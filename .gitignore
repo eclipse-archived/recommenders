@@ -1,0 +1,18 @@
+## no archives
+*.jar
+*.zip
+*.gz
+
+## no derived resources
+*/bin/*
+*.class
+*/target/*
+*/.recommenders/*
+
+
+## various other file types we don't want to have in the repository:
+
+.DS_Store
+*~
+*#
+*.licensed

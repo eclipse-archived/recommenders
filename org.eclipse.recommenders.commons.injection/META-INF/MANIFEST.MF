@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Injection Framework (Incubator)
+Bundle-SymbolicName: org.eclipse.recommenders.commons.injection;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: com.google.guice;bundle-version="3.0.0",
+ org.eclipse.core.runtime;bundle-version="3.6.0",
+ com.google.guava;bundle-version="1.7.0"
+Export-Package: org.eclipse.recommenders.commons.injection,
+ org.eclipse.recommenders.commons.internal.injection

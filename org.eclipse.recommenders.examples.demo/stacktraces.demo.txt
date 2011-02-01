@@ -1,0 +1,18 @@
+verwendete suchergebnisse:
+
+http://www.eclipse.org/swt/faq.php#uithread
+http://www.tutorials.de/java/208390-invalid-thread-access.html
+http://dev.eclipse.org/newslists/news.eclipse.platform.swt/msg22346.html
+
+daten auf vandyk/stacktraces-demo
+
+
+Exception in thread "Thread-2" org.eclipse.swt.SWTException: Invalid thread access
+	at org.eclipse.swt.SWT.error(SWT.java:4083)
+	at org.eclipse.swt.SWT.error(SWT.java:3998)
+	at org.eclipse.swt.SWT.error(SWT.java:3969)
+	at org.eclipse.swt.widgets.Widget.error(Widget.java:715)
+	at org.eclipse.swt.widgets.Widget.checkWidget(Widget.java:532)
+	at org.eclipse.swt.widgets.ProgressBar.setSelection(ProgressBar.java:273)
+	at org.eclipse.recommenders.examples.demo.stacktraces.InvalidThreadAccessDemo$1.run(InvalidThreadAccessDemo.java:32)
+	at java.lang.Thread.run(Thread.java:680)

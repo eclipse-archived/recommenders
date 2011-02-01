@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="modules" name="Eclipse Code Recommenders Dependency Injection Modules Extension Point" schema="schema/injection.exsd"/>
+
+</plugin>

@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Intelligent Code Completion (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.rcp.codecompletion;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core;bundle-version="3.6.0",
+ org.eclipse.jdt.ui;bundle-version="3.6.0",
+ org.eclipse.jface.text;bundle-version="3.6.0",
+ org.eclipse.recommenders.rcp.utils;bundle-version="0.1.0",
+ org.eclipse.recommenders.commons.analysis;bundle-version="0.1.0",
+ org.eclipse.core.resources;bundle-version="3.6.0",
+ org.eclipse.recommenders.rcp;bundle-version="0.1.0",
+ com.google.guava;bundle-version="1.7.0",
+ org.eclipse.recommenders.commons.utils;bundle-version="0.1.0",
+ org.apache.commons.lang;bundle-version="3.0.0",
+ com.google.guice;bundle-version="3.0.0",
+ org.eclipse.recommenders.commons.injection;bundle-version="0.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion,
+ org.eclipse.recommenders.rcp.codecompletion
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionPlugin

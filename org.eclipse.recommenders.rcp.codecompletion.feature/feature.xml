@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2010 Darmstadt University of Technology.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+       Darmstadt University of Technology - initial API and implementation.
+
+-->
+<feature
+      id="org.eclipse.recommenders.codecompletion"
+      label="Code Recommenders: Intelligent Code Completion (Incubation)"
+      version="0.1.0.qualifier"
+      provider-name="Eclipse Code Recommenders">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <url>
+      <update label="Eclipse Code Recommenders Temporary Update Site" url="http://vandyk.st.informatik.tu-darmstadt.de/updates/sneak/"/>
+      <discovery label="Eclipse Code Recommenders Third-Party Dependencies" url="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-latest/"/>
+   </url>
+
+   <requires>
+      <import plugin="org.apache.commons.lang" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.google.guava" version="1.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.recommenders.commons.utils" version="0.1.0" match="greaterOrEqual"/>
+      <import plugin="com.ibm.wala.core" version="1.3.0" match="greaterOrEqual"/>
+      <import plugin="com.ibm.wala.shrike" version="1.3.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.log4j" version="1.2.16" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.io" version="1.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.recommenders.commons.utils.gson" version="0.1.0" match="greaterOrEqual"/>
+      <import plugin="com.google.guice" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.google.gson" version="1.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.ui" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.core" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.ui" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.editors" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.recommenders.rcp.utils" version="0.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.recommenders.commons.analysis" version="0.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.6.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface.text" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="smile"/>
+      <import plugin="org.eclipse.recommenders.rcp" version="0.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.recommenders.rcp.codecompletion" version="0.1.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.primitives" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.math" version="2.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.recommenders.rcp.analysis" version="0.1.0" match="greaterOrEqual"/>
+      <import plugin="jsr305" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.pde.core" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface.text" version="3.6.1" match="greaterOrEqual"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.eclipse.recommenders.rcp.codecompletion.calls" version="0.1.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.recommenders.commons.analysis"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.commons.utils"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.commons.utils.gson"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.utils"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.codecompletion.calls"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.codecompletion"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.analysis"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.codecompletion.overrides"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.recommenders.commons.injection"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
