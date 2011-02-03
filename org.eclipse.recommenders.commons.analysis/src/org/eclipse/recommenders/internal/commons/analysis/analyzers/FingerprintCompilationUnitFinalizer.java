@@ -15,10 +15,11 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
-import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.utils.ClassUtils;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
@@ -33,7 +34,8 @@ public class FingerprintCompilationUnitFinalizer implements CompilationUnitFinal
     private final Map<IClass, String/* fingerprint */> map = new MapMaker().softKeys().makeMap();
 
     @Override
-    public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass) {
+    public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass,
+            final IProgressMonitor monitor) {
         setCompilationUnitFingerprint(compilationUnit, exampleClass);
         //
         final IClassHierarchy cha = exampleClass.getClassHierarchy();
@@ -76,7 +78,7 @@ public class FingerprintCompilationUnitFinalizer implements CompilationUnitFinal
     }
 
     private void addTypeToUsedTypes(final CompilationUnit compilationUnit, final ITypeName recType, final IClass clazz) {
-        String fingerprint = fingerprint(clazz);
+        final String fingerprint = fingerprint(clazz);
         final org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeReference recTypeRef = org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeReference
                 .create(recType, fingerprint);
         compilationUnit.imports.add(recTypeRef);

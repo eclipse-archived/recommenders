@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.CallGraphMethodAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICallGraphAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ReceiverCallsitesCallGraphAnalyzer;
@@ -200,8 +201,8 @@ public class ReceiverCallsitesTracingTest {
     }
 
     /**
-     * This method has a changed behavior in v2 since it does not follow calls to the super class anymore. At least not
-     * now.
+     * This method has a changed behavior in v2 since it does not follow calls
+     * to the super class anymore. At least not now.
      */
     @Test
     public void testCallsToCreatorMethodInSuperclass() throws Exception {
@@ -249,7 +250,7 @@ public class ReceiverCallsitesTracingTest {
     }
 
     private void exerciseSUTAndFilterValues(final RecommendersEntrypoint entrypoint) {
-        sut.analyzeMethod(entrypoint, output);
+        sut.analyzeMethod(entrypoint, output, new NullProgressMonitor());
         filterValuesWithEmtpyReceiverCallsites();
     }
 

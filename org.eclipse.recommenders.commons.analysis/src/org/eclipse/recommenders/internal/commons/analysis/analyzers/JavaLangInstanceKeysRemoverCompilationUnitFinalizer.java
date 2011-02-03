@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey;
@@ -21,7 +22,8 @@ import com.ibm.wala.classLoader.IClass;
 
 public class JavaLangInstanceKeysRemoverCompilationUnitFinalizer implements CompilationUnitFinalizer {
     @Override
-    public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass) {
+    public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass,
+            final IProgressMonitor monitor) {
         recursiveRemoveWalaExceptions(compilationUnit.primaryType);
     }
 

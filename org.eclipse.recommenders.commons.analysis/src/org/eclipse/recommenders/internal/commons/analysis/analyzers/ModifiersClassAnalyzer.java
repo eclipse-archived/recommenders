@@ -10,13 +10,14 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 
 import com.ibm.wala.classLoader.IClass;
 
 public class ModifiersClassAnalyzer implements IClassAnalyzer {
     @Override
-    public void analyzeClass(final IClass exampleClass, final TypeDeclaration type) {
+    public void analyzeClass(final IClass exampleClass, final TypeDeclaration type, final IProgressMonitor monitor) {
         type.modifiers = exampleClass.getModifiers();
     }
 }

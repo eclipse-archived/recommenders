@@ -10,10 +10,11 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 
 import com.ibm.wala.classLoader.IClass;
 
 public interface CompilationUnitFinalizer {
-    void finalizeClass(CompilationUnit compilationUnit, IClass exampleClass);
+    void finalizeClass(CompilationUnit compilationUnit, IClass exampleClass, IProgressMonitor monitor);
 }

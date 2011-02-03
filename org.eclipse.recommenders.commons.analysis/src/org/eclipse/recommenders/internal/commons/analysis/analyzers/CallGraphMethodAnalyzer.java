@@ -15,6 +15,7 @@ import static java.util.Collections.singleton;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
@@ -63,7 +64,11 @@ public class CallGraphMethodAnalyzer implements IMethodAnalyzer {
     }
 
     @Override
-    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration method) {
+    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration method,
+            final IProgressMonitor monitor) {
+        if (monitor.isCanceled()) {
+            return;
+        }
         this.methodDecl = method;
         setEntrypointMethod(entrypoint);
         buildCallGraph(entrypoint);
@@ -97,7 +102,8 @@ public class CallGraphMethodAnalyzer implements IMethodAnalyzer {
                             .create(org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite.Kind.METHOD_RETURN,
                                     null, 0, WalaNameUtils.wala2recMethodName(newsiteForField.def));
                 } else if (MethodUtils.isFakeRoot(alloc.getNode())) {
-                    // we assume that it is parameter when it is initialized in fakeroot
+                    // we assume that it is parameter when it is initialized in
+                    // fakeroot
                     // bogus but okay for now.
                     recInstanceKey.kind = Kind.PARAMETER;
                 }

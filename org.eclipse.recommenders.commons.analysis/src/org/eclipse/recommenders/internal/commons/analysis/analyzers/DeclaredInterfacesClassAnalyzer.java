@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
@@ -18,7 +19,7 @@ import com.ibm.wala.classLoader.IClass;
 
 public class DeclaredInterfacesClassAnalyzer implements IClassAnalyzer {
     @Override
-    public void analyzeClass(final IClass exampleClass, final TypeDeclaration type) {
+    public void analyzeClass(final IClass exampleClass, final TypeDeclaration type, final IProgressMonitor monitor) {
         for (final IClass interface_ : exampleClass.getDirectInterfaces()) {
             final ITypeName name = WalaNameUtils.wala2recTypeName(interface_);
             type.interfaces.add(name);

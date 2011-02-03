@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
 import java.lang.reflect.Modifier;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 
 import com.ibm.wala.classLoader.IMethod;
@@ -19,7 +20,8 @@ import com.ibm.wala.ipa.callgraph.Entrypoint;
 
 public class ModifiersMethodAnalyzer implements IMethodAnalyzer {
     @Override
-    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl) {
+    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl,
+            final IProgressMonitor monitor) {
         final IMethod method = entrypoint.getMethod();
         int modifiers = 0;
         if (method.isPrivate()) {

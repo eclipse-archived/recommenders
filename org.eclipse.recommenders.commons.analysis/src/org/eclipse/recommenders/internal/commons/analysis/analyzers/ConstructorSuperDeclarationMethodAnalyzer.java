@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
@@ -22,7 +23,8 @@ import com.ibm.wala.ipa.callgraph.Entrypoint;
 
 public class ConstructorSuperDeclarationMethodAnalyzer implements IMethodAnalyzer {
     @Override
-    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl) {
+    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl,
+            final IProgressMonitor monitor) {
         final IMethod method = entrypoint.getMethod();
         // filter for constructor calls only
         if (!method.isInit()) {

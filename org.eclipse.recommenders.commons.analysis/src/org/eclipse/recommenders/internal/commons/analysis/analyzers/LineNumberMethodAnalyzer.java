@@ -10,18 +10,21 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 
 /**
- * Sets the line number of the <b>first bytecode instruction</b> of this method. This is clearly not identical to the
- * line number the method has been declared but a valuable pointer in code when debuging.
+ * Sets the line number of the <b>first bytecode instruction</b> of this method.
+ * This is clearly not identical to the line number the method has been declared
+ * but a valuable pointer in code when debuging.
  */
 public class LineNumberMethodAnalyzer implements IMethodAnalyzer {
     @Override
-    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl) {
+    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl,
+            final IProgressMonitor monitor) {
         final IMethod method = entrypoint.getMethod();
         methodDecl.line = method.getLineNumber(0);
     }

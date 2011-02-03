@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.CallGraphMethodAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICallGraphAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ParameterCallsitesCallGraphAnalyzer;
@@ -115,7 +116,7 @@ public class ParameterCallsitesTracingTest {
     }
 
     private void exerciseSUT(final RecommendersEntrypoint entrypoint) {
-        sut.analyzeMethod(entrypoint, output);
+        sut.analyzeMethod(entrypoint, output, new NullProgressMonitor());
     }
 
     private void filterValuesWithEmtpyParameterCallsites() {

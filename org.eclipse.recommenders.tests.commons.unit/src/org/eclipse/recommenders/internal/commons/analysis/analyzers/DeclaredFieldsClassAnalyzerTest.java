@@ -51,7 +51,7 @@ public class DeclaredFieldsClassAnalyzerTest {
         mockClassGetDeclaredFields(exampleClass, declaredFields);
         final Set<ITypeName> expecteds = Sets.newHashSet(WalaNameUtils.walaFields2recTypeNames(declaredFields));
         // exercise
-        sut.analyzeClass(exampleClass, data);
+        sut.analyzeClass(exampleClass, data, null);
         // verify
         assertEquals(expecteds, data.fields);
     }

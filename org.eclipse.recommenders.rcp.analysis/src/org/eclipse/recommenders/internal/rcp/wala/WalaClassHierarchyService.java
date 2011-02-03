@@ -20,11 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.eclipse.core.resources.WorkspaceJob;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElement;
@@ -34,8 +31,8 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.commons.analysis.utils.WalaUtils;
 import org.eclipse.recommenders.internal.rcp.wala.cp.EclipseProjectPath;
-import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
 
@@ -47,6 +44,7 @@ import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.types.ClassLoaderReference;
 import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
+import com.ibm.wala.util.debug.UnimplementedError;
 
 public class WalaClassHierarchyService implements IClassHierarchyService, IElementChangedListener {
     private final HashMap<IJavaProject, IClassHierarchy> project2chaTable = new HashMap<IJavaProject, IClassHierarchy>();
@@ -126,21 +124,22 @@ public class WalaClassHierarchyService implements IClassHierarchyService, IEleme
         final IJavaProject project = jdtElement.getJavaProject();
         try {
             if (!project2chaTable.containsKey(project)) {
-                final WorkspaceJob job = new WorkspaceJob("") {
-                    @Override
-                    public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
-                        try {
-                            make(project, monitor);
-                        } catch (final InvocationTargetException e) {
-                            RecommendersPlugin.logError(e, "Exception during analysis.");
-                        } catch (final InterruptedException e) {
-                            RecommendersPlugin.logError(e, "Exception during analysis.");
-                        }
-                        return Status.OK_STATUS;
-                    }
-                };
-                job.schedule();
-                job.join();
+                make(project, new NullProgressMonitor());
+                // final WorkspaceJob job = new WorkspaceJob("") {
+                // @Override
+                // public IStatus runInWorkspace(final IProgressMonitor monitor)
+                // throws CoreException {
+                // try {
+                // } catch (final InvocationTargetException e) {
+                // RecommendersPlugin.logError(e, "Exception during analysis.");
+                // } catch (final InterruptedException e) {
+                // RecommendersPlugin.logError(e, "Exception during analysis.");
+                // }
+                // return Status.OK_STATUS;
+                // }
+                // };
+                // job.schedule();
+                // job.join();
             }
         } catch (final Exception x) {
             final String format = "Failed to create class hierarchy for project '%s'";
@@ -159,8 +158,13 @@ public class WalaClassHierarchyService implements IClassHierarchyService, IEleme
         }
         final ITypeName crType = resolver.toRecType(jdtType);
         final TypeReference walaType = cr2walaTypeReference(crType);
-        final IClass clazz = cha.lookupClass(walaType);
-        return clazz;
+
+        try {
+            final IClass clazz = cha.lookupClass(walaType);
+            return clazz;
+        } catch (final UnimplementedError x) {
+            throw WalaUtils.throwWalaFailedUnexpectedlyException(x);
+        }
     }
 
     @Override

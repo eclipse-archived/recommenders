@@ -39,7 +39,7 @@ public class NameClassAnalyzerTest {
         final IClass exampleClass = createClassMock("Lsome/Name");
         final ITypeName expected = wala2recTypeName(exampleClass);
         // exercise
-        sut.analyzeClass(exampleClass, data);
+        sut.analyzeClass(exampleClass, data, null);
         // verify
         assertEquals(expected, data.name);
     }

@@ -41,7 +41,7 @@ public class NameMethodAnalyzerTest {
         final Entrypoint entrypoint = createEntryPointMock(method);
         final IMethodName methodName = wala2recMethodName(method);
         // exercise
-        sut.analyzeMethod(entrypoint, data);
+        sut.analyzeMethod(entrypoint, data, null);
         //
         assertEquals(methodName, data.name);
     }

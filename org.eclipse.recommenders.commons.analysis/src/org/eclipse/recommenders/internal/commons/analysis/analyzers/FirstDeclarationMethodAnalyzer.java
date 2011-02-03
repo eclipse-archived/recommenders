@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.utils.MethodUtils;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
@@ -19,7 +20,8 @@ import com.ibm.wala.ipa.callgraph.Entrypoint;
 
 public class FirstDeclarationMethodAnalyzer implements IMethodAnalyzer {
     @Override
-    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl) {
+    public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl,
+            final IProgressMonitor monitor) {
         final IMethod method = entrypoint.getMethod();
         // filter constructor calls
         if (!MethodUtils.mayHaveSuperDeclaration(method)) {

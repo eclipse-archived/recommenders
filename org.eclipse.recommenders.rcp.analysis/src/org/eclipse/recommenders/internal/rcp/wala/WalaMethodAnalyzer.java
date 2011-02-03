@@ -16,6 +16,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -43,6 +44,8 @@ public class WalaMethodAnalyzer {
 
     private final Provider<WalaTypeAnalyzer> walaTypeAnalyzerProvider;
 
+    private IProgressMonitor monitor;
+
     @Inject
     public WalaMethodAnalyzer(final Set<IMethodAnalyzer> methodAnalyzers,
             final Provider<WalaTypeAnalyzer> walaTypeAnalyzer, final IClassHierarchyService cha) {
@@ -51,7 +54,7 @@ public class WalaMethodAnalyzer {
         this.cha = cha;
     }
 
-    public void init(final Entrypoint walaMethod, @Nullable final org.eclipse.jdt.core.IMethod jdtMethod,
+    public void initalize(final Entrypoint walaMethod, @Nullable final org.eclipse.jdt.core.IMethod jdtMethod,
             final MethodDeclaration recMethod) {
         ensureIsNotNull(walaMethod);
         ensureIsNotNull(recMethod);
@@ -60,7 +63,8 @@ public class WalaMethodAnalyzer {
         this.recMethod = recMethod;
     }
 
-    public void run() throws JavaModelException {
+    public void run(final IProgressMonitor monitor) throws JavaModelException {
+        this.monitor = monitor;
         analyzeMethodInstructions();
         analyzeNestedTypes();
     }
@@ -79,8 +83,8 @@ public class WalaMethodAnalyzer {
                 final TypeDeclaration anonymousRecType = TypeDeclaration.create();
                 recMethod.nestedTypes.add(anonymousRecType);
                 final WalaTypeAnalyzer walaTypeAnalyzer2 = walaTypeAnalyzerProvider.get();
-                walaTypeAnalyzer2.init(anonymousJdtType, anonymousRecType, anonymousWalaType);
-                walaTypeAnalyzer2.run();
+                walaTypeAnalyzer2.initialize(anonymousJdtType, anonymousRecType, anonymousWalaType);
+                walaTypeAnalyzer2.run(monitor);
             }
         }
     }
@@ -88,7 +92,7 @@ public class WalaMethodAnalyzer {
     private void analyzeMethodInstructions() {
         for (final IMethodAnalyzer methodAnalyzer : methodAnalyzers) {
             try {
-                methodAnalyzer.analyzeMethod(walaEntrypoint, recMethod);
+                methodAnalyzer.analyzeMethod(walaEntrypoint, recMethod, monitor);
             } catch (final Exception e) {
                 logErrorMessage(e);
             }

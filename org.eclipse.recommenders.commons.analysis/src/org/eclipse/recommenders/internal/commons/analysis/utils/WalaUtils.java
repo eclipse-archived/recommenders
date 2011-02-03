@@ -27,6 +27,7 @@ import org.eclipse.recommenders.commons.utils.Throws;
 import com.google.common.collect.Sets;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.util.debug.UnimplementedError;
 
 public class WalaUtils {
     public static class IClassComparator implements Comparator<IClass> {
@@ -179,5 +180,9 @@ public class WalaUtils {
         // return FileUtils.listFiles(directory, new String[] { "jar" },
         // recursively);
         return FileUtils.listFiles(directory, new JarFileFileFilter(), new AllDirsOnlyOnceFileFilter());
+    }
+
+    public static RuntimeException throwWalaFailedUnexpectedlyException(final UnimplementedError x) {
+        throw new RuntimeException("Wala Bytecode Analysis Failed. Please report this issue.", x);
     }
 }

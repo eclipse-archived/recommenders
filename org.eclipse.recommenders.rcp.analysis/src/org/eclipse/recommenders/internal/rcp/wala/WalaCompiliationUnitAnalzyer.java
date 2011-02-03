@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import java.util.Date;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.CompilationUnitFinalizer;
@@ -39,6 +40,8 @@ public class WalaCompiliationUnitAnalzyer {
 
     private final Provider<WalaTypeAnalyzer> walaTypeAnalyzerProvider;
 
+    private IProgressMonitor monitor;
+
     @Inject
     public WalaCompiliationUnitAnalzyer(final Provider<WalaTypeAnalyzer> walaTypeAnalyzerProvider,
             final Set<CompilationUnitFinalizer> compilationUnitFinalizers,
@@ -58,8 +61,9 @@ public class WalaCompiliationUnitAnalzyer {
         this.recCompilationUnit = recCompilationUnit;
     }
 
-    public void run() throws JavaModelException {
-        initCompilationUnit();
+    public void run(final IProgressMonitor monitor) throws JavaModelException {
+        this.monitor = monitor;
+        initializeCompilationUnit();
         analyzePrimaryType();
         finalizeCompilationUnit();
         publishCompilationUnit();
@@ -68,18 +72,18 @@ public class WalaCompiliationUnitAnalzyer {
     private void analyzePrimaryType() throws JavaModelException {
         recCompilationUnit.primaryType = TypeDeclaration.create();
         final WalaTypeAnalyzer walaTypeAnalyzer = walaTypeAnalyzerProvider.get();
-        walaTypeAnalyzer.init(jdtCompilationUnit.findPrimaryType(), recCompilationUnit.primaryType, walaClass);
-        walaTypeAnalyzer.run();
+        walaTypeAnalyzer.initialize(jdtCompilationUnit.findPrimaryType(), recCompilationUnit.primaryType, walaClass);
+        walaTypeAnalyzer.run(monitor);
     }
 
-    private void initCompilationUnit() {
+    private void initializeCompilationUnit() {
         recCompilationUnit.analysedOn = new Date();
         recCompilationUnit.name = walaClass.getName().toString();
     }
 
     private void finalizeCompilationUnit() {
         for (final CompilationUnitFinalizer cuFinalizer : compilationUnitFinalizers) {
-            cuFinalizer.finalizeClass(recCompilationUnit, walaClass);
+            cuFinalizer.finalizeClass(recCompilationUnit, walaClass, monitor);
         }
     }
 

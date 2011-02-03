@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.Throws;
@@ -52,6 +53,8 @@ public class WalaTypeAnalyzer {
 
     private final JavaElementResolver jdtResolver;
 
+    private IProgressMonitor monitor;
+
     @Inject
     public WalaTypeAnalyzer(final Set<IClassAnalyzer> classAnalyzers,
             final Provider<IEntrypointSelector> entrypointSelector, final Provider<WalaTypeAnalyzer> typeAnalyzers,
@@ -65,7 +68,7 @@ public class WalaTypeAnalyzer {
         this.jdtResolver = jdtResolver;
     }
 
-    public void init(final IType jdtType, final TypeDeclaration recType, final IClass walaClass) {
+    public void initialize(final IType jdtType, final TypeDeclaration recType, final IClass walaClass) {
         ensureIsNotNull(jdtType);
         ensureIsNotNull(walaClass);
         ensureIsNotNull(recType);
@@ -74,7 +77,8 @@ public class WalaTypeAnalyzer {
         this.walaClass = walaClass;
     }
 
-    public void run() throws JavaModelException {
+    public void run(final IProgressMonitor monitor) throws JavaModelException {
+        this.monitor = monitor;
         analyzeClassStructure();
         analyzeEachMethod();
         analyzeMemberTypes();
@@ -87,15 +91,15 @@ public class WalaTypeAnalyzer {
             final IClass walaClass = cha.getType(jdtMemberType);
             if (walaClass != null) {
                 final WalaTypeAnalyzer walaMemberTypeAnalyzer = typeAnalyzers.get();
-                walaMemberTypeAnalyzer.init(jdtMemberType, recMemberType, walaClass);
-                walaMemberTypeAnalyzer.run();
+                walaMemberTypeAnalyzer.initialize(jdtMemberType, recMemberType, walaClass);
+                walaMemberTypeAnalyzer.run(monitor);
             }
         }
     }
 
     private void analyzeClassStructure() {
         for (final IClassAnalyzer classAnalyzer : classAnalyzers) {
-            classAnalyzer.analyzeClass(walaClass, recType);
+            classAnalyzer.analyzeClass(walaClass, recType, monitor);
         }
     }
 
@@ -108,8 +112,8 @@ public class WalaTypeAnalyzer {
             final MethodDeclaration recMethod = MethodDeclaration.create();
             recType.methods.add(recMethod);
             final WalaMethodAnalyzer walaMethodAnalyzer = walaMethodAnalyzers.get();
-            walaMethodAnalyzer.init(entrypoint, jdtMethod, recMethod);
-            walaMethodAnalyzer.run();
+            walaMethodAnalyzer.initalize(entrypoint, jdtMethod, recMethod);
+            walaMethodAnalyzer.run(monitor);
         }
     }
 

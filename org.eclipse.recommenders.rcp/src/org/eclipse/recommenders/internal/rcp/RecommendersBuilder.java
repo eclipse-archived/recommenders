@@ -22,7 +22,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
@@ -156,11 +155,11 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
             monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
             return;
         }
-        monitor.subTask("Analyzing " + cu.getElementName());
+        monitor.subTask("Recommenders Analyzing " + cu.getElementName());
         final List<Object> artifacts = Lists.newLinkedList();
         for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
 
-            final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer);
+            final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer, new InterruptingProgressMonitor(monitor));
             if (artifact != null) {
                 artifacts.add(artifact);
             }
@@ -169,10 +168,12 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         monitor.worked(1);
     }
 
-    private Object safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer) {
+    private Object safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
+            final IProgressMonitor monitor) {
+
         try {
-            return analyzer.analyze(cu, new NullProgressMonitor());
-        } catch (final Exception x) {
+            return analyzer.analyze(cu, monitor);
+        } catch (final RuntimeException x) {
             logAnalyzerFailed(cu, analyzer, x);
             return null;
         }

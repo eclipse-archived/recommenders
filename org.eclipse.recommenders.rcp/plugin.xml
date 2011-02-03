@@ -80,7 +80,7 @@
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.RecommendersNature">
+               class="org.eclipse.recommenders.internal.rcp.RecommendersNature">
          </run>
       </runtime>
       <builder

@@ -49,7 +49,7 @@ public class DeclaredInterfacesClassAnalyzerTest {
         when(c.getDirectInterfaces()).thenReturn(declaredInterfaces);
         final Set<ITypeName> expecteds = Sets.newHashSet(wala2recTypeNames(declaredInterfaces));
         // exercise
-        sut.analyzeClass(c, data);
+        sut.analyzeClass(c, data, null);
         // verify
         assertEquals(expecteds, data.interfaces);
     }

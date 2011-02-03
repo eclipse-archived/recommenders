@@ -10,10 +10,11 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 
 public interface IMethodAnalyzer {
-    void analyzeMethod(Entrypoint entrypoint, MethodDeclaration method);
+    void analyzeMethod(Entrypoint entrypoint, MethodDeclaration method, IProgressMonitor monitor);
 }

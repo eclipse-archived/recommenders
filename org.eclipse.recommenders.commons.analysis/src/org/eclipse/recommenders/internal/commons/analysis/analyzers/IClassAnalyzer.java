@@ -10,10 +10,11 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 
 import com.ibm.wala.classLoader.IClass;
 
 public interface IClassAnalyzer {
-    void analyzeClass(IClass exampleClass, TypeDeclaration type);
+    void analyzeClass(IClass exampleClass, TypeDeclaration type, IProgressMonitor monitor);
 }

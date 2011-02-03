@@ -42,7 +42,7 @@ public class DeclaredSuperclassClassAnalyzerTest {
         final ITypeName superClassName = wala2recTypeName(superclass);
         mockClassGetSuperclass(baseclass, superclass);
         // exercise
-        sut.analyzeClass(baseclass, data);
+        sut.analyzeClass(baseclass, data, null);
         // verify
         assertEquals(superClassName, data.superclass);
     }

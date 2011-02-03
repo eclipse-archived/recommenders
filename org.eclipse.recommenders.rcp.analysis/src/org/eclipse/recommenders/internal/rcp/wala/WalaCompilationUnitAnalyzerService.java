@@ -113,7 +113,7 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         final WalaCompiliationUnitAnalzyer r = injector.getInstance(WalaCompiliationUnitAnalzyer.class);
         r.init(jdtCompilationUnit, walaClass, recCompilationUnit);
         try {
-            r.run();
+            r.run(monitor);
         } catch (final Exception x) {
             RcpAnalysisPlugin.logError(x, "error during analysis if '%s'", walaClass.getName());
         }

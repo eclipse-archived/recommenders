@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
@@ -20,7 +21,7 @@ import com.ibm.wala.types.TypeReference;
 
 public class DeclaredFieldsClassAnalyzer implements IClassAnalyzer {
     @Override
-    public void analyzeClass(final IClass exampleClass, final TypeDeclaration type) {
+    public void analyzeClass(final IClass exampleClass, final TypeDeclaration type, final IProgressMonitor monitor) {
         for (final IField field : exampleClass.getDeclaredInstanceFields()) {
             final TypeReference fieldType = field.getFieldTypeReference();
             final ITypeName typeName = WalaNameUtils.wala2recTypeName(fieldType);
