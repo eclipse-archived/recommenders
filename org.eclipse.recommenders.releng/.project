@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.eclipse.recommenders.commons.releng</name>
+	<name>org.eclipse.recommenders.releng</name>
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
-
 	</buildSpec>
 	<natures>
-
 	</natures>
 </projectDescription>

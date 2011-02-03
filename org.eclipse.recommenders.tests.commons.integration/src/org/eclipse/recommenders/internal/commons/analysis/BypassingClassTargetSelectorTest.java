@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) 2010 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */
 package org.eclipse.recommenders.internal.commons.analysis;
 
 import static org.eclipse.recommenders.tests.commons.analysis.utils.WalaMockUtils.createCGNodeMock;
@@ -33,7 +43,7 @@ public class BypassingClassTargetSelectorTest {
         // setup
         setupSiteAndCGNode(TypeReference.Boolean);
         // exercise
-        IClass actual = sut.getAllocatedTarget(caller, site);
+        final IClass actual = sut.getAllocatedTarget(caller, site);
         // verify
         assertEquals(null, actual);
     }
@@ -43,7 +53,7 @@ public class BypassingClassTargetSelectorTest {
         // setup
         setupSiteAndCGNode(TypeReference.JavaLangCharacter);
         // exercise
-        IClass allocated = sut.getAllocatedTarget(caller, site);
+        final IClass allocated = sut.getAllocatedTarget(caller, site);
         // verify
         assertEquals(TypeReference.JavaLangCharacter, allocated.getReference());
     }
@@ -53,14 +63,14 @@ public class BypassingClassTargetSelectorTest {
         // setup
         setupSiteAndCGNode(TypeReference.JavaUtilSet);
         // exercise
-        IClass allocated = sut.getAllocatedTarget(caller, site);
+        final IClass allocated = sut.getAllocatedTarget(caller, site);
         // verify
         assertTrue(allocated instanceof BypassSyntheticClass);
-        IClass realType = ((BypassSyntheticClass) allocated).getRealType();
+        final IClass realType = ((BypassSyntheticClass) allocated).getRealType();
         assertEquals(TypeReference.JavaUtilSet, realType.getReference());
     }
 
-    private void setupSiteAndCGNode(TypeReference declaredNewSiteType) {
+    private void setupSiteAndCGNode(final TypeReference declaredNewSiteType) {
         site = createNewSiteMock();
         caller = createCGNodeMock();
         cha = JREOnlyClassHierarchyFixture.getInstance();

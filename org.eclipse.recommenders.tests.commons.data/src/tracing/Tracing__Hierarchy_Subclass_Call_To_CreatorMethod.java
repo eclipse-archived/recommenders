@@ -1,15 +1,21 @@
+/**
+ * Copyright (c) 2010 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */
 package tracing;
-
 
 import acme.Button;
 
+public class Tracing__Hierarchy_Subclass_Call_To_CreatorMethod extends Tracing__Hierarchy_Rootclass {
 
-public class Tracing__Hierarchy_Subclass_Call_To_CreatorMethod extends Tracing__Hierarchy_Rootclass
-{
-
-    public void __test()
-    {
-        Button createNewButton = createNewButton();
+    public void __test() {
+        final Button createNewButton = createNewButton();
         createNewButton.foo1();
     }
 }

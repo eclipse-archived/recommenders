@@ -146,11 +146,11 @@
 						</executions>
 						<configuration>
 							<encoding>UTF-8</encoding>
-							<header>../org.eclipse.recommenders.commons.releng/etc/license-tu-darmstadt.txt</header>
+							<header>org.eclipse.recommenders.releng/etc/license-tu-darmstadt.txt</header>
 							<validHeaders>
-								<validHeader>../org.eclipse.recommenders.commons.releng/etc/license-fritz-kaluza.txt</validHeader>
-								<validHeader>../org.eclipse.recommenders.commons.releng/etc/license-tu-darmstadt.txt</validHeader>
-								<validHeader>../org.eclipse.recommenders.commons.releng/etc/license-henss.txt</validHeader>
+								<validHeader>org.eclipse.recommenders.releng/etc/license-fritz-kaluza.txt</validHeader>
+								<validHeader>org.eclipse.recommenders.releng/etc/license-tu-darmstadt.txt</validHeader>
+								<validHeader>org.eclipse.recommenders.releng/etc/license-henss.txt</validHeader>
 							</validHeaders>
 							<strictCheck>false</strictCheck>
 							<quiet>false</quiet>
