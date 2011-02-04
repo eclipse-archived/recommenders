@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * Two tools to show:
+ * Example Codesearch:
  * 
  * <ul>
  * <li>Example Code Search: Go into {@link #setMessage(String)} and trigger code
@@ -26,13 +26,11 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class MyView extends ViewPart {
 
-    public void setMessage(final String newMessage) {
+    public void updateMessage(final String newMessage) {
 
         // How do I get an instance of IStatusLineManager?
-
-        final IStatusLineManager manager = getViewSite().getActionBars().getStatusLineManager();
-        // manager.setMessage(newMessage);
-
+        final IStatusLineManager manager = null;
+        manager.setMessage(newMessage);
     }
 
     @Override

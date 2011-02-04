@@ -13,7 +13,6 @@ package org.eclipse.recommenders.examples.demo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -37,7 +36,8 @@ public class MyDialog extends Dialog {
     @Override
     protected Control createDialogArea(final Composite parent) {
         final Composite container = createContainer(parent);
-        swtTextWidget.setLayoutData(new RowData());
+
+        swtTextWidget = new Text(container, SWT.BORDER);
 
         final Button b = new Button(parent, 0);
         b.addSelectionListener(null);

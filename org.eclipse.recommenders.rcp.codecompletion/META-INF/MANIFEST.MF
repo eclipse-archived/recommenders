@@ -6,18 +6,18 @@ Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.jdt.core;bundle-version="3.6.0",
- org.eclipse.jdt.ui;bundle-version="3.6.0",
- org.eclipse.jface.text;bundle-version="3.6.0",
- org.eclipse.recommenders.rcp.utils;bundle-version="0.1.0",
- org.eclipse.recommenders.commons.analysis;bundle-version="0.1.0",
- org.eclipse.core.resources;bundle-version="3.6.0",
- org.eclipse.recommenders.rcp;bundle-version="0.1.0",
- com.google.guava;bundle-version="1.7.0",
- org.eclipse.recommenders.commons.utils;bundle-version="0.1.0",
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.jface.text,
+ org.eclipse.recommenders.rcp.utils,
+ org.eclipse.recommenders.commons.analysis,
+ org.eclipse.core.resources,
+ org.eclipse.recommenders.rcp,
+ com.google.guava,
+ org.eclipse.recommenders.commons.utils,
  org.apache.commons.lang;bundle-version="3.0.0",
- com.google.guice;bundle-version="3.0.0",
- org.eclipse.recommenders.commons.injection;bundle-version="0.1.0"
+ com.google.guice,
+ org.eclipse.recommenders.commons.injection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion,
  org.eclipse.recommenders.rcp.codecompletion
