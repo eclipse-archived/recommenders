@@ -42,7 +42,7 @@ public class MyDialog extends Dialog {
         final Button b = new Button(parent, 0);
         b.addSelectionListener(null);
         b.setSelection(true);
-        b.setText(null);
+        
         final IWorkbenchHelpSystem help = PlatformUI.getWorkbench().getHelpSystem();
 
         return container;

@@ -45,9 +45,6 @@ public class ModifiersMethodAnalyzer implements IMethodAnalyzer {
         if (method.isSynchronized()) {
             modifiers |= Modifier.SYNCHRONIZED;
         }
-        if (method.isVolatile()) {
-            modifiers |= Modifier.VOLATILE;
-        }
         if (method.isNative()) {
             modifiers |= Modifier.NATIVE;
         }

@@ -96,7 +96,7 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
     @Override
     public void buildCallGraph() {
         try {
-            callGraph = callGraphBuilder.makeCallGraph(options, new InterruptsCheckingProgressMonitor());
+            callGraph = callGraphBuilder.makeCallGraph(options);
         } catch (final Exception e) {
             throw Throws.throwUnhandledException(e);
         }
