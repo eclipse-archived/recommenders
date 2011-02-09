@@ -294,6 +294,8 @@
 		<module>org.eclipse.recommenders.rcp.utils</module>
 		<module>org.eclipse.recommenders.tests.commons</module>
 		<module>org.eclipse.recommenders.tests.commons.unit</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.calls</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.overrides</module>
 		<module>org.eclipse.recommenders.examples.rcp.codecompletion</module>
 
 		<!-- features 'n update sites -->
