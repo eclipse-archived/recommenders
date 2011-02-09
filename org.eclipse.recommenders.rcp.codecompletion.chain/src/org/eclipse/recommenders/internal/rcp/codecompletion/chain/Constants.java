@@ -68,7 +68,9 @@ public class Constants {
     /**
      * This setting sets the plug-in ID, which is needed to display the image in
      * the proposal box.
+     * 
+     * REVIEW: Is there another way to retrieve this id from the manifest.mf?
      */
-    public static final String PLUGIN_ID = "org.eclipse.recommenders.rcp.codecompletion.callchain";
+    public static final String PLUGIN_ID = "org.eclipse.recommenders.rcp.codecompletion.chain";
   }
 }

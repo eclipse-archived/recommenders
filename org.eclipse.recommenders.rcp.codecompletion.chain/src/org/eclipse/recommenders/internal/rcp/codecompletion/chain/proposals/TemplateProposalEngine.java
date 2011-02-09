@@ -269,11 +269,7 @@ public class TemplateProposalEngine {
       if (partCode == null)
         return null;
       if (code == null) {
-        // if (prefixToEquals.contains(partCode)) {
         code = new StringBuilder().append(first).append(partCode);
-        // } else {
-        // code = new StringBuilder().append(first).append(partCode);
-        // }
       } else {
         code.append(Signature.C_DOT).append(partCode);
       }

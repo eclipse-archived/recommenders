@@ -14,8 +14,10 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +39,7 @@ import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
 
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
+import com.ibm.wala.classLoader.IMember;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.types.TypeName;
 
@@ -54,6 +57,8 @@ public class ChainingAlgorithm {
   private final JavaElementResolver resolver;
 
   private FieldsAndMethodsCompletionContext ctx;
+  
+  private static Map<IClass, Map<IMember, IClass>> searchMap;
 
   public ChainingAlgorithm() {
     expectedType = null;
@@ -63,6 +68,7 @@ public class ChainingAlgorithm {
 
     walaService = InjectionService.getInstance().requestInstance(IClassHierarchyService.class);
     resolver = InjectionService.getInstance().requestInstance(JavaElementResolver.class);
+    searchMap = Collections.synchronizedMap(new HashMap<IClass, Map<IMember, IClass>>());
   }
 
   public void execute(final JavaContentAssistInvocationContext jctx) throws JavaModelException {
@@ -143,15 +149,16 @@ public class ChainingAlgorithm {
           }
         }));
     executor.allowCoreThreadTimeOut(true);
+    //executor.prestartAllCoreThreads();
 
     ChainingAlgorithmWorker.setExecutor(executor);
     ChainingAlgorithmWorker.setExpectedType(expectedType);
   }
 
   private void startWorkers(final IClass callingContext) throws JavaModelException {
-    startInitialWorkersForFields(ctx, callingContext);
-    startInitialWorkersForLocalVariables(ctx);
-    startInitialWorkersForMethodsReturnType(ctx, callingContext);
+    startInitialWorkersForFields(callingContext);
+    startInitialWorkersForLocalVariables();
+    startInitialWorkersForMethodsReturnType(callingContext);
   }
 
   private void waitForThreadPoolTermination() {
@@ -162,7 +169,7 @@ public class ChainingAlgorithm {
     }
   }
 
-  private void startInitialWorkersForMethodsReturnType(final FieldsAndMethodsCompletionContext ctx,
+  private void startInitialWorkersForMethodsReturnType(
       final IClass callingContext) throws JavaModelException {
 
     // REVIEW String parsing should go to private methods or utility classes.
@@ -180,7 +187,6 @@ public class ChainingAlgorithm {
 
   private void startMethodWorkerFromMethodProposal(final IClass callingContext,
       final ChainedProposalAnchor methodProposal, final TypeName fieldType) {
-    // FIXME: Attempt to retrieve generic types, see old algorithm
     final LinkedList<IChainWalaElement> walaList = new LinkedList<IChainWalaElement>();
     for (final IMethod method : callingContext.getAllMethods()) {
       TypeName returnReference = null;
@@ -217,15 +223,14 @@ public class ChainingAlgorithm {
     if ((fullyQualifiedType == null) || !LookupUtilJdt.isWantedType(fullyQualifiedType))
       return null;
     TypeName fieldType = null;
-    if (!LookupUtilJdt.isSignatureOfSimpleType(new String(signature))
-        && !(fullyQualifiedType instanceof LookupUtilJdt.PrimitiveType)) {
+    if (!isPrimitive(signature, fullyQualifiedType)) {
       fieldType = walaService.getType(fullyQualifiedType).getName();
     } else
       return null;
     return fieldType;
   }
 
-  private void startInitialWorkersForLocalVariables(final FieldsAndMethodsCompletionContext ctx)
+  private void startInitialWorkersForLocalVariables()
       throws JavaModelException {
     for (final ChainedProposalAnchor variableProposal : ctx.getProposedVariables()) {
       if (isValidLocalVariable(ctx, variableProposal)) {
@@ -257,7 +262,7 @@ public class ChainingAlgorithm {
         && !Arrays.equals(variableProposal.getCompletion().toCharArray(), ctx.getCallingVariableName());
   }
 
-  private void startInitialWorkersForFields(final FieldsAndMethodsCompletionContext ctx, final IClass callingContext)
+  private void startInitialWorkersForFields(final IClass callingContext)
       throws JavaModelException {
     for (final ChainedProposalAnchor fieldProposal : ctx.getProposedFields()) {
       final char signature[] = fieldProposal.getSignature();
@@ -306,5 +311,13 @@ public class ChainingAlgorithm {
 
   public List<ChainedJavaProposal> getProposals() {
     return proposals;
+  }
+
+  public static void setSearchMap(Map<IClass, Map<IMember, IClass>> searchMap) {
+    ChainingAlgorithm.searchMap = searchMap;
+  }
+
+  public static Map<IClass, Map<IMember, IClass>> getSearchMap() {
+    return searchMap;
   }
 }

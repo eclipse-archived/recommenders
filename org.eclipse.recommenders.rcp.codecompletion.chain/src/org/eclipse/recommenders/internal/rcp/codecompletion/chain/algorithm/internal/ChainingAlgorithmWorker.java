@@ -25,8 +25,6 @@ import com.ibm.wala.types.TypeReference;
 @SuppressWarnings("restriction")
 public class ChainingAlgorithmWorker implements Runnable {
 
-  private static Map<IClass, Map<IMember, IClass>> searchMap = new HashMap<IClass, Map<IMember, IClass>>();
-
   private static ThreadPoolExecutor executor;
 
   private final LinkedList<IChainWalaElement> workingChain;
@@ -54,7 +52,7 @@ public class ChainingAlgorithmWorker implements Runnable {
     // check if max chain length reached
     if (getPriority() + 1 < Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
       // check if type was already computed
-      if (ChainingAlgorithmWorker.searchMap.containsKey(typeToCheck)) {
+      if (ChainingAlgorithm.getSearchMap().containsKey(typeToCheck)) {
         executeComputationOnExistingType(typeToCheck);
         tryTerminateExecutor();
         return;
@@ -65,25 +63,27 @@ public class ChainingAlgorithmWorker implements Runnable {
         // check methods of type --> store in search map && and create new
         // worker
         map.putAll(computeMethods(typeToCheck));
-        ChainingAlgorithmWorker.searchMap.put(typeToCheck, map);
+        ChainingAlgorithm.getSearchMap().put(typeToCheck, map);
       } else {
-        final ArrayClass arrayTypeToCheck = (ArrayClass) typeToCheck;
-        final IClass classOfArray = arrayTypeToCheck.getElementClass();
-        if (classOfArray == null) {
-          final TypeReference elementType = arrayTypeToCheck.getReference().getArrayElementType();
-          if (elementType.isPrimitiveType())
-            return;// classOfArray =
-                   // ChainingAlgorithm.boxPrimitiveTyp(typeToCheck,
-          // elementType.getName().toString().toCharArray());
-        }
-        final Map<IMember, IClass> map = computeFields(classOfArray);
-        // check methods of type --> store in search map && and create new
-        // worker
-        map.putAll(computeMethods(classOfArray));
-        ChainingAlgorithmWorker.searchMap.put(typeToCheck, map);
+        handleArrayType(typeToCheck);
       }
     }
     tryTerminateExecutor();
+  }
+
+  private void handleArrayType(final IClass typeToCheck) throws JavaModelException {
+    final ArrayClass arrayTypeToCheck = (ArrayClass) typeToCheck;
+    final IClass classOfArray = arrayTypeToCheck.getElementClass();
+    if (classOfArray == null) {
+      final TypeReference elementType = arrayTypeToCheck.getReference().getArrayElementType();
+      if (elementType.isPrimitiveType())
+        return;
+    }
+    final Map<IMember, IClass> map = computeFields(classOfArray);
+    // check methods of type --> store in search map && and create new
+    // worker
+    map.putAll(computeMethods(classOfArray));
+    ChainingAlgorithm.getSearchMap().put(typeToCheck, map);
   }
 
   /*
@@ -122,7 +122,7 @@ public class ChainingAlgorithmWorker implements Runnable {
   private void tryTerminateExecutor() {
     if ((ChainingAlgorithmWorker.getExecutor().getPoolSize() == 1)
         && (ChainingAlgorithmWorker.getExecutor().getQueue().size() < 1)) {
-      ChainingAlgorithmWorker.getExecutor().shutdownNow();
+      ChainingAlgorithmWorker.getExecutor().shutdownNow(); //XXX There is a problem with the executer which I cannot resolve. If you trigger the plug-in several times in a very short period, than a InterruptedException can occur 
     }
   }
 
@@ -130,7 +130,7 @@ public class ChainingAlgorithmWorker implements Runnable {
    * if the chain has to be extended by a method
    */
   private IClass createMethodWorker(final IMethod m) throws JavaModelException {
-    if (m.isPublic()) {
+    if (m.isPublic()) {//XXX: Case: If calling context is subtype of typeToCheck than field/method can be protected or package private
       final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
       list.add(new MethodChainWalaElement(m));
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1, internalProposalStore);
@@ -161,15 +161,14 @@ public class ChainingAlgorithmWorker implements Runnable {
    * if the chain has to be extended by a field
    */
   private IClass createFieldWorker(final IClass typeToCheck, final IField f) throws JavaModelException {
-    if (f.isPublic()) {
+    if (f.isPublic()) { //XXX: Case: If calling context is subtype of typeToCheck than field/method can be protected or package private
       final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
       list.add(new FieldChainWalaElement(f));
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1, internalProposalStore);
       startWorker(worker);
-      if (f.getFieldTypeReference().isPrimitiveType())
-        return null; // return
-                     // ChainingAlgorithm.boxPrimitiveTyp(f.getDeclaringClass(),
-      // f.getFieldTypeReference().getName().toString().toCharArray());
+      if (f.getFieldTypeReference().isPrimitiveType()){
+        return null;
+      }
       return f.getClassHierarchy().lookupClass(f.getFieldTypeReference());
     }
     return null;
@@ -180,7 +179,7 @@ public class ChainingAlgorithmWorker implements Runnable {
    * worker
    */
   private void executeComputationOnExistingType(final IClass typeToCheck) {
-    for (final Entry<IMember, IClass> entry : ChainingAlgorithmWorker.searchMap.get(typeToCheck).entrySet()) {
+    for (final Entry<IMember, IClass> entry : ChainingAlgorithm.getSearchMap().get(typeToCheck).entrySet()) {
       final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
       if (entry.getKey() instanceof IField) {
         list.add(new FieldChainWalaElement((IField) entry.getKey()));
@@ -209,6 +208,7 @@ public class ChainingAlgorithmWorker implements Runnable {
     if (typeToCheck == null)
       return true;
     final int testResult = LookupUtilWala.equalityTest(typeToCheck, ChainingAlgorithmWorker.getExpectedType());
+    //if both types equal
     if ((testResult & LookupUtilWala.RESULT_EQUAL) > 0) {
       if (!checkRedundancy()) {
         internalProposalStore.addProposal(workingChain);
@@ -216,6 +216,7 @@ public class ChainingAlgorithmWorker implements Runnable {
       } else
         return true;
     }
+    //if typeToCheck is primitive return
     if ((testResult & LookupUtilWala.RESULT_PRIMITIVE) > 0)
       return true;
     // Consult type hierarchy for sub-/supertypes
@@ -236,6 +237,7 @@ public class ChainingAlgorithmWorker implements Runnable {
       } else
         return true;
     }
+    // not equal, not in a hierarchical relation, not primitive
     return false;
   }
 
