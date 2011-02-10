@@ -15,23 +15,29 @@ import static org.eclipse.recommenders.tests.commons.analysis.utils.TestConstant
 import static org.eclipse.recommenders.tests.commons.analysis.utils.WalaMockUtils.createCGNodeMock;
 import static org.eclipse.recommenders.tests.commons.analysis.utils.WalaMockUtils.createCallGraphBuilderMock;
 import static org.eclipse.recommenders.tests.commons.analysis.utils.WalaMockUtils.createCallSiteReferenceMock;
+import static org.eclipse.recommenders.tests.commons.analysis.utils.WalaMockUtils.createPublicStaticMethodMock;
 import static org.eclipse.recommenders.tests.commons.analysis.utils.WalaMockUtils.mockCallSiteGetDeclaredTarget;
 import static org.eclipse.recommenders.tests.commons.analysis.utils.WalaMockUtils.mockCallSiteIsDispatch;
 import static org.eclipse.recommenders.tests.commons.analysis.utils.WalaMockUtils.mockCallSiteIsFixed;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import org.eclipse.recommenders.internal.commons.analysis.selectors.RestrictedDeclaringClassMethodTargetSelector;
-import org.eclipse.recommenders.tests.commons.analysis.utils.JREOnlyClassHierarchyFixture;
+import org.eclipse.recommenders.tests.commons.analysis.utils.BundleClassloaderBasedClassHierarchy;
 import org.junit.Test;
 
 import com.ibm.wala.classLoader.CallSiteReference;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.ipa.callgraph.CGNode;
 import com.ibm.wala.ipa.callgraph.impl.ClassHierarchyMethodTargetSelector;
 import com.ibm.wala.ipa.callgraph.propagation.SSAPropagationCallGraphBuilder;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 
 public class RestrictedDeclaringClassMethodTargetSelectorTest {
+
+    private static IClassHierarchy cha = BundleClassloaderBasedClassHierarchy
+            .newInstance(RestrictedDeclaringClassMethodTargetSelectorTest.class);
 
     private RestrictedDeclaringClassMethodTargetSelector sut;
 
@@ -48,17 +54,20 @@ public class RestrictedDeclaringClassMethodTargetSelectorTest {
     }
 
     @Test
-    public void testGetCalleeTarget_CallToObjectClone() {
+    public void testGetCalleeTarget_CallToObjectHashCode() {
         setupSUT();
         final CallSiteReference call = createCallSiteReferenceMock();
         mockCallSiteGetDeclaredTarget(call, METHOD_OBJECT_HASHCODE);
         mockCallSiteIsDispatch(call, true);
-        final IMethod actualCallTarget = sut.getCalleeTarget(createCGNodeMock(), call, thisClass);
+        final CGNode cgNode = createCGNodeMock();
+        IMethod sourceMethod = createPublicStaticMethodMock();
+        when(cgNode.getMethod()).thenReturn(sourceMethod);
+        final IMethod actualCallTarget = sut.getCalleeTarget(cgNode, call, thisClass);
         assertEquals(METHOD_OBJECT_HASHCODE, actualCallTarget.getReference());
     }
 
     private void setupSUT() {
-        final IClassHierarchy cha = JREOnlyClassHierarchyFixture.getInstance();
+
         final ClassHierarchyMethodTargetSelector delegate = new ClassHierarchyMethodTargetSelector(cha);
         thisClass = cha.getRootClass();
         final SSAPropagationCallGraphBuilder builder = createCallGraphBuilderMock();

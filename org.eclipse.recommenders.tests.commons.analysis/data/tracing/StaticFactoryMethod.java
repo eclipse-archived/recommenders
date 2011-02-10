@@ -8,15 +8,12 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package names;
+package tracing;
 
 
-@SuppressWarnings("unused")
-public class Names__Field_Constructor {
+public class StaticFactoryMethod {
 
-    private Button field;
-
-    void __test() {
-        field = new Button();
-    }
+	public static StaticFactoryMethod __test() {
+		return new StaticFactoryMethod();
+	}
 }

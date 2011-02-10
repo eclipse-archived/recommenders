@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Commons Analysis Tests (Incubator)
+Bundle-SymbolicName: org.eclipse.recommenders.tests.commons.analysis
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.commons.analysis
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: classselector,
+ org.eclipse.recommenders.internal.commons.analysis,
+ org.eclipse.recommenders.internal.commons.analysis.analyzers,
+ org.eclipse.recommenders.internal.commons.analysis.entrypoints,
+ tracing
+Require-Bundle: org.junit4,
+ org.mockito,
+ org.eclipse.recommenders.tests.commons,
+ org.apache.commons.collections,
+ org.eclipse.swt

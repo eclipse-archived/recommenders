@@ -10,7 +10,6 @@
  */
 package names;
 
-import acme.Button;
 
 public class Names__Field_Method_Uninitialized {
 

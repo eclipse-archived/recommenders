@@ -85,12 +85,26 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
         // callGraphBuilder.setContextSelector(selector);
         final ContextSelector delegate = callGraphBuilder.getContextSelector();
         final nCFAContextSelector newContextSelector = new nCFAContextSelector(5, delegate);
+        // final ContextSelector d = new ContextSelector() {
+        //
+        // @Override
+        // public Context getCalleeTarget(final CGNode caller, final
+        // CallSiteReference site, final IMethod callee,
+        // final InstanceKey receiver) {
+        // final Context context = newContextSelector.getCalleeTarget(caller,
+        // site, callee, receiver);
+        // return context;
+        // }
+        // };
         callGraphBuilder.setContextSelector(newContextSelector);
     }
 
     @Override
     public void buildContextInterpretor() {
         // stick with the default one.
+        // final RTAContextInterpreter contextInterpreter =
+        // callGraphBuilder.getContextInterpreter();
+        // System.out.println();
     }
 
     @Override

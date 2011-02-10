@@ -25,12 +25,13 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDec
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.internal.commons.analysis.entrypoints.RecommendersEntrypoint;
 import org.eclipse.recommenders.internal.commons.analysis.utils.InstanceCallGraphBuilder;
-import org.eclipse.recommenders.tests.commons.analysis.utils.TestdataClassHierarchyFixture;
+import org.eclipse.recommenders.tests.commons.analysis.utils.BundleClassloaderBasedClassHierarchy;
 import org.eclipse.recommenders.tests.commons.analysis.utils.WalaTestUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import tracing.StaticFactoryMethod;
 import tracing.Tracing__Call_From_Inner_Class_To_Private_Method_Of_Enclosing_Class.InnerClass;
 import tracing.Tracing__Call_From_Subtype_To_Framework_Supertype;
 import tracing.Tracing__Call_To_Local_Non_Framework_Type;
@@ -60,7 +61,8 @@ import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 
 public class ReceiverCallsitesTracingTest {
-    private static IClassHierarchy cha = TestdataClassHierarchyFixture.getInstance();
+    private static IClassHierarchy cha = BundleClassloaderBasedClassHierarchy
+            .newInstance(ReceiverCallsitesTracingTest.class);
 
     private AnalysisOptions opts;
 
@@ -93,6 +95,17 @@ public class ReceiverCallsitesTracingTest {
     public void testCallToNewInteger() {
         // setup
         final RecommendersEntrypoint entrypoint = lookupEntrypoint(Tracing__Call_To_New_Integer.class);
+        // exercise
+        exerciseSUTAndFilterValues(entrypoint);
+        // verify
+        checkReceiversCallSitesCount(output, 1);
+    }
+
+    @Test
+    @Ignore
+    public void testStaticFactoryMethod() {
+        // setup
+        final RecommendersEntrypoint entrypoint = lookupEntrypoint(StaticFactoryMethod.class);
         // exercise
         exerciseSUTAndFilterValues(entrypoint);
         // verify

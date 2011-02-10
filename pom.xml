@@ -15,7 +15,7 @@
 		<osgi-test-version>0.10.0</osgi-test-version>
 		<emma.session.out.file>${project.build.directory}/emma/${project.artifactId}.es</emma.session.out.file>
 		<emma.filter>*</emma.filter>
-	<!-- org.eclipse.recommenders.commons.stacktraces,org.eclipse.recommenders.commons.stacktraces.client,org.eclipse.recommenders.rcp.stacktraces.openid -->
+		<!-- org.eclipse.recommenders.commons.stacktraces,org.eclipse.recommenders.commons.stacktraces.client,org.eclipse.recommenders.rcp.stacktraces.openid -->
 		<eclemma.instrument.bundles>
 			org.eclipse.recommenders.commons.utils,org.eclipse.recommenders.commons.utils.gson,org.eclipse.recommenders.commons.analysis
 		</eclemma.instrument.bundles>
@@ -283,19 +283,24 @@
 		<!-- plug-ins -->
 
 		<module>org.eclipse.recommenders.commons.analysis</module>
+		<module>org.eclipse.recommenders.tests.commons.analysis</module>
+
 		<module>org.eclipse.recommenders.commons.injection</module>
 		<module>org.eclipse.recommenders.commons.utils</module>
 		<module>org.eclipse.recommenders.commons.utils.gson</module>
 		<module>org.eclipse.recommenders.rcp</module>
 		<module>org.eclipse.recommenders.rcp.analysis</module>
 		<module>org.eclipse.recommenders.rcp.codecompletion</module>
+
 		<module>org.eclipse.recommenders.rcp.codecompletion.calls</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.calls</module>
+
 		<module>org.eclipse.recommenders.rcp.codecompletion.overrides</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.overrides</module>
+
 		<module>org.eclipse.recommenders.rcp.utils</module>
 		<module>org.eclipse.recommenders.tests.commons</module>
 		<module>org.eclipse.recommenders.tests.commons.unit</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.calls</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.overrides</module>
 		<module>org.eclipse.recommenders.examples.rcp.codecompletion</module>
 
 		<!-- features 'n update sites -->
