@@ -12,7 +12,8 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal;
 
 /**
- * Default implementation of {@link IChainedProposalPart}
+ * This POJO is field from the JDT context. It contains one anchor or starting point from which the call chain
+ * is started. This method contains either variables, fields or methods.
  */
 public class ChainedProposalAnchor {
   private final String completion;

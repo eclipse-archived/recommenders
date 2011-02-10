@@ -70,6 +70,27 @@ public class TemplateProposalEngine {
       return computeProposalList(proposals, algortihmComputeTime, proposalStartTime, prefixToEquals, ctx);
     }
   }
+  
+//This method sorts all computed 'raw' proposals.
+  private void sort(final List<ChainedJavaProposal> proposals) {
+    // Prefer proposals that do not cope with casts
+    Collections.sort(proposals, new Comparator<ChainedJavaProposal>() {
+      @Override
+      public int compare(final ChainedJavaProposal p1, final ChainedJavaProposal p2) {
+        if (p1.getProposedChain().size() < p2.getProposedChain().size())
+          return -1;
+        else if (p1.getProposedChain().size() > p2.getProposedChain().size())
+          return 1;
+        else {
+          if (!p1.needsCast() && p2.needsCast())
+            return -1;
+          if (p1.needsCast() && !p2.needsCast())
+            return 1;
+          return 0;
+        }
+      }
+    });
+  }
 
   private String computePrefixToEquals(final JavaContentAssistInvocationContext jctx) {
     String prefixToEquals = "";
@@ -122,17 +143,24 @@ public class TemplateProposalEngine {
       if (isMaxProposalCount(proposalNo) || isMaxPluginComputationTime(algortihmComputeTime, proposalStartTime)) {
         break;
       }
-      try {
-        final String code = generateCode(proposal, prefixToEquals);
-        if (code != null) {
-          computeProposal(proposals, ctx, completionProposals, proposalNo, proposal, code);
-        }
-        proposalNo++;
-      } catch (final Exception e) {
-        JavaPlugin.log(e);
-      }
+      proposalNo = computeProposalPart(proposals, prefixToEquals, ctx, completionProposals, proposalNo, proposal);
     }
     return completionProposals;
+  }
+
+  private int computeProposalPart(final List<ChainedJavaProposal> proposals, final String prefixToEquals,
+      final JavaContext ctx, final List<IJavaCompletionProposal> completionProposals, int proposalNo,
+      final ChainedJavaProposal proposal) {
+    try {
+      final String code = generateCode(proposal, prefixToEquals);
+      if (code != null) {
+        computeProposal(proposals, ctx, completionProposals, proposalNo, proposal, code);
+      }
+      proposalNo++;
+    } catch (final Exception e) {
+      JavaPlugin.log(e);
+    }
+    return proposalNo;
   }
 
   private void computeProposal(final List<ChainedJavaProposal> proposals, final JavaContext ctx,
@@ -191,11 +219,15 @@ public class TemplateProposalEngine {
         code.append(Signature.C_DOT).append(partCode);
       }
     }
+    computeCastingForName(proposal, code);
+    return code.toString();
+  }
+
+  private void computeCastingForName(final ChainedJavaProposal proposal, StringBuilder code) {
     if (proposal.needsCast()) {
       code.insert(0,
           String.format("(%s) ", proposal.getCastingType().getName().getClassName().toString().replaceAll("/", ".")));
     }
-    return code.toString();
   }
 
   // This method generates the part name for the proposal box. If the part is a
@@ -234,27 +266,6 @@ public class TemplateProposalEngine {
     return description;
   }
 
-  // This method sorts all computed 'raw' proposals.
-  private void sort(final List<ChainedJavaProposal> proposals) {
-    // Prefer proposals that do not cope with casts
-    Collections.sort(proposals, new Comparator<ChainedJavaProposal>() {
-      @Override
-      public int compare(final ChainedJavaProposal p1, final ChainedJavaProposal p2) {
-        if (p1.getProposedChain().size() < p2.getProposedChain().size())
-          return -1;
-        else if (p1.getProposedChain().size() > p2.getProposedChain().size())
-          return 1;
-        else {
-          if (!p1.needsCast() && p2.needsCast())
-            return -1;
-          if (p1.needsCast() && !p2.needsCast())
-            return 1;
-          return 0;
-        }
-      }
-    });
-  }
-
   // This method computes the code for the proposals. Therefore the hole string
   // is created, so that every prefix has
   // to be overridden.
@@ -274,17 +285,21 @@ public class TemplateProposalEngine {
         code.append(Signature.C_DOT).append(partCode);
       }
     }
+    computeCastingForCode(proposal, code);
+    code.append("${cursor}");
+    return code.toString();
+  }
+
+  private void computeCastingForCode(final ChainedJavaProposal proposal, StringBuilder code) {
     if (proposal.needsCast()) {
       code.insert(
           0,
           String.format("(${type:newType(%s)})", proposal.getCastingType().getName().getClassName().toString()
               .replaceAll("/", ".")));
     }
-    code.append("${cursor}");
-    return code.toString();
   }
 
-  // This method generates a part of the code for one propsal.
+  // This method generates a part of the code for one proposal.
   private String makeTemplatePartCode(final IChainWalaElement part) throws JavaModelException {
     switch (part.getElementType()) {
     case FIELD:
@@ -292,20 +307,22 @@ public class TemplateProposalEngine {
     case METHOD:
       final MethodChainWalaElement me = (MethodChainWalaElement) part;
       final StringBuilder methodCode = new StringBuilder().append(part.getCompletion()).append(Signature.C_PARAM_START);
-      boolean firstParam = true;
-      int paramNo = 0;
-      final String paramNames[] = me.getParameterNames();
-      for (final TypeReference type : me.getParameterTypes()) {
-        if (!firstParam) {
-          methodCode.append(", ");
-        }
-        methodCode.append(String.format("${" + paramNames[paramNo++] + "}"));
-        firstParam = false;
-      }
+      includeParameterNames(me, methodCode);
       methodCode.append(Signature.C_PARAM_END);
       return methodCode.toString();
     default:
       return "";
+    }
+  }
+
+  private void includeParameterNames(final MethodChainWalaElement me, final StringBuilder methodCode) {
+    boolean firstParam = true;
+    for (final String paramName : me.getParameterNames()) {
+      if (!firstParam) {
+        methodCode.append(", ");
+      }
+      methodCode.append(String.format("${" + paramName + "}"));
+      firstParam = false;
     }
   }
 }

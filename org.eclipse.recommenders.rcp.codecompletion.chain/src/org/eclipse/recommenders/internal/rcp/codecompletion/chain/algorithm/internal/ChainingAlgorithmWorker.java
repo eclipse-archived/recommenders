@@ -58,17 +58,21 @@ public class ChainingAlgorithmWorker implements Runnable {
         return;
       }
       // check fields of type --> store in search map && and create new worker
-      if (!typeToCheck.isArrayClass()) {
-        final Map<IMember, IClass> map = computeFields(typeToCheck);
-        // check methods of type --> store in search map && and create new
-        // worker
-        map.putAll(computeMethods(typeToCheck));
-        ChainingAlgorithm.getSearchMap().put(typeToCheck, map);
-      } else {
-        handleArrayType(typeToCheck);
-      }
+      processCheckingAndStoring(typeToCheck);
     }
     tryTerminateExecutor();
+  }
+
+  private void processCheckingAndStoring(final IClass typeToCheck) throws JavaModelException {
+    if (!typeToCheck.isArrayClass()) {
+      final Map<IMember, IClass> map = computeFields(typeToCheck);
+      // check methods of type --> store in search map && and create new
+      // worker
+      map.putAll(computeMethods(typeToCheck));
+      ChainingAlgorithm.getSearchMap().put(typeToCheck, map);
+    } else {
+      handleArrayType(typeToCheck);
+    }
   }
 
   private void handleArrayType(final IClass typeToCheck) throws JavaModelException {

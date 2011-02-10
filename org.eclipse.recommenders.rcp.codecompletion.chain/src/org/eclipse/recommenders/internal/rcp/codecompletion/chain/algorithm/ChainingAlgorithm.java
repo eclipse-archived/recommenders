@@ -156,9 +156,9 @@ public class ChainingAlgorithm {
   }
 
   private void startWorkers(final IClass callingContext) throws JavaModelException {
-    startInitialWorkersForFields(callingContext);
-    startInitialWorkersForLocalVariables();
-    startInitialWorkersForMethodsReturnType(callingContext);
+    processInitialFields(callingContext);
+    processLocalVariables();
+    processMethodsReturnType(callingContext);
   }
 
   private void waitForThreadPoolTermination() {
@@ -169,7 +169,7 @@ public class ChainingAlgorithm {
     }
   }
 
-  private void startInitialWorkersForMethodsReturnType(
+  private void processMethodsReturnType(
       final IClass callingContext) throws JavaModelException {
 
     // REVIEW String parsing should go to private methods or utility classes.
@@ -230,7 +230,7 @@ public class ChainingAlgorithm {
     return fieldType;
   }
 
-  private void startInitialWorkersForLocalVariables()
+  private void processLocalVariables()
       throws JavaModelException {
     for (final ChainedProposalAnchor variableProposal : ctx.getProposedVariables()) {
       if (isValidLocalVariable(ctx, variableProposal)) {
@@ -262,7 +262,7 @@ public class ChainingAlgorithm {
         && !Arrays.equals(variableProposal.getCompletion().toCharArray(), ctx.getCallingVariableName());
   }
 
-  private void startInitialWorkersForFields(final IClass callingContext)
+  private void processInitialFields(final IClass callingContext)
       throws JavaModelException {
     for (final ChainedProposalAnchor fieldProposal : ctx.getProposedFields()) {
       final char signature[] = fieldProposal.getSignature();
