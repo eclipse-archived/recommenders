@@ -57,7 +57,7 @@ public class ChainingAlgorithm {
   private final JavaElementResolver resolver;
 
   private FieldsAndMethodsCompletionContext ctx;
-  
+
   private static Map<IClass, Map<IMember, IClass>> searchMap;
 
   public ChainingAlgorithm() {
@@ -94,24 +94,6 @@ public class ChainingAlgorithm {
 
   private boolean isValidComputationContext(final JavaContentAssistInvocationContext jctx,
       final FieldsAndMethodsCompletionContext ctx, final IClass callingContext) {
-    //
-    // Marcel: minimal HACK to terminate computation if completion is unlikely
-    // to find anything meaningful, i.e.,
-    // use it on this or an any other qualified name but nowhere else.
-    // You should have a closer look on this to improve the code further.
-
-    // Andreas Kaluza: Sry this HACK does not work. If you have for example a
-    // member PlattformUI findMe; and you trigger this completion in a method
-    // within the fragment IWorkbenchHelpSystem d = find<^+Space>, than you get
-    // no proposals. The proposal should be 'findMe'. I commented this HACK out.
-
-    /*
-     * final IntelligentCompletionContext context = new
-     * IntelligentCompletionContext(jctx, resolver); if
-     * (!context.isReceiverImplicitThis() && !(context.getCompletionNode()
-     * instanceof CompletionOnQualifiedNameReference)) return false;
-     */
-    // HACK ended
 
     if (callingContext == null)
       return false;
@@ -128,16 +110,14 @@ public class ChainingAlgorithm {
 
     expectedType = walaService.getType(ctx.getExpectedType());
 
-    // }
-    // REVIEW: unclear why this could happen. What is the meaning of ==null? use
-    // a well named boolean variable or (preferred) method
-    if (expectedType == null)
-      return false;
-
-    return true;
+    return expectedType != null;
   }
 
+  // REVIEW: Name mismatch. not only init threadpool but also
+  // ChainingAlgorithmWorker...
   private void initThreadPool() {
+
+    // REVIEW: computation of max threads
     executor = new ThreadPoolExecutor(0, Runtime.getRuntime().availableProcessors(),
         Constants.AlgorithmSettings.WORKER_KEEP_ALIVE_TIME_IN_MS, TimeUnit.MILLISECONDS,
         new PriorityBlockingQueue<Runnable>(11, new Comparator<Runnable>() {
@@ -149,15 +129,20 @@ public class ChainingAlgorithm {
           }
         }));
     executor.allowCoreThreadTimeOut(true);
-    //executor.prestartAllCoreThreads();
+    // REVIEW: do we need this ? If so, for what reasons?
+    // executor.prestartAllCoreThreads();
 
+    // REVIEW: why static? session based variables as statics?
     ChainingAlgorithmWorker.setExecutor(executor);
     ChainingAlgorithmWorker.setExpectedType(expectedType);
   }
 
   private void startWorkers(final IClass callingContext) throws JavaModelException {
+    // REVIEW: start -> Process -> start? name hopping?
     processInitialFields(callingContext);
     processLocalVariables();
+    // REVIEW: methods are those defined in "this"? maybe rename to something
+    // like "...DeclaredMethodsReturnTypes" ?
     processMethodsReturnType(callingContext);
   }
 
@@ -169,19 +154,15 @@ public class ChainingAlgorithm {
     }
   }
 
-  private void processMethodsReturnType(
-      final IClass callingContext) throws JavaModelException {
+  // REVIEW: callingContext as field?
+  private void processMethodsReturnType(final IClass callingContext) throws JavaModelException {
 
-    // REVIEW String parsing should go to private methods or utility classes.
-    // use
-    // speaking names...
-    // REVIEW consider using NULL-Objects
     for (final ChainedProposalAnchor methodProposal : ctx.getProposedMethods()) {
-      final TypeName fieldType = getTypeName(methodProposal);
-      if (fieldType == null) {
-        continue;
+      // REVIEW: name mismatch?
+      final TypeName fieldType = getMethodReturnTypeName(methodProposal);
+      if (fieldType != null) {
+        startMethodWorkerFromMethodProposal(callingContext, methodProposal, fieldType);
       }
-      startMethodWorkerFromMethodProposal(callingContext, methodProposal, fieldType);
     }
   }
 
@@ -202,8 +183,12 @@ public class ChainingAlgorithm {
     }
   }
 
+  // REVIEW fieldtype name mismatch?
   private boolean isValidMethod(final ChainedProposalAnchor methodProposal, final TypeName fieldType,
       final IMethod method, final TypeName returnReference, final int thisParameterInParameterTypes) {
+
+    // REVIEW: HŠ? :) Split into separate methods or boolean vars to make the
+    // meaning more clear.
     return returnReference.equals(fieldType)
         && method.getName().toString().equals(methodProposal.getCompletion())
         && (method.getNumberOfParameters() - thisParameterInParameterTypes == methodProposal.getParameterNames().length);
@@ -217,21 +202,19 @@ public class ChainingAlgorithm {
     return thisParameterInParameterTypes;
   }
 
-  private TypeName getTypeName(final ChainedProposalAnchor methodProposal) throws JavaModelException {
+  private TypeName getMethodReturnTypeName(final ChainedProposalAnchor methodProposal) throws JavaModelException {
     final char[] signature = methodProposal.getSignature();
     final IType fullyQualifiedType = LookupUtilJdt.lookupType(signature);
     if ((fullyQualifiedType == null) || !LookupUtilJdt.isWantedType(fullyQualifiedType))
       return null;
-    TypeName fieldType = null;
     if (!isPrimitive(signature, fullyQualifiedType)) {
-      fieldType = walaService.getType(fullyQualifiedType).getName();
+      TypeName fieldType = walaService.getType(fullyQualifiedType).getName();
+      return fieldType;
     } else
       return null;
-    return fieldType;
   }
 
-  private void processLocalVariables()
-      throws JavaModelException {
+  private void processLocalVariables() throws JavaModelException {
     for (final ChainedProposalAnchor variableProposal : ctx.getProposedVariables()) {
       if (isValidLocalVariable(ctx, variableProposal)) {
         startWorkerForVariableProposal(variableProposal);
@@ -242,8 +225,9 @@ public class ChainingAlgorithm {
   private void startWorkerForVariableProposal(final ChainedProposalAnchor variableProposal) throws JavaModelException {
     final char signature[] = variableProposal.getSignature();
     final IType fullyQualifiedType = LookupUtilJdt.lookupType(signature);
-    final LinkedList<IChainWalaElement> walaList = new LinkedList<IChainWalaElement>();
     if (!isPrimitive(signature, fullyQualifiedType)) {
+      final LinkedList<IChainWalaElement> walaList = new LinkedList<IChainWalaElement>();
+      // REVIEW: can we please split this add operation a bit?
       walaList.add(new FieldChainWalaElement(variableProposal.getCompletion(), new String(variableProposal
           .getSignature()), walaService.getType(fullyQualifiedType).getClassHierarchy(), walaService
           .getType(fullyQualifiedType).getClassLoader().getReference()));
@@ -251,6 +235,8 @@ public class ChainingAlgorithm {
     }
   }
 
+  // REVIEW: can || (fullyQualifiedType instanceof LookupUtilJdt.PrimitiveType)
+  // happen? Primitives are well defined, right?
   private boolean isPrimitive(final char[] signature, final IType fullyQualifiedType) {
     return LookupUtilJdt.isSignatureOfSimpleType(new String(signature))
         || (fullyQualifiedType instanceof LookupUtilJdt.PrimitiveType);
@@ -258,19 +244,22 @@ public class ChainingAlgorithm {
 
   private boolean isValidLocalVariable(final FieldsAndMethodsCompletionContext ctx,
       final ChainedProposalAnchor variableProposal) {
+    // REVIEW isOfExpectedType but not ... what is the second part about?
+    // example or better names?/split ?
     return Arrays.equals(variableProposal.getSignature(), ctx.getExpectedTypeSignature())
         && !Arrays.equals(variableProposal.getCompletion().toCharArray(), ctx.getCallingVariableName());
   }
 
-  private void processInitialFields(final IClass callingContext)
-      throws JavaModelException {
+  private void processInitialFields(final IClass callingContext) throws JavaModelException {
     for (final ChainedProposalAnchor fieldProposal : ctx.getProposedFields()) {
       final char signature[] = fieldProposal.getSignature();
       final IType fullyQualifiedType = LookupUtilJdt.lookupType(signature);
-      final LinkedList<IChainWalaElement> walaList = new LinkedList<IChainWalaElement>();
-      TypeName fieldType = null;
       if (!isPrimitive(signature, fullyQualifiedType)) {
-        fieldType = walaService.getType(fullyQualifiedType).getName();
+        // REVIEW: should this list be initialized in #startWorkersForField..?
+        // useless param here?
+        final LinkedList<IChainWalaElement> walaList = new LinkedList<IChainWalaElement>();
+        // REVIEW: move to startWorkerForField
+        TypeName fieldType = walaService.getType(fullyQualifiedType).getName();
         startWorkerForFieldProposal(callingContext, fieldProposal, walaList, fieldType);
       }
     }
@@ -283,7 +272,10 @@ public class ChainingAlgorithm {
       if (!field.getFieldTypeReference().isPrimitiveType()) {
         fieldReference = field.getFieldTypeReference().getName();
         if (fieldReference.equals(fieldType) && field.getName().toString().equals(fieldProposal.getCompletion())) {
+          // REVIEW: walaList means exactly what?
           walaList.add(new FieldChainWalaElement(field));
+          // REVIEW: first "real start worker" methods name? first initalize
+          // then start?
           executor.execute(new ChainingAlgorithmWorker(walaList, 0, this));
           break;
         }

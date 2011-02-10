@@ -40,7 +40,7 @@ public class ChainedJavaCompletionProposalComputer implements IJavaCompletionPro
   private StopWatch sw;
 
   /**
-   * Executes the default chaining algorithm and returns a list of templated
+   * Executes the default chaining algorithm and returns a list of template
    * proposals
    */
   @SuppressWarnings("rawtypes")
