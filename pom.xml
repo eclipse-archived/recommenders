@@ -17,7 +17,7 @@
 		<emma.filter>*</emma.filter>
 		<!-- org.eclipse.recommenders.commons.stacktraces,org.eclipse.recommenders.commons.stacktraces.client,org.eclipse.recommenders.rcp.stacktraces.openid -->
 		<eclemma.instrument.bundles>
-			org.eclipse.recommenders.commons.utils,org.eclipse.recommenders.commons.utils.gson,org.eclipse.recommenders.commons.analysis
+			org.eclipse.recommenders.commons.utils,org.eclipse.recommenders.commons.utils.gson
 		</eclemma.instrument.bundles>
 	</properties>
 	<repositories>
