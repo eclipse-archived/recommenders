@@ -57,7 +57,7 @@ public class CallsModelStoreAndLoaderTest {
     }
 
     private URL getCallsModelFileUrl() {
-        final Path basedir = new Path("/test-data/models.zip");
+        final Path basedir = new Path("/test-data/models.zip.test");
         try {
             return FileLocator.resolve(FileLocator.find(FrameworkUtil.getBundle(getClass()), basedir, null));
         } catch (final IOException e) {
