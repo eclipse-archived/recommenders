@@ -1,3 +1,4 @@
+package org.eclipse.recommenders.tests.rcp.codecompletion.overrides;
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
@@ -8,7 +9,6 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.codecompletion.calls;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -22,10 +22,10 @@ import java.util.Set;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelLoader;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.InstanceUsage;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.overrides.IOverridesModelLoader;
+import org.eclipse.recommenders.internal.rcp.codecompletion.overrides.OverridesModelStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.overrides.net.ClassOverridesNetwork;
+import org.eclipse.recommenders.internal.rcp.codecompletion.overrides.net.ClassOverridesObservation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,21 +34,21 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-public class CallsModelStoreTest {
+public class OverridesModelStoreTest {
 
-    private MockCallsModelLoader loader;
-    private CallsModelStore store;
+    private MockOverridesModelLoader loader;
+    private OverridesModelStore store;
 
     @Before
     public void setup() {
         final Injector injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
-                loader = new MockCallsModelLoader();
-                bind(ICallsModelLoader.class).toInstance(loader);
+                loader = new MockOverridesModelLoader();
+                bind(IOverridesModelLoader.class).toInstance(loader);
             }
         });
-        store = injector.getInstance(CallsModelStore.class);
+        store = injector.getInstance(OverridesModelStore.class);
     }
 
     @Test
@@ -70,26 +70,24 @@ public class CallsModelStoreTest {
     public void smokeTestModelRetrieval() {
         // setup
         loader.availableTypes.add(VmTypeName.BOOLEAN);
-        final LinkedList<InstanceUsage> observations = new LinkedList<InstanceUsage>();
-        final InstanceUsage usage = new InstanceUsage();
-        usage.name = "InstanceName";
-        usage.invokedMethods.add(VmMethodName.get("Ljava/lang/Boolean.toString()Ljava/lang/String;"));
-        usage.observedContexts.put(VmMethodName.get("Ljava/lang/Boolean.toString()Ljava/lang/String;"), 1);
-        usage.observedContexts.put(VmMethodName.get("Ljava/lang/String.toString()Ljava/lang/String;"), 1);
-        observations.add(usage);
+        final LinkedList<ClassOverridesObservation> observations = new LinkedList<ClassOverridesObservation>();
+        final ClassOverridesObservation observation = new ClassOverridesObservation();
+        observation.frequency = 2;
+        observation.overriddenMethods.add(VmMethodName.get("Ljava/lang/String.toString()Ljava/lang/String;"));
+        observations.add(observation);
         loader.observations.put(VmTypeName.BOOLEAN, observations);
 
         // exercise
-        final ObjectMethodCallsNet model = store.getModel(VmTypeName.BOOLEAN);
+        final ClassOverridesNetwork model = store.getModel(VmTypeName.BOOLEAN);
 
         // verify
         Assert.assertNotNull(model);
     }
 
-    private class MockCallsModelLoader implements ICallsModelLoader {
+    private class MockOverridesModelLoader implements IOverridesModelLoader {
 
         private final Set<ITypeName> availableTypes = new HashSet<ITypeName>();
-        private final Map<ITypeName, List<InstanceUsage>> observations = new HashMap<ITypeName, List<InstanceUsage>>();
+        private final Map<ITypeName, List<ClassOverridesObservation>> observations = new HashMap<ITypeName, List<ClassOverridesObservation>>();
 
         @Override
         public Set<ITypeName> readAvailableTypes() {
