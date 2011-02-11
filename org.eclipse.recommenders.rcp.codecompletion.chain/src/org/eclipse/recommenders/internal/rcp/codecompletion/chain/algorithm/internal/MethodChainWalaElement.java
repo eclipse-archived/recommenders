@@ -15,7 +15,6 @@ import java.io.UTFDataFormatException;
 
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainWalaElement;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.proposals.TemplateProposalEngine;
 
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
@@ -60,7 +59,6 @@ public class MethodChainWalaElement implements IChainWalaElement {
     }
   }
 
-  @SuppressWarnings("restriction")
   private void computeParameterTypesAndNames(final IMethod method, final int parameterMinCount) {
     parameterNames = new String[method.getNumberOfParameters() - parameterMinCount];
     parameterTypes = new TypeReference[method.getNumberOfParameters() - parameterMinCount];
@@ -123,9 +121,8 @@ public class MethodChainWalaElement implements IChainWalaElement {
 
   /**
    * Returns the names of formal parameters. Intension: if parameter names are
-   * not known (e.g. in case of binary types or compulation units), the names
-   * should be arg0, arg1, ... These names get used by
-   * {@link TemplateProposalEngine#makeTemplatePartCode(IChainElement part)}
+   * not known (e.g. in case of binary types or computation units), the names
+   * are arg0, arg1, ...
    * 
    * @return array of names of formal parameters
    */

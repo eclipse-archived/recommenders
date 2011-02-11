@@ -55,9 +55,6 @@ public class FieldChainWalaElement implements IChainWalaElement {
     returnType = classHierarchy.lookupClass(fieldReference);
   }
 
-  // REVIEW: smells like duplicagted code : extract various helper/check methods
-  // --> this is a for a special scenario: I had to go this way because of the
-  // variables I could not get from the wala context.
   public FieldChainWalaElement(final String completion, final String signature, final IClassHierarchy classHierarchy,
       final ClassLoaderReference classLoader) {
     this.completion = completion;

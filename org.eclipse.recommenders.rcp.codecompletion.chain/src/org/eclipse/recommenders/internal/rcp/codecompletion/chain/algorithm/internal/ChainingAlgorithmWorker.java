@@ -25,21 +25,23 @@ import com.ibm.wala.types.TypeReference;
 @SuppressWarnings("restriction")
 public class ChainingAlgorithmWorker implements Runnable {
 
-  private static ThreadPoolExecutor executor;
+  private final ThreadPoolExecutor executor;
 
   private final LinkedList<IChainWalaElement> workingChain;
 
   private final int priority;
 
-  private static IClass expectedType;
+  private final IClass expectedType;
 
   private final ChainingAlgorithm internalProposalStore;
 
   public ChainingAlgorithmWorker(final LinkedList<IChainWalaElement> workingChain, final int priority,
-      final ChainingAlgorithm internalProposalStore) {
+      final ChainingAlgorithm internalProposalStore, ThreadPoolExecutor executor, IClass expectedType) {
     this.workingChain = workingChain;
     this.priority = priority;
     this.internalProposalStore = internalProposalStore;
+    this.executor = executor;
+    this.expectedType = expectedType;
   }
 
   private void inspectType() throws JavaModelException {
@@ -124,9 +126,11 @@ public class ChainingAlgorithmWorker implements Runnable {
    * time is reached. But we want to have the optimal run time.
    */
   private void tryTerminateExecutor() {
-    if ((ChainingAlgorithmWorker.getExecutor().getPoolSize() == 1)
-        && (ChainingAlgorithmWorker.getExecutor().getQueue().size() < 1)) {
-      ChainingAlgorithmWorker.getExecutor().shutdownNow(); //XXX There is a problem with the executer which I cannot resolve. If you trigger the plug-in several times in a very short period, than a InterruptedException can occur 
+    if ((executor.getPoolSize() == 1) && (executor.getQueue().size() < 1)) {
+      // XXX There is a problem with the executer which I cannot resolve. If you
+      // trigger the plug-in several times in a very short period, than a
+      // InterruptedException can occur
+      executor.shutdownNow();
     }
   }
 
@@ -134,10 +138,13 @@ public class ChainingAlgorithmWorker implements Runnable {
    * if the chain has to be extended by a method
    */
   private IClass createMethodWorker(final IMethod m) throws JavaModelException {
-    if (m.isPublic()) {//XXX: Case: If calling context is subtype of typeToCheck than field/method can be protected or package private
+    if (m.isPublic()) {// XXX: Case: If calling context is subtype of
+                       // typeToCheck than field/method can be protected or
+                       // package private
       final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
       list.add(new MethodChainWalaElement(m));
-      final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1, internalProposalStore);
+      final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
+          internalProposalStore, executor, expectedType);
       startWorker(worker);
       if (m.getReturnType().isPrimitiveType())
         return null;// return
@@ -152,9 +159,9 @@ public class ChainingAlgorithmWorker implements Runnable {
    * put worker to the executor, so that it can be processed
    */
   private void startWorker(final ChainingAlgorithmWorker worker) {
-    if (ChainingAlgorithmWorker.getExecutor().getKeepAliveTime(TimeUnit.MILLISECONDS) <= Constants.AlgorithmSettings.WORKER_KEEP_ALIVE_TIME_IN_MS) {
+    if (executor.getKeepAliveTime(TimeUnit.MILLISECONDS) <= Constants.AlgorithmSettings.WORKER_KEEP_ALIVE_TIME_IN_MS) {
       try {
-        ChainingAlgorithmWorker.getExecutor().execute(worker);
+        executor.execute(worker);
       } catch (final RejectedExecutionException e) {
         JavaPlugin.log(e);
       }
@@ -165,12 +172,15 @@ public class ChainingAlgorithmWorker implements Runnable {
    * if the chain has to be extended by a field
    */
   private IClass createFieldWorker(final IClass typeToCheck, final IField f) throws JavaModelException {
-    if (f.isPublic()) { //XXX: Case: If calling context is subtype of typeToCheck than field/method can be protected or package private
+    if (f.isPublic()) { // XXX: Case: If calling context is subtype of
+                        // typeToCheck than field/method can be protected or
+                        // package private
       final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
       list.add(new FieldChainWalaElement(f));
-      final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1, internalProposalStore);
+      final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
+          internalProposalStore, executor, expectedType);
       startWorker(worker);
-      if (f.getFieldTypeReference().isPrimitiveType()){
+      if (f.getFieldTypeReference().isPrimitiveType()) {
         return null;
       }
       return f.getClassHierarchy().lookupClass(f.getFieldTypeReference());
@@ -190,7 +200,8 @@ public class ChainingAlgorithmWorker implements Runnable {
       } else {
         list.add(new MethodChainWalaElement((IMethod) entry.getKey()));
       }
-      final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1, internalProposalStore);
+      final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
+          internalProposalStore, executor, expectedType);
       startWorker(worker);
     }
   }
@@ -211,8 +222,8 @@ public class ChainingAlgorithmWorker implements Runnable {
   private boolean storeForProposal(final IClass typeToCheck) throws JavaModelException {
     if (typeToCheck == null)
       return true;
-    final int testResult = LookupUtilWala.equalityTest(typeToCheck, ChainingAlgorithmWorker.getExpectedType());
-    //if both types equal
+    final int testResult = LookupUtilWala.equalityTest(typeToCheck, expectedType);
+    // if both types equal
     if ((testResult & LookupUtilWala.RESULT_EQUAL) > 0) {
       if (!checkRedundancy()) {
         internalProposalStore.addProposal(workingChain);
@@ -220,21 +231,19 @@ public class ChainingAlgorithmWorker implements Runnable {
       } else
         return true;
     }
-    //if typeToCheck is primitive return
+    // if typeToCheck is primitive return
     if ((testResult & LookupUtilWala.RESULT_PRIMITIVE) > 0)
       return true;
     // Consult type hierarchy for sub-/supertypes
-    if (LookupUtilWala.isSubtype(typeToCheck, ChainingAlgorithmWorker.getExpectedType())
-        && !((testResult & LookupUtilWala.RESULT_EQUAL) > 0)) {
+    if (LookupUtilWala.isSubtype(typeToCheck, expectedType) && !((testResult & LookupUtilWala.RESULT_EQUAL) > 0)) {
       if (!checkRedundancy()) {
-        internalProposalStore.addCastedProposal(workingChain, ChainingAlgorithmWorker.getExpectedType());
+        internalProposalStore.addCastedProposal(workingChain, expectedType);
         return false;
       } else
         return true;
     }
     /* else */
-    if (LookupUtilWala.isSupertype(typeToCheck, ChainingAlgorithmWorker.getExpectedType())
-        && !((testResult & LookupUtilWala.RESULT_EQUAL) > 0)) {
+    if (LookupUtilWala.isSupertype(typeToCheck, expectedType) && !((testResult & LookupUtilWala.RESULT_EQUAL) > 0)) {
       if (!checkRedundancy()) {
         internalProposalStore.addProposal(workingChain);
         return false;
@@ -264,19 +273,4 @@ public class ChainingAlgorithmWorker implements Runnable {
     return priority;
   }
 
-  public static void setExecutor(final ThreadPoolExecutor executor) {
-    ChainingAlgorithmWorker.executor = executor;
-  }
-
-  public static ThreadPoolExecutor getExecutor() {
-    return ChainingAlgorithmWorker.executor;
-  }
-
-  public static void setExpectedType(final IClass expectedType) {
-    ChainingAlgorithmWorker.expectedType = expectedType;
-  }
-
-  public static IClass getExpectedType() {
-    return ChainingAlgorithmWorker.expectedType;
-  }
 }
