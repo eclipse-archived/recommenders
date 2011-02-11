@@ -289,7 +289,10 @@
 		<module>org.eclipse.recommenders.commons.utils</module>
 		<module>org.eclipse.recommenders.commons.utils.gson</module>
 		<module>org.eclipse.recommenders.rcp</module>
+		
 		<module>org.eclipse.recommenders.rcp.analysis</module>
+		<module>org.eclipse.recommenders.tests.rcp.analysis</module>
+		
 		<module>org.eclipse.recommenders.rcp.codecompletion</module>
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.calls</module>
