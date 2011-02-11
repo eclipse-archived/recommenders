@@ -1,315 +1,276 @@
-/**
- * Copyright (c) 2010 Gary Fritz, and Andreas Kaluza.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Gary Fritz - initial API and implementation.
- *    Andreas Kaluza - modified implementation to use WALA
- */
-package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
+package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.Map.Entry;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal.ChainedProposalAnchor;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal.ChainingAlgorithmWorker;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal.FieldChainWalaElement;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal.FieldsAndMethodsCompletionContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal.MethodChainWalaElement;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.util.LookupUtilJdt;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.util.LookupUtilWala;
 
+import com.ibm.wala.classLoader.ArrayClass;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMember;
 import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.types.TypeName;
+import com.ibm.wala.types.TypeReference;
 
 @SuppressWarnings("restriction")
-public class ChainingAlgorithm {
+public class ChainingAlgorithmWorker implements Runnable {
 
-  private IClass expectedType;
+  private final ThreadPoolExecutor executor;
 
-  private final List<ChainedJavaProposal> proposals;
+  private final LinkedList<IChainWalaElement> workingChain;
 
-  private ThreadPoolExecutor executor;
+  private final int priority;
 
-  private final IClassHierarchyService walaService;
+  private final IClass expectedType;
 
-  private final JavaElementResolver resolver;
+  private final ChainingAlgorithm internalProposalStore;
 
-  private FieldsAndMethodsCompletionContext ctx;
-
-  private static Map<IClass, Map<IMember, IClass>> searchMap;
-
-  public ChainingAlgorithm() {
-    expectedType = null;
-    // REVIEW: unclear why sychronized. init in field + comment/explanation? -->
-    // I fill this list by several threads, so synchronization is needed.
-    proposals = Collections.synchronizedList(new LinkedList<ChainedJavaProposal>());
-
-    walaService = InjectionService.getInstance().requestInstance(IClassHierarchyService.class);
-    resolver = InjectionService.getInstance().requestInstance(JavaElementResolver.class);
-    searchMap = Collections.synchronizedMap(new HashMap<IClass, Map<IMember, IClass>>());
+  public ChainingAlgorithmWorker(final LinkedList<IChainWalaElement> workingChain, final int priority,
+      final ChainingAlgorithm internalProposalStore, ThreadPoolExecutor executor, IClass expectedType) {
+    this.workingChain = workingChain;
+    this.priority = priority;
+    this.internalProposalStore = internalProposalStore;
+    this.executor = executor;
+    this.expectedType = expectedType;
   }
 
-  public void execute(final JavaContentAssistInvocationContext jctx) throws JavaModelException {
-
-    final IClass callingContext = getCallingContext(jctx);
-
-    if (!isValidComputationContext(jctx, ctx, callingContext))
+  private void inspectType() throws JavaModelException {
+    final IClass typeToCheck = workingChain.getLast().getType();
+    // check type if searched type --> store for proposal
+    if (storeForProposal(typeToCheck)) {
+      tryTerminateExecutor();
       return;
-
-    initThreadPool();
-
-    startWorkers(callingContext);
-
-    waitForThreadPoolTermination();
+    }
+    // check if max chain length reached
+    if (getPriority() + 1 < Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
+      // check if type was already computed
+      if (ChainingAlgorithm.getSearchMap().containsKey(typeToCheck)) {
+        executeComputationOnExistingType(typeToCheck);
+        tryTerminateExecutor();
+        return;
+      }
+      // check fields of type --> store in search map && and create new worker
+      processCheckingAndStoring(typeToCheck);
+    }
+    tryTerminateExecutor();
   }
 
-  private IClass getCallingContext(final JavaContentAssistInvocationContext jctx) throws JavaModelException {
-    ctx = new FieldsAndMethodsCompletionContext(jctx);
-
-    final IType callingContextType = ctx.getCallingContext();
-    return walaService.getType(callingContextType);
+  private void processCheckingAndStoring(final IClass typeToCheck) throws JavaModelException {
+    if (!typeToCheck.isArrayClass()) {
+      final Map<IMember, IClass> map = computeFields(typeToCheck);
+      // check methods of type --> store in search map && and create new
+      // worker
+      map.putAll(computeMethods(typeToCheck));
+      ChainingAlgorithm.getSearchMap().put(typeToCheck, map);
+    } else {
+      handleArrayType(typeToCheck);
+    }
   }
 
-  private boolean isValidComputationContext(final JavaContentAssistInvocationContext jctx,
-      final FieldsAndMethodsCompletionContext ctx, final IClass callingContext) {
-
-    if (callingContext == null)
-      return false;
-
-    final char[] expectedTypeSignature = ctx.getExpectedTypeSignature();
-    // REVIEW: what do you actually check here? failed to resolve?,
-    // void?,primitive? no clue.
-    if ((expectedTypeSignature == null) || (expectedTypeSignature.length == 0))
-      return false;
-
-    // REVIEW: use isSimpleType(expSignature) Maybe use of ItypeName?
-    if (LookupUtilJdt.isSignatureOfSimpleType(new String(expectedTypeSignature)))
-      return false;
-
-    expectedType = walaService.getType(ctx.getExpectedType());
-
-    return expectedType != null;
+  private void handleArrayType(final IClass typeToCheck) throws JavaModelException {
+    final ArrayClass arrayTypeToCheck = (ArrayClass) typeToCheck;
+    final IClass classOfArray = arrayTypeToCheck.getElementClass();
+    if (classOfArray == null) {
+      final TypeReference elementType = arrayTypeToCheck.getReference().getArrayElementType();
+      if (elementType.isPrimitiveType())
+        return;
+    }
+    final Map<IMember, IClass> map = computeFields(classOfArray);
+    // check methods of type --> store in search map && and create new
+    // worker
+    map.putAll(computeMethods(classOfArray));
+    ChainingAlgorithm.getSearchMap().put(typeToCheck, map);
   }
 
-  // REVIEW: Name mismatch. not only init threadpool but also
-  // ChainingAlgorithmWorker...
-  private void initThreadPool() {
-
-    // REVIEW: computation of max threads
-    executor = new ThreadPoolExecutor(0, Runtime.getRuntime().availableProcessors(),
-        Constants.AlgorithmSettings.WORKER_KEEP_ALIVE_TIME_IN_MS, TimeUnit.MILLISECONDS,
-        new PriorityBlockingQueue<Runnable>(11, new Comparator<Runnable>() {
-
-          // sort the workers according to their priority
-          @Override
-          public int compare(final Runnable o1, final Runnable o2) {
-            return ((ChainingAlgorithmWorker) o1).getPriority() - ((ChainingAlgorithmWorker) o2).getPriority();
-          }
-        }));
-    executor.allowCoreThreadTimeOut(true);
-    // REVIEW: do we need this ? If so, for what reasons?
-    // executor.prestartAllCoreThreads();
-
-    // REVIEW: why static? session based variables as statics?
-    ChainingAlgorithmWorker.setExecutor(executor);
-    ChainingAlgorithmWorker.setExpectedType(expectedType);
+  /*
+   * computes all methods from type to check
+   */
+  private Map<IMember, IClass> computeMethods(final IClass typeToCheck) throws JavaModelException {
+    final Map<IMember, IClass> map1 = new HashMap<IMember, IClass>();
+    for (final IMethod m : typeToCheck.getAllMethods()) {
+      final IClass result = createMethodWorker(m);
+      if (result != null) {
+        map1.put(m, result);
+      }
+    }
+    return map1;
   }
 
-  private void startWorkers(final IClass callingContext) throws JavaModelException {
-    // REVIEW: start -> Process -> start? name hopping?
-    processInitialFields(callingContext);
-    processLocalVariables();
-    // REVIEW: methods are those defined in "this"? maybe rename to something
-    // like "...DeclaredMethodsReturnTypes" ?
-    processMethodsReturnType(callingContext);
+  /*
+   * computes all fields from type to check
+   */
+  private Map<IMember, IClass> computeFields(final IClass typeToCheck) throws JavaModelException {
+    final Map<IMember, IClass> map = new HashMap<IMember, IClass>();
+    for (final IField f : typeToCheck.getAllFields()) {
+      final IClass result = createFieldWorker(typeToCheck, f);
+      if (result != null) {
+        map.put(f, result);
+      }
+    }
+    return map;
   }
 
-  private void waitForThreadPoolTermination() {
+  /*
+   * when ever one chain is finished the terminator should be tried to be
+   * terminated. The reason is, that the terminator only exits, if the max. run
+   * time is reached. But we want to have the optimal run time.
+   */
+  private void tryTerminateExecutor() {
+    if ((executor.getPoolSize() == 1) && (executor.getQueue().size() < 1)) {
+      // XXX There is a problem with the executer which I cannot resolve. If you
+      // trigger the plug-in several times in a very short period, than a
+      // InterruptedException can occur
+      executor.shutdownNow();
+    }
+  }
+
+  /*
+   * if the chain has to be extended by a method
+   */
+  private IClass createMethodWorker(final IMethod m) throws JavaModelException {
+    if (m.isPublic()) {// XXX: Case: If calling context is subtype of
+                       // typeToCheck than field/method can be protected or
+                       // package private
+      final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
+      list.add(new MethodChainWalaElement(m));
+      final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
+          internalProposalStore, executor, expectedType);
+      startWorker(worker);
+      if (m.getReturnType().isPrimitiveType())
+        return null;// return
+                    // ChainingAlgorithm.boxPrimitiveTyp(m.getDeclaringClass(),
+      // m.getReturnType().getName().toString().toCharArray());
+      return m.getClassHierarchy().lookupClass(m.getReturnType());
+    }
+    return null;
+  }
+
+  /*
+   * put worker to the executor, so that it can be processed
+   */
+  private void startWorker(final ChainingAlgorithmWorker worker) {
+    if (executor.getKeepAliveTime(TimeUnit.MILLISECONDS) <= Constants.AlgorithmSettings.WORKER_KEEP_ALIVE_TIME_IN_MS) {
+      try {
+        executor.execute(worker);
+      } catch (final RejectedExecutionException e) {
+        JavaPlugin.log(e);
+      }
+    }
+  }
+
+  /*
+   * if the chain has to be extended by a field
+   */
+  private IClass createFieldWorker(final IClass typeToCheck, final IField f) throws JavaModelException {
+    if (f.isPublic()) { // XXX: Case: If calling context is subtype of
+                        // typeToCheck than field/method can be protected or
+                        // package private
+      final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
+      list.add(new FieldChainWalaElement(f));
+      final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
+          internalProposalStore, executor, expectedType);
+      startWorker(worker);
+      if (f.getFieldTypeReference().isPrimitiveType()) {
+        return null;
+      }
+      return f.getClassHierarchy().lookupClass(f.getFieldTypeReference());
+    }
+    return null;
+  }
+
+  /*
+   * if a type was found in the internal store, create either a method or field
+   * worker
+   */
+  private void executeComputationOnExistingType(final IClass typeToCheck) {
+    for (final Entry<IMember, IClass> entry : ChainingAlgorithm.getSearchMap().get(typeToCheck).entrySet()) {
+      final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
+      if (entry.getKey() instanceof IField) {
+        list.add(new FieldChainWalaElement((IField) entry.getKey()));
+      } else {
+        list.add(new MethodChainWalaElement((IMethod) entry.getKey()));
+      }
+      final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
+          internalProposalStore, executor, expectedType);
+      startWorker(worker);
+    }
+  }
+
+  @Override
+  public void run() {
     try {
-      executor.awaitTermination(Constants.AlgorithmSettings.EXECUTOR_ALIVE_TIME_IN_MS, TimeUnit.MILLISECONDS);
-    } catch (final InterruptedException e) {
+      inspectType();
+    } catch (final JavaModelException e) {
       JavaPlugin.log(e);
     }
   }
 
-  // REVIEW: callingContext as field?
-  private void processMethodsReturnType(final IClass callingContext) throws JavaModelException {
-
-    for (final ChainedProposalAnchor methodProposal : ctx.getProposedMethods()) {
-      // REVIEW: name mismatch?
-      final TypeName fieldType = getMethodReturnTypeName(methodProposal);
-      if (fieldType != null) {
-        startMethodWorkerFromMethodProposal(callingContext, methodProposal, fieldType);
-      }
+  /*
+   * function to check if the call chain meets the expectations, so that it can
+   * be processed for proposal computation
+   */
+  private boolean storeForProposal(final IClass typeToCheck) throws JavaModelException {
+    if (typeToCheck == null)
+      return true;
+    final int testResult = LookupUtilWala.equalityTest(typeToCheck, expectedType);
+    // if both types equal
+    if ((testResult & LookupUtilWala.RESULT_EQUAL) > 0) {
+      if (!checkRedundancy()) {
+        internalProposalStore.addProposal(workingChain);
+        return false;
+      } else
+        return true;
     }
-  }
-
-  private void startMethodWorkerFromMethodProposal(final IClass callingContext,
-      final ChainedProposalAnchor methodProposal, final TypeName fieldType) {
-    final LinkedList<IChainWalaElement> walaList = new LinkedList<IChainWalaElement>();
-    for (final IMethod method : callingContext.getAllMethods()) {
-      TypeName returnReference = null;
-      if (!method.getReturnType().isPrimitiveType()) {
-        returnReference = method.getReturnType().getName();
-        final int thisParameterInParameterTypes = computeParameterInParameterType(method);
-        if (isValidMethod(methodProposal, fieldType, method, returnReference, thisParameterInParameterTypes)) {
-          walaList.add(new MethodChainWalaElement(method));
-          executor.execute(new ChainingAlgorithmWorker(walaList, 0, this));
-          break;
-        }
-      }
+    // if typeToCheck is primitive return
+    if ((testResult & LookupUtilWala.RESULT_PRIMITIVE) > 0)
+      return true;
+    // Consult type hierarchy for sub-/supertypes
+    if (LookupUtilWala.isSubtype(typeToCheck, expectedType) && !((testResult & LookupUtilWala.RESULT_EQUAL) > 0)) {
+      if (!checkRedundancy()) {
+        internalProposalStore.addCastedProposal(workingChain, expectedType);
+        return false;
+      } else
+        return true;
     }
-  }
-
-  // REVIEW fieldtype name mismatch?
-  private boolean isValidMethod(final ChainedProposalAnchor methodProposal, final TypeName fieldType,
-      final IMethod method, final TypeName returnReference, final int thisParameterInParameterTypes) {
-
-    // REVIEW: HŠ? :) Split into separate methods or boolean vars to make the
-    // meaning more clear.
-    return returnReference.equals(fieldType)
-        && method.getName().toString().equals(methodProposal.getCompletion())
-        && (method.getNumberOfParameters() - thisParameterInParameterTypes == methodProposal.getParameterNames().length);
-  }
-
-  private int computeParameterInParameterType(final IMethod method) {
-    int thisParameterInParameterTypes = 1;
-    if (method.isStatic()) {
-      thisParameterInParameterTypes = 0;
+    /* else */
+    if (LookupUtilWala.isSupertype(typeToCheck, expectedType) && !((testResult & LookupUtilWala.RESULT_EQUAL) > 0)) {
+      if (!checkRedundancy()) {
+        internalProposalStore.addProposal(workingChain);
+        return false;
+      } else
+        return true;
     }
-    return thisParameterInParameterTypes;
+    // not equal, not in a hierarchical relation, not primitive
+    return false;
   }
 
-  private TypeName getMethodReturnTypeName(final ChainedProposalAnchor methodProposal) throws JavaModelException {
-    final char[] signature = methodProposal.getSignature();
-    final IType fullyQualifiedType = LookupUtilJdt.lookupType(signature);
-    if ((fullyQualifiedType == null) || !LookupUtilJdt.isWantedType(fullyQualifiedType))
-      return null;
-    if (!isPrimitive(signature, fullyQualifiedType)) {
-      TypeName fieldType = walaService.getType(fullyQualifiedType).getName();
-      return fieldType;
-    } else
-      return null;
-  }
-
-  private void processLocalVariables() throws JavaModelException {
-    for (final ChainedProposalAnchor variableProposal : ctx.getProposedVariables()) {
-      if (isValidLocalVariable(ctx, variableProposal)) {
-        startWorkerForVariableProposal(variableProposal);
-      }
+  /*
+   * wie want to avoid: method1().method1().method1()... this function handles
+   * this case
+   */
+  private boolean checkRedundancy() {
+    final int size = workingChain.size();
+    if (size >= 2) {
+      final IChainWalaElement last = workingChain.get(size - 1);
+      final IChainWalaElement nextLast = workingChain.get(size - 2);
+      if (last.getCompletion().equals(nextLast.getCompletion()))
+        return true;
     }
+    return false;
   }
 
-  private void startWorkerForVariableProposal(final ChainedProposalAnchor variableProposal) throws JavaModelException {
-    final char signature[] = variableProposal.getSignature();
-    final IType fullyQualifiedType = LookupUtilJdt.lookupType(signature);
-    if (!isPrimitive(signature, fullyQualifiedType)) {
-      final LinkedList<IChainWalaElement> walaList = new LinkedList<IChainWalaElement>();
-      // REVIEW: can we please split this add operation a bit?
-      walaList.add(new FieldChainWalaElement(variableProposal.getCompletion(), new String(variableProposal
-          .getSignature()), walaService.getType(fullyQualifiedType).getClassHierarchy(), walaService
-          .getType(fullyQualifiedType).getClassLoader().getReference()));
-      executor.execute(new ChainingAlgorithmWorker(walaList, 0, this));
-    }
+  public int getPriority() {
+    return priority;
   }
 
-  // REVIEW: can || (fullyQualifiedType instanceof LookupUtilJdt.PrimitiveType)
-  // happen? Primitives are well defined, right?
-  private boolean isPrimitive(final char[] signature, final IType fullyQualifiedType) {
-    return LookupUtilJdt.isSignatureOfSimpleType(new String(signature))
-        || (fullyQualifiedType instanceof LookupUtilJdt.PrimitiveType);
-  }
-
-  private boolean isValidLocalVariable(final FieldsAndMethodsCompletionContext ctx,
-      final ChainedProposalAnchor variableProposal) {
-    // REVIEW isOfExpectedType but not ... what is the second part about?
-    // example or better names?/split ?
-    return Arrays.equals(variableProposal.getSignature(), ctx.getExpectedTypeSignature())
-        && !Arrays.equals(variableProposal.getCompletion().toCharArray(), ctx.getCallingVariableName());
-  }
-
-  private void processInitialFields(final IClass callingContext) throws JavaModelException {
-    for (final ChainedProposalAnchor fieldProposal : ctx.getProposedFields()) {
-      final char signature[] = fieldProposal.getSignature();
-      final IType fullyQualifiedType = LookupUtilJdt.lookupType(signature);
-      if (!isPrimitive(signature, fullyQualifiedType)) {
-        // REVIEW: should this list be initialized in #startWorkersForField..?
-        // useless param here?
-        final LinkedList<IChainWalaElement> walaList = new LinkedList<IChainWalaElement>();
-        // REVIEW: move to startWorkerForField
-        TypeName fieldType = walaService.getType(fullyQualifiedType).getName();
-        startWorkerForFieldProposal(callingContext, fieldProposal, walaList, fieldType);
-      }
-    }
-  }
-
-  private void startWorkerForFieldProposal(final IClass callingContext, final ChainedProposalAnchor fieldProposal,
-      final LinkedList<IChainWalaElement> walaList, final TypeName fieldType) {
-    for (final IField field : callingContext.getAllFields()) {
-      TypeName fieldReference = null;
-      if (!field.getFieldTypeReference().isPrimitiveType()) {
-        fieldReference = field.getFieldTypeReference().getName();
-        if (fieldReference.equals(fieldType) && field.getName().toString().equals(fieldProposal.getCompletion())) {
-          // REVIEW: walaList means exactly what?
-          walaList.add(new FieldChainWalaElement(field));
-          // REVIEW: first "real start worker" methods name? first initalize
-          // then start?
-          executor.execute(new ChainingAlgorithmWorker(walaList, 0, this));
-          break;
-        }
-      }
-    }
-  }
-
-  public void addCastedProposal(final LinkedList<IChainWalaElement> workingChain, final IClass expectedType) {
-    // Collections.reverse(workingChain);
-    synchronized (proposals) {
-      proposals.add(new ChainedJavaProposal(workingChain, expectedType));
-    }
-  }
-
-  public void addProposal(final LinkedList<IChainWalaElement> workingChain) {
-    // Collections.reverse(workingChain);
-    synchronized (proposals) {
-      proposals.add(new ChainedJavaProposal(workingChain));
-    }
-  }
-
-  public IClass getExpectedType() {
-    return expectedType;
-  }
-
-  public List<ChainedJavaProposal> getProposals() {
-    return proposals;
-  }
-
-  public static void setSearchMap(Map<IClass, Map<IMember, IClass>> searchMap) {
-    ChainingAlgorithm.searchMap = searchMap;
-  }
-
-  public static Map<IClass, Map<IMember, IClass>> getSearchMap() {
-    return searchMap;
-  }
 }
