@@ -47,6 +47,7 @@ import com.google.inject.Provides;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
+import com.ibm.wala.util.debug.UnimplementedError;
 
 public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnalyzer<CompilationUnit> {
     private final IClassHierarchyService wala;
@@ -115,6 +116,8 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         try {
             r.run(monitor);
         } catch (final Exception x) {
+            RcpAnalysisPlugin.logError(x, "error during analysis if '%s'", walaClass.getName());
+        } catch (final UnimplementedError x) {
             RcpAnalysisPlugin.logError(x, "error during analysis if '%s'", walaClass.getName());
         }
         return recCompilationUnit;
