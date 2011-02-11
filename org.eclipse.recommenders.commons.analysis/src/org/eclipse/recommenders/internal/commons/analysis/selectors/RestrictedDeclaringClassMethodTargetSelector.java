@@ -28,8 +28,9 @@ import com.ibm.wala.ipa.callgraph.propagation.SSAPropagationCallGraphBuilder;
 import com.ibm.wala.types.MethodReference;
 
 /**
- * A {@link MethodTargetSelector} that returns methods only iff the resolved target method is declared in the same class
- * give at selector instance creation. Calls to other methods are not resolved or stubbed.
+ * A {@link MethodTargetSelector} that returns methods only iff the resolved
+ * target method is declared in the same class give at selector instance
+ * creation. Calls to other methods are not resolved or stubbed.
  */
 public class RestrictedDeclaringClassMethodTargetSelector implements MethodTargetSelector {
 
@@ -51,14 +52,15 @@ public class RestrictedDeclaringClassMethodTargetSelector implements MethodTarge
         if (Thread.currentThread().isInterrupted()) {
             Throws.throwCancelationException();
         }
+
+        // final boolean receiverThis = isReceiverThis(caller, call,
+        // receiverType);
+        // experimental(caller, call, receiverType);
         final MethodReference declaredCallTarget = call.getDeclaredTarget();
         if (RecommendersInits.isRecommendersInit(declaredCallTarget)) {
-            if (acceptedDeclaringClasses.contains(receiverType)) {
-                return RecommendersInits.createRecommendersInit(caller, call, receiverType, builder,
-                        new DeclaredNonPrimitiveOrArrayFieldsSelector());
-            } else {
-                return null;
-            }
+            return RecommendersInits.createRecommendersInit(caller, call, receiverType, builder,
+                    new DeclaredNonPrimitiveOrArrayFieldsSelector());
+
         }
         final IMethod resolvedCalleeTarget = delegate.getCalleeTarget(caller, call, receiverType);
         if (resolvedCalleeTarget == null) {

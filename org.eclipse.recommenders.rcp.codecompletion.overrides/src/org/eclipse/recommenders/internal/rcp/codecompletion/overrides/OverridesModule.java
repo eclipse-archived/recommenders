@@ -10,14 +10,21 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.overrides;
 
+import java.io.IOException;
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
 import org.eclipse.recommenders.rcp.IEditorChangedListener;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.name.Names;
 
 public class OverridesModule extends AbstractModule {
     @Override
@@ -26,6 +33,9 @@ public class OverridesModule extends AbstractModule {
     }
 
     private void bindCompletionEngine() {
+        bind(IOverridesModelLoader.class).to(OverridesModelLoader.class).in(Scopes.SINGLETON);
+        bind(URL.class).annotatedWith(Names.named("overrides.model.fileUrl")).toInstance(getOverridesModelFileUrl());
+
         bind(OverridesModelStore.class).in(Scopes.SINGLETON);
         bind(OverridesCompletionEngine.class).in(Scopes.SINGLETON); //
         bind(InstantOverridesRecommender.class).in(Scopes.SINGLETON); //
@@ -37,5 +47,14 @@ public class OverridesModule extends AbstractModule {
                 .to(OverridesCompletionEngine.class);
         Multibinder.newSetBinder(binder(), IRecommendationsViewContentProvider.class).addBinding()
                 .to(InstantOverridesRecommender.class);
+    }
+
+    private URL getOverridesModelFileUrl() {
+        final Path basedir = new Path("/data/models.zip");
+        try {
+            return FileLocator.resolve(FileLocator.find(FrameworkUtil.getBundle(getClass()), basedir, null));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

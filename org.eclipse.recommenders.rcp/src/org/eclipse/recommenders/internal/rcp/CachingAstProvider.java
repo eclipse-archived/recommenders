@@ -41,7 +41,13 @@ public class CachingAstProvider implements IAstProvider, IElementChangedListener
     public void elementChanged(final ElementChangedEvent event) {
         final IJavaElementDelta delta = event.getDelta();
         final CompilationUnit ast = delta.getCompilationUnitAST();
+        if (ast == null) {
+            return;
+        }
         final ICompilationUnit cu = cast(ast.getJavaElement());
+        if (cu == null) {
+            return;
+        }
         cache.put(cu, ast);
     }
 }

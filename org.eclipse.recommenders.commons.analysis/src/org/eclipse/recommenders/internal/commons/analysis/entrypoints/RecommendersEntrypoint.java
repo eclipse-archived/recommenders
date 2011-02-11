@@ -22,8 +22,8 @@ import com.ibm.wala.ssa.SSANewInstruction;
 import com.ibm.wala.types.TypeReference;
 
 /**
- * A special analysis entry point that adds for each parameter a call to the recommenders-initializer to the
- * {@link FakeRootMethod}.
+ * A special analysis entry point that adds for each parameter a call to the
+ * recommenders-initializer to the {@link FakeRootMethod}.
  */
 public class RecommendersEntrypoint extends DefaultEntrypoint {
     /**
@@ -38,8 +38,9 @@ public class RecommendersEntrypoint extends DefaultEntrypoint {
     }
 
     /**
-     * Creates allocation sites for all non-primitive parameters. If a new allocation site is created a call to its
-     * recommenders-initializer is added to the FakeRootMethod.
+     * Creates allocation sites for all non-primitive parameters. If a new
+     * allocation site is created a call to its recommenders-initializer is
+     * added to the FakeRootMethod.
      */
     @Override
     protected int makeArgument(final AbstractRootMethod fakeRootMethod, final int valueNum) {
@@ -49,10 +50,13 @@ public class RecommendersEntrypoint extends DefaultEntrypoint {
         } else {
             final SSANewInstruction newInstruction = fakeRootMethod.addAllocationWithoutCtor(typeRef);
             /*
-             * 'n' might be null if wala doesn't know the type (because of an incomplete classpath)
+             * 'n' might be null if wala doesn't know the type (because of an
+             * incomplete classpath)
              */
             if (null != newInstruction) {
-                addCallToRecommendersInitializer(fakeRootMethod, newInstruction);
+                if (!method.isStatic() && valueNum == 0) {
+                    addCallToRecommendersInitializer(fakeRootMethod, newInstruction);
+                }
                 return newInstruction.getDef();
             }
             return -1;

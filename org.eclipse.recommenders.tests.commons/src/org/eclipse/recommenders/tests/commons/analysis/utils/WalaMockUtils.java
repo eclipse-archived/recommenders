@@ -43,21 +43,21 @@ import com.ibm.wala.util.strings.Atom;
 public class WalaMockUtils {
 
     public static CGNode createCGNodeMock() {
-        CGNode mock = mock(CGNode.class);
+        final CGNode mock = mock(CGNode.class);
         return mock;
     }
 
     public static IClassHierarchy createClassHierarchyMock() {
-        IClassHierarchy mock = mock(IClassHierarchy.class);
+        final IClassHierarchy mock = mock(IClassHierarchy.class);
         return mock;
     }
 
-    public static void mockCGNodeGetClassHierarchy(CGNode node, IClassHierarchy returnValue) {
+    public static void mockCGNodeGetClassHierarchy(final CGNode node, final IClassHierarchy returnValue) {
         when(node.getClassHierarchy()).thenReturn(returnValue);
     }
 
-    public static void mockClassHierarchyLookupAnyType(IClassHierarchy cha, IClass returnValue) {
-        TypeReference any = any();
+    public static void mockClassHierarchyLookupAnyType(final IClassHierarchy cha, final IClass returnValue) {
+        final TypeReference any = any();
         when(cha.lookupClass(any)).thenReturn(returnValue);
     }
 
@@ -65,33 +65,33 @@ public class WalaMockUtils {
         return createClassMock("Lsome/mock/Class");
     }
 
-    public static IClass createClassMock(String name) {
-        IClass res = mock(IClass.class);
-        TypeName typeName = TypeName.findOrCreate(name);
-        TypeReference typeRef = TypeReference.findOrCreate(ClassLoaderReference.Primordial, typeName);
+    public static IClass createClassMock(final String name) {
+        final IClass res = mock(IClass.class);
+        final TypeName typeName = TypeName.findOrCreate(name);
+        final TypeReference typeRef = TypeReference.findOrCreate(ClassLoaderReference.Primordial, typeName);
         when(res.getName()).thenReturn(typeName);
         when(res.getReference()).thenReturn(typeRef);
         return res;
     }
 
-    public static void mockClassGetDeclaredFields(IClass c, List<IField> declaredFields) {
+    public static void mockClassGetDeclaredFields(final IClass c, final List<IField> declaredFields) {
         when(c.getDeclaredInstanceFields()).thenReturn(declaredFields);
     }
 
     public static IMethod createMethodMock() {
-        IMethod res = mock(IMethod.class);
+        final IMethod res = mock(IMethod.class);
         when(res.getSignature()).thenReturn("LClass.mockedSignature()V");
         return res;
     }
 
     public static IMethod createSyntheticMethodMock() {
-        IMethod res = mock(SyntheticMethod.class);
+        final IMethod res = mock(SyntheticMethod.class);
         return res;
     }
 
-    public static IMethod createMethod(String declaringClass, String methodName, String signature) {
-        IMethod res = createSyntheticMethodMock();
-        MethodReference ref = MethodReference.findOrCreate(ClassLoaderReference.Application, declaringClass,
+    public static IMethod createMethod(final String declaringClass, final String methodName, final String signature) {
+        final IMethod res = createSyntheticMethodMock();
+        final MethodReference ref = MethodReference.findOrCreate(ClassLoaderReference.Application, declaringClass,
                 methodName, signature);
         when(res.getReference()).thenReturn(ref);
         when(res.getSignature()).thenCallRealMethod();
@@ -100,7 +100,7 @@ public class WalaMockUtils {
     }
 
     public static IMethod createMethodWithBooleanParameterMock() {
-        IMethod res = createPublicMethodMock();
+        final IMethod res = createPublicMethodMock();
         mockMethodName(res, "someName");
         mockMethodParameters(res, TypeReference.JavaLangBoolean);
         mockMethodReturn(res, TypeReference.Void);
@@ -108,12 +108,12 @@ public class WalaMockUtils {
         return res;
     }
 
-    public static Entrypoint createEntryPointMock(IMethod mock) {
+    public static Entrypoint createEntryPointMock(final IMethod mock) {
         return new DefaultEntrypoint(mock, null);
     }
 
     public static IMethod createMethodWithIntegerParameterMock() {
-        IMethod res = createPublicMethodMock();
+        final IMethod res = createPublicMethodMock();
         mockMethodName(res, "someName");
         mockMethodParameters(res, TypeReference.JavaLangInteger);
         mockMethodReturn(res, TypeReference.Void);
@@ -122,7 +122,7 @@ public class WalaMockUtils {
     }
 
     public static IMethod createPackageVisibleMethodMock() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         when(res.isPublic()).thenReturn(false);
         when(res.isPrivate()).thenReturn(false);
         when(res.isProtected()).thenReturn(false);
@@ -130,28 +130,28 @@ public class WalaMockUtils {
     }
 
     public static NewSiteReference createNewSiteMock() {
-        NewSiteReference mock = mock(NewSiteReference.class);
+        final NewSiteReference mock = mock(NewSiteReference.class);
         return mock;
     }
 
-    public static void mockNewSiteGetDeclaredType(NewSiteReference site, TypeReference returnValue) {
+    public static void mockNewSiteGetDeclaredType(final NewSiteReference site, final TypeReference returnValue) {
         when(site.getDeclaredType()).thenReturn(returnValue);
     }
 
     public static IMethod createPrivateMethodMock() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         mockMethodIsPrivate(res, true);
         return res;
     }
 
     public static IMethod createProtectedMethodMock() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         mockMethodIsProtected(res, true);
         return res;
     }
 
     public static IMethod createPublicClinitMock() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         mockMethodIsPublic(res, true);
         mockMethodIsClinit(res, true);
         mockMethodIsStatic(res, true);
@@ -159,7 +159,7 @@ public class WalaMockUtils {
     }
 
     public static IMethod createPublicNativeMock() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         mockMethodIsPublic(res, true);
         mockMethodIsNative(res, true);
         mockMethodIsAbstract(res, true);
@@ -167,127 +167,127 @@ public class WalaMockUtils {
     }
 
     public static IMethod createConstructor() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         mockMethodIsInit(res, true);
-        Selector noArgsSelector = Selector.make("<init>()V");
+        final Selector noArgsSelector = Selector.make("<init>()V");
         when(res.getSelector()).thenReturn(noArgsSelector);
         return res;
     }
 
     public static IMethod createPublicConstructorMock() {
-        IMethod res = createConstructor();
+        final IMethod res = createConstructor();
         mockMethodIsPublic(res, true);
         return res;
     }
 
     public static IMethod createProtectedConstructorMock() {
-        IMethod res = createConstructor();
+        final IMethod res = createConstructor();
         mockMethodIsProtected(res, true);
         return res;
     }
 
     public static IMethod createPublicFinalMethodMock() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         mockMethodIsPublic(res, true);
         mockMethodIsFinal(res, true);
         return res;
     }
 
     public static IMethod createPublicMethodMock() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         mockMethodIsPublic(res, true);
         return res;
     }
 
     public static IMethod createPublicStaticMethodMock() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         mockMethodIsPublic(res, true);
         mockMethodIsStatic(res, true);
         return res;
     }
 
     public static IMethod createProtectedStaticMethodMock() {
-        IMethod res = createMethodMock();
+        final IMethod res = createMethodMock();
         mockMethodIsProtected(res, true);
         mockMethodIsStatic(res, true);
         return res;
     }
 
     public static IClass createPublicClass() {
-        IClass res = createClassMock();
+        final IClass res = createClassMock();
         when(res.getModifiers()).thenReturn(Modifier.PUBLIC);
         return res;
     }
 
     public static IClass createStaticClassMock() {
-        IClass res = createClassMock();
+        final IClass res = createClassMock();
         when(res.getModifiers()).thenReturn(Modifier.STATIC);
         return res;
     }
 
-    public static IClass createInterface(String name) {
-        IClass res = createClassMock();
+    public static IClass createInterface(final String name) {
+        final IClass res = createClassMock();
         when(res.isInterface()).thenReturn(true);
         mockClassGetName(res, name);
         return res;
     }
 
     public static IField createPublicStringField() {
-        IField res = createField(TypeReference.JavaLangString, "stringField", null);
+        final IField res = createField(TypeReference.JavaLangString, "stringField", null);
         mockFieldIsPublic(res);
         return res;
     }
 
     public static IField createPrivateIntegerField() {
-        IField res = createField(TypeReference.JavaLangInteger, "integerField", null);
+        final IField res = createField(TypeReference.JavaLangInteger, "integerField", null);
         mockFieldIsPrivate(res);
         return res;
     }
 
-    public static void mockFieldIsPublic(IField res) {
+    public static void mockFieldIsPublic(final IField res) {
         when(res.isPublic()).thenReturn(true);
     }
 
-    public static void mockFieldIsPrivate(IField res) {
+    public static void mockFieldIsPrivate(final IField res) {
         when(res.isPrivate()).thenReturn(true);
     }
 
-    public static IField createField(TypeReference type, String fieldName, IClass declaringClass) {
-        IField mock = mock(IField.class);
+    public static IField createField(final TypeReference type, final String fieldName, final IClass declaringClass) {
+        final IField mock = mock(IField.class);
         when(mock.getDeclaringClass()).thenReturn(declaringClass);
         when(mock.getName()).thenReturn(Atom.findOrCreateUnicodeAtom(fieldName));
         when(mock.getFieldTypeReference()).thenReturn(type);
         return mock;
     }
 
-    public static void mockClassGetDeclareMethods(IClass clazz, Collection<IMethod> returnedMethods) {
+    public static void mockClassGetDeclareMethods(final IClass clazz, final Collection<IMethod> returnedMethods) {
         when(clazz.getDeclaredMethods()).thenReturn(returnedMethods);
     }
 
-    public static void mockClassGetMethodWithAnySelector(IClass clazz, IMethod returnValue) {
-        Selector any = (Selector) any();
+    public static void mockClassGetMethodWithAnySelector(final IClass clazz, final IMethod returnValue) {
+        final Selector any = (Selector) any();
         when(clazz.getMethod(any)).thenReturn(returnValue);
     }
 
-    public static void mockClassGetSuperclass(IClass subclass, IClass superclass) {
+    public static void mockClassGetSuperclass(final IClass subclass, final IClass superclass) {
         when(subclass.getSuperclass()).thenReturn(superclass);
     }
 
-    public static void mockClassGetName(IClass clazz, String name) {
-        TypeName typeName = TypeName.findOrCreate(name);
+    public static void mockClassGetName(final IClass clazz, final String name) {
+        final TypeName typeName = TypeName.findOrCreate(name);
         when(clazz.getName()).thenReturn(typeName);
     }
 
-    public static void mockClassIsPrimordial(IClass clazz) {
+    public static void mockClassIsPrimordial(final IClass clazz) {
         mockClassClassLoader(clazz, ClassLoaderReference.Primordial);
     }
 
-    public static void mockClassIsApplication(IClass clazz) {
+    public static void mockClassIsApplication(final IClass clazz) {
         mockClassClassLoader(clazz, ClassLoaderReference.Application);
     }
 
-    public static void mockClassClassLoader(IClass clazz, ClassLoaderReference ref) {
-        IClassLoader cl = mock(IClassLoader.class);
+    public static void mockClassClassLoader(final IClass clazz, final ClassLoaderReference ref) {
+        final IClassLoader cl = mock(IClassLoader.class);
         when(cl.getReference()).thenReturn(ref);
         when(clazz.getClassLoader()).thenReturn(cl);
     }
@@ -300,110 +300,110 @@ public class WalaMockUtils {
         return TypeReference.findOrCreate(ClassLoaderReference.Primordial, "Ljava/lang/String");
     }
 
-    public static void mockTypeReferenceClassLoader(TypeReference type, ClassLoaderReference ref) {
+    public static void mockTypeReferenceClassLoader(final TypeReference type, final ClassLoaderReference ref) {
         when(type.getClassLoader()).thenReturn(ref);
     }
 
-    public static void mockMethodGetDeclaringClass(IMethod method, IClass returnValue) {
+    public static void mockMethodGetDeclaringClass(final IMethod method, final IClass returnValue) {
         when(method.getDeclaringClass()).thenReturn(returnValue);
     }
 
-    public static IMethod mockMethodIsClinit(IMethod res, boolean value) {
+    public static IMethod mockMethodIsClinit(final IMethod res, final boolean value) {
         when(res.isClinit()).thenReturn(value);
         return res;
     }
 
-    public static IMethod mockMethodIsFinal(IMethod res, boolean value) {
+    public static IMethod mockMethodIsFinal(final IMethod res, final boolean value) {
         when(res.isFinal()).thenReturn(value);
         return res;
     }
 
-    public static IMethod mockMethodIsInit(IMethod res, boolean value) {
+    public static IMethod mockMethodIsInit(final IMethod res, final boolean value) {
         when(res.isInit()).thenReturn(value);
         return res;
     }
 
-    public static IMethod mockMethodIsPrivate(IMethod res, boolean value) {
+    public static IMethod mockMethodIsPrivate(final IMethod res, final boolean value) {
         when(res.isPrivate()).thenReturn(value);
         return res;
     }
 
-    public static IMethod mockMethodIsProtected(IMethod res, boolean value) {
+    public static IMethod mockMethodIsProtected(final IMethod res, final boolean value) {
         when(res.isProtected()).thenReturn(value);
         return res;
     }
 
-    public static IMethod mockMethodIsPublic(IMethod res, boolean value) {
+    public static IMethod mockMethodIsPublic(final IMethod res, final boolean value) {
         when(res.isPublic()).thenReturn(value);
         return res;
     }
 
-    private static IMethod mockMethodIsNative(IMethod method, boolean value) {
+    private static IMethod mockMethodIsNative(final IMethod method, final boolean value) {
         when(method.isNative()).thenReturn(value);
         return method;
     }
 
-    private static IMethod mockMethodIsAbstract(IMethod method, boolean value) {
+    private static IMethod mockMethodIsAbstract(final IMethod method, final boolean value) {
         when(method.isAbstract()).thenReturn(true);
         return method;
     }
 
-    public static IMethod mockMethodIsStatic(IMethod method, boolean value) {
+    public static IMethod mockMethodIsStatic(final IMethod method, final boolean value) {
         when(method.isStatic()).thenReturn(value);
         return method;
     }
 
-    public static IMethod mockMethodName(IMethod method, String name) {
-        Atom nameAtom = Atom.findOrCreateAsciiAtom(name);
+    public static IMethod mockMethodName(final IMethod method, final String name) {
+        final Atom nameAtom = Atom.findOrCreateAsciiAtom(name);
         when(method.getName()).thenReturn(nameAtom);
         return method;
     }
 
-    public static void mockMethodParameters(IMethod res, TypeReference... parameterTypes) {
+    public static void mockMethodParameters(final IMethod res, final TypeReference... parameterTypes) {
         when(res.getNumberOfParameters()).thenReturn(parameterTypes.length);
         for (int i = parameterTypes.length; i-- > 0;) {
             when(res.getParameterType(i)).thenReturn(parameterTypes[i]);
         }
     }
 
-    public static void mockMethodReturn(IMethod res, TypeReference returnValue) {
+    public static void mockMethodReturn(final IMethod res, final TypeReference returnValue) {
         when(res.getReturnType()).thenReturn(returnValue);
     }
 
-    public static void mockMethodSelector(IMethod res) {
+    public static void mockMethodSelector(final IMethod res) {
         ensureIsNotNull(res.getReturnType());
         ensureIsNotNull(res.getName());
-        List<TypeName> paramTypeNames = Lists.newLinkedList();
+        final List<TypeName> paramTypeNames = Lists.newLinkedList();
         for (int i = 0; i < res.getNumberOfParameters(); i++) {
-            TypeReference parameterType = res.getParameterType(i);
-            TypeName name = parameterType.getName();
+            final TypeReference parameterType = res.getParameterType(i);
+            final TypeName name = parameterType.getName();
             paramTypeNames.add(name);
         }
-        Atom methodName = res.getName();
-        TypeName returnTypeName = res.getReturnType().getName();
-        Descriptor descriptor = Descriptor.findOrCreate(paramTypeNames.toArray(new TypeName[0]), returnTypeName);
+        final Atom methodName = res.getName();
+        final TypeName returnTypeName = res.getReturnType().getName();
+        final Descriptor descriptor = Descriptor.findOrCreate(paramTypeNames.toArray(new TypeName[0]), returnTypeName);
         when(res.getSelector()).thenReturn(new Selector(methodName, descriptor));
     }
 
     public static SSAPropagationCallGraphBuilder createCallGraphBuilderMock() {
-        SSAPropagationCallGraphBuilder mock = mock(SSAPropagationCallGraphBuilder.class);
+        final SSAPropagationCallGraphBuilder mock = mock(SSAPropagationCallGraphBuilder.class);
         return mock;
     }
 
     public static CallSiteReference createCallSiteReferenceMock() {
-        CallSiteReference mock = mock(CallSiteReference.class);
+        final CallSiteReference mock = mock(CallSiteReference.class);
         return mock;
     }
 
-    public static void mockCallSiteGetDeclaredTarget(CallSiteReference call, MethodReference returnValue) {
+    public static void mockCallSiteGetDeclaredTarget(final CallSiteReference call, final MethodReference returnValue) {
         when(call.getDeclaredTarget()).thenReturn(returnValue);
     }
 
-    public static void mockCallSiteIsFixed(CallSiteReference call, boolean returnValue) {
+    public static void mockCallSiteIsFixed(final CallSiteReference call, final boolean returnValue) {
         when(call.isFixed()).thenReturn(returnValue);
     }
 
-    public static void mockCallSiteIsDispatch(CallSiteReference call, boolean returnValue) {
+    public static void mockCallSiteIsDispatch(final CallSiteReference call, final boolean returnValue) {
         when(call.isDispatch()).thenReturn(returnValue);
     }
 }
