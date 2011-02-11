@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Implementation-Version: 0.1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Object Usage Templates
+Bundle-SymbolicName: org.eclipse.recommenders.rcp.codecompletion.templates;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Activator: org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesPlugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.jdt.core,
+ org.eclipse.recommenders.commons.analysis,
+ org.eclipse.recommenders.commons.utils,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.recommenders.rcp.codecompletion,
+ org.eclipse.recommenders.rcp.utils,
+ com.google.guava,
+ org.apache.commons.lang,
+ org.junit,
+ org.eclipse.jdt.ui,
+ com.google.guice,
+ org.eclipse.recommenders.rcp.codecompletion.calls;bundle-version="0.1.0",
+ org.eclipse.recommenders.commons.injection;bundle-version="0.1.0"
+Bundle-ActivationPolicy: lazy
+Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Eclipse Code Recommenders
+Bundle-ClassPath: .,
+ /metadata
+Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion.templates,
+ org.eclipse.recommenders.internal.rcp.codecompletion.templates.types
