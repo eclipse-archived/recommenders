@@ -28,6 +28,7 @@ import com.ibm.wala.types.TypeReference;
  * too.
  * 
  */
+@SuppressWarnings("restriction")
 public class MethodChainWalaElement implements IChainWalaElement {
   private String completion;
 
@@ -39,7 +40,6 @@ public class MethodChainWalaElement implements IChainWalaElement {
 
   private final IClassHierarchy classHierarchy;
 
-  @SuppressWarnings("restriction")
   public MethodChainWalaElement(final IMethod method) {
     classHierarchy = method.getClassHierarchy();
     try {
