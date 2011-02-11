@@ -61,10 +61,7 @@ public class CompilationUnitViewPublisher extends RecommenderAdapter {
         final WorkbenchJob job = new WorkbenchJob("") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
-                final IWorkbench workbench = PlatformUI.getWorkbench();
-                final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-                final IWorkbenchPage page = window.getActivePage();
-                final CompilationUnitView view = (CompilationUnitView) page.findView(IDs.COMPILATIONUNIT_VIEW_ID);
+                final CompilationUnitView view = findCompilationUnitView();
                 if (view == null) {
                     return Status.CANCEL_STATUS;
                 }
@@ -74,6 +71,17 @@ public class CompilationUnitViewPublisher extends RecommenderAdapter {
                 final CompilationUnit artifact = store.loadArtifact(compilationUnit, CompilationUnit.class);
                 view.setInput(artifact);
                 return Status.OK_STATUS;
+            }
+
+            private CompilationUnitView findCompilationUnitView() {
+                final IWorkbench workbench = PlatformUI.getWorkbench();
+                if (workbench.isClosing()) {
+                    return null;
+                }
+                final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+                final IWorkbenchPage page = window.getActivePage();
+                final CompilationUnitView view = (CompilationUnitView) page.findView(IDs.COMPILATIONUNIT_VIEW_ID);
+                return view;
             }
         };
         job.schedule();

@@ -85,6 +85,9 @@ public class RecommendationsViewPublisher extends RecommenderAdapter {
 
     private RecommendationsView findView() {
         final IWorkbench workbench = PlatformUI.getWorkbench();
+        if (workbench.isClosing()) {
+            return null;
+        }
         final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
         final IWorkbenchPage page = window.getActivePage();
         final RecommendationsView view = (RecommendationsView) page.findView(IDs.RECOMMENDATIONS_VIEW_ID);
