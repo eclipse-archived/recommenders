@@ -294,6 +294,7 @@
 		<module>org.eclipse.recommenders.tests.rcp.analysis</module>
 		
 		<module>org.eclipse.recommenders.rcp.codecompletion</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion</module>
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.calls</module>
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.calls</module>

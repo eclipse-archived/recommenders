@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>org.eclipse.recommenders.parent</artifactId>
+		<groupId>org.eclipse.recommenders</groupId>
+		<version>0.1.0-SNAPSHOT</version>
+		<relativePath>../org.recommenders.parent</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.eclipse.recommenders</groupId>
+	<artifactId>org.eclipse.recommenders.tests.rcp.codecompletion</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+	<packaging>eclipse-test-plugin</packaging>
+
+	<profiles>
+		<profile>
+			<id>coverage</id>
+			<activation>
+				<property>
+					<name>coverage</name>
+				</property>
+			</activation>
+			<properties>
+				<emma.session.out.file>${project.build.directory}/emma/${project.artifactId}.es</emma.session.out.file>
+				<emma.instrument.bundles>org.eclipse.recommenders.rcp.codecompletion</emma.instrument.bundles>
+			</properties>
+			<build>
+				<plugins>
+					<!-- plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>build-helper-maven-plugin</artifactId> 
+						<executions> <execution> <id>attach-artifacts</id> <phase>package</phase> 
+						<goals> <goal>attach-artifact</goal> </goals> <configuration> <artifacts> 
+						<artifact> <file>${emma.session.out.file}</file> <type>es</type> </artifact> 
+						</artifacts> </configuration> </execution> </executions> </plugin -->
+
+					<plugin>
+						<groupId>org.sonatype.tycho</groupId>
+						<artifactId>maven-osgi-test-plugin</artifactId>
+						<version>${tycho-version}</version>
+						<configuration>
+							<skip>${skipFunctional}</skip>
+							<!-- useUIHarness>true</useUIHarness> <useUIThread>false</useUIThread> 
+								<product>org.eclipse.sdk.ide</product> <application>org.eclipse.ui.ide.workbench</application> 
+								<argLine>-Xmx512M</argLine -->
+							<systemProperties combine.children="append">
+								<emma.session.out.file>${emma.session.out.file}</emma.session.out.file>
+								<emma.filter>${emma.filter}</emma.filter>
+								<eclemma.instrument.bundles>${emma.instrument.bundles}</eclemma.instrument.bundles>
+							</systemProperties>
+							<frameworkExtensions>
+								<frameworkExtension>
+									<groupId>org.eclemma.runtime.equinox</groupId>
+									<artifactId>org.eclemma.runtime.equinox</artifactId>
+									<version>1.1.0.200908261008</version>
+								</frameworkExtension>
+							</frameworkExtensions>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
