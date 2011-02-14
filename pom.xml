@@ -272,6 +272,11 @@
 							</execution>
 						</executions>
 					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.7</version>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -289,10 +294,10 @@
 		<module>org.eclipse.recommenders.commons.utils</module>
 		<module>org.eclipse.recommenders.commons.utils.gson</module>
 		<module>org.eclipse.recommenders.rcp</module>
-		
+
 		<module>org.eclipse.recommenders.rcp.analysis</module>
 		<module>org.eclipse.recommenders.tests.rcp.analysis</module>
-		
+
 		<module>org.eclipse.recommenders.rcp.codecompletion</module>
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion</module>
 
@@ -306,6 +311,8 @@
 		<module>org.eclipse.recommenders.tests.commons</module>
 		<module>org.eclipse.recommenders.tests.commons.unit</module>
 		<module>org.eclipse.recommenders.examples.rcp.codecompletion</module>
+
+		<module>org.eclipse.recommenders.doc.user</module>
 
 		<!-- features 'n update sites -->
 

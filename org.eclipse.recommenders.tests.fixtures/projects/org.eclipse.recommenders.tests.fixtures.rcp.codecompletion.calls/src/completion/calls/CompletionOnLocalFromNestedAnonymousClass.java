@@ -26,12 +26,12 @@ public class CompletionOnLocalFromNestedAnonymousClass extends DialogPage {
 
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                text.<^Space>
+                 text.<^Space>
             }
 
             @Override
             public void widgetDefaultSelected(final SelectionEvent e) {
-                text.<^Space>
+                 text.<^Space>
             }
         });
     }
