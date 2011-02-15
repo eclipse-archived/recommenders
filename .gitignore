@@ -8,7 +8,7 @@
 *.class
 */target/*
 */.recommenders/*
-
+*/screenshots/*
 
 ## various other file types we don't want to have in the repository:
 
