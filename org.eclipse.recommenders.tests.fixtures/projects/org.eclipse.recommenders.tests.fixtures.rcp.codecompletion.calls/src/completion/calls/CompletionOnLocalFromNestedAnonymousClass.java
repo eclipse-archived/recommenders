@@ -28,7 +28,10 @@ public class CompletionOnLocalFromNestedAnonymousClass extends DialogPage {
 
             @Override
             public void modifyText(final ModifyEvent e) {
-                text.<^Space>
+                //@start
+                text.<^Space|getText().*%>
+                //@end
+                // text.getText()
             }
         });
     }

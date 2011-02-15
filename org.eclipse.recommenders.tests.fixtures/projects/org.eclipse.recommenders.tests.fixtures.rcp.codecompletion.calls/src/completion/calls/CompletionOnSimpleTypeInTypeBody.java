@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Control;
 
 public class CompletionOnSimpleTypeInTypeBody  {
 
-	// Button<^Space> should not trigger any template. Ensure templates are only triggered within method bodies.
-	Button<^Space>
+	// Button should not trigger any template. Ensure templates are only triggered within method bodies.
+	Button<@Ignore^Space>
 
 }

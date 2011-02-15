@@ -22,10 +22,10 @@ public class CompletionOnSimpleTypeNameInMethodBodyWithImport extends Dialog {
 
     @Override
 	protected Control createDialogArea(final Composite parent) {
-		// Button<^Space> -> expects patterns for SWT Button only since Button
+		// Button -> expects patterns for SWT Button only since Button
 		// has been qualified by an import already
 		//
-		Button<^Sapce>
+		Button<@Ignore^Sapce>
 		return null;
 	}
 

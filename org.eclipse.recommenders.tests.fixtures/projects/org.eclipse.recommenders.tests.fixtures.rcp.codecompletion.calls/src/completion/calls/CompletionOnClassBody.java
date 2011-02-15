@@ -12,12 +12,19 @@ package completion.calls;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 public class CompletionOnClassBody extends Dialog {
 
-    
-    <^Space>
-    
+    //@start
+    <^Space|createDialogArea.*>
+    //@end
+    //@Override
+    //protected Control createDialogArea(Composite parent) {
+    //  // TODO Auto-generated method stub
+    //  return super.createDialogArea(parent);
+    //}
     
     
     public CompletionOnClassBody() {

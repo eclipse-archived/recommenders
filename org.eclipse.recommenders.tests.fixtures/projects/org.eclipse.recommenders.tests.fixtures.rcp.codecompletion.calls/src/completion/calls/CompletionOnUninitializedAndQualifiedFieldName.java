@@ -22,8 +22,12 @@ public class CompletionOnUninitializedAndQualifiedFieldName extends Dialog {
 
     @Override
 	protected Control createDialogArea(final Composite parent) {
-		b.<^Space>
+        //@start
+		b.<^Space|setText.*%>
 		return null;
+		//@end
+//		b.setText()
+//      return null;
 	}
 
     protected CompletionOnUninitializedAndQualifiedFieldName() {
