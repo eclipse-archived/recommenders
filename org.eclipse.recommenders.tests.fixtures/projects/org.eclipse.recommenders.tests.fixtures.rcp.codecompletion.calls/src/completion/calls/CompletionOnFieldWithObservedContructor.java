@@ -16,19 +16,19 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class CompletionOnLocalWithObservedContructor extends Dialog {
+public class CompletionOnFieldWithObservedContructor extends Dialog {
 
     private Button b;
 
     @Override
-	protected Control createDialogArea(final Composite parent) {
-		final Button b = new Button(null, 0);
-		// b.<^Space> -> pattern w/o contructor
-		b.<^Space>
-		return null;
-	}
+    protected Control createDialogArea(final Composite parent) {
+        b = new Button(null, 0);
+        // b.<^Space> -> pattern w/o contructor
+        b.<^Space>
+        return null;
+    }
 
-    private CompletionOnLocalWithObservedContructor() {
+    private CompletionOnFieldWithObservedContructor() {
         super((IShellProvider) null);
     }
 }

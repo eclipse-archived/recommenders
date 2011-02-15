@@ -51,18 +51,18 @@
 										navigationimages="true" title="Recommenders Documentation"
 										helpPrefix="help" generateUnifiedToc="true">
 										<path name="Recommenders/UserGuide" title="Recommenders User Guide" />
-										<!-- path name="Recommenders/NewAndNoteworthy/" title="Recommenders 
-											New and Noteworthy" / -->
-										<stylesheet url="book.css" />
-										<pageAppendum>
+										<path name="Recommenders/New_and_Noteworthy/0.1" title="Recommenders 
+											New and Noteworthy" />
+											<stylesheet url="book.css" />
+											<pageAppendum>
 
-											= Updating This Document =
+												= Updating This Document =
 
-											This document is
-											maintained in a collaborative wiki. If you wish
-											to
-											update or
-											modify this document please visit {url} 
+												This document is
+												maintained in a collaborative wiki. If you wish
+												to
+												update or
+												modify this document please visit {url} 
 				</pageAppendum>
 									</mediawiki-to-eclipse-help>
 									<mkdir dir="help/images" />
