@@ -15,6 +15,11 @@ import org.eclipse.jface.window.IShellProvider;
 
 public class CompletionOnClassBody extends Dialog {
 
+    
+    <^Space>
+    
+    
+    
     public CompletionOnClassBody() {
         super((IShellProvider) null);
     }
