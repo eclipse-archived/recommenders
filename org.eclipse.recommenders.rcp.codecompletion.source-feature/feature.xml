@@ -17,8 +17,76 @@
       %license
    </license>
 
+<requires>
+      <import plugin="org.apache.commons.lang" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.google.guava" version="1.7.0" match="greaterOrEqual"/>
+      <import plugin="com.ibm.wala.core" version="1.3.0" match="greaterOrEqual"/>
+      <import plugin="com.ibm.wala.shrike" version="1.3.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.log4j" version="1.2.16" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.io" version="1.4.0" match="greaterOrEqual"/>
+      <import plugin="com.google.guice" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.google.gson" version="1.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.ui" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.core" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.ui" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.editors" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.6.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface.text" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="smile"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.primitives" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.math" version="2.1.0" match="greaterOrEqual"/>
+      <import plugin="jsr305" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.pde.core" version="3.6.0" match="greaterOrEqual"/>
+   </requires>
+   
    <plugin
          id="org.eclipse.recommenders.commons.analysis.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.commons.utils.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.commons.utils.gson.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.utils.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.codecompletion.calls.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.codecompletion.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -32,23 +100,23 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.rcp.codecompletion.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.rcp.codecompletion.calls.source"
+         id="org.eclipse.recommenders.rcp.codecompletion.overrides.source"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.recommenders.rcp.codecompletion.overrides.source"
+         id="org.eclipse.recommenders.commons.injection.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
+   <plugin
+         id="org.eclipse.recommenders.doc.user.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
