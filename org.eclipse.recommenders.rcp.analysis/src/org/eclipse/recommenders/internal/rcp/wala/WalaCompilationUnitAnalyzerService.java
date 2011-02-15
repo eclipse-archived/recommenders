@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.injection.InjectionService;
+import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitConsumer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.CallGraphMethodAnalyzerPluginModule;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.ConstructorSuperDeclarationMethodAnalyzerPluginModule;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.DeclaredFieldsClassAnalyzerPluginModule;
@@ -33,7 +34,6 @@ import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.Rece
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.SuperDeclarationMethodAnalyzerPluginModule;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.ThisObjectInstanceKeyCompilationUnitFinalizerPluginModule;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.WalaDefaultInstanceKeysCompilationUnitFinalizerPluginModule;
-import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.ZipCompilationUnitConsumerPluginModule;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.commons.analysis.entrypoints.AllMethodsAndContructorsEntrypointSelector;
 import org.eclipse.recommenders.internal.commons.analysis.entrypoints.IEntrypointSelector;
@@ -44,6 +44,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
+import com.google.inject.multibindings.Multibinder;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.ipa.callgraph.AnalysisOptions;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
@@ -88,12 +89,13 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
                 new LocalNamesCollectingGraphAnalyzerPluginModule(),
                 new JavaLangInstanceKeysCompilationUnitFinalizerPluginModule(),
                 new WalaDefaultInstanceKeysCompilationUnitFinalizerPluginModule(),
-                new ZipCompilationUnitConsumerPluginModule(), new ModifiersMethodAnalyzerPluginModule(),
-                new ModifiersClassAnalyzerPluginModule(),
+                new ModifiersMethodAnalyzerPluginModule(), new ModifiersClassAnalyzerPluginModule(),
                 new ThisObjectInstanceKeyCompilationUnitFinalizerPluginModule(),
                 new FingerprintCompilationUnitFinalizerPluginModule(), new AbstractModule() {
                     @Override
                     protected void configure() {
+                        final Multibinder<ICompilationUnitConsumer> binder = Multibinder.newSetBinder(binder(),
+                                ICompilationUnitConsumer.class);
                     }
 
                     @Provides
