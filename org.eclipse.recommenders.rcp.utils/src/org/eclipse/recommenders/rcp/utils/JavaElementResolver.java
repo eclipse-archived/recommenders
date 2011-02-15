@@ -67,7 +67,7 @@ public class JavaElementResolver {
 
     public ITypeName toRecType(IType jdtType) {
         ensureIsNotNull(jdtType);
-        jdtType = (IType) jdtType.getPrimaryElement();
+        jdtType = JdtUtils.resolveJavaElementProxy(jdtType);
         ITypeName recType = (ITypeName) cache.inverse().get(jdtType);
         if (recType == null) {
             String fullyQualifiedName = jdtType.getFullyQualifiedName();
@@ -163,7 +163,7 @@ public class JavaElementResolver {
      */
     public IMethodName toRecMethod(IMethod jdtMethod) {
         ensureIsNotNull(jdtMethod);
-        jdtMethod = (IMethod) jdtMethod.getPrimaryElement();
+        jdtMethod = JdtUtils.resolveJavaElementProxy(jdtMethod);
         IMethodName recMethod = (IMethodName) cache.inverse().get(jdtMethod);
         if (recMethod == null) {
             try {

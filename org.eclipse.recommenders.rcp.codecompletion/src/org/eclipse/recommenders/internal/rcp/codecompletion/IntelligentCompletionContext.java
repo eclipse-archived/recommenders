@@ -52,6 +52,7 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+import org.eclipse.recommenders.rcp.utils.JdtUtils;
 
 @SuppressWarnings({ "restriction", "deprecation" })
 public class IntelligentCompletionContext implements IIntelligentCompletionContext {
@@ -261,8 +262,9 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
             if (enclosingType == null) {
                 return null;
             }
-            // TODO :: Rework
-            enclosingType = (IType) enclosingType.getPrimaryElement();
+            // TODO :: Rework code to resolve supertype name... this is
+            // odd/wrong location for this, right?
+            enclosingType = JdtUtils.resolveJavaElementProxy(enclosingType);
             final ITypeHierarchy typeHierarchy = SuperTypeHierarchyCache.getTypeHierarchy(enclosingType);
             final IType superclass = typeHierarchy.getSuperclass(enclosingType);
             return superclass == null ? null : resolver.toRecType(superclass);
