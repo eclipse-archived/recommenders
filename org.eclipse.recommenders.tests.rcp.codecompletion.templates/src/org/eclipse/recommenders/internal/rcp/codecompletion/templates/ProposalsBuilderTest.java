@@ -20,7 +20,7 @@ import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Position;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Expression;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,15 +30,15 @@ public class ProposalsBuilderTest {
 
     @Test
     public final void testProposalsBuilder() throws JavaModelException {
-        final Expression expression = AllTests.getDefaultExpression();
+        final MethodCall methodCall = AllTests.getDefaultMethodCall();
 
         final List<PatternRecommendation> patterns = Lists.newArrayList(PatternRecommendation.create("Pattern 1",
-                Sets.newHashSet(expression.getInvokedMethod()), 50));
+                Sets.newHashSet(methodCall.getInvokedMethod()), 50));
 
         final CompletionProposalsBuilder builder = new CompletionProposalsBuilder(null,
                 ExpressionPrinterTest.getExpressionPrinterMock());
         final JavaContext javaContext = new JavaContext(null, new Document(), new Position(0), null);
-        final CompletionTargetVariable completionTargetVariable = expression.getCompletionTargetVariable();
+        final CompletionTargetVariable completionTargetVariable = methodCall.getCompletionTargetVariable();
 
         Assert.assertEquals(1, builder.computeProposals(patterns, javaContext, completionTargetVariable).size());
     }

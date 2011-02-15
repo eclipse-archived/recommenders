@@ -24,6 +24,13 @@ class MethodFormatter {
     private final JavaElementResolver resolver = new JavaElementResolver();
     private int argumentCounter = -1;
 
+    /**
+     * @param methodName
+     *            The method which shall be turned into java code.
+     * @return A string containing the java code for the given method.
+     * @throws JavaModelException
+     *             When the method could not be resolved by JDT.
+     */
     String format(final IMethodName methodName) throws JavaModelException {
         String method = "";
         if (methodName.isInit()) {
@@ -34,6 +41,14 @@ class MethodFormatter {
         return String.format("%s(%s)", method, getParametersString(methodName));
     }
 
+    /**
+     * @param methodName
+     *            The method for which to get the parameter names.
+     * @return The method's parameters as template code, e.g.
+     *         <code>${string}, ${selected:link(false, true)}</code>.
+     * @throws JavaModelException
+     *             When the method could not be resolved by JDT.
+     */
     String getParametersString(final IMethodName methodName) throws JavaModelException {
         final StringBuilder parameters = new StringBuilder(32);
         final IMethod jdtMethod = resolver.toJdtMethod(methodName);
@@ -46,6 +61,15 @@ class MethodFormatter {
         return StringUtils.chomp(parameters.toString(), ", ");
     }
 
+    /**
+     * @param parameterName
+     *            The parameter's name as resolved by JDT.
+     * @param parameterType
+     *            The parameter's type as resolved by JDT.
+     * @return The template code for a single parameter, e.g.
+     *         <code>${listener:var(org.eclipse.swt.events.SelectionListener)}</code>
+     *         .
+     */
     private String getParameterString(final String parameterName, final String parameterType) {
         final StringBuilder parameter = new StringBuilder(32);
         parameter.append(getParameterName(parameterName));
@@ -59,6 +83,12 @@ class MethodFormatter {
         return String.format("${%s}", parameter);
     }
 
+    /**
+     * @param parameterName
+     *            The parameter's name as resolved by JDT.
+     * @return The parameter name after it is modified in case it was in "
+     *         <code>arg0</code>" format.
+     */
     private String getParameterName(final String parameterName) {
         String name = parameterName;
         if (parameterName.startsWith("arg")) {
@@ -68,6 +98,13 @@ class MethodFormatter {
         return name;
     }
 
+    /**
+     * Eclipse templates disallow the use of same names for different
+     * parameters. If parameter names are unknown they usually are named
+     * <code>arg0</code>, <code>arg1</code>, etc. This enumeration starts at 0
+     * with each new expression so we have to ensure a continuous enumeration.
+     * This method resets the counter (e.g. after the pattern is completed).
+     */
     void resetArgumentCounter() {
         argumentCounter = -1;
     }

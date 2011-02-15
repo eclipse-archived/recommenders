@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Expression;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -22,14 +22,14 @@ public class ExpressionPrinterTest {
 
     @Test
     public final void testPatternNamer() throws JavaModelException {
-        final ExpressionFormatter printer = getExpressionPrinterMock();
-        final Expression expression = AllTests.getDefaultExpression();
-        Assert.assertEquals("someVariable = new null;", printer.format(expression));
+        final MethodCallFormatter printer = getExpressionPrinterMock();
+        final MethodCall methodCall = AllTests.getDefaultMethodCall();
+        Assert.assertEquals("someVariable = new null;", printer.format(methodCall));
     }
 
-    public static final ExpressionFormatter getExpressionPrinterMock() throws JavaModelException {
+    public static final MethodCallFormatter getExpressionPrinterMock() throws JavaModelException {
         final MethodFormatter methodFormatter = Mockito.mock(MethodFormatter.class);
         Mockito.doReturn("...").when(methodFormatter).getParametersString(Matchers.any(IMethodName.class));
-        return new ExpressionFormatter(methodFormatter);
+        return new MethodCallFormatter(methodFormatter);
     }
 }

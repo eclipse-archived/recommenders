@@ -23,34 +23,44 @@ import org.eclipse.jface.text.templates.Template;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Expression;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.JavaTemplateProposal;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.swt.graphics.Image;
 
 /**
  * Transforms {@link PatternRecommendation}s into
- * {@link IJavaCompletionProposal}s which can be passed to Eclipse.
+ * {@link IJavaCompletionProposal}s which are applied on the editor content when
+ * the propoals is selected from the completion proposals menu.
  */
 @SuppressWarnings("restriction")
 final class CompletionProposalsBuilder {
 
     private final Image templateIcon;
-    private final ExpressionFormatter expressionFormatter;
+    private final MethodCallFormatter methodCallFormatter;
 
     /**
      * @param templateIcon
-     *            The icon to be shown along with the proposal.
-     * @param expressionFormatter
-     *            The formatter which will turn the {@link Expression}s inside
-     *            the {@link PatternRecommendation} into the code which will be
-     *            inserted when the completion is selected.
+     *            The icon to be shown along with the completion proposals.
+     * @param methodCallFormatter
+     *            The formatter which will turn the {@link MethodCall}s from the
+     *            given {@link PatternRecommendation} into java code which will
+     *            be inserted when the completion is selected.
      */
-    CompletionProposalsBuilder(final Image templateIcon, final ExpressionFormatter expressionFormatter) {
+    CompletionProposalsBuilder(final Image templateIcon, final MethodCallFormatter methodCallFormatter) {
         this.templateIcon = templateIcon;
-        this.expressionFormatter = expressionFormatter;
+        this.methodCallFormatter = methodCallFormatter;
     }
 
+    /**
+     * @param patterns
+     *            The patterns which shall be turned into completion proposals.
+     * @param context
+     *            The context from where the completion request was invoked.
+     * @param completionTargetVariable
+     *            The variable on which the completion request was invoked.
+     * @return A list of completion proposals for the given patterns.
+     */
     public List<IJavaCompletionProposal> computeProposals(final Collection<PatternRecommendation> patterns,
             final DocumentTemplateContext context, final CompletionTargetVariable completionTargetVariable) {
         final List<IJavaCompletionProposal> proposals = new ArrayList<IJavaCompletionProposal>();
@@ -60,6 +70,15 @@ final class CompletionProposalsBuilder {
         return proposals;
     }
 
+    /**
+     * @param patternRecommendation
+     *            The pattern which shall be turned into a completion proposal.
+     * @param context
+     *            The context from where the completion request was invoked.
+     * @param completionTargetVariable
+     *            The variable on which the completion request was invoked.
+     * @return The given pattern turned into a proposal object.
+     */
     private TemplateProposal buildTemplateProposal(final PatternRecommendation patternRecommendation,
             final DocumentTemplateContext context, final CompletionTargetVariable completionTargetVariable) {
         final String code = buildCode(patternRecommendation, completionTargetVariable);
@@ -68,22 +87,31 @@ final class CompletionProposalsBuilder {
         final Template template = new Template(templateName, templateDescription, "java", code, false);
 
         final Region region = new Region(context.getCompletionOffset(), context.getCompletionLength());
-        return new JavaTemplateProposal(template, context, region, templateIcon, patternRecommendation.getProbability());
+        final int probability = patternRecommendation.getProbability();
+        return new JavaTemplateProposal(template, context, region, templateIcon, probability);
     }
 
-    private String buildCode(final PatternRecommendation usagePattern,
+    /**
+     * @param patternRecommendation
+     *            The pattern from which to take recommended method calls.
+     * @param completionTargetVariable
+     *            The variable on which the proposed methods shall be invoked.
+     * @return The code to be inserted into the document, built from the
+     *         recommended method calls and the given target variable.
+     */
+    private String buildCode(final PatternRecommendation patternRecommendation,
             final CompletionTargetVariable completionTargetVariable) {
         final StringBuilder code = new StringBuilder(32);
         final String lineSeparator = System.getProperty("line.separator");
-        for (final IMethodName method : usagePattern.getMethods()) {
+        for (final IMethodName method : patternRecommendation.getMethods()) {
             try {
-                final Expression expression = new Expression(completionTargetVariable, method);
-                code.append(String.format("%s%s", expressionFormatter.format(expression), lineSeparator));
+                code.append(methodCallFormatter.format(new MethodCall(completionTargetVariable, method)));
+                code.append(lineSeparator);
             } catch (final JavaModelException e) {
                 Throws.throwUnhandledException(e);
             }
         }
-        expressionFormatter.resetArgumentCounter();
+        methodCallFormatter.resetArgumentCounter();
         return String.format("%s${cursor}", code);
     }
 }

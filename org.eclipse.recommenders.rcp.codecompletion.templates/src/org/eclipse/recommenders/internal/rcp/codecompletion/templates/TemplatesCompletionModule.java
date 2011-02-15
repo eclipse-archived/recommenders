@@ -25,7 +25,7 @@ public final class TemplatesCompletionModule extends AbstractModule {
     protected void configure() {
         bindCallsRecommender();
         bindExpressionFormatter();
-        bindIntelligentCodecompletionEngine();
+        bindTemplatesCodecompletionEngine();
     }
 
     /**
@@ -39,10 +39,13 @@ public final class TemplatesCompletionModule extends AbstractModule {
      * Binds the formatter which will return a string for a pattern's code.
      */
     private void bindExpressionFormatter() {
-        bind(ExpressionFormatter.class).in(Scopes.SINGLETON);
+        bind(MethodCallFormatter.class).in(Scopes.SINGLETON);
     }
 
-    private void bindIntelligentCodecompletionEngine() {
+    /**
+     * Registers the {@link TemplatesCompletionEngine} as a recommender.
+     */
+    private void bindTemplatesCodecompletionEngine() {
         final Multibinder<IIntelligentCompletionEngine> binder = Multibinder.newSetBinder(binder(),
                 IIntelligentCompletionEngine.class);
         binder.addBinding().to(TemplatesCompletionEngine.class).in(Scopes.SINGLETON);

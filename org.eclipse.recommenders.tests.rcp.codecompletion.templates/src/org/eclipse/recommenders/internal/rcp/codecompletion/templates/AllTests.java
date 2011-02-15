@@ -14,7 +14,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Expression;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -30,7 +30,7 @@ final class AllTests {
     private static final CompletionTargetVariable TARGETVARIABLE = new CompletionTargetVariable("someVariable",
             VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), null, false);
 
-    private static final Expression EXPRESSION = new Expression(TARGETVARIABLE, METHODNAME);
+    private static final MethodCall METHODCALL = new MethodCall(TARGETVARIABLE, METHODNAME);
 
     /**
      * Private constructor to prevent instantiation of utility class.
@@ -41,8 +41,8 @@ final class AllTests {
     /**
      * @return the expression which is used in most test cases.
      */
-    protected static Expression getDefaultExpression() {
-        return AllTests.EXPRESSION;
+    protected static MethodCall getDefaultMethodCall() {
+        return AllTests.METHODCALL;
     }
 
 }

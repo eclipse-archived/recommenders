@@ -16,13 +16,12 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 /**
  * Models a call of a certain method on a given variable.
  */
-// TODO: Review name too generic
-public final class Expression {
+public final class MethodCall {
 
     private final CompletionTargetVariable completionTargetVariable;
     private final IMethodName invokedMethod;
 
-    public Expression(final CompletionTargetVariable completionTargetVariable, final IMethodName invokedMethod) {
+    public MethodCall(final CompletionTargetVariable completionTargetVariable, final IMethodName invokedMethod) {
         this.completionTargetVariable = Checks.ensureIsNotNull(completionTargetVariable);
         this.invokedMethod = Checks.ensureIsNotNull(invokedMethod);
     }

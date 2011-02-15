@@ -36,11 +36,6 @@ public final class CompletionTargetVariable {
         return name;
     }
 
-    /**
-     * Gets the <code>InvokedVariable</code>'s type.
-     * 
-     * @return the <code>InvokedVariable</code>'s type
-     */
     public ITypeName getType() {
         return typeName;
     }
@@ -49,11 +44,6 @@ public final class CompletionTargetVariable {
         return needsConstructor;
     }
 
-    /**
-     * Gets the <code>InvokedVariable</code>'s document region.
-     * 
-     * @return the <code>InvokedVariable</code>'s document region
-     */
     public Region getDocumentRegion() {
         return documentRegion;
     }

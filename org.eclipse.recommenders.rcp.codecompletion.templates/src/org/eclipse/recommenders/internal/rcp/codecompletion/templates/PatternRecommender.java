@@ -92,6 +92,9 @@ final class PatternRecommender {
         return result;
     }
 
+    /**
+     * @return True, if a model for the current receiver type could be found.
+     */
     private boolean canFindModel() {
         boolean result = false;
         if (callsModelStore.hasModel(receiverType)) {
@@ -150,6 +153,10 @@ final class PatternRecommender {
         return !patternMethods.isEmpty() && (!needsConstructor || patternMethods.iterator().next().isInit());
     }
 
+    /**
+     * A {@link Predicate} which filters out patterns not surpassing a minimum
+     * probability threshold.
+     */
     static final class PatternProbabilityFilter implements Predicate<Tuple<String, Double>> {
         @Override
         public boolean apply(final Tuple<String, Double> pattern) {
@@ -157,6 +164,10 @@ final class PatternRecommender {
         }
     }
 
+    /**
+     * A {@link Comparator} sorting patterns in their probabilities descending
+     * order or by their name in case of same probabilities.
+     */
     static final class PatternSorter implements Comparator<Tuple<String, Double>> {
         @Override
         public int compare(final Tuple<String, Double> pattern1, final Tuple<String, Double> pattern2) {

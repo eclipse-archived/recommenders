@@ -13,6 +13,9 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+/**
+ * Stores the <code>Plugin</code>'s instance while it is started.
+ */
 public final class TemplatesPlugin extends AbstractUIPlugin {
 
     private static TemplatesPlugin plugin;

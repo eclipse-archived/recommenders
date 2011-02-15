@@ -47,25 +47,33 @@ final class TemplatesCompletionEngine implements IIntelligentCompletionEngine {
     private AbstractJavaContextType templateContextType;
     private final PatternRecommender patternRecommender;
 
+    /**
+     * @param patternRecommender
+     *            Computes and returns patterns suitable for the active
+     *            completion request.
+     * @param methodCallFormatter
+     *            The formatter will turn MethodCalls into the code to be used
+     *            by the eclipse template engine.
+     */
     @Inject
-    TemplatesCompletionEngine(final PatternRecommender patternRecommender, final ExpressionFormatter expressionFormatter) {
+    TemplatesCompletionEngine(final PatternRecommender patternRecommender, final MethodCallFormatter methodCallFormatter) {
         this.patternRecommender = patternRecommender;
-        initializeProposalBuilder(expressionFormatter);
+        initializeProposalBuilder(methodCallFormatter);
         initializeTemplateContextType();
     }
 
     /**
      * Initializes the proposal builder.
      * 
-     * @param expressionFormatter
+     * @param methodCallFormatter
      *            The <code>ExpressionPrinter</code> to be used by the
      *            <code>ProposalsBuilder</code>.
      */
-    private void initializeProposalBuilder(final ExpressionFormatter expressionFormatter) {
+    private void initializeProposalBuilder(final MethodCallFormatter methodCallFormatter) {
         final Bundle bundle = FrameworkUtil.getBundle(TemplatesCompletionEngine.class);
         final Image icon = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(), "metadata/icon2.gif")
                 .createImage();
-        completionProposalsBuilder = new CompletionProposalsBuilder(icon, expressionFormatter);
+        completionProposalsBuilder = new CompletionProposalsBuilder(icon, methodCallFormatter);
     }
 
     /**
@@ -92,29 +100,47 @@ final class TemplatesCompletionEngine implements IIntelligentCompletionEngine {
         return Collections.emptyList();
     }
 
+    /**
+     * @param patternRecommendations
+     *            The recommendations computed by the {@link PatternRecommender}
+     *            .
+     * @param completionTargetVariable
+     *            The variable on which the completion request was executed.
+     * @param context
+     *            The context from where the completion request was invoked.
+     * @return The completion proposals to be displayed in the editor.
+     */
     private List<IJavaCompletionProposal> buildProposalsForPatterns(
             final Collection<PatternRecommendation> patternRecommendations,
             final CompletionTargetVariable completionTargetVariable, final IIntelligentCompletionContext context) {
         List<IJavaCompletionProposal> completionProposals = Collections.emptyList();
         if (!patternRecommendations.isEmpty()) {
-            try {
-                final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable, context);
-                completionProposals = completionProposalsBuilder.computeProposals(patternRecommendations,
-                        templateContext, completionTargetVariable);
-            } catch (final JavaModelException e) {
-                Throws.throwUnhandledException(e);
-            }
+            final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable, context);
+            completionProposals = completionProposalsBuilder.computeProposals(patternRecommendations, templateContext,
+                    completionTargetVariable);
         }
         return completionProposals;
     }
 
+    /**
+     * @param completionTargetVariable
+     *            The variable on which the completion request was executed.
+     * @param completionContext
+     *            The context from where the completion request was invoked.
+     * @return A {@link DocumentTemplateContext} suiting the completion context.
+     */
     private DocumentTemplateContext getTemplateContext(final CompletionTargetVariable completionTargetVariable,
-            final IIntelligentCompletionContext completionContext) throws JavaModelException {
+            final IIntelligentCompletionContext completionContext) {
         final ICompilationUnit compilationUnit = completionContext.getCompilationUnit();
         final Region region = completionTargetVariable.getDocumentRegion();
-        final JavaContext templateContext = new ModifiedJavaContext(templateContextType, new Document(
-                compilationUnit.getSource()), region.getOffset(), region.getLength(), compilationUnit);
-        templateContext.setForceEvaluation(true);
+        JavaContext templateContext = null;
+        try {
+            templateContext = new ModifiedJavaContext(templateContextType, new Document(compilationUnit.getSource()),
+                    region.getOffset(), region.getLength(), compilationUnit);
+            templateContext.setForceEvaluation(true);
+        } catch (final JavaModelException e) {
+            Throws.throwUnhandledException(e);
+        }
         return templateContext;
     }
 }
