@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.WorkingCopyOwner;
 import org.eclipse.jdt.internal.codeassist.CompletionEngine;
@@ -254,6 +255,22 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         return null;
     }
 
+    private ITypeName getSuperclassOfEnclosingType() {
+        try {
+            IType enclosingType = findEnclosingType();
+            if (enclosingType == null) {
+                return null;
+            }
+            // TODO :: Rework
+            enclosingType = (IType) enclosingType.getPrimaryElement();
+            final ITypeHierarchy typeHierarchy = SuperTypeHierarchyCache.getTypeHierarchy(enclosingType);
+            final IType superclass = typeHierarchy.getSuperclass(enclosingType);
+            return superclass == null ? null : resolver.toRecType(superclass);
+        } catch (final JavaModelException e) {
+            throw throwUnhandledException(e);
+        }
+    }
+
     @Override
     public ITypeName getEnclosingType() {
         final IType enclosingType = findEnclosingType();
@@ -307,7 +324,7 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
     @Override
     public Variable getVariable() {
         if (isReceiverImplicitThis()) {
-            return Variable.create("this", getEnclosingType(), getEnclosingMethod());
+            return Variable.create("this", getSuperclassOfEnclosingType(), getEnclosingMethod());
         }
         if (getReceiverName() != null && getReceiverType() != null) {
             return Variable.create(getReceiverName(), getReceiverType(), getEnclosingMethod());
