@@ -47,7 +47,7 @@
 										wikiBaseUrl="http://wiki.eclipse.org" validate="true"
 										failonvalidationerror="true" prependImagePrefix="images"
 										formatoutput="true" defaultAbsoluteLinkTarget="recommenders_external"
-										dest="${project.build.directory}/generated-resources/help"
+										dest="${project.build.directory}/generated-resources/wiki-user-guide/help"
 										navigationimages="true" title="Recommenders Documentation"
 										helpPrefix="help" generateUnifiedToc="true">
 										<path name="Recommenders/UserGuide" title="Recommenders User Guide" />
@@ -91,7 +91,7 @@
 						<configuration>
 							<resources>
 								<resource>
-									<directory>target/generated-resources/help</directory>
+									<directory>target/generated-resources/wiki-user-guide/</directory>
 								</resource>
 							</resources>
 						</configuration>
