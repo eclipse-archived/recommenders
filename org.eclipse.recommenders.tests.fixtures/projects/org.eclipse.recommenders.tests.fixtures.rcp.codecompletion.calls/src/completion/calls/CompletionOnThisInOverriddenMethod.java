@@ -16,7 +16,10 @@ public class CompletionOnThisInOverriddenMethod extends Wizard {
 
     @Override
     public void addPages() {
-         <^Space>
+        //@start 
+        <^Space|addPage.*%>
+        //@end
+        //addPage()
     }
 
     @Override

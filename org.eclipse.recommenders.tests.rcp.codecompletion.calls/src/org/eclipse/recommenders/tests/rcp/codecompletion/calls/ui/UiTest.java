@@ -35,7 +35,19 @@ public class UiTest {
     public static void beforeClass() {
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
         bot = new SWTWorkbenchBot();
-        // bot.viewByTitle("Welcome").close();
+        try {
+            bot.viewByTitle("Welcome").close();
+        } catch (final Exception e) {
+        }
+
+        bot.menu("Window").menu("Open Perspective").menu("Other...").click();
+        bot.shell("Open Perspective").activate();
+        if (bot.table().containsItem("Java")) {
+            bot.table().select("Java");
+        } else {
+            bot.table().select("Java (default)");
+        }
+        bot.button("OK").click();
     }
 
     @AfterClass
@@ -52,7 +64,7 @@ public class UiTest {
         final String projectName = "org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.calls";
         UiTestHelper.copyProjectToWorkspace(projectName);
 
-        final SWTBotView projectExplorerView = bot.viewByTitle("Project Explorer");
+        final SWTBotView projectExplorerView = bot.viewByTitle("Package Explorer");
         final SWTBotTreeItem srcNode = projectExplorerView.bot().tree().expandNode(projectName).getNode("src");
         srcNode.expand();
         openAndTestFiles(srcNode.getItems());
