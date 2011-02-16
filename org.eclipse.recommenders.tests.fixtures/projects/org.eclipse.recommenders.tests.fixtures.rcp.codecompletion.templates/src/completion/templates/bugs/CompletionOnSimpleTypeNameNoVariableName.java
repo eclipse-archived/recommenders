@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package completion.templates;
+package completion.templates.bugs;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
@@ -16,17 +16,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class CompletionOnUninitializedAndQualifiedFieldName extends Dialog {
+public class CompletionOnSimpleTypeNameNoVariableName extends Dialog {
 
     private Button b;
 
     @Override
 	protected Control createDialogArea(final Composite parent) {
-		b.<^Space>
+		// expects the pattern to assign a suitable variable name
+		Button <^Space>
 		return null;
 	}
 
-    protected CompletionOnUninitializedAndQualifiedFieldName() {
+    private CompletionOnSimpleTypeNameNoVariableName() {
         super((IShellProvider) null);
     }
 }

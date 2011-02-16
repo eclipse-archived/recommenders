@@ -11,21 +11,23 @@
 package completion.templates.bugs;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.PlatformUI;
 
-public class CompletionOnMethodReturnValue extends DialogPage {
+public class CompletionOnSimpleTypeNameWithVariableName extends Dialog {
+
+    private Button b;
 
     @Override
-    public void createControl(final Composite parent) {
-        PlatformUI.getWorkbench().<^Space>
-    }
-    
-    public void test(){
-    	new Button(null, 0).<^Space>
+	protected Control createDialogArea(final Composite parent) {
+		// expects the pattern to use b as variable name
+		Button b<^Space>
+		return null;
+	}
+
+    private CompletionOnSimpleTypeNameWithVariableName() {
+        super((IShellProvider) null);
     }
 }

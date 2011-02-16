@@ -24,7 +24,7 @@ public class CompletionOnLocaWithCompletionPrefix extends Dialog {
 	protected Control createDialogArea(final Composite parent) {
 		final Button b = new Button(null, 0);
 		// b.sett<^Space> -> pattern w/o constructor but w/ setText
-		//
+		// Discussion: is w/ setText a must?
 		b.sett<^Space>
 		return null;
 	}

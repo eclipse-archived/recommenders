@@ -61,7 +61,7 @@ class MethodFormatter {
      * @throws JavaModelException
      *             When the method could not be resolved by JDT.
      */
-    String getParametersString(final IMethodName methodName) throws JavaModelException {
+    private String getParametersString(final IMethodName methodName) throws JavaModelException {
         final StringBuilder parameters = new StringBuilder(32);
         final IMethod jdtMethod = elementResolver.toJdtMethod(methodName);
         final String[] parameterNames = jdtMethod.getParameterNames();

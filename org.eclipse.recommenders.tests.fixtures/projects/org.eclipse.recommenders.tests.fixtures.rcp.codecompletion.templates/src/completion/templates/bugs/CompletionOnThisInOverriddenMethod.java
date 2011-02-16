@@ -14,15 +14,15 @@ import org.eclipse.jface.wizard.Wizard;
 
 public class CompletionOnThisInOverriddenMethod extends Wizard {
 
-    @Override
+	@Override
     public void addPages() {
     	// Should there be patterns?
-         <^Space>
+        <^Space>
     }
 
-    @Override
-    public boolean performFinish() {
-        return false;
-    }
+	@Override
+	public boolean performFinish() {
+		return false;
+	}
 
 }

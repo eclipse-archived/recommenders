@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package completion.templates.bugs;
+package completion.templates;
 
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.swt.events.ModifyEvent;
@@ -28,6 +28,7 @@ public class CompletionOnLocalFromNestedAnonymousClass extends DialogPage {
 
             @Override
             public void modifyText(final ModifyEvent e) {
+            	// The new variable created from return type has to be declared properly.
                 text.<^Space>
             }
         });

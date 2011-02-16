@@ -52,8 +52,11 @@ final class MethodCallFormatter {
         if (invokedMethod.isInit()) {
             invocationPrefix = "new ";
         } else {
-            final String variableName = methodCall.getCompletionTargetVariable().getName();
-            invocationPrefix = String.format("%s.", variableName == null ? "${someVar}" : variableName);
+            String variableName = methodCall.getCompletionTargetVariable().getName();
+            if (variableName == null || variableName.isEmpty()) {
+                variableName = "${unconstructed}";
+            }
+            invocationPrefix = String.format("%s.", variableName);
         }
         return String.format("%s%s%s;", getNewVariableString(methodCall), invocationPrefix,
                 methodFormatter.format(invokedMethod));
@@ -86,33 +89,42 @@ final class MethodCallFormatter {
      *         type.
      */
     private static String getNewVariableName(final MethodCall methodCall) {
-        final IMethodName invokedMethod = methodCall.getInvokedMethod();
         String variableName = null;
-        if (invokedMethod.isInit()) {
+        if (methodCall.getInvokedMethod().isInit()) {
             variableName = methodCall.getCompletionTargetVariable().getName();
         }
-        if (variableName == null) {
-            variableName = getNewVariableNameFromMethod(invokedMethod);
+        if (variableName == null || variableName.isEmpty()) {
+            variableName = getNewVariableNameFromMethod(methodCall);
         }
         return variableName;
     }
 
     /**
-     * @param methodName
-     *            A method which returns a type other than void.
+     * @param methodCall
+     *            {@link MethodCall} holding information about the method call
+     *            to format and on which variable it is invoked.
      * @return A variable name from the given method's name (e.g. "
      *         <code>getText</code>" to "<code>text</code>") or its return type
      *         (e.g. "<code>someMethod : String</code>" to "<code>string</code>
      *         ").
      */
-    private static String getNewVariableNameFromMethod(final IMethodName methodName) {
+    private static String getNewVariableNameFromMethod(final MethodCall methodCall) {
         String variableName;
-        if (methodName.getName().startsWith("get")) {
-            variableName = methodName.getName().substring(3);
+        final IMethodName methodName = methodCall.getInvokedMethod();
+        if (methodName.isInit()) {
+            final String type = Names
+                    .vm2srcTypeName(methodCall.getCompletionTargetVariable().getType().getIdentifier());
+            variableName = String.format("${unconstructed:newName(%s)}", type);
+        } else if (methodName.getName().startsWith("get")) {
+            variableName = StringUtils.uncapitalize(methodName.getName().substring(3));
+            if (variableName.equals(methodCall.getCompletionTargetVariable().getName())) {
+                final String type = Names.vm2srcTypeName(methodName.getReturnType().getIdentifier());
+                variableName = String.format("${returned:newName(%s)}", type);
+            }
         } else {
-            variableName = methodName.getReturnType().getClassName();
+            variableName = StringUtils.uncapitalize(methodName.getReturnType().getClassName());
         }
-        return StringUtils.uncapitalize(variableName);
+        return variableName;
     }
 
     /**

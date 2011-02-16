@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -42,7 +43,7 @@ final class CompletionTargetVariableBuilder {
 
         final boolean needsConstructor = needsConstructor(receiverName);
         if (needsConstructor) {
-            receiverName = receiverName.substring(0, receiverName.length() - 1);
+            receiverName = StringUtils.chop(receiverName);
         }
 
         if (receiverName.isEmpty() && receiverType == null) {
@@ -71,17 +72,12 @@ final class CompletionTargetVariableBuilder {
             final ITypeName receiverType, final IIntelligentCompletionContext context, final boolean needsConstructor) {
         CompletionTargetVariable completionTargetVariable = null;
         if (receiverType != null) {
-            int documentOffset;
             int variableNameLength = 0;
             if (!needsConstructor && receiverName.length() > 0) {
                 // For variables other than implicit "this", add space for ".".
                 variableNameLength = receiverName.length() + 1;
             }
-            if (needsConstructor) {
-                documentOffset = context.getReplacementRegion().getOffset();
-            } else {
-                documentOffset = context.getInvocationOffset() - variableNameLength;
-            }
+            final int documentOffset = context.getReplacementRegion().getOffset() - variableNameLength;
             final int replacementLength = context.getReplacementRegion().getLength() + variableNameLength;
             completionTargetVariable = new CompletionTargetVariable(receiverName, receiverType, new Region(
                     documentOffset, replacementLength), needsConstructor);
