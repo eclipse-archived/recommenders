@@ -115,7 +115,11 @@ public class CallsCompletionEngine implements IIntelligentCompletionEngine {
         firstMethodDeclaration = ctx.getEnclosingMethodsFirstDeclaration();
         for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
             if (resolver.canResolve(ctx)) {
-                receiverType = ctx.getReceiverType();
+
+                // XXX this is a bit dirty: we need to handle this
+                // appropriately... here ctx.getVariable() makes a hack for the
+                // recevier type which noone can understand in 3 months.
+                receiverType = receiver.isThis() ? receiver.type : ctx.getReceiverType();
                 receiverMethodInvocations = resolver.getReceiverMethodInvocations();
                 return true;
             }

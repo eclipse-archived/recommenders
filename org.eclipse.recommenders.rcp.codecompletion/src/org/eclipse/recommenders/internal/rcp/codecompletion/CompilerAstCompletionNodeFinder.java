@@ -232,10 +232,6 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
      */
     public MethodBinding receiverDefinedByMethodReturn;
 
-    // public MethodBinding enclosingMethod;
-
-    // public TypeBinding enclosingType;
-
     public MethodScope scope;
 
     public final Set<AbstractVariableDeclaration> variableDeclarations = Sets.newHashSet();
@@ -243,11 +239,8 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     public void clearState() {
         receiverDefinedByMethodReturn = null;
         completionNode = null;
-        // completionNodeParent = null;
         declaringTypeOfEnclosingMethodCall = null;
-        // enclosingMethod = null;
         enclosingMethodCallSelector = null;
-        // enclosingType = null;
         expectedReturnType = null;
         expectsStaticMember = false;
         receiverName = null;
@@ -259,69 +252,31 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     public boolean visit(final SingleNameReference singleNameReference, final BlockScope scope) {
         if (singleNameReference instanceof CompletionOnSingleNameReference) {
             final CompletionOnSingleNameReference node = storeCompletionNode(singleNameReference);
-            // evaluateBlockScope(scope);
             evaluateCompletionOnSingleNameReference(node);
             return false;
         }
         return true;
     }
 
+    @SuppressWarnings("unchecked")
+    private <T extends Statement> T storeCompletionNode(final Statement statement) {
+        completionNode = statement;
+        return (T) statement;
+    }
+
+    private void evaluateCompletionOnSingleNameReference(final CompletionOnSingleNameReference completion) {
+        // XXX this is actually not resolving any binding:
+        receiverType = completion.resolvedType;
+        receiverName = String.valueOf(completion.token);
+    }
+
     @Override
     public boolean visit(final QualifiedNameReference qualifiedNameReference, final BlockScope scope) {
         if (qualifiedNameReference instanceof CompletionOnQualifiedNameReference) {
             final CompletionOnQualifiedNameReference node = storeCompletionNode(qualifiedNameReference);
-            // evaluateBlockScope(scope);
             evaluateCompletionOnQualifiedNameReference(node);
             return false;
         }
-        return true;
-    }
-
-    @Override
-    public boolean visit(final MessageSend messageSend, final BlockScope scope) {
-        if (messageSend instanceof CompletionOnMessageSend) {
-            final CompletionOnMessageSend node = storeCompletionNode(messageSend);
-            // evaluateBlockScope(scope);
-            evaluateCompletionOnMessageSend(node);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean visit(final FieldReference fieldReference, final BlockScope scope) {
-        if (fieldReference instanceof CompletionOnMemberAccess) {
-            final CompletionOnMemberAccess node = storeCompletionNode(fieldReference);
-            // evaluateBlockScope(scope);
-            evaluateCompletionOnMemberAccess(node);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean visit(final LocalDeclaration localDeclaration, final BlockScope scope) {
-        if (localDeclaration instanceof CompletionOnLocalName) {
-            final CompletionOnLocalName node = storeCompletionNode(localDeclaration);
-            // evaluateBlockScope(scope);
-            evaluateCompletionOnLocalName(node);
-        } else {
-            variableDeclarations.add(localDeclaration);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean visit(final FieldDeclaration fieldDeclaration, final MethodScope scope) {
-        if (fieldDeclaration instanceof CompletionOnFieldType) {
-            storeCompletionNode(fieldDeclaration);
-            // final ClassScope parent = scope.classScope();
-            // if (parent != null) {
-            // evaluateClassScope(parent);
-            // }
-            return false;
-        }
-        variableDeclarations.add(fieldDeclaration);
         return true;
     }
 
@@ -340,32 +295,58 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             receiverType = typeBinding;
             expectsStaticMember = true;
             return;
+        default:
+            /**
+             * triggering code completion on an err pos like:
+             * 
+             * <pre>
+             *      b.|&lt;^Space&gt;
+             *      final Button b = new Button(parent, 0);
+             * 
+             * </pre>
+             * 
+             * TODO is this appropriate? Do we want to handle these events? or
+             * just discard error situations?
+             */
+            // if (c.binding instanceof ProblemBinding) {
+            // final ProblemBinding problem = cast(c.binding);
+            // receiverName = String.valueOf(problem.name);
+            // receiverType = problem.searchType;
+            // }
+            clearState();
         }
-
-        /**
-         * triggering code completion on an err pos like:
-         * 
-         * <pre>
-         *      b.|&lt;^Space&gt;
-         *      final Button b = new Button(parent, 0);
-         * 
-         * </pre>
-         * 
-         * TODO is this appropriate? Do we want to handle these events? or jsut
-         * discard error situations?
-         */
-        // if (c.binding instanceof ProblemBinding) {
-        // final ProblemBinding problem = cast(c.binding);
-        // receiverName = String.valueOf(problem.name);
-        // receiverType = problem.searchType;
-        // }
-        clearState();
     }
 
-    private void evaluateCompletionOnSingleNameReference(final CompletionOnSingleNameReference completion) {
-        // XXX this is actually not resolving any binding:
-        receiverType = completion.resolvedType;
-        receiverName = String.valueOf(completion.token);
+    private void evaluateVariableBindingAsReceiver(final VariableBinding binding) {
+        ensureIsNotNull(binding);
+        receiverName = new String(binding.name);
+        receiverType = binding.type;
+    }
+
+    @Override
+    public boolean visit(final MessageSend messageSend, final BlockScope scope) {
+        if (messageSend instanceof CompletionOnMessageSend) {
+            final CompletionOnMessageSend node = storeCompletionNode(messageSend);
+            evaluateCompletionOnMessageSend(node);
+            return false;
+        }
+        return true;
+    }
+
+    private void evaluateCompletionOnMessageSend(final CompletionOnMessageSend c) {
+        declaringTypeOfEnclosingMethodCall = c.actualReceiverType;
+        enclosingMethodCallSelector = new String(c.selector);
+        expectsReturnType = true;
+    }
+
+    @Override
+    public boolean visit(final FieldReference fieldReference, final BlockScope scope) {
+        if (fieldReference instanceof CompletionOnMemberAccess) {
+            final CompletionOnMemberAccess node = storeCompletionNode(fieldReference);
+            evaluateCompletionOnMemberAccess(node);
+            return false;
+        }
+        return true;
     }
 
     private void evaluateCompletionOnMemberAccess(final CompletionOnMemberAccess c) {
@@ -389,50 +370,10 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
         }
     }
 
-    private void evaluateCompletionOnMessageSend(final CompletionOnMessageSend c) {
-        declaringTypeOfEnclosingMethodCall = c.actualReceiverType;
-        enclosingMethodCallSelector = new String(c.selector);
-        expectsReturnType = true;
+    private void evaluateThisReferenceAsReceiver(final ThisReference ref) {
+        receiverName = "this";
+        receiverType = ref.resolvedType;
     }
-
-    private void evaluateCompletionOnLocalName(final CompletionOnLocalName c) {
-        if (c.binding != null) {
-            expectedReturnType = c.binding.type;
-            // TODO this is actually not correct! Need to fix the pattern
-            // template stuff which expects receiver type
-            // being set!
-            receiverType = expectedReturnType;
-        }
-        receiverName = String.valueOf(c.name);
-        expectsReturnType = true;
-    }
-
-    // public void evaluateBlockScope(final BlockScope scope) {
-    // this.scope = (MethodScope) scope;
-    // final AbstractMethodDeclaration enclosingMethodDeclaration =
-    // cast(scope.referenceContext());
-    // if (enclosingMethodDeclaration != null) {
-    // enclosingMethod = enclosingMethodDeclaration.binding;
-    // }
-    // final TypeDeclaration enclosingTypeDeclaration = scope.referenceType();
-    // if (enclosingTypeDeclaration != null) {
-    // enclosingType = enclosingTypeDeclaration.binding;
-    // }
-    // }
-
-    // public void evaluateClassScope(final ClassScope scope) {
-    // ensureIsNotNull(scope);
-    // ensureIsNotNull(scope.referenceContext);
-    // enclosingType = scope.referenceContext.binding;
-    // }
-
-    // public void evaluateCompilationUnitScope(final CompilationUnitScope
-    // scope) {
-    // ensureIsNotNull(scope);
-    // if (scope.topLevelTypes != null && scope.topLevelTypes.length > 0) {
-    // enclosingType = scope.topLevelTypes[0];
-    // }
-    // }
 
     /**
      * <pre>
@@ -449,25 +390,41 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
         receiverName = "";
     }
 
-    private void evaluateThisReferenceAsReceiver(final ThisReference ref) {
-        receiverName = "this";
-        receiverType = ref.resolvedType;
+    @Override
+    public boolean visit(final LocalDeclaration localDeclaration, final BlockScope scope) {
+        if (localDeclaration instanceof CompletionOnLocalName) {
+            final CompletionOnLocalName node = storeCompletionNode(localDeclaration);
+            evaluateCompletionOnLocalName(node);
+        } else {
+            variableDeclarations.add(localDeclaration);
+        }
+        return true;
     }
 
-    private void evaluateVariableBindingAsReceiver(final VariableBinding binding) {
-        ensureIsNotNull(binding);
-        receiverName = new String(binding.name);
-        receiverType = binding.type;
+    private void evaluateCompletionOnLocalName(final CompletionOnLocalName c) {
+        if (c.binding != null) {
+            expectedReturnType = c.binding.type;
+            // TODO this is actually not correct! Need to fix the pattern
+            // template stuff which expects receiver type
+            // being set!
+            receiverType = expectedReturnType;
+        }
+        receiverName = String.valueOf(c.name);
+        expectsReturnType = true;
+    }
+
+    @Override
+    public boolean visit(final FieldDeclaration fieldDeclaration, final MethodScope scope) {
+        if (fieldDeclaration instanceof CompletionOnFieldType) {
+            storeCompletionNode(fieldDeclaration);
+            return false;
+        }
+        variableDeclarations.add(fieldDeclaration);
+        return true;
     }
 
     public boolean isCompletionNodeFound() {
         return completionNode != null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends Statement> T storeCompletionNode(final Statement statement) {
-        completionNode = statement;
-        return (T) statement;
     }
 
     @Override

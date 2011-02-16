@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Calls
+Bundle-SymbolicName: org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.calls
+Bundle-Version: 1.0.0.qualifier
+Export-Package: completion.calls
+Require-Bundle: org.eclipse.ui;bundle-version="3.6.1"

@@ -11,6 +11,8 @@
 package completion.calls;
 
 import org.eclipse.jface.dialogs.DialogPage;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
@@ -22,15 +24,10 @@ public class CompletionOnLocalFromNestedAnonymousClass extends DialogPage {
 
     @Override
     public void createControl(final Composite parent) {
-        text.addSelectionListener(new SelectionListener() {
+        text.addModifyListener(new ModifyListener() {
 
             @Override
-            public void widgetSelected(final SelectionEvent e) {
-                text.<^Space>
-            }
-
-            @Override
-            public void widgetDefaultSelected(final SelectionEvent e) {
+            public void modifyText(final ModifyEvent e) {
                 text.<^Space>
             }
         });

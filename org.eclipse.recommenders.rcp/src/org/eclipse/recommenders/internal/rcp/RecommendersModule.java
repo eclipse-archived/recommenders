@@ -64,6 +64,7 @@ public class RecommendersModule extends AbstractModule implements Module {
     }
 
     private void configureArtifactStore() {
+        bind(JsonArtifactStore.class).in(Scopes.SINGLETON);
         bind(IArtifactStore.class).to(JsonArtifactStore.class).in(Scopes.SINGLETON);
         compilationUnitAnalyzerBinder = Multibinder.newSetBinder(binder(), ICompilationUnitAnalyzer.class);
         artifactStoreChangedListenerBinder = Multibinder.newSetBinder(binder(), IArtifactStoreChangedListener.class);

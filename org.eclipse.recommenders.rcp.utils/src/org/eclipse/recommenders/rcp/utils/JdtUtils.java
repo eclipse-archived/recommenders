@@ -72,6 +72,10 @@ public class JdtUtils {
         return (StructuredSelection) (isStructured(selection) ? selection : StructuredSelection.EMPTY);
     }
 
+    public static <T extends IJavaElement> T resolveJavaElementProxy(final IJavaElement element) {
+        return (T) element.getPrimaryElement();
+    }
+
     private static IJavaElement[] codeResolve(final IJavaElement input, final ITextSelection selection)
             throws JavaModelException {
         if (input instanceof ICodeAssist) {
@@ -230,7 +234,8 @@ public class JdtUtils {
     }
 
     /**
-     * Finds and returns the Java element that contains the text selection in the given editor.
+     * Finds and returns the Java element that contains the text selection in
+     * the given editor.
      * 
      * @param editor
      *            the Java editor

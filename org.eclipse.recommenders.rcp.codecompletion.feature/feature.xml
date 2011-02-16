@@ -17,7 +17,7 @@
       version="0.1.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
-   <description>
+   <description url="http://www.eclipse.org/recommenders/">
       %description
    </description>
 
@@ -124,6 +124,13 @@
 
    <plugin
          id="org.eclipse.recommenders.commons.injection"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.doc.user"
          download-size="0"
          install-size="0"
          version="0.0.0"
