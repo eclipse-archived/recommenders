@@ -132,6 +132,10 @@ final class PatternRecommender {
         return typeRecs;
     }
 
+    /**
+     * @return Most probable pattern names and their probabilities, trimmed to
+     *         the size of <code>MAX_PATTERNS</code>.
+     */
     private List<Tuple<String, Double>> findMostLikelyPatterns() {
         List<Tuple<String, Double>> patterns = model.getPatternsNode().getPatternsWithProbability();
         patterns = Lists.newArrayList(Iterators.filter(patterns.iterator(), new PatternProbabilityFilter()));

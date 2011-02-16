@@ -20,7 +20,8 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ExpressionPrinterTest.class, ProposalsBuilderTest.class, ReceiverBuilderTest.class,
+@SuiteClasses({ CompletionProposalsBuilderTest.class, CompletionTargetVariableBuilderTest.class,
+        MethodCallFormatterTest.class, MethodFormatterTest.class, PatternRecommenderTest.class,
         TemplatesCompletionEngineTest.class })
 final class AllTests {
 
@@ -31,12 +32,6 @@ final class AllTests {
             VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), null, false);
 
     private static final MethodCall METHODCALL = new MethodCall(TARGETVARIABLE, METHODNAME);
-
-    /**
-     * Private constructor to prevent instantiation of utility class.
-     */
-    private AllTests() {
-    }
 
     /**
      * @return the expression which is used in most test cases.

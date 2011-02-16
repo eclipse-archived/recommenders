@@ -23,11 +23,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ReceiverBuilderTest {
+public final class CompletionTargetVariableBuilderTest {
 
     @Test
-    public final void testExistentVariable() {
-        final IIntelligentCompletionContext context = ReceiverBuilderTest.getMockedContext(
+    public void testExistentVariable() {
+        final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(
                 "Button butto = new Button();\nbutto.", "butto", "Button");
         final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                 .createInvokedVariable(context);
@@ -39,9 +39,9 @@ public class ReceiverBuilderTest {
     }
 
     @Test
-    public final void testConstructor() {
-        final IIntelligentCompletionContext context = ReceiverBuilderTest.getMockedConstructorContext("Button bu",
-                "bu ", "Button");
+    public void testConstructor() {
+        final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getConstructorContextMock(
+                "Button bu", "bu ", "Button");
         final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                 .createInvokedVariable(context);
 
@@ -51,7 +51,7 @@ public class ReceiverBuilderTest {
         Assert.assertEquals(new Region(9, 0), completionTargetVariable.getDocumentRegion());
     }
 
-    private static IIntelligentCompletionContext getMockedContext(final String code, final String variableName,
+    protected static IIntelligentCompletionContext getMockedContext(final String code, final String variableName,
             final String typeSimpleName) {
         final IIntelligentCompletionContext context = Mockito.mock(IIntelligentCompletionContext.class);
         final ICompilationUnit compUnit = Mockito.mock(ICompilationUnit.class);
@@ -59,7 +59,7 @@ public class ReceiverBuilderTest {
         Mockito.when(context.getReceiverName()).thenReturn(variableName);
         Mockito.when(context.getReceiverType()).thenReturn(VmTypeName.get(typeSimpleName));
         Mockito.when(context.getCompilationUnit()).thenReturn(compUnit);
-        Mockito.when(context.getInvocationOffset()).thenReturn(code.length());
+        Mockito.when(Integer.valueOf(context.getInvocationOffset())).thenReturn(Integer.valueOf(code.length()));
         Mockito.when(context.getReplacementRegion()).thenReturn(new Region(code.length(), 0));
         try {
             Mockito.when(compUnit.getSource()).thenReturn(code);
@@ -70,10 +70,10 @@ public class ReceiverBuilderTest {
         return context;
     }
 
-    public static IIntelligentCompletionContext getMockedConstructorContext(final String code,
-            final String variableName, final String typeSimpleName) {
-        final IIntelligentCompletionContext context = ReceiverBuilderTest.getMockedContext(code, variableName,
-                typeSimpleName);
+    public static IIntelligentCompletionContext getConstructorContextMock(final String code, final String variableName,
+            final String typeSimpleName) {
+        final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(code,
+                variableName, typeSimpleName);
         final CompletionProposal prop = Mockito.mock(CompletionProposal.class);
         Mockito.when(prop.getSignature()).thenReturn("Lorg.eclipse.swt.widgets.Button;".toCharArray());
         Mockito.when(context.getJdtProposals()).thenReturn(Sets.newHashSet(prop));

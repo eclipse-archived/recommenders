@@ -26,17 +26,18 @@ import org.junit.Assert;
 import org.junit.Test;
 
 @SuppressWarnings("restriction")
-public class ProposalsBuilderTest {
+public final class CompletionProposalsBuilderTest {
 
     @Test
-    public final void testProposalsBuilder() throws JavaModelException {
+    public void testProposalsBuilder() throws JavaModelException {
         final MethodCall methodCall = AllTests.getDefaultMethodCall();
 
         final List<PatternRecommendation> patterns = Lists.newArrayList(PatternRecommendation.create("Pattern 1",
                 Sets.newHashSet(methodCall.getInvokedMethod()), 50));
 
         final CompletionProposalsBuilder builder = new CompletionProposalsBuilder(null,
-                ExpressionPrinterTest.getExpressionPrinterMock());
+                MethodCallFormatterTest.getMethodCallFormatterMock());
+
         final JavaContext javaContext = new JavaContext(null, new Document(), new Position(0), null);
         final CompletionTargetVariable completionTargetVariable = methodCall.getCompletionTargetVariable();
 

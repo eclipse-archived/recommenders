@@ -71,8 +71,8 @@ final class TemplatesCompletionEngine implements IIntelligentCompletionEngine {
      */
     private void initializeProposalBuilder(final MethodCallFormatter methodCallFormatter) {
         final Bundle bundle = FrameworkUtil.getBundle(TemplatesCompletionEngine.class);
-        final Image icon = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(), "metadata/icon2.gif")
-                .createImage();
+        final Image icon = bundle == null ? null : AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(),
+                "metadata/icon2.gif").createImage();
         completionProposalsBuilder = new CompletionProposalsBuilder(icon, methodCallFormatter);
     }
 
@@ -80,7 +80,8 @@ final class TemplatesCompletionEngine implements IIntelligentCompletionEngine {
      * Sets the appropriate <code>ContextType</code> for all computed templates.
      */
     private void initializeTemplateContextType() {
-        templateContextType = (AbstractJavaContextType) JavaPlugin.getDefault().getTemplateContextRegistry()
+        final JavaPlugin plugin = JavaPlugin.getDefault();
+        templateContextType = plugin == null ? null : (AbstractJavaContextType) plugin.getTemplateContextRegistry()
                 .getContextType(JavaContextType.ID_ALL);
     }
 

@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
+import com.google.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
@@ -21,8 +23,13 @@ import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
  */
 class MethodFormatter {
 
-    private final JavaElementResolver resolver = new JavaElementResolver();
+    private final JavaElementResolver elementResolver;
     private int argumentCounter = -1;
+
+    @Inject
+    public MethodFormatter(final JavaElementResolver elementResolver) {
+        this.elementResolver = elementResolver;
+    }
 
     /**
      * @param methodName
@@ -51,7 +58,7 @@ class MethodFormatter {
      */
     String getParametersString(final IMethodName methodName) throws JavaModelException {
         final StringBuilder parameters = new StringBuilder(32);
-        final IMethod jdtMethod = resolver.toJdtMethod(methodName);
+        final IMethod jdtMethod = elementResolver.toJdtMethod(methodName);
         final String[] parameterNames = jdtMethod.getParameterNames();
         final String[] parameterTypes = jdtMethod.getParameterTypes();
         for (int i = 0; i < parameterNames.length; ++i) {

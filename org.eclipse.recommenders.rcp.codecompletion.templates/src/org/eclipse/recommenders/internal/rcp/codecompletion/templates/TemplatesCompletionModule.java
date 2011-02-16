@@ -15,6 +15,7 @@ import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 /**
  * Prepares the <code>Plugin</code> by injecting dependencies.
@@ -24,7 +25,7 @@ public final class TemplatesCompletionModule extends AbstractModule {
     @Override
     protected void configure() {
         bindCallsRecommender();
-        bindExpressionFormatter();
+        bindMethodCallFormatter();
         bindTemplatesCodecompletionEngine();
     }
 
@@ -38,7 +39,8 @@ public final class TemplatesCompletionModule extends AbstractModule {
     /**
      * Binds the formatter which will return a string for a pattern's code.
      */
-    private void bindExpressionFormatter() {
+    private void bindMethodCallFormatter() {
+        bind(JavaElementResolver.class).in(Scopes.SINGLETON);
         bind(MethodCallFormatter.class).in(Scopes.SINGLETON);
     }
 

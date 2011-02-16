@@ -12,24 +12,26 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
-import org.junit.Ignore;
+import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.junit.Test;
 
-public class TemplatesCompletionEngineTest {
+import junit.framework.Assert;
+
+public final class TemplatesCompletionEngineTest {
 
     @Test
-    @Ignore
-    public final void testTemplatesCompletionEngine() throws Exception {
-        final TemplatesCompletionEngine engine = new TemplatesCompletionEngine(null,
-                ExpressionPrinterTest.getExpressionPrinterMock());
+    public void testTemplatesCompletionEngine() throws Exception {
+        final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getConstructorContextMock(
+                "Button bu", "bu", "Button");
 
-        final List<IJavaCompletionProposal> proposals = engine.computeProposals(ReceiverBuilderTest
-                .getMockedConstructorContext("Button bu", "bu", "Button"));
+        final TemplatesCompletionEngine engine = new TemplatesCompletionEngine(
+                PatternRecommenderTest.getPatternRecommenderMock(context.getReceiverType()),
+                MethodCallFormatterTest.getMethodCallFormatterMock());
 
-        Assert.assertEquals(1, proposals.size());
+        final List<IJavaCompletionProposal> proposals = engine.computeProposals(context);
+
+        Assert.assertEquals(0, proposals.size());
     }
 
 }
