@@ -12,11 +12,11 @@ package completion.calls;
 
 import org.eclipse.jface.wizard.Wizard;
 
-public class CompletionOnThis extends Wizard {
+public class CompletionOnThisInOverriddenMethod extends Wizard {
 
     @Override
     public void addPages() {
-         Space|addPage.*%>
+         <^Space>
     }
 
     @Override
