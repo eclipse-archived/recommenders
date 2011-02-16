@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
@@ -30,10 +29,10 @@ public final class CompletionProposalsBuilderTest {
 
     @Test
     public void testProposalsBuilder() throws JavaModelException {
-        final MethodCall methodCall = AllTests.getDefaultMethodCall();
+        final MethodCall methodCall = AllTests.getDefaultConstructorCall();
 
         final List<PatternRecommendation> patterns = Lists.newArrayList(PatternRecommendation.create("Pattern 1",
-                Sets.newHashSet(methodCall.getInvokedMethod()), 50));
+                Lists.newArrayList(methodCall.getInvokedMethod()), 50));
 
         final CompletionProposalsBuilder builder = new CompletionProposalsBuilder(null,
                 MethodCallFormatterTest.getMethodCallFormatterMock());

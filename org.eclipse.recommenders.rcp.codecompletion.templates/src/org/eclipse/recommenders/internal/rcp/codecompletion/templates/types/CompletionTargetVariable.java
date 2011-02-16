@@ -40,6 +40,10 @@ public final class CompletionTargetVariable {
         return typeName;
     }
 
+    /**
+     * @return True, if the templates proposals definitely have to contain
+     *         constructors.
+     */
     public boolean isNeedsConstructor() {
         return needsConstructor;
     }

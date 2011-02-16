@@ -20,8 +20,12 @@ public final class MethodCallFormatterTest {
     @Test
     public void testPatternNamer() throws JavaModelException {
         final MethodCallFormatter formatter = getMethodCallFormatterMock();
-        final MethodCall methodCall = AllTests.getDefaultMethodCall();
-        Assert.assertEquals("someVariable = new Button(${intTest:link(0)});", formatter.format(methodCall));
+
+        MethodCall methodCall = AllTests.getDefaultMethodCall();
+        Assert.assertEquals("constructed.setText(${intTest:link(0)});", formatter.format(methodCall));
+
+        methodCall = AllTests.getDefaultConstructorCall();
+        Assert.assertEquals("unconstructed = new Button(${intTest:link(0)});", formatter.format(methodCall));
     }
 
     public static MethodCallFormatter getMethodCallFormatterMock() throws JavaModelException {

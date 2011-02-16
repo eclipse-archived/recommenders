@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
+import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
@@ -25,19 +26,30 @@ import org.junit.runners.Suite.SuiteClasses;
         TemplatesCompletionEngineTest.class })
 final class AllTests {
 
-    private static final IMethodName METHODNAME = VmMethodName
+    private static final CompletionTargetVariable DEFAULTVARIABLE = new CompletionTargetVariable("constructed",
+            VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), new Region(0, 0), false);
+    private static final CompletionTargetVariable CONSTRUCTORVARIABLE = new CompletionTargetVariable("unconstructed",
+            VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), new Region(0, 0), true);
+
+    private static final IMethodName DEFAULTMETHOD = VmMethodName.get("Lorg/eclipse/swt/widgets/Button.setText()V");
+    private static final IMethodName CONSTRUCTORMETHOD = VmMethodName
             .get("Lorg/eclipse/swt/widgets/Button.<init>(Lorg/eclipse/swt/widgets/Composite;Lint;)V");
 
-    private static final CompletionTargetVariable TARGETVARIABLE = new CompletionTargetVariable("someVariable",
-            VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), null, false);
-
-    private static final MethodCall METHODCALL = new MethodCall(TARGETVARIABLE, METHODNAME);
+    private static final MethodCall METHODCALL = new MethodCall(DEFAULTVARIABLE, DEFAULTMETHOD);
+    private static final MethodCall CONSTRUCTORCALL = new MethodCall(CONSTRUCTORVARIABLE, CONSTRUCTORMETHOD);
 
     /**
-     * @return the expression which is used in most test cases.
+     * @return the method which is used in most test cases.
      */
     protected static MethodCall getDefaultMethodCall() {
-        return AllTests.METHODCALL;
+        return METHODCALL;
+    }
+
+    /**
+     * @return the constructor call which is used in most test cases.
+     */
+    protected static MethodCall getDefaultConstructorCall() {
+        return AllTests.CONSTRUCTORCALL;
     }
 
 }

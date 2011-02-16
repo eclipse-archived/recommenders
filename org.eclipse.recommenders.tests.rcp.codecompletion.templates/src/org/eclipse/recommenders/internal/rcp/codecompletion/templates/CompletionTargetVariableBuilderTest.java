@@ -61,6 +61,7 @@ public final class CompletionTargetVariableBuilderTest {
         Mockito.when(context.getCompilationUnit()).thenReturn(compUnit);
         Mockito.when(Integer.valueOf(context.getInvocationOffset())).thenReturn(Integer.valueOf(code.length()));
         Mockito.when(context.getReplacementRegion()).thenReturn(new Region(code.length(), 0));
+        Mockito.when(context.getEnclosingMethod()).thenReturn(AllTests.getDefaultMethodCall().getInvokedMethod());
         try {
             Mockito.when(compUnit.getSource()).thenReturn(code);
         } catch (final JavaModelException e) {

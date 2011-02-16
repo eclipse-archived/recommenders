@@ -14,12 +14,14 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 
 /**
  * Temporary class to compute the shift amount when a new import is
  * automatically written to the document.
  */
 @SuppressWarnings("restriction")
+@Provisional
 public final class ModifiedJavaContext extends JavaContext {
 
     private boolean shifted;
@@ -37,6 +39,10 @@ public final class ModifiedJavaContext extends JavaContext {
         return getCompletionOffset();
     }
 
+    /**
+     * Inspects how many characters where inserted by the automatically included
+     * import and modifies the context's completion offset.
+     */
     private void shiftCompletionOffset() {
         final IDocument document = JavaTemplateProposal.getCurrentDocument();
         if (document != null) {

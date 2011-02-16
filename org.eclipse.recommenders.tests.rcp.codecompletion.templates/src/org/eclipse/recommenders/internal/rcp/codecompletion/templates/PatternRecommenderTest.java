@@ -11,13 +11,17 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Provider;
 
 import org.eclipse.recommenders.commons.utils.Tuple;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
@@ -27,7 +31,10 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Patt
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
+
+import junit.framework.Assert;
 
 public final class PatternRecommenderTest {
 
@@ -37,8 +44,16 @@ public final class PatternRecommenderTest {
                 "Button butto = new Button();\nbutto.", "butto", "Button");
         final PatternRecommender recommender = getPatternRecommenderMock(context.getReceiverType());
 
-        final CompletionTargetVariable targetVariable = AllTests.getDefaultMethodCall().getCompletionTargetVariable();
+        final CompletionTargetVariable targetVariable = AllTests.getDefaultConstructorCall()
+                .getCompletionTargetVariable();
         final Set<PatternRecommendation> recommendations = recommender.computeRecommendations(targetVariable, context);
+
+        Assert.assertEquals(1, recommendations.size());
+        for (final PatternRecommendation recommendation : recommendations) {
+            Assert.assertEquals("Pattern 1", recommendation.getName());
+            Assert.assertEquals(50, recommendation.getProbability());
+            Assert.assertEquals(2, recommendation.getMethods().size());
+        }
     }
 
     protected static PatternRecommender getPatternRecommenderMock(final ITypeName receiverType) {
@@ -56,13 +71,28 @@ public final class PatternRecommenderTest {
     }
 
     private static ObjectMethodCallsNet getCallsNetMock() {
-        final ObjectMethodCallsNet net = Mockito.mock(ObjectMethodCallsNet.class);
+        final ObjectMethodCallsNet model = Mockito.mock(ObjectMethodCallsNet.class);
+
         final PatternNode node = Mockito.mock(PatternNode.class);
         final List<Tuple<String, Double>> patterns = Lists.newArrayList();
         patterns.add(Tuple.create("Pattern 1", 0.5));
-
         Mockito.when(node.getPatternsWithProbability()).thenReturn(patterns);
-        Mockito.when(net.getPatternsNode()).thenReturn(node);
-        return net;
+
+        Mockito.when(model.getPatternsNode()).thenReturn(node);
+        Mockito.when(model.getRecommendedMethodCalls(Matchers.anyDouble())).thenReturn(getRecommendedMethods());
+        return model;
+    }
+
+    private static SortedSet<Tuple<IMethodName, Double>> getRecommendedMethods() {
+        final SortedSet<Tuple<IMethodName, Double>> methodsSet = Sets
+                .newTreeSet(new Comparator<Tuple<IMethodName, Double>>() {
+                    @Override
+                    public int compare(final Tuple<IMethodName, Double> arg0, final Tuple<IMethodName, Double> arg1) {
+                        return arg0.getFirst().compareTo(arg1.getFirst());
+                    }
+                });
+        methodsSet.add(Tuple.create(AllTests.getDefaultConstructorCall().getInvokedMethod(), 0.5));
+        methodsSet.add(Tuple.create(AllTests.getDefaultMethodCall().getInvokedMethod(), 0.5));
+        return methodsSet;
     }
 }

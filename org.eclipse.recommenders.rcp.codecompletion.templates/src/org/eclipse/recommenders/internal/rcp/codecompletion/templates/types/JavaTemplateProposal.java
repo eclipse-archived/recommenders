@@ -17,6 +17,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -36,26 +37,33 @@ public final class JavaTemplateProposal extends TemplateProposal {
         computeStyledDisplayString();
     }
 
+    /**
+     * Sets the string to be displayed in the completion proposals view. It
+     * contains the template's name and its probability.
+     */
     private void computeStyledDisplayString() {
+        final Integer relevance = Integer.valueOf(getRelevance() - RELEVANCE_OFFSET);
         final StyledString styledString = new StyledString();
         styledString.append(String.format("dynamic '%s'", getTemplate().getDescription()));
         styledString.append(" - ", StyledString.QUALIFIER_STYLER);
         styledString.append(getTemplate().getName().replace("pattern", "Pattern #"), StyledString.QUALIFIER_STYLER);
-        styledString.append(String.format(" - %d %%", Integer.valueOf(getRelevance() - RELEVANCE_OFFSET)),
-                StyledString.COUNTER_STYLER);
+        styledString.append(String.format(" - %d %%", relevance), StyledString.COUNTER_STYLER);
         setDisplayString(styledString);
     }
 
     @Override
+    @Provisional
     public void apply(final ITextViewer viewer, final char trigger, final int stateMask, final int offset) {
         JavaTemplateProposal.setCurrentDocument(viewer.getDocument());
         super.apply(viewer, trigger, stateMask, offset);
     }
 
+    @Provisional
     private static void setCurrentDocument(final IDocument document) {
         JavaTemplateProposal.currentDocument = document;
     }
 
+    @Provisional
     static IDocument getCurrentDocument() {
         return JavaTemplateProposal.currentDocument;
     }

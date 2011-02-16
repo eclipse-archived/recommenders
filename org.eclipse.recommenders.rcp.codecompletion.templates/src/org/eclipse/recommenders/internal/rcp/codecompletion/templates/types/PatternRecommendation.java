@@ -10,10 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.types;
 
-import java.util.Set;
+import java.util.List;
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -26,25 +25,45 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 public final class PatternRecommendation implements Comparable<PatternRecommendation> {
 
     private String name;
-    private ImmutableCollection<IMethodName> methods;
+    private ImmutableList<IMethodName> methods;
     private int probability;
 
-    public static PatternRecommendation create(final String name, final Set<IMethodName> methods, final int probability) {
+    /**
+     * @param name
+     *            The name this pattern was given within the models store.
+     * @param methods
+     *            The pattern's methods as obtained from the model store.
+     * @param probability
+     *            Probability that this pattern is used in the observed
+     *            occasion.
+     * @return The <code>PatternRecommendation</code> encapsulating the given
+     *         parameters.
+     */
+    public static PatternRecommendation create(final String name, final List<IMethodName> methods, final int probability) {
         final PatternRecommendation recommendation = new PatternRecommendation();
         recommendation.name = Checks.ensureIsNotNull(name);
-        recommendation.methods = ImmutableSet.copyOf(methods);
+        recommendation.methods = ImmutableList.copyOf(methods);
         recommendation.probability = probability;
         return recommendation;
     }
 
+    /**
+     * @return The name this pattern was given within the models store.
+     */
     public String getName() {
         return name;
     }
 
-    public ImmutableCollection<IMethodName> getMethods() {
+    /**
+     * @return The pattern's methods as obtained from the model store.
+     */
+    public ImmutableList<IMethodName> getMethods() {
         return methods;
     }
 
+    /**
+     * @return Probability that this pattern is used in the observed occasion.
+     */
     public int getProbability() {
         return probability;
     }

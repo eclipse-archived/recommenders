@@ -31,7 +31,11 @@ public final class TemplatesCompletionEngineTest {
 
         final List<IJavaCompletionProposal> proposals = engine.computeProposals(context);
 
-        Assert.assertEquals(0, proposals.size());
+        Assert.assertEquals(1, proposals.size());
+        for (final IJavaCompletionProposal proposal : proposals) {
+            Assert.assertEquals(612, proposal.getRelevance());
+            Assert.assertEquals("dynamic 'Button' - Pattern 1 - 50 %", proposal.getDisplayString());
+        }
     }
 
 }

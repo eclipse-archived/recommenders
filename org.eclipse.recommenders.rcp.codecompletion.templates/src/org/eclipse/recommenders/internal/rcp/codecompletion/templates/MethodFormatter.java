@@ -26,6 +26,11 @@ class MethodFormatter {
     private final JavaElementResolver elementResolver;
     private int argumentCounter = -1;
 
+    /**
+     * @param elementResolver
+     *            Is responsible for converting an {@link IMethodName} observed
+     *            within the context into an {@link IMethod}.
+     */
     @Inject
     public MethodFormatter(final JavaElementResolver elementResolver) {
         this.elementResolver = elementResolver;

@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 
 import javax.inject.Inject;
 
@@ -60,7 +59,7 @@ final class PatternRecommender {
     public Set<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
             final IIntelligentCompletionContext context) {
         if (canFindVariableUsage(context) && canFindModel()) {
-            updateModel(context);
+            updateModel(context.getVariable(), context.getEnclosingMethodsFirstDeclaration());
             final Set<PatternRecommendation> recommendations = computeRecommendationsForModel(targetVariable
                     .isNeedsConstructor());
             return recommendations;
@@ -68,6 +67,12 @@ final class PatternRecommender {
         return Collections.emptySet();
     }
 
+    /**
+     * @param context
+     *            The context from where to resolve variable usage.
+     * @return True, if a new variable is to be constructed or an existing's
+     *         usage could be resolved.
+     */
     private boolean canFindVariableUsage(final IIntelligentCompletionContext context) {
         boolean result = true;
         if (context.getVariable() == null) {
@@ -79,6 +84,12 @@ final class PatternRecommender {
         return result;
     }
 
+    /**
+     * @param context
+     *            The context from where to resolve variable usage.
+     * @return True, if a provided {@link IVariableUsageResolver} was able to
+     *         resolve the variable usage.
+     */
     private boolean canResolveVariableUsage(final IIntelligentCompletionContext context) {
         boolean result = false;
         for (final IVariableUsageResolver resolver : usageResolvers.get()) {
@@ -104,29 +115,49 @@ final class PatternRecommender {
         return result;
     }
 
-    private void updateModel(final IIntelligentCompletionContext context) {
-        final Variable contextVariable = context.getVariable();
+    /**
+     * @param contextVariable
+     *            The target variable as given by the context.
+     * @param enclosingMethodsFirstDeclaration
+     *            The first declaration (i.e. where an overridden method was
+     *            first declared) of the method enclosing the variable on which
+     *            the completion request was invoked.
+     */
+    private void updateModel(final Variable contextVariable, final IMethodName enclosingMethodsFirstDeclaration) {
         model.clearEvidence();
         model.setAvailablity(true);
-        model.setMethodContext(context.getEnclosingMethodsFirstDeclaration());
+        model.setMethodContext(enclosingMethodsFirstDeclaration);
         model.setObservedMethodCalls(receiverType, receiverMethodInvocations);
-        if (contextVariable != null
-                && (contextVariable.fuzzyIsParameter() || contextVariable.fuzzyIsDefinedByMethodReturn())) {
+        if (negateConstructors(contextVariable)) {
             model.negateConstructors();
         }
         model.updateBeliefs();
     }
 
-    private Set<PatternRecommendation> computeRecommendationsForModel(final boolean needsConstructor) {
+    /**
+     * @param contextVariable
+     *            The target variable as given by the context.
+     * @return True, if the patterns should definitely contain no constructors.
+     */
+    private boolean negateConstructors(final Variable contextVariable) {
+        return contextVariable != null
+                && (contextVariable.fuzzyIsParameter() || contextVariable.fuzzyIsDefinedByMethodReturn());
+    }
+
+    /**
+     * @param constructorRequired
+     *            True, if patterns without constructors should be filtered out.
+     * @return The most probable patterns regarding the updated model, limited
+     *         to the size of <code>MAX_PATTERNS</code>.
+     */
+    private Set<PatternRecommendation> computeRecommendationsForModel(final boolean constructorRequired) {
         final Set<PatternRecommendation> typeRecs = Sets.newTreeSet();
         for (final Tuple<String, Double> patternWithProbablity : findMostLikelyPatterns()) {
             final String patternName = patternWithProbablity.getFirst();
-            final SortedSet<IMethodName> patternMethods = getMethodCallsForPattern(patternName);
-            if (keepPattern(patternMethods, needsConstructor)) {
+            final List<IMethodName> patternMethods = getMethodCallsForPattern(patternName);
+            if (keepPattern(patternMethods, constructorRequired)) {
                 final int percentage = (int) (patternWithProbablity.getSecond().doubleValue() * 100);
-                final PatternRecommendation recommendation = PatternRecommendation.create(patternName, patternMethods,
-                        percentage);
-                typeRecs.add(recommendation);
+                typeRecs.add(PatternRecommendation.create(patternName, patternMethods, percentage));
             }
         }
         return typeRecs;
@@ -143,8 +174,8 @@ final class PatternRecommender {
         return patterns.subList(0, Math.min(patterns.size(), MAX_PATTERNS));
     }
 
-    private SortedSet<IMethodName> getMethodCallsForPattern(final String patternName) {
-        final SortedSet<IMethodName> recommendedMethods = Sets.newTreeSet();
+    private List<IMethodName> getMethodCallsForPattern(final String patternName) {
+        final List<IMethodName> recommendedMethods = Lists.newArrayList();
         model.setPattern(patternName);
         model.updateBeliefs();
         for (final Tuple<IMethodName, Double> pair : model.getRecommendedMethodCalls(METHOD_PROBABILITY_THRESHOLD)) {
@@ -153,8 +184,17 @@ final class PatternRecommender {
         return recommendedMethods;
     }
 
-    private boolean keepPattern(final SortedSet<IMethodName> patternMethods, final boolean needsConstructor) {
-        return !patternMethods.isEmpty() && (!needsConstructor || patternMethods.iterator().next().isInit());
+    /**
+     * @param patternMethods
+     *            The methods of a given pattern as received from the mode
+     *            store.
+     * @param constructorRequired
+     *            True, if patterns without constructors should be filtered out.
+     * @return True, if methods exist and they either contain a constructor or a
+     *         constructor is not required.
+     */
+    private boolean keepPattern(final List<IMethodName> patternMethods, final boolean constructorRequired) {
+        return !patternMethods.isEmpty() && (!constructorRequired || patternMethods.get(0).isInit());
     }
 
     /**

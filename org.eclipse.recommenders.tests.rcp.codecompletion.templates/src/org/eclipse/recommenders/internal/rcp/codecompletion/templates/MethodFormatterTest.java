@@ -24,7 +24,7 @@ public final class MethodFormatterTest {
 
     @Test
     public void testFormat() throws JavaModelException {
-        final IMethodName methodName = AllTests.getDefaultMethodCall().getInvokedMethod();
+        final IMethodName methodName = AllTests.getDefaultConstructorCall().getInvokedMethod();
         final String code = getMethodFormatterMock().format(methodName);
 
         Assert.assertEquals("Button(${intTest:link(0)})", code);
