@@ -22,6 +22,9 @@ public class CompletionOnMethodReturnValue extends DialogPage {
 
     @Override
     public void createControl(final Composite parent) {
-        PlatformUI.getWorkbench().<^Space>
+        //@start
+        PlatformUI.getWorkbench().<^Space|getHelpSystem.*%>
+        //@end
+        //PlatformUI.getWorkbench().getHelpSystem()
     }
 }

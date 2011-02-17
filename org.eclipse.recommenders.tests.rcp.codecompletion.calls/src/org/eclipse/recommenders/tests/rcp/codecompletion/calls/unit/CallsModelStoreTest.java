@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.rcp.codecompletion.calls;
+package org.eclipse.recommenders.tests.rcp.codecompletion.calls.unit;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

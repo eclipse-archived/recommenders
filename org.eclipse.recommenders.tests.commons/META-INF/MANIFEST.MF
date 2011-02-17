@@ -14,6 +14,14 @@ Require-Bundle: org.junit;bundle-version="4.8.1";visibility:=reexport,
  org.eclipse.core.runtime;bundle-version="3.6.0";visibility:=reexport,
  org.apache.commons.lang;bundle-version="3.0.0";visibility:=reexport,
  com.google.guice;bundle-version="3.0.0",
- org.objenesis;bundle-version="1.0.0"
-Export-Package: org.eclipse.recommenders.tests.commons.analysis.utils
+ org.objenesis;bundle-version="1.0.0",
+ org.hamcrest,
+ org.eclipse.swtbot.eclipse.core,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.swtbot.junit4_x,
+ org.eclipse.swtbot.swt.finder,
+ org.eclipse.ui,
+ org.eclipse.core.resources;bundle-version="3.6.0",
+ org.apache.commons.io;bundle-version="1.4.0"
+Export-Package: org.eclipse.recommenders.tests.commons.analysis.utils, org.eclipse.recommenders.tests.commons.ui.utils
 Bundle-Vendor: Eclipse Code Recommenders

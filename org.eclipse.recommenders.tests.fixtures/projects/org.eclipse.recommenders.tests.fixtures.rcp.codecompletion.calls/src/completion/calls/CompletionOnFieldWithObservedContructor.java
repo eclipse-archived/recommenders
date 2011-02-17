@@ -22,10 +22,15 @@ public class CompletionOnFieldWithObservedContructor extends Dialog {
 
     @Override
     protected Control createDialogArea(final Composite parent) {
+        // b. -> pattern w/o contructor
+        //@start
         b = new Button(null, 0);
-        // b.<^Space> -> pattern w/o contructor
-        b.<^Space>
+        b.<^Space|setText.*%>
         return null;
+        //@end
+//        b = new Button(null, 0);
+//        b.setText()
+//        return null;
     }
 
     private CompletionOnFieldWithObservedContructor() {

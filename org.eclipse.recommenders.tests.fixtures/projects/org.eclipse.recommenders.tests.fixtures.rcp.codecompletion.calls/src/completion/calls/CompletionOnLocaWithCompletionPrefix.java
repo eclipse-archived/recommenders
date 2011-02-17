@@ -22,11 +22,15 @@ public class CompletionOnLocaWithCompletionPrefix extends Dialog {
 
     @Override
 	protected Control createDialogArea(final Composite parent) {
+        // b.sett -> pattern w/o constructor but w/ setText
+        //@start
 		final Button b = new Button(null, 0);
-		// b.sett<^Space> -> pattern w/o constructor but w/ setText
-		//
-		b.sett<^Space>
+		b.sett<^Space|setText.*%>
 		return null;
+		//@end
+//		final Button b = new Button(null, 0);
+//      b.setText()
+//      return null;
 	}
 
     private CompletionOnLocaWithCompletionPrefix() {
