@@ -11,7 +11,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain;
 
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal.ChainingAlgorithmWorker;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.ChainingAlgorithmWorker;
+
 
 public class Constants {
   /**

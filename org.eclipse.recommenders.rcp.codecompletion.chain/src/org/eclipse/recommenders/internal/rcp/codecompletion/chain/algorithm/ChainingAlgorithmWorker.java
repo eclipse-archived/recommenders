@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal;
+package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,9 +11,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.ChainingAlgorithm;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainWalaElement;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.util.LookupUtilWala;
 
 import com.ibm.wala.classLoader.ArrayClass;
 import com.ibm.wala.classLoader.IClass;
@@ -27,7 +24,7 @@ public class ChainingAlgorithmWorker implements Runnable {
 
   private final ThreadPoolExecutor executor;
 
-  private final LinkedList<IChainWalaElement> workingChain;
+  private final LinkedList<IChainElement> workingChain;
 
   private final int priority;
 
@@ -35,8 +32,8 @@ public class ChainingAlgorithmWorker implements Runnable {
 
   private final ChainingAlgorithm internalProposalStore;
 
-  public ChainingAlgorithmWorker(final LinkedList<IChainWalaElement> workingChain, final int priority,
-      final ChainingAlgorithm internalProposalStore, ThreadPoolExecutor executor, IClass expectedType) {
+  public ChainingAlgorithmWorker(final LinkedList<IChainElement> workingChain, final int priority,
+      final ChainingAlgorithm internalProposalStore, final ThreadPoolExecutor executor, final IClass expectedType) {
     this.workingChain = workingChain;
     this.priority = priority;
     this.internalProposalStore = internalProposalStore;
@@ -82,8 +79,9 @@ public class ChainingAlgorithmWorker implements Runnable {
     final IClass classOfArray = arrayTypeToCheck.getElementClass();
     if (classOfArray == null) {
       final TypeReference elementType = arrayTypeToCheck.getReference().getArrayElementType();
-      if (elementType.isPrimitiveType())
+      if (elementType.isPrimitiveType()) {
         return;
+      }
     }
     final Map<IMember, IClass> map = computeFields(classOfArray);
     // check methods of type --> store in search map && and create new
@@ -126,7 +124,7 @@ public class ChainingAlgorithmWorker implements Runnable {
    * time is reached. But we want to have the optimal run time.
    */
   private void tryTerminateExecutor() {
-    if ((executor.getPoolSize() == 1) && (executor.getQueue().size() < 1)) {
+    if (executor.getPoolSize() == 1 && executor.getQueue().size() < 1) {
       // XXX There is a problem with the executer which I cannot resolve. If you
       // trigger the plug-in several times in a very short period, than a
       // InterruptedException can occur
@@ -141,14 +139,15 @@ public class ChainingAlgorithmWorker implements Runnable {
     if (m.isPublic()) {// XXX: Case: If calling context is subtype of
                        // typeToCheck than field/method can be protected or
                        // package private
-      final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
-      list.add(new MethodChainWalaElement(m));
+      final LinkedList<IChainElement> list = new LinkedList<IChainElement>(workingChain);
+      list.add(new MethodChainElement(m));
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
           internalProposalStore, executor, expectedType);
       startWorker(worker);
-      if (m.getReturnType().isPrimitiveType())
+      if (m.getReturnType().isPrimitiveType()) {
         return null;// return
-                    // ChainingAlgorithm.boxPrimitiveTyp(m.getDeclaringClass(),
+      }
+      // ChainingAlgorithm.boxPrimitiveTyp(m.getDeclaringClass(),
       // m.getReturnType().getName().toString().toCharArray());
       return m.getClassHierarchy().lookupClass(m.getReturnType());
     }
@@ -175,8 +174,8 @@ public class ChainingAlgorithmWorker implements Runnable {
     if (f.isPublic()) { // XXX: Case: If calling context is subtype of
                         // typeToCheck than field/method can be protected or
                         // package private
-      final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
-      list.add(new FieldChainWalaElement(f));
+      final LinkedList<IChainElement> list = new LinkedList<IChainElement>(workingChain);
+      list.add(new FieldChainElement(f));
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
           internalProposalStore, executor, expectedType);
       startWorker(worker);
@@ -194,11 +193,11 @@ public class ChainingAlgorithmWorker implements Runnable {
    */
   private void executeComputationOnExistingType(final IClass typeToCheck) {
     for (final Entry<IMember, IClass> entry : ChainingAlgorithm.getSearchMap().get(typeToCheck).entrySet()) {
-      final LinkedList<IChainWalaElement> list = new LinkedList<IChainWalaElement>(workingChain);
+      final LinkedList<IChainElement> list = new LinkedList<IChainElement>(workingChain);
       if (entry.getKey() instanceof IField) {
-        list.add(new FieldChainWalaElement((IField) entry.getKey()));
+        list.add(new FieldChainElement((IField) entry.getKey()));
       } else {
-        list.add(new MethodChainWalaElement((IMethod) entry.getKey()));
+        list.add(new MethodChainElement((IMethod) entry.getKey()));
       }
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
           internalProposalStore, executor, expectedType);
@@ -220,51 +219,57 @@ public class ChainingAlgorithmWorker implements Runnable {
    * be processed for proposal computation
    */
   private boolean storeForProposal(final IClass typeToCheck) throws JavaModelException {
-    if (typeToCheck == null)
+    if (typeToCheck == null) {
       return true;
-    final int testResult = LookupUtilWala.equalityTest(typeToCheck, expectedType);
+    }
+    final int testResult = WalaCache.equalityTest(typeToCheck, expectedType);
     // if both types equal
-    if ((testResult & LookupUtilWala.RESULT_EQUAL) > 0) {
+    if ((testResult & WalaCache.RESULT_EQUAL) > 0) {
       if (!checkRedundancy()) {
         internalProposalStore.addProposal(workingChain);
         return false;
-      } else
+      } else {
         return true;
+      }
     }
     // if typeToCheck is primitive return
-    if ((testResult & LookupUtilWala.RESULT_PRIMITIVE) > 0)
+    if ((testResult & WalaCache.RESULT_PRIMITIVE) > 0) {
       return true;
+    }
     // Consult type hierarchy for sub-/supertypes
-    if (LookupUtilWala.isSubtype(typeToCheck, expectedType) && !((testResult & LookupUtilWala.RESULT_EQUAL) > 0)) {
+    if (WalaCache.isSubtype(typeToCheck, expectedType) && !((testResult & WalaCache.RESULT_EQUAL) > 0)) {
       if (!checkRedundancy()) {
         internalProposalStore.addCastedProposal(workingChain, expectedType);
         return false;
-      } else
+      } else {
         return true;
+      }
     }
     /* else */
-    if (LookupUtilWala.isSupertype(typeToCheck, expectedType) && !((testResult & LookupUtilWala.RESULT_EQUAL) > 0)) {
+    if (WalaCache.isSupertype(typeToCheck, expectedType) && !((testResult & WalaCache.RESULT_EQUAL) > 0)) {
       if (!checkRedundancy()) {
         internalProposalStore.addProposal(workingChain);
         return false;
-      } else
+      } else {
         return true;
+      }
     }
     // not equal, not in a hierarchical relation, not primitive
     return false;
   }
 
   /*
-   * wie want to avoid: method1().method1().method1()... this function handles
+   * we want to avoid: method1().method1().method1()... this function handles
    * this case
    */
   private boolean checkRedundancy() {
     final int size = workingChain.size();
     if (size >= 2) {
-      final IChainWalaElement last = workingChain.get(size - 1);
-      final IChainWalaElement nextLast = workingChain.get(size - 2);
-      if (last.getCompletion().equals(nextLast.getCompletion()))
+      final IChainElement last = workingChain.get(size - 1);
+      final IChainElement nextLast = workingChain.get(size - 2);
+      if (last.getCompletion().equals(nextLast.getCompletion())) {
         return true;
+      }
     }
     return false;
   }

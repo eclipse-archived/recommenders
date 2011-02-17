@@ -9,7 +9,7 @@
  *    Gary Fritz - initial API and implementation.
  *    Andreas Kaluza - modified implementation to use WALA 
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.chain.proposals;
+package org.eclipse.recommenders.internal.rcp.codecompletion.chain;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,11 +32,8 @@ import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.TemplateException;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.ChainedJavaProposal;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainWalaElement;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal.FieldsAndMethodsCompletionContext;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal.MethodChainWalaElement;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.MethodChainElement;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -59,37 +56,40 @@ public class TemplateProposalEngine {
   }
 
   @SuppressWarnings("unchecked")
-  public List<IJavaCompletionProposal> generateJavaCompletionProposals(final List<ChainedJavaProposal> proposals,
+  public List<IJavaCompletionProposal> generateJavaCompletionProposals(final List<ChainProposal> proposals,
       final JavaContentAssistInvocationContext jctx, final long algortihmComputeTime) {
     this.jctx = jctx;
     final long proposalStartTime = System.currentTimeMillis();
-    if (isValidProposal(proposals))
+    if (isValidProposal(proposals)) {
       return Collections.EMPTY_LIST;
+    }
     sort(proposals);
     synchronized (proposals) {
       return computeProposalList(proposals, algortihmComputeTime, proposalStartTime);
     }
   }
 
-  private boolean isValidProposal(final List<ChainedJavaProposal> proposals) {
-    return (proposals == null) || proposals.isEmpty();
+  private boolean isValidProposal(final List<ChainProposal> proposals) {
+    return proposals == null || proposals.isEmpty();
   }
 
   // This method sorts all computed 'raw' proposals.
-  private void sort(final List<ChainedJavaProposal> proposals) {
+  private void sort(final List<ChainProposal> proposals) {
     // Prefer proposals that do not cope with casts
-    Collections.sort(proposals, new Comparator<ChainedJavaProposal>() {
+    Collections.sort(proposals, new Comparator<ChainProposal>() {
       @Override
-      public int compare(final ChainedJavaProposal p1, final ChainedJavaProposal p2) {
-        if (p1.getProposedChain().size() < p2.getProposedChain().size())
+      public int compare(final ChainProposal p1, final ChainProposal p2) {
+        if (p1.getProposedChain().size() < p2.getProposedChain().size()) {
           return -1;
-        else if (p1.getProposedChain().size() > p2.getProposedChain().size())
+        } else if (p1.getProposedChain().size() > p2.getProposedChain().size()) {
           return 1;
-        else {
-          if (!p1.needsCast() && p2.needsCast())
+        } else {
+          if (!p1.needsCast() && p2.needsCast()) {
             return -1;
-          if (p1.needsCast() && !p2.needsCast())
+          }
+          if (p1.needsCast() && !p2.needsCast()) {
             return 1;
+          }
           return 0;
         }
       }
@@ -99,12 +99,37 @@ public class TemplateProposalEngine {
   private String computePrefixToEquals() {
     String prefixToEquals = "";
     try {
-      prefixToEquals = FieldsAndMethodsCompletionContext.getPrefixToEqualSymbol(jctx.getDocument(),
-          jctx.getInvocationOffset());
+      prefixToEquals = getPrefixToEqualSymbol(jctx.getDocument(), jctx.getInvocationOffset());
     } catch (final BadLocationException e) {
       JavaPlugin.log(e);
     }
     return prefixToEquals;
+  }
+
+  /**
+   * Helper method to detect the portion of code to the equal-symbol
+   * 
+   * @param doc
+   * @param offset
+   * @return
+   * @throws BadLocationException
+   */
+  public static String getPrefixToEqualSymbol(final IDocument doc, int offset) throws BadLocationException {
+    final IRegion lineRegion = doc.getLineInformationOfOffset(offset);
+    final int lineStart = lineRegion.getOffset();
+    final StringBuilder sb = new StringBuilder();
+    char c = doc.getChar(offset - 1);
+    while (c != '=') {
+      sb.insert(0, c);
+      c = doc.getChar(--offset - 1);
+      if (offset <= lineStart) {
+        return "";
+      }
+    }
+    if (sb.length() > 0 && sb.substring(0, 1).equals(" ")) {
+      sb.replace(0, 1, "");
+    }
+    return sb.toString();
   }
 
   // Computes the Java context. Due to all proposals are erased, the offset to
@@ -121,8 +146,7 @@ public class TemplateProposalEngine {
   private int computeOffsetToEquals(final JavaContentAssistInvocationContext jctx) {
     int offsetToEquals = -1;
     try {
-      offsetToEquals = FieldsAndMethodsCompletionContext.getOffsetToEqualSymbol(jctx.getDocument(),
-          jctx.getInvocationOffset());
+      offsetToEquals = getOffsetToEqualSymbol(jctx.getDocument(), jctx.getInvocationOffset());
       if (offsetToEquals == -1) {
         offsetToEquals = jctx.getInvocationOffset();
       } else {
@@ -134,17 +158,30 @@ public class TemplateProposalEngine {
     return offsetToEquals;
   }
 
+  public static int getOffsetToEqualSymbol(final IDocument doc, int offset) throws BadLocationException {
+    final IRegion lineRegion = doc.getLineInformationOfOffset(offset);
+    final int lineStart = lineRegion.getOffset();
+    char c = doc.getChar(offset - 1);
+    while (c != '=') {
+      c = doc.getChar(--offset - 1);
+      if (offset <= lineStart) {
+        return -1;
+      }
+    }
+    return offset;
+  }
+
   // Iterates over all computed proposals. First this method checks if the time
   // is up, or the max. number of proposals
   // are reached. Then it generates the code, description and finally the
   // proposal template.
-  private List<IJavaCompletionProposal> computeProposalList(final List<ChainedJavaProposal> proposals,
+  private List<IJavaCompletionProposal> computeProposalList(final List<ChainProposal> proposals,
       final long algortihmComputeTime, final long proposalStartTime) {
     completionProposals = new ArrayList<IJavaCompletionProposal>();
 
     int proposalNo = 1;
-    int proposalListSize = proposals.size();
-    for (final ChainedJavaProposal proposal : proposals) {
+    final int proposalListSize = proposals.size();
+    for (final ChainProposal proposal : proposals) {
       if (isMaxProposalCount(proposalNo) || isMaxPluginComputationTime(algortihmComputeTime, proposalStartTime)) {
         break;
       }
@@ -153,7 +190,7 @@ public class TemplateProposalEngine {
     return completionProposals;
   }
 
-  private int computeProposalPart(int proposalListSize, int proposalNo, final ChainedJavaProposal proposal) {
+  private int computeProposalPart(final int proposalListSize, int proposalNo, final ChainProposal proposal) {
     try {
       final String code = generateCode(proposal);
       if (code != null) {
@@ -166,7 +203,7 @@ public class TemplateProposalEngine {
     return proposalNo;
   }
 
-  private void computeAndAddProposal(int proposalSize, final int proposalNo, final ChainedJavaProposal proposal,
+  private void computeAndAddProposal(final int proposalSize, final int proposalNo, final ChainProposal proposal,
       final String code) throws BadLocationException, TemplateException {
     final JavaContext ctx = computeJavaContext();
     final Template template = generateTemplate(proposal, code); // name
@@ -182,8 +219,8 @@ public class TemplateProposalEngine {
 
   private boolean canEvaluateTemplate(final JavaContext ctx, final Template template) throws BadLocationException,
       TemplateException {
-    boolean isEvaluable = ctx.evaluate(template) != null;
-    boolean hasProposalString = ctx.evaluate(template).getString() != null;
+    final boolean isEvaluable = ctx.evaluate(template) != null;
+    final boolean hasProposalString = ctx.evaluate(template).getString() != null;
 
     return isEvaluable && hasProposalString;
   }
@@ -195,7 +232,7 @@ public class TemplateProposalEngine {
     return region;
   }
 
-  private Template generateTemplate(final ChainedJavaProposal proposal, final String code) {
+  private Template generateTemplate(final ChainProposal proposal, final String code) {
     final String description = computeDescription(proposal);
     final String name = computeName(proposal);
     final Template template = new Template(name, description, "java", code, true);
@@ -203,21 +240,22 @@ public class TemplateProposalEngine {
   }
 
   private boolean isMaxPluginComputationTime(final long algortihmComputeTime, final long proposalStartTime) {
-    return (System.currentTimeMillis() - proposalStartTime > Constants.ProposalSettings.MAX_PROPOSAL_COMPUTATION_TIME_IN_MS
-        + algortihmComputeTime);
+    return System.currentTimeMillis() - proposalStartTime > Constants.ProposalSettings.MAX_PROPOSAL_COMPUTATION_TIME_IN_MS
+        + algortihmComputeTime;
   }
 
   private boolean isMaxProposalCount(final int proposalNo) {
-    return (Constants.ProposalSettings.MAX_PROPOSAL_COUNT < proposalNo);
+    return Constants.ProposalSettings.MAX_PROPOSAL_COUNT < proposalNo;
   }
 
   // This method computes the name, which is displayed in the proposal box.
-  private String computeName(final ChainedJavaProposal proposal) {
+  private String computeName(final ChainProposal proposal) {
     StringBuilder name = null;
-    for (final IChainWalaElement part : proposal.getProposedChain()) {
+    for (final IChainElement part : proposal.getProposedChain()) {
       final String partName = makePartName(part);
-      if (partName == null)
+      if (partName == null) {
         return null;
+      }
       if (name == null) {
         name = new StringBuilder().append(partName);
       } else {
@@ -228,7 +266,7 @@ public class TemplateProposalEngine {
     return name.toString();
   }
 
-  private void computeCastingForName(final ChainedJavaProposal proposal, StringBuilder code) {
+  private void computeCastingForName(final ChainProposal proposal, final StringBuilder code) {
     if (proposal.needsCast()) {
       code.insert(0,
           String.format("(%s) ", proposal.getCastingType().getName().getClassName().toString().replaceAll("/", ".")));
@@ -238,7 +276,7 @@ public class TemplateProposalEngine {
   // This method generates the part name for the proposal box. If the part is a
   // method with input parameters an
   // '(...)' is added, else '()'
-  private String makePartName(final IChainWalaElement part) {
+  private String makePartName(final IChainElement part) {
     switch (part.getElementType()) {
     case FIELD:
       return part.getCompletion();
@@ -249,8 +287,8 @@ public class TemplateProposalEngine {
     }
   }
 
-  private String makeTemplatePartNameForMethod(final IChainWalaElement part) {
-    final MethodChainWalaElement me = (MethodChainWalaElement) part;
+  private String makeTemplatePartNameForMethod(final IChainElement part) {
+    final MethodChainElement me = (MethodChainElement) part;
     final StringBuilder methodCode = new StringBuilder().append(part.getCompletion());
     if (me.getParameterNames().length == 0) {
       methodCode.append("()");
@@ -261,7 +299,7 @@ public class TemplateProposalEngine {
   }
 
   // This method computes the description for the proposal box
-  private String computeDescription(final ChainedJavaProposal proposal) {
+  private String computeDescription(final ChainProposal proposal) {
     final int chainLength = proposal.getProposedChain().size();
     String description = chainLength == 1 ? "(1 element" : "(" + chainLength + " elements";
     if (proposal.needsCast()) {
@@ -274,16 +312,17 @@ public class TemplateProposalEngine {
   // This method computes the code for the proposals. Therefore the hole string
   // is created, so that every prefix has
   // to be overridden.
-  private String generateCode(final ChainedJavaProposal proposal) throws JavaModelException {
+  private String generateCode(final ChainProposal proposal) throws JavaModelException {
 
-    String prefixToEquals = computePrefixToEquals();
+    final String prefixToEquals = computePrefixToEquals();
     final String prefixToLastDot = prefixToEquals.substring(0, prefixToEquals.lastIndexOf('.') + 1);
 
     StringBuilder code = null;
-    for (final IChainWalaElement part : proposal.getProposedChain()) {
+    for (final IChainElement part : proposal.getProposedChain()) {
       final String partCode = makePartCode(part);
-      if (partCode == null)
+      if (partCode == null) {
         return null;
+      }
       if (code == null) {
         code = new StringBuilder().append(prefixToLastDot).append(partCode);
       } else {
@@ -295,21 +334,21 @@ public class TemplateProposalEngine {
     return code.toString();
   }
 
-  private void computeCastingForCode(final ChainedJavaProposal proposal, StringBuilder code) {
+  private void computeCastingForCode(final ChainProposal proposal, final StringBuilder code) {
     if (proposal.needsCast()) {
-      String castingString = String.format("(${type:newType(%s)})", proposal.getCastingType().getName().getClassName()
-          .toString().replaceAll("/", "."));
+      final String castingString = String.format("(${type:newType(%s)})", proposal.getCastingType().getName()
+          .getClassName().toString().replaceAll("/", "."));
       code.insert(0, castingString);
     }
   }
 
   // This method generates a part of the code for one proposal.
-  private String makePartCode(final IChainWalaElement part) throws JavaModelException {
+  private String makePartCode(final IChainElement part) throws JavaModelException {
     switch (part.getElementType()) {
     case FIELD:
       return part.getCompletion();
     case METHOD:
-      final MethodChainWalaElement methodChainElement = (MethodChainWalaElement) part;
+      final MethodChainElement methodChainElement = (MethodChainElement) part;
       final StringBuilder methodCode = new StringBuilder().append(part.getCompletion()).append(Signature.C_PARAM_START);
       includeParameterNames(methodChainElement, methodCode);
       methodCode.append(Signature.C_PARAM_END);
@@ -319,7 +358,7 @@ public class TemplateProposalEngine {
     }
   }
 
-  private void includeParameterNames(final MethodChainWalaElement me, final StringBuilder methodCode) {
+  private void includeParameterNames(final MethodChainElement me, final StringBuilder methodCode) {
     boolean firstParam = true;
     for (final String paramName : me.getParameterNames()) {
       if (!firstParam) {

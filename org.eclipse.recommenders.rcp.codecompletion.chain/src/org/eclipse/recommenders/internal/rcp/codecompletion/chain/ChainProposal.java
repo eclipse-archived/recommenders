@@ -9,11 +9,12 @@
  *    Gary Fritz - initial API and implementation.
  *    Andreas Kaluza - modified implementation to use WALA 
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
+package org.eclipse.recommenders.internal.rcp.codecompletion.chain;
 
 import java.util.List;
 
 import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement;
 
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.types.TypeReference;
@@ -22,8 +23,8 @@ import com.ibm.wala.types.TypeReference;
  * Default implementation of {@link IChainedJavaProposal}
  * 
  */
-public class ChainedJavaProposal {
-  private final List<IChainWalaElement> proposedChain;
+public class ChainProposal {
+  private final List<IChainElement> proposedChain;
 
   TypeReference resultingType;
 
@@ -37,7 +38,7 @@ public class ChainedJavaProposal {
    * @param proposedChain
    *          list of proposed chain elements (fields and/or methods)
    */
-  public ChainedJavaProposal(final List<IChainWalaElement> proposedChain) {
+  public ChainProposal(final List<IChainElement> proposedChain) {
     this(proposedChain, null);
   }
 
@@ -67,7 +68,7 @@ public class ChainedJavaProposal {
    * @param castingType
    *          type to up-cast the chain's last element's resulting type to
    */
-  public ChainedJavaProposal(final List<IChainWalaElement> proposedChain, final IClass castingType) {
+  public ChainProposal(final List<IChainElement> proposedChain, final IClass castingType) {
     Checks.ensureIsNotNull(proposedChain);
     Checks.ensureIsTrue(proposedChain.size() >= 1);
     this.proposedChain = proposedChain;
@@ -76,7 +77,7 @@ public class ChainedJavaProposal {
     this.castingType = castingType;
   }
 
-  public List<IChainWalaElement> getProposedChain() {
+  public List<IChainElement> getProposedChain() {
     return proposedChain;
   }
 

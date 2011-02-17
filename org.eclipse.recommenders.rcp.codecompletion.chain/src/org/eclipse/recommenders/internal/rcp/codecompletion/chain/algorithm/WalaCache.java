@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.internal.rcp.codecompletion.chain.util;
+package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +17,7 @@ import com.ibm.wala.types.TypeReference;
  * 
  * XXX could be refactored to an util class
  */
-public class LookupUtilWala {
+public class WalaCache {
 
   public static final int RESULT_PRIMITIVE = 0x2;
 
@@ -40,7 +40,7 @@ public class LookupUtilWala {
    * @throws JavaModelException
    */
   public static boolean isSupertype(final IClass context, final IClass subtype) throws JavaModelException {
-    List<IClass> superclasses = LookupUtilWala.hierarchies.get(context);
+    List<IClass> superclasses = WalaCache.hierarchies.get(context);
     if (superclasses == null) {
       superclasses = InheritanceUtils.getAllSuperclasses(context);
       superclasses.addAll(context.getAllImplementedInterfaces());
@@ -50,8 +50,8 @@ public class LookupUtilWala {
           break;
         }
       }
-      synchronized (LookupUtilWala.hierarchies) {
-        LookupUtilWala.hierarchies.put(context, superclasses);
+      synchronized (WalaCache.hierarchies) {
+        WalaCache.hierarchies.put(context, superclasses);
       }
     }
     return superclasses.contains(subtype);
@@ -69,7 +69,7 @@ public class LookupUtilWala {
    * @throws JavaModelException
    */
   public static boolean isSubtype(final IClass context, final IClass subtype) throws JavaModelException {
-    List<IClass> superclasses = LookupUtilWala.hierarchies.get(subtype);
+    List<IClass> superclasses = WalaCache.hierarchies.get(subtype);
     if (superclasses == null) {
       superclasses = InheritanceUtils.getAllSuperclasses(subtype);
       superclasses.addAll(subtype.getAllImplementedInterfaces());
@@ -79,8 +79,8 @@ public class LookupUtilWala {
           break;
         }
       }
-      synchronized (LookupUtilWala.hierarchies) {
-        LookupUtilWala.hierarchies.put(subtype, superclasses);
+      synchronized (WalaCache.hierarchies) {
+        WalaCache.hierarchies.put(subtype, superclasses);
       }
     }
     return superclasses.contains(context);
@@ -101,12 +101,12 @@ public class LookupUtilWala {
   public static int equalityTest(final IClass resultingType, final IClass expectedType) {
     if (resultingType.getReference().isPrimitiveType() && resultingType.getReference().isPrimitiveType()) {
       if (resultingType.getReference().getName().equals(expectedType.getReference().getName()))
-        return LookupUtilWala.RESULT_EQUAL | LookupUtilWala.RESULT_PRIMITIVE;
+        return WalaCache.RESULT_EQUAL | WalaCache.RESULT_PRIMITIVE;
       else
-        return LookupUtilWala.RESULT_PRIMITIVE;
+        return WalaCache.RESULT_PRIMITIVE;
     } else {
       if (resultingType.getReference().getName().equals(expectedType.getReference().getName()))
-        return LookupUtilWala.RESULT_EQUAL;
+        return WalaCache.RESULT_EQUAL;
     }
     // Types are not equal, but maybe they're related
     // i.e. one of them is in the type hierarchy of the other one

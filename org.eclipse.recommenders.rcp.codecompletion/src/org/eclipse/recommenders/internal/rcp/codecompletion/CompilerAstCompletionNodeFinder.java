@@ -24,6 +24,7 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameRef
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
@@ -53,6 +54,7 @@ import org.eclipse.jdt.internal.compiler.ast.DoubleLiteral;
 import org.eclipse.jdt.internal.compiler.ast.EmptyStatement;
 import org.eclipse.jdt.internal.compiler.ast.EqualExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
 import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
@@ -124,7 +126,6 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.recommenders.commons.utils.annotations.Clumsy;
-import org.eclipse.recommenders.commons.utils.names.ITypeName;
 
 import com.google.common.collect.Sets;
 
@@ -191,7 +192,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
      * }
      * </pre>
      */
-    public ITypeName requestedTypeCompletion;
+    public TypeBinding requestedTypeCompletion;
 
     public boolean expectsStaticMember;
 
@@ -395,7 +396,11 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
         if (localDeclaration instanceof CompletionOnLocalName) {
             final CompletionOnLocalName node = storeCompletionNode(localDeclaration);
             evaluateCompletionOnLocalName(node);
+        } else if (isCompletionOnVariableInitialization(localDeclaration.initialization)) {
+            expectedReturnType = localDeclaration.binding.type;
         } else {
+            // we only add this declaration if it's "complete".
+            // Var c = c doesn't make sense, right?
             variableDeclarations.add(localDeclaration);
         }
         return true;
@@ -419,8 +424,20 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             storeCompletionNode(fieldDeclaration);
             return false;
         }
-        variableDeclarations.add(fieldDeclaration);
+        if (isCompletionOnVariableInitialization(fieldDeclaration.initialization)) {
+            expectedReturnType = fieldDeclaration.binding.type;
+        } else {
+            // we only add this declaration if it's "complete".
+            // Var c = c doesn't make sense, right?
+            variableDeclarations.add(fieldDeclaration);
+        }
         return true;
+    }
+
+    private boolean isCompletionOnVariableInitialization(final Expression initialization) {
+        return initialization instanceof CompletionOnSingleNameReference
+                || initialization instanceof CompletionOnQualifiedNameReference
+                || initialization instanceof CompletionOnMemberAccess;
     }
 
     public boolean isCompletionNodeFound() {
@@ -886,6 +903,12 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     @Override
     public boolean visit(final ReturnStatement returnStatement, final BlockScope scope) {
+        if (isCompletionOnVariableInitialization(returnStatement.expression)) {
+            if (scope.referenceContext() instanceof AbstractMethodDeclaration) {
+                final AbstractMethodDeclaration referenceContext = (AbstractMethodDeclaration) scope.referenceContext();
+                expectedReturnType = referenceContext.binding.returnType;
+            }
+        }
         return true;
     }
 

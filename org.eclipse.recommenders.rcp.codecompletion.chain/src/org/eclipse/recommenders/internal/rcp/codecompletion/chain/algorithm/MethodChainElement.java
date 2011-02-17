@@ -9,12 +9,11 @@
  *    Gary Fritz - initial API and implementation.
  *    Andreas Kaluza - modified implementation to use WALA 
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.internal;
+package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
 import java.io.UTFDataFormatException;
 
 import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainWalaElement;
 
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
@@ -29,7 +28,7 @@ import com.ibm.wala.types.TypeReference;
  * 
  */
 @SuppressWarnings("restriction")
-public class MethodChainWalaElement implements IChainWalaElement {
+public class MethodChainElement implements IChainElement {
   private String completion;
 
   private TypeReference[] parameterTypes;
@@ -40,7 +39,7 @@ public class MethodChainWalaElement implements IChainWalaElement {
 
   private final IClassHierarchy classHierarchy;
 
-  public MethodChainWalaElement(final IMethod method) {
+  public MethodChainElement(final IMethod method) {
     classHierarchy = method.getClassHierarchy();
     try {
       completion = method.getName().toUnicodeString();
@@ -105,10 +104,10 @@ public class MethodChainWalaElement implements IChainWalaElement {
     return resultingType;
   }
 
-  @Override
-  public String getResultingTypeName() {
-    return resultingType.getName().toUnicodeString();
-  }
+  // @Override
+  // public String getResultingTypeName() {
+  // return resultingType.getName().toUnicodeString();
+  // }
 
   /**
    * Returns array of types of formal parameters
@@ -132,8 +131,9 @@ public class MethodChainWalaElement implements IChainWalaElement {
 
   @Override
   public IClass getType() {
-    if (getResultingType().isPrimitiveType())
+    if (getResultingType().isPrimitiveType()) {
       return null;
+    }
     return classHierarchy.lookupClass(getResultingType());
   }
 }

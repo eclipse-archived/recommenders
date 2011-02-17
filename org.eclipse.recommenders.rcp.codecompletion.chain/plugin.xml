@@ -15,7 +15,7 @@
       <javaCompletionProposalComputer
             activate="true"
             categoryId="org.eclipse.recommenders.code.completion.chainedjava.category"
-            class="org.eclipse.recommenders.internal.rcp.codecompletion.chain.ChainedJavaCompletionProposalComputer">
+            class="org.eclipse.recommenders.internal.rcp.codecompletion.chain.ChainCompletionProposalComputer">
       </javaCompletionProposalComputer>
    </extension>
 </plugin>

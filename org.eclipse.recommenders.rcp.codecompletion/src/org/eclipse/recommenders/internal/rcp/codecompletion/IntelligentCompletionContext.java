@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -283,7 +284,8 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         final IJavaElement element = findEnclosingElement();
         if (element instanceof IMethod) {
             return ((IMethod) element).getDeclaringType();
-
+        } else if (element instanceof IField) {
+            return ((IField) element).getDeclaringType();
         } else if (element instanceof IType) {
             return (IType) element;
         }

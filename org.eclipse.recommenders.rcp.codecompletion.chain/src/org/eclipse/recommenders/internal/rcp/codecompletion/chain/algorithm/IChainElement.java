@@ -19,13 +19,13 @@ import com.ibm.wala.types.TypeReference;
  * implementation ({@link ChainingAlgorithm} ).
  * 
  */
-public interface IChainWalaElement {
+public interface IChainElement {
   /**
    * Type of element REVIEW: new information? skip this or make some important
    * points.
    */
   public enum ChainElementType {
-    FIELD, METHOD
+    FIELD, METHOD, LOCAL
   };
 
   /**
@@ -43,23 +43,17 @@ public interface IChainWalaElement {
   public abstract String getCompletion();
 
   /**
+   * Returns the {@link IClass} this completion portion results in
+   * 
+   * @return the class this completion portion results in
+   */
+  public IClass getType();
+
+  /**
    * Returns the {@link TypeReference} this completion portion results in
    * 
    * @return the type reference this completion portion results in
    */
   public abstract TypeReference getResultingType();
 
-  /**
-   * Returns the name of the {@link IClass} this completion portion results in
-   * 
-   * @return name of the type this completion portion results in
-   */
-  public abstract String getResultingTypeName();
-
-  /**
-   * Returns the {@link IClass} this completion portion results in
-   * 
-   * @return the class this completion portion results in
-   */
-  public IClass getType();
 }
