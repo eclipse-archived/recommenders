@@ -15,12 +15,12 @@ public class CompletionOnMemberCallChainDepth2 {
     File c =<^Space>
 
     public CompletionOnMemberCallChainDepth2(){
-        A a = new A();
-        File c =<^Space>
+        final A a = new A();
+        final File c =<^Space>
     }
     
     public void method() {
-        A a = new A();
-        File c =<^Space>
+        final A a = new A();
+        final File c =<^Space>
     }
 }
