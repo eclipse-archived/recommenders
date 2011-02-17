@@ -24,8 +24,10 @@ public class CompletionOnThisInOverriddenMethod extends Wizard {
 
     @Override
     public boolean performFinish() {
-
+        //@start
+        this.<^Space|getContainer.*%>
+        //@end
+        //this.getContainer()
         return false;
     }
-
 }

@@ -10,101 +10,45 @@
  */
 package org.eclipse.recommenders.tests.rcp.codecompletion.calls.ui;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.recommenders.tests.commons.ui.utils.DefaultUiTest;
+import org.eclipse.recommenders.tests.commons.ui.utils.FixtureUtil;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEclipseEditor;
-import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEditor;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
-import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(SWTBotJunit4ClassRunner.class)
-public class UiTest {
+public class UiTest extends DefaultUiTest {
 
-    private static SWTWorkbenchBot bot;
-
-    @BeforeClass
-    public static void beforeClass() {
-        SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        bot = new SWTWorkbenchBot();
-        try {
-            bot.viewByTitle("Welcome").close();
-        } catch (final Exception e) {
-        }
-
-        bot.menu("Window").menu("Open Perspective").menu("Other...").click();
-        bot.shell("Open Perspective").activate();
-        if (bot.table().containsItem("Java")) {
-            bot.table().select("Java");
-        } else {
-            bot.table().select("Java (default)");
-        }
-        bot.button("OK").click();
-    }
-
-    @AfterClass
-    public static void sleep() {
-        bot.sleep(1000);
-        final List<? extends SWTBotEditor> editors = bot.editors();
-        for (final SWTBotEditor editor : editors) {
-            editor.saveAndClose();
-        }
-    }
+    private static final String fixtureProjectName = "org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.calls";
 
     @Test
-    public void testCalls() throws Exception {
-        final String projectName = "org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.calls";
-        UiTestHelper.copyProjectToWorkspace(projectName);
+    public void testClassesInFixtureProject() throws Exception {
+        FixtureUtil.copyProjectToWorkspace(fixtureProjectName);
+        final SWTBotTreeItem srcNode = findSourceNode();
+        searchAndTestClasses(srcNode.getItems());
+    }
 
+    private SWTBotTreeItem findSourceNode() {
         final SWTBotView projectExplorerView = bot.viewByTitle("Package Explorer");
-        final SWTBotTreeItem srcNode = projectExplorerView.bot().tree().expandNode(projectName).getNode("src");
+        final SWTBotTreeItem projectTreeItem = projectExplorerView.bot().tree().expandNode(fixtureProjectName);
+        final SWTBotTreeItem srcNode = projectTreeItem.getNode("src");
         srcNode.expand();
-        openAndTestFiles(srcNode.getItems());
+        return srcNode;
     }
 
-    private void testFile(final String file) {
-        final SWTBotEclipseEditor editor = bot.editorByTitle(file).toTextEditor();
-        bot.sleep(1000);
-        int lineNumber = 0;
-        for (final String line : editor.getLines()) {
-            final int column = line.indexOf("<^Space");
-            if (column >= 0) {
-                System.out.println(lineNumber + ":" + column + "-> " + line);
-                editor.navigateTo(lineNumber, column);
-
-                final Pattern pattern = Pattern.compile("\\<\\^Space\\|(.+?)\\>");
-                final Matcher matcher = pattern.matcher(line);
-                matcher.find();
-                final String method = matcher.group(1);
-
-                UiTestHelper.triggerCodeCompletion(editor, bot, method);
-
-                editor.setFocus();
-            }
-
-            lineNumber++;
-        }
-
-        final CompletionVerifier verifier = new CompletionVerifier(editor.getLines());
-        verifier.verify();
-        editor.saveAndClose();
-    }
-
-    private void openAndTestFiles(final SWTBotTreeItem[] items) {
+    private void searchAndTestClasses(final SWTBotTreeItem[] items) {
         for (int i = 0; i < items.length; i++) {
             if (isJavaFile(items[i])) {
                 openAndTestFile(items[i]);
             } else {
                 items[i].expand();
-                openAndTestFiles(items[i].getItems());
+                searchAndTestClasses(items[i].getItems());
             }
         }
     }
@@ -114,16 +58,50 @@ public class UiTest {
     }
 
     private void openAndTestFile(final SWTBotTreeItem item) {
-        System.out.println(item.getText());
-        item.setFocus();
-        item.select();
-        item.doubleClick();
+        final SWTBotEclipseEditor editor = openClassFileEditor(item);
+
         try {
-            testFile(item.getText());
+            testClassFile(editor);
         } catch (final Exception e) {
             throw new RuntimeException("Test failed for file: " + item.getText(), e);
         } catch (final AssertionError e) {
             throw new RuntimeException("Test failed for file: " + item.getText(), e);
         }
     }
+
+    private SWTBotEclipseEditor openClassFileEditor(final SWTBotTreeItem item) {
+        item.setFocus();
+        item.select();
+        item.doubleClick();
+        return bot.editorByTitle(item.getText()).toTextEditor();
+    }
+
+    private void testClassFile(final SWTBotEclipseEditor editor) {
+        bot.sleep(1000);
+        searchMarkersAndInvokeCompletion(editor);
+        new CompletionVerifier(editor.getLines()).verify();
+        editor.saveAndClose();
+    }
+
+    private void searchMarkersAndInvokeCompletion(final SWTBotEclipseEditor editor) {
+        int lineNumber = 0;
+        for (final String line : editor.getLines()) {
+            final int column = line.indexOf("<^Space");
+            if (column >= 0) {
+                editor.navigateTo(lineNumber, column);
+                final String proposalExpression = findProposalExpression(line);
+                CompletionUtil.triggerCodeCompletion(editor, bot, proposalExpression);
+            }
+
+            lineNumber++;
+        }
+    }
+
+    private String findProposalExpression(final String line) {
+        final Pattern pattern = Pattern.compile("\\<\\^Space\\|(.+?)\\>");
+        final Matcher matcher = pattern.matcher(line);
+        matcher.find();
+        return matcher.group(1);
+    }
+
 }
