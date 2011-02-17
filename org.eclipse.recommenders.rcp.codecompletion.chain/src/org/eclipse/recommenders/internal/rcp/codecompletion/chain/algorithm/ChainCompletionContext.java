@@ -5,7 +5,6 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import java.util.List;
 
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerBindings;
@@ -18,8 +17,8 @@ import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMember;
 import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.types.TypeReference;
 
+@SuppressWarnings("restriction")
 public class ChainCompletionContext {
 
   private final IntelligentCompletionContext ctx;
@@ -134,48 +133,16 @@ public class ChainCompletionContext {
     }
   }
 
-  @SuppressWarnings("restriction")
   private void computeAccessibleLocals() {
     if (!ctx.getVariable().isThis()) {
       return;
     }
-    for (final AbstractVariableDeclaration var : ctx.getVariableDeclarations()) {
-      if (var instanceof LocalDeclaration) {
-        final LocalDeclaration local = (LocalDeclaration) var;
-        final ITypeName typeName = CompilerBindings.toTypeName(local.type);
-        final IClass walaClass = toWalaClass(typeName);
-        final IChainElement element = new IChainElement() {
-
-          @Override
-          public IClass getType() {
-
-            return walaClass;
-          }
-
-          // @Override
-          // public String getResultingTypeName() {
-          //
-          // return null;
-          // }
-
-          @Override
-          public TypeReference getResultingType() {
-            return walaClass.getReference();
-          }
-
-          @Override
-          public ChainElementType getElementType() {
-
-            return ChainElementType.FIELD;
-          }
-
-          @Override
-          public String getCompletion() {
-            return String.valueOf(local.name);
-          }
-        };
-        accessibleLocals.add(element);
-      }
+    for (final LocalDeclaration local : ctx.getLocalDeclarations()) {
+      final ITypeName typeName = CompilerBindings.toTypeName(local.type);
+      final IClass localType = toWalaClass(typeName);
+      final String localName = String.valueOf(local.name);
+      final IChainElement element = new LocalVariableChainElement(localName, localType);
+      accessibleLocals.add(element);
     }
   }
 

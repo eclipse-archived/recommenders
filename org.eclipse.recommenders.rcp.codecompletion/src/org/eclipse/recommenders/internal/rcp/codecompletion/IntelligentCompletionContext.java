@@ -33,8 +33,9 @@ import org.eclipse.jdt.internal.codeassist.CompletionEngine;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionParser;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
@@ -199,8 +200,13 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
     }
 
     @Override
-    public Set<AbstractVariableDeclaration> getVariableDeclarations() {
-        return astCompletionNodeFinder.variableDeclarations;
+    public Set<FieldDeclaration> getFieldDeclarations() {
+        return astCompletionNodeFinder.fieldDeclarations;
+    }
+
+    @Override
+    public Set<LocalDeclaration> getLocalDeclarations() {
+        return astCompletionNodeFinder.localDeclarations;
     }
 
     @Override
@@ -333,7 +339,7 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         if (getReceiverName() != null && getReceiverType() != null) {
             return Variable.create(getReceiverName(), getReceiverType(), getEnclosingMethod());
         }
-        final AbstractVariableDeclaration match = findMatchingLocalVariable(getReceiverName());
+        final LocalDeclaration match = findMatchingLocalVariable(getReceiverName());
         if (match == null) {
             return null;
         }
@@ -346,8 +352,8 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         return "".equals(getReceiverName()) && getReceiverType() == null;
     }
 
-    private AbstractVariableDeclaration findMatchingLocalVariable(final String receiverName) {
-        for (final AbstractVariableDeclaration local : getVariableDeclarations()) {
+    private LocalDeclaration findMatchingLocalVariable(final String receiverName) {
+        for (final LocalDeclaration local : getLocalDeclarations()) {
             final String name = String.valueOf(local.name);
             if (name.equals(receiverName)) {
                 return local;

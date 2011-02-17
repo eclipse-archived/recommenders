@@ -25,7 +25,6 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameRefere
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
@@ -235,7 +234,8 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     public MethodScope scope;
 
-    public final Set<AbstractVariableDeclaration> variableDeclarations = Sets.newHashSet();
+    public final Set<FieldDeclaration> fieldDeclarations = Sets.newHashSet();
+    public final Set<LocalDeclaration> localDeclarations = Sets.newHashSet();
 
     public void clearState() {
         receiverDefinedByMethodReturn = null;
@@ -401,7 +401,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
         } else {
             // we only add this declaration if it's "complete".
             // Var c = c doesn't make sense, right?
-            variableDeclarations.add(localDeclaration);
+            localDeclarations.add(localDeclaration);
         }
         return true;
     }
@@ -429,7 +429,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
         } else {
             // we only add this declaration if it's "complete".
             // Var c = c doesn't make sense, right?
-            variableDeclarations.add(fieldDeclaration);
+            fieldDeclarations.add(fieldDeclaration);
         }
         return true;
     }
