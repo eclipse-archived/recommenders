@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.rcp.codecompletion.calls.ui;
+package org.eclipse.recommenders.tests.commons.ui.utils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -66,7 +66,12 @@ public class CompletionVerifier {
         String storeLine;
         final int startIndex = currentLine.indexOf("<^Space");
         if (startIndex >= 0) {
-            storeLine = currentLine.substring(0, startIndex);
+            final int commentIndex = currentLine.indexOf("//");
+            if (commentIndex >= 0 && commentIndex < startIndex) {
+                storeLine = currentLine.substring(0, commentIndex);
+            } else {
+                storeLine = currentLine.substring(0, startIndex);
+            }
             storeLine += currentLine.substring(currentLine.indexOf(">") + 1, currentLine.length());
         } else {
             storeLine = currentLine;
