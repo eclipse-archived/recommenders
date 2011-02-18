@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.rcp.codecompletion.calls.ui;
+package org.eclipse.recommenders.tests.rcp.codecompletion.overrides.ui;
 
 import org.eclipse.recommenders.tests.commons.ui.utils.DefaultUiTest;
 import org.eclipse.recommenders.tests.commons.ui.utils.FixtureUtil;
@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class UiTest extends DefaultUiTest {
 
-    private static final String fixtureProjectName = "org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.calls";
+    private static final String fixtureProjectName = "org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.overrides";
 
     @Test
     public void testClassesInFixtureProject() throws Exception {

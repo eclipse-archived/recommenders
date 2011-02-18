@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.rcp.codecompletion.overrides;
+package org.eclipse.recommenders.tests.rcp.codecompletion.overrides.unit;
 
 import java.io.IOException;
 import java.net.URL;
