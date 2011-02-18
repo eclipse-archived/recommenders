@@ -29,7 +29,7 @@
 		<repository>
 			<id>recommenders-3rd</id>
 			<layout>p2</layout>
-			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-latest/</url>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-20110218_1045/</url>
 		</repository>
 		<repository>
 			<id>swtbot</id>
@@ -150,11 +150,13 @@
 						</executions>
 						<configuration>
 							<encoding>UTF-8</encoding>
-							<header>org.eclipse.recommenders.releng/etc/license-tu-darmstadt.txt</header>
 							<validHeaders>
-								<validHeader>org.eclipse.recommenders.releng/etc/license-fritz-kaluza.txt</validHeader>
-								<validHeader>org.eclipse.recommenders.releng/etc/license-tu-darmstadt.txt</validHeader>
-								<validHeader>org.eclipse.recommenders.releng/etc/license-henss.txt</validHeader>
+								<validHeader>org.eclipse.recommenders.releng/etc/license-fritz-kaluza-2010.txt</validHeader>
+								<validHeader>org.eclipse.recommenders.releng/etc/license-fritz-kaluza-2010.txt</validHeader>
+								<validHeader>org.eclipse.recommenders.releng/etc/license-tu-darmstadt-2010.txt</validHeader>
+								<validHeader>org.eclipse.recommenders.releng/etc/license-tu-darmstadt-2011.txt</validHeader>
+								<validHeader>org.eclipse.recommenders.releng/etc/license-henss-2010.txt</validHeader>
+								<validHeader>org.eclipse.recommenders.releng/etc/license-henss-2011.txt</validHeader>
 							</validHeaders>
 							<strictCheck>false</strictCheck>
 							<quiet>false</quiet>
@@ -162,10 +164,6 @@
 							<includes>
 								<include>**/*.java</include>
 							</includes>
-							<properties>
-								<year>2010</year>
-								<owner>Darmstadt University of Technology</owner>
-							</properties>
 							<encoding>UTF-8</encoding>
 						</configuration>
 					</plugin>
@@ -310,6 +308,8 @@
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.overrides</module>
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.overrides</module>
+
+		<module>org.eclipse.recommenders.rcp.codecompletion.chain</module>
 
 		<module>org.eclipse.recommenders.rcp.utils</module>
 		<module>org.eclipse.recommenders.tests.commons</module>
