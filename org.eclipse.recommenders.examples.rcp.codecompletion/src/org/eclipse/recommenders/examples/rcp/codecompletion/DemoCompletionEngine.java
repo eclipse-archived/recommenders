@@ -17,16 +17,34 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
+import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
+import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
+import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
+
+import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
-public class DemoCompletionEngine implements IIntelligentCompletionEngine {
+public class DemoCompletionEngine implements IJavaCompletionProposalComputer {
+
+    private final IntelligentCompletionContextResolver contextResolver;
+
+    @Inject
+    public DemoCompletionEngine(final IntelligentCompletionContextResolver contextResolver) {
+        this.contextResolver = contextResolver;
+    }
 
     @Override
-    public List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
-        return Collections.singletonList(makeDemoProposal(ctx));
+    public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+        final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
+        if (contextResolver.hasProjectRecommendersNature(jCtx)) {
+            final IIntelligentCompletionContext iContext = contextResolver.resolveContext(jCtx);
+            return Collections.singletonList(makeDemoProposal(iContext));
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     IJavaCompletionProposal makeDemoProposal(final IIntelligentCompletionContext ctx) {
@@ -41,5 +59,23 @@ public class DemoCompletionEngine implements IIntelligentCompletionEngine {
             }
         };
         return p;
+    }
+
+    @Override
+    public void sessionStarted() {
+    }
+
+    @Override
+    public List computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return null;
+    }
+
+    @Override
+    public void sessionEnded() {
     }
 }

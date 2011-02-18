@@ -13,22 +13,23 @@ package org.eclipse.recommenders.internal.rcp.codecompletion;
 import org.eclipse.recommenders.internal.rcp.codecompletion.resolvers.AnonymousMemberAccessVariableUsageResolver;
 import org.eclipse.recommenders.internal.rcp.codecompletion.resolvers.AstBasedVariableUsageResolver;
 import org.eclipse.recommenders.internal.rcp.codecompletion.resolvers.StoreBasedVariableUsageResolver;
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
+import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 
 public class IntelligentCompletionModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        configureEmptyCompletionEngineSet();
         configureVariableUsageResolvers();
+        configureContextResolver();
     }
 
-    private void configureEmptyCompletionEngineSet() {
-        Multibinder.newSetBinder(binder(), IIntelligentCompletionEngine.class);
+    private void configureContextResolver() {
+        bind(IntelligentCompletionContextResolver.class).in(Scopes.SINGLETON);
     }
 
     private void configureVariableUsageResolvers() {

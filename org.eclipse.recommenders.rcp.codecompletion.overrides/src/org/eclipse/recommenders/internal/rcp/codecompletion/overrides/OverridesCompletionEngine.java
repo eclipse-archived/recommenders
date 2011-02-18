@@ -15,21 +15,25 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
+import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.rcp.RecommenderAdapter;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.codecompletion.CompletionProposalDecorator;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
+import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 
 import com.google.common.collect.Lists;
 
 @SuppressWarnings("restriction")
-public class OverridesCompletionEngine extends RecommenderAdapter implements IIntelligentCompletionEngine {
+public class OverridesCompletionEngine extends RecommenderAdapter implements IJavaCompletionProposalComputer {
     private final IArtifactStore artifactStore;
 
     private IIntelligentCompletionContext ctx;
@@ -42,14 +46,28 @@ public class OverridesCompletionEngine extends RecommenderAdapter implements IIn
 
     private List<IJavaCompletionProposal> proposals;
 
+    private final IntelligentCompletionContextResolver contextResolver;
+
     @Inject
-    public OverridesCompletionEngine(final IArtifactStore artifactStore, final InstantOverridesRecommender recommender) {
+    public OverridesCompletionEngine(final IArtifactStore artifactStore, final InstantOverridesRecommender recommender,
+            final IntelligentCompletionContextResolver contextResolver) {
         this.artifactStore = artifactStore;
         this.recommender = recommender;
+        this.contextResolver = contextResolver;
     };
 
     @Override
-    public List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
+    public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+        final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
+        if (contextResolver.hasProjectRecommendersNature(jCtx)) {
+            final IIntelligentCompletionContext iCtx = contextResolver.resolveContext(jCtx);
+            return computeProposals(iCtx);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
         this.ctx = ctx;
         this.jdtCu = ctx.getCompilationUnit();
         if (!isCompletionTriggeredInTypeDeclarationBody()) {
@@ -100,5 +118,24 @@ public class OverridesCompletionEngine extends RecommenderAdapter implements IIn
 
     private boolean isCompletionTriggeredInTypeDeclarationBody() {
         return ctx.getEnclosingMethod() == null && ctx.getEnclosingType() != null;
+    }
+
+    @Override
+    public void sessionStarted() {
+    }
+
+    @Override
+    public List computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return null;
+    }
+
+    @Override
+    public void sessionEnded() {
+
     }
 }

@@ -13,17 +13,22 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 import static java.util.Collections.emptyList;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
+import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -31,8 +36,8 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
 import org.eclipse.recommenders.rcp.codecompletion.CompletionProposalDecorator;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
+import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -40,7 +45,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 @SuppressWarnings("restriction")
-public class CallsCompletionEngine implements IIntelligentCompletionEngine {
+public class CallsCompletionEngine implements IJavaCompletionProposalComputer {
     private static final double MIN_PROBABILITY_THRESHOLD = 0.30d;
 
     private Set<Class<?>> supportedCompletionRequests;
@@ -65,11 +70,15 @@ public class CallsCompletionEngine implements IIntelligentCompletionEngine {
 
     private IMethodName firstMethodDeclaration;
 
+    private final IntelligentCompletionContextResolver contextResolver;
+
     @Inject
     public CallsCompletionEngine(final CallsModelStore modelsStore,
-            final Provider<Set<IVariableUsageResolver>> usageResolversProvider) {
+            final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
+            final IntelligentCompletionContextResolver contextResolver) {
         this.modelsStore = modelsStore;
         this.usageResolversProvider = usageResolversProvider;
+        this.contextResolver = contextResolver;
         initializeSuportedCompletionRequests();
     }
 
@@ -82,7 +91,17 @@ public class CallsCompletionEngine implements IIntelligentCompletionEngine {
     }
 
     @Override
-    public List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
+    public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+        final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
+        if (contextResolver.hasProjectRecommendersNature(jCtx)) {
+            final IIntelligentCompletionContext iCtx = contextResolver.resolveContext(jCtx);
+            return computeProposals(iCtx);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
         this.ctx = ctx;
         if (!isCompletionRequestSupported()) {
             return emptyList();
@@ -180,5 +199,23 @@ public class CallsCompletionEngine implements IIntelligentCompletionEngine {
                 proposals.add(decoratedProposal);
             }
         }
+    }
+
+    @Override
+    public void sessionStarted() {
+    }
+
+    @Override
+    public List computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return null;
+    }
+
+    @Override
+    public void sessionEnded() {
     }
 }

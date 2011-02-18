@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
 import org.eclipse.recommenders.rcp.IEditorChangedListener;
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.inject.AbstractModule;
@@ -42,8 +41,6 @@ public class OverridesModule extends AbstractModule {
         Multibinder.newSetBinder(binder(), IEditorChangedListener.class).addBinding()
                 .to(OverridesCompletionEngine.class);
         Multibinder.newSetBinder(binder(), IArtifactStoreChangedListener.class).addBinding()
-                .to(OverridesCompletionEngine.class);
-        Multibinder.newSetBinder(binder(), IIntelligentCompletionEngine.class).addBinding()
                 .to(OverridesCompletionEngine.class);
         Multibinder.newSetBinder(binder(), IRecommendationsViewContentProvider.class).addBinding()
                 .to(InstantOverridesRecommender.class);
