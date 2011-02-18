@@ -45,6 +45,26 @@
 		</profile>
 	
 		<profile>
+			<id>developer</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+				       <groupId>org.sonatype.tycho</groupId>
+				       <artifactId>maven-osgi-test-plugin</artifactId>
+				       <version>${tycho-version}</version>
+				       <configuration>
+				       		<testSuite>org.eclipse.recommenders.tests.rcp.codecompletion.calls</testSuite>
+          					<testClass>org.eclipse.recommenders.tests.rcp.codecompletion.calls.unit.UnitTestSuite</testClass>
+				       </configuration>
+				     </plugin>
+				</plugins>
+			</build>
+		</profile>
+	
+		<profile>
 			<id>coverage</id>
 			<build>
 				<plugins>
