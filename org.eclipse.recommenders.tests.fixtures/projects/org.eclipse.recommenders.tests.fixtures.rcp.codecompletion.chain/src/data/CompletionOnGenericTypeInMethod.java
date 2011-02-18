@@ -21,7 +21,7 @@ public class CompletionOnGenericTypeInMethod {
 
     public static void test_exactGenericType() {
 		final CompletionOnGenericTypeInMethod variable = new CompletionOnGenericTypeInMethod();
-		final List<String> c = <^Space>
+		final List<String> c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> List<String>
@@ -32,7 +32,7 @@ public class CompletionOnGenericTypeInMethod {
 
     public static void test_exactButWrongGenericType() {
 		final CompletionOnGenericTypeInMethod variable = new CompletionOnGenericTypeInMethod();
-		final List<Integer> c = <^Space>
+		final List<Integer> c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> List<Integer>
@@ -43,7 +43,7 @@ public class CompletionOnGenericTypeInMethod {
 
     public static void test_anonymousGenericType() {
 		final CompletionOnGenericTypeInMethod variable = new CompletionOnGenericTypeInMethod();
-		final List<?> c = <^Space>
+		final List<?> c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> List<?>
@@ -54,7 +54,7 @@ public class CompletionOnGenericTypeInMethod {
 
     public static void test_genericSuperType() {
 		final CompletionOnGenericTypeInMethod variable = new CompletionOnGenericTypeInMethod();
-		final List<? extends Serializable> c = <^Space>
+		final List<? extends Serializable> c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> List<? extends Serializable>
@@ -65,7 +65,7 @@ public class CompletionOnGenericTypeInMethod {
 
     public static void test_wrongGenericSuperType() {
 		final CompletionOnGenericTypeInMethod variable = new CompletionOnGenericTypeInMethod();
-		final List<? extends File> c = <^Space>
+		final List<? extends File> c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> List<? extends File>
@@ -76,7 +76,7 @@ public class CompletionOnGenericTypeInMethod {
 
     public static void test_genericSubType() {
 		final CompletionOnGenericTypeInMethod variable = new CompletionOnGenericTypeInMethod();
-		final List<? super String> c = <^Space>
+		final List<? super String> c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> List<? super String>
@@ -87,7 +87,7 @@ public class CompletionOnGenericTypeInMethod {
 
     public static void test_wrongGenericSubType() {
 		final CompletionOnGenericTypeInMethod variable = new CompletionOnGenericTypeInMethod();
-		final List<? super Serializable> c = <^Space>
+		final List<? super Serializable> c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> List<? super Serializable>

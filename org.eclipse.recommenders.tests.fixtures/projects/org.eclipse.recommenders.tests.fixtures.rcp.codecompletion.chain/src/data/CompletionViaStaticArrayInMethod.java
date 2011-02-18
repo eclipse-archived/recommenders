@@ -20,7 +20,7 @@ public class CompletionViaStaticArrayInMethod {
             new CompletionViaStaticArrayInMethod() };
 
     public static void method1() {
-		final AtomicBoolean c = <^Space>
+		final AtomicBoolean c = <@Ignore^Space>
         /* calling context --> static
          * expected type --> AtomicBoolean
          * expected completion --> useUs[i].findMe

@@ -16,7 +16,11 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
 public class CompletionOnLocal {
     public void method() {
+        //@start
 	    final IWorkbench wb = PlatformUI.getWorkbench();
-        final IWorkbenchHelpSystem c = wb.<^Space>
+        final IWorkbenchHelpSystem c = wb.<^Space|getHelpSystem.*(1 element).*>
+        //@end
+        //final IWorkbench wb = PlatformUI.getWorkbench();
+        //final IWorkbenchHelpSystem c = wb.getHelpSystem()
     }
 }

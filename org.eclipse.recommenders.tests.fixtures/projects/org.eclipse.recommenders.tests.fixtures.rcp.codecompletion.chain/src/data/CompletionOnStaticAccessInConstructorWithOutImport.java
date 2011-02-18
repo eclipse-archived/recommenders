@@ -16,7 +16,7 @@ public class CompletionOnStaticAccessInConstructorWithOutImport {
 
     public  CompletionOnStaticAccessInConstructorWithOutImport() {
         
-        final IWorkbenchHelpSystem c = PlatformUI.<^Space> 
+        final IWorkbenchHelpSystem c = PlatformUI.<@Ignore^Space> 
         /* calling context --> PlatformUI
          * expected type --> IWorkbenchHelpSystem
          * variable name --> c

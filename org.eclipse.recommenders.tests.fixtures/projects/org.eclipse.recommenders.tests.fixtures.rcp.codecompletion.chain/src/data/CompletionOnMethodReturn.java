@@ -16,8 +16,10 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
 public class CompletionOnMethodReturn {
     public void method() {
-        
-        final IWorkbenchHelpSystem c = getPlatform().<^Space>
+        //@start
+        final IWorkbenchHelpSystem c = getPlatform().<^Space|getHelpSystem.*(1 element).*>
+        //@end
+        //final IWorkbenchHelpSystem c = getPlatform().getHelpSystem()
         /* calling context --> PlatformUI
          * expected type --> IWorkbenchHelpSystem
          * variable name --> c

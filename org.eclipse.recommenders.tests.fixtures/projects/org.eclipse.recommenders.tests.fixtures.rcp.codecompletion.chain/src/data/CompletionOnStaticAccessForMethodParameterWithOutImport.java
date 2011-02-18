@@ -14,7 +14,7 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
 public class CompletionOnStaticAccessForMethodParameterWithOutImport {
 
-    int bla = callMe(PlatformUI.<^Space>);
+    int bla = callMe(PlatformUI.<@Ignore^Space>);
     /* calling context --> PlatformUI
      * expected type --> IWorkbenchHelpSystem
      * variable name --> XXX here we need a convention!
@@ -22,7 +22,7 @@ public class CompletionOnStaticAccessForMethodParameterWithOutImport {
    
     
     public CompletionOnStaticAccessForMethodParameterWithOutImport()  {
-        final int bla = callMe(PlatformUI.<^Space>);
+        final int bla = callMe(PlatformUI.<@Ignore^Space>);
         /* calling context --> PlatformUI
          * expected type --> IWorkbenchHelpSystem
          * variable name --> XXX here we need a convention!
@@ -36,7 +36,7 @@ public class CompletionOnStaticAccessForMethodParameterWithOutImport {
     
     
     public void method () {
-        final int i = callMe(PlatformUI.<^Space>);
+        final int i = callMe(PlatformUI.<@Ignore^Space>);
         /* calling context --> PlatformUI
          * expected type --> IWorkbenchHelpSystem
          * variable name --> XXX here we need a convention!

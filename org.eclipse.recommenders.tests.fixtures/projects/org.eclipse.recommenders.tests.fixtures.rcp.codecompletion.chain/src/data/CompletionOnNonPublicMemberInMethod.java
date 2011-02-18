@@ -24,7 +24,7 @@ public class CompletionOnNonPublicMemberInMethod {
 
     public static void test_protected() {
 		final CompletionOnNonPublicMemberInMethod useMe = new CompletionOnNonPublicMemberInMethod();
-		final AtomicBoolean c = <^Space>
+		final AtomicBoolean c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicBoolean
@@ -35,7 +35,7 @@ public class CompletionOnNonPublicMemberInMethod {
 
     public static void test_default() {
 		final CompletionOnNonPublicMemberInMethod useMe = new CompletionOnNonPublicMemberInMethod();
-		final AtomicInteger c = <^Space>
+		final AtomicInteger c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicInteger
@@ -46,7 +46,7 @@ public class CompletionOnNonPublicMemberInMethod {
 
     public static void test_private() {
 		final CompletionOnNonPublicMemberInMethod useMe = new CompletionOnNonPublicMemberInMethod();
-		final AtomicLong c = <^Space>
+		final AtomicLong c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicLong

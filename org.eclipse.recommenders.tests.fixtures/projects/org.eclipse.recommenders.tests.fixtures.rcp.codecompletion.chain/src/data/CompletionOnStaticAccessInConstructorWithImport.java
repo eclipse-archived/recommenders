@@ -17,7 +17,10 @@ public class CompletionOnStaticAccessInConstructorWithImport {
 
     public CompletionOnStaticAccessInConstructorWithImport() {
         
-        final IWorkbenchHelpSystem c = PlatformUI.<^Space> 
+        //@start
+        final IWorkbenchHelpSystem c = PlatformUI.<^Space|getWorkbench.+getHelpSystem.*>
+        //@end
+        //final IWorkbenchHelpSystem c = PlatformUI.getWorkbench().getHelpSystem()
         /* calling context --> PlatformUI
          * expected type --> IWorkbenchHelpSystem
          * variable name --> c

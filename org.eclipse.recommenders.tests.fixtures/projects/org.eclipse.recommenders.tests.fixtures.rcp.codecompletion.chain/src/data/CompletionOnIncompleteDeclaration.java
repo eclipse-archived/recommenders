@@ -17,7 +17,7 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 public class CompletionOnIncompleteDeclaration {
     public void method() {
         
-        IWorkbenchHelpSystem<^Space>
+        IWorkbenchHelpSystem<@Ignore^Space>
     }
 
     private IWorkbench getPlatform() {

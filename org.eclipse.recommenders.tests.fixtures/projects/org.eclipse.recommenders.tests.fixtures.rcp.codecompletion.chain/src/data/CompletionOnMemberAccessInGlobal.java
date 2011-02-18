@@ -13,8 +13,12 @@ package data;
 import java.io.File;
 
 public class CompletionOnMemberAccessInGlobal {
+    //@start
     File findMe = new File("");
-    File c = <^Space>;
+    File c = <^Space|findMe.*(1 element).*>;
+    //@end
+    //File findMe = new File("");
+    //File c = findMe;
     /* calling context --> 'this' aka CompletionOnMemberAccessInGlobal
      * expected type --> File
      * variable name --> c

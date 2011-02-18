@@ -57,12 +57,14 @@ public class CompletionUtil {
     }
 
     private static void selectProposal(final SWTBotShell completionShell, final String proposalExpression) {
+        final StringBuffer availableProposals = new StringBuffer();
         final SWTBotTable table = completionShell.bot().table();
         int matches = 0;
         int matchingRow = -1;
 
         for (int row = 0; row < table.rowCount(); row++) {
             final String cell = table.cell(row, 0);
+            availableProposals.append(cell + "\n");
             if (cell.matches(proposalExpression)) {
                 matchingRow = row;
                 matches++;
@@ -70,10 +72,10 @@ public class CompletionUtil {
         }
 
         if (matches == 0) {
-            Assert.fail("Proposal not found: " + proposalExpression);
+            Assert.fail("Proposal not found: " + proposalExpression + "\nAvailable Proposals:\n" + availableProposals);
         } else if (matches > 1) {
             Assert.fail("Regular expression for proposal selection did match more than one proposal. Matches: "
-                    + matches + "; Regex: " + proposalExpression);
+                    + matches + "; Regex: " + proposalExpression + "\nAvailable Proposals:\n" + availableProposals);
         } else {
             table.setFocus();
             table.doubleClick(matchingRow, 0);

@@ -15,7 +15,7 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
 public class CompletionOnStaticAccessInGlobalWithImport {
         
-        IWorkbenchHelpSystem c = PlatformUI.<^Space> 
+        IWorkbenchHelpSystem c = PlatformUI.<@Ignore^Space> 
         /* calling context --> PlatformUI
          * expected type --> IWorkbenchHelpSystem
          * variable name --> c

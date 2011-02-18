@@ -18,7 +18,7 @@ public class CompletionOnArrayMemberAccessInMethod {
 
     public static void method1() {
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-        final AtomicInteger c = <^Space>
+        final AtomicInteger c = <@Ignore^Space>
         /* calling context --> static
          * expected type --> AtomicInteger
          * expected completion --> obj.findUs[i]
@@ -28,7 +28,7 @@ public class CompletionOnArrayMemberAccessInMethod {
 
     public static void method2() {
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-        final AtomicInteger[] c = <^Space>
+        final AtomicInteger[] c = <@Ignore^Space>
         /* calling context --> static
          * expected type --> AtomicInteger[]
          * expected completion --> obj.findUs
@@ -38,7 +38,7 @@ public class CompletionOnArrayMemberAccessInMethod {
 
     public static void method3() {
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-        final AtomicInteger[][] c = <^Space>
+        final AtomicInteger[][] c = <@Ignore^Space>
         /* calling context --> static
          * expected type --> AtomicInteger[][]
          * NOT expected completion --> obj.findUs

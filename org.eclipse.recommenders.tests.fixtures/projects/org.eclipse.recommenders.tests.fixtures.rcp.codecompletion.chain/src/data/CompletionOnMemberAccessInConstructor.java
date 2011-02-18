@@ -17,7 +17,10 @@ public class CompletionOnMemberAccessInConstructor {
     File findMe = new File("");
 
     public CompletionOnMemberAccessInConstructor(){
-        final File c = <^Space>;
+        //@start
+        final File c = <^Space|findMe.*(1 element).*>;
+        //@end
+        //final File c = findMe;
         /* calling context --> 'this' aka CompletionOnMemberAccessInGlobal
          * expected type --> File
          * variable name --> c

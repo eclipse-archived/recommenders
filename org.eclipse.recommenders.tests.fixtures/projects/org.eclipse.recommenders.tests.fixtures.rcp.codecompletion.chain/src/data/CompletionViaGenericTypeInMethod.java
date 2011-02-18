@@ -18,7 +18,7 @@ public class CompletionViaGenericTypeInMethod {
     public static void method() {
 		final Iterator<CompletionViaGenericTypeInMethod> useMe = Arrays.asList(
 				new CompletionViaGenericTypeInMethod()).iterator();
-		final CompletionViaGenericTypeInMethod c = <^Space>
+		final CompletionViaGenericTypeInMethod c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> CompletionViaGenericTypeInMethod

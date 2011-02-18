@@ -21,16 +21,20 @@ public class CompletionOnMemberCallChainDepth2 {
         }
     }
     
+    //@start
     A a = new A();
-    File c =<^Space>
+    File c = <^Space|a.b.findMe.*>
+    //@end
+    //A a = new A();
+    //File c = a.b.findMe
 
     public CompletionOnMemberCallChainDepth2(){
         final A a = new A();
-        final File c =<^Space>
+        final File c =<@Ignore^Space>
     }
     
     public void method() {
         final A a = new A();
-        final File c =<^Space>
+        final File c =<@Ignore^Space>
     }
 }

@@ -26,7 +26,7 @@ public class CompletionOnSupertypeMemberInMethod {
 
     public static void test_onAttribute() {
 		final Subtype useMe = new Subtype();
-		final AtomicBoolean c = <^Space>
+		final AtomicBoolean c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicBoolean
@@ -37,7 +37,7 @@ public class CompletionOnSupertypeMemberInMethod {
 
     public static void test_onMethod() {
 		final Subtype useMe = new Subtype();
-		final AtomicInteger c = <^Space>
+		final AtomicInteger c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicInteger

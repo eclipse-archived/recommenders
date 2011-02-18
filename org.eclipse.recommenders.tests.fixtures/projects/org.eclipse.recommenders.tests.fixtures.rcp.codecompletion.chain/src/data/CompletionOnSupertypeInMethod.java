@@ -19,7 +19,7 @@ public class CompletionOnSupertypeInMethod {
 
     public static void method() {
 		final CompletionOnSupertypeInMethod useMe = new CompletionOnSupertypeInMethod();
-		final InputStream c = <^Space>
+		final InputStream c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> InputStream

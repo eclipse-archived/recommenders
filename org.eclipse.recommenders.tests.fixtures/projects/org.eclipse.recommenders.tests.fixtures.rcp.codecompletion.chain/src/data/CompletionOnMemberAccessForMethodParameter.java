@@ -16,7 +16,7 @@ public class CompletionOnMemberAccessForMethodParameter {
    
     File findMe = new File("");
     
-    int bla = callMe(<^Space>);
+    int bla = callMe(<@Ignore^Space>);
     /* calling context --> 'this' aka CompletionOnMemberAccessForMethodParameter
      * expected type --> File
      * variable name --> XXX here we need a convention!
@@ -24,7 +24,7 @@ public class CompletionOnMemberAccessForMethodParameter {
    
     
     public CompletionOnMemberAccessForMethodParameter()  {
-        final int bla = callMe(<^Space>);
+        final int bla = callMe(<@Ignore^Space>);
         /* calling context --> 'this' aka CompletionOnMemberAccessForMethodParameter
          * expected type --> File
          * variable name --> XXX here we need a convention!
@@ -38,7 +38,7 @@ public class CompletionOnMemberAccessForMethodParameter {
     
     
     public void method () {
-        final int i = callMe(<^Space>);
+        final int i = callMe(<@Ignore^Space>);
         /* calling context --> 'this' aka CompletionOnMemberAccessForMethodParameter
          * expected type --> File
          * variable name --> XXX here we need a convention!

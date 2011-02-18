@@ -17,7 +17,10 @@ public class CompletionOnMemberAccessInMethod {
     File findMe = new File("");
 
     public void method() {
-        final File c = <^Space>
+        //@start
+        final File c = <^Space|findMe.*(1 element).*>
+        //@end
+        //final File c = findMe
         /* calling context --> 'this' aka CompletionOnMemberAccessInMethod
          * expected type --> File
          * variable name --> c

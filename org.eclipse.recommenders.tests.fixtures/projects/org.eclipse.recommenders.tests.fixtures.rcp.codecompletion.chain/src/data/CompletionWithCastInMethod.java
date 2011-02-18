@@ -24,7 +24,7 @@ public class CompletionWithCastInMethod {
 
     public static void test_castToSubClass() {
 		final CompletionWithCastInMethod useMe = new CompletionWithCastInMethod();
-		final ByteArrayInputStream c = <^Space>
+		final ByteArrayInputStream c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> ByteArrayInputStream
@@ -35,7 +35,7 @@ public class CompletionWithCastInMethod {
 
     public static void test_castToInterface() {
 		final CompletionWithCastInMethod useMe = new CompletionWithCastInMethod();
-		final List<String> c = <^Space>
+		final List<String> c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> List<String>

@@ -22,7 +22,7 @@ public class CompletionOnMemberInMethodWithPrefix {
 
     public static void method1() {
 		final CompletionOnMemberInMethodWithPrefix useMe = new CompletionOnMemberInMethodWithPrefix();
-		final AtomicBoolean c = use<^Space>
+		final AtomicBoolean c = use<@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicBoolean
@@ -33,7 +33,7 @@ public class CompletionOnMemberInMethodWithPrefix {
 
     public static void method2() {
 		final CompletionOnMemberInMethodWithPrefix useMe = new CompletionOnMemberInMethodWithPrefix();
-		final AtomicBoolean c = useMe.get<^Space>
+		final AtomicBoolean c = useMe.get<@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicBoolean

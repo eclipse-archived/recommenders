@@ -16,7 +16,7 @@ public class CompletionOnPrimitiveTypeInMethod {
 
     public static void method() {
 		final CompletionOnPrimitiveTypeInMethod useMe = new CompletionOnPrimitiveTypeInMethod();
-		final int c = <^Space>
+		final int c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> int

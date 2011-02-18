@@ -18,7 +18,7 @@ public class CompletionViaLocalVariableInMethod {
 
     public static void method() {
 		final CompletionViaLocalVariableInMethod variable = new CompletionViaLocalVariableInMethod();
-		final AtomicBoolean c = <^Space>
+		final AtomicBoolean c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicBoolean

@@ -21,7 +21,7 @@ public class CompletionOnNonPublicMembersOfOtherClassInMethod {
     public static FieldsWithDifferentVisibilities useMe = new FieldsWithDifferentVisibilities();
 
     public static void test_protected() {
-		final AtomicBoolean c = <^Space>
+		final AtomicBoolean c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicBoolean
@@ -31,7 +31,7 @@ public class CompletionOnNonPublicMembersOfOtherClassInMethod {
 	}
 
     public static void test_default() {
-		final AtomicInteger c = <^Space>
+		final AtomicInteger c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicInteger
@@ -41,7 +41,7 @@ public class CompletionOnNonPublicMembersOfOtherClassInMethod {
 	}
 
     public static void test_private() {
-		final AtomicLong c = <^Space>
+		final AtomicLong c = <@Ignore^Space>
 		/*
 		 * calling context --> static
 		 * expected type --> AtomicLong
