@@ -38,7 +38,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 @SuppressWarnings("restriction")
-public class ChainProposalTemplateGenerator {
+public class ChainTemplateProposalGenerator {
   private final TemplateContextType templateContextType;
 
   private final Image templateIcon;
@@ -47,7 +47,7 @@ public class ChainProposalTemplateGenerator {
 
   private List<IJavaCompletionProposal> completionProposals;
 
-  public ChainProposalTemplateGenerator() {
+  public ChainTemplateProposalGenerator() {
     final ContextTypeRegistry templateContextRegistry = JavaPlugin.getDefault().getTemplateContextRegistry();
     templateContextType = templateContextRegistry.getContextType(JavaContextType.ID_ALL);
     JavaPlugin.getDefault().getCodeTemplateContextRegistry().addContextType(templateContextType);
@@ -56,7 +56,7 @@ public class ChainProposalTemplateGenerator {
   }
 
   @SuppressWarnings("unchecked")
-  public List<IJavaCompletionProposal> generateJavaCompletionProposals(final List<ChainProposal> proposals,
+  public List<IJavaCompletionProposal> generateJavaCompletionProposals(final List<ChainTemplateProposal> proposals,
       final JavaContentAssistInvocationContext jctx, final long algortihmComputeTime) {
     this.jctx = jctx;
     final long proposalStartTime = System.currentTimeMillis();
@@ -69,16 +69,16 @@ public class ChainProposalTemplateGenerator {
     }
   }
 
-  private boolean isValidProposal(final List<ChainProposal> proposals) {
+  private boolean isValidProposal(final List<ChainTemplateProposal> proposals) {
     return proposals == null || proposals.isEmpty();
   }
 
   // This method sorts all computed 'raw' proposals.
-  private void sort(final List<ChainProposal> proposals) {
+  private void sort(final List<ChainTemplateProposal> proposals) {
     // Prefer proposals that do not cope with casts
-    Collections.sort(proposals, new Comparator<ChainProposal>() {
+    Collections.sort(proposals, new Comparator<ChainTemplateProposal>() {
       @Override
-      public int compare(final ChainProposal p1, final ChainProposal p2) {
+      public int compare(final ChainTemplateProposal p1, final ChainTemplateProposal p2) {
         if (p1.getProposedChain().size() < p2.getProposedChain().size()) {
           return -1;
         } else if (p1.getProposedChain().size() > p2.getProposedChain().size()) {
@@ -175,13 +175,13 @@ public class ChainProposalTemplateGenerator {
   // is up, or the max. number of proposals
   // are reached. Then it generates the code, description and finally the
   // proposal template.
-  private List<IJavaCompletionProposal> computeProposalList(final List<ChainProposal> proposals,
+  private List<IJavaCompletionProposal> computeProposalList(final List<ChainTemplateProposal> proposals,
       final long algortihmComputeTime, final long proposalStartTime) {
     completionProposals = new ArrayList<IJavaCompletionProposal>();
 
     int proposalNo = 1;
     final int proposalListSize = proposals.size();
-    for (final ChainProposal proposal : proposals) {
+    for (final ChainTemplateProposal proposal : proposals) {
       if (isMaxProposalCount(proposalNo) || isMaxPluginComputationTime(algortihmComputeTime, proposalStartTime)) {
         break;
       }
@@ -190,7 +190,7 @@ public class ChainProposalTemplateGenerator {
     return completionProposals;
   }
 
-  private int computeProposalPart(final int proposalListSize, int proposalNo, final ChainProposal proposal) {
+  private int computeProposalPart(final int proposalListSize, int proposalNo, final ChainTemplateProposal proposal) {
     try {
       final String code = generateCode(proposal);
       if (code != null) {
@@ -203,7 +203,7 @@ public class ChainProposalTemplateGenerator {
     return proposalNo;
   }
 
-  private void computeAndAddProposal(final int proposalSize, final int proposalNo, final ChainProposal proposal,
+  private void computeAndAddProposal(final int proposalSize, final int proposalNo, final ChainTemplateProposal proposal,
       final String code) throws BadLocationException, TemplateException {
     final JavaContext ctx = computeJavaContext();
     final Template template = generateTemplate(proposal, code); // name
@@ -232,7 +232,7 @@ public class ChainProposalTemplateGenerator {
     return region;
   }
 
-  private Template generateTemplate(final ChainProposal proposal, final String code) {
+  private Template generateTemplate(final ChainTemplateProposal proposal, final String code) {
     final String description = computeDescription(proposal);
     final String name = computeName(proposal);
     final Template template = new Template(name, description, "java", code, true);
@@ -249,7 +249,7 @@ public class ChainProposalTemplateGenerator {
   }
 
   // This method computes the name, which is displayed in the proposal box.
-  private String computeName(final ChainProposal proposal) {
+  private String computeName(final ChainTemplateProposal proposal) {
     StringBuilder name = null;
     for (final IChainElement part : proposal.getProposedChain()) {
       final String partName = makePartName(part);
@@ -266,7 +266,7 @@ public class ChainProposalTemplateGenerator {
     return name.toString();
   }
 
-  private void computeCastingForName(final ChainProposal proposal, final StringBuilder code) {
+  private void computeCastingForName(final ChainTemplateProposal proposal, final StringBuilder code) {
     if (proposal.needsCast()) {
       code.insert(0,
           String.format("(%s) ", proposal.getCastingType().getName().getClassName().toString().replaceAll("/", ".")));
@@ -299,7 +299,7 @@ public class ChainProposalTemplateGenerator {
   }
 
   // This method computes the description for the proposal box
-  private String computeDescription(final ChainProposal proposal) {
+  private String computeDescription(final ChainTemplateProposal proposal) {
     final int chainLength = proposal.getProposedChain().size();
     String description = chainLength == 1 ? "(1 element" : "(" + chainLength + " elements";
     if (proposal.needsCast()) {
@@ -312,7 +312,7 @@ public class ChainProposalTemplateGenerator {
   // This method computes the code for the proposals. Therefore the hole string
   // is created, so that every prefix has
   // to be overridden.
-  private String generateCode(final ChainProposal proposal) throws JavaModelException {
+  private String generateCode(final ChainTemplateProposal proposal) throws JavaModelException {
 
     final String prefixToEquals = computePrefixToEquals();
     final String prefixToLastDot = prefixToEquals.substring(0, prefixToEquals.lastIndexOf('.') + 1);
@@ -334,7 +334,7 @@ public class ChainProposalTemplateGenerator {
     return code.toString();
   }
 
-  private void computeCastingForCode(final ChainProposal proposal, final StringBuilder code) {
+  private void computeCastingForCode(final ChainTemplateProposal proposal, final StringBuilder code) {
     if (proposal.needsCast()) {
       final String castingString = String.format("(${type:newType(%s)})", proposal.getCastingType().getName()
           .getClassName().toString().replaceAll("/", "."));

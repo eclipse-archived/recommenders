@@ -19,11 +19,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.ICha
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.types.TypeReference;
 
-/**
- * Default implementation of {@link IChainedJavaProposal}
- * 
- */
-public class ChainProposal {
+public class ChainTemplateProposal {
   private final List<IChainElement> proposedChain;
 
   TypeReference resultingType;
@@ -38,7 +34,7 @@ public class ChainProposal {
    * @param proposedChain
    *          list of proposed chain elements (fields and/or methods)
    */
-  public ChainProposal(final List<IChainElement> proposedChain) {
+  public ChainTemplateProposal(final List<IChainElement> proposedChain) {
     this(proposedChain, null);
   }
 
@@ -68,7 +64,7 @@ public class ChainProposal {
    * @param castingType
    *          type to up-cast the chain's last element's resulting type to
    */
-  public ChainProposal(final List<IChainElement> proposedChain, final IClass castingType) {
+  public ChainTemplateProposal(final List<IChainElement> proposedChain, final IClass castingType) {
     Checks.ensureIsNotNull(proposedChain);
     Checks.ensureIsTrue(proposedChain.size() >= 1);
     this.proposedChain = proposedChain;

@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.recommenders.commons.injection.InjectionService;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.ChainProposal;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.ChainTemplateProposal;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
@@ -39,7 +39,7 @@ public class ChainingAlgorithm {
 
   private IClass expectedType;
 
-  private final List<ChainProposal> proposals;
+  private final List<ChainTemplateProposal> proposals;
 
   private ThreadPoolExecutor executor;
 
@@ -54,7 +54,7 @@ public class ChainingAlgorithm {
   public ChainingAlgorithm() {
     expectedType = null;
 
-    proposals = Collections.synchronizedList(new LinkedList<ChainProposal>());
+    proposals = Collections.synchronizedList(new LinkedList<ChainTemplateProposal>());
     walaService = InjectionService.getInstance().requestInstance(IClassHierarchyService.class);
     javaelementResolver = InjectionService.getInstance().requestInstance(JavaElementResolver.class);
     searchMap = Collections.synchronizedMap(new HashMap<IClass, Map<IMember, IClass>>());
@@ -134,17 +134,17 @@ public class ChainingAlgorithm {
 
   public void addCastedProposal(final LinkedList<IChainElement> workingChain, final IClass expectedType) {
     synchronized (proposals) {
-      proposals.add(new ChainProposal(workingChain, expectedType));
+      proposals.add(new ChainTemplateProposal(workingChain, expectedType));
     }
   }
 
   public void addProposal(final LinkedList<IChainElement> workingChain) {
     synchronized (proposals) {
-      proposals.add(new ChainProposal(workingChain));
+      proposals.add(new ChainTemplateProposal(workingChain));
     }
   }
 
-  public List<ChainProposal> getProposals() {
+  public List<ChainTemplateProposal> getProposals() {
     return proposals;
   }
 
