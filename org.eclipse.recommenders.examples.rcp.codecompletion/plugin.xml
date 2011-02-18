@@ -2,9 +2,13 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.eclipse.recommenders.commons.injection.modules">
-      <module
-            class="org.eclipse.recommenders.examples.rcp.codecompletion.DemoModule"></module>
+         id="org.eclipse.recommenders"
+         name="Code Recommenders Demo Completion Engine"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.eclipse.recommenders.rcp.category.completion"
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.examples.rcp.codecompletion.DemoCompletionProposalComputer">
+      </javaCompletionProposalComputer>
    </extension>
-
 </plugin>

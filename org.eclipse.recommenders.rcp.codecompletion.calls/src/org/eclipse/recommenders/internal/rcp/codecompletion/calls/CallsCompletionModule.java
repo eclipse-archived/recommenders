@@ -16,7 +16,6 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.inject.AbstractModule;
@@ -28,7 +27,6 @@ public class CallsCompletionModule extends AbstractModule {
     @Override
     protected void configure() {
         configureModelStore();
-        configureCompletionEngine();
         configureRecommendationsViewPublisher();
     }
 
@@ -36,12 +34,6 @@ public class CallsCompletionModule extends AbstractModule {
         bind(CallsModelStore.class).in(Scopes.SINGLETON);
         bind(ICallsModelLoader.class).to(CallsModelLoader.class).in(Scopes.SINGLETON);
         bind(URL.class).annotatedWith(Names.named("calls.model.fileUrl")).toInstance(getCallsModelFileUrl());
-    }
-
-    private void configureCompletionEngine() {
-        final Multibinder<IIntelligentCompletionEngine> binder = Multibinder.newSetBinder(binder(),
-                IIntelligentCompletionEngine.class);
-        binder.addBinding().to(CallsCompletionEngine.class).in(Scopes.SINGLETON);
     }
 
     private void configureRecommendationsViewPublisher() {

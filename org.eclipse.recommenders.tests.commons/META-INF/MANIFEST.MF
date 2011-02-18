@@ -25,3 +25,4 @@ Require-Bundle: org.junit;bundle-version="4.8.1";visibility:=reexport,
  org.apache.commons.io;bundle-version="1.4.0"
 Export-Package: org.eclipse.recommenders.tests.commons.analysis.utils, org.eclipse.recommenders.tests.commons.ui.utils
 Bundle-Vendor: Eclipse Code Recommenders
+Import-Package: org.apache.log4j
