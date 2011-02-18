@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) 2010 Andreas Kaluza.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Andreas Kaluza - initial API and implementation.
+ */
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
 import java.util.HashMap;
@@ -100,13 +110,15 @@ public class WalaCache {
   // XXX need to look closer on this... here happens magic :)
   public static int equalityTest(final IClass resultingType, final IClass expectedType) {
     if (resultingType.getReference().isPrimitiveType() && resultingType.getReference().isPrimitiveType()) {
-      if (resultingType.getReference().getName().equals(expectedType.getReference().getName()))
+      if (resultingType.getReference().getName().equals(expectedType.getReference().getName())) {
         return WalaCache.RESULT_EQUAL | WalaCache.RESULT_PRIMITIVE;
-      else
+      } else {
         return WalaCache.RESULT_PRIMITIVE;
+      }
     } else {
-      if (resultingType.getReference().getName().equals(expectedType.getReference().getName()))
+      if (resultingType.getReference().getName().equals(expectedType.getReference().getName())) {
         return WalaCache.RESULT_EQUAL;
+      }
     }
     // Types are not equal, but maybe they're related
     // i.e. one of them is in the type hierarchy of the other one
