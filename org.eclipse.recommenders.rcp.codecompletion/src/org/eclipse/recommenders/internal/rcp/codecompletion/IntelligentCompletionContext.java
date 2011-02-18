@@ -348,6 +348,7 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         return Variable.create(name, type, getEnclosingMethod());
     }
 
+    @Override
     public boolean isReceiverImplicitThis() {
         return "".equals(getReceiverName()) && getReceiverType() == null;
     }

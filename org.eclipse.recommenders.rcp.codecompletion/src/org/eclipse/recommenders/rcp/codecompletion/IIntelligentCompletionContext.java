@@ -197,4 +197,6 @@ public interface IIntelligentCompletionContext {
 
     IMethodName getEnclosingMethodsFirstDeclaration();
 
+    public boolean isReceiverImplicitThis();
+
 }

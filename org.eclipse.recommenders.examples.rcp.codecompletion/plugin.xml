@@ -8,7 +8,7 @@
       <javaCompletionProposalComputer
             activate="true"
             categoryId="org.eclipse.recommenders.rcp.category.completion"
-            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.examples.rcp.codecompletion.DemoCompletionEngine">
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.examples.rcp.codecompletion.DemoCompletionProposalComputer">
       </javaCompletionProposalComputer>
    </extension>
 </plugin>

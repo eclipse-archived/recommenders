@@ -18,7 +18,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerBindings;
-import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionContext;
+import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
 
@@ -31,7 +31,7 @@ import com.ibm.wala.classLoader.IMethod;
 @SuppressWarnings("restriction")
 public class ChainCompletionContext {
 
-  private final IntelligentCompletionContext ctx;
+  private final IIntelligentCompletionContext ctx;
   private final List<IChainElement> accessibleFields = Lists.newLinkedList();
   private final List<IChainElement> accessibleMethods = Lists.newLinkedList();
   private final List<IChainElement> accessibleLocals = Lists.newLinkedList();
@@ -41,7 +41,7 @@ public class ChainCompletionContext {
   private IClass expectedType;
   private IClass enclosingType;
 
-  public ChainCompletionContext(final IntelligentCompletionContext ctx, final JavaElementResolver javaElementResolver,
+  public ChainCompletionContext(final IIntelligentCompletionContext ctx, final JavaElementResolver javaElementResolver,
       final IClassHierarchyService walaChaService) {
     this.ctx = ctx;
     this.javaElementResolver = javaElementResolver;

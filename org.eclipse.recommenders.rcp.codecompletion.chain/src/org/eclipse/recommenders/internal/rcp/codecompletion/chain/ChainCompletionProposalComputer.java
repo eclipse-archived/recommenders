@@ -23,6 +23,10 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.ChainingAlgorithm;
+import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
+import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
+
+import com.google.inject.Inject;
 
 /**
  * This is the default implementation of the plug-in's
@@ -31,11 +35,15 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.Chai
 @SuppressWarnings({ "restriction" })
 public class ChainCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-  // REVIEW: ExtensionFactory:classname.
-  // class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
-
-  private JavaContentAssistInvocationContext jctx;
+  private JavaContentAssistInvocationContext jCtx;
   private StopWatch sw;
+  private final IntelligentCompletionContextResolver contextResolver;
+  private IIntelligentCompletionContext iCtx;
+
+  @Inject
+  public ChainCompletionProposalComputer(final IntelligentCompletionContextResolver contextResolver) {
+    this.contextResolver = contextResolver;
+  }
 
   /**
    * Executes the default chaining algorithm and returns a list of template
@@ -45,33 +53,36 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
   @Override
   public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
     if (context instanceof JavaContentAssistInvocationContext) {
-      final ChainingAlgorithm algorithm = createAlgorithm(context);
-      try {
-        executeAlgorithm(algorithm);
-        return computeProposals(algorithm);
-      } catch (final Exception e) {
-        JavaPlugin.log(e);
+      jCtx = (JavaContentAssistInvocationContext) context;
+      if (contextResolver.hasProjectRecommendersNature(jCtx)) {
+        iCtx = contextResolver.resolveContext(jCtx);
+        return doComputeCompletionProposals();
       }
     }
     return Collections.emptyList();
   }
 
-  private ChainingAlgorithm createAlgorithm(final ContentAssistInvocationContext context) {
-    jctx = (JavaContentAssistInvocationContext) context;
-    final ChainingAlgorithm algorithm = new ChainingAlgorithm();
-    return algorithm;
+  private List<IJavaCompletionProposal> doComputeCompletionProposals() {
+    try {
+      final ChainingAlgorithm algorithm = new ChainingAlgorithm();
+      executeAlgorithm(algorithm);
+      return computeProposals(algorithm);
+    } catch (final Exception e) {
+      JavaPlugin.log(e);
+      return Collections.emptyList();
+    }
   }
 
   private void executeAlgorithm(final ChainingAlgorithm algorithm) throws JavaModelException {
     sw = new StopWatch();
     sw.start();
-    algorithm.execute(jctx);
+    algorithm.execute(iCtx);
     sw.stop();
   }
 
   private List<IJavaCompletionProposal> computeProposals(final ChainingAlgorithm algorithm) {
-    final TemplateProposalEngine templateProposalEngine = new TemplateProposalEngine();
-    return templateProposalEngine.generateJavaCompletionProposals(algorithm.getProposals(), jctx, sw.getTime());
+    final ChainProposalTemplateGenerator chainProposalGenerator = new ChainProposalTemplateGenerator();
+    return chainProposalGenerator.generateJavaCompletionProposals(algorithm.getProposals(), jCtx, sw.getTime());
   }
 
   @SuppressWarnings("rawtypes")

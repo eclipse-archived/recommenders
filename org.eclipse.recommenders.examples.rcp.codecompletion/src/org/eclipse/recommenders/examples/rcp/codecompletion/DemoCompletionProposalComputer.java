@@ -27,12 +27,12 @@ import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextR
 import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
-public class DemoCompletionEngine implements IJavaCompletionProposalComputer {
+public class DemoCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
     private final IntelligentCompletionContextResolver contextResolver;
 
     @Inject
-    public DemoCompletionEngine(final IntelligentCompletionContextResolver contextResolver) {
+    public DemoCompletionProposalComputer(final IntelligentCompletionContextResolver contextResolver) {
         this.contextResolver = contextResolver;
     }
 

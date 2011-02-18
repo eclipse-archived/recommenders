@@ -24,11 +24,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.commons.injection.InjectionService;
-import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.ChainProposal;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
+import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
 
@@ -61,10 +60,8 @@ public class ChainingAlgorithm {
     searchMap = Collections.synchronizedMap(new HashMap<IClass, Map<IMember, IClass>>());
   }
 
-  public void execute(final JavaContentAssistInvocationContext jctx) throws JavaModelException {
-
-    initializeCompletionContext(jctx);
-    initializeEnclosingClass(jctx);
+  public void execute(final IIntelligentCompletionContext ictx) throws JavaModelException {
+    initializeChainCompletionContext(ictx);
 
     if (canComputeProposals()) {
       initializeThreadPool();
@@ -73,13 +70,9 @@ public class ChainingAlgorithm {
     }
   }
 
-  private void initializeCompletionContext(final JavaContentAssistInvocationContext jctx) {
-    ctx = new ChainCompletionContext(new IntelligentCompletionContext(jctx, javaelementResolver), javaelementResolver,
-        walaService);
+  private void initializeChainCompletionContext(final IIntelligentCompletionContext ictx) {
+    ctx = new ChainCompletionContext(ictx, javaelementResolver, walaService);
     expectedType = ctx.getExpectedType();
-  }
-
-  private void initializeEnclosingClass(final JavaContentAssistInvocationContext jctx) throws JavaModelException {
   }
 
   private boolean canComputeProposals() {

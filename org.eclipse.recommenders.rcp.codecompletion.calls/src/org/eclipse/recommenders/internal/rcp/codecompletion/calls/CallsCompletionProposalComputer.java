@@ -45,7 +45,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 @SuppressWarnings("restriction")
-public class CallsCompletionEngine implements IJavaCompletionProposalComputer {
+public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
     private static final double MIN_PROBABILITY_THRESHOLD = 0.30d;
 
     private Set<Class<?>> supportedCompletionRequests;
@@ -73,7 +73,7 @@ public class CallsCompletionEngine implements IJavaCompletionProposalComputer {
     private final IntelligentCompletionContextResolver contextResolver;
 
     @Inject
-    public CallsCompletionEngine(final CallsModelStore modelsStore,
+    public CallsCompletionProposalComputer(final CallsModelStore modelsStore,
             final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
             final IntelligentCompletionContextResolver contextResolver) {
         this.modelsStore = modelsStore;

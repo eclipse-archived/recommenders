@@ -24,7 +24,7 @@
       <javaCompletionProposalComputer
             activate="true"
             categoryId="org.eclipse.recommenders.rcp.category.completion"
-            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codecompletion.overrides.OverridesCompletionEngine">
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codecompletion.overrides.OverridesCompletionProposalComputer">
       </javaCompletionProposalComputer>
    </extension>
    

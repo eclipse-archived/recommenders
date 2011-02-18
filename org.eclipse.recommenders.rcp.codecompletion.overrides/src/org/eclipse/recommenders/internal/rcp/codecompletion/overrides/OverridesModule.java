@@ -36,12 +36,12 @@ public class OverridesModule extends AbstractModule {
         bind(URL.class).annotatedWith(Names.named("overrides.model.fileUrl")).toInstance(getOverridesModelFileUrl());
 
         bind(OverridesModelStore.class).in(Scopes.SINGLETON);
-        bind(OverridesCompletionEngine.class).in(Scopes.SINGLETON); //
+        bind(OverridesCompletionProposalComputer.class).in(Scopes.SINGLETON); //
         bind(InstantOverridesRecommender.class).in(Scopes.SINGLETON); //
         Multibinder.newSetBinder(binder(), IEditorChangedListener.class).addBinding()
-                .to(OverridesCompletionEngine.class);
+                .to(OverridesCompletionProposalComputer.class);
         Multibinder.newSetBinder(binder(), IArtifactStoreChangedListener.class).addBinding()
-                .to(OverridesCompletionEngine.class);
+                .to(OverridesCompletionProposalComputer.class);
         Multibinder.newSetBinder(binder(), IRecommendationsViewContentProvider.class).addBinding()
                 .to(InstantOverridesRecommender.class);
     }
