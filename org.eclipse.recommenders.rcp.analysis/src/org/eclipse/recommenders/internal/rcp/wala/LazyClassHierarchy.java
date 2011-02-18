@@ -42,6 +42,7 @@ import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaAnalysisUtils;
 
 import com.google.common.collect.Iterators;
+import com.ibm.wala.classLoader.ArrayClassLoader;
 import com.ibm.wala.classLoader.ClassFileModule;
 import com.ibm.wala.classLoader.ClassLoaderFactory;
 import com.ibm.wala.classLoader.IClass;
@@ -99,11 +100,17 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
 
     @Override
     public IClass lookupClass(final TypeReference typeRef) {
+        final TypeName name = typeRef.getName();
         if (isClassAlreadyDefinedOrCurrentlyLoaded(typeRef)) {
-            return ensureIsNotNull(clazzes.get(typeRef.getName()));
+            return ensureIsNotNull(clazzes.get(name));
         }
         if (typeRef.isArrayType()) {
-            return ensureIsNotNull(scope.getArrayClassLoader().lookupClass(typeRef.getName(), appLoader, this));
+            final ArrayClassLoader arrayClassLoader = scope.getArrayClassLoader();
+            final IClass lookupClass = arrayClassLoader.lookupClass(name, appLoader, this);
+            if (lookupClass == null) {
+                System.err.println("failed to resolve " + name);
+            }
+            return lookupClass;
         }
         try {
             if (typeRef.getClassLoader().equals(SYNTETIC)) {

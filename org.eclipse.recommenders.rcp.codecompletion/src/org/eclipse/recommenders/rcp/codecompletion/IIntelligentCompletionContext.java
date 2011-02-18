@@ -18,10 +18,12 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
+import org.eclipse.recommenders.commons.utils.annotations.Experimental;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.annotations.ReportUsage;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -60,9 +62,26 @@ public interface IIntelligentCompletionContext {
     public ASTNode getCompletionNode();
 
     /**
-     * Returns a set of all variables declared/accessible in the current scope.
+     * Returns a set of all local variables declared in the method code
+     * completion was triggered in.
+     * <p>
+     * Note, the objects returned by this method are compiler ast nodes. This
+     * API is very likely to change!
+     * </p>
      */
-    Set<AbstractVariableDeclaration> getVariableDeclarations();
+    @Experimental
+    Set<LocalDeclaration> getLocalDeclarations();
+
+    /**
+     * Returns a set of all fields declared in the scope of this compilation
+     * unit( or just type?) completion was triggered in.
+     * <p>
+     * Note, the objects returned by this method are compiler ast nodes. This
+     * API is very likely to change!
+     * </p>
+     */
+    @Experimental
+    Set<FieldDeclaration> getFieldDeclarations();
 
     /**
      * Returns proposals made by the JDT. These proposals are allowed to be
@@ -177,4 +196,5 @@ public interface IIntelligentCompletionContext {
     public int getInvocationOffset();
 
     IMethodName getEnclosingMethodsFirstDeclaration();
+
 }
