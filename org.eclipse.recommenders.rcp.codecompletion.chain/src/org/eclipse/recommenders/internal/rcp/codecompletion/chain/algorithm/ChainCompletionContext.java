@@ -91,7 +91,9 @@ public class ChainCompletionContext {
       receiverType = enclosingType;
     } else {
       final ITypeName receiverTypeName = ctx.getReceiverType();
-      receiverType = toWalaClass(receiverTypeName);
+      if (receiverType != null) {
+        receiverType = toWalaClass(receiverTypeName);
+      }
     }
     return receiverType != null;
   }
