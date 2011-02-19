@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
-import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
-
 import java.util.List;
 
 import org.eclipse.jdt.core.IType;
@@ -70,14 +68,10 @@ public class ChainCompletionContext {
     return enclosingType != null;
   }
 
-  private boolean findExpectedClass() {
-    final ITypeName expectedTypeName = ctx.getExpectedType();
-    expectedType = toWalaClass(expectedTypeName);
-    return expectedType != null;
-  }
-
   private IClass toWalaClass(final ITypeName typeName) {
-    ensureIsNotNull(typeName);
+    if (typeName == null) {
+      return null;
+    }
     final IType jdtType = javaElementResolver.toJdtType(typeName);
     if (jdtType == null) {
       return null;
@@ -86,14 +80,18 @@ public class ChainCompletionContext {
     return walaType;
   }
 
+  private boolean findExpectedClass() {
+    final ITypeName expectedTypeName = ctx.getExpectedType();
+    expectedType = toWalaClass(expectedTypeName);
+    return expectedType != null;
+  }
+
   private boolean findReceiverClass() {
     if (ctx.isReceiverImplicitThis()) {
       receiverType = enclosingType;
     } else {
       final ITypeName receiverTypeName = ctx.getReceiverType();
-      if (receiverType != null) {
-        receiverType = toWalaClass(receiverTypeName);
-      }
+      receiverType = toWalaClass(receiverTypeName);
     }
     return receiverType != null;
   }
@@ -152,6 +150,9 @@ public class ChainCompletionContext {
     for (final LocalDeclaration local : ctx.getLocalDeclarations()) {
       final ITypeName typeName = CompilerBindings.toTypeName(local.type);
       final IClass localType = toWalaClass(typeName);
+      if (localType == null) {
+        continue;
+      }
       final String localName = String.valueOf(local.name);
       final IChainElement element = new LocalChainElement(localName, localType);
       accessibleLocals.add(element);
