@@ -33,6 +33,7 @@ import org.eclipse.jdt.internal.codeassist.CompletionEngine;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionParser;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
@@ -353,11 +354,43 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         return "".equals(getReceiverName()) && getReceiverType() == null;
     }
 
+    /**
+     * Searches the list of locals and fields declared for exact match. This
+     * method may return <code>null</code>.
+     * <p>
+     * Note, this method does not perform a search on inherited fields. Only
+     * declarations in "this" are considered.
+     * </p>
+     */
+    public Variable findMatchingVariable(final String variableName) {
+        AbstractVariableDeclaration match = findMatchingLocalVariable(getReceiverName());
+        if (match == null) {
+            match = findMatchingFieldDeclaration(variableName);
+        }
+        if (match == null) {
+            return null;
+        }
+        final String name = String.valueOf(match.name);
+        final ITypeName type = CompilerBindings.toTypeName(match.type);
+        return Variable.create(name, type, getEnclosingMethod());
+
+    }
+
     private LocalDeclaration findMatchingLocalVariable(final String receiverName) {
         for (final LocalDeclaration local : getLocalDeclarations()) {
             final String name = String.valueOf(local.name);
             if (name.equals(receiverName)) {
                 return local;
+            }
+        }
+        return null;
+    }
+
+    private FieldDeclaration findMatchingFieldDeclaration(final String receiverName) {
+        for (final FieldDeclaration field : getFieldDeclarations()) {
+            final String name = String.valueOf(field.name);
+            if (name.equals(receiverName)) {
+                return field;
             }
         }
         return null;
