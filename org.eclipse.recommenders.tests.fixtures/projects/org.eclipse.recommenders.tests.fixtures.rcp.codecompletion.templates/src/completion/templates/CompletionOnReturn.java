@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package completion.templates.bugs;
+package completion.templates;
 
 import org.eclipse.swt.widgets.Button;
 
@@ -18,7 +18,6 @@ public class CompletionOnReturn {
         Button b = new Button(null, 0);
         // Should there be patterns at all? If so, take care only
         // one-liners with appropriate return types are proposed.
-        // Additional: Large template that is not displayed
         return b.<^Space>;
     }
 }

@@ -24,6 +24,20 @@ public final class CompletionTargetVariable {
     private final boolean needsConstructor;
     private final Region documentRegion;
 
+    /**
+     * @param name
+     *            The name of the variable on which the completion was
+     *            triggered.
+     * @param typeName
+     *            The type of the variable on which the completion was
+     *            triggered.
+     * @param documentRegion
+     *            True, if the templates proposals definitely have to contain
+     *            constructors, e.g. in "<code>Button b<^Space></code>".
+     * @param needsConstructor
+     *            The region inside the document which shall be replaced by
+     *            completion proposals for this variable.
+     */
     public CompletionTargetVariable(final String name, final ITypeName typeName, final Region documentRegion,
             final boolean needsConstructor) {
         this.name = name;
@@ -32,22 +46,32 @@ public final class CompletionTargetVariable {
         this.needsConstructor = needsConstructor;
     }
 
+    /**
+     * @return The name of the variable on which the completion was triggered.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return The type of the variable on which the completion was triggered.
+     */
     public ITypeName getType() {
         return typeName;
     }
 
     /**
      * @return True, if the templates proposals definitely have to contain
-     *         constructors.
+     *         constructors, e.g. in "<code>Button b<^Space></code>".
      */
     public boolean isNeedsConstructor() {
         return needsConstructor;
     }
 
+    /**
+     * @return The region inside the document which shall be replaced by
+     *         completion proposals for this variable.
+     */
     public Region getDocumentRegion() {
         return documentRegion;
     }

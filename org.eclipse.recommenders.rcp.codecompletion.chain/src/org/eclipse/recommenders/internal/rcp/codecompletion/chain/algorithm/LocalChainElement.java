@@ -14,11 +14,11 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.types.TypeReference;
 
-public class LocalVariableChainElement implements IChainElement {
+public class LocalChainElement implements IChainElement {
   private final String name;
   private final IClass type;
 
-  public LocalVariableChainElement(final String name, final IClass type) {
+  public LocalChainElement(final String name, final IClass type) {
     this.name = name;
     this.type = type;
   }

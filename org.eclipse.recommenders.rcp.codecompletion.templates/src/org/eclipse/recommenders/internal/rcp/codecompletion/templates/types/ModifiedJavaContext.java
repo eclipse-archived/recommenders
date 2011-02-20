@@ -26,6 +26,18 @@ public final class ModifiedJavaContext extends JavaContext {
 
     private boolean shifted;
 
+    /**
+     * @param type
+     *            the context type.
+     * @param document
+     *            the document.
+     * @param completionOffset
+     *            the completion offset within the document.
+     * @param completionLength
+     *            the completion length.
+     * @param compilationUnit
+     *            the compilation unit (may be <code>null</code>).
+     */
     public ModifiedJavaContext(final TemplateContextType type, final IDocument document, final int completionOffset,
             final int completionLength, final ICompilationUnit compilationUnit) {
         super(type, document, completionOffset, completionLength, compilationUnit);

@@ -12,30 +12,33 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.junit.Test;
 
-import junit.framework.Assert;
-
 public final class TemplatesCompletionEngineTest {
 
-    @Test
-    public void testTemplatesCompletionEngine() throws Exception {
-        final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getConstructorContextMock(
-                "Button bu", "bu", "Button");
+	@Test
+	public void testTemplatesCompletionEngine() throws Exception {
+		final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest
+				.getConstructorContextMock("Button bu", "bu", "Button");
 
-        final TemplatesCompletionEngine engine = new TemplatesCompletionEngine(
-                PatternRecommenderTest.getPatternRecommenderMock(context.getReceiverType()),
-                MethodCallFormatterTest.getMethodCallFormatterMock());
+		final TemplatesCompletionEngine engine = new TemplatesCompletionEngine(
+				PatternRecommenderTest.getPatternRecommenderMock(context
+						.getReceiverType()),
+				MethodCallFormatterTest.getMethodCallFormatterMock(), null);
 
-        final List<IJavaCompletionProposal> proposals = engine.computeProposals(context);
+		final List<IJavaCompletionProposal> proposals = engine
+				.computeProposals(context);
 
-        Assert.assertEquals(1, proposals.size());
-        for (final IJavaCompletionProposal proposal : proposals) {
-            Assert.assertEquals(612, proposal.getRelevance());
-            Assert.assertEquals("dynamic 'Button' - Pattern 1 - 50 %", proposal.getDisplayString());
-        }
-    }
+		Assert.assertEquals(1, proposals.size());
+		for (final IJavaCompletionProposal proposal : proposals) {
+			Assert.assertEquals(612, proposal.getRelevance());
+			Assert.assertEquals("dynamic 'Button' - Pattern 1 - 50 %",
+					proposal.getDisplayString());
+		}
+	}
 
 }

@@ -30,6 +30,21 @@ public final class JavaTemplateProposal extends TemplateProposal {
     private static IDocument currentDocument;
     private static final int RELEVANCE_OFFSET = 562;
 
+    /**
+     * Creates a template proposal with a template and its context.
+     * 
+     * @param template
+     *            the template
+     * @param context
+     *            the context in which the template was requested.
+     * @param region
+     *            the region this proposal is applied to
+     * @param image
+     *            the icon of the proposal.
+     * @param probability
+     *            the probability that the represented pattern is applied in the
+     *            given context.
+     */
     public JavaTemplateProposal(final Template template, final TemplateContext context, final IRegion region,
             final Image image, final int probability) {
         super(template, context, region, image);

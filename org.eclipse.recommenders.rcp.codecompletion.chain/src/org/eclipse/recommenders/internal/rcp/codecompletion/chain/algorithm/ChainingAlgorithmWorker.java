@@ -233,9 +233,9 @@ public class ChainingAlgorithmWorker implements Runnable {
     if (typeToCheck == null) {
       return true;
     }
-    final int testResult = WalaCache.equalityTest(typeToCheck, expectedType);
+    final int testResult = InheritanceHierarchyCache.equalityTest(typeToCheck, expectedType);
     // if both types equal
-    if ((testResult & WalaCache.RESULT_EQUAL) > 0) {
+    if ((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0) {
       if (!checkRedundancy()) {
         internalProposalStore.addProposal(workingChain);
         return false;
@@ -244,11 +244,11 @@ public class ChainingAlgorithmWorker implements Runnable {
       }
     }
     // if typeToCheck is primitive return
-    if ((testResult & WalaCache.RESULT_PRIMITIVE) > 0) {
+    if ((testResult & InheritanceHierarchyCache.RESULT_PRIMITIVE) > 0) {
       return true;
     }
     // Consult type hierarchy for sub-/supertypes
-    if (WalaCache.isSubtype(typeToCheck, expectedType) && !((testResult & WalaCache.RESULT_EQUAL) > 0)) {
+    if (InheritanceHierarchyCache.isSubtype(typeToCheck, expectedType) && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
       if (!checkRedundancy()) {
         internalProposalStore.addCastedProposal(workingChain, expectedType);
         return false;
@@ -257,7 +257,7 @@ public class ChainingAlgorithmWorker implements Runnable {
       }
     }
     /* else */
-    if (WalaCache.isSupertype(typeToCheck, expectedType) && !((testResult & WalaCache.RESULT_EQUAL) > 0)) {
+    if (InheritanceHierarchyCache.isSupertype(typeToCheck, expectedType) && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
       if (!checkRedundancy()) {
         internalProposalStore.addProposal(workingChain);
         return false;

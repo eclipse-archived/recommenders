@@ -16,22 +16,27 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.template.java.AbstractJavaContextType;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jdt.internal.corext.template.java.JavaContextType;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
+import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.ModifiedJavaContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
+import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
@@ -41,11 +46,12 @@ import org.osgi.framework.FrameworkUtil;
  * Controls the process of template recommendations.
  */
 @SuppressWarnings("restriction")
-final class TemplatesCompletionEngine implements IIntelligentCompletionEngine {
+final class TemplatesCompletionEngine implements IJavaCompletionProposalComputer {
 
+    private final IntelligentCompletionContextResolver contextResolver;
+    private final PatternRecommender patternRecommender;
     private CompletionProposalsBuilder completionProposalsBuilder;
     private AbstractJavaContextType templateContextType;
-    private final PatternRecommender patternRecommender;
 
     /**
      * @param patternRecommender
@@ -54,10 +60,17 @@ final class TemplatesCompletionEngine implements IIntelligentCompletionEngine {
      * @param methodCallFormatter
      *            The formatter will turn MethodCalls into the code to be used
      *            by the eclipse template engine.
+     * @param contextResolver
+     *            Responsible for computing an
+     *            {@link IIntelligentCompletionContext} from a
+     *            {@link ContentAssistInvocationContext} which is given by the
+     *            editor for each completion request.
      */
     @Inject
-    TemplatesCompletionEngine(final PatternRecommender patternRecommender, final MethodCallFormatter methodCallFormatter) {
+    TemplatesCompletionEngine(final PatternRecommender patternRecommender,
+            final MethodCallFormatter methodCallFormatter, final IntelligentCompletionContextResolver contextResolver) {
         this.patternRecommender = patternRecommender;
+        this.contextResolver = contextResolver;
         initializeProposalBuilder(methodCallFormatter);
         initializeTemplateContextType();
     }
@@ -86,8 +99,22 @@ final class TemplatesCompletionEngine implements IIntelligentCompletionEngine {
     }
 
     @Override
+    public List<IJavaCompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context,
+            final IProgressMonitor monitor) {
+        final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
+        if (contextResolver.hasProjectRecommendersNature(jCtx)) {
+            return computeProposals(contextResolver.resolveContext(jCtx));
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * @param context
+     *            The context from where the completion request was invoked.
+     * @return The completion proposals to be displayed in the editor.
+     */
     public List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext context) {
-        if (context.getEnclosingMethod() != null) {
+        if (context.getEnclosingMethod() != null && (context.expectsReturnValue() || context.getExpectedType() == null)) {
             final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                     .createInvokedVariable(context);
             if (completionTargetVariable != null) {
@@ -143,5 +170,24 @@ final class TemplatesCompletionEngine implements IIntelligentCompletionEngine {
             Throws.throwUnhandledException(e);
         }
         return templateContext;
+    }
+
+    @Override
+    public void sessionStarted() {
+    }
+
+    @Override
+    public List<IContextInformation> computeContextInformation(final ContentAssistInvocationContext context,
+            final IProgressMonitor monitor) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return null;
+    }
+
+    @Override
+    public void sessionEnded() {
     }
 }

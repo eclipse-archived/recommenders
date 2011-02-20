@@ -12,9 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import com.google.inject.multibindings.Multibinder;
 
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionEngine;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 /**
@@ -26,7 +24,6 @@ public final class TemplatesCompletionModule extends AbstractModule {
     protected void configure() {
         bindCallsRecommender();
         bindMethodCallFormatter();
-        bindTemplatesCodecompletionEngine();
     }
 
     /**
@@ -42,14 +39,5 @@ public final class TemplatesCompletionModule extends AbstractModule {
     private void bindMethodCallFormatter() {
         bind(JavaElementResolver.class).in(Scopes.SINGLETON);
         bind(MethodCallFormatter.class).in(Scopes.SINGLETON);
-    }
-
-    /**
-     * Registers the {@link TemplatesCompletionEngine} as a recommender.
-     */
-    private void bindTemplatesCodecompletionEngine() {
-        final Multibinder<IIntelligentCompletionEngine> binder = Multibinder.newSetBinder(binder(),
-                IIntelligentCompletionEngine.class);
-        binder.addBinding().to(TemplatesCompletionEngine.class).in(Scopes.SINGLETON);
     }
 }

@@ -81,7 +81,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
   }
 
   private List<IJavaCompletionProposal> computeProposals(final ChainingAlgorithm algorithm) {
-    final ChainProposalTemplateGenerator chainProposalGenerator = new ChainProposalTemplateGenerator();
+    final ChainTemplateProposalGenerator chainProposalGenerator = new ChainTemplateProposalGenerator();
     return chainProposalGenerator.generateJavaCompletionProposals(algorithm.getProposals(), jCtx, sw.getTime());
   }
 

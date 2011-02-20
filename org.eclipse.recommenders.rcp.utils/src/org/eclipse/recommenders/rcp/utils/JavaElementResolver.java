@@ -195,7 +195,8 @@ public class JavaElementResolver {
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
             } catch (final Exception e) {
-                throw throwUnhandledException(e);
+                RecommendersUtilsPlugin.logError(e, "failed to resolve jdt method '%s'.", jdtMethod);
+                return null;
             }
         }
         return recMethod;

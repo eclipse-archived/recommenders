@@ -91,7 +91,9 @@ public class ChainCompletionContext {
       receiverType = enclosingType;
     } else {
       final ITypeName receiverTypeName = ctx.getReceiverType();
-      receiverType = toWalaClass(receiverTypeName);
+      if (receiverType != null) {
+        receiverType = toWalaClass(receiverTypeName);
+      }
     }
     return receiverType != null;
   }
@@ -151,7 +153,7 @@ public class ChainCompletionContext {
       final ITypeName typeName = CompilerBindings.toTypeName(local.type);
       final IClass localType = toWalaClass(typeName);
       final String localName = String.valueOf(local.name);
-      final IChainElement element = new LocalVariableChainElement(localName, localType);
+      final IChainElement element = new LocalChainElement(localName, localType);
       accessibleLocals.add(element);
     }
   }

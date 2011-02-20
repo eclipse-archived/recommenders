@@ -50,12 +50,28 @@ final class PatternRecommender {
     private Set<IMethodName> receiverMethodInvocations;
     private ObjectMethodCallsNet model;
 
+    /**
+     * @param callsModelStore
+     *            The place where all patterns for every available class are
+     *            stored.
+     * @param usageResolvers
+     *            A set of resolvers which are able to compute a variable's type
+     *            and preceding method invocations from a given context.
+     */
     @Inject
     PatternRecommender(final CallsModelStore callsModelStore, final Provider<Set<IVariableUsageResolver>> usageResolvers) {
         this.callsModelStore = callsModelStore;
         this.usageResolvers = usageResolvers;
     }
 
+    /**
+     * @param targetVariable
+     *            The variable on which the completion request was invoked.
+     * @param context
+     *            The context from where the completion request was invoked.
+     * @return The {@link PatternRecommendation}s holding information for the
+     *         templates to be displayed.
+     */
     public Set<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
             final IIntelligentCompletionContext context) {
         if (canFindVariableUsage(context) && canFindModel()) {
@@ -174,6 +190,13 @@ final class PatternRecommender {
         return patterns.subList(0, Math.min(patterns.size(), MAX_PATTERNS));
     }
 
+    /**
+     * @param patternName
+     *            The interal names, used to identify the pattern inside the
+     *            pattern store.
+     * @return The methods which shall be invoked by the template built from the
+     *         given pattern.
+     */
     private List<IMethodName> getMethodCallsForPattern(final String patternName) {
         final List<IMethodName> recommendedMethods = Lists.newArrayList();
         model.setPattern(patternName);

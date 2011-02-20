@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package completion.templates.bugs;
+package completion.templates;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
@@ -16,20 +16,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class CompletionOnFieldWithObservedContructor extends Dialog {
+public class CompletionOnSimpleTypeNameNoVariableName extends Dialog {
 
     private Button b;
 
     @Override
-    protected Control createDialogArea(final Composite parent) {
-        b = new Button(null, 0);
-        // b.<^Space> -> pattern w/o contructor
-        // when marking "<^Space>" is should be replaced on completion.
-        b.<^Space>
-        return null;
-    }
+	protected Control createDialogArea(final Composite parent) {
+		// expects the pattern to assign a suitable variable name
+		Button <^Space>
+		return null;
+	}
 
-    private CompletionOnFieldWithObservedContructor() {
+    private CompletionOnSimpleTypeNameNoVariableName() {
         super((IShellProvider) null);
     }
 }
