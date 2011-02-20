@@ -106,6 +106,18 @@
          version="0.0.0"/>
 
    <plugin
+         id="org.eclipse.recommenders.rcp.codecompletion.templates.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.codecompletion.chain.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+         
+   <plugin
          id="org.eclipse.recommenders.commons.injection.source"
          download-size="0"
          install-size="0"
