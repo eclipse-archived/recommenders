@@ -47,7 +47,7 @@ import org.osgi.framework.FrameworkUtil;
  * Controls the process of template recommendations.
  */
 @SuppressWarnings("restriction")
-final class TemplatesCompletionEngine implements IJavaCompletionProposalComputer {
+final class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
     private final IntelligentCompletionContextResolver contextResolver;
     private final PatternRecommender patternRecommender;
@@ -68,7 +68,7 @@ final class TemplatesCompletionEngine implements IJavaCompletionProposalComputer
      *            editor for each completion request.
      */
     @Inject
-    TemplatesCompletionEngine(final PatternRecommender patternRecommender,
+    TemplatesCompletionProposalComputer(final PatternRecommender patternRecommender,
             final MethodCallFormatter methodCallFormatter, final IntelligentCompletionContextResolver contextResolver) {
         this.patternRecommender = patternRecommender;
         this.contextResolver = contextResolver;
@@ -84,7 +84,7 @@ final class TemplatesCompletionEngine implements IJavaCompletionProposalComputer
      *            <code>ProposalsBuilder</code>.
      */
     private void initializeProposalBuilder(final MethodCallFormatter methodCallFormatter) {
-        final Bundle bundle = FrameworkUtil.getBundle(TemplatesCompletionEngine.class);
+        final Bundle bundle = FrameworkUtil.getBundle(TemplatesCompletionProposalComputer.class);
         final Image icon = bundle == null ? null : AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(),
                 "metadata/icon2.gif").createImage();
         completionProposalsBuilder = new CompletionProposalsBuilder(icon, methodCallFormatter);
