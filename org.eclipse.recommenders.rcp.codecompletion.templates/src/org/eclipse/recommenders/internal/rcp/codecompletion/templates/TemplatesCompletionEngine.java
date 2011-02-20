@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.corext.template.java.AbstractJavaContextType;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jdt.internal.corext.template.java.JavaContextType;
@@ -114,7 +115,7 @@ final class TemplatesCompletionEngine implements IJavaCompletionProposalComputer
      * @return The completion proposals to be displayed in the editor.
      */
     public List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext context) {
-        if (context.getEnclosingMethod() != null && (context.expectsReturnValue() || context.getExpectedType() == null)) {
+        if (shouldComputeProposals(context)) {
             final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                     .createInvokedVariable(context);
             if (completionTargetVariable != null) {
@@ -126,6 +127,18 @@ final class TemplatesCompletionEngine implements IJavaCompletionProposalComputer
             }
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * @param context
+     *            The context from where the completion request was invoked.
+     * @return True, if the computer should try to find proposals for the given
+     *         context.
+     */
+    private boolean shouldComputeProposals(final IIntelligentCompletionContext context) {
+        return context.getEnclosingMethod() != null
+                && (context.expectsReturnValue() || context.getExpectedType() == null)
+                && !(context.getCompletionNode() instanceof CompletionOnMemberAccess);
     }
 
     /**

@@ -22,6 +22,7 @@ public class CompletionOnMethodReturnValue extends DialogPage {
 
     @Override
     public void createControl(final Composite parent) {
+    	// I disabled templates for these occasions. Are there any for which helpful template are imaginable?
         PlatformUI.getWorkbench().<^Space>
     }
     
