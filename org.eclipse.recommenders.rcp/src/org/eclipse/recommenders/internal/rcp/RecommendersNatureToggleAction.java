@@ -10,68 +10,79 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import static org.apache.commons.lang3.ArrayUtils.add;
-import static org.apache.commons.lang3.ArrayUtils.remove;
+import static org.eclipse.recommenders.commons.utils.Throws.throwUnreachable;
 
-import org.apache.commons.lang3.ArrayUtils;
+import java.util.LinkedList;
+
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.recommenders.rcp.utils.RCPUtils;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.google.common.collect.Lists;
+
 public class RecommendersNatureToggleAction implements IObjectActionDelegate {
 
-    private ISelection selection;
+    private LinkedList<IProject> projectsWithNature;
+    private LinkedList<IProject> projectsWithoutNature;
 
     @Override
     public void run(final IAction action) {
-        if (selection instanceof IStructuredSelection) {
-            IStructuredSelection s = (IStructuredSelection) selection;
-            for (Object element : s.toList()) {
-
-                IProject project = null;
-                if (element instanceof IProject) {
-                    project = (IProject) element;
-                } else if (element instanceof IAdaptable) {
-                    project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
-                }
-                if (canToggleNature(project)) {
-                    toggleNature(project);
-                }
-            }
+        for (final IProject project : projectsWithNature) {
+            RecommendersNature.removeNature(project);
+        }
+        for (final IProject project : projectsWithoutNature) {
+            RecommendersNature.addNature(project);
         }
     }
 
-    private boolean canToggleNature(IProject project) {
+    private boolean canToggleNature(final IProject project) {
         return project != null && project.isAccessible();
-    }
-
-    private void toggleNature(final IProject project) {
-        try {
-            final IProjectDescription description = project.getDescription();
-            String[] natures = description.getNatureIds();
-            int index = ArrayUtils.indexOf(natures, IDs.NATURE_ID);
-            natures = alreadyHasRecommendersNature(index) ? remove(natures, index) : add(natures, IDs.NATURE_ID);
-            description.setNatureIds(natures);
-            project.setDescription(description, null);
-        } catch (final CoreException e) {
-            RecommendersPlugin.logError(e, "Failed to set recommenders nature to project '%s'", project.getName());
-        }
-    }
-
-    private boolean alreadyHasRecommendersNature(int indexOf) {
-        return indexOf > -1;
     }
 
     @Override
     public void selectionChanged(final IAction action, final ISelection selection) {
-        this.selection = selection;
+        computeAccesibleProjectsFromCurrentSelection(selection);
+        computeNewActionText(action);
+    }
+
+    private void computeNewActionText(final IAction action) {
+        if (projectsWithNature.isEmpty() && projectsWithoutNature.isEmpty()) {
+            throwUnreachable("no project selected! Configuration mistake in plugin.xml.");
+        } else if (!projectsWithNature.isEmpty() && !projectsWithoutNature.isEmpty()) {
+            action.setText("Flip Recommenders Natures");
+        } else if (!projectsWithNature.isEmpty()) {
+            action.setText("Remove Recommenders Nature");
+        } else {
+            action.setText("Add Recommenders Nature");
+        }
+    }
+
+    private void computeAccesibleProjectsFromCurrentSelection(final ISelection selection) {
+        projectsWithNature = Lists.newLinkedList();
+        projectsWithoutNature = Lists.newLinkedList();
+
+        final StructuredSelection s = RCPUtils.asStructuredSelection(selection);
+        for (final Object element : s.toList()) {
+            IProject project = null;
+            if (element instanceof IProject) {
+                project = (IProject) element;
+            } else if (element instanceof IAdaptable) {
+                project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
+            }
+            if (!canToggleNature(project)) {
+                continue;
+            }
+            if (RecommendersNature.hasNature(project)) {
+                projectsWithNature.add(project);
+            } else {
+                projectsWithoutNature.add(project);
+            }
+        }
     }
 
     @Override
