@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.5"?>
+<plugin>
+	<extension
+         point="org.eclipse.recommenders.commons.injection.modules">
+      <module
+            class="org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionModule">
+      </module>
+   </extension>
+   <extension
+         id="org.eclipse.recommenders"
+         name="Code Recommenders Calls Proposals"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.eclipse.recommenders.rcp.category.completion"
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionEngine">
+      </javaCompletionProposalComputer>
+   </extension>
+</plugin>
