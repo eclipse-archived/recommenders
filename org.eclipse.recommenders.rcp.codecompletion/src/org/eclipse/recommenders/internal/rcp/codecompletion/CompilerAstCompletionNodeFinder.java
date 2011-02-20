@@ -243,6 +243,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
         declaringTypeOfEnclosingMethodCall = null;
         enclosingMethodCallSelector = null;
         expectedReturnType = null;
+        expectsReturnType = false;
         expectsStaticMember = false;
         receiverName = null;
         receiverType = null;
@@ -397,7 +398,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             final CompletionOnLocalName node = storeCompletionNode(localDeclaration);
             evaluateCompletionOnLocalName(node);
         } else if (isCompletionOnVariableInitialization(localDeclaration.initialization)) {
-            expectedReturnType = localDeclaration.binding.type;
+            setExpectedReturnType(localDeclaration.binding.type);
         } else {
             // we only add this declaration if it's "complete".
             // Var c = c doesn't make sense, right?
@@ -408,7 +409,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     private void evaluateCompletionOnLocalName(final CompletionOnLocalName c) {
         if (c.binding != null) {
-            expectedReturnType = c.binding.type;
+            setExpectedReturnType(c.binding.type);
             // TODO this is actually not correct! Need to fix the pattern
             // template stuff which expects receiver type
             // being set!
@@ -425,7 +426,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             return false;
         }
         if (isCompletionOnVariableInitialization(fieldDeclaration.initialization)) {
-            expectedReturnType = fieldDeclaration.binding.type;
+            setExpectedReturnType(fieldDeclaration.binding.type);
         } else {
             // we only add this declaration if it's "complete".
             // Var c = c doesn't make sense, right?
@@ -906,10 +907,15 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
         if (isCompletionOnVariableInitialization(returnStatement.expression)) {
             if (scope.referenceContext() instanceof AbstractMethodDeclaration) {
                 final AbstractMethodDeclaration referenceContext = (AbstractMethodDeclaration) scope.referenceContext();
-                expectedReturnType = referenceContext.binding.returnType;
+                setExpectedReturnType(referenceContext.binding.returnType);
             }
         }
         return true;
+    }
+
+    private void setExpectedReturnType(final TypeBinding type) {
+        expectedReturnType = type;
+        expectsReturnType = true;
     }
 
     @Override
