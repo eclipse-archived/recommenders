@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import java.util.List;
 import java.util.Map;
@@ -27,13 +27,17 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
+import org.eclipse.recommenders.internal.rcp.InterruptingProgressMonitor;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 import org.eclipse.recommenders.rcp.utils.CountingProgressMonitor;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.ibm.wala.ipa.cha.IClassHierarchy;
 
 /**
  * Incremental builder that triggers the {@link ICompilationUnitAnalyzer}s to
@@ -52,6 +56,12 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
 
     @Inject
     private Set<ICompilationUnitAnalyzer> analyzers;
+
+    @Inject
+    private IClassHierarchyService chaService;
+
+    @Inject
+    private JavaElementResolver javaElementResolver;
 
     public RecommendersBuilder() {
         // that's odd: builder extension point does not allow usage of extension
@@ -151,6 +161,11 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
     }
 
     private void analyzeCompilationUnit(final ICompilationUnit cu) throws CoreException {
+        final IClassHierarchy cha = chaService.getClassHierachy(cu);
+        if (cha instanceof LazyClassHierarchy) {
+            final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
+            lcha.remove(javaElementResolver.toRecType(cu.findPrimaryType()));
+        }
         if (!cu.isStructureKnown()) {
             monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
             return;

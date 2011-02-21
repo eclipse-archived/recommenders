@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.wala.cp;
+package org.eclipse.recommenders.internal.rcp.analysis.cp;
 
 import java.io.File;
 import java.io.FileNotFoundException;

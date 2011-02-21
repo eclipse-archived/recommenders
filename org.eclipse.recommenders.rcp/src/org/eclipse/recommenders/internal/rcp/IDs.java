@@ -13,10 +13,6 @@ package org.eclipse.recommenders.internal.rcp;
 public class IDs {
     public static final String PLUGIN_ID = "org.eclipse.recommenders.rcp";
 
-    public static final String NATURE_ID = "org.eclipse.recommenders.rcp.RecommendersNature";
-
-    public static final String BUILDER_ID = "org.eclipse.recommenders.rcp.RecommendersBuilder";
-
     public static final String EXT_POINT_ID = "org.eclipse.recommenders.rcp.injection";
 
     public static final String RECOMMENDATIONS_VIEW_ID = "org.eclipse.recommenders.rcp.views.RecommendationsView";

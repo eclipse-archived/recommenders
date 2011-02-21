@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.wala;
+package org.eclipse.recommenders.rcp.analysis;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;

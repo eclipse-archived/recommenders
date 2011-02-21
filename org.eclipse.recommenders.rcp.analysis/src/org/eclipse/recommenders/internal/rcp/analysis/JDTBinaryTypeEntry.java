@@ -11,7 +11,7 @@
 /**
  *
  */
-package org.eclipse.recommenders.internal.rcp.wala;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 

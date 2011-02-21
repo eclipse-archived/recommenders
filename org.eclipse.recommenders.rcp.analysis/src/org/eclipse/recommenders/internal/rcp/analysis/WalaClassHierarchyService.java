@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.wala;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import static org.eclipse.jdt.core.IJavaElementDelta.ADDED;
 import static org.eclipse.jdt.core.IJavaElementDelta.CHANGED;
@@ -32,9 +32,9 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaUtils;
-import org.eclipse.recommenders.internal.rcp.wala.cp.EclipseProjectPath;
+import org.eclipse.recommenders.internal.rcp.analysis.cp.EclipseProjectPath;
+import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
 
 import com.google.inject.Inject;
 import com.ibm.wala.classLoader.IClass;

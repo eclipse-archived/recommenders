@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.wala;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -38,7 +38,7 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Compilati
 import org.eclipse.recommenders.internal.commons.analysis.entrypoints.AllMethodsAndContructorsEntrypointSelector;
 import org.eclipse.recommenders.internal.commons.analysis.entrypoints.IEntrypointSelector;
 import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
-import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
+import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
@@ -66,6 +66,7 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
     @Override
     @SuppressWarnings("unused")
     public CompilationUnit analyze(final ICompilationUnit jdtCompilationUnit, final IProgressMonitor monitor) {
+        System.out.println("start analyzing " + jdtCompilationUnit.getElementName());
         final IType jdtType = jdtCompilationUnit.findPrimaryType();
         if (jdtType == null) {
             return null;
@@ -122,6 +123,8 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         } catch (final UnimplementedError x) {
             RcpAnalysisPlugin.logError(x, "error during analysis if '%s'", walaClass.getName());
         }
+        System.out.println("end analyzing " + jdtCompilationUnit.getElementName());
+
         return recCompilationUnit;
     }
 }

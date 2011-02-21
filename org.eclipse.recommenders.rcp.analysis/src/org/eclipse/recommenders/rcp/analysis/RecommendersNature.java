@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp;
+package org.eclipse.recommenders.rcp.analysis;
 
 import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.apache.commons.lang3.ArrayUtils.remove;
@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.recommenders.internal.rcp.analysis.IDs;
 
 public class RecommendersNature implements IProjectNature {
     public static void addNature(final IProject project) {

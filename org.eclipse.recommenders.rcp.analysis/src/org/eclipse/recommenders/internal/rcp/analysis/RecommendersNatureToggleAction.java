@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnreachable;
 
@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.recommenders.rcp.analysis.RecommendersNature;
 import org.eclipse.recommenders.rcp.utils.RCPUtils;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;

@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.wala;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 

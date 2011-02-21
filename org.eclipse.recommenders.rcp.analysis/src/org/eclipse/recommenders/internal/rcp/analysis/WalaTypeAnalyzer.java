@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.wala;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
@@ -25,8 +25,8 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDec
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.entrypoints.IEntrypointSelector;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
+import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;

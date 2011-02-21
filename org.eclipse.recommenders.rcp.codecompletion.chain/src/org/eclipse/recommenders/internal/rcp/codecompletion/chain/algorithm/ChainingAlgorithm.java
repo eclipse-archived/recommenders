@@ -27,9 +27,9 @@ import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.ChainTemplateProposal;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
+import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
 
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMember;

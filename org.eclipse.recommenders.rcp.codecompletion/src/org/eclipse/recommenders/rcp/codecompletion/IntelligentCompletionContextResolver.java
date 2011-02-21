@@ -15,8 +15,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.internal.rcp.RecommendersNature;
 import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionContext;
+import org.eclipse.recommenders.rcp.analysis.RecommendersNature;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 import com.google.inject.Inject;

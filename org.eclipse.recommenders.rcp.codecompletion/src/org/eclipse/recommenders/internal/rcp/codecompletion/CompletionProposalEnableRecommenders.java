@@ -16,7 +16,7 @@ import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.internal.rcp.IDs;
-import org.eclipse.recommenders.internal.rcp.RecommendersNature;
+import org.eclipse.recommenders.rcp.analysis.RecommendersNature;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;

@@ -16,7 +16,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
-import org.eclipse.recommenders.internal.rcp.RecommendersBuilder;
 
 /**
  * An artifact store collects analysis artifacts created by various

@@ -11,7 +11,7 @@
 /**
  *
  */
-package org.eclipse.recommenders.internal.rcp.wala;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import java.io.IOException;
 import java.io.InputStream;

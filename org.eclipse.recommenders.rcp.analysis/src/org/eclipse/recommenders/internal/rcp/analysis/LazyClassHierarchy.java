@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.wala;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
@@ -39,7 +39,9 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.BinaryType;
 import org.eclipse.jdt.internal.core.SourceType;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaAnalysisUtils;
+import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
 
 import com.google.common.collect.Iterators;
 import com.ibm.wala.classLoader.ArrayClassLoader;
@@ -187,6 +189,7 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
         } catch (final InvalidClassFileException e) {
             throw throwUnhandledException(e);
         }
+        System.out.println("loading from output folder: " + res.getName());
         clazzes.put(res.getName(), res);
         watchlist.put(eclipseFile, res.getName());
         res.getSuperclass();
@@ -403,13 +406,13 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
                         // handle added resource
                         break;
                     case IResourceDelta.REMOVED:
-                        // handle removed resource
                         break;
                     case IResourceDelta.CHANGED:
                         final IResource resource = delta.getResource();
                         if (pathDescribesAnExistingFileHandle(resource)) {
                             final TypeName typeName = watchlist.get(resource);
                             if (null != typeName) {
+                                System.out.println("removed wala class: " + typeName);
                                 clazzes.remove(typeName);
                             }
                         }
@@ -422,5 +425,11 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
         } catch (final CoreException e) {
             throwUnhandledException(e);
         }
+    }
+
+    public void remove(final ITypeName recType) {
+        ensureIsNotNull(recType);
+        final TypeName name = WalaNameUtils.rec2walaType(recType).getName();
+        clazzes.remove(name);
     }
 }

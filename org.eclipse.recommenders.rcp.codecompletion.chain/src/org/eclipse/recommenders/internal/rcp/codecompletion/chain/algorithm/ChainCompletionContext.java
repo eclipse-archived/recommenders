@@ -16,9 +16,9 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerBindings;
+import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
 
 import com.google.common.collect.Lists;
 import com.ibm.wala.classLoader.IClass;

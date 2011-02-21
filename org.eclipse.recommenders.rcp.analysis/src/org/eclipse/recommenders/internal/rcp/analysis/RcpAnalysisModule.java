@@ -8,12 +8,12 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.wala;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
 import javax.inject.Singleton;
 
 import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
-import org.eclipse.recommenders.rcp.wala.IClassHierarchyService;
+import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
