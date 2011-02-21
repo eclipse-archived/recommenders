@@ -1,0 +1,88 @@
+/**
+ * Copyright (c) 2011 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */
+package org.eclipse.recommenders.internal.rcp.codesearch.jobs;
+
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
+import org.apache.commons.lang3.time.StopWatch;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.recommenders.commons.codesearch.CodeSearchResource;
+import org.eclipse.recommenders.commons.codesearch.Proposal;
+import org.eclipse.recommenders.commons.codesearch.Request;
+import org.eclipse.recommenders.commons.codesearch.Response;
+import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
+import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
+import org.eclipse.swt.widgets.Display;
+
+public class SendCodeSearchRequestJob extends WorkspaceJob {
+    private final Request request;
+    private Response reply;
+    private final IJavaProject javaProject;
+
+    public SendCodeSearchRequestJob(final Request request, final IJavaProject javaProject) {
+        super("Searching Example Code");
+        this.javaProject = javaProject;
+        ensureIsNotNull(request);
+        this.request = request;
+    }
+
+    @Override
+    public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
+        if (!isValidRequest()) {
+            return Status.CANCEL_STATUS;
+        }
+        final StopWatch netWatch = new StopWatch();
+        netWatch.start();
+        final CodeSearchResource codeSearch = createTransport();
+        reply = codeSearch.search(request);
+        netWatch.stop();
+        System.out.printf("net comm took %s\n", netWatch);
+        final StopWatch eclWatch = new StopWatch();
+        eclWatch.start();
+        buildASTs();
+        eclWatch.stop();
+        System.out.printf("building asts took %s\n", eclWatch);
+        openViews();
+        return Status.OK_STATUS;
+    }
+
+    private boolean isValidRequest() {
+        return Request.INVALID != request;
+    }
+
+    private void buildASTs() {
+        for (final Proposal result : reply.proposals) {
+            final CompilationUnit cu = CrASTUtil.createCompilationUnitFromString(result.className, result.source,
+                    javaProject);
+            result.ast = cu;
+        }
+    }
+
+    private void openViews() {
+        Display.getDefault().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                CodesearchPlugin.showQueryView().setInput(request, javaProject);
+                CodesearchPlugin.showExamplesView().setInput(request, reply);
+            }
+        });
+    }
+
+    public static CodeSearchResource createTransport() {
+        return null;
+    }
+}
