@@ -143,6 +143,12 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     public Statement completionNode;
 
     /**
+     * One of {@link ReturnStatement}, {@link LocalDeclaration},
+     * {@link FieldDeclaration}, or <code>null</code>
+     */
+    public Statement completionNodeParent;
+
+    /**
      * The type of the receiver this completion event was triggered on, e.g,
      * Button b = ...; b.|&lt;ctrl-space&gt; would set {@link #receiverType} to
      * <code>Button</code>.
@@ -399,6 +405,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             evaluateCompletionOnLocalName(node);
         } else if (isCompletionOnVariableInitialization(localDeclaration.initialization)) {
             setExpectedReturnType(localDeclaration.binding.type);
+            completionNodeParent = localDeclaration;
         } else {
             // we only add this declaration if it's "complete".
             // Var c = c doesn't make sense, right?
@@ -427,6 +434,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
         }
         if (isCompletionOnVariableInitialization(fieldDeclaration.initialization)) {
             setExpectedReturnType(fieldDeclaration.binding.type);
+            completionNodeParent = fieldDeclaration;
         } else {
             // we only add this declaration if it's "complete".
             // Var c = c doesn't make sense, right?
@@ -908,6 +916,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             if (scope.referenceContext() instanceof AbstractMethodDeclaration) {
                 final AbstractMethodDeclaration referenceContext = (AbstractMethodDeclaration) scope.referenceContext();
                 setExpectedReturnType(referenceContext.binding.returnType);
+                completionNodeParent = returnStatement;
             }
         }
         return true;
