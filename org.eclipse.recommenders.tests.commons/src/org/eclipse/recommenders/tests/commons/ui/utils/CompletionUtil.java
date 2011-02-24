@@ -30,7 +30,7 @@ public class CompletionUtil {
         final SWTBotShell[] shellsBeforeCompletion = bot.shells();
         editor.setFocus();
         editor.pressShortcut(SWT.CTRL, ' ');
-        bot.sleep(500);
+        bot.sleep(1000);
         final SWTBotShell[] shellsAfterCompletion = bot.shells();
         final SWTBotShell completionShell = findNewShell(shellsBeforeCompletion, shellsAfterCompletion);
         completionShell.activate();
