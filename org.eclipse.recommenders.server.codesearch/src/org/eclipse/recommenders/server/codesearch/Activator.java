@@ -1,56 +1,69 @@
-/**
- * Copyright (c) 2011 Darmstadt University of Technology.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Marcel Bruch - initial API and implementation.
- */
 package org.eclipse.recommenders.server.codesearch;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import org.apache.log4j.BasicConfigurator;
-import org.osgi.framework.Bundle;
+import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.http.HttpService;
+import org.osgi.util.tracker.ServiceTracker;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 
 public class Activator implements BundleActivator {
 
-    private static BundleContext context;
-
-    static BundleContext getContext() {
-        return context;
-    }
-
-    private File installLocation;
+    private ServiceTracker tracker;
+    private HttpService httpService;
+    private WebserviceActivator serviceActivator;
 
     @Override
     public void start(final BundleContext context) throws Exception {
-        resolveInstallLocation(context);
-        initLoggingSystem();
+        tracker = new ServiceTracker(context, HttpService.class.getName(), null) {
+            @Override
+            public Object addingService(final ServiceReference serviceRef) {
+                httpService = (HttpService) super.addingService(serviceRef);
+                startService();
+                return httpService;
+            }
 
-    }
-
-    private void resolveInstallLocation(final BundleContext context) throws IOException {
-        final Bundle bundle = context.getBundle();
-        final URL indexDirUrl = bundle.getEntry("data");
-        // final URLConverter converter = new URLConverterImpl();
-        // final URL fileURL = converter.toFileURL(indexDirUrl);
-        // installLocation = new File(fileURL.getPath()).getAbsoluteFile();
-    }
-
-    private void initLoggingSystem() {
-        BasicConfigurator.resetConfiguration();
-        BasicConfigurator.configure();
+            @Override
+            public void removedService(final ServiceReference ref, final Object service) {
+                if (httpService == service) {
+                    stopService();
+                    httpService = null;
+                }
+                super.removedService(ref, service);
+            }
+        };
+        tracker.open();
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception {
+        tracker.close();
+        stopService();
+    }
 
+    private void stopService() {
+        if (serviceActivator != null) {
+            serviceActivator.stop();
+        }
+    }
+
+    private void startService() {
+        final Injector injector = InjectionService.getInstance().getInjector()
+                .createChildInjector(new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        bind(HttpService.class).toInstance(httpService);
+                    }
+                });
+
+        serviceActivator = injector.getInstance(WebserviceActivator.class);
+        try {
+            serviceActivator.start();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
