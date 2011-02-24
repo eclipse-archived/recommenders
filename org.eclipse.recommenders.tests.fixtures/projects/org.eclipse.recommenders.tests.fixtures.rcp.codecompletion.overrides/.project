@@ -29,6 +29,6 @@
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>org.eclipse.recommenders.rcp.RecommendersNature</nature>
+		<nature>org.eclipse.recommenders.rcp.analysis.RecommendersNature</nature>
 	</natures>
 </projectDescription>
