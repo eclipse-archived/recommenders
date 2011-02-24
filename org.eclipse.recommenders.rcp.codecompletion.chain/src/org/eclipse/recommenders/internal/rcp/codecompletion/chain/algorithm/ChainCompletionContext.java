@@ -13,7 +13,9 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 import java.util.List;
 
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerBindings;
 import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
@@ -38,6 +40,7 @@ public class ChainCompletionContext {
   private IClass receiverType;
   private IClass expectedType;
   private IClass enclosingType;
+  private IMethod enclosingMethod;
 
   public ChainCompletionContext(final IIntelligentCompletionContext ctx, final JavaElementResolver javaElementResolver,
       final IClassHierarchyService walaChaService) {
@@ -49,6 +52,9 @@ public class ChainCompletionContext {
 
   private void initializeAccessibleElements() {
     if (!findEnclosingClass()) {
+      return;
+    }
+    if (!findEnclosingMethod()) {
       return;
     }
     if (!findReceiverClass()) {
@@ -80,6 +86,24 @@ public class ChainCompletionContext {
     return walaType;
   }
 
+  private boolean findEnclosingMethod() {
+    final IMethodName name = ctx.getEnclosingMethod();
+    enclosingMethod = toWalaMethod(name);
+    return enclosingMethod != null;
+  }
+
+  private IMethod toWalaMethod(final IMethodName methodName) {
+    if (methodName == null) {
+      return null;
+    }
+    final org.eclipse.jdt.core.IMethod jdtMethod = javaElementResolver.toJdtMethod(methodName);
+    if (jdtMethod == null) {
+      return null;
+    }
+    final IMethod walaMethod = walaChaService.getMethod(jdtMethod);
+    return walaMethod;
+  }
+
   private boolean findExpectedClass() {
     final ITypeName expectedTypeName = ctx.getExpectedType();
     expectedType = toWalaClass(expectedTypeName);
@@ -88,6 +112,8 @@ public class ChainCompletionContext {
 
   private boolean findReceiverClass() {
     if (ctx.isReceiverImplicitThis()) {
+      receiverType = enclosingType;
+    } else if (ctx.getCompletionNode() instanceof CompletionOnSingleNameReference) {
       receiverType = enclosingType;
     } else {
       final ITypeName receiverTypeName = ctx.getReceiverType();
@@ -110,6 +136,13 @@ public class ChainCompletionContext {
   }
 
   private boolean isAccessible(final IMember member) {
+
+    if (ctx.isReceiverImplicitThis()) {
+      if (enclosingMethod != null && enclosingMethod.isStatic() && !member.isStatic()) {
+        return false;
+      }
+    }
+
     if (member.getDeclaringClass() == receiverType) {
       return true;
     }
@@ -131,6 +164,7 @@ public class ChainCompletionContext {
       if (method.isVoid()) {
         continue;
       }
+
       if (!isAccessible(method)) {
         continue;
       }
@@ -154,6 +188,9 @@ public class ChainCompletionContext {
         continue;
       }
       final String localName = String.valueOf(local.name);
+      if (!localName.startsWith(ctx.getPrefixToken())) {
+        continue;
+      }
       final IChainElement element = new LocalChainElement(localName, localType);
       accessibleLocals.add(element);
     }
