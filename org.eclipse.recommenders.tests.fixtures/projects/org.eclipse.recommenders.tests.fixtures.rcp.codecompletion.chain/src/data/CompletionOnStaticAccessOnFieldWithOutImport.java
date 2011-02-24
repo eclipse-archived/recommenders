@@ -12,7 +12,7 @@ package data;
 
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
-public class CompletionOnStaticAccessInGlobalWithOutImport {
+public class CompletionOnStaticAccessOnFieldWithOutImport {
         
         IWorkbenchHelpSystem c = PlatformUI.<@Ignore^Space> 
         /* calling context --> PlatformUI

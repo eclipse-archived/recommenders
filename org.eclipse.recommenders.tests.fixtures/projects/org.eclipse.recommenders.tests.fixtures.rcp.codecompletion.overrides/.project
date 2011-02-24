@@ -21,7 +21,7 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.recommenders.rcp.RecommendersBuilder</name>
+			<name>org.eclipse.recommenders.rcp.analysis.RecommendersBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
