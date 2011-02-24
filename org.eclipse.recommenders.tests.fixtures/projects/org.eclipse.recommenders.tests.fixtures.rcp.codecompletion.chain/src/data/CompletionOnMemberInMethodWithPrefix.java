@@ -20,25 +20,12 @@ public class CompletionOnMemberInMethodWithPrefix {
         return new CompletionOnMemberInMethodWithPrefix();
     }
 
-    public static void method1() {
-		final CompletionOnMemberInMethodWithPrefix useMe = new CompletionOnMemberInMethodWithPrefix();
-		final AtomicBoolean c = use<@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> AtomicBoolean
-         * expected completion --> [use]Me.findMe
-		 * variable name --> c
-		 */
-	}
-
     public static void method2() {
+        //@start
 		final CompletionOnMemberInMethodWithPrefix useMe = new CompletionOnMemberInMethodWithPrefix();
-		final AtomicBoolean c = useMe.get<@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> AtomicBoolean
-         * expected completion --> [get]SubElement().findMe
-		 * variable name --> c
-		 */
+		final AtomicBoolean c = useMe.get<^Space|getSubElement().findMe.*>
+		//@end
+		//final CompletionOnMemberInMethodWithPrefix useMe = new CompletionOnMemberInMethodWithPrefix();
+		//final AtomicBoolean c = useMe.getSubElement().findMe
 	}
 }

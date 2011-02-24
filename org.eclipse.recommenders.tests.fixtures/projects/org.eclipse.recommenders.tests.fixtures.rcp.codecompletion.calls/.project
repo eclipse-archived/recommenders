@@ -21,7 +21,7 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.recommenders.rcp.RecommendersBuilder</name>
+			<name>org.eclipse.recommenders.rcp.analysis.RecommendersBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
@@ -30,5 +30,6 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.recommenders.rcp.RecommendersNature</nature>
+		<nature>org.eclipse.recommenders.rcp.analysis.RecommendersNature</nature>
 	</natures>
 </projectDescription>
