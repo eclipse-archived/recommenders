@@ -18,13 +18,13 @@ import org.eclipse.swt.widgets.Shell;
 
 public class CompletionOnAssignment extends Dialog {
 
-    protected CompletionOnAssignment(final Shell parentShell) {
-        super(parentShell);
-    }
+	protected CompletionOnAssignment(final Shell parentShell) {
+		super(parentShell);
+	}
 
-    @Override
+	@Override
     protected Control createDialogArea(final Composite parent) {
-        final Button b = <^Space>
+        final Button b = <@Ignore^Space>
         
         return null;
     }

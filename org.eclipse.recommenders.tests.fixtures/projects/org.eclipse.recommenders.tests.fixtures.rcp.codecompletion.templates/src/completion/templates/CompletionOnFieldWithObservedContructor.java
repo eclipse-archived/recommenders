@@ -24,7 +24,7 @@ public class CompletionOnFieldWithObservedContructor extends Dialog {
     protected Control createDialogArea(final Composite parent) {
         b = new Button(null, 0);
         // b.<^Space> -> pattern w/o contructor
-        b.<^Space>
+        b.<^Space|addSelectionListener.*%>
         return null;
     }
 

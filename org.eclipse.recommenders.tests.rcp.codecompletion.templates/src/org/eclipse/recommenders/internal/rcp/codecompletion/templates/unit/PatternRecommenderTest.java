@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
+package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +26,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.PatternNode;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.PatternRecommender;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -44,7 +45,7 @@ public final class PatternRecommenderTest {
                 "Button butto = new Button();\nbutto.", "butto", "Button");
         final PatternRecommender recommender = getPatternRecommenderMock(context.getReceiverType());
 
-        final CompletionTargetVariable targetVariable = AllTests.getDefaultConstructorCall()
+        final CompletionTargetVariable targetVariable = UnitTestSuite.getDefaultConstructorCall()
                 .getCompletionTargetVariable();
         final Set<PatternRecommendation> recommendations = recommender.computeRecommendations(targetVariable, context);
 
@@ -91,8 +92,8 @@ public final class PatternRecommenderTest {
                         return arg0.getFirst().compareTo(arg1.getFirst());
                     }
                 });
-        methodsSet.add(Tuple.create(AllTests.getDefaultConstructorCall().getInvokedMethod(), 0.5));
-        methodsSet.add(Tuple.create(AllTests.getDefaultMethodCall().getInvokedMethod(), 0.5));
+        methodsSet.add(Tuple.create(UnitTestSuite.getDefaultConstructorCall().getInvokedMethod(), 0.5));
+        methodsSet.add(Tuple.create(UnitTestSuite.getDefaultMethodCall().getInvokedMethod(), 0.5));
         return methodsSet;
     }
 }

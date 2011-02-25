@@ -21,7 +21,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
  * Extracts the {@link CompletionTargetVariable} from an
  * {@link IIntelligentCompletionContext}.
  */
-final class CompletionTargetVariableBuilder {
+public final class CompletionTargetVariableBuilder {
 
     /**
      * Private constructor to prevent instantiation of utility class.

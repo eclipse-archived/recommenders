@@ -47,7 +47,7 @@ import org.osgi.framework.FrameworkUtil;
  * Controls the process of template recommendations.
  */
 @SuppressWarnings("restriction")
-final class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
+public final class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
     private final IntelligentCompletionContextResolver contextResolver;
     private final PatternRecommender patternRecommender;
@@ -68,7 +68,7 @@ final class TemplatesCompletionProposalComputer implements IJavaCompletionPropos
      *            editor for each completion request.
      */
     @Inject
-    TemplatesCompletionProposalComputer(final PatternRecommender patternRecommender,
+    public TemplatesCompletionProposalComputer(final PatternRecommender patternRecommender,
             final MethodCallFormatter methodCallFormatter, final IntelligentCompletionContextResolver contextResolver) {
         this.patternRecommender = patternRecommender;
         this.contextResolver = contextResolver;

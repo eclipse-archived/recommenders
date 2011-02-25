@@ -34,7 +34,7 @@ import org.eclipse.swt.graphics.Image;
  * the propoals is selected from the completion proposals menu.
  */
 @SuppressWarnings("restriction")
-final class CompletionProposalsBuilder {
+public final class CompletionProposalsBuilder {
 
     private final Image templateIcon;
     private final MethodCallFormatter methodCallFormatter;
@@ -47,7 +47,7 @@ final class CompletionProposalsBuilder {
      *            given {@link PatternRecommendation} into java code which will
      *            be inserted when the completion is selected.
      */
-    CompletionProposalsBuilder(final Image templateIcon, final MethodCallFormatter methodCallFormatter) {
+    public CompletionProposalsBuilder(final Image templateIcon, final MethodCallFormatter methodCallFormatter) {
         this.templateIcon = templateIcon;
         this.methodCallFormatter = methodCallFormatter;
     }

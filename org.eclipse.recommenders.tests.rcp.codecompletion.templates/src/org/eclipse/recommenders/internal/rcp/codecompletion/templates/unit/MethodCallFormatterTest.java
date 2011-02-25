@@ -8,9 +8,10 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
+package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.MethodCallFormatter;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,10 +22,10 @@ public final class MethodCallFormatterTest {
     public void testPatternNamer() throws JavaModelException {
         final MethodCallFormatter formatter = getMethodCallFormatterMock();
 
-        MethodCall methodCall = AllTests.getDefaultMethodCall();
+        MethodCall methodCall = UnitTestSuite.getDefaultMethodCall();
         Assert.assertEquals("constructed.setText(${intTest:link(0)});", formatter.format(methodCall));
 
-        methodCall = AllTests.getDefaultConstructorCall();
+        methodCall = UnitTestSuite.getDefaultConstructorCall();
         Assert.assertEquals("unconstructed = new Button(${intTest:link(0)});", formatter.format(methodCall));
     }
 

@@ -38,7 +38,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
  * Computes <code>PatternRecommendations</code>s from the
  * <code>CallsModelStore</code>.
  */
-final class PatternRecommender {
+public final class PatternRecommender {
 
     private static final int MAX_PATTERNS = 5;
     private static final double PATTERN_PROBABILITY_THRESHOLD = 0.02d;
@@ -59,7 +59,8 @@ final class PatternRecommender {
      *            and preceding method invocations from a given context.
      */
     @Inject
-    PatternRecommender(final CallsModelStore callsModelStore, final Provider<Set<IVariableUsageResolver>> usageResolvers) {
+    public PatternRecommender(final CallsModelStore callsModelStore,
+            final Provider<Set<IVariableUsageResolver>> usageResolvers) {
         this.callsModelStore = callsModelStore;
         this.usageResolvers = usageResolvers;
     }
