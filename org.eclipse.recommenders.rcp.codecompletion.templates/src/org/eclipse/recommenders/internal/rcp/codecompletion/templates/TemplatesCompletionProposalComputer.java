@@ -19,7 +19,9 @@ import com.google.inject.Inject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnLocalName;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.corext.template.java.AbstractJavaContextType;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jdt.internal.corext.template.java.JavaContextType;
@@ -136,9 +138,14 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      *         context.
      */
     private boolean shouldComputeProposals(final IIntelligentCompletionContext context) {
-        return context.getEnclosingMethod() != null
-                && (context.expectsReturnValue() || context.getExpectedType() == null)
-                && !(context.getCompletionNode() instanceof CompletionOnMemberAccess);
+        if (context.getEnclosingMethod() == null) {
+            return false;
+        }
+        if (!context.expectsReturnValue()) {
+            return !(context.getCompletionNode() instanceof CompletionOnMemberAccess);
+        }
+        return context.getCompletionNode() instanceof CompletionOnLocalName
+                || context.getCompletionNode() instanceof CompletionOnSingleNameReference;
     }
 
     /**
