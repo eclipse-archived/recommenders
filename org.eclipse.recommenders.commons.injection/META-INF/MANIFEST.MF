@@ -6,7 +6,7 @@ Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: com.google.guice;bundle-version="3.0.0",
- org.eclipse.core.runtime,
- com.google.guava
+ com.google.guava,
+ org.eclipse.core.runtime
 Export-Package: org.eclipse.recommenders.commons.injection,
  org.eclipse.recommenders.commons.internal.injection

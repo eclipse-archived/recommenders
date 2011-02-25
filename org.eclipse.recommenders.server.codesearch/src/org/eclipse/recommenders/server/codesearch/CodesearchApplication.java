@@ -4,13 +4,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.recommenders.server.codesearch.resources.CodeSearchResource;
 import org.eclipse.recommenders.server.commons.AuthenticationFilter;
 import org.eclipse.recommenders.server.commons.GuiceInjectableProvider;
+import org.eclipse.recommenders.server.commons.IAuthenticationService;
 
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Scopes;
 import com.sun.jersey.api.container.filter.RolesAllowedResourceFilterFactory;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -32,7 +35,7 @@ public class CodesearchApplication extends DefaultResourceConfig {
     @Override
     public Set<Class<?>> getClasses() {
         final Set<Class<?>> result = new HashSet<Class<?>>();
-
+        result.add(CodeSearchResource.class);
         return result;
     }
 
@@ -59,6 +62,7 @@ public class CodesearchApplication extends DefaultResourceConfig {
 
             @Override
             public void configure(final Binder binder) {
+                binder.bind(IAuthenticationService.class).to(MockAuthenticationService.class).in(Scopes.SINGLETON);
                 // binder.bind(ResourceIdentifierService.class).toInstance(new
                 // ResourceIdentifierService());
             }

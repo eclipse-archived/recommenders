@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.recommenders.commons.codesearch.CodeSearchResource;
+import org.eclipse.recommenders.commons.codesearch.ICodeSearchResource;
 import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.codesearch.Response;
@@ -47,7 +47,7 @@ public class SendCodeSearchRequestJob extends WorkspaceJob {
         }
         final StopWatch netWatch = new StopWatch();
         netWatch.start();
-        final CodeSearchResource codeSearch = createTransport();
+        final ICodeSearchResource codeSearch = createTransport();
         reply = codeSearch.search(request);
         netWatch.stop();
         System.out.printf("net comm took %s\n", netWatch);
@@ -82,7 +82,7 @@ public class SendCodeSearchRequestJob extends WorkspaceJob {
         });
     }
 
-    public static CodeSearchResource createTransport() {
+    public static ICodeSearchResource createTransport() {
         return null;
     }
 }

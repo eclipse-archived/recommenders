@@ -27,7 +27,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.SimpleFSDirectory;
-import org.eclipse.recommenders.commons.codesearch.CodeSearchResource;
+import org.eclipse.recommenders.commons.codesearch.ICodeSearchResource;
 import org.eclipse.recommenders.commons.codesearch.FeatureWeights;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.Proposal;
@@ -38,7 +38,7 @@ import org.eclipse.recommenders.commons.utils.TreeBag;
 import org.eclipse.recommenders.server.codesearch.lucene.CodesearchQuery;
 import org.eclipse.recommenders.server.codesearch.lucene.LuceneQueryUtil;
 
-public class LocalCodesearchService implements CodeSearchResource {
+public class LocalCodesearchService implements ICodeSearchResource {
 
     private static Logger log = Logger.getLogger(LocalCodesearchService.class);
     private FeatureWeights weights;

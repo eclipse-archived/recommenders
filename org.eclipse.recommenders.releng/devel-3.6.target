@@ -26,7 +26,7 @@
 <repository location="http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site/"/>
 </location>
 <location includeAllPlatforms="true" includeMode="slicer" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201102251119"/>
+<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201102251537"/>
 <repository location="file:/D:/workspace-recommenders/org.eclipse.recommenders.3rd/org.eclipse.recommenders.3rd.repository/target/repository/"/>
 </location>
 </locations>

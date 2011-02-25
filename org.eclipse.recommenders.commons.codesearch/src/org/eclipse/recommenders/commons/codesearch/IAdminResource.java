@@ -10,7 +10,11 @@
  */
 package org.eclipse.recommenders.commons.codesearch;
 
-public interface SourceCodeResource {
+import java.util.List;
 
-    public String get(String snippetId);
+public interface IAdminResource {
+
+    public void setWeights(FeatureWeights newWeights);
+
+    public List<Request> getRequests();
 }

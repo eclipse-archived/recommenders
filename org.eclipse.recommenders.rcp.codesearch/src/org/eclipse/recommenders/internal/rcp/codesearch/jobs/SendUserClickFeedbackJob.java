@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.recommenders.commons.codesearch.CodeSearchResource;
+import org.eclipse.recommenders.commons.codesearch.ICodeSearchResource;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.FeedbackType;
 import org.eclipse.recommenders.commons.codesearch.Proposal;
@@ -35,7 +35,7 @@ public class SendUserClickFeedbackJob extends WorkspaceJob {
     @Override
     public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
         final Feedback feedback = Feedback.create(hit.source, request.uniqueRequestId, FeedbackType.EDITOR_OPENED);
-        final CodeSearchResource service = SendCodeSearchRequestJob.createTransport();
+        final ICodeSearchResource service = SendCodeSearchRequestJob.createTransport();
         service.addFeedback(feedback);
         return Status.OK_STATUS;
     }

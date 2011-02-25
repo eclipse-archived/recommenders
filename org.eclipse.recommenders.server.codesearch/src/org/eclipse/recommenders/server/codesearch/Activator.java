@@ -18,9 +18,11 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(final BundleContext context) throws Exception {
+        System.err.println("Bundle started");
         tracker = new ServiceTracker(context, HttpService.class.getName(), null) {
             @Override
             public Object addingService(final ServiceReference serviceRef) {
+                System.err.println("HttpService found");
                 httpService = (HttpService) super.addingService(serviceRef);
                 startService();
                 return httpService;

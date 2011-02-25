@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.commons.codesearch;
 
-public interface CodeSearchResource {
+public interface ICodeSearchResource {
 
     public Response search(Request request);
 
