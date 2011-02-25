@@ -16,3 +16,4 @@ Require-Bundle: org.junit4,
  org.eclipse.recommenders.tests.commons,
  org.apache.commons.collections,
  org.eclipse.swt
+Import-Package: javax.inject;version="1.0.0"
