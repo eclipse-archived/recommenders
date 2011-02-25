@@ -12,17 +12,18 @@ Require-Bundle: org.eclipse.core.runtime,
  com.ibm.wala.shrike,
  com.google.guava,
  org.eclipse.recommenders.rcp.utils,
- org.apache.commons.lang;bundle-version="3.0.0",
+ org.apache.commons.lang3;bundle-version="3.0.0",
  org.apache.log4j,
  org.eclipse.pde.core,
  org.eclipse.recommenders.commons.analysis,
  org.eclipse.recommenders.rcp,
  com.google.guice,
- jsr305,
  org.eclipse.recommenders.commons.injection,
- org.eclipse.ui
+ org.eclipse.ui,
+ javax.annotations.jsr305;bundle-version="0.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.analysis,
  org.eclipse.recommenders.rcp.analysis
 Bundle-Vendor: Eclipse Code Recommenders
+Import-Package: javax.inject;version="1.0.0"

@@ -10,27 +10,44 @@
  */
 package org.eclipse.recommenders.tests.commons.ui.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import junit.framework.Assert;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEclipseEditor;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 
+import com.google.common.collect.Lists;
+
 public class TestProjectClassesHelper {
 
     private final SWTWorkbenchBot bot;
     private String projectName;
+    private final boolean stopOnError;
+    private final List<Throwable> errors = Lists.newLinkedList();
 
     public TestProjectClassesHelper(final SWTWorkbenchBot bot) {
+        this(bot, true);
+    }
+
+    public TestProjectClassesHelper(final SWTWorkbenchBot bot, final boolean stopOnError) {
         this.bot = bot;
+        this.stopOnError = stopOnError;
     }
 
     public void searchAndTestClasses(final String projectName) {
         this.projectName = projectName;
         final SWTBotTreeItem srcNode = findSourceNode();
         searchAndTestClasses(srcNode.getItems());
+        if (errors.size() > 0) {
+            printErrors();
+        }
     }
 
     private SWTBotTreeItem findSourceNode() {
@@ -62,9 +79,18 @@ public class TestProjectClassesHelper {
         try {
             testClassFile(editor);
         } catch (final Exception e) {
-            throw new RuntimeException("Test failed for file: " + item.getText(), e);
+            handleError(e, item.getText());
         } catch (final AssertionError e) {
-            throw new RuntimeException("Test failed for file: " + item.getText(), e);
+            handleError(e, item.getText());
+        }
+    }
+
+    private void handleError(final Throwable t, final String filename) {
+        final RuntimeException exception = new RuntimeException("Test failed for file: " + filename, t);
+        if (stopOnError) {
+            throw exception;
+        } else {
+            errors.add(exception);
         }
     }
 
@@ -115,5 +141,15 @@ public class TestProjectClassesHelper {
         final Matcher matcher = pattern.matcher(line);
         matcher.find();
         return matcher.group(1);
+    }
+
+    private void printErrors() {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final PrintStream printStream = new PrintStream(baos);
+        for (final Throwable error : errors) {
+            error.printStackTrace(printStream);
+        }
+
+        Assert.fail("Multiple errors occured: \n" + baos.toString());
     }
 }

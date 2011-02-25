@@ -10,12 +10,16 @@
  */
 package org.eclipse.recommenders.tests.commons.ui.utils;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEclipseEditor;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.junit.Assert;
+
+import com.google.common.collect.Lists;
 
 public class CompletionUtil {
 
@@ -30,21 +34,36 @@ public class CompletionUtil {
         final SWTBotShell[] shellsBeforeCompletion = bot.shells();
         editor.setFocus();
         editor.pressShortcut(SWT.CTRL, ' ');
-        bot.sleep(500);
+        bot.sleep(1000);
         final SWTBotShell[] shellsAfterCompletion = bot.shells();
-        final SWTBotShell completionShell = findNewShell(shellsBeforeCompletion, shellsAfterCompletion);
+        final List<SWTBotShell> newShells = findNewShells(shellsBeforeCompletion, shellsAfterCompletion);
+        final SWTBotShell completionShell = findCompletionShell(newShells);
         completionShell.activate();
         return completionShell;
     }
 
-    private static SWTBotShell findNewShell(final SWTBotShell[] oldShells, final SWTBotShell[] newShells) {
+    private static SWTBotShell findCompletionShell(final List<SWTBotShell> shells) {
+        for (final SWTBotShell shell : shells) {
+            shell.activate();
+            try {
+                shell.bot().table();
+                return shell;
+            } catch (final Exception e) {
+            }
+        }
+        throw new RuntimeException("Completion shell not found");
+    }
+
+    private static List<SWTBotShell> findNewShells(final SWTBotShell[] oldShells, final SWTBotShell[] newShells) {
+        final List<SWTBotShell> result = Lists.newLinkedList();
+
         for (int i = 0; i < newShells.length; i++) {
             if (!contains(oldShells, newShells[i])) {
-                return newShells[i];
+                result.add(newShells[i]);
             }
         }
 
-        throw new IllegalArgumentException("No new shells in array.");
+        return result;
     }
 
     private static boolean contains(final SWTBotShell[] array, final SWTBotShell element) {

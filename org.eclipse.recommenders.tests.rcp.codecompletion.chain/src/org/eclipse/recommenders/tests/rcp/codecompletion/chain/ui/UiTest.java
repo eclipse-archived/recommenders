@@ -26,7 +26,7 @@ public class UiTest extends DefaultUiTest {
     @Test
     public void testClassesInFixtureProject() throws Exception {
         FixtureUtil.copyProjectToWorkspace(fixtureProjectName);
-        final TestProjectClassesHelper helper = new TestProjectClassesHelper(bot);
+        final TestProjectClassesHelper helper = new TestProjectClassesHelper(bot, false);
         helper.searchAndTestClasses(fixtureProjectName);
     }
 

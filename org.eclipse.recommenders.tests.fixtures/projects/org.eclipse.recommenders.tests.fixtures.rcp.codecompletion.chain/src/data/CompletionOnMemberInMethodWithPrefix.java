@@ -23,7 +23,7 @@ public class CompletionOnMemberInMethodWithPrefix {
     public static void method2() {
         //@start
 		final CompletionOnMemberInMethodWithPrefix useMe = new CompletionOnMemberInMethodWithPrefix();
-		final AtomicBoolean c = useMe.get<^Space|getSubElement().findMe.*>
+		final AtomicBoolean c = useMe.get<^Space|getSubElement.+findMe.*>
 		//@end
 		//final CompletionOnMemberInMethodWithPrefix useMe = new CompletionOnMemberInMethodWithPrefix();
 		//final AtomicBoolean c = useMe.getSubElement().findMe

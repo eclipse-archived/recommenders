@@ -46,7 +46,7 @@ final class CompletionTargetVariableBuilder {
             receiverName = StringUtils.chop(receiverName);
         }
 
-        if (receiverName.isEmpty() && receiverType == null) {
+        if ((receiverName == null || receiverName.isEmpty()) && receiverType == null) {
             receiverName = "this";
             receiverType = context.getEnclosingType();
         }
@@ -94,6 +94,6 @@ final class CompletionTargetVariableBuilder {
     @Provisional
     private static boolean needsConstructor(final String receiverName) {
         // TODO: Discuss with advisor :-) Bug in Advisors code?
-        return receiverName.endsWith(" ");
+        return receiverName == null || receiverName.endsWith(" ");
     }
 }

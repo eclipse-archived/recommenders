@@ -27,9 +27,10 @@ Require-Bundle: smile,
  org.eclipse.recommenders.commons.analysis,
  com.google.guice,
  org.eclipse.core.resources,
- jsr305,
  org.eclipse.recommenders.rcp.utils,
- org.eclipse.recommenders.commons.injection
+ org.eclipse.recommenders.commons.injection,
+ javax.annotations.jsr305;bundle-version="0.0.0",
+ org.apache.commons.lang3;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion.calls,
  org.eclipse.recommenders.internal.rcp.codecompletion.calls.net
