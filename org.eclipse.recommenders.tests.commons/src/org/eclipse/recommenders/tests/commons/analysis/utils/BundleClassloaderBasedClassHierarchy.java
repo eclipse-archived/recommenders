@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.eclipse.recommenders.internal.commons.analysis.fixture.DefaultAnalysisScopeBuilder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -46,270 +45,263 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.shrike.ShrikeClassReaderHandle;
 
 public class BundleClassloaderBasedClassHierarchy implements IClassHierarchy {
-	public static IClassHierarchy newInstance(Class<?> clazz) {
-		Bundle bundle = FrameworkUtil.getBundle(clazz);
+    public static IClassHierarchy newInstance(final Class<?> clazz) {
+        final Bundle bundle = FrameworkUtil.getBundle(clazz);
 
-		return new BundleClassloaderBasedClassHierarchy(bundle);
-	}
+        return new BundleClassloaderBasedClassHierarchy(bundle);
+    }
 
-	private final class BinaryUrlModule extends AbstractURLModule {
-		private BinaryUrlModule(URL url) {
-			super(url);
-		}
+    private final class BinaryUrlModule extends AbstractURLModule {
+        private BinaryUrlModule(final URL url) {
+            super(url);
+        }
 
-		@Override
-		public boolean isClassFile() {
+        @Override
+        public boolean isClassFile() {
 
-			return true;
-		}
+            return true;
+        }
 
-		@Override
-		public boolean isSourceFile() {
-			return false;
-		}
-	}
+        @Override
+        public boolean isSourceFile() {
+            return false;
+        }
+    }
 
-	public static final ClassLoaderReference SYNTETIC = new ClassLoaderReference(
-			AnalysisScope.SYNTHETIC, ClassLoaderReference.Java,
-			ClassLoaderReference.Application);
+    public static final ClassLoaderReference SYNTETIC = new ClassLoaderReference(AnalysisScope.SYNTHETIC,
+            ClassLoaderReference.Java, ClassLoaderReference.Application);
 
-	private final IClassLoader bypassLoader;
-	private final IClassLoader appLoader;
-	private final AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
+    private final IClassLoader bypassLoader;
+    private final IClassLoader appLoader;
+    private final AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
 
-	private final ArrayClassLoader arrayClassLoader = new ArrayClassLoader();
-	private final HashMap<TypeName, IClass> clazzes = new HashMap<TypeName, IClass>();
+    private final ArrayClassLoader arrayClassLoader = new ArrayClassLoader();
+    private final HashMap<TypeName, IClass> clazzes = new HashMap<TypeName, IClass>();
 
-	private ClassHierarchyDummyClassLoader primordialLoader;
+    private final ClassHierarchyDummyClassLoader primordialLoader;
 
-	private final Bundle bundle;
+    private final Bundle bundle;
 
-	public BundleClassloaderBasedClassHierarchy(final Bundle bundle) {
+    public BundleClassloaderBasedClassHierarchy(final Bundle bundle) {
 
-		this.bundle = bundle;
-		this.primordialLoader = new ClassHierarchyDummyClassLoader(this,
-				ClassLoaderReference.Primordial);
-		this.appLoader = new ClassHierarchyDummyClassLoader(this,
-				ClassLoaderReference.Application);
-		this.bypassLoader = new BypassSyntheticClassLoader(SYNTETIC, appLoader,
-				null, this);
+        this.bundle = bundle;
+        this.primordialLoader = new ClassHierarchyDummyClassLoader(this, ClassLoaderReference.Primordial);
+        this.appLoader = new ClassHierarchyDummyClassLoader(this, ClassLoaderReference.Application);
+        this.bypassLoader = new BypassSyntheticClassLoader(SYNTETIC, appLoader, null, this);
 
-	}
+    }
 
-	@Override
-	public boolean addClass(final IClass clazz) {
-		return false;
-	}
+    @Override
+    public boolean addClass(final IClass clazz) {
+        return false;
+    }
 
-	@Override
-	public IClass lookupClass(final TypeReference typeRef) {
-		if (isClassAlreadyLoaded(typeRef)) {
-			return ensureIsNotNull(clazzes.get(typeRef.getName()));
-		}
-		if (typeRef.isArrayType()) {
-			return ensureIsNotNull(arrayClassLoader.lookupClass(
-					typeRef.getName(), appLoader, this));
-		}
-		if (typeRef.getClassLoader().equals(SYNTETIC)) {
-			return ensureIsNotNull(loadSynteticType(typeRef));
-		}
+    @Override
+    public IClass lookupClass(final TypeReference typeRef) {
+        if (isClassAlreadyLoaded(typeRef)) {
+            return ensureIsNotNull(clazzes.get(typeRef.getName()));
+        }
+        if (typeRef.isArrayType()) {
+            return ensureIsNotNull(arrayClassLoader.lookupClass(typeRef.getName(), appLoader, this));
+        }
+        if (typeRef.getClassLoader().equals(SYNTETIC)) {
+            return ensureIsNotNull(loadSynteticType(typeRef));
+        }
 
-		String string = typeRef.getName().toString();
-		if (string.startsWith("Ljava")) {
-			return loadClass(typeRef.getName(), primordialLoader);
-		} else
-			return loadClass(typeRef.getName(), appLoader);
-	}
+        final String string = typeRef.getName().toString();
+        if (string.startsWith("Ljava")) {
+            return loadClass(typeRef.getName(), primordialLoader);
+        } else {
+            return loadClass(typeRef.getName(), appLoader);
+        }
+    }
 
-	private IClass loadClass(TypeName className, IClassLoader cl) {
+    private IClass loadClass(final TypeName className, final IClassLoader cl) {
 
-		try {
-			String classNameString = className.toString();
-			String name = classNameString.substring(1) + ".class";
-			URL resource = bundle.getResource(name);
-			if (resource == null)
-				return null;
-			ShrikeClassReaderHandle handle = new ShrikeClassReaderHandle(
-					new BinaryUrlModule(resource));
-			ShrikeClass shrikeClass = new ShrikeClass(handle, cl, this);
-			clazzes.put(className, shrikeClass);
-			return shrikeClass;
-		} catch (InvalidClassFileException e) {
-			throw new IllegalArgumentException();
-		}
+        try {
+            final String classNameString = className.toString();
+            final String name = classNameString.substring(1) + ".class";
+            final URL resource = bundle.getResource(name);
+            if (resource == null) {
+                return null;
+            }
+            final ShrikeClassReaderHandle handle = new ShrikeClassReaderHandle(new BinaryUrlModule(resource));
+            final ShrikeClass shrikeClass = new ShrikeClass(handle, cl, this);
+            clazzes.put(className, shrikeClass);
+            return shrikeClass;
+        } catch (final InvalidClassFileException e) {
+            throw new IllegalArgumentException();
+        }
 
-	}
+    }
 
-	private IClass loadSynteticType(final TypeReference typeRef) {
-		final IClass lookupClass = bypassLoader.lookupClass(typeRef.getName());
-		clazzes.put(typeRef.getName(), lookupClass);
-		return lookupClass;
-	}
+    private IClass loadSynteticType(final TypeReference typeRef) {
+        final IClass lookupClass = bypassLoader.lookupClass(typeRef.getName());
+        clazzes.put(typeRef.getName(), lookupClass);
+        return lookupClass;
+    }
 
-	private boolean isClassAlreadyLoaded(final TypeReference A) {
-		return clazzes.containsKey(A.getName());
-	}
+    private boolean isClassAlreadyLoaded(final TypeReference A) {
+        return clazzes.containsKey(A.getName());
+    }
 
-	@Override
-	public IClassLoader getLoader(final ClassLoaderReference loaderRef) {
-		if ("Synthetic".equals(loaderRef.getName().toString())) {
-			return bypassLoader;
-		} else
-			return appLoader;
-	}
+    @Override
+    public IClassLoader getLoader(final ClassLoaderReference loaderRef) {
+        if ("Synthetic".equals(loaderRef.getName().toString())) {
+            return bypassLoader;
+        } else {
+            return appLoader;
+        }
+    }
 
-	@Override
-	public IClass getRootClass() {
-		return lookupClass(TypeReference.JavaLangObject);
-	}
+    @Override
+    public IClass getRootClass() {
+        return lookupClass(TypeReference.JavaLangObject);
+    }
 
-	@Override
-	public AnalysisScope getScope() {
-		return scope;
-	}
+    @Override
+    public AnalysisScope getScope() {
+        return scope;
+    }
 
-	@Override
-	public boolean isRootClass(final IClass c) {
-		return TypeReference.JavaLangObject.equals(c.getReference());
-	}
+    @Override
+    public boolean isRootClass(final IClass c) {
+        return TypeReference.JavaLangObject.equals(c.getReference());
+    }
 
-	@Override
-	public boolean isSubclassOf(final IClass c, final IClass T) {
-		IClass current = c;
-		while (null != current
-				&& !TypeReference.JavaLangObject.equals(current.getReference())) {
-			if (current == T) {
-				return true;
-			}
-			current = current.getSuperclass();
-		}
-		return false;
-	}
+    @Override
+    public boolean isSubclassOf(final IClass c, final IClass T) {
+        IClass current = c;
+        while (null != current && !TypeReference.JavaLangObject.equals(current.getReference())) {
+            if (current == T) {
+                return true;
+            }
+            current = current.getSuperclass();
+        }
+        return false;
+    }
 
-	public boolean isSyntheticClass(final IClass c) {
-		throw throwUnsupportedOperation();
-	}
+    public boolean isSyntheticClass(final IClass c) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public IField resolveField(final FieldReference f) {
-		final IClass clazz = lookupClass(f.getDeclaringClass());
-		if (null == clazz) {
-			return null;
-		}
-		return clazz.getField(f.getName());
-	}
+    @Override
+    public IField resolveField(final FieldReference f) {
+        final IClass clazz = lookupClass(f.getDeclaringClass());
+        if (null == clazz) {
+            return null;
+        }
+        return clazz.getField(f.getName());
+    }
 
-	@Override
-	public IField resolveField(final IClass klass, final FieldReference f) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public IField resolveField(final IClass klass, final FieldReference f) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public IMethod resolveMethod(final MethodReference m) {
-		final IClass clazz = lookupClass(m.getDeclaringClass());
-		if (null == clazz) {
-			return null;
-		}
-		return clazz.getMethod(m.getSelector());
-	}
+    @Override
+    public IMethod resolveMethod(final MethodReference m) {
+        final IClass clazz = lookupClass(m.getDeclaringClass());
+        if (null == clazz) {
+            return null;
+        }
+        return clazz.getMethod(m.getSelector());
+    }
 
-	@Override
-	public IMethod resolveMethod(final IClass receiverClass,
-			final Selector selector) {
-		return receiverClass.getMethod(selector);
-	}
+    @Override
+    public IMethod resolveMethod(final IClass receiverClass, final Selector selector) {
+        return receiverClass.getMethod(selector);
+    }
 
-	@Override
-	public Iterator<IClass> iterator() {
-		return Iterators.emptyIterator();
-	}
+    @Override
+    public Iterator<IClass> iterator() {
+        return Iterators.emptyIterator();
+    }
 
-	@Override
-	public Collection<IClass> computeSubClasses(final TypeReference type) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public Collection<IClass> computeSubClasses(final TypeReference type) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public ClassLoaderFactory getFactory() {
-		return null;
-	}
+    @Override
+    public ClassLoaderFactory getFactory() {
+        return null;
+    }
 
-	@Override
-	public Collection<IClass> getImmediateSubclasses(final IClass klass) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public Collection<IClass> getImmediateSubclasses(final IClass klass) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public Set<IClass> getImplementors(final TypeReference type) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public Set<IClass> getImplementors(final TypeReference type) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public Collection<TypeReference> getJavaLangErrorTypes() {
-		return Collections.emptyList();
-	}
+    @Override
+    public Collection<TypeReference> getJavaLangErrorTypes() {
+        return Collections.emptyList();
+    }
 
-	@Override
-	public Collection<TypeReference> getJavaLangRuntimeExceptionTypes() {
+    @Override
+    public Collection<TypeReference> getJavaLangRuntimeExceptionTypes() {
 
-		return Collections.emptyList();
-	}
+        return Collections.emptyList();
+    }
 
-	@Override
-	public IClass getLeastCommonSuperclass(final IClass A, final IClass B) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public IClass getLeastCommonSuperclass(final IClass A, final IClass B) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public TypeReference getLeastCommonSuperclass(final TypeReference A,
-			final TypeReference B) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public TypeReference getLeastCommonSuperclass(final TypeReference A, final TypeReference B) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public IClassLoader[] getLoaders() {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public IClassLoader[] getLoaders() {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public int getNumber(final IClass c) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public int getNumber(final IClass c) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public int getNumberOfClasses() {
-		return 0;
-	}
+    @Override
+    public int getNumberOfClasses() {
+        return 0;
+    }
 
-	@Override
-	public int getNumberOfImmediateSubclasses(final IClass klass) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public int getNumberOfImmediateSubclasses(final IClass klass) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public Collection<IMethod> getPossibleTargets(final MethodReference ref) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public Collection<IMethod> getPossibleTargets(final MethodReference ref) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public Set<IMethod> getPossibleTargets(final IClass receiverClass,
-			final MethodReference ref) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public Set<IMethod> getPossibleTargets(final IClass receiverClass, final MethodReference ref) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public boolean implementsInterface(final IClass c, final IClass i) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public boolean implementsInterface(final IClass c, final IClass i) {
+        throw throwUnsupportedOperation();
+    }
 
-	@Override
-	public boolean isAssignableFrom(final IClass c1, final IClass c2) {
-		return isSubclassOf(c2, c1);
-	}
+    @Override
+    public boolean isAssignableFrom(final IClass c1, final IClass c2) {
+        return isSubclassOf(c2, c1);
+    }
 
-	@Override
-	public boolean isInterface(final TypeReference type) {
-		throw throwUnsupportedOperation();
-	}
+    @Override
+    public boolean isInterface(final TypeReference type) {
+        throw throwUnsupportedOperation();
+    }
 
 }

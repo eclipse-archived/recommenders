@@ -10,12 +10,11 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis;
 
-import static java.lang.String.format;
-import static org.junit.Assert.fail;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import static java.lang.String.*;
+import static junit.framework.Assert.*;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.CallGraphMethodAnalyzer;

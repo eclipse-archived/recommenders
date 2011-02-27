@@ -20,8 +20,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Singleton;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -45,6 +43,7 @@ import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @Singleton
 public class JsonArtifactStore implements IArtifactStore {

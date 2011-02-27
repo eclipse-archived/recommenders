@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.recommenders.commons.utils
 Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.apache.commons.lang;bundle-version="3.0.0",
+Require-Bundle: org.apache.commons.lang3,
  com.google.guava
 Export-Package: org.eclipse.recommenders.commons.utils,
  org.eclipse.recommenders.commons.utils.annotations,

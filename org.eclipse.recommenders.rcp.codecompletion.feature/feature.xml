@@ -34,38 +34,6 @@
       <discovery label="Eclipse Code Recommenders Third-Party Dependencies" url="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-latest/"/>
    </url>
 
-   <requires>
-      <import plugin="org.apache.commons.lang" version="3.0.0" match="greaterOrEqual"/>
-      <import plugin="com.google.guava"/>
-      <import plugin="com.ibm.wala.core"/>
-      <import plugin="com.ibm.wala.shrike"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.apache.log4j"/>
-      <import plugin="org.apache.commons.io"/>
-      <import plugin="com.google.guice"/>
-      <import plugin="com.google.gson" version="1.6.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.jdt.core"/>
-      <import plugin="org.eclipse.jdt.ui"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="com.google.guice" version="3.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.jface"/>
-      <import plugin="smile"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor"/>
-      <import plugin="org.apache.commons.primitives"/>
-      <import plugin="org.apache.commons.math"/>
-      <import plugin="jsr305"/>
-      <import plugin="org.eclipse.pde.core"/>
-      <import plugin="org.eclipse.help"/>
-      <import plugin="org.junit"/>
-      <import plugin="org.eclipse.recommenders.rcp.codecompletion.calls" version="0.1.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.recommenders.commons.injection" version="0.1.0" match="greaterOrEqual"/>
-   </requires>
-
    <plugin
          id="org.eclipse.recommenders.commons.analysis"
          download-size="0"

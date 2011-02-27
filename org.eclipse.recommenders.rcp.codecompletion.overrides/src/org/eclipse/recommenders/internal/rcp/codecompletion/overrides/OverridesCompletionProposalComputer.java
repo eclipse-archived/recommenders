@@ -13,8 +13,6 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.overrides;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -31,6 +29,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public class OverridesCompletionProposalComputer extends RecommenderAdapter implements IJavaCompletionProposalComputer {
@@ -49,8 +48,8 @@ public class OverridesCompletionProposalComputer extends RecommenderAdapter impl
     private final IntelligentCompletionContextResolver contextResolver;
 
     @Inject
-    public OverridesCompletionProposalComputer(final IArtifactStore artifactStore, final InstantOverridesRecommender recommender,
-            final IntelligentCompletionContextResolver contextResolver) {
+    public OverridesCompletionProposalComputer(final IArtifactStore artifactStore,
+            final InstantOverridesRecommender recommender, final IntelligentCompletionContextResolver contextResolver) {
         this.artifactStore = artifactStore;
         this.recommender = recommender;
         this.contextResolver = contextResolver;
