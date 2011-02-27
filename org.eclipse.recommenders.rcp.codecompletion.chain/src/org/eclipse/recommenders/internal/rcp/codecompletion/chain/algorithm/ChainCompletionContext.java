@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.cast;
 import java.util.List;
 
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
@@ -114,6 +115,7 @@ public class ChainCompletionContext {
   }
 
   private boolean findReceiverClass() {
+
     if (ctx.isReceiverImplicitThis()) {
       receiverType = enclosingType;
     } else if (ctx.getCompletionNode() instanceof CompletionOnSingleNameReference) {
@@ -152,6 +154,10 @@ public class ChainCompletionContext {
       if (enclosingMethod != null && enclosingMethod.isStatic() && !member.isStatic()) {
         return false;
       }
+    }
+
+    if (ctx.getCompletionNode() instanceof CompletionOnQualifiedNameReference) {
+      return member.isStatic();
     }
 
     if (member.getDeclaringClass() == receiverType) {
