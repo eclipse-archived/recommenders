@@ -61,22 +61,20 @@ public class ChainingAlgorithm {
   }
 
   public void execute(final IIntelligentCompletionContext ictx) throws JavaModelException {
+    if (!ictx.expectsReturnValue()) {
+      return;
+    }
+
     initializeChainCompletionContext(ictx);
 
-    if (canComputeProposals()) {
-      initializeThreadPool();
-      processMembers();
-      waitForThreadPoolTermination();
-    }
+    initializeThreadPool();
+    processMembers();
+    waitForThreadPoolTermination();
   }
 
   private void initializeChainCompletionContext(final IIntelligentCompletionContext ictx) {
     ctx = new ChainCompletionContext(ictx, javaelementResolver, walaService);
     expectedType = ctx.getExpectedType();
-  }
-
-  private boolean canComputeProposals() {
-    return expectedType != null;
   }
 
   private void initializeThreadPool() {

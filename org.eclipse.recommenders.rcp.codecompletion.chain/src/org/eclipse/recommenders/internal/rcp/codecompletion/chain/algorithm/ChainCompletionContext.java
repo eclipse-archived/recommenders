@@ -55,6 +55,10 @@ public class ChainCompletionContext {
   }
 
   private void initializeAccessibleElements() {
+    if (!findExpectedClass()) {
+      return;
+    }
+
     if (!findEnclosingClass()) {
       return;
     }
@@ -62,9 +66,6 @@ public class ChainCompletionContext {
       // return;
     }
     if (!findReceiverClass()) {
-      return;
-    }
-    if (!findExpectedClass()) {
       return;
     }
     computeAccessibleFields();
