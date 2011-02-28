@@ -168,7 +168,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
      * <code>varName|&lt;^Space&gt</code> the reveiver type is typically NOT
      * set! Be careful!
      */
-    public String receiverName = "";
+    public String receiverName;
 
     /**
      * If {@link #expectsReturnType} is true, this completion request requires
@@ -393,9 +393,11 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
      * @param m
      */
     private void evaluteMessageSendAsDefForAnonymousReceiver(final MessageSend m) {
-        receiverDefinedByMethodReturn = m.binding;
-        receiverType = m.binding.returnType;
-        receiverName = "";
+        if (m.binding != null) {
+            receiverDefinedByMethodReturn = m.binding;
+            receiverType = m.binding.returnType;
+            receiverName = "";
+        }
     }
 
     @Override

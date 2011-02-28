@@ -101,10 +101,12 @@ public class ChainingAlgorithm {
   }
 
   private void waitForThreadPoolTermination() {
-    try {
-      executor.awaitTermination(Constants.AlgorithmSettings.EXECUTOR_ALIVE_TIME_IN_MS, TimeUnit.MILLISECONDS);
-    } catch (final InterruptedException e) {
-      JavaPlugin.log(e);
+    if (executor.getTaskCount() > 0) {
+      try {
+        executor.awaitTermination(Constants.AlgorithmSettings.EXECUTOR_ALIVE_TIME_IN_MS, TimeUnit.MILLISECONDS);
+      } catch (final InterruptedException e) {
+        JavaPlugin.log(e);
+      }
     }
   }
 
