@@ -24,7 +24,7 @@
 		<repository>
 			<id>helios</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/helios</url>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/helios/</url>
 		</repository>
 		<repository>
 			<id>recommenders-3rd</id>
