@@ -15,10 +15,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.rcp,
  com.google.guava,
  org.eclipse.recommenders.commons.utils,
- org.apache.commons.lang3;bundle-version="3.0.0",
+ org.apache.commons.lang3,
  com.google.guice,
  org.eclipse.recommenders.commons.injection,
- org.eclipse.recommenders.rcp.analysis;bundle-version="0.1.0"
+ org.eclipse.recommenders.rcp.analysis
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion,
  org.eclipse.recommenders.rcp.codecompletion

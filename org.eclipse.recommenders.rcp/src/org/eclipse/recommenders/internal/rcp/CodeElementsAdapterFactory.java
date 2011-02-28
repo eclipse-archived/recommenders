@@ -12,9 +12,6 @@ package org.eclipse.recommenders.internal.rcp;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
@@ -38,6 +35,8 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @SuppressWarnings({ "rawtypes", "restriction" })
 @Singleton

@@ -88,7 +88,10 @@ public class JavaElementResolver {
             if (parent != null) {
                 try {
                     for (final IType nested : parent.getTypes()) {
-                        System.out.println(nested);
+                        final String key = nested.getKey();
+                        if (key.equals(recType.getIdentifier() + ";")) {
+                            return nested;
+                        }
                     }
                     for (final IMethod m : parent.getMethods()) {
                         for (final IJavaElement children : m.getChildren()) {

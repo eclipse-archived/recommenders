@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
+package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -24,7 +24,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ CompletionProposalsBuilderTest.class, CompletionTargetVariableBuilderTest.class,
         MethodCallFormatterTest.class, MethodFormatterTest.class, PatternRecommenderTest.class,
         TemplatesCompletionEngineTest.class })
-final class AllTests {
+public final class UnitTestSuite {
 
     private static final CompletionTargetVariable DEFAULTVARIABLE = new CompletionTargetVariable("constructed",
             VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), new Region(0, 0), false);
@@ -49,7 +49,7 @@ final class AllTests {
      * @return the constructor call which is used in most test cases.
      */
     protected static MethodCall getDefaultConstructorCall() {
-        return AllTests.CONSTRUCTORCALL;
+        return UnitTestSuite.CONSTRUCTORCALL;
     }
 
 }

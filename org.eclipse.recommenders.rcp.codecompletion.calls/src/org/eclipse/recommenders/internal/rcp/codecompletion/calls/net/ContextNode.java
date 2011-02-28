@@ -16,8 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
+import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;

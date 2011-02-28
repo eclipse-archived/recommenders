@@ -10,13 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp.analysis;
 
-import javax.inject.Singleton;
-
 import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
 import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 
 @SuppressWarnings("rawtypes")

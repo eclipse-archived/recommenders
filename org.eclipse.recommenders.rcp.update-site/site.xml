@@ -6,6 +6,6 @@
    <feature url="features/org.eclipse.recommenders.rcp.codecompletion.source_0.1.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.source" version="0.1.0.qualifier">
       <category name="code-recommenders"/>
    </feature>
-   <feature url="features/3rd.feature_1.0.0.201102181113.jar" id="3rd.feature" version="1.0.0.201102181113"/>
+   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201102272239.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201102272239"/>
    <category-def name="code-recommenders" label="Eclipse Code Recommenders"/>
 </site>

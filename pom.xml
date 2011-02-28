@@ -29,7 +29,7 @@
 		<repository>
 			<id>recommenders-3rd</id>
 			<layout>p2</layout>
-			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-20110218_1045/</url>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head/</url>
 		</repository>
 		<repository>
 			<id>swtbot</id>

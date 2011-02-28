@@ -13,8 +13,6 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.overrides;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -29,6 +27,7 @@ import org.eclipse.recommenders.rcp.IRecommendation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.inject.Inject;
 
 public class InstantOverridesRecommender implements IRecommendationsViewContentProvider {
     private final double MIN_PROBABILITY_THRESHOLD = 0.1d;

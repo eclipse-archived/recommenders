@@ -15,8 +15,6 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -40,6 +38,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
 
 import com.google.common.collect.Sets;
+import com.google.inject.Inject;
 
 public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
 

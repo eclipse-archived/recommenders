@@ -8,11 +8,12 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
+package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.MethodFormatter;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -24,7 +25,7 @@ public final class MethodFormatterTest {
 
     @Test
     public void testFormat() throws JavaModelException {
-        final IMethodName methodName = AllTests.getDefaultConstructorCall().getInvokedMethod();
+        final IMethodName methodName = UnitTestSuite.getDefaultConstructorCall().getInvokedMethod();
         final String code = getMethodFormatterMock().format(methodName);
 
         Assert.assertEquals("Button(${intTest:link(0)})", code);

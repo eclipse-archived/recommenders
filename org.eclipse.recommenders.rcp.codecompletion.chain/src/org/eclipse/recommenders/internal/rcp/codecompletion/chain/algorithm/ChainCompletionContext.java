@@ -10,10 +10,14 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
+import static org.eclipse.recommenders.commons.utils.Checks.cast;
+
 import java.util.List;
 
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
+import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -55,7 +59,7 @@ public class ChainCompletionContext {
       return;
     }
     if (!findEnclosingMethod()) {
-      return;
+      // return;
     }
     if (!findReceiverClass()) {
       return;
@@ -111,6 +115,7 @@ public class ChainCompletionContext {
   }
 
   private boolean findReceiverClass() {
+
     if (ctx.isReceiverImplicitThis()) {
       receiverType = enclosingType;
     } else if (ctx.getCompletionNode() instanceof CompletionOnSingleNameReference) {
@@ -130,6 +135,14 @@ public class ChainCompletionContext {
       if (!matchesPrefix(field)) {
         continue;
       }
+      if (ctx.getCompletionNodeParent() instanceof FieldDeclaration) {
+        final FieldDeclaration node = cast(ctx.getCompletionNodeParent());
+        final String name = String.valueOf(node.name);
+        if (name.equals(field.getName().toString())) {
+          continue;
+        }
+      }
+
       final FieldChainElement chainElement = new FieldChainElement(field);
       accessibleFields.add(chainElement);
     }
@@ -141,6 +154,10 @@ public class ChainCompletionContext {
       if (enclosingMethod != null && enclosingMethod.isStatic() && !member.isStatic()) {
         return false;
       }
+    }
+
+    if (ctx.getCompletionNode() instanceof CompletionOnQualifiedNameReference) {
+      return member.isStatic();
     }
 
     if (member.getDeclaringClass() == receiverType) {
@@ -191,6 +208,15 @@ public class ChainCompletionContext {
       if (!localName.startsWith(ctx.getPrefixToken())) {
         continue;
       }
+
+      if (ctx.getCompletionNodeParent() instanceof LocalDeclaration) {
+        final LocalDeclaration node = cast(ctx.getCompletionNodeParent());
+        final String name = String.valueOf(node.name);
+        if (name.equals(localName)) {
+          continue;
+        }
+      }
+
       final IChainElement element = new LocalChainElement(localName, localType);
       accessibleLocals.add(element);
     }

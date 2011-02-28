@@ -17,9 +17,10 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
-import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
+import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
@@ -59,7 +60,14 @@ public interface IIntelligentCompletionContext {
      * @see CompletionOnQualifiedNameReference
      * @see CompletionOnSingleNameReference
      */
-    public ASTNode getCompletionNode();
+    public Statement getCompletionNode();
+
+    /**
+     * @see ReturnStatement
+     * @see FieldDeclaration
+     * @see LocalDeclaration
+     */
+    public Statement getCompletionNodeParent();
 
     /**
      * Returns a set of all local variables declared in the method code

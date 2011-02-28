@@ -14,12 +14,11 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IMethodAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;

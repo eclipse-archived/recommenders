@@ -15,14 +15,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.inject.Provider;
-
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -34,11 +26,18 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Patt
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 /**
  * Computes <code>PatternRecommendations</code>s from the
  * <code>CallsModelStore</code>.
  */
-final class PatternRecommender {
+public final class PatternRecommender {
 
     private static final int MAX_PATTERNS = 5;
     private static final double PATTERN_PROBABILITY_THRESHOLD = 0.02d;
@@ -59,7 +58,8 @@ final class PatternRecommender {
      *            and preceding method invocations from a given context.
      */
     @Inject
-    PatternRecommender(final CallsModelStore callsModelStore, final Provider<Set<IVariableUsageResolver>> usageResolvers) {
+    public PatternRecommender(final CallsModelStore callsModelStore,
+            final Provider<Set<IVariableUsageResolver>> usageResolvers) {
         this.callsModelStore = callsModelStore;
         this.usageResolvers = usageResolvers;
     }

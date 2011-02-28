@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package completion.templates;
+package completion.templates.bugs;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Button;
@@ -18,14 +18,23 @@ import org.eclipse.swt.widgets.Shell;
 
 public class CompletionOnAssignment extends Dialog {
 
-    protected CompletionOnAssignment(final Shell parentShell) {
-        super(parentShell);
-    }
+	protected CompletionOnAssignment(final Shell parentShell) {
+		super(parentShell);
+	}
 
-    @Override
+	@Override
     protected Control createDialogArea(final Composite parent) {
-        final Button b = <^Space>
-        
+        // TODO: link to Button b in context
+		final Button b = <^Space|new Button.*%>
         return null;
     }
+
+	private void noCompletionExpected(){
+		final Button b = new Button(null, 0);
+		final String s = b.<@Ignore^Space>;
+	}
+	
+	private void assignmentToNewVariable(){
+		Button b<^Space| = new Button.*%>
+	}
 }

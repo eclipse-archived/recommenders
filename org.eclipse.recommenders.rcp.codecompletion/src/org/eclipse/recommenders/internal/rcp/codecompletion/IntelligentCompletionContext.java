@@ -32,12 +32,12 @@ import org.eclipse.jdt.core.WorkingCopyOwner;
 import org.eclipse.jdt.internal.codeassist.CompletionEngine;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionParser;
-import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
@@ -197,8 +197,13 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
     }
 
     @Override
-    public ASTNode getCompletionNode() {
+    public Statement getCompletionNode() {
         return astCompletionNodeFinder.completionNode;
+    }
+
+    @Override
+    public Statement getCompletionNodeParent() {
+        return astCompletionNodeFinder.completionNodeParent;
     }
 
     @Override

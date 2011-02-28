@@ -14,10 +14,10 @@ import org.eclipse.swt.widgets.Button;
 
 public class CompletionOnReturn {
 
-    public String completionOnReturn() {
-        Button b = new Button(null, 0);
+	public String completionOnReturn() {
+        final Button b = new Button(null, 0);
         // Should there be patterns at all? If so, take care only
         // one-liners with appropriate return types are proposed.
-        return b.<^Space>;
+        return b.<@Ignore^Space>;
     }
 }

@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.views.cu;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -28,6 +26,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.WorkbenchJob;
+
+import com.google.inject.Inject;
 
 public class CompilationUnitViewPublisher extends RecommenderAdapter {
     private final IArtifactStore store;

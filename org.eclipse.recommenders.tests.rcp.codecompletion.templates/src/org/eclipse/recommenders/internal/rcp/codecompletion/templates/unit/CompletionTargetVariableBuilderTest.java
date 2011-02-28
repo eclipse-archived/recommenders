@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
+package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 
 import com.google.common.collect.Sets;
 
@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.CompletionTargetVariableBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.junit.Assert;
@@ -61,7 +62,7 @@ public final class CompletionTargetVariableBuilderTest {
         Mockito.when(context.getCompilationUnit()).thenReturn(compUnit);
         Mockito.when(Integer.valueOf(context.getInvocationOffset())).thenReturn(Integer.valueOf(code.length()));
         Mockito.when(context.getReplacementRegion()).thenReturn(new Region(code.length(), 0));
-        Mockito.when(context.getEnclosingMethod()).thenReturn(AllTests.getDefaultMethodCall().getInvokedMethod());
+        Mockito.when(context.getEnclosingMethod()).thenReturn(UnitTestSuite.getDefaultMethodCall().getInvokedMethod());
         try {
             Mockito.when(compUnit.getSource()).thenReturn(code);
         } catch (final JavaModelException e) {
