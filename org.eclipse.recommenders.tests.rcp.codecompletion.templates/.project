@@ -35,6 +35,11 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.recommenders.rcp.analysis.RecommendersBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
@@ -42,5 +47,6 @@
 		<nature>net.sf.eclipsecs.core.CheckstyleNature</nature>
 		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 		<nature>org.eclipse.recommenders.rcp.RecommendersNature</nature>
+		<nature>org.eclipse.recommenders.rcp.analysis.RecommendersNature</nature>
 	</natures>
 </projectDescription>

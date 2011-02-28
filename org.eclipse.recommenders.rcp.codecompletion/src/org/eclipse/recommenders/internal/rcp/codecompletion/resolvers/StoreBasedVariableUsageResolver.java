@@ -14,8 +14,6 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
@@ -23,6 +21,8 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
+
+import com.google.inject.Inject;
 
 public class StoreBasedVariableUsageResolver implements IVariableUsageResolver {
 

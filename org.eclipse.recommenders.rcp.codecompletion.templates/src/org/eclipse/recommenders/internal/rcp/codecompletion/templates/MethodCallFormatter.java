@@ -21,7 +21,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Meth
 /**
  * Generates the <code>String</code> representation of a {@link MethodCall}.
  */
-final class MethodCallFormatter {
+public final class MethodCallFormatter {
 
     private final MethodFormatter methodFormatter;
 
@@ -46,7 +46,7 @@ final class MethodCallFormatter {
      * @throws JavaModelException
      *             When the method could not be resolved by JDT.
      */
-    String format(final MethodCall methodCall) throws JavaModelException {
+    public String format(final MethodCall methodCall) throws JavaModelException {
         String invocationPrefix;
         final IMethodName invokedMethod = methodCall.getInvokedMethod();
         if (invokedMethod.isInit()) {

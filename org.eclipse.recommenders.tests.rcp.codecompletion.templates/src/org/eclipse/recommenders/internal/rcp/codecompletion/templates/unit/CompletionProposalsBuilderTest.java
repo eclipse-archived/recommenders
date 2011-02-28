@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
+package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 
 import java.util.List;
 
@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Position;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.CompletionProposalsBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
@@ -29,7 +30,7 @@ public final class CompletionProposalsBuilderTest {
 
     @Test
     public void testProposalsBuilder() throws JavaModelException {
-        final MethodCall methodCall = AllTests.getDefaultConstructorCall();
+        final MethodCall methodCall = UnitTestSuite.getDefaultConstructorCall();
 
         final List<PatternRecommendation> patterns = Lists.newArrayList(PatternRecommendation.create("Pattern 1",
                 Lists.newArrayList(methodCall.getInvokedMethod()), 50));

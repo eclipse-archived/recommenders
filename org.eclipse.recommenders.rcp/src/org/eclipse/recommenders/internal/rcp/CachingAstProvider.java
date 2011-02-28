@@ -15,8 +15,6 @@ import static org.eclipse.recommenders.commons.utils.Checks.cast;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Singleton;
-
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IElementChangedListener;
@@ -25,6 +23,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.recommenders.rcp.IAstProvider;
 
 import com.google.common.collect.MapMaker;
+import com.google.inject.Singleton;
 
 @Singleton
 public class CachingAstProvider implements IAstProvider, IElementChangedListener {

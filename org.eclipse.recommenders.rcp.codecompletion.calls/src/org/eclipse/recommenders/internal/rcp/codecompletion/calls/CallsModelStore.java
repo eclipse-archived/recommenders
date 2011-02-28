@@ -20,11 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.recommenders.commons.utils.FixedSizeLinkedHashMap;
 import org.eclipse.recommenders.commons.utils.annotations.Clumsy;
+import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.InstanceUsage;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.NetworkBuilder;

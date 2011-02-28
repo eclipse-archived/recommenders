@@ -12,8 +12,6 @@ package org.eclipse.recommenders.internal.rcp.views.recommendations;
 
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -34,6 +32,7 @@ import org.eclipse.ui.progress.WorkbenchJob;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.inject.Inject;
 
 public class RecommendationsViewPublisher extends RecommenderAdapter {
 

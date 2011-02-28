@@ -51,8 +51,10 @@
 										navigationimages="true" title="Recommenders Documentation"
 										helpPrefix="help" generateUnifiedToc="true">
 										<path name="Recommenders/UserGuide" title="Recommenders User Guide" />
+										<path name="Recommenders/New_and_Noteworthy/0.2" title="Recommenders 
+											New and Noteworthy 0.2" />
 										<path name="Recommenders/New_and_Noteworthy/0.1" title="Recommenders 
-											New and Noteworthy" />
+											New and Noteworthy 0.1" />
 											<stylesheet url="book.css" />
 											<pageAppendum>
 												

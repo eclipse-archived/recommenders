@@ -21,7 +21,7 @@ import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 /**
  * Generates the <code>String</code> representation of an {@link IMethod}.
  */
-class MethodFormatter {
+public class MethodFormatter {
 
     private final JavaElementResolver elementResolver;
     private int argumentCounter = -1;
@@ -43,7 +43,7 @@ class MethodFormatter {
      * @throws JavaModelException
      *             When the method could not be resolved by JDT.
      */
-    String format(final IMethodName methodName) throws JavaModelException {
+    public String format(final IMethodName methodName) throws JavaModelException {
         String method = "";
         if (methodName.isInit()) {
             method = methodName.getDeclaringType().getClassName();

@@ -23,7 +23,7 @@ public class CompletionOnSimpleTypeNameNoVariableName extends Dialog {
     @Override
 	protected Control createDialogArea(final Composite parent) {
 		// expects the pattern to assign a suitable variable name
-		Button <^Space>
+		Button <^Space|button = new Button.*%>
 		return null;
 	}
 
