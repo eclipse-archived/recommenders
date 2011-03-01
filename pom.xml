@@ -10,7 +10,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<build-alias>alpha-1</build-alias>
+		<build-alias>b000</build-alias>
 		<tycho-version>0.10.0</tycho-version>
 		<osgi-test-version>0.10.0</osgi-test-version>
 		<emma.session.out.file>${project.build.directory}/emma/${project.artifactId}.es</emma.session.out.file>
@@ -40,6 +40,19 @@
 
 
 	<profiles>
+		<profile>
+			<id>build-number</id>
+			<activation>
+				<property>
+					<name>BUILD_NUMBER</name>
+				</property>
+			</activation>
+			
+			<properties>
+				<build-alias>b${BUILD_NUMBER}</build-alias>
+			</properties>
+		</profile>
+	
 		<profile>
 			<id>coverage</id>
 			<build>
@@ -278,6 +291,17 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<version>2.7</version>
+					</plugin>
+					
+					<plugin>
+						<!-- http://software.2206966.n2.nabble.com/Tycho-qualifier-td5659840.html -->
+						<groupId>org.sonatype.tycho</groupId>
+						<artifactId>maven-osgi-packaging-plugin</artifactId>
+						<version>${tycho-version}</version>
+						<configuration>
+							<format>'v'yyyyMMdd-HHmm'-${build-alias}'</format>
+							<archiveSite>true</archiveSite>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
