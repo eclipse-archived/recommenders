@@ -44,12 +44,12 @@
 			<id>build-number</id>
 			<activation>
 				<property>
-					<name>BUILD_NUMBER</name>
+					<name>env.BUILD_NUMBER</name>
 				</property>
 			</activation>
 			
 			<properties>
-				<build-alias>b${BUILD_NUMBER}</build-alias>
+				<build-alias>b${env.BUILD_NUMBER}</build-alias>
 			</properties>
 		</profile>
 	
