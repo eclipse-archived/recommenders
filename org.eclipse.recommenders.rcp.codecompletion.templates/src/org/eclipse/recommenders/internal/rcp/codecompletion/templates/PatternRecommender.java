@@ -76,7 +76,7 @@ public final class PatternRecommender {
      */
     public ImmutableSet<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
             final IIntelligentCompletionContext context) {
-        if (canFindVariableUsage(context) && canFindModel(targetVariable.getType())) {
+        if (canFindVariableUsage(targetVariable, context) && canFindModel(targetVariable.getType())) {
             updateModel(context.getVariable(), context.getEnclosingMethodsFirstDeclaration());
             return computeRecommendationsForModel(targetVariable.isNeedsConstructor());
         }
@@ -84,15 +84,18 @@ public final class PatternRecommender {
     }
 
     /**
+     * @param targetVariable
+     *            The variable on which the completion request was invoked.
      * @param context
      *            The context from where to resolve variable usage.
      * @return True, if a new variable is to be constructed or an existing's
      *         usage could be resolved.
      */
-    private boolean canFindVariableUsage(final IIntelligentCompletionContext context) {
+    private boolean canFindVariableUsage(final CompletionTargetVariable targetVariable,
+            final IIntelligentCompletionContext context) {
         boolean result = true;
         if (context.getVariable() == null) {
-            receiverMethodInvocations = Sets.newHashSet();
+            receiverMethodInvocations = targetVariable.getReceiverCalls();
         } else {
             result = canResolveVariableUsage(context);
         }
@@ -122,7 +125,6 @@ public final class PatternRecommender {
      */
     private boolean canFindModel(final ITypeName receiverType) {
         boolean result = false;
-        System.err.println("recType: " + receiverType);
         if (callsModelStore.hasModel(receiverType)) {
             model = callsModelStore.getModel(receiverType);
             this.receiverType = receiverType;

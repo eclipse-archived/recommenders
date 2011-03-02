@@ -27,9 +27,9 @@ import org.junit.runners.Suite.SuiteClasses;
 public final class UnitTestSuite {
 
     private static final CompletionTargetVariable DEFAULTVARIABLE = new CompletionTargetVariable("constructed",
-            VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), new Region(0, 0), false);
+            VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), null, new Region(0, 0), false);
     private static final CompletionTargetVariable CONSTRUCTORVARIABLE = new CompletionTargetVariable("unconstructed",
-            VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), new Region(0, 0), true);
+            VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), null, new Region(0, 0), true);
 
     private static final IMethodName DEFAULTMETHOD = VmMethodName.get("Lorg/eclipse/swt/widgets/Button.setText()V");
     private static final IMethodName CONSTRUCTORMETHOD = VmMethodName

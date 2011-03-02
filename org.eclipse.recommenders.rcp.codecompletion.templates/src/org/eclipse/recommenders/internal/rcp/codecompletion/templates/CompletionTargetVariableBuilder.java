@@ -10,8 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
+import java.util.Set;
+
 import org.eclipse.jface.text.Region;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -39,6 +43,7 @@ public final class CompletionTargetVariableBuilder {
     public static CompletionTargetVariable createInvokedVariable(final IIntelligentCompletionContext context) {
         ITypeName receiverType = context.getReceiverType();
         String receiverName = context.getReceiverName();
+        Set<IMethodName> receiverCalls = null;
 
         final boolean needsConstructor = receiverType != null && receiverType.equals(context.getExpectedType());
 
@@ -47,11 +52,16 @@ public final class CompletionTargetVariableBuilder {
                 receiverName = "this";
                 receiverType = context.getEnclosingType();
             } else {
-                receiverType = ((IntelligentCompletionContext) context).findMatchingVariable(receiverName).type;
+                final Variable resolvedVariable = ((IntelligentCompletionContext) context)
+                        .findMatchingVariable(receiverName);
+                if (resolvedVariable != null) {
+                    receiverType = resolvedVariable.type;
+                    receiverCalls = resolvedVariable.getReceiverCalls();
+                }
             }
         }
 
-        return createInvokedVariable(receiverName, receiverType, context, needsConstructor);
+        return createInvokedVariable(receiverName, receiverType, receiverCalls, context, needsConstructor);
     }
 
     /**
@@ -59,6 +69,7 @@ public final class CompletionTargetVariableBuilder {
      *            The variable name if it could be extracted from the context.
      * @param receiverType
      *            The type of the variable on which completion is requested.
+     * @param receiverCalls
      * @param context
      *            The context holding information about the completion request.
      * @param needsConstructor
@@ -69,7 +80,8 @@ public final class CompletionTargetVariableBuilder {
      *         case it was invoked while defining a new variable.
      */
     private static CompletionTargetVariable createInvokedVariable(final String receiverName,
-            final ITypeName receiverType, final IIntelligentCompletionContext context, final boolean needsConstructor) {
+            final ITypeName receiverType, final Set<IMethodName> receiverCalls,
+            final IIntelligentCompletionContext context, final boolean needsConstructor) {
         CompletionTargetVariable completionTargetVariable = null;
         if (receiverType != null) {
             int variableNameLength = 0;
@@ -79,8 +91,8 @@ public final class CompletionTargetVariableBuilder {
             }
             final int documentOffset = context.getReplacementRegion().getOffset() - variableNameLength;
             final int replacementLength = context.getReplacementRegion().getLength() + variableNameLength;
-            completionTargetVariable = new CompletionTargetVariable(receiverName, receiverType, new Region(
-                    documentOffset, replacementLength), needsConstructor);
+            completionTargetVariable = new CompletionTargetVariable(receiverName, receiverType, receiverCalls,
+                    new Region(documentOffset, replacementLength), needsConstructor);
         }
         return completionTargetVariable;
     }
