@@ -53,12 +53,12 @@ public final class CompletionTargetVariableBuilderTest {
     }
 
     protected static IIntelligentCompletionContext getMockedContext(final String code, final String variableName,
-            final String typeSimpleName) {
+            final String typeName) {
         final IIntelligentCompletionContext context = Mockito.mock(IIntelligentCompletionContext.class);
         final ICompilationUnit compUnit = Mockito.mock(ICompilationUnit.class);
 
         Mockito.when(context.getReceiverName()).thenReturn(variableName);
-        Mockito.when(context.getReceiverType()).thenReturn(VmTypeName.get(typeSimpleName));
+        Mockito.when(context.getReceiverType()).thenReturn(VmTypeName.get(typeName));
         Mockito.when(context.getCompilationUnit()).thenReturn(compUnit);
         Mockito.when(Integer.valueOf(context.getInvocationOffset())).thenReturn(Integer.valueOf(code.length()));
         Mockito.when(context.getReplacementRegion()).thenReturn(new Region(code.length(), 0));
@@ -73,10 +73,10 @@ public final class CompletionTargetVariableBuilderTest {
     }
 
     public static IIntelligentCompletionContext getConstructorContextMock(final String code, final String variableName,
-            final String typeSimpleName) {
+            final String typeName) {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(code,
-                variableName, typeSimpleName);
-        Mockito.when(context.getExpectedType()).thenReturn(VmTypeName.get(typeSimpleName));
+                variableName, typeName);
+        Mockito.when(context.getExpectedType()).thenReturn(VmTypeName.get(typeName));
         final CompletionProposal prop = Mockito.mock(CompletionProposal.class);
         Mockito.when(prop.getSignature()).thenReturn("Lorg.eclipse.swt.widgets.Button;".toCharArray());
         Mockito.when(context.getJdtProposals()).thenReturn(Sets.newHashSet(prop));

@@ -42,7 +42,7 @@ public final class PatternRecommenderTest {
     @Test
     public void testComputeRecommendations() {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(
-                "Button butto = new Button();\nbutto.", "butto", "Button");
+                "Button butto = new Button();\nbutto.", "butto", "Lorg/eclipse/swt/widgets/Button");
         final PatternRecommender recommender = getPatternRecommenderMock(context.getReceiverType());
 
         final CompletionTargetVariable targetVariable = UnitTestSuite.getDefaultConstructorCall()

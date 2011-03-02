@@ -76,7 +76,7 @@ public final class PatternRecommender {
      */
     public ImmutableSet<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
             final IIntelligentCompletionContext context) {
-        if (canFindVariableUsage(context) && canFindModel()) {
+        if (canFindVariableUsage(context) && canFindModel(targetVariable.getType())) {
             updateModel(context.getVariable(), context.getEnclosingMethodsFirstDeclaration());
             return computeRecommendationsForModel(targetVariable.isNeedsConstructor());
         }
@@ -92,7 +92,6 @@ public final class PatternRecommender {
     private boolean canFindVariableUsage(final IIntelligentCompletionContext context) {
         boolean result = true;
         if (context.getVariable() == null) {
-            receiverType = context.getReceiverType();
             receiverMethodInvocations = Sets.newHashSet();
         } else {
             result = canResolveVariableUsage(context);
@@ -110,7 +109,6 @@ public final class PatternRecommender {
         boolean result = false;
         for (final IVariableUsageResolver resolver : usageResolvers.get()) {
             if (resolver.canResolve(context)) {
-                receiverType = context.getReceiverType();
                 receiverMethodInvocations = resolver.getReceiverMethodInvocations();
                 result = true;
                 break;
@@ -122,10 +120,12 @@ public final class PatternRecommender {
     /**
      * @return True, if a model for the current receiver type could be found.
      */
-    private boolean canFindModel() {
+    private boolean canFindModel(final ITypeName receiverType) {
         boolean result = false;
+        System.err.println("recType: " + receiverType);
         if (callsModelStore.hasModel(receiverType)) {
             model = callsModelStore.getModel(receiverType);
+            this.receiverType = receiverType;
             result = true;
         }
         return result;

@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 
@@ -41,9 +42,13 @@ public final class CompletionTargetVariableBuilder {
 
         final boolean needsConstructor = receiverType != null && receiverType.equals(context.getExpectedType());
 
-        if (receiverType == null && (receiverName == null || receiverName.isEmpty())) {
-            receiverName = "this";
-            receiverType = context.getEnclosingType();
+        if (receiverType == null) {
+            if (receiverName == null || receiverName.isEmpty()) {
+                receiverName = "this";
+                receiverType = context.getEnclosingType();
+            } else {
+                receiverType = ((IntelligentCompletionContext) context).findMatchingVariable(receiverName).type;
+            }
         }
 
         return createInvokedVariable(receiverName, receiverType, context, needsConstructor);
