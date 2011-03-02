@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
+
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -61,13 +63,13 @@ public final class CompletionProposalsBuilder {
      *            The variable on which the completion request was invoked.
      * @return A list of completion proposals for the given patterns.
      */
-    public List<IJavaCompletionProposal> computeProposals(final Collection<PatternRecommendation> patterns,
+    public ImmutableList<IJavaCompletionProposal> computeProposals(final Collection<PatternRecommendation> patterns,
             final DocumentTemplateContext context, final CompletionTargetVariable completionTargetVariable) {
         final List<IJavaCompletionProposal> proposals = new ArrayList<IJavaCompletionProposal>();
         for (final PatternRecommendation pattern : patterns) {
             proposals.add(buildTemplateProposal(pattern, context, completionTargetVariable));
         }
-        return proposals;
+        return ImmutableList.copyOf(proposals);
     }
 
     /**

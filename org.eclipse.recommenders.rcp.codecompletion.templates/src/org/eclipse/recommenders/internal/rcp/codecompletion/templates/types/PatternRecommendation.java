@@ -70,7 +70,7 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
 
     @Override
     public int compareTo(final PatternRecommendation other) {
-        return probability < other.probability ? -1 : (probability > other.probability ? 1 : 0);
+        return Integer.valueOf(probability).compareTo(other.probability);
     }
 
     @Override

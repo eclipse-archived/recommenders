@@ -43,7 +43,7 @@ public class MethodFormatter {
      * @throws JavaModelException
      *             When the method could not be resolved by JDT.
      */
-    public String format(final IMethodName methodName) throws JavaModelException {
+    public final String format(final IMethodName methodName) throws JavaModelException {
         String method = "";
         if (methodName.isInit()) {
             method = methodName.getDeclaringType().getClassName();
@@ -117,7 +117,7 @@ public class MethodFormatter {
      * with each new expression so we have to ensure a continuous enumeration.
      * This method resets the counter (e.g. after the pattern is completed).
      */
-    void resetArgumentCounter() {
+    final void resetArgumentCounter() {
         argumentCounter = -1;
     }
 

@@ -23,6 +23,7 @@ public class CompletionOnUninitializedAndQualifiedFieldName extends Dialog {
     @Override
 	protected Control createDialogArea(final Composite parent) {
 		// Discussion: Should there only be patterns with constructor?
+    	// Discussion: Should there be one-line patterns at all?
     	b.<^Space>
 		return null;
 	}

@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -115,19 +116,17 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      *            The context from where the completion request was invoked.
      * @return The completion proposals to be displayed in the editor.
      */
-    public List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext context) {
+    public ImmutableList<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext context) {
         if (shouldComputeProposals(context)) {
             final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                     .createInvokedVariable(context);
             if (completionTargetVariable != null) {
                 final Collection<PatternRecommendation> patternRecommendations = patternRecommender
                         .computeRecommendations(completionTargetVariable, context);
-                final List<IJavaCompletionProposal> completionProposals = buildProposalsForPatterns(
-                        patternRecommendations, completionTargetVariable, context);
-                return completionProposals;
+                return buildProposalsForPatterns(patternRecommendations, completionTargetVariable, context);
             }
         }
-        return Collections.emptyList();
+        return ImmutableList.of();
     }
 
     /**
@@ -157,16 +156,15 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      *            The context from where the completion request was invoked.
      * @return The completion proposals to be displayed in the editor.
      */
-    private List<IJavaCompletionProposal> buildProposalsForPatterns(
+    private ImmutableList<IJavaCompletionProposal> buildProposalsForPatterns(
             final Collection<PatternRecommendation> patternRecommendations,
             final CompletionTargetVariable completionTargetVariable, final IIntelligentCompletionContext context) {
-        List<IJavaCompletionProposal> completionProposals = Collections.emptyList();
         if (!patternRecommendations.isEmpty()) {
             final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable, context);
-            completionProposals = completionProposalsBuilder.computeProposals(patternRecommendations, templateContext,
+            return completionProposalsBuilder.computeProposals(patternRecommendations, templateContext,
                     completionTargetVariable);
         }
-        return completionProposals;
+        return ImmutableList.of();
     }
 
     /**
