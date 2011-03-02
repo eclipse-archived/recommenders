@@ -42,7 +42,7 @@ public final class CompletionTargetVariableBuilderTest {
     @Test
     public void testConstructor() {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getConstructorContextMock(
-                "Button bu", "bu ", "Button");
+                "Button bu", "bu", "Button");
         final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                 .createInvokedVariable(context);
 

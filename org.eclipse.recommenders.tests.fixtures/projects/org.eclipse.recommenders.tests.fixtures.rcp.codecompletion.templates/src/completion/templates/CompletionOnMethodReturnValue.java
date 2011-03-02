@@ -20,13 +20,13 @@ import org.eclipse.ui.PlatformUI;
 
 public class CompletionOnMethodReturnValue extends DialogPage {
 
-    @Override
+	@Override
     public void createControl(final Composite parent) {
     	// I disabled templates for these occasions. Are there any for which helpful template are imaginable?
-        PlatformUI.getWorkbench().<^Space>
+        PlatformUI.getWorkbench().<@Ignore^Space>
     }
-    
-    public void test(){
-    	new Button(null, 0).<^Space>
+
+	public void test(){
+    	new Button(null, 0).<@Ignore^Space>
     }
 }

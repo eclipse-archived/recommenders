@@ -18,17 +18,16 @@ import org.eclipse.swt.widgets.Control;
 
 public class CompletionOnFieldWithObservedContructor extends Dialog {
 
-    private Button b;
+	private Button b;
 
-    @Override
+	@Override
     protected Control createDialogArea(final Composite parent) {
         b = new Button(null, 0);
-        // b.<^Space> -> pattern w/o contructor
-        b.<^Space|addSelectionListener.*%>
+        b.<^Space|dynamic.*234.*%>
         return null;
     }
 
-    private CompletionOnFieldWithObservedContructor() {
-        super((IShellProvider) null);
-    }
+	private CompletionOnFieldWithObservedContructor() {
+		super((IShellProvider) null);
+	}
 }

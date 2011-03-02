@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
@@ -41,12 +40,8 @@ public final class CompletionTargetVariableBuilder {
         String receiverName = context.getReceiverName();
 
         final boolean needsConstructor = receiverType != null && receiverType.equals(context.getExpectedType());
-        // TODO: Discuss with advisor :-) Bug in Advisors code?
-        if (needsConstructor) {
-            receiverName = StringUtils.chop(receiverName);
-        }
 
-        if ((receiverName == null || receiverName.isEmpty()) && receiverType == null) {
+        if (receiverType == null && (receiverName == null || receiverName.isEmpty())) {
             receiverName = "this";
             receiverType = context.getEnclosingType();
         }

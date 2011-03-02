@@ -18,16 +18,16 @@ import org.eclipse.swt.widgets.Control;
 
 public class CompletionOnSimpleTypeNameNoVariableName extends Dialog {
 
-    private Button b;
+	private Button b;
 
-    @Override
+	@Override
 	protected Control createDialogArea(final Composite parent) {
 		// expects the pattern to assign a suitable variable name
-		Button <^Space|button = new Button.*%>
+		Button <^Space|dynamic.*234.*%>
 		return null;
 	}
 
-    private CompletionOnSimpleTypeNameNoVariableName() {
-        super((IShellProvider) null);
-    }
+	private CompletionOnSimpleTypeNameNoVariableName() {
+		super((IShellProvider) null);
+	}
 }

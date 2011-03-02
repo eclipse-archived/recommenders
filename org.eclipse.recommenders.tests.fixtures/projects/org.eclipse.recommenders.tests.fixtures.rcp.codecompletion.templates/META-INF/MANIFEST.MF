@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Calls
-Bundle-SymbolicName: org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.calls
+Bundle-Name: Templates
+Bundle-SymbolicName: org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.templates
 Bundle-Version: 0.2.0.qualifier
 Export-Package: completion.templates
 Require-Bundle: org.eclipse.ui;bundle-version="3.6.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
