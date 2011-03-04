@@ -70,7 +70,7 @@ public class CodesearchApplication extends DefaultResourceConfig {
             public void configure(final Binder binder) {
                 binder.bind(IAuthenticationService.class).to(MockAuthenticationService.class).in(Scopes.SINGLETON);
                 binder.bind(IDataAccessService.class).to(CouchDbDataAccessService.class).in(Scopes.SINGLETON);
-                binder.bind(File.class).annotatedWith(Names.named("codesearch.index")).toInstance(getIndexFolder());
+                binder.bind(File.class).annotatedWith(Names.named("codesearch.basedir")).toInstance(getIndexFolder());
                 binder.bind(SearchService.class).in(Scopes.SINGLETON);
                 // binder.bind(ResourceIdentifierService.class).toInstance(new
                 // ResourceIdentifierService());
@@ -79,7 +79,6 @@ public class CodesearchApplication extends DefaultResourceConfig {
     }
 
     protected File getIndexFolder() {
-        return new File(
-                "D:\\workspace-recommenders\\org.eclipse.recommenders\\org.eclipse.recommenders.server.codesearch\\index");
+        return new File("codesearch");
     }
 }

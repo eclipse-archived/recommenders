@@ -46,26 +46,28 @@ public class SearchService {
     private static Logger log = Logger.getLogger(SearchService.class);
     private FeatureWeights weights;
     private IndexReader luceneIndexReader;
-    private File indexFolder;
+    private File baseDir;
+    private File indexDir;
 
     @Inject
-    public SearchService(@Named("codesearch.index") final File indexFolder) throws CorruptIndexException, IOException {
-        setFolders(indexFolder);
+    public SearchService(@Named("codesearch.basedir") final File basedir) throws CorruptIndexException, IOException {
+        setFolders(basedir);
         createLuceneIndexReader();
         createTermsFrequencyIndex();
         loadDefaultWeights();
         log.info("CodeSearch server started");
     }
 
-    private void setFolders(final File indexFolder) throws ZipException, IOException {
-        this.indexFolder = indexFolder;
-        if (!indexFolder.exists()) {
-            indexFolder.mkdirs();
+    private void setFolders(final File basedir) throws ZipException, IOException {
+        this.baseDir = basedir;
+        this.indexDir = new File(basedir, "index");
+        if (!indexDir.exists()) {
+            indexDir.mkdirs();
         }
     }
 
     private void createLuceneIndexReader() throws IOException, CorruptIndexException {
-        final SimpleFSDirectory index = new SimpleFSDirectory(indexFolder);
+        final SimpleFSDirectory index = new SimpleFSDirectory(indexDir);
         luceneIndexReader = IndexReader.open(index);
         System.out.printf("# docs in index: %d\n", luceneIndexReader.maxDoc());
     }
@@ -84,7 +86,7 @@ public class SearchService {
     private void loadDefaultWeights() {
         try {
             this.weights = new FeatureWeights();
-            this.weights.weights = GsonUtil.deserialize(new File(indexFolder, "weights.json"),
+            this.weights.weights = GsonUtil.deserialize(new File(baseDir, "weights.json"),
                     new TypeToken<Map<String, Float>>() {
                     }.getType());
         } catch (final IOException e) {
