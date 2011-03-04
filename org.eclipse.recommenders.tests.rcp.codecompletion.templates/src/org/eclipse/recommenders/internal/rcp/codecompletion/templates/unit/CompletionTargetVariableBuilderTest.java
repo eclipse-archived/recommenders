@@ -76,6 +76,7 @@ public final class CompletionTargetVariableBuilderTest {
             final String typeSimpleName) {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(code,
                 variableName, typeSimpleName);
+        Mockito.when(context.getExpectedType()).thenReturn(VmTypeName.get(typeSimpleName));
         final CompletionProposal prop = Mockito.mock(CompletionProposal.class);
         Mockito.when(prop.getSignature()).thenReturn("Lorg.eclipse.swt.widgets.Button;".toCharArray());
         Mockito.when(context.getJdtProposals()).thenReturn(Sets.newHashSet(prop));

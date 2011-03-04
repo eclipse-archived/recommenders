@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnFieldType;
@@ -168,7 +169,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
      * <code>varName|&lt;^Space&gt</code> the reveiver type is typically NOT
      * set! Be careful!
      */
-    public String receiverName = "";
+    public String receiverName;
 
     /**
      * If {@link #expectsReturnType} is true, this completion request requires
@@ -275,7 +276,16 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     private void evaluateCompletionOnSingleNameReference(final CompletionOnSingleNameReference completion) {
         // XXX this is actually not resolving any binding:
         receiverType = completion.resolvedType;
-        receiverName = String.valueOf(completion.token);
+        setReceiverName(completion.token);
+    }
+
+    private void setReceiverName(final char[] name) {
+        String s = String.valueOf(name);
+        setReceiverName(s);
+    }
+
+    private void setReceiverName(final String name) {
+        receiverName = StringUtils.deleteWhitespace(name);
     }
 
     @Override
@@ -327,7 +337,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     private void evaluateVariableBindingAsReceiver(final VariableBinding binding) {
         ensureIsNotNull(binding);
-        receiverName = new String(binding.name);
+        setReceiverName(binding.name);
         receiverType = binding.type;
     }
 
@@ -379,7 +389,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     }
 
     private void evaluateThisReferenceAsReceiver(final ThisReference ref) {
-        receiverName = "this";
+        setReceiverName("this");
         receiverType = ref.resolvedType;
     }
 
@@ -393,9 +403,11 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
      * @param m
      */
     private void evaluteMessageSendAsDefForAnonymousReceiver(final MessageSend m) {
-        receiverDefinedByMethodReturn = m.binding;
-        receiverType = m.binding.returnType;
-        receiverName = "";
+        if (m.binding != null) {
+            receiverDefinedByMethodReturn = m.binding;
+            receiverType = m.binding.returnType;
+            setReceiverName("");
+        }
     }
 
     @Override
@@ -422,7 +434,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             // being set!
             receiverType = expectedReturnType;
         }
-        receiverName = String.valueOf(c.name);
+        setReceiverName(c.name);
         expectsReturnType = true;
     }
 

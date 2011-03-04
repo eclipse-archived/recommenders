@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.text.Region;
-import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -41,7 +40,8 @@ public final class CompletionTargetVariableBuilder {
         ITypeName receiverType = context.getReceiverType();
         String receiverName = context.getReceiverName();
 
-        final boolean needsConstructor = needsConstructor(receiverName);
+        final boolean needsConstructor = receiverType != null && receiverType.equals(context.getExpectedType());
+        // TODO: Discuss with advisor :-) Bug in Advisors code?
         if (needsConstructor) {
             receiverName = StringUtils.chop(receiverName);
         }
@@ -83,17 +83,5 @@ public final class CompletionTargetVariableBuilder {
                     documentOffset, replacementLength), needsConstructor);
         }
         return completionTargetVariable;
-    }
-
-    /**
-     * @param receiverName
-     *            The target variable's name as given by the context.
-     * @return True, if the completion is invoked while a new variable is
-     *         defined, e.g. <code>Button b<^Space></code>.
-     */
-    @Provisional
-    private static boolean needsConstructor(final String receiverName) {
-        // TODO: Discuss with advisor :-) Bug in Advisors code?
-        return receiverName == null || receiverName.endsWith(" ");
     }
 }

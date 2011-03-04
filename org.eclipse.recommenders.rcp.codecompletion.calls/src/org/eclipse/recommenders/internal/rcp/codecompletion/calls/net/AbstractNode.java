@@ -62,11 +62,16 @@ public class AbstractNode {
      * if previously set and cleared, <code>false</code> otherwise.
      */
     public boolean clearEvidence() {
-        if (!isEvidence()) {
+        try {
+            if (!isEvidence()) {
+                return false;
+            }
+            network.clearEvidence(nodeId);
+            return true;
+        } catch (final SMILEException x) {
+            RecommendersPlugin.logError(x, "failed to clear evidence for availability node");
             return false;
         }
-        network.clearEvidence(nodeId);
-        return true;
     }
 
     /**

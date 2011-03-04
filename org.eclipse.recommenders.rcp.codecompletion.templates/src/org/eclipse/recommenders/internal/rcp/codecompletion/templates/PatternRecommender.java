@@ -15,6 +15,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -25,13 +34,6 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Comp
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 /**
  * Computes <code>PatternRecommendations</code>s from the
@@ -72,15 +74,13 @@ public final class PatternRecommender {
      * @return The {@link PatternRecommendation}s holding information for the
      *         templates to be displayed.
      */
-    public Set<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
+    public ImmutableSet<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
             final IIntelligentCompletionContext context) {
         if (canFindVariableUsage(context) && canFindModel()) {
             updateModel(context.getVariable(), context.getEnclosingMethodsFirstDeclaration());
-            final Set<PatternRecommendation> recommendations = computeRecommendationsForModel(targetVariable
-                    .isNeedsConstructor());
-            return recommendations;
+            return computeRecommendationsForModel(targetVariable.isNeedsConstructor());
         }
-        return Collections.emptySet();
+        return ImmutableSet.of();
     }
 
     /**
@@ -166,7 +166,7 @@ public final class PatternRecommender {
      * @return The most probable patterns regarding the updated model, limited
      *         to the size of <code>MAX_PATTERNS</code>.
      */
-    private Set<PatternRecommendation> computeRecommendationsForModel(final boolean constructorRequired) {
+    private ImmutableSet<PatternRecommendation> computeRecommendationsForModel(final boolean constructorRequired) {
         final Set<PatternRecommendation> typeRecs = Sets.newTreeSet();
         for (final Tuple<String, Double> patternWithProbablity : findMostLikelyPatterns()) {
             final String patternName = patternWithProbablity.getFirst();
@@ -176,7 +176,7 @@ public final class PatternRecommender {
                 typeRecs.add(PatternRecommendation.create(patternName, patternMethods, percentage));
             }
         }
-        return typeRecs;
+        return ImmutableSet.copyOf(typeRecs);
     }
 
     /**
@@ -187,7 +187,8 @@ public final class PatternRecommender {
         List<Tuple<String, Double>> patterns = model.getPatternsNode().getPatternsWithProbability();
         patterns = Lists.newArrayList(Iterators.filter(patterns.iterator(), new PatternProbabilityFilter()));
         Collections.sort(patterns, new PatternSorter());
-        return patterns.subList(0, Math.min(patterns.size(), MAX_PATTERNS));
+        patterns = patterns.subList(0, Math.min(patterns.size(), MAX_PATTERNS));
+        return ImmutableList.copyOf(patterns);
     }
 
     /**
@@ -197,14 +198,14 @@ public final class PatternRecommender {
      * @return The methods which shall be invoked by the template built from the
      *         given pattern.
      */
-    private List<IMethodName> getMethodCallsForPattern(final String patternName) {
+    private ImmutableList<IMethodName> getMethodCallsForPattern(final String patternName) {
         final List<IMethodName> recommendedMethods = Lists.newArrayList();
         model.setPattern(patternName);
         model.updateBeliefs();
         for (final Tuple<IMethodName, Double> pair : model.getRecommendedMethodCalls(METHOD_PROBABILITY_THRESHOLD)) {
             recommendedMethods.add(pair.getFirst());
         }
-        return recommendedMethods;
+        return ImmutableList.copyOf(recommendedMethods);
     }
 
     /**

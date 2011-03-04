@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Commons Analysis Tests (Incubator)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.commons.analysis
-Bundle-Version: 0.1.0.qualifier
+Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.commons.analysis
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

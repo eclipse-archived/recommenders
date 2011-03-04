@@ -26,7 +26,7 @@
 <unit id="org.eclipse.epp.mpc.feature.group" version="1.0.1.v20100826-2143"/>
 <unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="3.4.3.v20110131-0200-e3x-8j9F7_FXiI9jRBM4_bFl96vsIL"/>
 <unit id="org.eclipse.mylyn.wikitext.sdk.feature.group" version="1.3.2.v20100916-0100-e3x-7U8M4FQCnvLuxi66SxLuukDef"/>
-<repository location="http://download.eclipse.org/releases/helios"/>
+<repository location="http://vandyk.st.informatik.tu-darmstadt.de/mirrors/helios"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" type="InstallableUnit">
 <unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201102280939"/>

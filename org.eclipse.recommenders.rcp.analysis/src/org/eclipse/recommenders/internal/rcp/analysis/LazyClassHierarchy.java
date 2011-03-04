@@ -125,7 +125,7 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
                 return ensureIsNotNull(loadBinaryClass((BinaryType) type));
             } else if (type instanceof SourceType) {
                 // it's sourceMethod, i.e., application.
-                return ensureIsNotNull(loadFromProjectOutputLocation((SourceType) type));
+                return loadFromProjectOutputLocation((SourceType) type);
                 // return loadSourceType((SourceType) type);
             }
         } catch (final JavaModelException e) {
@@ -177,8 +177,7 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
             final String msg = format(
                     "Failed to lookup compiled class for type '%s' in project '%s'. Did the project build successfully?",
                     type.getFullyQualifiedName(), type.getJavaProject().getElementName());
-            log.error(msg);
-            throwUnreachable();
+            log.warn(msg);
             return null;
         }
         final File file = eclipseFile.getLocation().toFile();

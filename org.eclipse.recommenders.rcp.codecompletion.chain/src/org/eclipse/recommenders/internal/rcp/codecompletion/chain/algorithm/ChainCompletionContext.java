@@ -15,12 +15,12 @@ import static org.eclipse.recommenders.commons.utils.Checks.cast;
 import java.util.List;
 
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerBindings;
 import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -55,6 +55,10 @@ public class ChainCompletionContext {
   }
 
   private void initializeAccessibleElements() {
+    if (!findExpectedClass()) {
+      return;
+    }
+
     if (!findEnclosingClass()) {
       return;
     }
@@ -62,9 +66,6 @@ public class ChainCompletionContext {
       // return;
     }
     if (!findReceiverClass()) {
-      return;
-    }
-    if (!findExpectedClass()) {
       return;
     }
     computeAccessibleFields();
@@ -156,7 +157,8 @@ public class ChainCompletionContext {
       }
     }
 
-    if (ctx.getCompletionNode() instanceof CompletionOnQualifiedNameReference) {
+    final Variable var = ctx.getVariable();
+    if (var == null) {
       return member.isStatic();
     }
 
@@ -195,6 +197,10 @@ public class ChainCompletionContext {
   }
 
   private void computeAccessibleLocals() {
+    if (ctx.getVariable() == null) {
+      return;
+    }
+
     if (!ctx.getVariable().isThis()) {
       return;
     }
