@@ -11,11 +11,15 @@
 package org.eclipse.recommenders.server.codesearch.couchdb;
 
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
+import org.eclipse.recommenders.server.codesearch.RequestLogEntry;
+import org.eclipse.recommenders.server.codesearch.TransactionResult;
 
 public interface IDataAccessService {
 
-    public void saveSnippet(SnippetSummary type);
+    public TransactionResult save(RequestLogEntry request);
 
-    public SnippetSummary getSnippet(String codeSnippetId);
+    public RequestLogEntry getLogEntry(String requestId);
+
+    public SnippetSummary getCodeSnippet(String snippetId);
 
 }

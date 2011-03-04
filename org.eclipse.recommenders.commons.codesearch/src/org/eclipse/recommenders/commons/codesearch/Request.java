@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.commons.codesearch;
 
-import java.util.Date;
-import java.util.List;
 
 /**
  * The data structure containing all parameters required to issue a code search
@@ -27,22 +25,11 @@ public class Request {
     }
 
     /**
-     * Request id. Created by the server.
-     */
-    public String id;
-
-    /**
      * The unique user-id is generated from the user's mac address and hashed
      * using sha1. This is used internally for filtering operations - for
      * instance to determine new or frequent users of the system etc.)
      */
     public String issuedBy;
-
-    /**
-     * The date the query was issued on. This field is set by the server and
-     * used for logging purpose only.
-     */
-    public Date issuedOn;
 
     /**
      * Different types of queries can be issued. Since each query type may use
@@ -62,17 +49,5 @@ public class Request {
      * A query may be customized using individual feature weights.
      */
     public FeatureWeights featureWeights;
-
-    /**
-     * The proposals made by the server. This field used for logs only and thus
-     * is typically <code>null</code> on client side.
-     */
-    public List<Proposal> proposals;
-
-    /**
-     * The feedbacks collected on server side. This field used for logs only and
-     * thus is typically <code>null</code> on client side.
-     */
-    public List<Proposal> feedbacks;
 
 }
