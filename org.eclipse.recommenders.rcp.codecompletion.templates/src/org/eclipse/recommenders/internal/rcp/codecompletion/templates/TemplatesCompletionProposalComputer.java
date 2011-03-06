@@ -36,6 +36,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.recommenders.commons.utils.Throws;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -60,9 +61,9 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      * @param patternRecommender
      *            Computes and returns patterns suitable for the active
      *            completion request.
-     * @param methodCallFormatter
-     *            The formatter will turn MethodCalls into the code to be used
-     *            by the eclipse template engine.
+     * @param codeBuilder
+     *            The {@link CodeBuilder} will turn {@link MethodCall}s into the
+     *            code to be used by the eclipse template engine.
      * @param contextResolver
      *            Responsible for computing an
      *            {@link IIntelligentCompletionContext} from a
@@ -71,25 +72,25 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      */
     @Inject
     public TemplatesCompletionProposalComputer(final PatternRecommender patternRecommender,
-            final MethodCallFormatter methodCallFormatter, final IntelligentCompletionContextResolver contextResolver) {
+            final CodeBuilder codeBuilder, final IntelligentCompletionContextResolver contextResolver) {
         this.patternRecommender = patternRecommender;
         this.contextResolver = contextResolver;
-        initializeProposalBuilder(methodCallFormatter);
+        initializeProposalBuilder(codeBuilder);
         initializeTemplateContextType();
     }
 
     /**
      * Initializes the proposal builder.
      * 
-     * @param methodCallFormatter
-     *            The <code>ExpressionPrinter</code> to be used by the
-     *            <code>ProposalsBuilder</code>.
+     * @param codeBuilder
+     *            The {@link CodeBuilder} will turn {@link MethodCall}s into the
+     *            code to be used by the eclipse template engine.
      */
-    private void initializeProposalBuilder(final MethodCallFormatter methodCallFormatter) {
+    private void initializeProposalBuilder(final CodeBuilder codeBuilder) {
         final Bundle bundle = FrameworkUtil.getBundle(TemplatesCompletionProposalComputer.class);
         final Image icon = bundle == null ? null : AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(),
                 "metadata/icon2.gif").createImage();
-        completionProposalsBuilder = new CompletionProposalsBuilder(icon, methodCallFormatter);
+        completionProposalsBuilder = new CompletionProposalsBuilder(icon, codeBuilder);
     }
 
     /**

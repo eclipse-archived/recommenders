@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.MethodCallFormatter;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 /**
@@ -23,7 +25,7 @@ public final class TemplatesCompletionModule extends AbstractModule {
     @Override
     protected void configure() {
         bindCallsRecommender();
-        bindMethodCallFormatter();
+        bindCodeBuilder();
     }
 
     /**
@@ -34,10 +36,12 @@ public final class TemplatesCompletionModule extends AbstractModule {
     }
 
     /**
-     * Binds the formatter which will return a string for a pattern's code.
+     * Binds the {@link CodeBuilder} which will return a string of java code for
+     * a pattern's method calls.
      */
-    private void bindMethodCallFormatter() {
+    private void bindCodeBuilder() {
         bind(JavaElementResolver.class).in(Scopes.SINGLETON);
         bind(MethodCallFormatter.class).in(Scopes.SINGLETON);
+        bind(CodeBuilder.class).in(Scopes.SINGLETON);
     }
 }

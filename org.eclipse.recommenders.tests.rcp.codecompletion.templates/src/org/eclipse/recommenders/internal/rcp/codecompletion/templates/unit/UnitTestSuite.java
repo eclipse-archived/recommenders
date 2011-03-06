@@ -14,6 +14,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 import org.junit.runner.RunWith;
@@ -38,6 +39,9 @@ public final class UnitTestSuite {
     private static final MethodCall METHODCALL = new MethodCall(DEFAULTVARIABLE, DEFAULTMETHOD);
     private static final MethodCall CONSTRUCTORCALL = new MethodCall(CONSTRUCTORVARIABLE, CONSTRUCTORMETHOD);
 
+    private static final CodeBuilder CODEBUILDERMOCK = new CodeBuilder(
+            MethodCallFormatterTest.getMethodCallFormatterMock());
+
     /**
      * @return the method which is used in most test cases.
      */
@@ -52,4 +56,7 @@ public final class UnitTestSuite {
         return UnitTestSuite.CONSTRUCTORCALL;
     }
 
+    protected static CodeBuilder getCodeBuilderMock() {
+        return CODEBUILDERMOCK;
+    }
 }

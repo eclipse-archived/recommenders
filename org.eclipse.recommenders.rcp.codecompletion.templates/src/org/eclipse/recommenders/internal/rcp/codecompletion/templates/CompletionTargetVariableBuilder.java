@@ -85,7 +85,7 @@ public final class CompletionTargetVariableBuilder {
         CompletionTargetVariable completionTargetVariable = null;
         if (receiverType != null) {
             int variableNameLength = 0;
-            if (!needsConstructor && receiverName.length() > 0) {
+            if (!needsConstructor && receiverName != null && receiverName.length() > 0) {
                 // For variables other than implicit "this", add space for ".".
                 variableNameLength = receiverName.length() + 1;
             }

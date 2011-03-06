@@ -36,7 +36,7 @@ public final class CompletionProposalsBuilderTest {
                 Lists.newArrayList(methodCall.getInvokedMethod()), 50));
 
         final CompletionProposalsBuilder builder = new CompletionProposalsBuilder(null,
-                MethodCallFormatterTest.getMethodCallFormatterMock());
+                UnitTestSuite.getCodeBuilderMock());
 
         final JavaContext javaContext = new JavaContext(null, new Document(), new Position(0), null);
         final CompletionTargetVariable completionTargetVariable = methodCall.getCompletionTargetVariable();

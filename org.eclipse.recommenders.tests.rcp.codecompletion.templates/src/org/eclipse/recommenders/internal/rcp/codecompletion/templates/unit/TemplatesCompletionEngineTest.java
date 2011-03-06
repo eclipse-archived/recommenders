@@ -28,7 +28,7 @@ public final class TemplatesCompletionEngineTest {
 
         final TemplatesCompletionProposalComputer engine = new TemplatesCompletionProposalComputer(
                 PatternRecommenderTest.getPatternRecommenderMock(context.getReceiverType()),
-                MethodCallFormatterTest.getMethodCallFormatterMock(), null);
+                UnitTestSuite.getCodeBuilderMock(), null);
 
         final List<IJavaCompletionProposal> proposals = engine.computeProposals(context);
 
