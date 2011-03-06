@@ -32,14 +32,14 @@
          category="org.eclipse.recommenders.rcp.category.views"
          class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codesearch.views.QueryView"
          icon="icons/obj16/slocalhelp_obj.gif"
-         id="org.eclipse.recommenders.rcp.codesearch.view1"
+         id="org.eclipse.recommenders.internal.rcp.codesearch.views.QueryView"
          name="Codesearch Query"
          restorable="true">
    </view>
    <view
          class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codesearch.views.ResultsView"
          icon="icons/obj16/slocalhelp_obj.gif"
-         id="org.eclipse.recommenders.rcp.codesearch.view2"
+         id="org.eclipse.recommenders.internal.rcp.codesearch.views.ResultsView"
          name="Codesearch Results"
          restorable="true">
    </view>

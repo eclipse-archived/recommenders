@@ -17,9 +17,13 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 
 import com.google.common.collect.Sets;
+import com.google.gson.annotations.SerializedName;
 
 public class SnippetSummary {
 
+    public static final SnippetSummary NULL = new SnippetSummary();
+
+    @SerializedName("_id")
     public String id;
 
     /**

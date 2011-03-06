@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codesearch.client;
 
 public class ClientConfiguration {
 
-    private String baseUrl = "http://localhost:80/codesearch/";
+    private String baseUrl = "http://localhost:8080/codesearch/";
 
     public String getBaseUrl() {
         return baseUrl;

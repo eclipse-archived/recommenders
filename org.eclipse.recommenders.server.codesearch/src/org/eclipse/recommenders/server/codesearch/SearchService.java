@@ -97,7 +97,7 @@ public class SearchService {
     public List<SearchResult> search(final Request request) {
         try {
             final LinkedList<SearchResult> proposals = Lists.newLinkedList();
-            final FeatureWeights weights = (request.featureWeights == null) ? this.weights : request.featureWeights;
+            final FeatureWeights weights = request.featureWeights == null ? this.weights : request.featureWeights;
             final CodesearchQuery query = LuceneQueryUtil.toCodeSearchQuery(request, weights);
             final StopWatch w = new StopWatch();
             w.start();
@@ -107,12 +107,21 @@ public class SearchService {
             log.info("total scoring time:" + w);
             for (final ScoreDoc scoreDoc : search.scoreDocs) {
                 final Document doc = searcher.doc(scoreDoc.doc);
-                proposals.add(new SearchResult(scoreDoc.score, doc.get("id")));
+                final SearchResult searchResult = new SearchResult(scoreDoc.score, doc.get("id"));
+                proposals.add(searchResult);
             }
             return proposals;
 
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * As long as we don't have snippet ids in the index we need to recompute
+     * them based on the class or method name available in the score doc.
+     */
+    private String getSnippetId(final Document doc) {
+        return doc.get("id");
     }
 }

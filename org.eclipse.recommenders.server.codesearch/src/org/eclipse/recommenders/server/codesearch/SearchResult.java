@@ -10,12 +10,15 @@
  */
 package org.eclipse.recommenders.server.codesearch;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
 public class SearchResult {
 
     public float score;
     public String snippetId;
 
     public SearchResult(final float score, final String snippetId) {
+        ensureIsNotNull(snippetId, "null snippet id is invalid");
         this.score = score;
         this.snippetId = snippetId;
     }

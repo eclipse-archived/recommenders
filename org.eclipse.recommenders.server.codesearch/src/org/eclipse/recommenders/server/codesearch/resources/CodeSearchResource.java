@@ -77,6 +77,7 @@ public class CodeSearchResource {
             proposal.score = result.score;
             proposal.snippet = dataAccess.getCodeSnippet(result.snippetId);
             proposal.snippet.source = uriMapper.map(proposal.snippet.source);
+            proposals.add(proposal);
         }
         return proposals;
     }
