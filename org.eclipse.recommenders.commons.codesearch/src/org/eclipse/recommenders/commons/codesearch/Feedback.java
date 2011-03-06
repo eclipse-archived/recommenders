@@ -16,7 +16,7 @@ package org.eclipse.recommenders.commons.codesearch;
  */
 public class Feedback {
 
-    public static Feedback create(final String codeSnippetId, final FeedbackType feedbackEvent) {
+    public static Feedback newFeedback(final String codeSnippetId, final FeedbackType feedbackEvent) {
         final Feedback res = new Feedback();
         res.snippetId = codeSnippetId;
         res.event = feedbackEvent;

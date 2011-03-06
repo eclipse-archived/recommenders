@@ -11,8 +11,8 @@
 package org.eclipse.recommenders.internal.rcp.codesearch;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.recommenders.internal.rcp.codesearch.views.ExamplesView;
 import org.eclipse.recommenders.internal.rcp.codesearch.views.QueryView;
+import org.eclipse.recommenders.internal.rcp.codesearch.views.ResultsView;
 import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.recommenders.rcp.utils.RCPUtils;
 import org.eclipse.ui.IViewPart;
@@ -64,12 +64,12 @@ public class CodesearchPlugin extends AbstractUIPlugin {
         }
     }
 
-    public static ExamplesView showExamplesView() {
+    public static ResultsView showExamplesView() {
         final IWorkbenchPage page = RCPUtils.getActiveWorkbenchPage();
         IViewPart showView;
         try {
-            showView = page.showView(ExamplesView.ID);
-            return (ExamplesView) showView;
+            showView = page.showView(ResultsView.ID);
+            return (ResultsView) showView;
         } catch (final PartInitException e) {
             log(e);
             return null;

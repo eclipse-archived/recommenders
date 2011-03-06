@@ -28,8 +28,8 @@ import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -45,7 +45,7 @@ public class SimpleSummaryViewerConfiguration extends SourceViewerConfiguration 
             IJavaColorConstants.JAVADOC_LINK), null, SWT.BOLD, font);
     public static final TextAttribute TITTLE_FONT_KEYWORD = new TextAttribute(JavaUI.getColorManager().getColor(
             IJavaColorConstants.JAVA_KEYWORD), null, SWT.BOLD, font);
-    public Proposal hit;
+    public RCPProposal hit;
     public String tittle;
 
     @Override
@@ -73,7 +73,7 @@ public class SimpleSummaryViewerConfiguration extends SourceViewerConfiguration 
 
             @Override
             public String getHoverInfo(final ITextViewer textViewer, final IRegion hoverRegion) {
-                final String stats = GsonUtil.serialize(hit.featureScores);
+                final String stats = GsonUtil.serialize(hit.getIndividualFeatureScores());
                 return stats;
             }
         };

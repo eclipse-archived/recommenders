@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.commons.codesearch;
 
-
 /**
  * The data structure containing all parameters required to issue a code search
  * query.
@@ -19,9 +18,15 @@ public class Request {
 
     public static final Request INVALID = new Request();
 
-    public static Request create() {
+    public static Request newInstance() {
 
         return new Request();
+    }
+
+    public static Request newRequestWithBlankQuery() {
+        Request res = newInstance();
+        res.query = new SnippetSummary();
+        return res;
     }
 
     /**

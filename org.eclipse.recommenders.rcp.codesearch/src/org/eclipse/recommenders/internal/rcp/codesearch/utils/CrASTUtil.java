@@ -226,7 +226,7 @@ public class CrASTUtil {
             }
             final IJavaElement[] elements = ((ICodeAssist) input).codeSelect(selection.getOffset(),
                     selection.getLength());
-            if (elements != null && elements.length > 0) {
+            if ((elements != null) && (elements.length > 0)) {
                 return elements;
             }
         }

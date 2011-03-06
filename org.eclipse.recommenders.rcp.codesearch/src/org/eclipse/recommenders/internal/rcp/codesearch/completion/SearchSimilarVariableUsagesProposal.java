@@ -17,12 +17,14 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.commons.codesearch.Request;
+import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendCodeSearchRequestJob;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
@@ -36,10 +38,12 @@ public final class SearchSimilarVariableUsagesProposal extends JavaCompletionPro
             "icons/obj16/search.png").createImage();
     private final IJavaProject javaProject;
     private final MethodDeclaration method;
+    private final CodeSearchClient searchClient;
 
     public SearchSimilarVariableUsagesProposal(final int relevance, final CompilationUnit cu,
-            final IIntelligentCompletionContext ctx) {
+            final IIntelligentCompletionContext ctx, final CodeSearchClient searchClient) {
         super("", getOffSet(ctx), 0, icon, createTitle(ctx), relevance);
+        this.searchClient = searchClient;
         method = cu.findMethod(ctx.getEnclosingMethod());
         variable = Variable.create(ctx.getReceiverName(), ctx.getReceiverType(), ctx.getEnclosingMethod());
         javaProject = ctx.getCompilationUnit().getJavaProject();
@@ -68,37 +72,37 @@ public final class SearchSimilarVariableUsagesProposal extends JavaCompletionPro
     }
 
     private void scheduleSearchRequest(final Request request) {
-        new SendCodeSearchRequestJob(request, javaProject).schedule();
+        new SendCodeSearchRequestJob(request, javaProject, searchClient).schedule();
     }
 
     private Request createRequestFromVariable() {
-        final Request request = Request.create();
-        addOverriddenMethod(request);
-        addUsedMethods(request);
-        addVariableType(request);
+        final Request request = new Request();
         setUniqueIds(request);
+        request.query = new SnippetSummary();
+        addOverriddenMethod(request.query);
+        addUsedMethods(request.query);
+        addVariableType(request.query);
         return request;
     }
 
-    private void addOverriddenMethod(final Request request) {
+    private void setUniqueIds(final Request request) {
+        request.issuedBy = UUIDHelper.getUUID();
+    }
+
+    private void addOverriddenMethod(final SnippetSummary query) {
         final IMethodName root = method.superDeclaration;
         if (root != null) {
-            request.overriddenMethods.add(root);
+            query.overriddenMethods.add(root);
         }
     }
 
-    private void setUniqueIds(final Request request) {
-        request.uniqueUserId = UUIDHelper.getUUID();
-        request.uniqueRequestId = UUIDHelper.generateUID();
+    private void addVariableType(final SnippetSummary query) {
+        query.usedTypes.add(variable.type);
     }
 
-    private void addVariableType(final Request request) {
-        request.usedTypes.add(variable.type);
-    }
-
-    private void addUsedMethods(final Request request) {
+    private void addUsedMethods(final SnippetSummary query) {
         for (final IMethodName targetMethod : variable.getReceiverCalls()) {
-            request.calledMethods.add(targetMethod);
+            query.calledMethods.add(targetMethod);
         }
     }
 }

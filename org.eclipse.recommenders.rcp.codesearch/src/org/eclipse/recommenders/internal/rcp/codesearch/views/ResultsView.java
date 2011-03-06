@@ -12,9 +12,10 @@ package org.eclipse.recommenders.internal.rcp.codesearch.views;
 
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.codesearch.Request;
-import org.eclipse.recommenders.commons.codesearch.Response;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyEvent;
@@ -28,12 +29,20 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
-public class ExamplesView extends ViewPart {
-    public static final String ID = ExamplesView.class.getName();
+import com.google.inject.Inject;
+
+public class ResultsView extends ViewPart {
+    public static final String ID = ResultsView.class.getName();
     private ScrolledComposite scrollContainer;
     private Composite container;
     private Request request;
-    private Response reply;
+    private RCPResponse response;
+    private CodeSearchClient searchClient;
+
+    @Inject
+    public ResultsView(final CodeSearchClient searchClient) {
+        this.searchClient = searchClient;
+    }
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -77,9 +86,9 @@ public class ExamplesView extends ViewPart {
         scrollContainer.setExpandVertical(true);
     }
 
-    public void setInput(final Request request, final Response reply) {
+    public void setInput(final Request request, final RCPResponse reply) {
         this.request = request;
-        this.reply = reply;
+        this.response = reply;
         disposeOldSourceViewers();
         createNewSourceViewers("");
     }
@@ -91,15 +100,15 @@ public class ExamplesView extends ViewPart {
     }
 
     private void createNewSourceViewers(final String searchCritera) {
-        if (reply.proposals.size() == 0) {
+        if (response.isEmpty()) {
         }
-        for (final Proposal codeExample : reply.proposals) {
-            final ExampleSummaryPage page = new SimpleSummaryPage();
+        for (final RCPProposal codeExample : response.getProposals()) {
+            final ExampleSummaryPage page = new SimpleSummaryPage(searchClient);
             page.createControl(container);
-            page.setInput(request, reply, codeExample, searchCritera);
+            page.setInput(request, response, codeExample, searchCritera);
         }
         final int minWidth = 300;
-        final int minHeight = reply.proposals.size() * 80;
+        final int minHeight = response.getNumberOfProposals() * 80;
         scrollContainer.setMinSize(minWidth, minHeight);
         scrollContainer.layout(true, true);
     }

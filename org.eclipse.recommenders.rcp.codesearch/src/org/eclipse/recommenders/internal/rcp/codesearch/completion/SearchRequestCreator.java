@@ -44,7 +44,7 @@ import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
 @SuppressWarnings("restriction")
 public class SearchRequestCreator extends ASTVisitor {
     private final ITextSelection selection;
-    private final Request request = new Request();
+    private final Request request = Request.newRequestWithBlankQuery();
 
     public SearchRequestCreator(final ASTNode ast, final ITextSelection selection) {
         super(false);
@@ -56,7 +56,7 @@ public class SearchRequestCreator extends ASTVisitor {
     }
 
     private void determineRequestKind() {
-        final boolean empty = selection == null || selection.getLength() == 0;
+        final boolean empty = (selection == null) || (selection.getLength() == 0);
         if (empty) {
             request.type = RequestType.CLASS;
         } else {
@@ -94,7 +94,7 @@ public class SearchRequestCreator extends ASTVisitor {
         for (; superclass != null; superclass = superclass.getSuperclass()) {
             final ITypeName superclassName = BindingUtils.toTypeName(superclass);
             if (!isPrimitiveOrArrayOrNullOrObjectOrString(superclassName)) {
-                request.extendedTypes.add(superclassName);
+                request.query.extendedTypes.add(superclassName);
             }
         }
     }
@@ -103,7 +103,7 @@ public class SearchRequestCreator extends ASTVisitor {
         for (final ITypeBinding interface_ : node.resolveBinding().getInterfaces()) {
             final ITypeName ITypeName = BindingUtils.toTypeName(interface_);
             if (!isPrimitiveOrArrayOrNullOrObjectOrString(ITypeName)) {
-                request.implementedTypes.add(ITypeName);
+                request.query.implementedTypes.add(ITypeName);
             }
         }
     }
@@ -121,7 +121,7 @@ public class SearchRequestCreator extends ASTVisitor {
         final ITypeBinding fieldTypeBinding = fieldType.resolveBinding();
         final ITypeName ITypeName = BindingUtils.toTypeName(fieldTypeBinding);
         if (!isPrimitiveOrArrayOrNullOrObjectOrString(ITypeName)) {
-            request.fieldTypes.add(ITypeName);
+            request.query.fieldTypes.add(ITypeName);
         }
     }
 
@@ -138,7 +138,7 @@ public class SearchRequestCreator extends ASTVisitor {
         final IMethodBinding overriddenBinding = Bindings.findOverriddenMethod(b, true);
         final IMethodName overriddenIMethodName = BindingUtils.toMethodName(overriddenBinding);
         if (overriddenIMethodName != null) {
-            request.overriddenMethods.add(overriddenIMethodName);
+            request.query.overriddenMethods.add(overriddenIMethodName);
         }
     }
 
@@ -230,15 +230,15 @@ public class SearchRequestCreator extends ASTVisitor {
 
     private void addUsedType(final ITypeBinding b) {
         final ITypeName type = BindingUtils.toTypeName(b);
-        if (type != null && !isPrimitiveOrArrayOrNullOrObjectOrString(type)) {
-            request.usedTypes.add(type);
+        if ((type != null) && !isPrimitiveOrArrayOrNullOrObjectOrString(type)) {
+            request.query.usedTypes.add(type);
         }
     }
 
     private void addUsedMethod(final IMethodBinding b) {
         final IMethodName method = BindingUtils.toMethodName(b);
         if (method != null) {
-            request.calledMethods.add(method);
+            request.query.calledMethods.add(method);
             addMethodParametersToUses(method);
             addMethodReturnTypeToUses(method);
         }
@@ -247,7 +247,7 @@ public class SearchRequestCreator extends ASTVisitor {
     private void addMethodParametersToUses(final IMethodName IMethodName) {
         for (final ITypeName param : IMethodName.getParameterTypes()) {
             if (!isPrimitiveOrArrayOrNullOrObjectOrString(param)) {
-                request.usedTypes.add(param);
+                request.query.usedTypes.add(param);
             }
         }
     }
@@ -255,7 +255,7 @@ public class SearchRequestCreator extends ASTVisitor {
     private void addMethodReturnTypeToUses(final IMethodName IMethodName) {
         final ITypeName returnType = IMethodName.getReturnType();
         if (!isPrimitiveOrArrayOrNullOrObjectOrString(returnType)) {
-            request.usedTypes.add(returnType);
+            request.query.usedTypes.add(returnType);
         }
     }
 
@@ -277,7 +277,7 @@ public class SearchRequestCreator extends ASTVisitor {
     }
 
     private boolean isPrimitiveOrArrayOrNullOrObjectOrString(final ITypeName type) {
-        return type == null || type.isPrimitiveType() || type.isArrayType() || type == VmTypeName.OBJECT
-                || type == VmTypeName.STRING;
+        return (type == null) || type.isPrimitiveType() || type.isArrayType() || (type == VmTypeName.OBJECT)
+                || (type == VmTypeName.STRING);
     }
 }

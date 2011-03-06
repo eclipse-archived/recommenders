@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.codesearch.client;
+package org.eclipse.recommenders.internal.rcp.codesearch.client;
 
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.ICodeSearchResource;

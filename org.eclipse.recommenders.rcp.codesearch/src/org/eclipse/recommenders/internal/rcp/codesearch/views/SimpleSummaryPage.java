@@ -31,12 +31,17 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.SourceViewer;
-import org.eclipse.recommenders.commons.codesearch.Proposal;
+import org.eclipse.recommenders.commons.codesearch.Feedback;
+import org.eclipse.recommenders.commons.codesearch.FeedbackType;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.codesearch.Response;
+import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.jobs.OpenSourceCodeInEditorJob;
 import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendUserClickFeedbackJob;
 import org.eclipse.recommenders.rcp.utils.ast.ASTStringUtils;
@@ -72,14 +77,19 @@ import com.google.common.collect.Multimap;
 public class SimpleSummaryPage implements ExampleSummaryPage {
     private String tittle;
     private Composite control;
-    public Request request;
+    public SnippetSummary request;
     public Response reply;
-    public Proposal proposal;
+    public RCPProposal proposal;
     private SourceViewer contentArea;
     private StringBuffer contentAreaBuffer;
     private List<StyleRange> contentAreaStyles;
     private SimpleSummaryViewerConfiguration configuration;
     private String searchData;
+    private final CodeSearchClient searchClient;
+
+    public SimpleSummaryPage(final CodeSearchClient searchClient) {
+        this.searchClient = searchClient;
+    }
 
     @Override
     public void createControl(final Composite parent) {
@@ -136,7 +146,8 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
             public void handleEvent(final Event event) {
                 if (isMouseAtTittleArea(event.y)) {
                     new OpenSourceCodeInEditorJob(request, proposal, searchData).schedule();
-                    new SendUserClickFeedbackJob(request, proposal).schedule();
+                    final Feedback feedback = Feedback.newFeedback(proposal.getId(), FeedbackType.EDITOR_OPENED);
+                    new SendUserClickFeedbackJob(request.id, feedback, null).schedule();
                 } else {
                     for (final Control child : control.getParent().getChildren()) {
                         ((GridData) child.getLayoutData()).minimumHeight = 80;
@@ -238,7 +249,8 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
             public void handleEvent(final Event event) {
                 if (!isMouseAtTittleArea(event.y)) {
                     new OpenSourceCodeInEditorJob(request, proposal, searchData).schedule();
-                    new SendUserClickFeedbackJob(request, proposal).schedule();
+                    final Feedback feedback = Feedback.newFeedback(proposal.getId(), FeedbackType.EDITOR_OPENED);
+                    new SendUserClickFeedbackJob(request.id, feedback, searchClient).schedule();
                 }
             }
         });
@@ -255,14 +267,14 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
     }
 
     @Override
-    public void setInput(final Request request, final Response reply, final Proposal hit, final String searchData) {
+    public void setInput(final Request request, final RCPResponse response, final RCPProposal result,
+            final String searchData) {
         this.searchData = searchData;
-        this.request = request;
-        this.reply = reply;
-        this.proposal = hit;
-        configuration.hit = hit;
+        this.request = request.query;
+        this.proposal = result;
+        configuration.hit = result;
         //
-        switch (hit.type) {
+        switch (proposal.getType()) {
         case METHOD:
             setContents();
             break;
@@ -400,13 +412,13 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
     }
 
     private void addTitle() {
-        if (proposal.methodName != null) {
-            final MethodDeclaration node = MethodDeclarationFinder.find(proposal.ast, proposal.methodName);
-            tittle = node == null ? Names.vm2srcQualifiedMethod(proposal.methodName) : ASTStringUtils
+        if (proposal.getMethodName() != null) {
+            final MethodDeclaration node = MethodDeclarationFinder.find(proposal.getAst(), proposal.getMethodName());
+            tittle = node == null ? Names.vm2srcQualifiedMethod(proposal.getMethodName()) : ASTStringUtils
                     .toQualifiedString(node);
-        } else if (proposal.className != null) {
-            final TypeDeclaration node = TypeDeclarationFinder.find(proposal.ast, proposal.className);
-            tittle = node == null ? Names.vm2srcQualifiedType(proposal.className) : ASTStringUtils
+        } else if (proposal.getClassName() != null) {
+            final TypeDeclaration node = TypeDeclarationFinder.find(proposal.getAst(), proposal.getClassName());
+            tittle = node == null ? Names.vm2srcQualifiedType(proposal.getClassName()) : ASTStringUtils
                     .toDeclarationString(node);
         } else {
             tittle = "<error: neither class name nor method name set in hit>";
@@ -460,4 +472,5 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
     public Control getControl() {
         return control;
     }
+
 }

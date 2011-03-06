@@ -8,12 +8,11 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.codesearch.client.exceptions;
+package org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions;
 
-public class ConflictException extends InvalidRequestException {
+public class ServerErrorException extends ServerCommunicationException {
 
-    public ConflictException(final Throwable e) {
+    public ServerErrorException(final Throwable e) {
         super(e);
     }
-
 }

@@ -19,6 +19,7 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendCodeSearchRequestJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -29,6 +30,8 @@ import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.internal.WorkbenchImages;
 import org.eclipse.ui.part.ViewPart;
 
+import com.google.inject.Inject;
+
 @SuppressWarnings("restriction")
 public class QueryView extends ViewPart {
     public static final String ID = QueryView.class.getName();
@@ -36,6 +39,13 @@ public class QueryView extends ViewPart {
     private SourceViewer viewer;
     private Action sendQueryAction;
     private IJavaProject issuingProject;
+    private final CodeSearchClient searchClient;
+
+    @Inject
+    public QueryView(final CodeSearchClient searchClient) {
+        this.searchClient = searchClient;
+
+    }
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -52,7 +62,7 @@ public class QueryView extends ViewPart {
             @Override
             public void run() {
                 final Request request = getInput();
-                new SendCodeSearchRequestJob(request, issuingProject).schedule();
+                new SendCodeSearchRequestJob(request, issuingProject, searchClient).schedule();
             }
         };
         sendQueryAction.setToolTipText("Submits the view's code search query");

@@ -22,8 +22,8 @@ public class SimpleSummaryPartitionScanner extends RuleBasedPartitionScanner {
     // public final static String CODE_USES = "__code_uses";
     // public final static String CODE_CALLS = "__code_calls";
     // public final static String CODE_SCORE = "__code_score";
-    public final static String TITTLE_TYPE = "__tittle__type";
-    public static String[] CONTENT_TYPES = new String[] { IDocument.DEFAULT_CONTENT_TYPE, };
+    public static final String TITTLE_TYPE = "__tittle__type";
+    public static final String[] CONTENT_TYPES = new String[] { IDocument.DEFAULT_CONTENT_TYPE, };
 
     public SimpleSummaryPartitionScanner() {
         final IToken key = new Token(IDocument.DEFAULT_CONTENT_TYPE);

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+ <extension
+         point="org.eclipse.recommenders.commons.injection.modules">
+      <module
+            class="org.eclipse.recommenders.internal.rcp.codesearch.ExamplesModule">
+      </module>
+   </extension>
+	<extension
+         id="org.eclipse.recommenders"
+         name="Code Recommenders Calls Proposals"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.eclipse.recommenders.rcp.category.codesearch"
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codesearch.completion.CodesearchCompletionProposalComputer">
+      </javaCompletionProposalComputer>
+   </extension>
+<extension
+      id="org.eclipse.recommenders.rcp.category.codesearch"
+      name="Recommenders Codesearch"
+      point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+   <proposalCategory
+         icon="icons/obj16/search.png">
+   </proposalCategory>
+</extension>
+<extension
+      point="org.eclipse.ui.views">
+   <view
+         allowMultiple="false"
+         category="org.eclipse.recommenders.rcp.category.views"
+         class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codesearch.views.QueryView"
+         icon="icons/obj16/slocalhelp_obj.gif"
+         id="org.eclipse.recommenders.rcp.codesearch.view1"
+         name="Codesearch Query"
+         restorable="true">
+   </view>
+   <view
+         class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codesearch.views.ResultsView"
+         icon="icons/obj16/slocalhelp_obj.gif"
+         id="org.eclipse.recommenders.rcp.codesearch.view2"
+         name="Codesearch Results"
+         restorable="true">
+   </view>
+</extension>
+</plugin>

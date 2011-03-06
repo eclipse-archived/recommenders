@@ -26,9 +26,9 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.ITextPresentationListener;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.SourceViewer;
-import org.eclipse.recommenders.commons.codesearch.Proposal;
-import org.eclipse.recommenders.commons.codesearch.Request;
+import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.RemoteEditorInput;
 import org.eclipse.recommenders.internal.rcp.codesearch.views.VariableUsagesHighlighter;
@@ -43,17 +43,17 @@ import org.eclipse.swt.widgets.Display;
 @SuppressWarnings("restriction")
 public class OpenSourceCodeInEditorJob extends WorkspaceJob {
     private final List<String> previouslyCopiedClipboardContents;
-    private final Request request;
-    private final Proposal hit;
+    private final SnippetSummary request;
+    private final RCPProposal hit;
     private Clipboard clipboard;
     private final String searchData;
 
-    public OpenSourceCodeInEditorJob(final Request request, final Proposal hit, final String searchData) {
+    public OpenSourceCodeInEditorJob(final SnippetSummary request, final RCPProposal proposal, final String searchData) {
         super("Loading Source Code from Examples Repository");
         this.searchData = searchData;
         previouslyCopiedClipboardContents = new ArrayList<String>();
         this.request = checkNotNull(request);
-        this.hit = checkNotNull(hit);
+        this.hit = checkNotNull(proposal);
         clipboard = new Clipboard(Display.getCurrent());
     }
 
@@ -76,30 +76,30 @@ public class OpenSourceCodeInEditorJob extends WorkspaceJob {
         });
     }
 
-    private void revealMethodIfAvailable(final Proposal result, final JavaEditor editor) {
-        final IMethodName methodToReveal = result.methodName;
+    private void revealMethodIfAvailable(final RCPProposal result, final JavaEditor editor) {
+        final IMethodName methodToReveal = result.getMethodName();
         if (methodToReveal != null) {
-            final MethodDeclaration methodDeclaration = CrASTUtil.findMethod(result.ast, methodToReveal);
+            final MethodDeclaration methodDeclaration = CrASTUtil.findMethod(result.getAst(), methodToReveal);
             if (methodDeclaration == null) {
                 return;
             }
             CrASTUtil.revealInEditor(editor, methodDeclaration);
         } else {
-            final TypeDeclaration decl = TypeDeclarationFinder.find(hit.ast, hit.className);
+            final TypeDeclaration decl = TypeDeclarationFinder.find(hit.getAst(), hit.getClassName());
             if (decl != null) {
                 CrASTUtil.revealInEditor(editor, decl);
             }
         }
     }
 
-    private JavaEditor openSourceInEditor(final Proposal hit) {
+    private JavaEditor openSourceInEditor(final RCPProposal hit) {
         // XXX: note, we cannot use some characters that often occur inside
         // method
         // signatures here!
         // we need to sanitize method names somehow if we want to use them as
         // title
-        final String title = hit.className.toString();
-        final RemoteEditorInput storage = new RemoteEditorInput(hit.source, title);
+        final String title = hit.getClassName().toString();
+        final RemoteEditorInput storage = new RemoteEditorInput(hit.getSource(), title);
         final JavaEditor openJavaEditor = JdtUtils.openJavaEditor(storage);
         final SourceViewer s = (SourceViewer) openJavaEditor.getViewer();
         final ITextPresentationListener listener = new VariableUsagesHighlighter(s, request, hit, searchData);

@@ -8,11 +8,12 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.codesearch.client.exceptions;
+package org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions;
 
-public class ServerErrorException extends ServerCommunicationException {
+public class NotFoundException extends InvalidRequestException {
 
-    public ServerErrorException(final Throwable e) {
+    public NotFoundException(final Throwable e) {
         super(e);
     }
+
 }

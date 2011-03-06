@@ -16,33 +16,33 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.eclipse.recommenders.commons.codesearch.Proposal;
-import org.eclipse.recommenders.commons.codesearch.Request;
+import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
 public class TypesUsesMethodCallsGrouper {
     private final LinkedHashMultimap<ITypeName, IMethodName> index = LinkedHashMultimap.create();
-    private final Request request;
+    private final SnippetSummary request;
 
-    public TypesUsesMethodCallsGrouper(final Request request, final Proposal hit) {
+    public TypesUsesMethodCallsGrouper(final SnippetSummary request, final RCPProposal proposal) {
         this.request = request;
-        buildIndex(hit);
+        buildIndex(proposal);
     }
 
     @SuppressWarnings("unchecked")
-    private void buildIndex(final Proposal hit) {
-        final Collection<ITypeName> inBoth = CollectionUtils.retainAll(hit.usedTypes, request.usedTypes);
+    private void buildIndex(final RCPProposal proposal) {
+        final Collection<ITypeName> inBoth = CollectionUtils.retainAll(proposal.getUsedTypes(), request.usedTypes);
         for (final ITypeName type : inBoth) {
             index.putAll(type, Collections.EMPTY_LIST);
         }
-        for (final ITypeName type : hit.usedTypes) {
+        for (final ITypeName type : proposal.getUsedTypes()) {
             index.putAll(type, Collections.EMPTY_LIST);
         }
-        for (final IMethodName method : hit.calledMethods) {
+        for (final IMethodName method : proposal.getCalledMethods()) {
             final ITypeName type = method.getDeclaringType();
             index.put(type, method);
         }

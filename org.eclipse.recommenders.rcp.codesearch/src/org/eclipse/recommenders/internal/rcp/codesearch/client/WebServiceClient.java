@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.rcp.codesearch.client;
+package org.eclipse.recommenders.internal.rcp.codesearch.client;
 
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
@@ -19,11 +19,11 @@ import java.util.Map;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.recommenders.rcp.codesearch.client.exceptions.ConflictException;
-import org.eclipse.recommenders.rcp.codesearch.client.exceptions.NotFoundException;
-import org.eclipse.recommenders.rcp.codesearch.client.exceptions.ServerErrorException;
-import org.eclipse.recommenders.rcp.codesearch.client.exceptions.ServerUnreachableException;
-import org.eclipse.recommenders.rcp.codesearch.client.exceptions.UnauthorizedAccessException;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions.ConflictException;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions.NotFoundException;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions.ServerErrorException;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions.ServerUnreachableException;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions.UnauthorizedAccessException;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;

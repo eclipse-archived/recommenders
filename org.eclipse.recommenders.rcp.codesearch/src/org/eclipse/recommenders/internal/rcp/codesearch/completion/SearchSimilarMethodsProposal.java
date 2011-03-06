@@ -1,4 +1,5 @@
 /**
+
  * Copyright (c) 2011 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,6 +28,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendCodeSearchRequestJob;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -43,12 +45,14 @@ public final class SearchSimilarMethodsProposal extends JavaCompletionProposal {
     private final MethodDeclaration method;
     private final CompilationUnit recCu;
     private final IIntelligentCompletionContext ctx;
+    private final CodeSearchClient searchClient;
 
     public SearchSimilarMethodsProposal(final int relevance, final CompilationUnit cu,
-            final IIntelligentCompletionContext ctx) {
+            final IIntelligentCompletionContext ctx, final CodeSearchClient searchClient) {
         super("", getOffSet(ctx), 0, icon, createTitle(ctx.getEnclosingMethod()), relevance);
         recCu = cu;
         this.ctx = ctx;
+        this.searchClient = searchClient;
         method = recCu.findMethod(ctx.getEnclosingMethod());
     }
 
@@ -70,8 +74,7 @@ public final class SearchSimilarMethodsProposal extends JavaCompletionProposal {
     public void apply(final ITextViewer viewer, final char trigger, final int stateMask, final int offset) {
         try {
             final Request request = createRequestFromEnclosingMethod();
-            request.uniqueUserId = UUIDHelper.getUUID();
-            request.uniqueRequestId = UUIDHelper.generateUID();
+            request.issuedBy = UUIDHelper.getUUID();
             scheduleSearchRequest(request);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -79,7 +82,7 @@ public final class SearchSimilarMethodsProposal extends JavaCompletionProposal {
     }
 
     private void scheduleSearchRequest(final Request request) {
-        new SendCodeSearchRequestJob(request, ctx.getOriginalContext().getProject()).schedule();
+        new SendCodeSearchRequestJob(request, ctx.getOriginalContext().getProject(), searchClient).schedule();
     }
 
     private Request createRequestFromEnclosingMethod() throws JavaModelException, PartInitException {

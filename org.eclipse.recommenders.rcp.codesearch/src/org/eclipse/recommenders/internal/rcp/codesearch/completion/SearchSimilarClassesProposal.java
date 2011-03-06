@@ -27,6 +27,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendCodeSearchRequestJob;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -43,12 +44,14 @@ public final class SearchSimilarClassesProposal extends JavaCompletionProposal {
             "icons/obj16/search.png").createImage();
     private final CompilationUnit recCu;
     private final IIntelligentCompletionContext ctx;
+    private final CodeSearchClient searchClient;
 
     public SearchSimilarClassesProposal(final int relevance, final CompilationUnit cu,
-            final IIntelligentCompletionContext ctx) {
+            final IIntelligentCompletionContext ctx, final CodeSearchClient searchClient) {
         super("", getOffSet(ctx), 0, icon, createTitle(cu.primaryType), relevance);
         recCu = cu;
         this.ctx = ctx;
+        this.searchClient = searchClient;
         type = recCu.primaryType;
     }
 
@@ -74,8 +77,7 @@ public final class SearchSimilarClassesProposal extends JavaCompletionProposal {
     public void apply(final ITextViewer viewer, final char trigger, final int stateMask, final int offset) {
         try {
             final Request request = createRequestFromEnclosingType();
-            request.uniqueUserId = UUIDHelper.getUUID();
-            request.uniqueRequestId = UUIDHelper.generateUID();
+            request.issuedBy = UUIDHelper.getUUID();
             scheduleSearchRequest(request);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -83,7 +85,7 @@ public final class SearchSimilarClassesProposal extends JavaCompletionProposal {
     }
 
     private void scheduleSearchRequest(final Request request) {
-        new SendCodeSearchRequestJob(request, ctx.getOriginalContext().getProject()).schedule();
+        new SendCodeSearchRequestJob(request, ctx.getOriginalContext().getProject(), searchClient).schedule();
     }
 
     private Request createRequestFromEnclosingType() throws JavaModelException, PartInitException {

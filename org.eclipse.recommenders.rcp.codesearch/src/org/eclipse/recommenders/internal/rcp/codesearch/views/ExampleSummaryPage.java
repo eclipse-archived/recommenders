@@ -10,16 +10,16 @@
  */
 package org.eclipse.recommenders.internal.rcp.codesearch.views;
 
-import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.codesearch.Request;
-import org.eclipse.recommenders.commons.codesearch.Response;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public interface ExampleSummaryPage {
-    public void createControl(Composite parent);
+    void createControl(Composite parent);
 
-    public Control getControl();
+    Control getControl();
 
-    public void setInput(Request request, Response reply, Proposal result, String searchData);
+    void setInput(Request request, RCPResponse response, RCPProposal result, String searchData);
 }

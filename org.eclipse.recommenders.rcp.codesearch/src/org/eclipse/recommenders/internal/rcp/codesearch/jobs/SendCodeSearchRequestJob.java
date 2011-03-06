@@ -19,23 +19,25 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.recommenders.commons.codesearch.ICodeSearchResource;
-import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.codesearch.Response;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
-import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
 import org.eclipse.swt.widgets.Display;
 
 public class SendCodeSearchRequestJob extends WorkspaceJob {
     private final Request request;
-    private Response reply;
+    private RCPResponse response;
     private final IJavaProject javaProject;
+    private final CodeSearchClient searchClient;
 
-    public SendCodeSearchRequestJob(final Request request, final IJavaProject javaProject) {
+    public SendCodeSearchRequestJob(final Request request, final IJavaProject javaProject,
+            final CodeSearchClient searchClient) {
         super("Searching Example Code");
         this.javaProject = javaProject;
+        this.searchClient = searchClient;
         ensureIsNotNull(request);
         this.request = request;
     }
@@ -47,8 +49,9 @@ public class SendCodeSearchRequestJob extends WorkspaceJob {
         }
         final StopWatch netWatch = new StopWatch();
         netWatch.start();
-        final ICodeSearchResource codeSearch = createTransport();
-        reply = codeSearch.search(request);
+        final Response serverResponse = searchClient.search(request);
+        response = RCPResponse.newInstance(serverResponse);
+
         netWatch.stop();
         System.out.printf("net comm took %s\n", netWatch);
         final StopWatch eclWatch = new StopWatch();
@@ -65,11 +68,13 @@ public class SendCodeSearchRequestJob extends WorkspaceJob {
     }
 
     private void buildASTs() {
-        for (final Proposal result : reply.proposals) {
-            final CompilationUnit cu = CrASTUtil.createCompilationUnitFromString(result.className, result.source,
-                    javaProject);
-            result.ast = cu;
-        }
+        // for (final Proposal result : reply.proposals) {
+        // final CompilationUnit cu =
+        // CrASTUtil.createCompilationUnitFromString(result.className,
+        // result.source,
+        // javaProject);
+        // result.ast = cu;
+        // }
     }
 
     private void openViews() {
@@ -77,7 +82,7 @@ public class SendCodeSearchRequestJob extends WorkspaceJob {
             @Override
             public void run() {
                 CodesearchPlugin.showQueryView().setInput(request, javaProject);
-                CodesearchPlugin.showExamplesView().setInput(request, reply);
+                CodesearchPlugin.showExamplesView().setInput(request, response);
             }
         });
     }

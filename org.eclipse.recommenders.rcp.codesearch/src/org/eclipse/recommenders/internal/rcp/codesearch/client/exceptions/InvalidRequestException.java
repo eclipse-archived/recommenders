@@ -8,17 +8,11 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.codesearch.client;
+package org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions;
 
-public class ClientConfiguration {
+public class InvalidRequestException extends RuntimeException {
 
-    private String baseUrl = "http://localhost:80/codesearch/";
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public void setBaseUrl(final String baseUrl) {
-        this.baseUrl = baseUrl;
+    public InvalidRequestException(final Throwable e) {
+        super(e);
     }
 }

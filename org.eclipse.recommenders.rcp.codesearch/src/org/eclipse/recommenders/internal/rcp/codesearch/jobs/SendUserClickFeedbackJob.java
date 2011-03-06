@@ -15,28 +15,26 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.recommenders.commons.codesearch.ICodeSearchResource;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
-import org.eclipse.recommenders.commons.codesearch.FeedbackType;
-import org.eclipse.recommenders.commons.codesearch.Proposal;
-import org.eclipse.recommenders.commons.codesearch.Request;
+import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
 
 public class SendUserClickFeedbackJob extends WorkspaceJob {
-    private final Proposal hit;
-    private final Request request;
 
-    public SendUserClickFeedbackJob(final Request request, final Proposal hit) {
+    private final String requestId;
+    private final Feedback feedback;
+    private final CodeSearchClient client;
+
+    public SendUserClickFeedbackJob(final String requestId, final Feedback feedback, final CodeSearchClient client) {
         super("Sending user click-through feedback");
-        this.request = request;
-        this.hit = hit;
+        this.requestId = requestId;
+        this.feedback = feedback;
+        this.client = client;
         setUser(false);
     }
 
     @Override
     public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
-        final Feedback feedback = Feedback.create(hit.source, request.uniqueRequestId, FeedbackType.EDITOR_OPENED);
-        final ICodeSearchResource service = SendCodeSearchRequestJob.createTransport();
-        service.addFeedback(feedback);
+        client.addFeedback(requestId, feedback);
         return Status.OK_STATUS;
     }
 }
