@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -24,6 +25,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -47,6 +49,8 @@ public final class PatternRecommender {
 
     private final CallsModelStore callsModelStore;
     private final Provider<Set<IVariableUsageResolver>> usageResolvers;
+
+    private IIntelligentCompletionContext context;
     private ITypeName receiverType;
     private Set<IMethodName> receiverMethodInvocations;
     private ObjectMethodCallsNet model;
@@ -69,15 +73,16 @@ public final class PatternRecommender {
     /**
      * @param targetVariable
      *            The variable on which the completion request was invoked.
-     * @param context
+     * @param completionContext
      *            The context from where the completion request was invoked.
      * @return The {@link PatternRecommendation}s holding information for the
      *         templates to be displayed.
      */
     public ImmutableSet<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
-            final IIntelligentCompletionContext context) {
-        if (canFindVariableUsage(targetVariable, context) && canFindModel(targetVariable.getType())) {
-            updateModel(context.getVariable(), context.getEnclosingMethodsFirstDeclaration());
+            final IIntelligentCompletionContext completionContext) {
+        context = completionContext;
+        if (canFindVariableUsage(targetVariable) && canFindModel(targetVariable.getType())) {
+            updateModel();
             return computeRecommendationsForModel(targetVariable.isNeedsConstructor());
         }
         return ImmutableSet.of();
@@ -86,38 +91,31 @@ public final class PatternRecommender {
     /**
      * @param targetVariable
      *            The variable on which the completion request was invoked.
-     * @param context
-     *            The context from where to resolve variable usage.
      * @return True, if a new variable is to be constructed or an existing's
      *         usage could be resolved.
      */
-    private boolean canFindVariableUsage(final CompletionTargetVariable targetVariable,
-            final IIntelligentCompletionContext context) {
+    private boolean canFindVariableUsage(final CompletionTargetVariable targetVariable) {
         boolean result = true;
         if (context.getVariable() == null) {
             receiverMethodInvocations = targetVariable.getReceiverCalls();
         } else {
-            result = canResolveVariableUsage(context);
+            result = canResolveVariableUsage();
         }
         return result;
     }
 
     /**
-     * @param context
-     *            The context from where to resolve variable usage.
      * @return True, if a provided {@link IVariableUsageResolver} was able to
      *         resolve the variable usage.
      */
-    private boolean canResolveVariableUsage(final IIntelligentCompletionContext context) {
-        boolean result = false;
+    private boolean canResolveVariableUsage() {
         for (final IVariableUsageResolver resolver : usageResolvers.get()) {
             if (resolver.canResolve(context)) {
                 receiverMethodInvocations = resolver.getReceiverMethodInvocations();
-                result = true;
-                break;
+                return true;
             }
         }
-        return result;
+        return false;
     }
 
     /**
@@ -125,7 +123,9 @@ public final class PatternRecommender {
      */
     private boolean canFindModel(final ITypeName receiverType) {
         boolean result = false;
-        if (callsModelStore.hasModel(receiverType)) {
+        if ("".equals(receiverType.getPackage().getIdentifier())) {
+            System.err.println("Should search for " + receiverType);
+        } else if (callsModelStore.hasModel(receiverType)) {
             model = callsModelStore.getModel(receiverType);
             this.receiverType = receiverType;
             result = true;
@@ -133,20 +133,12 @@ public final class PatternRecommender {
         return result;
     }
 
-    /**
-     * @param contextVariable
-     *            The target variable as given by the context.
-     * @param enclosingMethodsFirstDeclaration
-     *            The first declaration (i.e. where an overridden method was
-     *            first declared) of the method enclosing the variable on which
-     *            the completion request was invoked.
-     */
-    private void updateModel(final Variable contextVariable, final IMethodName enclosingMethodsFirstDeclaration) {
+    private void updateModel() {
         model.clearEvidence();
         model.setAvailablity(true);
-        model.setMethodContext(enclosingMethodsFirstDeclaration);
+        model.setMethodContext(context.getEnclosingMethodsFirstDeclaration());
         model.setObservedMethodCalls(receiverType, receiverMethodInvocations);
-        if (negateConstructors(contextVariable)) {
+        if (shallNegateConstructors(context.getVariable())) {
             model.negateConstructors();
         }
         model.updateBeliefs();
@@ -157,12 +149,13 @@ public final class PatternRecommender {
      *            The target variable as given by the context.
      * @return True, if the patterns should definitely contain no constructors.
      */
-    private boolean negateConstructors(final Variable contextVariable) {
+    private boolean shallNegateConstructors(final Variable contextVariable) {
         return contextVariable != null
                 && (contextVariable.fuzzyIsParameter() || contextVariable.fuzzyIsDefinedByMethodReturn());
     }
 
     /**
+     * @param prefixToken
      * @param constructorRequired
      *            True, if patterns without constructors should be filtered out.
      * @return The most probable patterns regarding the updated model, limited
@@ -220,7 +213,20 @@ public final class PatternRecommender {
      *         constructor is not required.
      */
     private boolean keepPattern(final List<IMethodName> patternMethods, final boolean constructorRequired) {
-        return !patternMethods.isEmpty() && (!constructorRequired || patternMethods.get(0).isInit());
+        if (patternMethods.isEmpty() || constructorRequired && !patternMethods.get(0).isInit()) {
+            return false;
+        }
+        if (constructorRequired || context.getReceiverType() == null) {
+            return true;
+        }
+        final String prefixToken = context.getPrefixToken();
+        Preconditions.checkNotNull(prefixToken);
+        for (final IMethodName method : patternMethods) {
+            if (StringUtils.startsWithIgnoreCase(method.getName(), prefixToken)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

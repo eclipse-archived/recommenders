@@ -59,6 +59,7 @@ public final class CompletionTargetVariableBuilderTest {
 
         Mockito.when(context.getReceiverName()).thenReturn(variableName);
         Mockito.when(context.getReceiverType()).thenReturn(VmTypeName.get(typeName));
+        Mockito.when(context.getPrefixToken()).thenReturn("");
         Mockito.when(context.getCompilationUnit()).thenReturn(compUnit);
         Mockito.when(Integer.valueOf(context.getInvocationOffset())).thenReturn(Integer.valueOf(code.length()));
         Mockito.when(context.getReplacementRegion()).thenReturn(new Region(code.length(), 0));

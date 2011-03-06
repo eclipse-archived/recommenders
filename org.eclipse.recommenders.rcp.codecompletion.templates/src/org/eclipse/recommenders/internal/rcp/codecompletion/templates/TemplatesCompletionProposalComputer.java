@@ -107,7 +107,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             final IProgressMonitor monitor) {
         final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
         if (contextResolver.hasProjectRecommendersNature(jCtx)) {
-            return computeProposals(contextResolver.resolveContext(jCtx));
+            return computeCompletionProposals(contextResolver.resolveContext(jCtx));
         }
         return Collections.emptyList();
     }
@@ -117,14 +117,12 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      *            The context from where the completion request was invoked.
      * @return The completion proposals to be displayed in the editor.
      */
-    public ImmutableList<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext context) {
-        if (shouldComputeProposals(context)) {
+    public ImmutableList<IJavaCompletionProposal> computeCompletionProposals(final IIntelligentCompletionContext context) {
+        if (shouldComputeProposalsForContext(context)) {
             final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                     .createInvokedVariable(context);
             if (completionTargetVariable != null) {
-                final Collection<PatternRecommendation> patternRecommendations = patternRecommender
-                        .computeRecommendations(completionTargetVariable, context);
-                return buildProposalsForPatterns(patternRecommendations, completionTargetVariable, context);
+                return buildProposalsForTargetVariable(completionTargetVariable, context);
             }
         }
         return ImmutableList.of();
@@ -136,7 +134,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      * @return True, if the computer should try to find proposals for the given
      *         context.
      */
-    private boolean shouldComputeProposals(final IIntelligentCompletionContext context) {
+    private boolean shouldComputeProposalsForContext(final IIntelligentCompletionContext context) {
         if (context.getEnclosingMethod() == null) {
             return false;
         }
@@ -148,18 +146,16 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     }
 
     /**
-     * @param patternRecommendations
-     *            The recommendations computed by the {@link PatternRecommender}
-     *            .
      * @param completionTargetVariable
      *            The variable on which the completion request was executed.
      * @param context
      *            The context from where the completion request was invoked.
      * @return The completion proposals to be displayed in the editor.
      */
-    private ImmutableList<IJavaCompletionProposal> buildProposalsForPatterns(
-            final Collection<PatternRecommendation> patternRecommendations,
+    private ImmutableList<IJavaCompletionProposal> buildProposalsForTargetVariable(
             final CompletionTargetVariable completionTargetVariable, final IIntelligentCompletionContext context) {
+        final Collection<PatternRecommendation> patternRecommendations = patternRecommender.computeRecommendations(
+                completionTargetVariable, context);
         if (!patternRecommendations.isEmpty()) {
             final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable, context);
             return completionProposalsBuilder.computeProposals(patternRecommendations, templateContext,

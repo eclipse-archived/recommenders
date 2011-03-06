@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package completion.templates.bugs;
+package completion.templates;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
@@ -18,18 +18,20 @@ import org.eclipse.swt.widgets.Control;
 
 public class CompletionOnLocaWithCompletionPrefix extends Dialog {
 
-    private Button b;
+	private Button b;
 
-    @Override
+	@Override
 	protected Control createDialogArea(final Composite parent) {
 		final Button b = new Button(null, 0);
 		// b.sett<^Space> -> pattern w/o constructor but w/ setText
-		// Discussion: is w/ setText a must?
-		b.sett<^Space>
+		b.sett<^Space|dynamic.*234.*%>
+		
+		b.settt<@Ignore^Space>
+		
 		return null;
 	}
 
-    private CompletionOnLocaWithCompletionPrefix() {
-        super((IShellProvider) null);
-    }
+	private CompletionOnLocaWithCompletionPrefix() {
+		super((IShellProvider) null);
+	}
 }

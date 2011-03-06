@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package completion.templates.bugs;
+package completion.templates;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
@@ -16,19 +16,17 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class CompletionOnUninitializedAndUnqualifiedFieldName extends Dialog {
+public class CompletionOnUninitializedAndQualifiedFieldName extends Dialog {
 
-	private Button b;
+    private Button b;
 
-	private CompletionOnUninitializedAndUnqualifiedFieldName() {
-		super((IShellProvider) null);
-	}
-
-	@Override
+    @Override
 	protected Control createDialogArea(final Composite parent) {
-		b = new Button(null, 0);
-		// TODO: receiverCalls
-		b<^Space|dynamic.*234.*%>
+    	b.<^Space>
 		return null;
 	}
+
+    protected CompletionOnUninitializedAndQualifiedFieldName() {
+        super((IShellProvider) null);
+    }
 }

@@ -12,6 +12,8 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.types;
 
 import java.util.Set;
 
+import com.google.common.base.Objects;
+
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -84,5 +86,12 @@ public final class CompletionTargetVariable {
      */
     public Region getDocumentRegion() {
         return documentRegion;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this).add("name", name).add("type", typeName)
+                .add("needsConstructor", needsConstructor).add("documentRegion", documentRegion)
+                .add("receiverCalls", receiverCalls).toString();
     }
 }

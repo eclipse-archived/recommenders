@@ -24,13 +24,13 @@ public final class TemplatesCompletionEngineTest {
     @Test
     public void testTemplatesCompletionEngine() throws Exception {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getConstructorContextMock(
-                "Button bu", "bu", "Button");
+                "Button bu", "bu", "Lorg/eclipse/swt/widgets/Button");
 
         final TemplatesCompletionProposalComputer engine = new TemplatesCompletionProposalComputer(
                 PatternRecommenderTest.getPatternRecommenderMock(context.getReceiverType()),
                 UnitTestSuite.getCodeBuilderMock(), null);
 
-        final List<IJavaCompletionProposal> proposals = engine.computeProposals(context);
+        final List<IJavaCompletionProposal> proposals = engine.computeCompletionProposals(context);
 
         Assert.assertEquals(1, proposals.size());
         for (final IJavaCompletionProposal proposal : proposals) {

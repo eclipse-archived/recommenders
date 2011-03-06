@@ -51,7 +51,7 @@ public final class CodeBuilder {
     public String buildCode(final ImmutableList<IMethodName> methods,
             final CompletionTargetVariable completionTargetVariable) {
         final StringBuilder code = new StringBuilder(methods.size() * 16);
-        final Set<ITypeName> imports = new HashSet<ITypeName>();
+        final Set<ITypeName> imports = new HashSet<ITypeName>(8);
         for (final IMethodName method : methods) {
             try {
                 code.append(methodCallFormatter.format(new MethodCall(completionTargetVariable, method)));

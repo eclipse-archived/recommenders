@@ -16,7 +16,7 @@ public class CompletionOnThisInOverriddenMethod extends Wizard {
 
 	@Override
     public void addPages() {
-    	// Should there be patterns?
+    	// Gives Lcompletion/templates/bugs/CompletionOnThisInOverriddenMethod as type. Should be corrected.
         <^Space>
     }
 

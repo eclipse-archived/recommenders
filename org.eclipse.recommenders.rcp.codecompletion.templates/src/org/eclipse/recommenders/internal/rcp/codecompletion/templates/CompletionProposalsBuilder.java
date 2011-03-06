@@ -40,6 +40,9 @@ public final class CompletionProposalsBuilder {
     /**
      * @param templateIcon
      *            The icon to be shown along with the completion proposals.
+     * @param codeBuilder
+     *            The {@link CodeBuilder} will turn {@link MethodCall}s into the
+     *            code to be used by the eclipse template engine.
      */
     public CompletionProposalsBuilder(final Image templateIcon, final CodeBuilder codeBuilder) {
         this.templateIcon = templateIcon;
