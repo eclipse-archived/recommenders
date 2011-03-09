@@ -44,4 +44,19 @@
          restorable="true">
    </view>
 </extension>
+	<extension
+           point="org.eclipse.ui.preferencePages">
+        <page
+              class="org.eclipse.recommenders.internal.rcp.codesearch.preferences.CodesearchPreferencePage"
+              id="org.eclipse.recommenders.rcp.category.codesearch.preferences"
+              name="Codesearch"
+              category="org.eclipse.recommenders.rcp.category.preferences" >
+        </page>
+     </extension>
+     <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codesearch.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
 </plugin>

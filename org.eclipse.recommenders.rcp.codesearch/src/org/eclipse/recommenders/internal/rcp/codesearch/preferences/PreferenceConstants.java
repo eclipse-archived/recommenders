@@ -8,20 +8,9 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codesearch.client;
+package org.eclipse.recommenders.internal.rcp.codesearch.preferences;
 
-import com.google.inject.Singleton;
+public class PreferenceConstants {
 
-@Singleton
-public class ClientConfiguration {
-
-    private String baseUrl = "http://localhost:8080/codesearch/";
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public void setBaseUrl(final String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
+    public static final String WEBSERVICE_HOST = "org.eclipse.recommenders.codesearch.webservice.host";
 }
