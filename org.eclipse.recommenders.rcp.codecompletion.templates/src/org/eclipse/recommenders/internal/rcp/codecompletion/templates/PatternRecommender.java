@@ -19,6 +19,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -51,7 +52,6 @@ public final class PatternRecommender {
     private final Provider<Set<IVariableUsageResolver>> usageResolvers;
 
     private IIntelligentCompletionContext context;
-    private ITypeName receiverType;
     private Set<IMethodName> receiverMethodInvocations;
     private ObjectMethodCallsNet model;
 
@@ -80,12 +80,16 @@ public final class PatternRecommender {
      */
     public ImmutableSet<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
             final IIntelligentCompletionContext completionContext) {
+        final Builder<PatternRecommendation> recommendations = ImmutableSet.builder();
         context = completionContext;
-        if (canFindVariableUsage(targetVariable) && canFindModel(targetVariable.getType())) {
-            updateModel();
-            return computeRecommendationsForModel(targetVariable.isNeedsConstructor());
+        if (canFindVariableUsage(targetVariable)) {
+            for (final ObjectMethodCallsNet typeModel : findModelsForType(targetVariable.getType())) {
+                model = typeModel;
+                updateModel();
+                recommendations.addAll(computeRecommendationsForModel(targetVariable.isNeedsConstructor()));
+            }
         }
-        return ImmutableSet.of();
+        return recommendations.build();
     }
 
     /**
@@ -118,26 +122,21 @@ public final class PatternRecommender {
         return false;
     }
 
-    /**
-     * @return True, if a model for the current receiver type could be found.
-     */
-    private boolean canFindModel(final ITypeName receiverType) {
-        boolean result = false;
+    private ImmutableSet<ObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
+        final Builder<ObjectMethodCallsNet> models = ImmutableSet.builder();
         if ("".equals(receiverType.getPackage().getIdentifier())) {
-            System.err.println("Should search for " + receiverType);
+            models.addAll(callsModelStore.getModelsForSimpleName(receiverType));
         } else if (callsModelStore.hasModel(receiverType)) {
-            model = callsModelStore.getModel(receiverType);
-            this.receiverType = receiverType;
-            result = true;
+            models.add(callsModelStore.getModel(receiverType));
         }
-        return result;
+        return models.build();
     }
 
     private void updateModel() {
         model.clearEvidence();
         model.setAvailablity(true);
         model.setMethodContext(context.getEnclosingMethodsFirstDeclaration());
-        model.setObservedMethodCalls(receiverType, receiverMethodInvocations);
+        model.setObservedMethodCalls(model.getType(), receiverMethodInvocations);
         if (shallNegateConstructors(context.getVariable())) {
             model.negateConstructors();
         }

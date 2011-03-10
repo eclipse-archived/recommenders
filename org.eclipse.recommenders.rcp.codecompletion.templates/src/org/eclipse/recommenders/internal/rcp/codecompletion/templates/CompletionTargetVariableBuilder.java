@@ -15,6 +15,7 @@ import java.util.Set;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
@@ -29,6 +30,7 @@ public final class CompletionTargetVariableBuilder {
     private IIntelligentCompletionContext context;
     private ITypeName receiverType;
     private String receiverName;
+    private boolean needsConstructor;
     private Set<IMethodName> receiverCalls;
 
     /**
@@ -65,6 +67,8 @@ public final class CompletionTargetVariableBuilder {
         receiverName = context.getReceiverName();
         if (receiverType == null) {
             handleUnresolvedType();
+        } else {
+            needsConstructor = receiverType.equals(context.getExpectedType());
         }
         if (receiverType != null) {
             completionTargetVariable = buildInvokedVariable();
@@ -83,7 +87,11 @@ public final class CompletionTargetVariableBuilder {
         } else {
             final Variable resolvedVariable = ((IntelligentCompletionContext) context)
                     .findMatchingVariable(receiverName);
-            if (resolvedVariable != null) {
+            if (resolvedVariable == null) {
+                receiverType = VmTypeName.get("L" + receiverName);
+                receiverName = "";
+                needsConstructor = true;
+            } else {
                 receiverType = resolvedVariable.type;
                 receiverCalls = resolvedVariable.getReceiverCalls();
             }
@@ -100,7 +108,7 @@ public final class CompletionTargetVariableBuilder {
         final int documentOffset = context.getReplacementRegion().getOffset() - variableNameLength;
         final int replacementLength = context.getReplacementRegion().getLength() + variableNameLength;
         return new CompletionTargetVariable(receiverName, receiverType, receiverCalls, new Region(documentOffset,
-                replacementLength), needsConstructor());
+                replacementLength), needsConstructor);
     }
 
     /**
@@ -110,18 +118,10 @@ public final class CompletionTargetVariableBuilder {
      */
     private int getVariableNameLength() {
         int variableNameLength = 0;
-        if (!needsConstructor() && receiverName != null && receiverName.length() > 0) {
+        if (!needsConstructor && receiverName != null && receiverName.length() > 0) {
             // For variables other than implicit "this", add space for ".".
             variableNameLength = receiverName.length() + 1;
         }
         return variableNameLength;
-    }
-
-    /**
-     * @return True, if the context expects the variable type as return type,
-     *         i.e. a constructor call.
-     */
-    private boolean needsConstructor() {
-        return receiverType.equals(context.getExpectedType());
     }
 }

@@ -27,6 +27,7 @@ public class CompletionOnUninitializedAndUnqualifiedFieldName extends Dialog {
 	@Override
 	protected Control createDialogArea(final Composite parent) {
 		b = new Button(null, 0);
+		b.setText("test");
 		// TODO: receiverCalls
 		b<^Space|dynamic.*234.*%>
 		return null;

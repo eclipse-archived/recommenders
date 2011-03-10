@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201102280939.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201102280939"/>
    <feature url="features/org.eclipse.recommenders.codecompletion_0.2.0.qualifier.jar" id="org.eclipse.recommenders.codecompletion" version="0.2.0.qualifier">
       <category name="code-recommenders"/>
    </feature>
    <feature url="features/org.eclipse.recommenders.rcp.codecompletion.source_0.2.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.source" version="0.2.0.qualifier">
       <category name="code-recommenders"/>
    </feature>
+   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201103061420.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201103061420"/>
    <category-def name="code-recommenders" label="Eclipse Code Recommenders"/>
 </site>

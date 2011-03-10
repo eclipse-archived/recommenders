@@ -22,6 +22,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.annotations.Clumsy;
@@ -32,175 +36,188 @@ import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 
 import smile.Network;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 @Clumsy
 public class ObjectMethodCallsNet {
 
-    public static String escape(final IMethodName ref) {
-        ensureIsNotNull(ref);
-        return ref.toString().replaceAll("[^\\w]", "_");
-    }
+	public static String escape(final IMethodName ref) {
+		ensureIsNotNull(ref);
+		return ref.toString().replaceAll("[^\\w]", "_");
+	}
 
-    private final Network network;
+	private final Network network;
 
-    private final Map<IMethodName, MethodNode> methodNodes;
+	private final Map<IMethodName, MethodNode> methodNodes;
 
-    private final ContextNode contextNode;
+	private final ContextNode contextNode;
 
-    private final AvailabilityNode availabilityNode;
+	private final AvailabilityNode availabilityNode;
 
-    private final PatternNode patternsNode;
+	private final PatternNode patternsNode;
 
-    private HashMap<String, IMethodName> escapedMethodReferences;
+	private HashMap<String, IMethodName> escapedMethodReferences;
 
-    private final ITypeName type;
+	private final ITypeName type;
 
-    protected ObjectMethodCallsNet(final ITypeName type, final Network network) {
-        this.type = type;
-        this.network = network;
-        contextNode = new ContextNode(network);
-        availabilityNode = new AvailabilityNode(network);
-        patternsNode = new PatternNode(network);
-        methodNodes = findMethodNodes();
-    }
+	protected ObjectMethodCallsNet(final ITypeName type, final Network network) {
+		this.type = type;
+		this.network = network;
+		contextNode = new ContextNode(network);
+		availabilityNode = new AvailabilityNode(network);
+		patternsNode = new PatternNode(network);
+		methodNodes = findMethodNodes();
+	}
 
-    public IMethodName getMethodReferenceFromEscapedName(final String escapedName) {
-        final IMethodName res = escapedMethodReferences.get(escapedName);
-        ensureIsNotNull(res);
-        return res;
-    }
+	public IMethodName getMethodReferenceFromEscapedName(
+			final String escapedName) {
+		final IMethodName res = escapedMethodReferences.get(escapedName);
+		ensureIsNotNull(res);
+		return res;
+	}
 
-    private Map<IMethodName, MethodNode> findMethodNodes() {
-        final Map<IMethodName, MethodNode> res = Maps.newHashMap();
-        for (final String methodNodeId : network.getChildIds(patternsNode.getNodeId())) {
-            final MethodNode methodNode = new MethodNode(network, methodNodeId);
-            res.put(methodNode.getMethod(), methodNode);
-        }
-        return res;
-    }
+	private Map<IMethodName, MethodNode> findMethodNodes() {
+		final Map<IMethodName, MethodNode> res = Maps.newHashMap();
+		for (final String methodNodeId : network.getChildIds(patternsNode
+				.getNodeId())) {
+			final MethodNode methodNode = new MethodNode(network, methodNodeId);
+			res.put(methodNode.getMethod(), methodNode);
+		}
+		return res;
+	}
 
-    public ContextNode getContextNode() {
-        return contextNode;
-    }
+	public ITypeName getType() {
+		return type;
+	}
 
-    public AvailabilityNode getAvailabilityNode() {
-        return availabilityNode;
-    }
+	public ContextNode getContextNode() {
+		return contextNode;
+	}
 
-    public PatternNode getPatternsNode() {
-        return patternsNode;
-    }
+	public AvailabilityNode getAvailabilityNode() {
+		return availabilityNode;
+	}
 
-    public Collection<MethodNode> getMethodNodes() {
-        return methodNodes.values();
-    }
+	public PatternNode getPatternsNode() {
+		return patternsNode;
+	}
 
-    public void setCalled(final IMethodName calledMethod) {
-        final MethodNode callNode = methodNodes.get(calledMethod);
-        if (callNode == null) {
-            System.err.printf("node %s not found in model.\n", calledMethod);
-            return;
-        }
-        callNode.setEvidence(true);
-    }
+	public Collection<MethodNode> getMethodNodes() {
+		return methodNodes.values();
+	}
 
-    public void updateBeliefs() {
-        network.updateBeliefs();
-    }
+	public void setCalled(final IMethodName calledMethod) {
+		final MethodNode callNode = methodNodes.get(calledMethod);
+		if (callNode == null) {
+			System.err.printf("node %s not found in model.\n", calledMethod);
+			return;
+		}
+		callNode.setEvidence(true);
+	}
 
-    protected Network getNetwork() {
-        return network;
-    }
+	public void updateBeliefs() {
+		network.updateBeliefs();
+	}
 
-    public void clearEvidence() {
-        network.clearAllEvidence();
-    }
+	protected Network getNetwork() {
+		return network;
+	}
 
-    public void saveNetwork() {
-        final File tmpDir = SystemUtils.getJavaIoTmpDir();
-        final File out = new File(tmpDir, "debug.xdsl").getAbsoluteFile();
-        System.out.println("wrote file to " + out);
-        network.writeFile(out.getAbsolutePath());
-    }
+	public void clearEvidence() {
+		network.clearAllEvidence();
+	}
 
-    @Override
-    public String toString() {
-        return "Model for " + type.getIdentifier();
-    }
+	public void saveNetwork() {
+		final File tmpDir = SystemUtils.getJavaIoTmpDir();
+		final File out = new File(tmpDir, "debug.xdsl").getAbsoluteFile();
+		System.out.println("wrote file to " + out);
+		network.writeFile(out.getAbsolutePath());
+	}
 
-    public void setAvailablity(final boolean newValue) {
-        getAvailabilityNode().setEvidence(newValue);
-    }
+	@Override
+	public String toString() {
+		return "Model for " + type.getIdentifier();
+	}
 
-    public void setMethodContext(final IMethodName newActiveMethodContext) {
-        getContextNode().setContext(newActiveMethodContext);
-    }
+	public void setAvailablity(final boolean newValue) {
+		getAvailabilityNode().setEvidence(newValue);
+	}
 
-    public void setObservedMethodCalls(final @Nullable ITypeName rebaseType, final Set<IMethodName> invokedMethods) {
-        for (final IMethodName invokedMethod : invokedMethods) {
-            final IMethodName rebased = rebaseType == null ? invokedMethod : VmMethodName.rebase(rebaseType,
-                    invokedMethod);
-            setCalled(rebased);
-        }
-    }
+	public void setMethodContext(final IMethodName newActiveMethodContext) {
+		getContextNode().setContext(newActiveMethodContext);
+	}
 
-    public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold) {
-        final TreeSet<Tuple<IMethodName, Double>> res = createSortedSet();
-        for (final MethodNode node : getMethodNodes()) {
-            if (node.isEvidence()) {
-                continue;
-            }
-            final double probability = node.getProbability();
-            if (probability < minProbabilityThreshold) {
-                continue;
-            }
-            final IMethodName method = node.getMethod();
-            res.add(Tuple.create(method, probability));
-        }
-        return res;
-    }
+	public void setObservedMethodCalls(final @Nullable ITypeName rebaseType,
+			final Set<IMethodName> invokedMethods) {
+		for (final IMethodName invokedMethod : invokedMethods) {
+			final IMethodName rebased = rebaseType == null ? invokedMethod
+					: VmMethodName.rebase(rebaseType, invokedMethod);
+			setCalled(rebased);
+		}
+	}
 
-    private TreeSet<Tuple<IMethodName, Double>> createSortedSet() {
-        final TreeSet<Tuple<IMethodName, Double>> res = Sets.newTreeSet(new Comparator<Tuple<IMethodName, Double>>() {
+	public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(
+			final double minProbabilityThreshold) {
+		final TreeSet<Tuple<IMethodName, Double>> res = createSortedSet();
+		for (final MethodNode node : getMethodNodes()) {
+			if (node.isEvidence()) {
+				continue;
+			}
+			final double probability = node.getProbability();
+			if (probability < minProbabilityThreshold) {
+				continue;
+			}
+			final IMethodName method = node.getMethod();
+			res.add(Tuple.create(method, probability));
+		}
+		return res;
+	}
 
-            @Override
-            public int compare(final Tuple<IMethodName, Double> o1, final Tuple<IMethodName, Double> o2) {
-                // the higher probability will be sorted above the lower values:
-                final int probabilityCompare = Double.compare(o2.getSecond(), o1.getSecond());
-                return probabilityCompare != 0 ? probabilityCompare : o1.getFirst().compareTo(o2.getFirst());
-            }
-        });
-        return res;
-    }
+	private TreeSet<Tuple<IMethodName, Double>> createSortedSet() {
+		final TreeSet<Tuple<IMethodName, Double>> res = Sets
+				.newTreeSet(new Comparator<Tuple<IMethodName, Double>>() {
 
-    public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold,
-            final int maxNumberOfRecommendations) {
-        final SortedSet<Tuple<IMethodName, Double>> recommendations = getRecommendedMethodCalls(minProbabilityThreshold);
-        if (recommendations.size() <= maxNumberOfRecommendations) {
-            return recommendations;
-        }
-        // need to remove smaller items:
-        final Tuple<IMethodName, Double> firstExcludedRecommendation = Iterables.get(recommendations,
-                maxNumberOfRecommendations);
-        final SortedSet<Tuple<IMethodName, Double>> res = recommendations.headSet(firstExcludedRecommendation);
-        ensureEquals(res.size(), maxNumberOfRecommendations,
-                "filter op did not return expected number of compilationUnits2recommendationsIndex");
-        return res;
-    }
+					@Override
+					public int compare(final Tuple<IMethodName, Double> o1,
+							final Tuple<IMethodName, Double> o2) {
+						// the higher probability will be sorted above the lower
+						// values:
+						final int probabilityCompare = Double.compare(
+								o2.getSecond(), o1.getSecond());
+						return probabilityCompare != 0 ? probabilityCompare
+								: o1.getFirst().compareTo(o2.getFirst());
+					}
+				});
+		return res;
+	}
 
-    public void negateConstructors() {
-        for (final MethodNode node : getMethodNodes()) {
-            if (node.getMethod().isInit()) {
-                node.setEvidence(false);
-            }
-        }
-    }
+	public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(
+			final double minProbabilityThreshold,
+			final int maxNumberOfRecommendations) {
+		final SortedSet<Tuple<IMethodName, Double>> recommendations = getRecommendedMethodCalls(minProbabilityThreshold);
+		if (recommendations.size() <= maxNumberOfRecommendations) {
+			return recommendations;
+		}
+		// need to remove smaller items:
+		final Tuple<IMethodName, Double> firstExcludedRecommendation = Iterables
+				.get(recommendations, maxNumberOfRecommendations);
+		final SortedSet<Tuple<IMethodName, Double>> res = recommendations
+				.headSet(firstExcludedRecommendation);
+		ensureEquals(
+				res.size(),
+				maxNumberOfRecommendations,
+				"filter op did not return expected number of compilationUnits2recommendationsIndex");
+		return res;
+	}
 
-    public void setPattern(final String patternName) {
-        patternsNode.setPattern(patternName);
+	public void negateConstructors() {
+		for (final MethodNode node : getMethodNodes()) {
+			if (node.getMethod().isInit()) {
+				node.setEvidence(false);
+			}
+		}
+	}
 
-    }
+	public void setPattern(final String patternName) {
+		patternsNode.setPattern(patternName);
+
+	}
 }
