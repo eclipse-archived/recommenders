@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.codesearch.Request;
+import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -48,6 +49,8 @@ public class RequestLogEntry extends Request {
      */
     public List<Feedback> feedbacks;
 
+    public long searchTimeInMillis;
+
     public static RequestLogEntry newEntryFromRequest(final Request request) {
         final RequestLogEntry logEntry = new RequestLogEntry();
         logEntry.issuedBy = request.issuedBy;
@@ -55,5 +58,10 @@ public class RequestLogEntry extends Request {
         logEntry.type = request.type;
         logEntry.featureWeights = request.featureWeights;
         return logEntry;
+    }
+
+    @Override
+    public String toString() {
+        return GsonUtil.serialize(this);
     }
 }

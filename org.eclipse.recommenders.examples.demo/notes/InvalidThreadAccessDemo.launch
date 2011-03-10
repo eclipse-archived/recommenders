@@ -11,5 +11,4 @@
 </mapAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.eclipse.recommenders.examples.demo.stacktraces.InvalidThreadAccessDemo"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.recommenders.examples.demo"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-d32"/>
 </launchConfiguration>

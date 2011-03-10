@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codesearch.views;
 
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.ITextPresentationListener;
@@ -49,8 +50,8 @@ public class VariableUsagesHighlighter implements ITextPresentationListener {
     // from the mouse click (or whatever invoked the listener) style ranges.
     @Override
     public void applyTextPresentation(final TextPresentation textPresentation) {
-        final UsedTypesAndMethodsLocationFinder finder = UsedTypesAndMethodsLocationFinder.find(proposal.getAst(),
-                request.usedTypes, request.calledMethods);
+        final UsedTypesAndMethodsLocationFinder finder = UsedTypesAndMethodsLocationFinder.find(
+                proposal.getAst(new NullProgressMonitor()), request.usedTypes, request.calledMethods);
         final Color foreground = JavaUI.getColorManager().getColor(new RGB(255, 0, 0));
         final Color background = JavaUI.getColorManager().getColor(new RGB(255, 255, 128));
         final Color heuristic = JavaUI.getColorManager().getColor(new RGB(220, 245, 139));
@@ -64,8 +65,8 @@ public class VariableUsagesHighlighter implements ITextPresentationListener {
             setAnnotation(annotationModel, node, "recommendation.type");
             setHighlightStyleForNode(textPresentation, foreground, background, node);
         }
-        for (final ASTNode node : HeuristicUsedTypesAndMethodsLocationFinder.find(proposal.getAst(), request.usedTypes,
-                request.calledMethods)) {
+        for (final ASTNode node : HeuristicUsedTypesAndMethodsLocationFinder.find(
+                proposal.getAst(new NullProgressMonitor()), request.usedTypes, request.calledMethods)) {
             setAnnotation(annotationModel, node, "recommendation.heuristic.type");
             setHighlightStyleForNode(textPresentation, null, heuristic, node);
         }
@@ -105,17 +106,17 @@ public class VariableUsagesHighlighter implements ITextPresentationListener {
         final Iterator<StyleRange> srIterator = textPresentation.getAllStyleRangeIterator();
         while (srIterator.hasNext()) {
             final StyleRange current = srIterator.next();
-            if ((current.start > start) && (current.start + current.length > start + length)
-                    && (current.start < start + length)) {
+            if (current.start > start && current.start + current.length > start + length
+                    && current.start < start + length) {
                 textPresentation.mergeStyleRange(new StyleRange(current.start, start + length - current.start,
                         foreground, background));
-            } else if ((current.start >= start) && (current.start + current.length <= start + length)) {
+            } else if (current.start >= start && current.start + current.length <= start + length) {
                 current.background = background;
                 current.foreground = foreground;
-            } else if ((current.start < start) && (current.start + current.length > start + length)) {
+            } else if (current.start < start && current.start + current.length > start + length) {
                 textPresentation.mergeStyleRange(new StyleRange(start, length, foreground, background));
-            } else if ((current.start < start) && (current.length + current.start < start + length)
-                    && (current.start + current.length > start)) {
+            } else if (current.start < start && current.length + current.start < start + length
+                    && current.start + current.length > start) {
                 textPresentation.mergeStyleRange(new StyleRange(start, start + length - current.start + current.length,
                         foreground, background));
             }

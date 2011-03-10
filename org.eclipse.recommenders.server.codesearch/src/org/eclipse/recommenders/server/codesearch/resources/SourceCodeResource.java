@@ -29,7 +29,7 @@ public class SourceCodeResource {
     @GET
     @Path("{id}")
     public String getSource(@PathParam("id") final String id) {
-        final String filename = id.replaceAll("/", ".") + ".java";
+        final String filename = id.replaceAll("/", ".").substring(1) + ".java";
         final String fileContent = localFileService.readFile(filename);
         if (fileContent == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);

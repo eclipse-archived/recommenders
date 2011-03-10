@@ -73,8 +73,12 @@ public class SimpleSummaryViewerConfiguration extends SourceViewerConfiguration 
 
             @Override
             public String getHoverInfo(final ITextViewer textViewer, final IRegion hoverRegion) {
-                final String stats = GsonUtil.serialize(hit.getIndividualFeatureScores());
-                return stats;
+                if (hit.getIndividualFeatureScores() != null) {
+                    final String stats = GsonUtil.serialize(hit.getIndividualFeatureScores());
+                    return stats;
+                } else {
+                    return null;
+                }
             }
         };
     }

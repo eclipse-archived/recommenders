@@ -22,7 +22,7 @@ public class UriMapper {
 
         if (scheme.equals("local")) {
             try {
-                return new URI("http://localhost:80/codesearch/source/" + encode(uri.getSchemeSpecificPart()));
+                return new URI("http://localhost:8080/codesearch/source/" + encode(uri.getSchemeSpecificPart()));
             } catch (final URISyntaxException e) {
                 throw new RuntimeException(e);
             }

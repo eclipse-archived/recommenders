@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codesearch.jobs;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -29,9 +31,10 @@ import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
+import org.eclipse.recommenders.internal.rcp.codesearch.utils.ByteStorage;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
-import org.eclipse.recommenders.internal.rcp.codesearch.utils.RemoteEditorInput;
 import org.eclipse.recommenders.internal.rcp.codesearch.views.VariableUsagesHighlighter;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.rcp.utils.ast.TypeDeclarationFinder;
 import org.eclipse.swt.dnd.Clipboard;
@@ -71,21 +74,27 @@ public class OpenSourceCodeInEditorJob extends WorkspaceJob {
                 if (editor == null) {
                     return;
                 }
-                revealMethodIfAvailable(hit, editor);
+                try {
+                    revealMethodIfAvailable(hit, editor);
+                } catch (final IOException e) {
+                    RecommendersPlugin.logError(e, "failed to parse source code.");
+                }
             }
         });
     }
 
-    private void revealMethodIfAvailable(final RCPProposal result, final JavaEditor editor) {
+    private void revealMethodIfAvailable(final RCPProposal result, final JavaEditor editor) throws IOException {
         final IMethodName methodToReveal = result.getMethodName();
         if (methodToReveal != null) {
-            final MethodDeclaration methodDeclaration = CrASTUtil.findMethod(result.getAst(), methodToReveal);
+            final MethodDeclaration methodDeclaration = CrASTUtil.findMethod(result.getAst(new NullProgressMonitor()),
+                    methodToReveal);
             if (methodDeclaration == null) {
                 return;
             }
             CrASTUtil.revealInEditor(editor, methodDeclaration);
         } else {
-            final TypeDeclaration decl = TypeDeclarationFinder.find(hit.getAst(), hit.getClassName());
+            final TypeDeclaration decl = TypeDeclarationFinder.find(hit.getAst(new NullProgressMonitor()),
+                    hit.getClassName());
             if (decl != null) {
                 CrASTUtil.revealInEditor(editor, decl);
             }
@@ -98,8 +107,9 @@ public class OpenSourceCodeInEditorJob extends WorkspaceJob {
         // signatures here!
         // we need to sanitize method names somehow if we want to use them as
         // title
+        final String source = hit.getSource(new NullProgressMonitor());
         final String title = hit.getClassName().toString();
-        final RemoteEditorInput storage = new RemoteEditorInput(hit.getSource(), title);
+        final ByteStorage storage = new ByteStorage(source, title);
         final JavaEditor openJavaEditor = JdtUtils.openJavaEditor(storage);
         final SourceViewer s = (SourceViewer) openJavaEditor.getViewer();
         final ITextPresentationListener listener = new VariableUsagesHighlighter(s, request, hit, searchData);

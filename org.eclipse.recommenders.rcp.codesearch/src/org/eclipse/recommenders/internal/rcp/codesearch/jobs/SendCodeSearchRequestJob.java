@@ -50,7 +50,7 @@ public class SendCodeSearchRequestJob extends WorkspaceJob {
         final StopWatch netWatch = new StopWatch();
         netWatch.start();
         final Response serverResponse = searchClient.search(request);
-        response = RCPResponse.newInstance(serverResponse);
+        response = RCPResponse.newInstance(serverResponse, javaProject);
 
         netWatch.stop();
         System.out.printf("net comm took %s\n", netWatch);
@@ -68,13 +68,7 @@ public class SendCodeSearchRequestJob extends WorkspaceJob {
     }
 
     private void buildASTs() {
-        // for (final Proposal result : reply.proposals) {
-        // final CompilationUnit cu =
-        // CrASTUtil.createCompilationUnitFromString(result.className,
-        // result.source,
-        // javaProject);
-        // result.ast = cu;
-        // }
+
     }
 
     private void openViews() {

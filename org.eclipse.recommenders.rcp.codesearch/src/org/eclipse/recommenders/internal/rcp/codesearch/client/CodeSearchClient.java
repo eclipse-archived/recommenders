@@ -29,7 +29,7 @@ public class CodeSearchClient implements ICodeSearchResource {
 
     @Override
     public void addFeedback(final String requestId, final Feedback feedback) {
-        client.doPostRequest("feedback", feedback);
+        client.doPostRequest("feedback/" + requestId, feedback);
     }
 
 }

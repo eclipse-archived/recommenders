@@ -13,8 +13,6 @@ package org.eclipse.recommenders.internal.rcp.codesearch.views;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
@@ -34,7 +32,6 @@ import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.FeedbackType;
 import org.eclipse.recommenders.commons.codesearch.Request;
-import org.eclipse.recommenders.commons.codesearch.Response;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -44,9 +41,6 @@ import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
 import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.jobs.OpenSourceCodeInEditorJob;
 import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendUserClickFeedbackJob;
-import org.eclipse.recommenders.rcp.utils.ast.ASTStringUtils;
-import org.eclipse.recommenders.rcp.utils.ast.MethodDeclarationFinder;
-import org.eclipse.recommenders.rcp.utils.ast.TypeDeclarationFinder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.PaintObjectEvent;
 import org.eclipse.swt.custom.PaintObjectListener;
@@ -75,11 +69,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class SimpleSummaryPage implements ExampleSummaryPage {
-    private String tittle;
+    private String title;
     private Composite control;
-    public SnippetSummary request;
-    public Response reply;
+    public RCPResponse serverResponse;
     public RCPProposal proposal;
+    public SnippetSummary snippet;
     private SourceViewer contentArea;
     private StringBuffer contentAreaBuffer;
     private List<StyleRange> contentAreaStyles;
@@ -145,9 +139,9 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
             @Override
             public void handleEvent(final Event event) {
                 if (isMouseAtTittleArea(event.y)) {
-                    new OpenSourceCodeInEditorJob(request, proposal, searchData).schedule();
                     final Feedback feedback = Feedback.newFeedback(proposal.getId(), FeedbackType.EDITOR_OPENED);
-                    new SendUserClickFeedbackJob(request.id, feedback, null).schedule();
+                    new SendUserClickFeedbackJob(serverResponse.getRequestId(), feedback, searchClient).schedule();
+                    new OpenSourceCodeInEditorJob(snippet, proposal, searchData).schedule();
                 } else {
                     for (final Control child : control.getParent().getChildren()) {
                         ((GridData) child.getLayoutData()).minimumHeight = 80;
@@ -190,7 +184,7 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
                 // StyleRange range = createTitleStyleRange(0, tittle.length());
                 final StyledText widget = (StyledText) e.widget;
                 // widget.setStyleRange(range);
-                final StyleRange[] ranges = widget.getStyleRanges(0, tittle.length());
+                final StyleRange[] ranges = widget.getStyleRanges(0, title.length());
                 for (final StyleRange s : ranges) {
                     s.underline = false;
                     widget.setStyleRange(s);
@@ -210,7 +204,7 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
                 // StyleRange range = createTitleStyleRange(0, tittle.length());
                 final StyledText widget = (StyledText) e.widget;
                 // widget.setStyleRange(range);
-                final StyleRange[] ranges = widget.getStyleRanges(0, tittle.length());
+                final StyleRange[] ranges = widget.getStyleRanges(0, title.length());
                 if (isMouseAtTittleArea(e.y)) {
                     for (final StyleRange s : ranges) {
                         s.underline = true;
@@ -248,9 +242,9 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
             @Override
             public void handleEvent(final Event event) {
                 if (!isMouseAtTittleArea(event.y)) {
-                    new OpenSourceCodeInEditorJob(request, proposal, searchData).schedule();
+                    new OpenSourceCodeInEditorJob(snippet, proposal, searchData).schedule();
                     final Feedback feedback = Feedback.newFeedback(proposal.getId(), FeedbackType.EDITOR_OPENED);
-                    new SendUserClickFeedbackJob(request.id, feedback, searchClient).schedule();
+                    new SendUserClickFeedbackJob(snippet.id, feedback, searchClient).schedule();
                 }
             }
         });
@@ -260,7 +254,7 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
         final StyledText widget = contentArea.getTextWidget();
         final int line = widget.getLineIndex(y);
         final int offset = widget.getOffsetAtLine(line);
-        if (offset >= 0 && offset <= tittle.length()) {
+        if (offset >= 0 && offset <= title.length()) {
             return true;
         }
         return false;
@@ -270,7 +264,8 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
     public void setInput(final Request request, final RCPResponse response, final RCPProposal result,
             final String searchData) {
         this.searchData = searchData;
-        this.request = request.query;
+        this.serverResponse = response;
+        this.snippet = request.query;
         this.proposal = result;
         configuration.hit = result;
         //
@@ -295,7 +290,7 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
         addTypesAndMethodsBlock(false);
         contentArea.getTextWidget().setText(contentAreaBuffer.toString());
         contentArea.getTextWidget().setStyleRanges(contentAreaStyles.toArray(new StyleRange[contentAreaStyles.size()]));
-        configuration.tittle = tittle;
+        configuration.tittle = title;
         contentArea.configure(configuration);
         final IDocumentPartitioner partitioner = new DefaultPartitioner(createScanner(),
                 new String[] { SimpleSummaryPartitionScanner.TITTLE_TYPE });
@@ -308,7 +303,7 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
     public IPartitionTokenScanner createScanner() {
         final IToken titleToken = new Token(SimpleSummaryPartitionScanner.TITTLE_TYPE);
         final IPredicateRule[] rules = new IPredicateRule[1];
-        rules[0] = new SingleLineRule(tittle, "\n", titleToken);
+        rules[0] = new SingleLineRule(title, "\n", titleToken);
         final RuleBasedPartitionScanner scanner = new RuleBasedPartitionScanner();
         scanner.setPredicateRules(rules);
         return scanner;
@@ -318,7 +313,7 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
         if (searchData.isEmpty()) {
             return true;
         }
-        final TypesUsesMethodCallsGrouper grouper = new TypesUsesMethodCallsGrouper(request, proposal);
+        final TypesUsesMethodCallsGrouper grouper = new TypesUsesMethodCallsGrouper(snippet, proposal);
         final Multimap<ITypeName, IMethodName> groups = grouper.getGroups();
         final Collection<IMethodName> methodGroup = groups.get(type);
         if (type.getClassName().toLowerCase().contains(searchData.toLowerCase())) {
@@ -345,7 +340,7 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
     }
 
     private void addTypesAndMethodsBlock(final boolean foundInRequest) {
-        final TypesUsesMethodCallsGrouper grouper = new TypesUsesMethodCallsGrouper(request, proposal);
+        final TypesUsesMethodCallsGrouper grouper = new TypesUsesMethodCallsGrouper(snippet, proposal);
         final List<ITypeName> typeGroup = grouper.getTypes(foundInRequest);
         final Multimap<ITypeName, IMethodName> groups = grouper.getGroups();
         for (final ITypeName type : typeGroup) {
@@ -413,17 +408,13 @@ public class SimpleSummaryPage implements ExampleSummaryPage {
 
     private void addTitle() {
         if (proposal.getMethodName() != null) {
-            final MethodDeclaration node = MethodDeclarationFinder.find(proposal.getAst(), proposal.getMethodName());
-            tittle = node == null ? Names.vm2srcQualifiedMethod(proposal.getMethodName()) : ASTStringUtils
-                    .toQualifiedString(node);
+            title = Names.vm2srcQualifiedMethod(proposal.getMethodName());
         } else if (proposal.getClassName() != null) {
-            final TypeDeclaration node = TypeDeclarationFinder.find(proposal.getAst(), proposal.getClassName());
-            tittle = node == null ? Names.vm2srcQualifiedType(proposal.getClassName()) : ASTStringUtils
-                    .toDeclarationString(node);
+            title = Names.vm2srcQualifiedType(proposal.getClassName());
         } else {
-            tittle = "<error: neither class name nor method name set in hit>";
+            title = "<error: neither class name nor method name set in hit>";
         }
-        contentAreaBuffer.append(tittle);
+        contentAreaBuffer.append(title);
         contentAreaBuffer.append(":\n");
         // contentAreaStyles.add(createTitleStyleRange(0,
         // contentAreaBuffer.length()));

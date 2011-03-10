@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.server.codesearch.resources;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.util.Date;
 import java.util.List;
 
@@ -19,10 +21,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.codesearch.Response;
+import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
+import org.eclipse.recommenders.commons.codesearch.SnippetType;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.server.codesearch.RequestLogEntry;
 import org.eclipse.recommenders.server.codesearch.SearchResult;
@@ -43,16 +48,32 @@ public class CodeSearchResource {
     private SearchService searchService;
     @Inject
     private UriMapper uriMapper;
+    private StopWatch stopwatch;
 
-    @Consumes({ "application/json" })
-    @Produces({ "application/json" })
+    @Consumes({ APPLICATION_JSON })
+    @Produces({ APPLICATION_JSON })
     @POST
     @Path("search")
     public Response search(final Request request) {
+        createAndStartStopwatch();
         validate(request);
         final RequestLogEntry logEntry = createLogEntry(request);
         final TransactionResult transactionResult = dataAccess.save(logEntry);
-        return createResponse(logEntry, transactionResult);
+        final Response response = createResponse(logEntry, transactionResult);
+        stopWatchAndLogTime(logEntry);
+        return response;
+    }
+
+    private void createAndStartStopwatch() {
+        stopwatch = new StopWatch();
+        stopwatch.start();
+    }
+
+    private void stopWatchAndLogTime(final RequestLogEntry logEntry) {
+        stopwatch.stop();
+        logEntry.searchTimeInMillis = stopwatch.getTime();
+        System.out.println("search took: " + stopwatch);
+        stopwatch = null;
     }
 
     private void validate(final Request request) {
@@ -76,10 +97,21 @@ public class CodeSearchResource {
             final Proposal proposal = Proposal.newProposal();
             proposal.score = result.score;
             proposal.snippet = dataAccess.getCodeSnippet(result.snippetId);
+            bugWorkaroundNoSnippetTypeSet(proposal.snippet);
             proposal.snippet.source = uriMapper.map(proposal.snippet.source);
             proposals.add(proposal);
         }
         return proposals;
+    }
+
+    private void bugWorkaroundNoSnippetTypeSet(final SnippetSummary snippet) {
+        if (snippet.methodName != null) {
+            snippet.type = SnippetType.METHOD;
+        } else if (snippet.className != null) {
+            snippet.type = SnippetType.CLASS;
+        } else {
+            snippet.type = SnippetType.UNKNOWN;
+        }
     }
 
     private Response createResponse(final RequestLogEntry logEntry, final TransactionResult transactionResult) {
@@ -90,7 +122,7 @@ public class CodeSearchResource {
     }
 
     @Path("feedback/{requestId}")
-    @Consumes({ "application/json" })
+    @Consumes({ APPLICATION_JSON })
     @POST
     public void addFeedback(@PathParam("requestId") final String requestId, final Feedback feedback) {
         validate(feedback);

@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codesearch.jobs;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,6 +28,9 @@ public class SendUserClickFeedbackJob extends WorkspaceJob {
 
     public SendUserClickFeedbackJob(final String requestId, final Feedback feedback, final CodeSearchClient client) {
         super("Sending user click-through feedback");
+        ensureIsNotNull(requestId);
+        ensureIsNotNull(feedback);
+        ensureIsNotNull(client);
         this.requestId = requestId;
         this.feedback = feedback;
         this.client = client;
