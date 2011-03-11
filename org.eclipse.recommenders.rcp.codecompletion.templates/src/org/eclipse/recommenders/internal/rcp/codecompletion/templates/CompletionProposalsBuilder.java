@@ -21,7 +21,6 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.JavaTemplateProposal;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.swt.graphics.Image;
@@ -54,15 +53,16 @@ public final class CompletionProposalsBuilder {
      *            The patterns which shall be turned into completion proposals.
      * @param context
      *            The context from where the completion request was invoked.
-     * @param completionTargetVariable
-     *            The variable on which the completion request was invoked.
+     * @param targetVariableName
+     *            The name of the variable on which the proposed methods shall
+     *            be invoked.
      * @return A list of completion proposals for the given patterns.
      */
     public ImmutableList<IJavaCompletionProposal> computeProposals(final Collection<PatternRecommendation> patterns,
-            final DocumentTemplateContext context, final CompletionTargetVariable completionTargetVariable) {
+            final DocumentTemplateContext context, final String targetVariableName) {
         final Builder<IJavaCompletionProposal> proposals = ImmutableList.builder();
         for (final PatternRecommendation pattern : patterns) {
-            proposals.add(buildTemplateProposal(pattern, context, completionTargetVariable));
+            proposals.add(buildTemplateProposal(pattern, context, targetVariableName));
         }
         return proposals.build();
     }
@@ -72,15 +72,16 @@ public final class CompletionProposalsBuilder {
      *            The pattern which shall be turned into a completion proposal.
      * @param context
      *            The context from where the completion request was invoked.
-     * @param completionTargetVariable
-     *            The variable on which the completion request was invoked.
+     * @param targetVariableName
+     *            The name of the variable on which the proposed methods shall
+     *            be invoked.
      * @return The given pattern turned into a proposal object.
      */
     private TemplateProposal buildTemplateProposal(final PatternRecommendation patternRecommendation,
-            final DocumentTemplateContext context, final CompletionTargetVariable completionTargetVariable) {
-        final String code = codeBuilder.buildCode(patternRecommendation.getMethods(), completionTargetVariable);
+            final DocumentTemplateContext context, final String targetVariableName) {
+        final String code = codeBuilder.buildCode(patternRecommendation.getMethods(), targetVariableName);
         final String templateName = patternRecommendation.getName();
-        final String templateDescription = completionTargetVariable.getType().getClassName();
+        final String templateDescription = patternRecommendation.getType().getClassName();
         final Template template = new Template(templateName, templateDescription, "java", code, false);
 
         final Region region = new Region(context.getCompletionOffset(), context.getCompletionLength());

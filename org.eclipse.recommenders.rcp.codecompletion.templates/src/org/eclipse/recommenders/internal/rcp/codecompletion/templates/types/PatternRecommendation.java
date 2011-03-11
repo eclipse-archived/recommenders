@@ -18,6 +18,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 
 /**
  * Encapsulates one recommendation received from the models store.
@@ -25,6 +26,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 public final class PatternRecommendation implements Comparable<PatternRecommendation> {
 
     private String name;
+    private ITypeName type;
     private ImmutableList<IMethodName> methods;
     private int probability;
 
@@ -39,9 +41,11 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
      * @return The <code>PatternRecommendation</code> encapsulating the given
      *         parameters.
      */
-    public static PatternRecommendation create(final String name, final List<IMethodName> methods, final int probability) {
+    public static PatternRecommendation create(final String name, final ITypeName type,
+            final List<IMethodName> methods, final int probability) {
         final PatternRecommendation recommendation = new PatternRecommendation();
         recommendation.name = Checks.ensureIsNotNull(name);
+        recommendation.type = Checks.ensureIsNotNull(type);
         recommendation.methods = ImmutableList.copyOf(methods);
         recommendation.probability = probability;
         return recommendation;
@@ -52,6 +56,10 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
      */
     public String getName() {
         return name;
+    }
+
+    public ITypeName getType() {
+        return type;
     }
 
     /**

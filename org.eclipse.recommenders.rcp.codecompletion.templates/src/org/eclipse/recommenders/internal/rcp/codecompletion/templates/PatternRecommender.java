@@ -167,7 +167,7 @@ public final class PatternRecommender {
             final List<IMethodName> patternMethods = getMethodCallsForPattern(patternName);
             if (keepPattern(patternMethods, constructorRequired)) {
                 final int percentage = (int) (patternWithProbablity.getSecond().doubleValue() * 100);
-                typeRecs.add(PatternRecommendation.create(patternName, patternMethods, percentage));
+                typeRecs.add(PatternRecommendation.create(patternName, model.getType(), patternMethods, percentage));
             }
         }
         return ImmutableSet.copyOf(typeRecs);

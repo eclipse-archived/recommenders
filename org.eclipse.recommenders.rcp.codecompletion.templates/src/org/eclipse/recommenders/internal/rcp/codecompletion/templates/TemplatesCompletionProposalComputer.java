@@ -159,7 +159,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         if (!patternRecommendations.isEmpty()) {
             final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable, context);
             return completionProposalsBuilder.computeProposals(patternRecommendations, templateContext,
-                    completionTargetVariable);
+                    completionTargetVariable.getName());
         }
         return ImmutableList.of();
     }

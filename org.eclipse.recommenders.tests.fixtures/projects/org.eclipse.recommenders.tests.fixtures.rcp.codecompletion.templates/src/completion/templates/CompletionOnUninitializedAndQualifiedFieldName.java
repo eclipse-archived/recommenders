@@ -22,7 +22,7 @@ public class CompletionOnUninitializedAndQualifiedFieldName extends Dialog {
 
     @Override
 	protected Control createDialogArea(final Composite parent) {
-    	b.<^Space>
+    	b.<^Space|dynamic.*593.*%>
 		return null;
 	}
 

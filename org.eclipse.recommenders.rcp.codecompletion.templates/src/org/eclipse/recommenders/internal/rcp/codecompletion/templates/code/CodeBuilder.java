@@ -21,7 +21,6 @@ import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 
 public final class CodeBuilder {
@@ -32,8 +31,8 @@ public final class CodeBuilder {
     /**
      * @param methodCallFormatter
      *            The formatter which will turn the given {@link MethodCall}s on
-     *            a specified {@link CompletionTargetVariable} into java code
-     *            which will be inserted when the completion is selected.
+     *            a specified variable name into java code which will be
+     *            inserted when the completion is selected.
      */
     @Inject
     public CodeBuilder(final MethodCallFormatter methodCallFormatter) {
@@ -43,27 +42,29 @@ public final class CodeBuilder {
     /**
      * @param methods
      *            The pattern's method to be included in the template.
-     * @param completionTargetVariable
-     *            The variable on which the proposed methods shall be invoked.
+     * @param targetVariableName
+     *            The name of the variable on which the proposed methods shall
+     *            be invoked.
      * @return The code to be inserted into the document, built from the
      *         recommended method calls and the given target variable.
      */
-    public String buildCode(final ImmutableList<IMethodName> methods,
-            final CompletionTargetVariable completionTargetVariable) {
+    public String buildCode(final ImmutableList<IMethodName> methods, final String targetVariableName) {
         final StringBuilder code = new StringBuilder(methods.size() * 16);
         final Set<ITypeName> imports = new HashSet<ITypeName>(8);
         for (final IMethodName method : methods) {
             try {
-                code.append(methodCallFormatter.format(new MethodCall(completionTargetVariable, method)));
+                code.append(methodCallFormatter.format(new MethodCall(targetVariableName, method)));
                 code.append(lineSeparator);
             } catch (final JavaModelException e) {
                 Throws.throwUnhandledException(e);
             }
-            if (!method.getReturnType().isVoid()) {
+            if (!method.isVoid()) {
                 imports.add(method.getReturnType());
+            } else if (method.isInit()) {
+                imports.add(method.getDeclaringType());
             }
         }
-        appendImports(imports, code);
+        // TODO: appendImports(imports, code);
         methodCallFormatter.resetArgumentCounter();
         return String.format("%s${cursor}", code);
     }

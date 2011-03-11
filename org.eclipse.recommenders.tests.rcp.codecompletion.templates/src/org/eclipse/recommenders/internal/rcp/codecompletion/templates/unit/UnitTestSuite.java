@@ -36,8 +36,8 @@ public final class UnitTestSuite {
     private static final IMethodName CONSTRUCTORMETHOD = VmMethodName
             .get("Lorg/eclipse/swt/widgets/Button.<init>(Lorg/eclipse/swt/widgets/Composite;Lint;)V");
 
-    private static final MethodCall METHODCALL = new MethodCall(DEFAULTVARIABLE, DEFAULTMETHOD);
-    private static final MethodCall CONSTRUCTORCALL = new MethodCall(CONSTRUCTORVARIABLE, CONSTRUCTORMETHOD);
+    private static final MethodCall METHODCALL = new MethodCall(DEFAULTVARIABLE.getName(), DEFAULTMETHOD);
+    private static final MethodCall CONSTRUCTORCALL = new MethodCall(CONSTRUCTORVARIABLE.getName(), CONSTRUCTORMETHOD);
 
     private static final CodeBuilder CODEBUILDERMOCK = new CodeBuilder(
             MethodCallFormatterTest.getMethodCallFormatterMock());
@@ -54,6 +54,10 @@ public final class UnitTestSuite {
      */
     protected static MethodCall getDefaultConstructorCall() {
         return UnitTestSuite.CONSTRUCTORCALL;
+    }
+
+    protected static CompletionTargetVariable getDefaultConstructorTargetVariable() {
+        return CONSTRUCTORVARIABLE;
     }
 
     protected static CodeBuilder getCodeBuilderMock() {
