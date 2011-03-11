@@ -8,11 +8,12 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions;
+package org.eclipse.recommenders.commons.codesearch.client;
 
-public class ServerErrorException extends ServerCommunicationException {
+public class UnauthorizedAccessException extends InvalidRequestException {
 
-    public ServerErrorException(final Throwable e) {
+    public UnauthorizedAccessException(final Throwable e) {
         super(e);
     }
+
 }

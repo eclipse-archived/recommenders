@@ -10,10 +10,18 @@
  */
 package org.eclipse.recommenders.commons.codesearch;
 
+
 public class Proposal {
 
     public static Proposal newProposal() {
         final Proposal proposal = new Proposal();
+        return proposal;
+    }
+
+    public static Proposal newProposal(final float score, final SnippetSummary snippet) {
+        final Proposal proposal = new Proposal();
+        proposal.score = score;
+        proposal.snippet = snippet;
         return proposal;
     }
 

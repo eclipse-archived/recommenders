@@ -8,12 +8,13 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions;
+package org.eclipse.recommenders.internal.server.codesearch.couchdb;
 
-public class ConflictException extends InvalidRequestException {
+public class TransactionResult {
 
-    public ConflictException(final Throwable e) {
-        super(e);
-    }
-
+    public String id;
+    public boolean ok;
+    public String rev;
+    public String error;
+    public String reason;
 }

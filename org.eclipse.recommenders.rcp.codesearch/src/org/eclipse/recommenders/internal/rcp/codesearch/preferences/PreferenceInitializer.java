@@ -12,8 +12,8 @@ package org.eclipse.recommenders.internal.rcp.codesearch.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.recommenders.commons.codesearch.client.ClientConfiguration;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.ClientConfiguration;
 
 import com.google.inject.Inject;
 

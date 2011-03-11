@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.server.codesearch.resources;
+package org.eclipse.recommenders.internal.server.codesearch.jaxrs;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,7 +16,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.recommenders.internal.server.codesearch.LocalFileService;
+import org.eclipse.recommenders.internal.server.codesearch.ZipFileSourceCodeProvider;
 
 import com.google.inject.Inject;
 
@@ -24,7 +24,7 @@ import com.google.inject.Inject;
 public class SourceCodeResource {
 
     @Inject
-    private LocalFileService localFileService;
+    private ZipFileSourceCodeProvider localFileService;
 
     @GET
     @Path("{id}")

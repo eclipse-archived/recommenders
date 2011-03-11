@@ -22,8 +22,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.recommenders.commons.codesearch.ICodeSearchResource;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.codesearch.Response;
+import org.eclipse.recommenders.commons.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
 import org.eclipse.swt.widgets.Display;
 

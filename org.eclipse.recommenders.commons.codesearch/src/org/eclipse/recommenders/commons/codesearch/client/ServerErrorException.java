@@ -8,11 +8,11 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codesearch.client.exceptions;
+package org.eclipse.recommenders.commons.codesearch.client;
 
-public class ServerUnreachableException extends ServerCommunicationException {
+public class ServerErrorException extends ServerCommunicationException {
 
-    public ServerUnreachableException(final Throwable e) {
+    public ServerErrorException(final Throwable e) {
         super(e);
     }
 }

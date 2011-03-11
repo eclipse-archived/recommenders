@@ -13,14 +13,17 @@ package org.eclipse.recommenders.internal.server.codesearch;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.recommenders.commons.codesearch.FeatureWeights;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
-import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.codesearch.Request;
+import org.eclipse.recommenders.commons.codesearch.RequestType;
+import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
+import org.eclipse.recommenders.internal.server.codesearch.lucene.LuceneSearchResult;
 
 import com.google.gson.annotations.SerializedName;
 
-public class RequestLogEntry extends Request {
+public class RequestLogEntry {
 
     /**
      * Request id. Created by the server.
@@ -38,10 +41,37 @@ public class RequestLogEntry extends Request {
     public Date issuedOn;
 
     /**
-     * The proposals made by the server. This field used for logs only and thus
-     * is typically <code>null</code> on client side.
+     * The unique user-id is generated from the user's mac address and hashed
+     * using sha1. This is used internally for filtering operations - for
+     * instance to determine new or frequent users of the system etc.)
      */
-    public List<Proposal> proposals;
+    public String issuedBy;
+
+    /**
+     * Different types of queries can be issued. Since each query type may use
+     * different feature weights, this flags allows the server to quickly
+     * identify the feature weight set to use.
+     */
+    public RequestType type;
+
+    /**
+     * This summary contains the information used to find relevant code
+     * examples. It is typically created from a text selection of an Editor
+     * inside Eclipse.
+     */
+    public SnippetSummary query;
+
+    /**
+     * A query may be customized using individual feature weights.
+     */
+    public FeatureWeights featureWeights;
+
+    public long searchTimeInMillis;
+
+    /**
+     * The proposals made by the server.
+     */
+    public List<LuceneSearchResult> results;
 
     /**
      * The feedbacks collected on server side. This field used for logs only and
@@ -49,19 +79,28 @@ public class RequestLogEntry extends Request {
      */
     public List<Feedback> feedbacks;
 
-    public long searchTimeInMillis;
+    public static RequestLogEntry newEntry(final Request request) {
+        final RequestLogEntry res = new RequestLogEntry();
+        res.issuedBy = request.issuedBy;
+        res.query = request.query.clone();
+        res.query.nullEmptySets();
+        res.type = request.type;
+        res.featureWeights = request.featureWeights;
+        res.issuedOn = new Date();
+        return res;
+    }
 
-    public static RequestLogEntry newEntryFromRequest(final Request request) {
-        final RequestLogEntry logEntry = new RequestLogEntry();
-        logEntry.issuedBy = request.issuedBy;
-        logEntry.query = request.query;
-        logEntry.type = request.type;
-        logEntry.featureWeights = request.featureWeights;
-        return logEntry;
+    public static RequestLogEntry newEntry(final Request request, final List<LuceneSearchResult> searchResults,
+            final long searchTimeInMillis) {
+        final RequestLogEntry res = newEntry(request);
+        res.results = searchResults;
+        res.searchTimeInMillis = searchTimeInMillis;
+        return res;
     }
 
     @Override
     public String toString() {
         return GsonUtil.serialize(this);
     }
+
 }

@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codesearch.client;
+package org.eclipse.recommenders.commons.codesearch.client;
 
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.ICodeSearchResource;
@@ -19,8 +19,12 @@ import com.google.inject.Inject;
 
 public class CodeSearchClient implements ICodeSearchResource {
 
-    @Inject
     private WebServiceClient client;
+
+    @Inject
+    public CodeSearchClient(final WebServiceClient client) {
+        this.client = client;
+    }
 
     @Override
     public Response search(final Request request) {

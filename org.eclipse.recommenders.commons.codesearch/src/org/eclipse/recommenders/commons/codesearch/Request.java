@@ -19,12 +19,11 @@ public class Request {
     public static final Request INVALID = new Request();
 
     public static Request newInstance() {
-
         return new Request();
     }
 
     public static Request newRequestWithBlankQuery() {
-        Request res = newInstance();
+        final Request res = newInstance();
         res.query = new SnippetSummary();
         return res;
     }

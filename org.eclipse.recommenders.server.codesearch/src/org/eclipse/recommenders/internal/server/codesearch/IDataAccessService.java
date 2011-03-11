@@ -8,18 +8,21 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.server.codesearch.couchdb;
+package org.eclipse.recommenders.internal.server.codesearch;
+
+import java.util.List;
 
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
-import org.eclipse.recommenders.internal.server.codesearch.RequestLogEntry;
-import org.eclipse.recommenders.internal.server.codesearch.TransactionResult;
+import org.eclipse.recommenders.internal.server.codesearch.couchdb.TransactionResult;
 
 public interface IDataAccessService {
 
     public TransactionResult save(RequestLogEntry request);
 
-    public RequestLogEntry getLogEntry(String requestId);
-
     public SnippetSummary getCodeSnippet(String snippetId);
+
+    public List<RequestLogEntry> getLogEntries();
+
+    public RequestLogEntry getLogEntry(String requestId);
 
 }

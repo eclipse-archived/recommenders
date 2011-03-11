@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.internal.server.codesearch;
+package org.eclipse.recommenders.internal.server.codesearch.jaxrs;
 
 import java.util.logging.Logger;
 

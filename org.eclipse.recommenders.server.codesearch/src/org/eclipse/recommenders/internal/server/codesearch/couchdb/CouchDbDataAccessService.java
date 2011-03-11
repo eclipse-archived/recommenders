@@ -14,14 +14,17 @@ import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledExcept
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
+import org.eclipse.recommenders.internal.server.codesearch.IDataAccessService;
 import org.eclipse.recommenders.internal.server.codesearch.RequestLogEntry;
-import org.eclipse.recommenders.internal.server.codesearch.TransactionResult;
 
+import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource.Builder;
 
 public class CouchDbDataAccessService implements IDataAccessService {
@@ -56,7 +59,8 @@ public class CouchDbDataAccessService implements IDataAccessService {
     @Override
     public TransactionResult save(final RequestLogEntry request) {
         final Builder builder = createRequestBuilder("");
-        return builder.post(TransactionResult.class, request);
+        final TransactionResult result = builder.post(TransactionResult.class, request);
+        return result;
     }
 
     @Override
@@ -71,4 +75,25 @@ public class CouchDbDataAccessService implements IDataAccessService {
         return builder.get(SnippetSummary.class);
     }
 
+    @Override
+    public List<RequestLogEntry> getLogEntries() {
+        final List<RequestLogEntry> logs = query("_design/feedbacks/_view/feedbacks",
+                new GenericType<GenericResultObjectView<RequestLogEntry>>() {
+                });
+        return logs;
+    }
+
+    private <T> List<T> query(final String path, final GenericType<GenericResultObjectView<T>> typeToken) {
+        final Builder builder = createRequestBuilder(path);
+        final GenericResultObjectView<T> result = builder.get(typeToken);
+        return transform(result.rows);
+    }
+
+    private static <T> List<T> transform(final List<ResultObject<T>> rows) {
+        final List<T> result = Lists.newLinkedList();
+        for (final ResultObject<T> obj : rows) {
+            result.add(obj.value);
+        }
+        return result;
+    }
 }

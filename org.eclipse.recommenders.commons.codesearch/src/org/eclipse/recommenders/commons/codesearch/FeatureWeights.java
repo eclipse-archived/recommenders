@@ -11,11 +11,11 @@
 package org.eclipse.recommenders.commons.codesearch;
 
 import java.util.Collection;
-import java.util.TreeMap;
+import java.util.Map;
 
 public class FeatureWeights {
 
-    public TreeMap<String, Float> weights;
+    public Map<String, Float> weights;
 
     public float getWeight(final String featureId) {
         return weights.containsKey(featureId) ? weights.get(featureId) : 0.0f;

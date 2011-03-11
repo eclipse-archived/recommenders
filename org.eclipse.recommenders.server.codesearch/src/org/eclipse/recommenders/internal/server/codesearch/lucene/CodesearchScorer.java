@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.DefaultSimilarity;
-import org.apache.lucene.search.Explanation;
 import org.eclipse.recommenders.commons.codesearch.FeatureWeights;
 import org.eclipse.recommenders.internal.server.codesearch.lucene.FeatureScorers.CallsHitratioFeatureScorer;
 import org.eclipse.recommenders.internal.server.codesearch.lucene.FeatureScorers.CallsInverseHitratioFeatureScorer;
@@ -170,26 +169,22 @@ public class CodesearchScorer extends org.apache.lucene.search.Scorer {
         return docID();
     }
 
-    public Explanation explain(final IndexReader reader, final int doc) {
-        final Explanation explanation = new Explanation();
+    public ScoringExplanation explain(final IndexReader reader, final int doc) {
+        final ScoringExplanation e = new ScoringExplanation();
         float score = 0.0f;
         try {
-            for (final SingleFeatureScorer scorer : subScorers.keySet()) {
-                final float featureWeight = subScorers.get(scorer);
-                final float featureScore = scorer.scoreDoc(doc);
+            for (final SingleFeatureScorer subScorer : subScorers.keySet()) {
+                final float featureWeight = subScorers.get(subScorer);
+                final float featureScore = subScorer.scoreDoc(doc);
                 final float subScore = featureWeight * featureScore;
                 score += subScore;
-                final Explanation featureExplanation = scorer.explainScore(doc);
-                explanation.addDetail(featureExplanation);
-                final Explanation featureWeightExplanation = new Explanation(featureWeight, "_"
-                        + featureExplanation.getDescription() + ".Weight");
-                explanation.addDetail(featureWeightExplanation);
+                //
+                e.addSubScore(subScorer.getIdentifier(), featureScore, featureWeight);
             }
-        } catch (final Exception e) {
-            e.printStackTrace();
+        } catch (final Exception x) {
+            x.printStackTrace();
         }
-        explanation.setDescription("_score");
-        explanation.setValue(score);
-        return explanation;
+        e.score = score;
+        return e;
     }
 }

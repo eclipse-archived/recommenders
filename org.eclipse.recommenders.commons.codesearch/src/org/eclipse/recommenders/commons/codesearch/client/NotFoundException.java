@@ -8,13 +8,12 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.server.codesearch;
+package org.eclipse.recommenders.commons.codesearch.client;
 
-public class TransactionResult {
+public class NotFoundException extends InvalidRequestException {
 
-    public String id;
-    public boolean ok;
-    public String rev;
-    public String error;
-    public String reason;
+    public NotFoundException(final Throwable e) {
+        super(e);
+    }
+
 }

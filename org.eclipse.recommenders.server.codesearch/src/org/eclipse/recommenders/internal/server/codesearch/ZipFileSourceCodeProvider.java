@@ -21,12 +21,12 @@ import org.apache.commons.io.IOUtils;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-public class LocalFileService {
+public class ZipFileSourceCodeProvider {
 
     private ZipFile zipFile;
 
     @Inject
-    public LocalFileService(@Named("codesearch.basedir") final File baseDir) {
+    public ZipFileSourceCodeProvider(@Named("codesearch.basedir") final File baseDir) {
         try {
             zipFile = new ZipFile(new File(baseDir, "sources/sources.zip"));
 

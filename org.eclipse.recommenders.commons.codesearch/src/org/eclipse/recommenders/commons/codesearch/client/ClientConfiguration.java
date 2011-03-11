@@ -8,13 +8,20 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codesearch.client;
+package org.eclipse.recommenders.commons.codesearch.client;
 
 import com.google.inject.Singleton;
 
 @Singleton
 public class ClientConfiguration {
 
+    public static ClientConfiguration create(final String baseurl) {
+        final ClientConfiguration res = new ClientConfiguration();
+        res.baseUrl = baseurl;
+        return res;
+    }
+
+    // TODO nuke hardcoded paths frmo configuration
     private String baseUrl = "http://localhost:8080/codesearch/";
 
     public String getBaseUrl() {

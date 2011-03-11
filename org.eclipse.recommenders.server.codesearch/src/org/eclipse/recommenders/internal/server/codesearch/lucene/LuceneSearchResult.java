@@ -8,19 +8,26 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.server.codesearch;
+package org.eclipse.recommenders.internal.server.codesearch.lucene;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
-public class SearchResult {
+public class LuceneSearchResult {
 
     public float score;
     public String snippetId;
+    public int luceneDocumentId;
+    public ScoringExplanation explanation;
 
-    public SearchResult(final float score, final String snippetId) {
+    public static LuceneSearchResult create(final float score, final String snippetId, final int luceneDocumentId,
+            final ScoringExplanation explanation) {
         ensureIsNotNull(snippetId, "null snippet id is invalid");
-        this.score = score;
-        this.snippetId = snippetId;
+        final LuceneSearchResult res = new LuceneSearchResult();
+        res.score = score;
+        res.snippetId = snippetId;
+        res.luceneDocumentId = luceneDocumentId;
+        res.explanation = explanation;
+        return res;
     }
 
 }

@@ -12,13 +12,17 @@ package org.eclipse.recommenders.commons.codesearch;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 public class Response {
+
+    public static Response newResponse(final String id, final List<Proposal> proposals) {
+        final Response res = new Response();
+        res.requestId = id;
+        res.proposals = proposals;
+        return res;
+    }
 
     public static Response newResponse() {
         final Response res = new Response();
-        res.proposals = Lists.newLinkedList();
         return res;
     }
 

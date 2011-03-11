@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.internal.server.codesearch;
 
 import org.eclipse.recommenders.commons.injection.InjectionService;
+import org.eclipse.recommenders.internal.server.codesearch.jaxrs.WebserviceActivator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

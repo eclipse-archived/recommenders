@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp.codesearch.views;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.recommenders.commons.codesearch.Request;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
+import org.eclipse.recommenders.commons.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
 import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
 import org.eclipse.swt.SWT;

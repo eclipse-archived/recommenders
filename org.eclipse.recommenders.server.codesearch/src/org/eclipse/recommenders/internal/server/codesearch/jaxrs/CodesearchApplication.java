@@ -1,14 +1,15 @@
-package org.eclipse.recommenders.internal.server.codesearch;
+package org.eclipse.recommenders.internal.server.codesearch.jaxrs;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.recommenders.internal.server.codesearch.IDataAccessService;
+import org.eclipse.recommenders.internal.server.codesearch.ISourceUriMapper;
+import org.eclipse.recommenders.internal.server.codesearch.LocalSourceUriMapper;
 import org.eclipse.recommenders.internal.server.codesearch.couchdb.CouchDbDataAccessService;
-import org.eclipse.recommenders.internal.server.codesearch.couchdb.IDataAccessService;
-import org.eclipse.recommenders.internal.server.codesearch.resources.CodeSearchResource;
-import org.eclipse.recommenders.internal.server.codesearch.resources.SourceCodeResource;
+import org.eclipse.recommenders.internal.server.codesearch.lucene.LuceneSearchService;
 import org.eclipse.recommenders.server.commons.AuthenticationFilter;
 import org.eclipse.recommenders.server.commons.GuiceInjectableProvider;
 import org.eclipse.recommenders.server.commons.IAuthenticationService;
@@ -18,6 +19,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
+import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Names;
 import com.sun.jersey.api.container.filter.RolesAllowedResourceFilterFactory;
 import com.sun.jersey.api.core.DefaultResourceConfig;
@@ -42,6 +44,7 @@ public class CodesearchApplication extends DefaultResourceConfig {
         final Set<Class<?>> result = new HashSet<Class<?>>();
         result.add(CodeSearchResource.class);
         result.add(SourceCodeResource.class);
+        result.add(AdminResource.class);
         return result;
     }
 
@@ -71,9 +74,14 @@ public class CodesearchApplication extends DefaultResourceConfig {
                 binder.bind(IAuthenticationService.class).to(MockAuthenticationService.class).in(Scopes.SINGLETON);
                 binder.bind(IDataAccessService.class).to(CouchDbDataAccessService.class).in(Scopes.SINGLETON);
                 binder.bind(File.class).annotatedWith(Names.named("codesearch.basedir")).toInstance(getIndexFolder());
-                binder.bind(SearchService.class).in(Scopes.SINGLETON);
+                binder.bind(LuceneSearchService.class).in(Scopes.SINGLETON);
                 // binder.bind(ResourceIdentifierService.class).toInstance(new
                 // ResourceIdentifierService());
+
+                final MapBinder<String, ISourceUriMapper> sourceUriMapperBinder = MapBinder.newMapBinder(binder,
+                        String.class, ISourceUriMapper.class);
+                sourceUriMapperBinder.addBinding("local").to(LocalSourceUriMapper.class);
+                // mapbinder.addBinding("sourcerer").to(SourcererUriMapper.class);
             }
         };
     }
