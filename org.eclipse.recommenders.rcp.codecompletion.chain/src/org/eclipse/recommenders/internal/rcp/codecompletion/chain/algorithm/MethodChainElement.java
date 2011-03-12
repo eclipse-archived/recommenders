@@ -39,7 +39,10 @@ public class MethodChainElement implements IChainElement {
 
   private final IClassHierarchy classHierarchy;
 
-  public MethodChainElement(final IMethod method) {
+  private final Integer chainDepth;
+  
+  public MethodChainElement(final IMethod method, final Integer chainDepth) {
+    this.chainDepth = chainDepth;
     classHierarchy = method.getClassHierarchy();
     try {
       completion = method.getName().toUnicodeString();
@@ -135,5 +138,10 @@ public class MethodChainElement implements IChainElement {
       return null;
     }
     return classHierarchy.lookupClass(getResultingType());
+  }
+
+  @Override
+  public Integer getChainDepth() {
+    return chainDepth;
   }
 }

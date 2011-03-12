@@ -144,7 +144,7 @@ public class ChainCompletionContext {
         }
       }
 
-      final FieldChainElement chainElement = new FieldChainElement(field);
+      final FieldChainElement chainElement = new FieldChainElement(field,0);
       accessibleFields.add(chainElement);
     }
   }
@@ -191,7 +191,7 @@ public class ChainCompletionContext {
         continue;
       }
 
-      final MethodChainElement chainElement = new MethodChainElement(method);
+      final MethodChainElement chainElement = new MethodChainElement(method,0);
       accessibleMethods.add(chainElement);
     }
   }
@@ -223,7 +223,7 @@ public class ChainCompletionContext {
         }
       }
 
-      final IChainElement element = new LocalChainElement(localName, localType);
+      final IChainElement element = new LocalChainElement(localName, localType,0);
       accessibleLocals.add(element);
     }
   }

@@ -151,7 +151,7 @@ public class ChainingAlgorithmWorker implements Runnable {
                        // typeToCheck than field/method can be protected or
                        // package private
       final LinkedList<IChainElement> list = new LinkedList<IChainElement>(workingChain);
-      list.add(new MethodChainElement(m));
+      list.add(new MethodChainElement(m, getPriority() + 1));
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
           internalProposalStore, executor, expectedType);
       startWorker(worker);
@@ -186,7 +186,7 @@ public class ChainingAlgorithmWorker implements Runnable {
                         // typeToCheck than field/method can be protected or
                         // package private
       final LinkedList<IChainElement> list = new LinkedList<IChainElement>(workingChain);
-      list.add(new FieldChainElement(f));
+      list.add(new FieldChainElement(f, getPriority() + 1));
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
           internalProposalStore, executor, expectedType);
       startWorker(worker);
@@ -206,9 +206,9 @@ public class ChainingAlgorithmWorker implements Runnable {
     for (final Entry<IMember, IClass> entry : ChainingAlgorithm.getSearchMap().get(typeToCheck).entrySet()) {
       final LinkedList<IChainElement> list = new LinkedList<IChainElement>(workingChain);
       if (entry.getKey() instanceof IField) {
-        list.add(new FieldChainElement((IField) entry.getKey()));
+        list.add(new FieldChainElement((IField) entry.getKey(), getPriority() + 1));
       } else {
-        list.add(new MethodChainElement((IMethod) entry.getKey()));
+        list.add(new MethodChainElement((IMethod) entry.getKey(), getPriority() + 1));
       }
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
           internalProposalStore, executor, expectedType);

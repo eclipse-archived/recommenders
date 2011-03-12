@@ -79,18 +79,27 @@ public class ChainTemplateProposalGenerator {
     Collections.sort(proposals, new Comparator<ChainTemplateProposal>() {
       @Override
       public int compare(final ChainTemplateProposal p1, final ChainTemplateProposal p2) {
+        //shortest length first
         if (p1.getProposedChain().size() < p2.getProposedChain().size()) {
           return -1;
         } else if (p1.getProposedChain().size() > p2.getProposedChain().size()) {
           return 1;
         } else {
+          //casting at the end
           if (!p1.needsCast() && p2.needsCast()) {
             return -1;
-          }
-          if (p1.needsCast() && !p2.needsCast()) {
+          } else if (p1.needsCast() && !p2.needsCast()) {
             return 1;
+          } else {
+            //sort according name of completion 
+            for (int i = 0 ; i<p1.getProposedChain().size();i++) {
+              if (!p1.getProposedChain().get(i).getCompletion().equals(p2.getProposedChain().get(i).getCompletion())){
+                return p1.getProposedChain().get(i).getCompletion().compareTo(p2.getProposedChain().get(i).getCompletion());
+              }
+            }
+            return 0;
           }
-          return 0;
+          
         }
       }
     });
@@ -118,7 +127,7 @@ public class ChainTemplateProposalGenerator {
     final IRegion lineRegion = doc.getLineInformationOfOffset(offset);
     final int lineStart = lineRegion.getOffset();
     final StringBuilder sb = new StringBuilder();
-    char c = doc.getChar(offset - 1);
+    char c = doc.getChar(offset);
     while (c != '=') {
       sb.insert(0, c);
       c = doc.getChar(--offset - 1);
@@ -149,9 +158,9 @@ public class ChainTemplateProposalGenerator {
       offsetToEquals = getOffsetToEqualSymbol(jctx.getDocument(), jctx.getInvocationOffset());
       if (offsetToEquals == -1) {
         offsetToEquals = jctx.getInvocationOffset();
-      } else {
-        offsetToEquals++;
-      }
+      } //else {
+//        offsetToEquals++;
+//      }
     } catch (final BadLocationException e) {
       JavaPlugin.log(e);
     }
@@ -279,9 +288,11 @@ public class ChainTemplateProposalGenerator {
   private String makePartName(final IChainElement part) {
     switch (part.getElementType()) {
     case FIELD:
-      return part.getCompletion();
+      return part.getChainDepth() == 0 ? "this."+part.getCompletion() : part.getCompletion();
     case METHOD:
       return makeTemplatePartNameForMethod(part);
+    case LOCAL:
+      return part.getCompletion(); 
     default:
       return "";
     }
@@ -346,13 +357,15 @@ public class ChainTemplateProposalGenerator {
   private String makePartCode(final IChainElement part) throws JavaModelException {
     switch (part.getElementType()) {
     case FIELD:
-      return part.getCompletion();
+      return part.getChainDepth() == 0 ? "this."+part.getCompletion() : part.getCompletion();
     case METHOD:
       final MethodChainElement methodChainElement = (MethodChainElement) part;
       final StringBuilder methodCode = new StringBuilder().append(part.getCompletion()).append(Signature.C_PARAM_START);
       includeParameterNames(methodChainElement, methodCode);
       methodCode.append(Signature.C_PARAM_END);
       return methodCode.toString();
+    case LOCAL:
+      return part.getCompletion();
     default:
       return "";
     }

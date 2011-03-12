@@ -34,7 +34,10 @@ public class FieldChainElement implements IChainElement {
 
   private IClass returnType;
 
-  public FieldChainElement(final IField field) {
+  private final Integer chainDepth;
+
+  public FieldChainElement(final IField field, final Integer chainDepth) {
+    this.chainDepth = chainDepth;
     try {
       completion = field.getName().toUnicodeString();
     } catch (final UTFDataFormatException e) {
@@ -67,5 +70,10 @@ public class FieldChainElement implements IChainElement {
   @Override
   public IClass getType() {
     return returnType;
+  }
+
+  @Override
+  public Integer getChainDepth() {
+    return chainDepth;
   }
 }

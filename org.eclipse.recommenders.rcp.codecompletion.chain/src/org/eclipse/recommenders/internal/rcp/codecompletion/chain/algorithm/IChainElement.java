@@ -55,5 +55,7 @@ public interface IChainElement {
    * @return the type reference this completion portion results in
    */
   public abstract TypeReference getResultingType();
+  
+  public Integer getChainDepth();
 
 }

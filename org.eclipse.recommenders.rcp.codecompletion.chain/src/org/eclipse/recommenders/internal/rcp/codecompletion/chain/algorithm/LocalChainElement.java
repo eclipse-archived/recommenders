@@ -17,10 +17,12 @@ import com.ibm.wala.types.TypeReference;
 public class LocalChainElement implements IChainElement {
   private final String name;
   private final IClass type;
+  private final Integer chainDepth;
 
-  public LocalChainElement(final String name, final IClass type) {
+  public LocalChainElement(final String name, final IClass type, final Integer chainDepth) {
     this.name = name;
     this.type = type;
+    this.chainDepth = chainDepth;
   }
 
   @Override
@@ -43,5 +45,10 @@ public class LocalChainElement implements IChainElement {
   @Override
   public String getCompletion() {
     return name;
+  }
+
+  @Override
+  public Integer getChainDepth() {
+    return chainDepth;
   }
 }
