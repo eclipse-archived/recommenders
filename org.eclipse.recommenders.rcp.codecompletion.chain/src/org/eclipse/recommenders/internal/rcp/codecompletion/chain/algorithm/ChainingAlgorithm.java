@@ -134,13 +134,13 @@ public class ChainingAlgorithm {
 
   public void addCastedProposal(final LinkedList<IChainElement> workingChain, final IClass expectedType) {
     synchronized (proposals) {
-      proposals.add(new ChainTemplateProposal(workingChain, expectedType));
+      proposals.add(new ChainTemplateProposal(workingChain, expectedType, true));
     }
   }
 
   public void addProposal(final LinkedList<IChainElement> workingChain) {
     synchronized (proposals) {
-      proposals.add(new ChainTemplateProposal(workingChain));
+      proposals.add(new ChainTemplateProposal(workingChain,expectedType, false));
     }
   }
 

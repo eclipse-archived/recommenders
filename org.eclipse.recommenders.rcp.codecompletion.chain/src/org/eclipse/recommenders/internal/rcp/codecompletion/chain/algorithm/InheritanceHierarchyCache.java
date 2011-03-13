@@ -97,9 +97,8 @@ public class InheritanceHierarchyCache {
   }
 
   /**
-   * Tests for type equality. This method can cope with boxed/unboxed primitive
-   * types. Sets flag, if types are equivalent and at least one of them is
-   * primitive
+   * Tests for type equality. Sets flag, if types are equivalent and at least
+   * one of them is primitive
    * 
    * @param resultingType
    *          type 1
@@ -108,20 +107,25 @@ public class InheritanceHierarchyCache {
    * @return true, in case of equivalence, false, else
    */
   // XXX need to look closer on this... here happens magic :)
+  // do not look at this... a magician never tells the trick ;)
   public static int equalityTest(final IClass resultingType, final IClass expectedType) {
-    if (resultingType.getReference().isPrimitiveType() && resultingType.getReference().isPrimitiveType()) {
-      if (resultingType.getReference().getName().equals(expectedType.getReference().getName())) {
-        return InheritanceHierarchyCache.RESULT_EQUAL | InheritanceHierarchyCache.RESULT_PRIMITIVE;
-      } else {
-        return InheritanceHierarchyCache.RESULT_PRIMITIVE;
-      }
-    } else {
-      if (resultingType.getReference().getName().equals(expectedType.getReference().getName())) {
-        return InheritanceHierarchyCache.RESULT_EQUAL;
+    TypeReference resultingReference = resultingType.getReference();
+    TypeReference expectedReference = expectedType.getReference();
+    int result = 0;
+    if (resultingReference.isPrimitiveType()) {
+      result |= InheritanceHierarchyCache.RESULT_PRIMITIVE;
+    }
+    if (resultingReference.getName().equals(expectedReference.getName())) {
+      result |= InheritanceHierarchyCache.RESULT_EQUAL;
+    } else if (resultingReference.getDimensionality() > expectedReference.getDimensionality()){
+      //array types
+      if (resultingReference.getInnermostElementType().equals(expectedReference.getInnermostElementType())){
+        result |= InheritanceHierarchyCache.RESULT_EQUAL;
       }
     }
+
     // Types are not equal, but maybe they're related
     // i.e. one of them is in the type hierarchy of the other one
-    return 0;
+    return result;
   }
 }

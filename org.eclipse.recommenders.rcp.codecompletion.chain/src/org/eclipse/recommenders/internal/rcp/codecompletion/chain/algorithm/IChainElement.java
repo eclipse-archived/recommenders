@@ -57,5 +57,7 @@ public interface IChainElement {
   public abstract TypeReference getResultingType();
   
   public Integer getChainDepth();
+  
+  public Integer getArrayDimension();
 
 }

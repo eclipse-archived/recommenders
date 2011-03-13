@@ -32,11 +32,13 @@ public class FieldChainElement implements IChainElement {
 
   private final IClassHierarchy classHierarchy;
 
-  private IClass returnType;
+  private IClass type;
 
   private final Integer chainDepth;
 
   private boolean thisQualifier = false;
+
+  private Integer arrayDimension = 0;
   
 
   public FieldChainElement(final IField field, final Integer chainDepth) {
@@ -50,9 +52,10 @@ public class FieldChainElement implements IChainElement {
     fieldReference = field.getFieldTypeReference();
     classHierarchy = field.getClassHierarchy();
     if (fieldReference.isPrimitiveType()) {
-      returnType = null;
+      type = null;
     }
-    returnType = classHierarchy.lookupClass(fieldReference);
+    type = classHierarchy.lookupClass(fieldReference);
+    arrayDimension = fieldReference.getDimensionality();
   }
 
   @Override
@@ -72,7 +75,7 @@ public class FieldChainElement implements IChainElement {
 
   @Override
   public IClass getType() {
-    return returnType;
+    return type;
   }
 
   @Override
@@ -86,6 +89,11 @@ public class FieldChainElement implements IChainElement {
 
   public void setThisQualifier(boolean thisQualifier) {
     this.thisQualifier = thisQualifier;
+  }
+
+  @Override
+  public Integer getArrayDimension() {
+    return arrayDimension;
   }
 
 }

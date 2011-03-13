@@ -39,6 +39,8 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.Meth
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+import com.ibm.wala.classLoader.IClass;
+
 @SuppressWarnings("restriction")
 public class ChainTemplateProposalGenerator {
   private final TemplateContextType templateContextType;
@@ -50,6 +52,10 @@ public class ChainTemplateProposalGenerator {
   private List<IJavaCompletionProposal> completionProposals;
 
   private List<ChainTemplateProposal> proposals;
+
+  private IClass expectedType;
+
+  private Integer expectedTypeDimension;
 
   public ChainTemplateProposalGenerator() {
     final ContextTypeRegistry templateContextRegistry = JavaPlugin.getDefault().getTemplateContextRegistry();
@@ -199,6 +205,8 @@ public class ChainTemplateProposalGenerator {
 
     int proposalNo = 1;
     for (final ChainTemplateProposal proposal : proposals) {
+      expectedType = proposal.getExpectedType();
+      expectedTypeDimension = proposal.getExpectedTypeDimension();
       if (isMaxProposalCount(proposalNo) || isMaxPluginComputationTime(algortihmComputeTime, proposalStartTime)) {
         break;
       }
@@ -302,17 +310,21 @@ public class ChainTemplateProposalGenerator {
   // '(...)' is added, else '()'
   private String makePartName(final IChainElement part) {
     final String prefixToLastDot = computePrefixToLastDot();
-    
+    String result = new String();
     switch (part.getElementType()) {
     case FIELD:
-      return checkForThisQualifier((FieldChainElement)part, prefixToLastDot) ? "this." + part.getCompletion() : part.getCompletion();
+      result = checkForThisQualifier((FieldChainElement) part, prefixToLastDot) ? "this." + part.getCompletion() : part
+          .getCompletion();
+      break;
     case METHOD:
-      return makeTemplatePartNameForMethod(part);
+      result = makeTemplatePartNameForMethod(part);
+      break;
     case LOCAL:
-      return part.getCompletion();
-    default:
-      return "";
+      result = part.getCompletion();
+      break;
     }
+    result += computeArrayBrackets(part);
+    return result;
   }
 
   private String makeTemplatePartNameForMethod(final IChainElement part) {
@@ -377,25 +389,46 @@ public class ChainTemplateProposalGenerator {
 
   // This method generates a part of the code for one proposal.
   private String makePartCode(final IChainElement part, String prefixToLastDot) throws JavaModelException {
+    String result = new String();
     switch (part.getElementType()) {
     case FIELD:
-      return checkForThisQualifier((FieldChainElement)part, prefixToLastDot) ? "this." + part.getCompletion() : part.getCompletion();
+      result = checkForThisQualifier((FieldChainElement) part, prefixToLastDot) ? "this." + part.getCompletion() : part
+          .getCompletion();
+      break;
     case METHOD:
       final MethodChainElement methodChainElement = (MethodChainElement) part;
       final StringBuilder methodCode = new StringBuilder().append(part.getCompletion()).append(Signature.C_PARAM_START);
       includeParameterNames(methodChainElement, methodCode);
       methodCode.append(Signature.C_PARAM_END);
-      return methodCode.toString();
+      result = methodCode.toString();
+      break;
     case LOCAL:
-      return part.getCompletion();
-    default:
-      return "";
+      result = part.getCompletion();
+      break;
     }
+    result += computeArrayBrackets(part);
+    return result;
   }
 
- //XXX methods check
+  private String computeArrayBrackets(final IChainElement part) {
+    String result = new String();
+    if (expectedType != null
+        && expectedType.getReference().getInnermostElementType()
+            .equals(part.getResultingType().getInnermostElementType())) {
+      for (int i = part.getArrayDimension() - expectedTypeDimension; i > 0; i--) {
+        result += "[${i}]";
+      }
+    } else {
+      for (int i = part.getArrayDimension(); i > 0; i--) {
+        result += "[${i}]";
+      }
+    }
+    return result;
+  }
+
+  // XXX methods check
   private boolean checkForThisQualifier(final FieldChainElement part, String prefixToLastDot) {
-    if (part.hasThisQualifier()){
+    if (part.hasThisQualifier()) {
       return prefixToLastDot.isEmpty() || prefixToLastDot.equals(" ");
     }
     return false;

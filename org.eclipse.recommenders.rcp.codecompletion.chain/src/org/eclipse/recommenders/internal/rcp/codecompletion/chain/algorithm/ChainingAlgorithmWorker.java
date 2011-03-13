@@ -53,9 +53,7 @@ public class ChainingAlgorithmWorker implements Runnable {
   }
 
   private void inspectType() throws JavaModelException {
-    if (checkRedundancy()) {
-      return;
-    }
+
     final IClass typeToCheck = workingChain.getLast().getType();
     // check type if searched type --> store for proposal
     if (storeForProposal(typeToCheck)) {
@@ -234,6 +232,9 @@ public class ChainingAlgorithmWorker implements Runnable {
    * be processed for proposal computation
    */
   private boolean storeForProposal(final IClass typeToCheck) throws JavaModelException {
+    if (checkRedundancy()) {
+      return true;
+    }
     if (typeToCheck == null) {
       return true;
     }
@@ -248,6 +249,7 @@ public class ChainingAlgorithmWorker implements Runnable {
     if ((testResult & InheritanceHierarchyCache.RESULT_PRIMITIVE) > 0) {
       return true;
     }
+    
     // Consult type hierarchy for sub-/supertypes
     if (InheritanceHierarchyCache.isSubtype(typeToCheck, expectedType) && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
 

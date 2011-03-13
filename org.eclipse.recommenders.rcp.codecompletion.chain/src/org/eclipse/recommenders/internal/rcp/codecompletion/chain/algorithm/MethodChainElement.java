@@ -40,6 +40,8 @@ public class MethodChainElement implements IChainElement {
   private final IClassHierarchy classHierarchy;
 
   private final Integer chainDepth;
+
+  private Integer arrayDimension = 0;
   
   public MethodChainElement(final IMethod method, final Integer chainDepth) {
     this.chainDepth = chainDepth;
@@ -52,6 +54,7 @@ public class MethodChainElement implements IChainElement {
     try {
       final int parameterMinCount = getParameterMinCount(method);
       resultingType = method.getReturnType();
+      arrayDimension = resultingType.getDimensionality();
       computeParameterTypesAndNames(method, parameterMinCount);
     } catch (final Exception e) {
       parameterNames = new String[0];
@@ -144,4 +147,10 @@ public class MethodChainElement implements IChainElement {
   public Integer getChainDepth() {
     return chainDepth;
   }
+  
+  @Override
+  public Integer getArrayDimension() {
+    return arrayDimension ;
+  }
+
 }

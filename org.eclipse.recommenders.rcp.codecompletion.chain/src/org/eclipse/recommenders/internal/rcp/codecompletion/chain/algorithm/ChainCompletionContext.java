@@ -237,7 +237,8 @@ public class ChainCompletionContext {
         }
       }
 
-      final IChainElement element = new LocalChainElement(localName, localType,0);
+      final LocalChainElement element = new LocalChainElement(localName, localType,0);
+      element.setArrayDimension(typeName.getArrayDimensions());
       accessibleLocals.add(element);
     }
   }

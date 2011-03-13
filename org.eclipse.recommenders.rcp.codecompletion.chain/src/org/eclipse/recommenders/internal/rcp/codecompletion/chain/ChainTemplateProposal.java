@@ -28,15 +28,9 @@ public class ChainTemplateProposal {
 
   private final boolean needsCast;
 
-  /**
-   * Constucts a proposal without cast
-   * 
-   * @param proposedChain
-   *          list of proposed chain elements (fields and/or methods)
-   */
-  public ChainTemplateProposal(final List<IChainElement> proposedChain) {
-    this(proposedChain, null);
-  }
+  private final Integer expectedTypeDimension;
+
+  private final IClass expectedType;
 
   /**
    * Constructs a proposal that needs an up-cast
@@ -64,13 +58,15 @@ public class ChainTemplateProposal {
    * @param castingType
    *          type to up-cast the chain's last element's resulting type to
    */
-  public ChainTemplateProposal(final List<IChainElement> proposedChain, final IClass castingType) {
+  public ChainTemplateProposal(final List<IChainElement> proposedChain, IClass expectedType, boolean cast) {
+    this.expectedType = expectedType;
+    this.expectedTypeDimension = expectedType.getReference().getDimensionality();
     Checks.ensureIsNotNull(proposedChain);
     Checks.ensureIsTrue(proposedChain.size() >= 1);
     this.proposedChain = proposedChain;
     resultingType = proposedChain.get(proposedChain.size() - 1).getResultingType();
-    needsCast = castingType != null;
-    this.castingType = castingType;
+    needsCast = cast;
+    this.castingType = cast ? expectedType:null;
   }
 
   public List<IChainElement> getProposedChain() {
@@ -87,5 +83,13 @@ public class ChainTemplateProposal {
 
   public IClass getCastingType() {
     return castingType;
+  }
+
+  public Integer getExpectedTypeDimension() {
+    return expectedTypeDimension;
+  }
+
+  public IClass getExpectedType() {
+    return expectedType;
   }
 }

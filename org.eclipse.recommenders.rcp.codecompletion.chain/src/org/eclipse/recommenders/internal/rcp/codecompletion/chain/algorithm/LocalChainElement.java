@@ -18,6 +18,7 @@ public class LocalChainElement implements IChainElement {
   private final String name;
   private final IClass type;
   private final Integer chainDepth;
+  private Integer arrayDimension = 0;
 
   public LocalChainElement(final String name, final IClass type, final Integer chainDepth) {
     this.name = name;
@@ -50,5 +51,14 @@ public class LocalChainElement implements IChainElement {
   @Override
   public Integer getChainDepth() {
     return chainDepth;
+  }
+  
+  @Override
+  public Integer getArrayDimension() {
+    return arrayDimension;
+  }
+
+  public void setArrayDimension(Integer arrayDimension) {
+    this.arrayDimension = arrayDimension;
   }
 }
