@@ -12,6 +12,7 @@ package data;
 
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
+//call chain 1 ok
 public class CompletionOnType {
 
 	static class S {

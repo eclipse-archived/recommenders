@@ -10,6 +10,7 @@
  */
 package data;
 
+//call chain 1 ok
 public class LocalNameClashWithField {
 
     String var = "findMe";

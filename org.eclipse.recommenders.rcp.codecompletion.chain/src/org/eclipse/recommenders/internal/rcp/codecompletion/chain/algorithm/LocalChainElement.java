@@ -39,7 +39,7 @@ public class LocalChainElement implements IChainElement {
   @Override
   public ChainElementType getElementType() {
 
-    return ChainElementType.FIELD;
+    return ChainElementType.LOCAL;
   }
 
   @Override

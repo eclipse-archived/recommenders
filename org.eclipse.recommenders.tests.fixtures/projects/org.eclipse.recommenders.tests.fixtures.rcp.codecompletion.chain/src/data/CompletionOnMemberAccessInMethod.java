@@ -12,6 +12,7 @@ package data;
 
 import java.io.File;
 
+//call chain 1 ok
 public class CompletionOnMemberAccessInMethod {
 
     File findMe = new File("");

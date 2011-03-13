@@ -14,6 +14,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
+//call chain 1 ok
 public class CompletionOnMethodReturn {
     public void method() {
         //@start

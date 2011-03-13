@@ -53,6 +53,9 @@ public class ChainingAlgorithmWorker implements Runnable {
   }
 
   private void inspectType() throws JavaModelException {
+    if (checkRedundancy()) {
+      return;
+    }
     final IClass typeToCheck = workingChain.getLast().getType();
     // check type if searched type --> store for proposal
     if (storeForProposal(typeToCheck)) {
@@ -87,6 +90,7 @@ public class ChainingAlgorithmWorker implements Runnable {
 
   private void handleArrayType(final IClass typeToCheck) throws JavaModelException {
     final ArrayClass arrayTypeToCheck = (ArrayClass) typeToCheck;
+    System.out.println("Array Depth: " + arrayTypeToCheck.getDimensionality());
     final IClass classOfArray = arrayTypeToCheck.getElementClass();
     if (classOfArray == null) {
       final TypeReference elementType = arrayTypeToCheck.getReference().getArrayElementType();
@@ -236,12 +240,9 @@ public class ChainingAlgorithmWorker implements Runnable {
     final int testResult = InheritanceHierarchyCache.equalityTest(typeToCheck, expectedType);
     // if both types equal
     if ((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0) {
-      if (!checkRedundancy()) {
         internalProposalStore.addProposal(workingChain);
         return false;
-      } else {
-        return true;
-      }
+
     }
     // if typeToCheck is primitive return
     if ((testResult & InheritanceHierarchyCache.RESULT_PRIMITIVE) > 0) {
@@ -249,21 +250,14 @@ public class ChainingAlgorithmWorker implements Runnable {
     }
     // Consult type hierarchy for sub-/supertypes
     if (InheritanceHierarchyCache.isSubtype(typeToCheck, expectedType) && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
-      if (!checkRedundancy()) {
+
         internalProposalStore.addCastedProposal(workingChain, expectedType);
         return false;
-      } else {
-        return true;
-      }
     }
     /* else */
     if (InheritanceHierarchyCache.isSupertype(typeToCheck, expectedType) && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
-      if (!checkRedundancy()) {
         internalProposalStore.addProposal(workingChain);
         return false;
-      } else {
-        return true;
-      }
     }
     // not equal, not in a hierarchical relation, not primitive
     return false;

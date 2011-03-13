@@ -12,6 +12,7 @@ package data;
 
 import java.io.File;
 
+// call chain 1 ok
 public class CompletionOnMemberCallChainDepth2 {
     class A {
         public B b = new B();

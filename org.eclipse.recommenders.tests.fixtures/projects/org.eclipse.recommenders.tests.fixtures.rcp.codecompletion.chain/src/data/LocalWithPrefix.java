@@ -12,6 +12,7 @@ package data;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+//call chain 1 ok
 public class LocalWithPrefix {
 
     public AtomicBoolean findMe = new AtomicBoolean();

@@ -12,10 +12,12 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
 import static org.eclipse.recommenders.commons.utils.Checks.cast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
+import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -45,6 +47,7 @@ public class ChainCompletionContext {
   private IClass expectedType;
   private IClass enclosingType;
   private IMethod enclosingMethod;
+  private List<String> localNames;
 
   public ChainCompletionContext(final IIntelligentCompletionContext ctx, final JavaElementResolver javaElementResolver,
       final IClassHierarchyService walaChaService) {
@@ -68,9 +71,9 @@ public class ChainCompletionContext {
     if (!findReceiverClass()) {
       return;
     }
-    computeAccessibleFields();
     computeAccessibleMethods();
     computeAccessibleLocals();
+    computeAccessibleFields();
   }
 
   private boolean findEnclosingClass() {
@@ -145,6 +148,9 @@ public class ChainCompletionContext {
       }
 
       final FieldChainElement chainElement = new FieldChainElement(field,0);
+      if (localNames.contains(chainElement.getCompletion())){
+        chainElement.setThisQualifier(true);
+      }
       accessibleFields.add(chainElement);
     }
   }
@@ -197,12 +203,19 @@ public class ChainCompletionContext {
   }
 
   private void computeAccessibleLocals() {
+    localNames = new ArrayList<String>();
     if (ctx.getVariable() == null) {
       return;
     }
 
     if (!ctx.getVariable().isThis()) {
       return;
+    }
+    
+    
+    if (ctx.getCompletionNodeParent() instanceof AbstractVariableDeclaration) {
+      AbstractVariableDeclaration decl = (AbstractVariableDeclaration) ctx.getCompletionNodeParent();
+      localNames.add(new String(decl.name));
     }
     for (final LocalDeclaration local : ctx.getLocalDeclarations()) {
       final ITypeName typeName = CompilerBindings.toTypeName(local.type);
@@ -214,6 +227,7 @@ public class ChainCompletionContext {
       if (!localName.startsWith(ctx.getPrefixToken())) {
         continue;
       }
+      localNames.add(localName);
 
       if (ctx.getCompletionNodeParent() instanceof LocalDeclaration) {
         final LocalDeclaration node = cast(ctx.getCompletionNodeParent());

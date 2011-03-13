@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+//call chain 1 ok
 public class CompletionWithCastInMethod {
 
     public InputStream findMe = new ByteArrayInputStream(new byte[] { 0, 1, 2, 3 });

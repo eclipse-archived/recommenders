@@ -32,7 +32,9 @@ import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.TemplateException;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.FieldChainElement;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement.ChainElementType;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.MethodChainElement;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -47,6 +49,8 @@ public class ChainTemplateProposalGenerator {
 
   private List<IJavaCompletionProposal> completionProposals;
 
+  private List<ChainTemplateProposal> proposals;
+
   public ChainTemplateProposalGenerator() {
     final ContextTypeRegistry templateContextRegistry = JavaPlugin.getDefault().getTemplateContextRegistry();
     templateContextType = templateContextRegistry.getContextType(JavaContextType.ID_ALL);
@@ -58,48 +62,50 @@ public class ChainTemplateProposalGenerator {
   @SuppressWarnings("unchecked")
   public List<IJavaCompletionProposal> generateJavaCompletionProposals(final List<ChainTemplateProposal> proposals,
       final JavaContentAssistInvocationContext jctx, final long algortihmComputeTime) {
+    this.proposals = proposals;
     this.jctx = jctx;
     final long proposalStartTime = System.currentTimeMillis();
-    if (isValidProposal(proposals)) {
+    if (isValidProposal()) {
       return Collections.EMPTY_LIST;
     }
-    sort(proposals);
+    sort();
     synchronized (proposals) {
-      return computeProposalList(proposals, algortihmComputeTime, proposalStartTime);
+      return computeProposalList(algortihmComputeTime, proposalStartTime);
     }
   }
 
-  private boolean isValidProposal(final List<ChainTemplateProposal> proposals) {
+  private boolean isValidProposal() {
     return proposals == null || proposals.isEmpty();
   }
 
   // This method sorts all computed 'raw' proposals.
-  private void sort(final List<ChainTemplateProposal> proposals) {
+  private void sort() {
     // Prefer proposals that do not cope with casts
     Collections.sort(proposals, new Comparator<ChainTemplateProposal>() {
       @Override
       public int compare(final ChainTemplateProposal p1, final ChainTemplateProposal p2) {
-        //shortest length first
+        // shortest length first
         if (p1.getProposedChain().size() < p2.getProposedChain().size()) {
           return -1;
         } else if (p1.getProposedChain().size() > p2.getProposedChain().size()) {
           return 1;
         } else {
-          //casting at the end
+          // casting at the end
           if (!p1.needsCast() && p2.needsCast()) {
             return -1;
           } else if (p1.needsCast() && !p2.needsCast()) {
             return 1;
           } else {
-            //sort according name of completion 
-            for (int i = 0 ; i<p1.getProposedChain().size();i++) {
-              if (!p1.getProposedChain().get(i).getCompletion().equals(p2.getProposedChain().get(i).getCompletion())){
-                return p1.getProposedChain().get(i).getCompletion().compareTo(p2.getProposedChain().get(i).getCompletion());
+            // sort according name of completion
+            for (int i = 0; i < p1.getProposedChain().size(); i++) {
+              if (!p1.getProposedChain().get(i).getCompletion().equals(p2.getProposedChain().get(i).getCompletion())) {
+                return p1.getProposedChain().get(i).getCompletion()
+                    .compareTo(p2.getProposedChain().get(i).getCompletion());
               }
             }
             return 0;
           }
-          
+
         }
       }
     });
@@ -127,10 +133,10 @@ public class ChainTemplateProposalGenerator {
     final IRegion lineRegion = doc.getLineInformationOfOffset(offset);
     final int lineStart = lineRegion.getOffset();
     final StringBuilder sb = new StringBuilder();
-    char c = doc.getChar(offset);
+    char c = doc.getChar(--offset);
     while (c != '=') {
       sb.insert(0, c);
-      c = doc.getChar(--offset - 1);
+      c = doc.getChar(--offset);
       if (offset <= lineStart) {
         return "";
       }
@@ -158,9 +164,9 @@ public class ChainTemplateProposalGenerator {
       offsetToEquals = getOffsetToEqualSymbol(jctx.getDocument(), jctx.getInvocationOffset());
       if (offsetToEquals == -1) {
         offsetToEquals = jctx.getInvocationOffset();
-      } //else {
-//        offsetToEquals++;
-//      }
+      } // else {
+      // offsetToEquals++;
+      // }
     } catch (final BadLocationException e) {
       JavaPlugin.log(e);
     }
@@ -177,6 +183,9 @@ public class ChainTemplateProposalGenerator {
         return -1;
       }
     }
+    if (doc.getChar(offset) == ' ') {
+      offset++;
+    }
     return offset;
   }
 
@@ -184,26 +193,25 @@ public class ChainTemplateProposalGenerator {
   // is up, or the max. number of proposals
   // are reached. Then it generates the code, description and finally the
   // proposal template.
-  private List<IJavaCompletionProposal> computeProposalList(final List<ChainTemplateProposal> proposals,
-      final long algortihmComputeTime, final long proposalStartTime) {
+  private List<IJavaCompletionProposal> computeProposalList(final long algortihmComputeTime,
+      final long proposalStartTime) {
     completionProposals = new ArrayList<IJavaCompletionProposal>();
 
     int proposalNo = 1;
-    final int proposalListSize = proposals.size();
     for (final ChainTemplateProposal proposal : proposals) {
       if (isMaxProposalCount(proposalNo) || isMaxPluginComputationTime(algortihmComputeTime, proposalStartTime)) {
         break;
       }
-      proposalNo = computeProposalPart(proposalListSize, proposalNo, proposal);
+      proposalNo = computeProposalPart(proposalNo, proposal);
     }
     return completionProposals;
   }
 
-  private int computeProposalPart(final int proposalListSize, int proposalNo, final ChainTemplateProposal proposal) {
+  private int computeProposalPart(int proposalNo, final ChainTemplateProposal proposal) {
     try {
       final String code = generateCode(proposal);
       if (code != null) {
-        computeAndAddProposal(proposalListSize, proposalNo, proposal, code);
+        computeAndAddProposal(proposalNo, proposal, code);
       }
       proposalNo++;
     } catch (final Exception e) {
@@ -212,14 +220,14 @@ public class ChainTemplateProposalGenerator {
     return proposalNo;
   }
 
-  private void computeAndAddProposal(final int proposalSize, final int proposalNo, final ChainTemplateProposal proposal,
-      final String code) throws BadLocationException, TemplateException {
+  private void computeAndAddProposal(final int proposalNo, final ChainTemplateProposal proposal, final String code)
+      throws BadLocationException, TemplateException {
     final JavaContext ctx = computeJavaContext();
     final Template template = generateTemplate(proposal, code); // name
     final IRegion region = computeRegion(ctx);
     if (canEvaluateTemplate(ctx, template)) {
       final TemplateProposal prop = new TemplateProposal(template, ctx, region, templateIcon);
-      prop.setRelevance(500 + proposalSize - proposalNo);
+      prop.setRelevance(500 + proposals.size() - proposalNo);
       completionProposals.add(prop);
     } else {
       System.err.println("Evaluation failed: " + code);
@@ -235,7 +243,14 @@ public class ChainTemplateProposalGenerator {
   }
 
   private IRegion computeRegion(final JavaContext ctx) {
-    final int start = ctx.getStart();
+    int start = ctx.getStart();
+    try {
+      if (ctx.getDocument().getChar(start) == ' ') {
+        start++;
+      }
+    } catch (BadLocationException e) {
+      JavaPlugin.log(e);
+    }
     final int end = ctx.getEnd();
     final IRegion region = new Region(start, end - start);
     return region;
@@ -286,13 +301,15 @@ public class ChainTemplateProposalGenerator {
   // method with input parameters an
   // '(...)' is added, else '()'
   private String makePartName(final IChainElement part) {
+    final String prefixToLastDot = computePrefixToLastDot();
+    
     switch (part.getElementType()) {
     case FIELD:
-      return part.getChainDepth() == 0 ? "this."+part.getCompletion() : part.getCompletion();
+      return checkForThisQualifier((FieldChainElement)part, prefixToLastDot) ? "this." + part.getCompletion() : part.getCompletion();
     case METHOD:
       return makeTemplatePartNameForMethod(part);
     case LOCAL:
-      return part.getCompletion(); 
+      return part.getCompletion();
     default:
       return "";
     }
@@ -325,12 +342,11 @@ public class ChainTemplateProposalGenerator {
   // to be overridden.
   private String generateCode(final ChainTemplateProposal proposal) throws JavaModelException {
 
-    final String prefixToEquals = computePrefixToEquals();
-    final String prefixToLastDot = prefixToEquals.substring(0, prefixToEquals.lastIndexOf('.') + 1);
+    final String prefixToLastDot = computePrefixToLastDot();
 
     StringBuilder code = null;
     for (final IChainElement part : proposal.getProposedChain()) {
-      final String partCode = makePartCode(part);
+      final String partCode = makePartCode(part, prefixToLastDot);
       if (partCode == null) {
         return null;
       }
@@ -345,6 +361,12 @@ public class ChainTemplateProposalGenerator {
     return code.toString();
   }
 
+  private String computePrefixToLastDot() {
+    final String prefixToEquals = computePrefixToEquals();
+    final String prefixToLastDot = prefixToEquals.substring(0, prefixToEquals.lastIndexOf('.') + 1);
+    return prefixToLastDot;
+  }
+
   private void computeCastingForCode(final ChainTemplateProposal proposal, final StringBuilder code) {
     if (proposal.needsCast()) {
       final String castingString = String.format("(${type:newType(%s)})", proposal.getCastingType().getName()
@@ -354,10 +376,10 @@ public class ChainTemplateProposalGenerator {
   }
 
   // This method generates a part of the code for one proposal.
-  private String makePartCode(final IChainElement part) throws JavaModelException {
+  private String makePartCode(final IChainElement part, String prefixToLastDot) throws JavaModelException {
     switch (part.getElementType()) {
     case FIELD:
-      return part.getChainDepth() == 0 ? "this."+part.getCompletion() : part.getCompletion();
+      return checkForThisQualifier((FieldChainElement)part, prefixToLastDot) ? "this." + part.getCompletion() : part.getCompletion();
     case METHOD:
       final MethodChainElement methodChainElement = (MethodChainElement) part;
       final StringBuilder methodCode = new StringBuilder().append(part.getCompletion()).append(Signature.C_PARAM_START);
@@ -369,6 +391,14 @@ public class ChainTemplateProposalGenerator {
     default:
       return "";
     }
+  }
+
+ //XXX methods check
+  private boolean checkForThisQualifier(final FieldChainElement part, String prefixToLastDot) {
+    if (part.hasThisQualifier()){
+      return prefixToLastDot.isEmpty() || prefixToLastDot.equals(" ");
+    }
+    return false;
   }
 
   private void includeParameterNames(final MethodChainElement me, final StringBuilder methodCode) {

@@ -36,6 +36,9 @@ public class FieldChainElement implements IChainElement {
 
   private final Integer chainDepth;
 
+  private boolean thisQualifier = false;
+  
+
   public FieldChainElement(final IField field, final Integer chainDepth) {
     this.chainDepth = chainDepth;
     try {
@@ -76,4 +79,13 @@ public class FieldChainElement implements IChainElement {
   public Integer getChainDepth() {
     return chainDepth;
   }
+
+  public boolean hasThisQualifier() {
+    return thisQualifier;
+  }
+
+  public void setThisQualifier(boolean thisQualifier) {
+    this.thisQualifier = thisQualifier;
+  }
+
 }

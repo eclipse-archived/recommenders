@@ -13,6 +13,7 @@ package data;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+//call chain 1 ok
 public class CompletionOnSupertypeInMethod {
 
     public ByteArrayInputStream findMe = new ByteArrayInputStream(new byte[] { 0, 1, 2, 3 });
