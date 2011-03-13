@@ -11,9 +11,9 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.JavaModelException;
@@ -23,6 +23,10 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 
+/**
+ * Builds an Eclipse templates code from a list of method calls on a given
+ * variable name.
+ */
 public final class CodeBuilder {
 
     private final MethodCallFormatter methodCallFormatter;
@@ -48,7 +52,7 @@ public final class CodeBuilder {
      * @return The code to be inserted into the document, built from the
      *         recommended method calls and the given target variable.
      */
-    public String buildCode(final ImmutableList<IMethodName> methods, final String targetVariableName) {
+    public String buildCode(final List<IMethodName> methods, final String targetVariableName) {
         final StringBuilder code = new StringBuilder(methods.size() * 16);
         final Set<ITypeName> imports = new HashSet<ITypeName>(8);
         for (final IMethodName method : methods) {
@@ -58,15 +62,19 @@ public final class CodeBuilder {
             } catch (final JavaModelException e) {
                 Throws.throwUnhandledException(e);
             }
-            if (!method.isVoid()) {
-                imports.add(method.getReturnType());
-            } else if (method.isInit()) {
-                imports.add(method.getDeclaringType());
-            }
+            addToImports(method, imports);
         }
-        // TODO: appendImports(imports, code);
+        appendImports(imports, code);
         methodCallFormatter.resetArgumentCounter();
         return String.format("%s${cursor}", code);
+    }
+
+    private void addToImports(final IMethodName method, final Set<ITypeName> imports) {
+        if (!method.isVoid()) {
+            imports.add(method.getReturnType());
+        } else if (method.isInit()) {
+            imports.add(method.getDeclaringType());
+        }
     }
 
     private void appendImports(final Set<ITypeName> imports, final StringBuilder code) {
@@ -76,8 +84,7 @@ public final class CodeBuilder {
                 code.append(Names.vm2srcTypeName(importType.getIdentifier()));
                 code.append(", ");
             }
-            code.setLength(code.length() - 2);
-            code.append(")}");
+            code.replace(code.length() - 3, code.length() - 1, ")}");
         }
     }
 

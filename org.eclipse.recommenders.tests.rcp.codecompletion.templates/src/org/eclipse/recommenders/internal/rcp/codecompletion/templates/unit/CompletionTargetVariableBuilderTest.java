@@ -15,6 +15,7 @@ import com.google.common.collect.Sets;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.CompletionTargetVariableBuilder;
@@ -49,7 +50,7 @@ public final class CompletionTargetVariableBuilderTest {
         Assert.assertTrue(completionTargetVariable.isNeedsConstructor());
         Assert.assertEquals("bu", completionTargetVariable.getName());
         Assert.assertEquals(VmTypeName.get("Button"), completionTargetVariable.getType());
-        Assert.assertEquals(new Region(9, 0), completionTargetVariable.getDocumentRegion());
+        Assert.assertEquals(new Region(0, 9), completionTargetVariable.getDocumentRegion());
     }
 
     protected static IIntelligentCompletionContext getMockedContext(final String code, final String variableName,
@@ -73,11 +74,18 @@ public final class CompletionTargetVariableBuilderTest {
         return context;
     }
 
+    @SuppressWarnings("restriction")
     public static IIntelligentCompletionContext getConstructorContextMock(final String code, final String variableName,
             final String typeName) {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(code,
                 variableName, typeName);
         Mockito.when(context.getExpectedType()).thenReturn(VmTypeName.get(typeName));
+
+        final Statement node = Mockito.mock(Statement.class);
+        Mockito.when(node.toString()).thenReturn(
+                "<test:" + VmTypeName.get(typeName).getClassName() + " " + variableName + ">");
+        Mockito.when(context.getCompletionNode()).thenReturn(node);
+
         final CompletionProposal prop = Mockito.mock(CompletionProposal.class);
         Mockito.when(prop.getSignature()).thenReturn("Lorg.eclipse.swt.widgets.Button;".toCharArray());
         Mockito.when(context.getJdtProposals()).thenReturn(Sets.newHashSet(prop));

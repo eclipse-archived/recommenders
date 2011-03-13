@@ -39,8 +39,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 
 /**
- * Computes <code>PatternRecommendations</code>s from the
- * <code>CallsModelStore</code>.
+ * Computes {@link PatternRecommendation}s from the {@link CallsModelStore}.
  */
 public final class PatternRecommender {
 

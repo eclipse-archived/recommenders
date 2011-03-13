@@ -69,16 +69,19 @@ public final class MethodCallFormatter {
      * @return The left side of an assignment, e.g. "<code>Button b = </code>".
      */
     private static String getNewVariableString(final MethodCall methodCall) {
-        final StringBuilder variableString = new StringBuilder();
+        String variableString = "";
         final IMethodName invokedMethod = methodCall.getInvokedMethod();
-
-        if (!invokedMethod.isVoid() && !invokedMethod.isInit()) {
-            variableString.append(String.format("%s ", Names.vm2srcSimpleTypeName(invokedMethod.getReturnType())));
-        }
         if (!invokedMethod.isVoid() || invokedMethod.isInit()) {
-            variableString.append(String.format("%s = ", getNewVariableName(methodCall)));
+            final String variableType = getNewVariableTypeString(invokedMethod);
+            final String variableName = getNewVariableName(methodCall);
+            variableString = String.format("%s %s = ", variableType, variableName);
         }
-        return variableString.toString();
+        return variableString;
+    }
+
+    private static String getNewVariableTypeString(final IMethodName invokedMethod) {
+        return Names.vm2srcSimpleTypeName(invokedMethod.isInit() ? invokedMethod.getDeclaringType() : invokedMethod
+                .getReturnType());
     }
 
     /**

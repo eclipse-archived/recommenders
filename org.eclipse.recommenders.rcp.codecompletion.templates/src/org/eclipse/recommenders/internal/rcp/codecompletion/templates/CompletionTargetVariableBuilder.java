@@ -105,8 +105,13 @@ public final class CompletionTargetVariableBuilder {
      */
     private CompletionTargetVariable buildInvokedVariable() {
         final int variableNameLength = getVariableNameLength();
-        final int documentOffset = context.getReplacementRegion().getOffset() - variableNameLength;
-        final int replacementLength = context.getReplacementRegion().getLength() + variableNameLength;
+        int documentOffset = context.getReplacementRegion().getOffset() - variableNameLength;
+        if (needsConstructor) {
+            documentOffset += context.getReplacementRegion().getLength();
+        }
+        // final int replacementLength =
+        // context.getReplacementRegion().getLength() + variableNameLength;
+        final int replacementLength = variableNameLength;
         return new CompletionTargetVariable(receiverName, receiverType, receiverCalls, new Region(documentOffset,
                 replacementLength), needsConstructor);
     }
@@ -116,9 +121,13 @@ public final class CompletionTargetVariableBuilder {
      *         information is required to calculate the region to be replaced by
      *         the template code.
      */
+    @SuppressWarnings("restriction")
     private int getVariableNameLength() {
         int variableNameLength = 0;
-        if (!needsConstructor && receiverName != null && receiverName.length() > 0) {
+        if (needsConstructor) {
+            final String completionNode = context.getCompletionNode().toString();
+            variableNameLength = completionNode.substring(completionNode.indexOf(':')).length() - 2;
+        } else if (receiverName != null && receiverName.length() > 0) {
             // For variables other than implicit "this", add space for ".".
             variableNameLength = receiverName.length() + 1;
         }

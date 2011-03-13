@@ -19,9 +19,9 @@ public class CompletionOnSimpleTypeInMethodBody extends Dialog {
 
     @Override
 	protected Control createDialogArea(final Composite parent) {
-		// Button<^Space> -> give patterns and import button then
+		// give patterns and import button then
 		// ensure Button is not imported as SWT or AWT Button before
-		Button b<^Space>
+		Button b<^Space|dynamic.*672.*%>
 		return null;
 	}
 

@@ -27,7 +27,7 @@ public final class MethodCallFormatterTest {
         Assert.assertEquals("constructed.setText(${intTest:link(0)});", methodCallFormatterMock.format(methodCall));
 
         methodCall = UnitTestSuite.getDefaultConstructorCall();
-        Assert.assertEquals("unconstructed = new Button(${intTest:link(0)});",
+        Assert.assertEquals("Button unconstructed = new Button(${intTest:link(0)});",
                 methodCallFormatterMock.format(methodCall));
     }
 

@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package completion.templates.bugs;
+package completion.templates;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
@@ -18,17 +18,16 @@ import org.eclipse.swt.widgets.Control;
 
 public class CompletionOnSimpleTypeNameInMethodBodyWithImport extends Dialog {
 
-    private Button b;
+	private Button b;
 
-    @Override
+	@Override
 	protected Control createDialogArea(final Composite parent) {
-		// Button<^Space> -> expects patterns for SWT Button only since Button
-		// has been qualified by an import already
-		Button<^Space>
+		// Expects patterns for SWT Button only since Button has been qualified by an import already
+		Button<^Space|dynamic.*672.*%>
 		return null;
 	}
 
-    private CompletionOnSimpleTypeNameInMethodBodyWithImport() {
-        super((IShellProvider) null);
-    }
+	private CompletionOnSimpleTypeNameInMethodBodyWithImport() {
+		super((IShellProvider) null);
+	}
 }
