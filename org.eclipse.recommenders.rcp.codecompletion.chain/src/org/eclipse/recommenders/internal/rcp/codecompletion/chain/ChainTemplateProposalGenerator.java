@@ -35,11 +35,13 @@ import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.FieldChainElement;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement.ChainElementType;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.InheritanceHierarchyCache;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.MethodChainElement;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.ibm.wala.classLoader.IClass;
+import com.ibm.wala.types.TypeName;
 
 @SuppressWarnings("restriction")
 public class ChainTemplateProposalGenerator {
@@ -244,8 +246,16 @@ public class ChainTemplateProposalGenerator {
 
   private boolean canEvaluateTemplate(final JavaContext ctx, final Template template) throws BadLocationException,
       TemplateException {
-    final boolean isEvaluable = ctx.evaluate(template) != null;
-    final boolean hasProposalString = ctx.evaluate(template).getString() != null;
+    boolean isEvaluable;
+    boolean hasProposalString;
+    try {
+      isEvaluable = ctx.evaluate(template) != null;
+      hasProposalString = ctx.evaluate(template).getString() != null;
+    } catch (Exception e) {
+      isEvaluable = false;
+      hasProposalString = false;
+    }
+    
 
     return isEvaluable && hasProposalString;
   }
@@ -301,7 +311,7 @@ public class ChainTemplateProposalGenerator {
   private void computeCastingForName(final ChainTemplateProposal proposal, final StringBuilder code) {
     if (proposal.needsCast()) {
       code.insert(0,
-          String.format("(%s) ", proposal.getCastingType().getName().getClassName().toString().replaceAll("/", ".")));
+          String.format("(%s) ", computeCasting(proposal)));
     }
   }
 
@@ -323,7 +333,7 @@ public class ChainTemplateProposalGenerator {
       result = part.getCompletion();
       break;
     }
-    result += computeArrayBrackets(part);
+    result += computeArrayBracketsForTemplate(part);
     return result;
   }
 
@@ -381,10 +391,25 @@ public class ChainTemplateProposalGenerator {
 
   private void computeCastingForCode(final ChainTemplateProposal proposal, final StringBuilder code) {
     if (proposal.needsCast()) {
-      final String castingString = String.format("(${type:newType(%s)})", proposal.getCastingType().getName()
-          .getClassName().toString().replaceAll("/", "."));
+      final String castingString = String.format("(${type:newType(%s)}%s)", computeCasting(proposal),computeArrayBracketsForCasting(proposal));
       code.insert(0, castingString);
     }
+  }
+
+  private String computeArrayBracketsForCasting(ChainTemplateProposal proposal) {
+    String brackets = new String();
+    //int proposalChainSize = proposal.getProposedChain().size();
+    for (int i = expectedTypeDimension; i > 0; i-- ) {//proposal.getProposedChain().get(proposalChainSize-1).getArrayDimension() - 
+      brackets += "[]";// + casting;
+    }
+    return brackets;
+  }
+
+  private String computeCasting(final ChainTemplateProposal proposal) {
+    TypeName name = proposal.getCastingType().getName();
+    String casting = name.getPackage().toString() + "/" + name.getClassName().toString();
+    casting = casting.replaceAll("/", ".");
+    return casting;
   }
 
   // This method generates a part of the code for one proposal.
@@ -406,13 +431,13 @@ public class ChainTemplateProposalGenerator {
       result = part.getCompletion();
       break;
     }
-    result += computeArrayBrackets(part);
+    result += computeArrayBracketsForTemplate(part);
     return result;
   }
 
-  private String computeArrayBrackets(final IChainElement part) {
+  private String computeArrayBracketsForTemplate(final IChainElement part) {
     String result = new String();
-    if (expectedType.getName().equals(part.getResultingType().getInnermostElementType().getName())) {
+    if (isEqualToExpectedType(part) || isInSubtypeHierarchie(part) || isInSupertypeHierarchie(part)) {
       for (int i = part.getArrayDimension() - expectedTypeDimension; i > 0; i--) {
         result += "[${i}]";
       }
@@ -422,6 +447,26 @@ public class ChainTemplateProposalGenerator {
       }
     }
     return result;
+  }
+
+  private boolean isInSupertypeHierarchie(IChainElement part) {
+    try {
+      return InheritanceHierarchyCache.isSupertype(part.getType(), expectedType, expectedTypeDimension);
+    } catch (JavaModelException e) {
+      return false;
+    }
+  }
+  
+  private boolean isInSubtypeHierarchie(IChainElement part) {
+    try {
+      return InheritanceHierarchyCache.isSubtype(part.getType(), expectedType, expectedTypeDimension);
+    } catch (JavaModelException e) {
+      return false;
+    }
+  }
+
+  private boolean isEqualToExpectedType(final IChainElement part) {
+    return expectedType.getName().equals(part.getResultingType().getInnermostElementType().getName());
   }
 
   // XXX methods check

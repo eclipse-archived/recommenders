@@ -52,8 +52,7 @@ public class CompletionOnArrayMemberAccessInMethod {
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
         final AtomicBoolean[][] c = <@Ignore^Space>
         /* calling context --> static
-         * expected type --> AtomicInteger
-         * expected completion --> obj.findUs[i]
+         * expected completion --> obj.findUs1[i]
          * variable name --> c
          */
     }
@@ -62,8 +61,7 @@ public class CompletionOnArrayMemberAccessInMethod {
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
         final AtomicBoolean c[] = <@Ignore^Space>
         /* calling context --> static
-         * expected type --> AtomicInteger
-         * expected completion --> obj.findUs[i]
+         * expected completion --> obj.findUs1[i][i]
          * variable name --> c
          */
     }
@@ -72,8 +70,7 @@ public class CompletionOnArrayMemberAccessInMethod {
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
         final AtomicBoolean c = <@Ignore^Space>
         /* calling context --> static
-         * expected type --> AtomicInteger
-         * expected completion --> obj.findUs[i]
+         * expected completion --> obj.findUs1[i][i][i]
          * variable name --> c
          */
     }

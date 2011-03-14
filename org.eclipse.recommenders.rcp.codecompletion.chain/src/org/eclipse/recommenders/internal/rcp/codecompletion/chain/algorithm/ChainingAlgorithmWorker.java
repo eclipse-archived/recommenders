@@ -91,8 +91,7 @@ public class ChainingAlgorithmWorker implements Runnable {
 
   private void handleArrayType(final IClass typeToCheck) throws JavaModelException {
     final ArrayClass arrayTypeToCheck = (ArrayClass) typeToCheck;
-    System.out.println("Array Depth: " + arrayTypeToCheck.getDimensionality());
-    final IClass classOfArray = arrayTypeToCheck.getElementClass();
+    final IClass classOfArray = arrayTypeToCheck.getInnermostElementClass();
     if (classOfArray == null) {
       final TypeReference elementType = arrayTypeToCheck.getReference().getArrayElementType();
       if (elementType.isPrimitiveType()) {
@@ -254,13 +253,13 @@ public class ChainingAlgorithmWorker implements Runnable {
     }
     
     // Consult type hierarchy for sub-/supertypes
-    if (InheritanceHierarchyCache.isSubtype(typeToCheck, expectedType) && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
+    if (InheritanceHierarchyCache.isSubtype(typeToCheck, expectedType, expectedTypeDimension) && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
 
         internalProposalStore.addCastedProposal(workingChain, expectedType);
         return false;
     }
     /* else */
-    if (InheritanceHierarchyCache.isSupertype(typeToCheck, expectedType) && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
+    if (InheritanceHierarchyCache.isSupertype(typeToCheck, expectedType, expectedTypeDimension) && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
         internalProposalStore.addProposal(workingChain);
         return false;
     }

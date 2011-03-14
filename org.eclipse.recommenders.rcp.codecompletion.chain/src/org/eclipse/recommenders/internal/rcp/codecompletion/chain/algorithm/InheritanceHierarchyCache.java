@@ -44,18 +44,18 @@ public class InheritanceHierarchyCache {
    * 
    * @param context
    *          concrete type
-   * @param subtype
+   * @param supertype
    *          type to test to be a supertype or not
    * @return true, in case of supertype relation, else false
    * @throws JavaModelException
    */
-  public static boolean isSupertype(final IClass context, final IClass subtype) throws JavaModelException {
+  public static boolean isSupertype(final IClass context, final IClass supertype, Integer supertypeDimension) throws JavaModelException {
     List<IClass> superclasses = InheritanceHierarchyCache.hierarchies.get(context);
     if (superclasses == null) {
       superclasses = InheritanceUtils.getAllSuperclasses(context);
       superclasses.addAll(context.getAllImplementedInterfaces());
       for (final IClass clazz : superclasses) {
-        if (clazz.getName().equals(TypeReference.JavaLangObject.getName())) {
+        if (isObject(clazz)) {
           superclasses.remove(clazz);
           break;
         }
@@ -64,7 +64,14 @@ public class InheritanceHierarchyCache {
         InheritanceHierarchyCache.hierarchies.put(context, superclasses);
       }
     }
-    return superclasses.contains(subtype);
+    for (IClass clazz: superclasses) {
+      if (clazz.getReference().getDimensionality() >= supertypeDimension) {
+        if (clazz.getReference().getInnermostElementType().getName().equals(supertype.getName())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
@@ -75,16 +82,17 @@ public class InheritanceHierarchyCache {
    *          base type
    * @param subtype
    *          type to test to be a subtype or not
+   * @param subTypeDimension 
    * @return true, in case of subtype relation, else false
    * @throws JavaModelException
    */
-  public static boolean isSubtype(final IClass context, final IClass subtype) throws JavaModelException {
+  public static boolean isSubtype(final IClass context, final IClass subtype, Integer subTypeDimension) throws JavaModelException {
     List<IClass> superclasses = InheritanceHierarchyCache.hierarchies.get(subtype);
     if (superclasses == null) {
       superclasses = InheritanceUtils.getAllSuperclasses(subtype);
       superclasses.addAll(subtype.getAllImplementedInterfaces());
       for (final IClass clazz : superclasses) {
-        if (clazz.getName().equals(TypeReference.JavaLangObject.getName())) {
+        if (isObject(clazz)) {
           superclasses.remove(clazz);
           break;
         }
@@ -93,7 +101,24 @@ public class InheritanceHierarchyCache {
         InheritanceHierarchyCache.hierarchies.put(subtype, superclasses);
       }
     }
+    if (context.isArrayClass()) {
+      for (IClass clazz: superclasses) {
+        if (context.getReference().getDimensionality() >= subTypeDimension) {
+          if (clazz.getReference().getName().equals(context.getReference().getInnermostElementType().getName())) {
+            return true;
+          }
+        }
+      }
+    }
     return superclasses.contains(context);
+  }
+
+  private static boolean isObject(final IClass clazz) {
+    if (clazz.isArrayClass() && clazz.getReference().getInnermostElementType().getName().equals(TypeReference.JavaLangObject.getName())) {
+      return true;
+    } else {
+      return clazz.getName().equals(TypeReference.JavaLangObject.getName());
+    }
   }
 
   /**
