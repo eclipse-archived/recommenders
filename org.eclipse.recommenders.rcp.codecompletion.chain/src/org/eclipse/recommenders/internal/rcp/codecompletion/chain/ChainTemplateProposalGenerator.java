@@ -412,9 +412,7 @@ public class ChainTemplateProposalGenerator {
 
   private String computeArrayBrackets(final IChainElement part) {
     String result = new String();
-    if (expectedType != null
-        && expectedType.getReference().getInnermostElementType()
-            .equals(part.getResultingType().getInnermostElementType())) {
+    if (expectedType.getName().equals(part.getResultingType().getInnermostElementType().getName())) {
       for (int i = part.getArrayDimension() - expectedTypeDimension; i > 0; i--) {
         result += "[${i}]";
       }

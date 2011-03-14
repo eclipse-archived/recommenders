@@ -48,6 +48,7 @@ public class ChainCompletionContext {
   private IClass enclosingType;
   private IMethod enclosingMethod;
   private List<String> localNames;
+  private int expectedTypeArrayDimension;
 
   public ChainCompletionContext(final IIntelligentCompletionContext ctx, final JavaElementResolver javaElementResolver,
       final IClassHierarchyService walaChaService) {
@@ -114,7 +115,8 @@ public class ChainCompletionContext {
 
   private boolean findExpectedClass() {
     final ITypeName expectedTypeName = ctx.getExpectedType();
-    expectedType = toWalaClass(expectedTypeName);
+    expectedTypeArrayDimension = expectedTypeName.getArrayDimensions();
+    expectedType = toWalaClass(expectedTypeName.isArrayType()?expectedTypeName.getArrayBaseType():expectedTypeName);
     return expectedType != null;
   }
 
@@ -261,6 +263,10 @@ public class ChainCompletionContext {
 
   public List<IChainElement> getProposedVariables() {
     return accessibleLocals;
+  }
+
+  public int getExpectedTypeArrayDimension() {
+    return expectedTypeArrayDimension;
   }
 
 }

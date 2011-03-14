@@ -43,13 +43,16 @@ public class ChainingAlgorithmWorker implements Runnable {
 
   private final ChainingAlgorithm internalProposalStore;
 
+  private final Integer expectedTypeDimension;
+
   public ChainingAlgorithmWorker(final LinkedList<IChainElement> workingChain, final int priority,
-      final ChainingAlgorithm internalProposalStore, final ThreadPoolExecutor executor, final IClass expectedType) {
+      final ChainingAlgorithm internalProposalStore, final ThreadPoolExecutor executor, final IClass expectedType, final Integer expectedTypeDimension) {
     this.workingChain = workingChain;
     this.priority = priority;
     this.internalProposalStore = internalProposalStore;
     this.executor = executor;
     this.expectedType = expectedType;
+    this.expectedTypeDimension = expectedTypeDimension;
   }
 
   private void inspectType() throws JavaModelException {
@@ -155,7 +158,7 @@ public class ChainingAlgorithmWorker implements Runnable {
       final LinkedList<IChainElement> list = new LinkedList<IChainElement>(workingChain);
       list.add(new MethodChainElement(m, getPriority() + 1));
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
-          internalProposalStore, executor, expectedType);
+          internalProposalStore, executor, expectedType, expectedTypeDimension);
       startWorker(worker);
       if (m.getReturnType().isPrimitiveType()) {
         return null;// return
@@ -190,7 +193,7 @@ public class ChainingAlgorithmWorker implements Runnable {
       final LinkedList<IChainElement> list = new LinkedList<IChainElement>(workingChain);
       list.add(new FieldChainElement(f, getPriority() + 1));
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
-          internalProposalStore, executor, expectedType);
+          internalProposalStore, executor, expectedType, expectedTypeDimension);
       startWorker(worker);
       if (f.getFieldTypeReference().isPrimitiveType()) {
         return null;
@@ -213,7 +216,7 @@ public class ChainingAlgorithmWorker implements Runnable {
         list.add(new MethodChainElement((IMethod) entry.getKey(), getPriority() + 1));
       }
       final ChainingAlgorithmWorker worker = new ChainingAlgorithmWorker(list, getPriority() + 1,
-          internalProposalStore, executor, expectedType);
+          internalProposalStore, executor, expectedType, expectedTypeDimension);
       startWorker(worker);
     }
   }
@@ -238,7 +241,7 @@ public class ChainingAlgorithmWorker implements Runnable {
     if (typeToCheck == null) {
       return true;
     }
-    final int testResult = InheritanceHierarchyCache.equalityTest(typeToCheck, expectedType);
+    final int testResult = InheritanceHierarchyCache.equalityTest(typeToCheck, expectedType, expectedTypeDimension);
     // if both types equal
     if ((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0) {
         internalProposalStore.addProposal(workingChain);

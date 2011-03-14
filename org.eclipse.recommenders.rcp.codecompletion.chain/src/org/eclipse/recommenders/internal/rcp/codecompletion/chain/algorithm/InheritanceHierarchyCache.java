@@ -108,7 +108,7 @@ public class InheritanceHierarchyCache {
    */
   // XXX need to look closer on this... here happens magic :)
   // do not look at this... a magician never tells the trick ;)
-  public static int equalityTest(final IClass resultingType, final IClass expectedType) {
+  public static int equalityTest(final IClass resultingType, final IClass expectedType, Integer expectedTypeDimension) {
     TypeReference resultingReference = resultingType.getReference();
     TypeReference expectedReference = expectedType.getReference();
     int result = 0;
@@ -117,9 +117,9 @@ public class InheritanceHierarchyCache {
     }
     if (resultingReference.getName().equals(expectedReference.getName())) {
       result |= InheritanceHierarchyCache.RESULT_EQUAL;
-    } else if (resultingReference.getDimensionality() > expectedReference.getDimensionality()){
+    } else if (resultingReference.getDimensionality() >= expectedTypeDimension){
       //array types
-      if (resultingReference.getInnermostElementType().equals(expectedReference.getInnermostElementType())){
+      if (resultingReference.getInnermostElementType().getName().equals(expectedReference.getName())){
         result |= InheritanceHierarchyCache.RESULT_EQUAL;
       }
     }

@@ -58,9 +58,9 @@ public class ChainTemplateProposal {
    * @param castingType
    *          type to up-cast the chain's last element's resulting type to
    */
-  public ChainTemplateProposal(final List<IChainElement> proposedChain, IClass expectedType, boolean cast) {
+  public ChainTemplateProposal(final List<IChainElement> proposedChain, IClass expectedType, final Integer expectedTypeDimension, boolean cast) {
     this.expectedType = expectedType;
-    this.expectedTypeDimension = expectedType.getReference().getDimensionality();
+    this.expectedTypeDimension = expectedTypeDimension;
     Checks.ensureIsNotNull(proposedChain);
     Checks.ensureIsTrue(proposedChain.size() >= 1);
     this.proposedChain = proposedChain;

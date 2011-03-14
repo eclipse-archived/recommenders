@@ -112,7 +112,8 @@ public class ChainingAlgorithm {
     for (final IChainElement methodProposal : ctx.getProposedMethods()) {
       final LinkedList<IChainElement> proposalElementList = new LinkedList<IChainElement>();
       proposalElementList.add(methodProposal);
-      executor.execute(new ChainingAlgorithmWorker(proposalElementList, 0, this, executor, expectedType));
+      executor.execute(new ChainingAlgorithmWorker(proposalElementList, 0, this, executor, expectedType, ctx
+          .getExpectedTypeArrayDimension()));
     }
   }
 
@@ -120,7 +121,8 @@ public class ChainingAlgorithm {
     for (final IChainElement variableProposal : ctx.getProposedVariables()) {
       final LinkedList<IChainElement> proposalElementList = new LinkedList<IChainElement>();
       proposalElementList.add(variableProposal);
-      executor.execute(new ChainingAlgorithmWorker(proposalElementList, 0, this, executor, expectedType));
+      executor.execute(new ChainingAlgorithmWorker(proposalElementList, 0, this, executor, expectedType, ctx
+          .getExpectedTypeArrayDimension()));
     }
   }
 
@@ -128,19 +130,20 @@ public class ChainingAlgorithm {
     for (final IChainElement fieldProposal : ctx.getProposedFields()) {
       final LinkedList<IChainElement> proposalElementList = new LinkedList<IChainElement>();
       proposalElementList.add(fieldProposal);
-      executor.execute(new ChainingAlgorithmWorker(proposalElementList, 0, this, executor, expectedType));
+      executor.execute(new ChainingAlgorithmWorker(proposalElementList, 0, this, executor, expectedType, ctx
+          .getExpectedTypeArrayDimension()));
     }
   }
 
   public void addCastedProposal(final LinkedList<IChainElement> workingChain, final IClass expectedType) {
     synchronized (proposals) {
-      proposals.add(new ChainTemplateProposal(workingChain, expectedType, true));
+      proposals.add(new ChainTemplateProposal(workingChain, expectedType, ctx.getExpectedTypeArrayDimension(), true));
     }
   }
 
   public void addProposal(final LinkedList<IChainElement> workingChain) {
     synchronized (proposals) {
-      proposals.add(new ChainTemplateProposal(workingChain,expectedType, false));
+      proposals.add(new ChainTemplateProposal(workingChain, expectedType, ctx.getExpectedTypeArrayDimension(), false));
     }
   }
 
