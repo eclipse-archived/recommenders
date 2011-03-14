@@ -1,0 +1,49 @@
+{
+  "imports": [
+    {
+      "name": "Ljava/lang/Object",
+      "fingerprint": "461e37adec8b28e74247c7473d930235838ea91e"
+    }
+  ],
+  "kind": "SNAPSHOT",
+  "analysedOn": "2011-03-14T14:00:55.281+01:00",
+  "fingerprint": "2e4b9959a088a855873d438633465ac3e8b251c8",
+  "name": "Ldata/CompletionOnArrayWithCastsSubtype",
+  "primaryType": {
+    "name": "Ldata/CompletionOnArrayWithCastsSubtype",
+    "superclass": "Ljava/lang/Object",
+    "interfaces": [],
+    "fields": [],
+    "methods": [
+      {
+        "name": "Ldata/CompletionOnArrayWithCastsSubtype.\u003cinit\u003e()V",
+        "superDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+        "firstDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+        "line": 0,
+        "nestedTypes": [],
+        "modifiers": 1,
+        "objects": [
+          {
+            "type": "Ljava/lang/Object",
+            "names": [
+              "this"
+            ],
+            "kind": "PARAMETER",
+            "parameterCallSites": [],
+            "receiverCallSites": [
+              {
+                "receiver": "this",
+                "targetMethod": "Ljava/lang/Object.\u003cinit\u003e()V",
+                "sourceMethod": "Ldata/CompletionOnArrayWithCastsSubtype.\u003cinit\u003e()V",
+                "line": 3
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "line": 0,
+    "memberTypes": [],
+    "modifiers": 33
+  }
+}
