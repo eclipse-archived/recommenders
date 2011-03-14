@@ -22,7 +22,7 @@ import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
+import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.recommenders.rcp.utils.ast.HeuristicUsedTypesAndMethodsLocationFinder;
 import org.eclipse.recommenders.rcp.utils.ast.UsedTypesAndMethodsLocationFinder;
 import org.eclipse.swt.custom.StyleRange;
@@ -72,6 +72,7 @@ public class VariableUsagesHighlighter implements ITextPresentationListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void resetAnnotations(final IAnnotationModel annotationModel) {
         final Iterator<Annotation> iter = annotationModel.getAnnotationIterator();
         while (iter.hasNext()) {
@@ -101,6 +102,7 @@ public class VariableUsagesHighlighter implements ITextPresentationListener {
         calculateRanges(textPresentation, start, length, foreground, background);
     }
 
+    @SuppressWarnings("unchecked")
     private void calculateRanges(final TextPresentation textPresentation, final int start, final int length,
             final Color foreground, final Color background) {
         final Iterator<StyleRange> srIterator = textPresentation.getAllStyleRangeIterator();

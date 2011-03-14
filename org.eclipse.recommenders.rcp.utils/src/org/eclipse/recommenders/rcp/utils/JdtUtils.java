@@ -326,4 +326,5 @@ public class JdtUtils {
     public static <T> T unsafeFirstElement(final ISelection s) {
         return (T) asStructuredSelection(s).getFirstElement();
     }
+
 }

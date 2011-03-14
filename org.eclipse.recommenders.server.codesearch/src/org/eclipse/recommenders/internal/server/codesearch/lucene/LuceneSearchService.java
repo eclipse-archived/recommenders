@@ -10,10 +10,15 @@
  */
 package org.eclipse.recommenders.internal.server.codesearch.lucene;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFalse;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,30 +52,33 @@ public class LuceneSearchService {
     private IndexReader luceneIndexReader;
     private File baseDir;
     private File indexDir;
+    private File weightsFile;
 
     @Inject
     public LuceneSearchService(@Named("codesearch.basedir") final File basedir) throws CorruptIndexException,
             IOException {
-        setFolders(basedir);
-        createLuceneIndexReader();
-        createTermsFrequencyIndex();
-        loadDefaultWeights();
+        initializeFilesAndFolders(basedir);
+        initializeLuceneIndexReader();
+        initializeTermFrequencyIndex();
+        initializeFeatureWeights();
     }
 
-    private void setFolders(final File basedir) throws ZipException, IOException {
+    private void initializeFilesAndFolders(final File basedir) throws ZipException, IOException {
         this.baseDir = basedir;
         this.indexDir = new File(basedir, "index");
         if (!indexDir.exists()) {
             indexDir.mkdirs();
         }
+        weightsFile = new File(baseDir, "weights/active-weights.json");
+
     }
 
-    private void createLuceneIndexReader() throws IOException, CorruptIndexException {
+    private void initializeLuceneIndexReader() throws IOException, CorruptIndexException {
         final SimpleFSDirectory index = new SimpleFSDirectory(indexDir);
         luceneIndexReader = IndexReader.open(index);
     }
 
-    private void createTermsFrequencyIndex() throws IOException {
+    private void initializeTermFrequencyIndex() throws IOException {
         final TermEnum termEnum = luceneIndexReader.terms();
         final Bag<Term> termsBag = TreeBag.newTreeBag();
         while (termEnum.next()) {
@@ -80,12 +88,11 @@ public class LuceneSearchService {
         }
     }
 
-    private void loadDefaultWeights() {
+    private void initializeFeatureWeights() {
         try {
             this.weights = new FeatureWeights();
-            this.weights.weights = GsonUtil.deserialize(new File(baseDir, "weights.json"),
-                    new TypeToken<Map<String, Float>>() {
-                    }.getType());
+            this.weights.weights = GsonUtil.deserialize(weightsFile, new TypeToken<Map<String, Float>>() {
+            }.getType());
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
@@ -94,7 +101,6 @@ public class LuceneSearchService {
     public List<LuceneSearchResult> search(final Request request) {
         try {
             final LinkedList<LuceneSearchResult> proposals = Lists.newLinkedList();
-            final FeatureWeights weights = request.featureWeights == null ? this.weights : request.featureWeights;
             final CodesearchQuery query = LuceneQueryUtil.toCodeSearchQuery(request, weights);
             final IndexSearcher searcher = new IndexSearcher(luceneIndexReader);
             final TopDocs search = searcher.search(query, 15);
@@ -120,5 +126,22 @@ public class LuceneSearchService {
         } catch (final Exception e) {
             throw throwUnhandledException(e);
         }
+    }
+
+    public void updateWeights(final FeatureWeights newWeights) {
+        ensureIsNotNull(newWeights);
+        ensureIsNotNull(newWeights.weights);
+        ensureIsFalse(newWeights.weights.isEmpty(), "empty weights not allowed. At least one feature is required.");
+        weights = newWeights;
+
+        final File backupFile = computeNewWeightsBackupFile();
+        GsonUtil.serialize(newWeights.weights, backupFile);
+        GsonUtil.serialize(newWeights.weights, weightsFile);
+    }
+
+    private File computeNewWeightsBackupFile() {
+        final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd__HH.mm.ss");
+        final String dateString = formatter.format(new Date());
+        return new File(weightsFile.getParentFile(), "weights-" + dateString + ".json");
     }
 }

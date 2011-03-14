@@ -18,14 +18,18 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+import org.eclipse.recommenders.commons.codesearch.FeatureWeights;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.internal.server.codesearch.IDataAccessService;
 import org.eclipse.recommenders.internal.server.codesearch.RequestLogEntry;
+import org.eclipse.recommenders.internal.server.codesearch.lucene.LuceneSearchResult;
 import org.eclipse.recommenders.internal.server.codesearch.lucene.LuceneSearchService;
 import org.eclipse.recommenders.internal.server.codesearch.lucene.ScoringExplanation;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 @Path("admin")
@@ -43,9 +47,24 @@ public class AdminResource {
 
     @Consumes({ APPLICATION_JSON })
     @Produces({ APPLICATION_JSON })
+    @GET
+    @Path("explain/{requestId}")
+    public List<ScoringExplanation> explain(@PathParam("requestId") final String requestId) {
+        final List<ScoringExplanation> res = Lists.newLinkedList();
+        final RequestLogEntry log = db.getLogEntry(requestId);
+        final Request tmp = Request.newRequestWithBlankQuery();
+        tmp.query = log.query;
+        for (final LuceneSearchResult result : log.results) {
+            final ScoringExplanation explanation = search.explainScore(tmp, result.luceneDocumentId);
+            res.add(explanation);
+        }
+        return res;
+    }
+
+    @Consumes({ APPLICATION_JSON })
     @POST
-    @Path("explain")
-    public ScoringExplanation explain(final Request query, final int luceneDocumentId) {
-        return search.explainScore(query, luceneDocumentId);
+    @Path("weights")
+    public void updateWeights(final FeatureWeights newWeights) {
+        search.updateWeights(newWeights);
     }
 }

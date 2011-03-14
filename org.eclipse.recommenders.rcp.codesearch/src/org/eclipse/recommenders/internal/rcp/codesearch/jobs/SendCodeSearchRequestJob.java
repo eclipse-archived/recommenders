@@ -24,7 +24,7 @@ import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.codesearch.Response;
 import org.eclipse.recommenders.commons.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
+import org.eclipse.recommenders.internal.rcp.codesearch.RCPResponse;
 import org.eclipse.swt.widgets.Display;
 
 public class SendCodeSearchRequestJob extends WorkspaceJob {
@@ -50,15 +50,9 @@ public class SendCodeSearchRequestJob extends WorkspaceJob {
         final StopWatch netWatch = new StopWatch();
         netWatch.start();
         final Response serverResponse = searchClient.search(request);
-        response = RCPResponse.newInstance(serverResponse, javaProject);
-
+        response = RCPResponse.newInstance(request, serverResponse, javaProject);
         netWatch.stop();
         System.out.printf("net comm took %s\n", netWatch);
-        final StopWatch eclWatch = new StopWatch();
-        eclWatch.start();
-        buildASTs();
-        eclWatch.stop();
-        System.out.printf("building asts took %s\n", eclWatch);
         openViews();
         return Status.OK_STATUS;
     }
@@ -67,16 +61,12 @@ public class SendCodeSearchRequestJob extends WorkspaceJob {
         return Request.INVALID != request;
     }
 
-    private void buildASTs() {
-
-    }
-
     private void openViews() {
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
                 CodesearchPlugin.showQueryView().setInput(request, javaProject);
-                CodesearchPlugin.showExamplesView().setInput(request, response);
+                CodesearchPlugin.showExamplesView().setInput(response);
             }
         });
     }

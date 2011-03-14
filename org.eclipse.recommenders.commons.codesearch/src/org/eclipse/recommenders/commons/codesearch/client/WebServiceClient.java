@@ -28,7 +28,7 @@ import com.sun.jersey.api.client.WebResource.Builder;
 
 public class WebServiceClient {
 
-    private ClientConfiguration configuration;
+    private final ClientConfiguration configuration;
     private final Client client;
     private final Map<String, Cookie> cookies;
 

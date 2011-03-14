@@ -12,6 +12,8 @@ package org.eclipse.recommenders.commons.codesearch.client;
 
 public class UnauthorizedAccessException extends InvalidRequestException {
 
+    private static final long serialVersionUID = 1L;
+
     public UnauthorizedAccessException(final Throwable e) {
         super(e);
     }

@@ -12,6 +12,8 @@ package org.eclipse.recommenders.commons.codesearch.client;
 
 public class ConflictException extends InvalidRequestException {
 
+    private static final long serialVersionUID = 1L;
+
     public ConflictException(final Throwable e) {
         super(e);
     }

@@ -40,11 +40,11 @@ public class VmMethodName implements IMethodName {
     }
 
     /**
-     * Creates a new {@link VmMethodName} from the given method argument but replaces the declaring type by the given
-     * new base type.
+     * Creates a new {@link VmMethodName} from the given method argument but
+     * replaces the declaring type by the given new base type.
      * <p>
-     * Example: vmMethodName = "Ljava/lang/String.wait()V", vmBaseTypeName = "Ljava/lang/Object" --&gt; res =
-     * "Ljava/lang/Object.wait()".
+     * Example: vmMethodName = "Ljava/lang/String.wait()V", vmBaseTypeName =
+     * "Ljava/lang/Object" --&gt; res = "Ljava/lang/Object.wait()".
      * 
      * @param vmBaseTypeName
      * @param vmMethodName
@@ -165,7 +165,8 @@ public class VmMethodName implements IMethodName {
                     off++;
                 }
                 // off points to the ';' now
-                argTypes.add(VmTypeName.get(new String(desc, start, off - start)));
+                String argumentTypeName = new String(desc, start, off - start);
+                argTypes.add(VmTypeName.get(argumentTypeName));
                 break;
             }
             case '[': {
@@ -206,8 +207,12 @@ public class VmMethodName implements IMethodName {
     @Override
     public ITypeName getReturnType() {
         String returnType = StringUtils.substringAfterLast(identifier, ")");
+        // strip off throws type from method return
+        returnType = StringUtils.substringBefore(returnType, "|");
         if (!returnType.endsWith(";")) {
-            // be sure that if it does not end with a ';' is MUST be a primitive or an array of primitives:
+
+            // be sure that if it does not end with a ';' is MUST be a primitive
+            // or an array of primitives:
             final ITypeName res = VmTypeName.get(returnType);
             ensureIsTrue(res.isPrimitiveType() || res.isArrayType() && res.getArrayBaseType().isPrimitiveType());
             return res;

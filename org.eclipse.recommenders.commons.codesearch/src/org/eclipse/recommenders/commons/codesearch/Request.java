@@ -49,9 +49,4 @@ public class Request {
      */
     public SnippetSummary query;
 
-    /**
-     * A query may be customized using individual feature weights.
-     */
-    public FeatureWeights featureWeights;
-
 }

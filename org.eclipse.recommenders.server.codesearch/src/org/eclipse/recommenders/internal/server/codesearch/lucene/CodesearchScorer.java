@@ -171,6 +171,7 @@ public class CodesearchScorer extends org.apache.lucene.search.Scorer {
 
     public ScoringExplanation explain(final IndexReader reader, final int doc) {
         final ScoringExplanation e = new ScoringExplanation();
+        e.luceneDocumentId = doc;
         float score = 0.0f;
         try {
             for (final SingleFeatureScorer subScorer : subScorers.keySet()) {

@@ -14,86 +14,72 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IStorageEditorInput;
 
-public class ByteStorage implements IStorage, IStorageEditorInput
-{
-	private final String data;
-	private final String name;
+public class ByteStorage implements IStorage, IStorageEditorInput {
+    private final String data;
+    private final String name;
 
-	public ByteStorage(final String data, final String name)
-	{
-		super();
-		this.data = data;
-		this.name = name;
-	}
+    public ByteStorage(final String data, final String name) {
+        super();
+        this.data = data;
+        this.name = name;
+    }
 
-	@Override
-	public InputStream getContents() throws CoreException
-	{
-		return new ByteArrayInputStream(data.getBytes());
-	}
+    @Override
+    public InputStream getContents() throws CoreException {
+        return new ByteArrayInputStream(data.getBytes());
+    }
 
-	@Override
-	public IPath getFullPath()
-	{
-		return new Path(name);
-	}
+    @Override
+    public IPath getFullPath() {
+        return new Path(name);
+    }
 
-	@Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") final Class adapter)
-	{
-		return null;
-	}
+    @Override
+    public Object getAdapter(@SuppressWarnings("rawtypes") final Class adapter) {
+        return null;
+    }
 
-	@Override
-	public String getName()
-	{
-		return name;
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public boolean isReadOnly()
-	{
-		return true;
-	}
+    @Override
+    public boolean isReadOnly() {
+        return true;
+    }
 
-	@Override
-	public boolean exists()
-	{
-		return true;
-	}
+    @Override
+    public boolean exists() {
+        return true;
+    }
 
-	@Override
-	public ImageDescriptor getImageDescriptor()
-	{
-		return null;
-	}
+    @Override
+    public ImageDescriptor getImageDescriptor() {
+        return null;
+    }
 
-	@Override
-	public IPersistableElement getPersistable()
-	{
-		return null;
-	}
+    @Override
+    public IPersistableElement getPersistable() {
+        return null;
+    }
 
-	@Override
-	public IStorage getStorage()
-	{
-		return this;
-	}
+    @Override
+    public IStorage getStorage() {
+        return this;
+    }
 
-	@Override
-	public String getToolTipText()
-	{
-		return "Code Example Recommendation: " + getName();
-	}
+    @Override
+    public String getToolTipText() {
+        return "Code Example Recommendation: " + getName();
+    }
 
-	@Override
-	public boolean equals(final Object obj)
-	{
-		if (obj instanceof ByteStorage)
-		{
-			final ByteStorage other = (ByteStorage) obj;
-			return getName().equals(other.getName());
-		}
-		return super.equals(obj);
-	}
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof ByteStorage) {
+            final ByteStorage other = (ByteStorage) obj;
+            return getName().equals(other.getName());
+        }
+        return super.equals(obj);
+    }
 }

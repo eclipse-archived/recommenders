@@ -29,12 +29,12 @@ public enum FeedbackType {
     RATED_USEFUL,
 
     /**
-     * User rated this snippet as being not helpful
-     */
-    RATED_USELESS,
-
-    /**
      * This item has not been rated at all.
      */
     NOT_RATED,
+
+    /**
+     * User rated this snippet as being not helpful
+     */
+    RATED_USELESS,
 }

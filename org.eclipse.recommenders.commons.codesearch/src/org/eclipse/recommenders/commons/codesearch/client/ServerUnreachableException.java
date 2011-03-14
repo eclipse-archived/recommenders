@@ -12,6 +12,8 @@ package org.eclipse.recommenders.commons.codesearch.client;
 
 public class ServerUnreachableException extends ServerCommunicationException {
 
+    private static final long serialVersionUID = 1L;
+
     public ServerUnreachableException(final Throwable e) {
         super(e);
     }

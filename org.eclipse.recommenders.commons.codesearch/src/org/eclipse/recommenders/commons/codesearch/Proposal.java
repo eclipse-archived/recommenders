@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.commons.codesearch;
 
-
 public class Proposal {
 
     public static Proposal newProposal() {

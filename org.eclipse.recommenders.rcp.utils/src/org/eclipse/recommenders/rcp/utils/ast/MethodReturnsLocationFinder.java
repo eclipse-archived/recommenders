@@ -16,24 +16,20 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.ConstructorInvocation;
-import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 
 import com.google.common.collect.Sets;
 
-public class UsedTypesAndMethodsLocationFinder {
+public class MethodReturnsLocationFinder {
 
-    public static UsedTypesAndMethodsLocationFinder find(final ASTNode cu, final Set<ITypeName> expectedTypes,
-            final Set<IMethodName> expectedMethods) {
+    public static MethodReturnsLocationFinder find(final ASTNode cu, final Set<ITypeName> expectedTypes) {
         try {
-            return new UsedTypesAndMethodsLocationFinder(cu, expectedTypes, expectedMethods);
+            return new MethodReturnsLocationFinder(cu, expectedTypes);
         } catch (final Throwable e) {
             e.printStackTrace();
             return null;
@@ -43,44 +39,14 @@ public class UsedTypesAndMethodsLocationFinder {
     private final Set<ASTNode> methods = Sets.newHashSet();
     private final Set<ASTNode> types = Sets.newHashSet();
 
-    public Set<ASTNode> getMethodSimpleNames() {
+    public Set<ASTNode> getMethodReturnSimpleNameNodes() {
         return methods;
     }
 
-    public Set<ASTNode> getTypeSimpleNames() {
-        return types;
-    }
-
-    public UsedTypesAndMethodsLocationFinder(final ASTNode member, final Set<ITypeName> expectedTypes,
-            final Set<IMethodName> expectedMethods) {
+    public MethodReturnsLocationFinder(final ASTNode member, final Set<ITypeName> expectedTypes) {
         ensureIsNotNull(member);
         ensureIsNotNull(expectedTypes);
         member.accept(new ASTVisitor(false) {
-
-            @Override
-            public boolean visit(final SimpleName node) {
-                final IBinding b = node.resolveBinding();
-                if (b instanceof IVariableBinding) {
-                    addVariableBinding((IVariableBinding) b, node);
-                } else if (b instanceof IMethodBinding) {
-                    addMethodBinding((IMethodBinding) b, node);
-                }
-                return true;
-            }
-
-            @Override
-            public boolean visit(final SuperConstructorInvocation node) {
-                final IMethodBinding b = node.resolveConstructorBinding();
-                addMethodBinding(b, node);
-                return true;
-            }
-
-            @Override
-            public boolean visit(final ConstructorInvocation node) {
-                final IMethodBinding b = node.resolveConstructorBinding();
-                addMethodBinding(b, node);
-                return true;
-            }
 
             @Override
             public boolean visit(final SuperMethodInvocation node) {
@@ -101,11 +67,8 @@ public class UsedTypesAndMethodsLocationFinder {
                 if (method == null) {
                     return;
                 }
-                if (expectedTypes.contains(method.getDeclaringType())) {
-                    methods.add(node);
-                } else if (expectedMethods.contains(method)) {
-                    methods.add(node);
-                } else if (expectedTypes.contains(method.getReturnType())) {
+                final ITypeName returnType = method.getReturnType();
+                if (expectedTypes.contains(returnType)) {
                     methods.add(node);
                 }
             }

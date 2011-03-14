@@ -12,6 +12,8 @@ package org.eclipse.recommenders.commons.codesearch.client;
 
 public class ServerCommunicationException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     public ServerCommunicationException(final Throwable e) {
         super(e);
     }

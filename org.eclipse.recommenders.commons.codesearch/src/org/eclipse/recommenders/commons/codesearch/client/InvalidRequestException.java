@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.commons.codesearch.client;
 
 public class InvalidRequestException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
     public InvalidRequestException(final Throwable e) {
         super(e);

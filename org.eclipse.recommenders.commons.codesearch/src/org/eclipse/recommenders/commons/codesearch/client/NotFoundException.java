@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.commons.codesearch.client;
 
 public class NotFoundException extends InvalidRequestException {
+    private static final long serialVersionUID = 1L;
 
     public NotFoundException(final Throwable e) {
         super(e);

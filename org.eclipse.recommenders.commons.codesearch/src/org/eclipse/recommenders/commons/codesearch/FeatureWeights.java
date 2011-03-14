@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.commons.codesearch;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFalse;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -23,5 +26,13 @@ public class FeatureWeights {
 
     public Collection<Float> weightValues() {
         return weights.values();
+    }
+
+    public static FeatureWeights create(final Map<String, Float> newWeights) {
+        ensureIsNotNull(newWeights);
+        ensureIsFalse(newWeights.isEmpty(), "map contains no weights");
+        final FeatureWeights res = new FeatureWeights();
+        res.weights = newWeights;
+        return res;
     }
 }

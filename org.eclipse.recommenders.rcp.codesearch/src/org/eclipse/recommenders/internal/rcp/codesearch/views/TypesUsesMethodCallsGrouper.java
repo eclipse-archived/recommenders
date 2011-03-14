@@ -19,7 +19,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
+import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;

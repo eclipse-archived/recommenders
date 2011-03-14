@@ -30,7 +30,7 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
+import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.ByteStorage;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
 import org.eclipse.recommenders.internal.rcp.codesearch.views.VariableUsagesHighlighter;

@@ -30,6 +30,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextR
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
+@SuppressWarnings("rawtypes")
 public class CodesearchCompletionProposalComputer implements IJavaCompletionProposalComputer {
     private final IArtifactStore artifactStore;
     private final IntelligentCompletionContextResolver contextResolver;
@@ -57,14 +58,12 @@ public class CodesearchCompletionProposalComputer implements IJavaCompletionProp
         }
         final CompilationUnit recCu = artifactStore.loadArtifact(jdtCu, CompilationUnit.class);
         final List<IJavaCompletionProposal> res = Lists.newArrayList();
-        if (recContext.getVariable() != null) {
-            res.add(new SearchSimilarVariableUsagesProposal(100, recCu, recContext, searchClient));
-        }
+        // if (recContext.getVariable() != null) {
+        // res.add(new SearchSimilarVariableUsagesProposal(100, recCu,
+        // recContext, searchClient));
+        // }
         if (recContext.getEnclosingMethod() != null) {
             res.add(new SearchSimilarMethodsProposal(100, recCu, recContext, searchClient));
-        }
-        {
-            res.add(new SearchSimilarClassesProposal(100, recCu, recContext, searchClient));
         }
         return res;
     }

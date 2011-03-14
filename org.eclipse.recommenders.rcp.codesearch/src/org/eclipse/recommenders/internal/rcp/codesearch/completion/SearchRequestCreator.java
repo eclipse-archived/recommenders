@@ -56,9 +56,9 @@ public class SearchRequestCreator extends ASTVisitor {
     }
 
     private void determineRequestKind() {
-        final boolean empty = (selection == null) || (selection.getLength() == 0);
+        final boolean empty = selection == null || selection.getLength() == 0;
         if (empty) {
-            request.type = RequestType.CLASS;
+            request.type = RequestType.SIMILAR_CLASSES;
         } else {
             request.type = RequestType.CUSTOM;
         }
@@ -230,7 +230,7 @@ public class SearchRequestCreator extends ASTVisitor {
 
     private void addUsedType(final ITypeBinding b) {
         final ITypeName type = BindingUtils.toTypeName(b);
-        if ((type != null) && !isPrimitiveOrArrayOrNullOrObjectOrString(type)) {
+        if (type != null && !isPrimitiveOrArrayOrNullOrObjectOrString(type)) {
             request.query.usedTypes.add(type);
         }
     }
@@ -277,7 +277,7 @@ public class SearchRequestCreator extends ASTVisitor {
     }
 
     private boolean isPrimitiveOrArrayOrNullOrObjectOrString(final ITypeName type) {
-        return (type == null) || type.isPrimitiveType() || type.isArrayType() || (type == VmTypeName.OBJECT)
-                || (type == VmTypeName.STRING);
+        return type == null || type.isPrimitiveType() || type.isArrayType() || type == VmTypeName.OBJECT
+                || type == VmTypeName.STRING;
     }
 }

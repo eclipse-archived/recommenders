@@ -11,5 +11,5 @@
 package org.eclipse.recommenders.commons.codesearch;
 
 public enum RequestType {
-    CLASS, METHOD, VARIABLE, CUSTOM
+    SIMILAR_CLASSES, SIMILAR_METHODS, SIMILAR_VARIABLE_USAGES, VARIABLE_DEFINITION, CUSTOM
 }

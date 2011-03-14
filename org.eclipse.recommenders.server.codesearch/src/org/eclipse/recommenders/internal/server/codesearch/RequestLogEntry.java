@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.server.codesearch;
 import java.util.Date;
 import java.util.List;
 
-import org.eclipse.recommenders.commons.codesearch.FeatureWeights;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.codesearch.RequestType;
@@ -61,11 +60,6 @@ public class RequestLogEntry {
      */
     public SnippetSummary query;
 
-    /**
-     * A query may be customized using individual feature weights.
-     */
-    public FeatureWeights featureWeights;
-
     public long searchTimeInMillis;
 
     /**
@@ -85,7 +79,6 @@ public class RequestLogEntry {
         res.query = request.query.clone();
         res.query.nullEmptySets();
         res.type = request.type;
-        res.featureWeights = request.featureWeights;
         res.issuedOn = new Date();
         return res;
     }

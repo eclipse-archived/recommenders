@@ -128,7 +128,8 @@ public class CrASTUtil {
         final String srcClassName = Names.vm2srcTypeName(ITypeName.getIdentifier());
         parser.setUnitName(srcClassName + ".java");
         parser.setProject(javaProject);
-        parser.setWorkingCopyOwner(new MyWorkingCopyOwner());
+        parser.setCompilerOptions(null);
+        // parser.setWorkingCopyOwner(new MyWorkingCopyOwner());
         parser.setBindingsRecovery(true);
         parser.setStatementsRecovery(true);
         final ASTNode ast = parser.createAST(null);
@@ -226,7 +227,7 @@ public class CrASTUtil {
             }
             final IJavaElement[] elements = ((ICodeAssist) input).codeSelect(selection.getOffset(),
                     selection.getLength());
-            if ((elements != null) && (elements.length > 0)) {
+            if (elements != null && elements.length > 0) {
                 return elements;
             }
         }

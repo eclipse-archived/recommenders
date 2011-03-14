@@ -29,7 +29,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
+import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;

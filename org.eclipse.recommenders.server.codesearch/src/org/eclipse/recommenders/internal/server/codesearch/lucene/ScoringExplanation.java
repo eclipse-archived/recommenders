@@ -36,6 +36,8 @@ public class ScoringExplanation extends Explanation {
      */
     public float score;
 
+    public int luceneDocumentId;
+
     /**
      * The detailed summary how each sub-scorer contributed to this score;
      */
@@ -44,5 +46,10 @@ public class ScoringExplanation extends Explanation {
     public void addSubScore(final String scorerName, final float score, final float weight) {
         final FeatureScoreExplanation e = FeatureScoreExplanation.create(scorerName, score, weight);
         scores.add(e);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 }

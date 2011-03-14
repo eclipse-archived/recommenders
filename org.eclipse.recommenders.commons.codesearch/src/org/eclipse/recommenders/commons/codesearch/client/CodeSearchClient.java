@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 
 public class CodeSearchClient implements ICodeSearchResource {
 
-    private WebServiceClient client;
+    private final WebServiceClient client;
 
     @Inject
     public CodeSearchClient(final WebServiceClient client) {

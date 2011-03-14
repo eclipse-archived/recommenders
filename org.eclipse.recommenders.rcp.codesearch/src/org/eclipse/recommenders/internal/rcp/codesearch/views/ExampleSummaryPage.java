@@ -10,9 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codesearch.views;
 
-import org.eclipse.recommenders.commons.codesearch.Request;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
+import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
+import org.eclipse.recommenders.internal.rcp.codesearch.RCPResponse;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -21,5 +20,5 @@ public interface ExampleSummaryPage {
 
     Control getControl();
 
-    void setInput(Request request, RCPResponse response, RCPProposal result, String searchData);
+    void setInput(RCPResponse response, RCPProposal proposalToDisplay);
 }
