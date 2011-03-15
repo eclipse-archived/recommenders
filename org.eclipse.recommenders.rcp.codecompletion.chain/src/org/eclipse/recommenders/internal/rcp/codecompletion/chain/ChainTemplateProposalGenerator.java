@@ -411,11 +411,11 @@ public class ChainTemplateProposalGenerator {
     String result = new String();
     if (isEqualToExpectedType(part) || isInSubtypeHierarchie(part) || isInSupertypeHierarchie(part)) {
       for (int i = part.getArrayDimension() - expectedTypeDimension; i > 0; i--) {
-        result += "[${i}]";
+        result += "[${" + ProposalNameGenerator.generateFreeVariableName() + "}]";
       }
     } else {
       for (int i = part.getArrayDimension(); i > 0; i--) {
-        result += "[${i}]";
+        result += "[${" + ProposalNameGenerator.generateFreeVariableName() + "}]";
       }
     }
     return result;

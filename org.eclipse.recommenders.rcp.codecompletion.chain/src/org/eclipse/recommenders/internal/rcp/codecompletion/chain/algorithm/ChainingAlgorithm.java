@@ -31,6 +31,7 @@ import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.ChainTemplateProposal;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.ProposalNameGenerator;
 import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
@@ -158,6 +159,7 @@ public class ChainingAlgorithm {
   }
 
   private void processMembers() throws JavaModelException {
+    ProposalNameGenerator.resetProposalNameGenerator();
     processInitialFields();
     processLocalVariables();
     processMethods();
@@ -189,6 +191,7 @@ public class ChainingAlgorithm {
     for (final IChainElement variableProposal : ctx.getProposedVariables()) {
       storeElementList.add(variableProposal);
       workingElement.add(variableProposal);
+      ProposalNameGenerator.markVariableNameAsUsed(variableProposal.getCompletion());
     }
   }
 
@@ -196,12 +199,14 @@ public class ChainingAlgorithm {
     for (final IChainElement fieldProposal : ctx.getProposedFields()) {
       storeElementList.add(fieldProposal);
       workingElement.add(fieldProposal);
+      ProposalNameGenerator.markVariableNameAsUsed(fieldProposal.getCompletion());
     }
   }
 
   public void storeLastChainElementForProposal(IChainElement element, IClass expectedType) {
     if (!lastChainElementForProposal.containsKey(element)) {
       lastChainElementForProposal.put(element, expectedType);
+
     }
   }
 
