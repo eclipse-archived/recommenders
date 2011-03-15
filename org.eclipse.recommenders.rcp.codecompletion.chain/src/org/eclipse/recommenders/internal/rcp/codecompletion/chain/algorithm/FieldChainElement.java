@@ -12,6 +12,8 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
 import java.io.UTFDataFormatException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 
@@ -39,9 +41,13 @@ public class FieldChainElement implements IChainElement {
   private boolean thisQualifier = false;
 
   private Integer arrayDimension = 0;
-  
+
+  private final List<IChainElement> prevoiusElements;
+
+  private boolean rootElement = false;
 
   public FieldChainElement(final IField field, final Integer chainDepth) {
+    prevoiusElements = new ArrayList<IChainElement>();
     this.chainDepth = chainDepth;
     try {
       completion = field.getName().toUnicodeString();
@@ -96,4 +102,24 @@ public class FieldChainElement implements IChainElement {
     return arrayDimension;
   }
 
+  @Override
+  public void addPrevoiusElement(IChainElement prevoius) {
+    prevoiusElements.add(prevoius);
+
+  }
+
+  @Override
+  public List<IChainElement> previousElements() {
+    return prevoiusElements;
+  }
+
+  @Override
+  public void setRootElement(boolean rootElement) {
+    this.rootElement = rootElement;
+  }
+
+  @Override
+  public boolean isRootElement() {
+    return rootElement;
+  }
 }

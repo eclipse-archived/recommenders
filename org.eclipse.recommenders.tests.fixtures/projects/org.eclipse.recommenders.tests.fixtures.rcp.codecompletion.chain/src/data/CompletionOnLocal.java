@@ -14,7 +14,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
-//call chain 1 ok
+//call chain 1 ok --> 1 element in chain, will not be exposed
 public class CompletionOnLocal {
     public void method() {
         //@start

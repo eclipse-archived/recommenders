@@ -116,7 +116,7 @@ public class ChainCompletionContext {
   private boolean findExpectedClass() {
     final ITypeName expectedTypeName = ctx.getExpectedType();
     expectedTypeArrayDimension = expectedTypeName.getArrayDimensions();
-    expectedType = toWalaClass(expectedTypeName.isArrayType()?expectedTypeName.getArrayBaseType():expectedTypeName);
+    expectedType = toWalaClass(expectedTypeName.isArrayType() ? expectedTypeName.getArrayBaseType() : expectedTypeName);
     return expectedType != null;
   }
 
@@ -149,10 +149,11 @@ public class ChainCompletionContext {
         }
       }
 
-      final FieldChainElement chainElement = new FieldChainElement(field,0);
-      if (localNames.contains(chainElement.getCompletion())){
+      final FieldChainElement chainElement = new FieldChainElement(field, 0);
+      if (localNames.contains(chainElement.getCompletion())) {
         chainElement.setThisQualifier(true);
       }
+      chainElement.setRootElement(true);
       accessibleFields.add(chainElement);
     }
   }
@@ -199,7 +200,8 @@ public class ChainCompletionContext {
         continue;
       }
 
-      final MethodChainElement chainElement = new MethodChainElement(method,0);
+      final MethodChainElement chainElement = new MethodChainElement(method, 0);
+      chainElement.setRootElement(true);
       accessibleMethods.add(chainElement);
     }
   }
@@ -213,8 +215,7 @@ public class ChainCompletionContext {
     if (!ctx.getVariable().isThis()) {
       return;
     }
-    
-    
+
     if (ctx.getCompletionNodeParent() instanceof AbstractVariableDeclaration) {
       AbstractVariableDeclaration decl = (AbstractVariableDeclaration) ctx.getCompletionNodeParent();
       localNames.add(new String(decl.name));
@@ -239,8 +240,9 @@ public class ChainCompletionContext {
         }
       }
 
-      final LocalChainElement element = new LocalChainElement(localName, localType,0);
+      final LocalChainElement element = new LocalChainElement(localName, localType, 0);
       element.setArrayDimension(typeName.getArrayDimensions());
+      element.setRootElement(true);
       accessibleLocals.add(element);
     }
   }

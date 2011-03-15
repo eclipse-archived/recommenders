@@ -34,7 +34,6 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.FieldChainElement;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement;
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement.ChainElementType;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.InheritanceHierarchyCache;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.MethodChainElement;
 import org.eclipse.swt.graphics.Image;
@@ -255,7 +254,6 @@ public class ChainTemplateProposalGenerator {
       isEvaluable = false;
       hasProposalString = false;
     }
-    
 
     return isEvaluable && hasProposalString;
   }
@@ -310,8 +308,7 @@ public class ChainTemplateProposalGenerator {
 
   private void computeCastingForName(final ChainTemplateProposal proposal, final StringBuilder code) {
     if (proposal.needsCast()) {
-      code.insert(0,
-          String.format("(%s) ", computeCasting(proposal)));
+      code.insert(0, String.format("(%s) ", computeCasting(proposal)));
     }
   }
 
@@ -391,15 +388,17 @@ public class ChainTemplateProposalGenerator {
 
   private void computeCastingForCode(final ChainTemplateProposal proposal, final StringBuilder code) {
     if (proposal.needsCast()) {
-      final String castingString = String.format("(${type:newType(%s)}%s)", computeCasting(proposal),computeArrayBracketsForCasting(proposal));
+      final String castingString = String.format("(${type:newType(%s)}%s)", computeCasting(proposal),
+          computeArrayBracketsForCasting(proposal));
       code.insert(0, castingString);
     }
   }
 
   private String computeArrayBracketsForCasting(ChainTemplateProposal proposal) {
     String brackets = new String();
-    //int proposalChainSize = proposal.getProposedChain().size();
-    for (int i = expectedTypeDimension; i > 0; i-- ) {//proposal.getProposedChain().get(proposalChainSize-1).getArrayDimension() - 
+    // int proposalChainSize = proposal.getProposedChain().size();
+    for (int i = expectedTypeDimension; i > 0; i--) {// proposal.getProposedChain().get(proposalChainSize-1).getArrayDimension()
+                                                     // -
       brackets += "[]";// + casting;
     }
     return brackets;
@@ -456,7 +455,7 @@ public class ChainTemplateProposalGenerator {
       return false;
     }
   }
-  
+
   private boolean isInSubtypeHierarchie(IChainElement part) {
     try {
       return InheritanceHierarchyCache.isSubtype(part.getType(), expectedType, expectedTypeDimension);

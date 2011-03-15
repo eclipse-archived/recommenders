@@ -14,11 +14,11 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
-//call chain 1 ok
+//call chain 1 ok --> 1 element chain does not lead to expected solution 
 public class CompletionOnMethodReturn {
     public void method() {
         //@start
-        final IWorkbenchHelpSystem c = getPlatform().<^Space|getHelpSystem.*(1 element).*>
+        final IWorkbenchHelpSystem c = getPlatform()<@ignore^Space|getHelpSystem.*(1 element).*>
         //@end
         //final IWorkbenchHelpSystem c = getPlatform().getHelpSystem()
         /* calling context --> PlatformUI

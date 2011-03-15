@@ -13,6 +13,7 @@ package data;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+//call chain 1 ok
 public class CompletionOnArrayMemberAccessInMethod {
 
     public AtomicInteger findUs[] = { new AtomicInteger(1), new AtomicInteger(2) };
