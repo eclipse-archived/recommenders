@@ -23,7 +23,7 @@ public class Constants {
      * {@link Constants.ProposalSettings#MAX_PROPOSAL_COMPUTATION_TIME_IN_MS} +
      * {@link Constants.AlgorithmSettings#EXECUTOR_ALIVE_TIME_IN_MS}.
      */
-    public static final int EXECUTOR_ALIVE_TIME_IN_MS = 4000000;
+    public static final int EXECUTOR_ALIVE_TIME_IN_MS = 4000;
 
     /**
      * This setting sets the maximal depth of every chain.
