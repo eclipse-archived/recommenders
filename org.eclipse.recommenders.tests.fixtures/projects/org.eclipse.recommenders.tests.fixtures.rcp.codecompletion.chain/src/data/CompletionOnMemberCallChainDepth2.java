@@ -19,6 +19,10 @@ public class CompletionOnMemberCallChainDepth2 {
 
         public class B {
             public File findMe = new File("");
+            
+            public File findMethod() {
+            	return null;
+            }
         }
     }
     

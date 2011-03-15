@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.chain;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jdt.core.JavaModelException;
@@ -44,6 +43,7 @@ import com.ibm.wala.types.TypeName;
 
 @SuppressWarnings("restriction")
 public class ChainTemplateProposalGenerator {
+
   private final TemplateContextType templateContextType;
 
   private final Image templateIcon;
@@ -88,34 +88,7 @@ public class ChainTemplateProposalGenerator {
   // This method sorts all computed 'raw' proposals.
   private void sort() {
     // Prefer proposals that do not cope with casts
-    Collections.sort(proposals, new Comparator<ChainTemplateProposal>() {
-      @Override
-      public int compare(final ChainTemplateProposal p1, final ChainTemplateProposal p2) {
-        // shortest length first
-        if (p1.getProposedChain().size() < p2.getProposedChain().size()) {
-          return -1;
-        } else if (p1.getProposedChain().size() > p2.getProposedChain().size()) {
-          return 1;
-        } else {
-          // casting at the end
-          if (!p1.needsCast() && p2.needsCast()) {
-            return -1;
-          } else if (p1.needsCast() && !p2.needsCast()) {
-            return 1;
-          } else {
-            // sort according name of completion
-            for (int i = 0; i < p1.getProposedChain().size(); i++) {
-              if (!p1.getProposedChain().get(i).getCompletion().equals(p2.getProposedChain().get(i).getCompletion())) {
-                return p1.getProposedChain().get(i).getCompletion()
-                    .compareTo(p2.getProposedChain().get(i).getCompletion());
-              }
-            }
-            return 0;
-          }
-
-        }
-      }
-    });
+    Collections.sort(proposals, new ProposalComperator());
   }
 
   private String computePrefixToEquals() {
