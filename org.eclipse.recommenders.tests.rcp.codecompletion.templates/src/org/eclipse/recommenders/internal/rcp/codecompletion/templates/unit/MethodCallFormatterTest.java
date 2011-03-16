@@ -11,25 +11,27 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.MethodCallFormatter;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.MethodCallFormatter;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 import org.junit.Assert;
 import org.junit.Test;
 
 public final class MethodCallFormatterTest {
 
+    private static MethodCallFormatter methodCallFormatterMock = new MethodCallFormatter(
+            MethodFormatterTest.getMethodFormatterMock());
+
     @Test
     public void testPatternNamer() throws JavaModelException {
-        final MethodCallFormatter formatter = getMethodCallFormatterMock();
-
         MethodCall methodCall = UnitTestSuite.getDefaultMethodCall();
-        Assert.assertEquals("constructed.setText(${intTest:link(0)});", formatter.format(methodCall));
+        Assert.assertEquals("constructed.setText(${intTest:link(0)});", methodCallFormatterMock.format(methodCall));
 
         methodCall = UnitTestSuite.getDefaultConstructorCall();
-        Assert.assertEquals("unconstructed = new Button(${intTest:link(0)});", formatter.format(methodCall));
+        Assert.assertEquals("Button unconstructed = new Button(${intTest:link(0)});",
+                methodCallFormatterMock.format(methodCall));
     }
 
-    public static MethodCallFormatter getMethodCallFormatterMock() throws JavaModelException {
-        return new MethodCallFormatter(MethodFormatterTest.getMethodFormatterMock());
+    public static MethodCallFormatter getMethodCallFormatterMock() {
+        return methodCallFormatterMock;
     }
 }

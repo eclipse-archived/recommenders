@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 
-public final class TemplatesCompletionEngineTest {
+public final class TemplatesCompletionProposalComputerTest {
 
     @Test
     public void testTemplatesCompletionEngine() throws Exception {

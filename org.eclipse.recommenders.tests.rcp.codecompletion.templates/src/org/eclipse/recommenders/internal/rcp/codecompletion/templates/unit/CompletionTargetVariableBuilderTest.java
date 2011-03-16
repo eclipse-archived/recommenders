@@ -10,11 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 
-import com.google.common.collect.Sets;
-
-import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.CompletionTargetVariableBuilder;
@@ -28,37 +26,42 @@ public final class CompletionTargetVariableBuilderTest {
 
     @Test
     public void testExistentVariable() {
-        final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(
-                "Button butto = new Button();\nbutto.", "butto", "Button");
-        final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
-                .createInvokedVariable(context);
-
-        Assert.assertFalse(completionTargetVariable.isNeedsConstructor());
-        Assert.assertEquals("butto", completionTargetVariable.getName());
-        Assert.assertEquals(VmTypeName.get("Button"), completionTargetVariable.getType());
-        Assert.assertEquals(new Region(29, 6), completionTargetVariable.getDocumentRegion());
+        testCompletionTargetVariableBuilder("Button butto = new Button();\nbutto.", "butto", "Button",
+                new Region(29, 6), false);
     }
 
     @Test
     public void testConstructor() {
-        final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getConstructorContextMock(
-                "Button bu", "bu ", "Button");
+        testCompletionTargetVariableBuilder("Button bu", "bu", "Button", new Region(0, 9), true);
+        testCompletionTargetVariableBuilder("Button", null, "Button", new Region(0, 6), true);
+        // testCompletionTargetVariableBuilder("Button b", "b", null, new
+        // Region(0, 8), true);
+    }
+
+    private void testCompletionTargetVariableBuilder(final String code, final String variableName,
+            final String typeName, final Region region, final boolean needsConstructor) {
+        final IIntelligentCompletionContext context = needsConstructor ? CompletionTargetVariableBuilderTest
+                .getConstructorContextMock(code, variableName, typeName) : getMockedContext(code, variableName,
+                typeName);
         final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                 .createInvokedVariable(context);
 
-        Assert.assertTrue(completionTargetVariable.isNeedsConstructor());
-        Assert.assertEquals("bu", completionTargetVariable.getName());
-        Assert.assertEquals(VmTypeName.get("Button"), completionTargetVariable.getType());
-        Assert.assertEquals(new Region(9, 0), completionTargetVariable.getDocumentRegion());
+        Assert.assertEquals(needsConstructor, completionTargetVariable.isNeedsConstructor());
+        Assert.assertEquals(variableName, completionTargetVariable.getName());
+        Assert.assertEquals(VmTypeName.get(typeName), completionTargetVariable.getType());
+        Assert.assertEquals(region, completionTargetVariable.getDocumentRegion());
     }
 
     protected static IIntelligentCompletionContext getMockedContext(final String code, final String variableName,
-            final String typeSimpleName) {
+            final String typeName) {
         final IIntelligentCompletionContext context = Mockito.mock(IIntelligentCompletionContext.class);
         final ICompilationUnit compUnit = Mockito.mock(ICompilationUnit.class);
 
         Mockito.when(context.getReceiverName()).thenReturn(variableName);
-        Mockito.when(context.getReceiverType()).thenReturn(VmTypeName.get(typeSimpleName));
+        if (typeName != null) {
+            Mockito.when(context.getReceiverType()).thenReturn(VmTypeName.get(typeName));
+        }
+        Mockito.when(context.getPrefixToken()).thenReturn("");
         Mockito.when(context.getCompilationUnit()).thenReturn(compUnit);
         Mockito.when(Integer.valueOf(context.getInvocationOffset())).thenReturn(Integer.valueOf(code.length()));
         Mockito.when(context.getReplacementRegion()).thenReturn(new Region(code.length(), 0));
@@ -72,14 +75,19 @@ public final class CompletionTargetVariableBuilderTest {
         return context;
     }
 
+    @SuppressWarnings("restriction")
     public static IIntelligentCompletionContext getConstructorContextMock(final String code, final String variableName,
-            final String typeSimpleName) {
+            final String typeName) {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(code,
-                variableName, typeSimpleName);
-        Mockito.when(context.getExpectedType()).thenReturn(VmTypeName.get(typeSimpleName));
-        final CompletionProposal prop = Mockito.mock(CompletionProposal.class);
-        Mockito.when(prop.getSignature()).thenReturn("Lorg.eclipse.swt.widgets.Button;".toCharArray());
-        Mockito.when(context.getJdtProposals()).thenReturn(Sets.newHashSet(prop));
+                variableName, typeName);
+        if (typeName != null) {
+            Mockito.when(context.getExpectedType()).thenReturn(VmTypeName.get(typeName));
+        }
+        final Statement node = Mockito.mock(Statement.class);
+        Mockito.when(node.toString()).thenReturn(
+                "<test:" + (typeName == null ? code : VmTypeName.get(typeName).getClassName())
+                        + (variableName != null ? " " + variableName : "") + ">");
+        Mockito.when(context.getCompletionNode()).thenReturn(node);
         return context;
     }
 }

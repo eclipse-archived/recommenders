@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
+package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
 import com.google.inject.Inject;
 
@@ -44,7 +44,7 @@ public class MethodFormatter {
      *             When the method could not be resolved by JDT.
      */
     public final String format(final IMethodName methodName) throws JavaModelException {
-        String method = "";
+        String method;
         if (methodName.isInit()) {
             method = methodName.getDeclaringType().getClassName();
         } else {
@@ -83,7 +83,7 @@ public class MethodFormatter {
      *         .
      */
     private String getParameterString(final String parameterName, final String parameterType) {
-        final StringBuilder parameter = new StringBuilder(32);
+        final StringBuilder parameter = new StringBuilder(16);
         parameter.append(getParameterName(parameterName));
         if ("I".equals(parameterType)) {
             parameter.append(":link(0)");

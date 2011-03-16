@@ -15,15 +15,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -36,8 +39,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 
 /**
- * Computes <code>PatternRecommendations</code>s from the
- * <code>CallsModelStore</code>.
+ * Computes {@link PatternRecommendation}s from the {@link CallsModelStore}.
  */
 public final class PatternRecommender {
 
@@ -47,7 +49,8 @@ public final class PatternRecommender {
 
     private final CallsModelStore callsModelStore;
     private final Provider<Set<IVariableUsageResolver>> usageResolvers;
-    private ITypeName receiverType;
+
+    private IIntelligentCompletionContext context;
     private Set<IMethodName> receiverMethodInvocations;
     private ObjectMethodCallsNet model;
 
@@ -69,82 +72,71 @@ public final class PatternRecommender {
     /**
      * @param targetVariable
      *            The variable on which the completion request was invoked.
-     * @param context
+     * @param completionContext
      *            The context from where the completion request was invoked.
      * @return The {@link PatternRecommendation}s holding information for the
      *         templates to be displayed.
      */
     public ImmutableSet<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
-            final IIntelligentCompletionContext context) {
-        if (canFindVariableUsage(context) && canFindModel()) {
-            updateModel(context.getVariable(), context.getEnclosingMethodsFirstDeclaration());
-            return computeRecommendationsForModel(targetVariable.isNeedsConstructor());
+            final IIntelligentCompletionContext completionContext) {
+        final Builder<PatternRecommendation> recommendations = ImmutableSet.builder();
+        context = completionContext;
+        if (canFindVariableUsage(targetVariable)) {
+            for (final ObjectMethodCallsNet typeModel : findModelsForType(targetVariable.getType())) {
+                model = typeModel;
+                updateModel();
+                recommendations.addAll(computeRecommendationsForModel(targetVariable.isNeedsConstructor()));
+            }
         }
-        return ImmutableSet.of();
+        return recommendations.build();
     }
 
     /**
-     * @param context
-     *            The context from where to resolve variable usage.
+     * @param targetVariable
+     *            The variable on which the completion request was invoked.
      * @return True, if a new variable is to be constructed or an existing's
      *         usage could be resolved.
      */
-    private boolean canFindVariableUsage(final IIntelligentCompletionContext context) {
+    private boolean canFindVariableUsage(final CompletionTargetVariable targetVariable) {
         boolean result = true;
         if (context.getVariable() == null) {
-            receiverType = context.getReceiverType();
-            receiverMethodInvocations = Sets.newHashSet();
+            receiverMethodInvocations = targetVariable.getReceiverCalls();
         } else {
-            result = canResolveVariableUsage(context);
+            result = canResolveVariableUsage();
         }
         return result;
     }
 
     /**
-     * @param context
-     *            The context from where to resolve variable usage.
      * @return True, if a provided {@link IVariableUsageResolver} was able to
      *         resolve the variable usage.
      */
-    private boolean canResolveVariableUsage(final IIntelligentCompletionContext context) {
-        boolean result = false;
+    private boolean canResolveVariableUsage() {
         for (final IVariableUsageResolver resolver : usageResolvers.get()) {
             if (resolver.canResolve(context)) {
-                receiverType = context.getReceiverType();
                 receiverMethodInvocations = resolver.getReceiverMethodInvocations();
-                result = true;
-                break;
+                return true;
             }
         }
-        return result;
+        return false;
     }
 
-    /**
-     * @return True, if a model for the current receiver type could be found.
-     */
-    private boolean canFindModel() {
-        boolean result = false;
-        if (callsModelStore.hasModel(receiverType)) {
-            model = callsModelStore.getModel(receiverType);
-            result = true;
+    private ImmutableSet<ObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
+        final Builder<ObjectMethodCallsNet> models = ImmutableSet.builder();
+        if (receiverType.getPackage().getIdentifier().length() == 0) {
+            models.addAll(callsModelStore.getModelsForSimpleName(receiverType));
+        } else if (callsModelStore.hasModel(receiverType)) {
+            models.add(callsModelStore.getModel(receiverType));
         }
-        return result;
+        return models.build();
     }
 
-    /**
-     * @param contextVariable
-     *            The target variable as given by the context.
-     * @param enclosingMethodsFirstDeclaration
-     *            The first declaration (i.e. where an overridden method was
-     *            first declared) of the method enclosing the variable on which
-     *            the completion request was invoked.
-     */
-    private void updateModel(final Variable contextVariable, final IMethodName enclosingMethodsFirstDeclaration) {
+    private void updateModel() {
         model.clearEvidence();
         model.setAvailablity(true);
-        model.setMethodContext(enclosingMethodsFirstDeclaration);
-        model.setObservedMethodCalls(receiverType, receiverMethodInvocations);
-        if (negateConstructors(contextVariable)) {
+        model.setMethodContext(context.getEnclosingMethodsFirstDeclaration());
+        model.setObservedMethodCalls(model.getType(), receiverMethodInvocations);
+        if (shallNegateConstructors(context.getVariable())) {
             model.negateConstructors();
         }
         model.updateBeliefs();
@@ -155,12 +147,13 @@ public final class PatternRecommender {
      *            The target variable as given by the context.
      * @return True, if the patterns should definitely contain no constructors.
      */
-    private boolean negateConstructors(final Variable contextVariable) {
+    private boolean shallNegateConstructors(final Variable contextVariable) {
         return contextVariable != null
                 && (contextVariable.fuzzyIsParameter() || contextVariable.fuzzyIsDefinedByMethodReturn());
     }
 
     /**
+     * @param prefixToken
      * @param constructorRequired
      *            True, if patterns without constructors should be filtered out.
      * @return The most probable patterns regarding the updated model, limited
@@ -173,7 +166,7 @@ public final class PatternRecommender {
             final List<IMethodName> patternMethods = getMethodCallsForPattern(patternName);
             if (keepPattern(patternMethods, constructorRequired)) {
                 final int percentage = (int) (patternWithProbablity.getSecond().doubleValue() * 100);
-                typeRecs.add(PatternRecommendation.create(patternName, patternMethods, percentage));
+                typeRecs.add(PatternRecommendation.create(patternName, model.getType(), patternMethods, percentage));
             }
         }
         return ImmutableSet.copyOf(typeRecs);
@@ -183,7 +176,7 @@ public final class PatternRecommender {
      * @return Most probable pattern names and their probabilities, trimmed to
      *         the size of <code>MAX_PATTERNS</code>.
      */
-    private List<Tuple<String, Double>> findMostLikelyPatterns() {
+    private ImmutableList<Tuple<String, Double>> findMostLikelyPatterns() {
         List<Tuple<String, Double>> patterns = model.getPatternsNode().getPatternsWithProbability();
         patterns = Lists.newArrayList(Iterators.filter(patterns.iterator(), new PatternProbabilityFilter()));
         Collections.sort(patterns, new PatternSorter());
@@ -218,7 +211,20 @@ public final class PatternRecommender {
      *         constructor is not required.
      */
     private boolean keepPattern(final List<IMethodName> patternMethods, final boolean constructorRequired) {
-        return !patternMethods.isEmpty() && (!constructorRequired || patternMethods.get(0).isInit());
+        if (patternMethods.isEmpty() || constructorRequired && !patternMethods.get(0).isInit()) {
+            return false;
+        }
+        if (constructorRequired || context.getReceiverType() == null) {
+            return true;
+        }
+        final String prefixToken = context.getPrefixToken();
+        Preconditions.checkNotNull(prefixToken);
+        for (final IMethodName method : patternMethods) {
+            if (StringUtils.startsWithIgnoreCase(method.getName(), prefixToken)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -239,8 +245,11 @@ public final class PatternRecommender {
     static final class PatternSorter implements Comparator<Tuple<String, Double>> {
         @Override
         public int compare(final Tuple<String, Double> pattern1, final Tuple<String, Double> pattern2) {
-            final int probabilityOrder = pattern2.getSecond().compareTo(pattern1.getSecond());
-            return probabilityOrder == 0 ? pattern1.getFirst().compareTo(pattern2.getFirst()) : probabilityOrder;
+            int probabilityOrder = pattern2.getSecond().compareTo(pattern1.getSecond());
+            if (probabilityOrder == 0) {
+                probabilityOrder = pattern1.getFirst().compareTo(pattern2.getFirst());
+            }
+            return probabilityOrder;
         }
     }
 }

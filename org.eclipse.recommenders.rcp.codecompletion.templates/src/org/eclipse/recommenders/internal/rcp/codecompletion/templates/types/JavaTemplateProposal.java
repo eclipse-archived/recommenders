@@ -21,8 +21,8 @@ import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Extends the <code>TemplateProposal</code> to customize the style of the
- * template's entry in the completion popup.
+ * Extends the {@link TemplateProposal} to customize the style of the template's
+ * entry in the completion popup.
  */
 @SuppressWarnings("restriction")
 public final class JavaTemplateProposal extends TemplateProposal {

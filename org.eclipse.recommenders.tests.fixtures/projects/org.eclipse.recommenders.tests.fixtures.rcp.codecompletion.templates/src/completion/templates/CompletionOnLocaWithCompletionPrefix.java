@@ -11,22 +11,27 @@
 package completion.templates;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.PlatformUI;
 
-public class CompletionOnMethodReturnValue extends DialogPage {
+public class CompletionOnLocaWithCompletionPrefix extends Dialog {
+
+	private Button b;
 
 	@Override
-    public void createControl(final Composite parent) {
-    	// I disabled templates for these occasions. Are there any for which helpful template are imaginable?
-        PlatformUI.getWorkbench().<@Ignore^Space>
-    }
+	protected Control createDialogArea(final Composite parent) {
+		final Button b = new Button(null, 0);
+		// pattern w/o constructor but w/ setText
+		b.sett<^Space|dynamic.*216.*%>
+		
+		b.settt<@Ignore^Space>
+		
+		return null;
+	}
 
-	public void test(){
-    	new Button(null, 0).<@Ignore^Space>
-    }
+	private CompletionOnLocaWithCompletionPrefix() {
+		super((IShellProvider) null);
+	}
 }

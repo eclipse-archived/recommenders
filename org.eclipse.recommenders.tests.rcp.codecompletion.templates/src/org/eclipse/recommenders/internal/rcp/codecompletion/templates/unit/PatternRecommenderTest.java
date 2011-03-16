@@ -27,7 +27,6 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStor
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.PatternNode;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.PatternRecommender;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
@@ -42,12 +41,11 @@ public final class PatternRecommenderTest {
     @Test
     public void testComputeRecommendations() {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(
-                "Button butto = new Button();\nbutto.", "butto", "Button");
+                "Button butto = new Button();\nbutto.", "butto", "Lorg/eclipse/swt/widgets/Button");
         final PatternRecommender recommender = getPatternRecommenderMock(context.getReceiverType());
 
-        final CompletionTargetVariable targetVariable = UnitTestSuite.getDefaultConstructorCall()
-                .getCompletionTargetVariable();
-        final Set<PatternRecommendation> recommendations = recommender.computeRecommendations(targetVariable, context);
+        final Set<PatternRecommendation> recommendations = recommender.computeRecommendations(
+                UnitTestSuite.getDefaultConstructorTargetVariable(), context);
 
         Assert.assertEquals(1, recommendations.size());
         for (final PatternRecommendation recommendation : recommendations) {
@@ -79,6 +77,7 @@ public final class PatternRecommenderTest {
         patterns.add(Tuple.create("Pattern 1", 0.5));
         Mockito.when(node.getPatternsWithProbability()).thenReturn(patterns);
 
+        Mockito.when(model.getType()).thenReturn(UnitTestSuite.getDefaultConstructorTargetVariable().getType());
         Mockito.when(model.getPatternsNode()).thenReturn(node);
         Mockito.when(model.getRecommendedMethodCalls(Matchers.anyDouble())).thenReturn(getRecommendedMethods());
         return model;

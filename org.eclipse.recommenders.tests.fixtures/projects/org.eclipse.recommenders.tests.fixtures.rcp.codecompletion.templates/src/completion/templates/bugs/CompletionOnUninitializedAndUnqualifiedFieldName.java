@@ -18,15 +18,18 @@ import org.eclipse.swt.widgets.Control;
 
 public class CompletionOnUninitializedAndUnqualifiedFieldName extends Dialog {
 
-    private Button b;
+	private Button b;
 
-    private CompletionOnUninitializedAndUnqualifiedFieldName() {
-        super((IShellProvider) null);
-    }
+	private CompletionOnUninitializedAndUnqualifiedFieldName() {
+		super((IShellProvider) null);
+	}
 
-    @Override
+	@Override
 	protected Control createDialogArea(final Composite parent) {
-		b<^Space>
+		b = new Button(null, 0);
+		b.setText("test");
+		// TODO: receiverCalls
+		b<^Space|dynamic.*234.*%>
 		return null;
 	}
 }

@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
+package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
 import com.google.inject.Inject;
 
@@ -52,7 +52,7 @@ public final class MethodCallFormatter {
         if (invokedMethod.isInit()) {
             invocationPrefix = "new ";
         } else {
-            String variableName = methodCall.getCompletionTargetVariable().getName();
+            String variableName = methodCall.getVariableName();
             if (variableName == null || variableName.isEmpty()) {
                 variableName = "${unconstructed}";
             }
@@ -69,16 +69,19 @@ public final class MethodCallFormatter {
      * @return The left side of an assignment, e.g. "<code>Button b = </code>".
      */
     private static String getNewVariableString(final MethodCall methodCall) {
-        final StringBuilder variableString = new StringBuilder(32);
+        String variableString = "";
         final IMethodName invokedMethod = methodCall.getInvokedMethod();
-
-        if (!invokedMethod.isVoid() && !invokedMethod.isInit()) {
-            variableString.append(String.format("%s ", Names.vm2srcSimpleTypeName(invokedMethod.getReturnType())));
-        }
         if (!invokedMethod.isVoid() || invokedMethod.isInit()) {
-            variableString.append(String.format("%s = ", getNewVariableName(methodCall)));
+            final String variableType = getNewVariableTypeString(invokedMethod);
+            final String variableName = getNewVariableName(methodCall);
+            variableString = String.format("%s %s = ", variableType, variableName);
         }
-        return variableString.toString();
+        return variableString;
+    }
+
+    private static String getNewVariableTypeString(final IMethodName invokedMethod) {
+        return Names.vm2srcSimpleTypeName(invokedMethod.isInit() ? invokedMethod.getDeclaringType() : invokedMethod
+                .getReturnType());
     }
 
     /**
@@ -91,7 +94,7 @@ public final class MethodCallFormatter {
     private static String getNewVariableName(final MethodCall methodCall) {
         String variableName = null;
         if (methodCall.getInvokedMethod().isInit()) {
-            variableName = methodCall.getCompletionTargetVariable().getName();
+            variableName = methodCall.getVariableName();
         }
         if (variableName == null || variableName.isEmpty()) {
             variableName = getNewVariableNameFromMethod(methodCall);
@@ -112,17 +115,21 @@ public final class MethodCallFormatter {
         String variableName;
         final IMethodName methodName = methodCall.getInvokedMethod();
         if (methodName.isInit()) {
-            final String type = Names
-                    .vm2srcTypeName(methodCall.getCompletionTargetVariable().getType().getIdentifier());
+            final String type = Names.vm2srcTypeName(methodName.getDeclaringType().getIdentifier());
             variableName = String.format("${unconstructed:newName(%s)}", type);
         } else if (methodName.getName().startsWith("get")) {
-            variableName = StringUtils.uncapitalize(methodName.getName().substring(3));
-            if (variableName.equals(methodCall.getCompletionTargetVariable().getName())) {
-                final String type = Names.vm2srcTypeName(methodName.getReturnType().getIdentifier());
-                variableName = String.format("${returned:newName(%s)}", type);
-            }
+            variableName = getNewVariableNameFromGetter(methodCall);
         } else {
             variableName = StringUtils.uncapitalize(methodName.getReturnType().getClassName());
+        }
+        return variableName;
+    }
+
+    private static String getNewVariableNameFromGetter(final MethodCall methodCall) {
+        String variableName = StringUtils.uncapitalize(methodCall.getInvokedMethod().getName().substring(3));
+        if (variableName.equals(methodCall.getVariableName())) {
+            final String type = Names.vm2srcTypeName(methodCall.getInvokedMethod().getReturnType().getIdentifier());
+            variableName = String.format("${returned:newName(%s)}", type);
         }
         return variableName;
     }

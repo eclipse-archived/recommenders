@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.MethodFormatter;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.MethodFormatter;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -31,10 +31,14 @@ public final class MethodFormatterTest {
         Assert.assertEquals("Button(${intTest:link(0)})", code);
     }
 
-    protected static MethodFormatter getMethodFormatterMock() throws JavaModelException {
+    protected static MethodFormatter getMethodFormatterMock() {
         final JavaElementResolver resolver = Mockito.mock(JavaElementResolver.class);
         final IMethod jdtMethod = Mockito.mock(IMethod.class);
-        Mockito.when(jdtMethod.getParameterNames()).thenReturn(new String[] { "intTest" });
+        try {
+            Mockito.when(jdtMethod.getParameterNames()).thenReturn(new String[] { "intTest" });
+        } catch (final JavaModelException e) {
+            throw new IllegalStateException(e);
+        }
         Mockito.when(jdtMethod.getParameterTypes()).thenReturn(new String[] { "I" });
         Mockito.when(resolver.toJdtMethod(Matchers.any(IMethodName.class))).thenReturn(jdtMethod);
         return new MethodFormatter(resolver);

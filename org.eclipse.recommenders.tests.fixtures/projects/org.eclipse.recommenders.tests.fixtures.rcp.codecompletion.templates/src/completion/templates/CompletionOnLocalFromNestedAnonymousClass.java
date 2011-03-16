@@ -20,16 +20,16 @@ import org.eclipse.swt.widgets.Text;
 
 public class CompletionOnLocalFromNestedAnonymousClass extends DialogPage {
 
-    Text text;
+	Text text;
 
-    @Override
+	@Override
     public void createControl(final Composite parent) {
         text.addModifyListener(new ModifyListener() {
 
             @Override
             public void modifyText(final ModifyEvent e) {
             	// The new variable created from return type has to be declared properly.
-                text.<^Space>
+                text.<^Space|dynamic.*44.*%>
             }
         });
     }
