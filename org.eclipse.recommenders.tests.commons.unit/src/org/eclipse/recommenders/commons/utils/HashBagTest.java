@@ -10,13 +10,13 @@
  */
 package org.eclipse.recommenders.commons.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.recommenders.commons.utils.Bag;
-import org.eclipse.recommenders.commons.utils.HashBag;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -35,18 +35,18 @@ public class HashBagTest {
 
     @Test
     public void testAddAll_Array() {
-        String[] expected = new String[] { "a", "b", "c" };
+        final String[] expected = new String[] { "a", "b", "c" };
         sut.addAll(expected);
-        for (String e : expected) {
+        for (final String e : expected) {
             assertEquals(1, sut.count(e));
         }
     }
 
     @Test
     public void testAddAll_Collection() {
-        Set<String> expected = Sets.newHashSet("a", "b", "c");
+        final Set<String> expected = Sets.newHashSet("a", "b", "c");
         sut.addAll(expected);
-        Set<String> actual = sut.elements();
+        final Set<String> actual = sut.elements();
         assertEquals(expected, actual);
     }
 
@@ -58,7 +58,7 @@ public class HashBagTest {
     @Test
     public void testCreate_Collection() {
         sut.addAll("a", "b");
-        Bag<String> copy = HashBag.newHashBag(sut.elements());
+        final Bag<String> copy = HashBag.newHashBag(sut.elements());
         assertNotSame(sut, copy);
         assertEquals(sut, copy);
     }
@@ -66,7 +66,7 @@ public class HashBagTest {
     @Test
     public void testCreate_Copy() {
         sut.addAll("a", "b");
-        Bag<String> copy = HashBag.create(sut);
+        final Bag<String> copy = HashBag.create(sut);
         assertNotSame(sut, copy);
         assertEquals(sut, copy);
     }
@@ -98,16 +98,24 @@ public class HashBagTest {
     public void testRemove() {
         sut.addAll("a", "a");
         assertEquals(2, sut.totalElementsCount());
-        sut.remove("a");
+        sut.remove("a", 1);
+        assertEquals(1, sut.totalElementsCount());
+    }
+
+    @Test
+    public void testRemoveAll() {
+        sut.addAll("a", "a");
+        assertEquals(2, sut.totalElementsCount());
+        sut.removeAll("a");
         assertEquals(0, sut.totalElementsCount());
     }
 
     @Test
     public void testTopElements() {
-        String[] someElements = new String[] { "a", "b", "c", "c", "a", "a" };
-        List<String> expected = Lists.newArrayList("a", "c");
+        final String[] someElements = new String[] { "a", "b", "c", "c", "a", "a" };
+        final List<String> expected = Lists.newArrayList("a", "c");
         sut.addAll(someElements);
-        List<String> actual = sut.topElements(2);
+        final List<String> actual = sut.topElements(2);
         assertEquals(expected, actual);
     }
 
