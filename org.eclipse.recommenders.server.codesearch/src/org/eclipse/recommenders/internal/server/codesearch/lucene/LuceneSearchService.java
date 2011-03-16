@@ -103,7 +103,7 @@ public class LuceneSearchService {
             final LinkedList<LuceneSearchResult> proposals = Lists.newLinkedList();
             final CodesearchQuery query = LuceneQueryUtil.toCodeSearchQuery(request, weights);
             final IndexSearcher searcher = new IndexSearcher(luceneIndexReader);
-            final TopDocs search = searcher.search(query, 15);
+            final TopDocs search = searcher.search(query, 50);
             for (final ScoreDoc scoreDoc : search.scoreDocs) {
                 final Document doc = searcher.doc(scoreDoc.doc);
                 final LuceneSearchResult searchResult = LuceneSearchResult.create(scoreDoc.score, doc.get("id"),

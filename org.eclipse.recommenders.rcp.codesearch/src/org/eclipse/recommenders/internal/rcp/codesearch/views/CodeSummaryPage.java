@@ -15,7 +15,7 @@ import org.eclipse.recommenders.internal.rcp.codesearch.RCPResponse;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public interface ExampleSummaryPage {
+public interface CodeSummaryPage {
     void createControl(Composite parent);
 
     Control getControl();

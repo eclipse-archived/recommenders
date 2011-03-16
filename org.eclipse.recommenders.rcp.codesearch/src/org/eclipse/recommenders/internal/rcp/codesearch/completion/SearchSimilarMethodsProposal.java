@@ -20,7 +20,6 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.codesearch.client.CodeSearchClient;
@@ -32,7 +31,6 @@ import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
 import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendCodeSearchRequestJob;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.utils.RCPUtils;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PartInitException;
@@ -87,11 +85,13 @@ public final class SearchSimilarMethodsProposal extends JavaCompletionProposal {
 
     private Request createRequestFromEnclosingMethod() throws JavaModelException, PartInitException {
         final JavaEditor editor = (JavaEditor) JavaUI.openInEditor(ctx.getCompilationUnit());
-        final ITextSelection selection = RCPUtils.getTextSelection(editor);
-        final ASTNode node = CrASTUtil.resolveClosesMethodOrTypeDeclarationNode(editor);
+        final ASTNode node = CrASTUtil.resolveClosestMethodOrTypeDeclarationNode(editor);
         if (node != null) {
-            final SearchRequestCreator searchRequestCreator = new SearchRequestCreator(node, selection);
-            return searchRequestCreator.getRequest();
+            return new SimilarMethodsSearchRequestCreator((org.eclipse.jdt.core.dom.MethodDeclaration) node)
+                    .getRequest();
+            // final SearchRequestCreator searchRequestCreator = new
+            // SearchRequestCreator(node, selection);
+            // return searchRequestCreator.getRequest();
         }
         throw throwUnreachable("unexpected selection - please report this issue.");
     }

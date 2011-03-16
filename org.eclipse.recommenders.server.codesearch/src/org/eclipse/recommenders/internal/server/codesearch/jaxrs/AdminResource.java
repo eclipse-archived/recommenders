@@ -52,7 +52,7 @@ public class AdminResource {
     public List<ScoringExplanation> explain(@PathParam("requestId") final String requestId) {
         final List<ScoringExplanation> res = Lists.newLinkedList();
         final RequestLogEntry log = db.getLogEntry(requestId);
-        final Request tmp = Request.newRequestWithBlankQuery();
+        final Request tmp = Request.createEmptyRequest();
         tmp.query = log.query;
         for (final LuceneSearchResult result : log.results) {
             final ScoringExplanation explanation = search.explainScore(tmp, result.luceneDocumentId);

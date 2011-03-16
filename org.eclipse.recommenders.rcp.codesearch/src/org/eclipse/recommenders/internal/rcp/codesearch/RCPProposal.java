@@ -12,12 +12,9 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Message;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.recommenders.commons.codesearch.FeatureWeights;
 import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.codesearch.SnippetType;
@@ -53,21 +50,21 @@ public class RCPProposal {
         return original.score;
     }
 
-    public FeatureWeights getIndividualFeatureScores() {
-        return original.individualFeatureScores;
-    }
+    // public FeatureWeights getIndividualFeatureScores() {
+    // return original.individualFeatureScores;
+    // }
 
     public CompilationUnit getAst(final IProgressMonitor monitor) {
         if (lazyAst == null) {
             final String source = getSource(monitor);
             final ITypeName primaryType = getSummary().className;
             lazyAst = CrASTUtil.createCompilationUnitFromString(primaryType, source, resolverContext);
-            final IProblem[] problems = lazyAst.getProblems();
-            if (problems.length > 0) {
-                for (final Message m : lazyAst.getMessages()) {
-                    System.out.println(m.getMessage());
-                }
-            }
+            // final IProblem[] problems = lazyAst.getProblems();
+            // if (problems.length > 0) {
+            // for (final Message m : lazyAst.getMessages()) {
+            // System.out.println(m.getMessage());
+            // }
+            // }
         }
         return lazyAst;
     }

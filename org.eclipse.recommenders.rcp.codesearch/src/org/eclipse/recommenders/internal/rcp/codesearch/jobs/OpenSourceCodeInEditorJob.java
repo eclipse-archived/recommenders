@@ -29,6 +29,7 @@ import org.eclipse.jface.text.ITextPresentationListener;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
+import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.ByteStorage;
@@ -103,13 +104,13 @@ public class OpenSourceCodeInEditorJob extends WorkspaceJob {
 
     private JavaEditor openSourceInEditor(final RCPProposal hit) {
         // XXX: note, we cannot use some characters that often occur inside
-        // method
-        // signatures here!
-        // we need to sanitize method names somehow if we want to use them as
-        // title
+        // method signatures here! we need to sanitize method names somehow if
+        // we want to use them as title
+        final String title = Names.vm2srcTypeName(hit.getClassName().getIdentifier());
+
         final String source = hit.getSource(new NullProgressMonitor());
-        final String title = hit.getClassName().toString();
         final ByteStorage storage = new ByteStorage(source, title);
+
         final JavaEditor openJavaEditor = JdtUtils.openJavaEditor(storage);
         final SourceViewer s = (SourceViewer) openJavaEditor.getViewer();
         final ITextPresentationListener listener = new VariableUsagesHighlighter(s, request, hit, searchData);

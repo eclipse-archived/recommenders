@@ -16,14 +16,19 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.recommenders.commons.utils.Names;
+import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
@@ -75,6 +80,13 @@ public class ASTStringUtils {
             return toQualifiedString(typeBinding);
         }
         final StringBuilder sb = new StringBuilder();
+        final ASTNode parent = type.getParent();
+        if (parent instanceof CompilationUnit) {
+            final CompilationUnit cu = (CompilationUnit) parent;
+            final PackageDeclaration package1 = cu.getPackage();
+            final String fullyQualifiedName = package1.getName().getFullyQualifiedName();
+            return sb.append(fullyQualifiedName).append(".").append(type.getName()).toString();
+        }
         sb.append("[unresolved] " + type.getName());
         return sb.toString();
     }
@@ -91,10 +103,16 @@ public class ASTStringUtils {
     public static String toQualifiedString(final MethodDeclaration method) {
         ensureIsNotNull(method);
         final StringBuilder sb = new StringBuilder();
-        if (method.getParent() instanceof TypeDeclaration) {
-            final TypeDeclaration declaringType = (TypeDeclaration) method.getParent();
+        final ASTNode parent = method.getParent();
+        if (parent instanceof TypeDeclaration) {
+            final TypeDeclaration declaringType = (TypeDeclaration) parent;
             sb.append(toQualifiedString(declaringType)).append(".");
+        } else if (parent instanceof AnonymousClassDeclaration) {
+            final AnonymousClassDeclaration anonymous = (AnonymousClassDeclaration) parent;
+            final String string = toQualifiedString(anonymous.resolveBinding());
+            sb.append(string).append(".");
         }
+
         sb.append(method.getName()).append("(");
         for (final SingleVariableDeclaration param : (List<SingleVariableDeclaration>) method.parameters()) {
             final Type type = param.getType();
@@ -111,7 +129,14 @@ public class ASTStringUtils {
         return binding.getName();
     }
 
-    public static String toQualifiedString(final ITypeBinding binding) {
+    public static String toQualifiedString(@Nullable final ITypeBinding binding) {
+        if (binding == null) {
+            return null;
+        }
+        if (binding.isAnonymous()) {
+            final String binaryName = binding.getBinaryName();
+            return binaryName != null ? binaryName : toQualifiedString(binding.getDeclaringClass()) + "$<>";
+        }
         return binding.getQualifiedName();
     }
 

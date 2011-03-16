@@ -288,6 +288,11 @@ public class JdtUtils {
             return null;
         }
         try {
+            final IEditorPart editor = page.findEditor(input);
+            if (editor instanceof JavaEditor) {
+                page.bringToTop(editor);
+                return (JavaEditor) editor;
+            }
             return (JavaEditor) page.openEditor(input, "org.eclipse.jdt.ui.CompilationUnitEditor");
         } catch (final PartInitException e) {
             log(e);

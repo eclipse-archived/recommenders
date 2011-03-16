@@ -28,7 +28,6 @@ import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
@@ -73,12 +72,13 @@ public class SimpleSummaryViewerConfiguration extends SourceViewerConfiguration 
 
             @Override
             public String getHoverInfo(final ITextViewer textViewer, final IRegion hoverRegion) {
-                if (hit.getIndividualFeatureScores() != null) {
-                    final String stats = GsonUtil.serialize(hit.getIndividualFeatureScores());
-                    return stats;
-                } else {
-                    return null;
-                }
+                // if (hit.getIndividualFeatureScores() != null) {
+                // final String stats =
+                // GsonUtil.serialize(hit.getIndividualFeatureScores());
+                // return stats;
+                // } else {
+                return null;
+                // }
             }
         };
     }

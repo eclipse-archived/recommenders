@@ -18,13 +18,28 @@ public class Request {
 
     public static final Request INVALID = new Request();
 
+    /**
+     * Creates a new request but completely uninitialized.
+     */
     public static Request newInstance() {
         return new Request();
     }
 
-    public static Request newRequestWithBlankQuery() {
+    /**
+     * Creates a request with an empty query object.
+     */
+    public static Request createEmptyRequest() {
         final Request res = newInstance();
         res.query = new SnippetSummary();
+        return res;
+    }
+
+    /**
+     * Creates a request with an empty query object and the given request type.
+     */
+    public static Request createEmptyRequest(final RequestType requestType) {
+        final Request res = createEmptyRequest();
+        res.type = requestType;
         return res;
     }
 

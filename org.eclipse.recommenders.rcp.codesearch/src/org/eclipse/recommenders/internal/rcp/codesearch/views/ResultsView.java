@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 
@@ -56,6 +57,11 @@ public class ResultsView extends ViewPart {
         rootContainer.setExpandVertical(true);
         rootContainer.setLayout(GridLayoutFactory.fillDefaults().create());
         rootContainer.setLayoutData(GridDataFactory.fillDefaults().create());
+
+        // Speed up scrolling when using a wheel mouse
+        final ScrollBar vBar = rootContainer.getVerticalBar();
+        vBar.setIncrement(10);
+
         summariesContainer = new Composite(rootContainer, SWT.NONE);
         summariesContainer.setBackground(JavaUI.getColorManager().getColor(new RGB(255, 255, 255)));
         summariesContainer.setLayout(GridLayoutFactory.fillDefaults().create());
@@ -141,7 +147,7 @@ public class ResultsView extends ViewPart {
     private void createNewSourceViewers() {
         summaryControl2ProposalIndex = HashBiMap.create();
         for (final RCPProposal proposal : response.getProposals()) {
-            final ExampleSummaryPage page = new RelatedStatementsSummaryPage(searchClient);
+            final CodeSummaryPage page = new RelatedStatementsSummaryPage(searchClient);
             page.createControl(summariesContainer);
             page.setInput(response, proposal);
             summaryControl2ProposalIndex.put(page.getControl(), proposal);

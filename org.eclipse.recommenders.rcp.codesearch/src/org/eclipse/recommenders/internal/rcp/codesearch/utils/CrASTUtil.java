@@ -136,7 +136,7 @@ public class CrASTUtil {
         return (CompilationUnit) ast;
     }
 
-    public static ASTNode resolveClosesMethodOrTypeDeclarationNode(final JavaEditor editor) throws JavaModelException {
+    public static ASTNode resolveClosestMethodOrTypeDeclarationNode(final JavaEditor editor) throws JavaModelException {
         final ITypeRoot root = EditorUtility.getEditorInputJavaElement(editor, true);
         if (root == null) {
             return null;

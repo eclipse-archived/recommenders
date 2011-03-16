@@ -12,11 +12,11 @@ package org.eclipse.recommenders.internal.rcp.codesearch.completion;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
-import org.eclipse.jdt.core.dom.ASTNode;
+import java.util.Collections;
+
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -30,38 +30,37 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.codesearch.RequestType;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
+import org.eclipse.recommenders.rcp.utils.ast.TypeDeclarationInformationAnalyzer;
+
+import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
-public class SearchRequestCreator extends ASTVisitor {
-    private final ITextSelection selection;
-    private final Request request = Request.createEmptyRequest();
+public class SimilarMethodsSearchRequestCreator extends ASTVisitor {
 
-    public SearchRequestCreator(final ASTNode ast, final ITextSelection selection) {
+    private final Request request = Request.createEmptyRequest(RequestType.SIMILAR_METHODS);
+
+    public SimilarMethodsSearchRequestCreator(final MethodDeclaration methodDeclaration) {
         super(false);
-        ensureIsNotNull(ast, "not ast");
-        ensureIsNotNull(selection, "not selection");
-        this.selection = selection;
-        determineRequestKind();
-        ast.accept(this);
+        ensureIsNotNull(methodDeclaration, "not ast");
+        methodDeclaration.accept(this);
+        addExtendsAndImplementsTerms(methodDeclaration);
     }
 
-    private void determineRequestKind() {
-        final boolean empty = selection == null || selection.getLength() == 0;
-        if (empty) {
-            request.type = RequestType.SIMILAR_CLASSES;
-        } else {
-            request.type = RequestType.CUSTOM;
+    private void addExtendsAndImplementsTerms(final MethodDeclaration methodDeclaration) {
+        final TypeDeclarationInformationAnalyzer t = new TypeDeclarationInformationAnalyzer(methodDeclaration);
+
+        if (t.foundSuperclass()) {
+            request.query.extendedTypes = Collections.singleton(t.getSuperclass());
         }
+        request.query.implementedTypes = Sets.newHashSet(t.getSuperInterfaces());
     }
 
     public Request getRequest() {
@@ -80,61 +79,17 @@ public class SearchRequestCreator extends ASTVisitor {
 
     @Override
     public boolean visit(final TypeDeclaration node) {
-        if (isNodeInSelectionRange(node)) {
-            setSuperclassNames(node);
-            setInterfaceNames(node);
-        }
-        return true;
-    }
-
-    private void setSuperclassNames(final TypeDeclaration node) {
-        final ITypeBinding clazz = node.resolveBinding();
-        ITypeBinding superclass = clazz.getSuperclass();
-        // add superclass, if not null and not Object
-        for (; superclass != null; superclass = superclass.getSuperclass()) {
-            final ITypeName superclassName = BindingUtils.toTypeName(superclass);
-            if (!isPrimitiveOrArrayOrNullOrObjectOrString(superclassName)) {
-                request.query.extendedTypes.add(superclassName);
-            }
-        }
-    }
-
-    private void setInterfaceNames(final TypeDeclaration node) {
-        for (final ITypeBinding interface_ : node.resolveBinding().getInterfaces()) {
-            final ITypeName ITypeName = BindingUtils.toTypeName(interface_);
-            if (!isPrimitiveOrArrayOrNullOrObjectOrString(ITypeName)) {
-                request.query.implementedTypes.add(ITypeName);
-            }
-        }
-    }
-
-    @Override
-    public boolean visit(final FieldDeclaration node) {
-        if (isNodeInSelectionRange(node)) {
-            final Type fieldType = node.getType();
-            addField(fieldType);
-        }
-        return true;
-    }
-
-    private void addField(final Type fieldType) {
-        final ITypeBinding fieldTypeBinding = fieldType.resolveBinding();
-        final ITypeName ITypeName = BindingUtils.toTypeName(fieldTypeBinding);
-        if (!isPrimitiveOrArrayOrNullOrObjectOrString(ITypeName)) {
-            request.query.fieldTypes.add(ITypeName);
-        }
+        return false;
     }
 
     @Override
     public boolean visit(final MethodDeclaration node) {
-        if (isNodeInSelectionRange(node)) {
-            final IMethodBinding binding = node.resolveBinding();
-            setOverridenIMethodName(binding);
-        }
+        final IMethodBinding binding = node.resolveBinding();
+        setOverridenIMethodNameIfAny(binding);
         return true;
     }
 
-    private void setOverridenIMethodName(final IMethodBinding b) {
+    private void setOverridenIMethodNameIfAny(final IMethodBinding b) {
         final IMethodBinding overriddenBinding = Bindings.findOverriddenMethod(b, true);
         final IMethodName overriddenIMethodName = BindingUtils.toMethodName(overriddenBinding);
         if (overriddenIMethodName != null) {
@@ -145,72 +100,55 @@ public class SearchRequestCreator extends ASTVisitor {
     // ========================= Method Level Instructions hacking
     @Override
     public boolean visit(final SimpleType node) {
-        if (isNodeInSelectionRange(node)) {
-            final ITypeBinding b = node.resolveBinding();
-            addUsedType(b);
-        }
+        final ITypeBinding b = node.resolveBinding();
+        addUsedType(b);
         return true;
     }
 
     @Override
     public boolean visit(final QualifiedType node) {
-        if (isNodeInSelectionRange(node)) {
-            final ITypeBinding b = node.resolveBinding();
-            addUsedType(b);
-        }
+        final ITypeBinding b = node.resolveBinding();
+        addUsedType(b);
         return true;
     }
 
     @Override
     public boolean visit(final ClassInstanceCreation node) {
-        if (isNodeInSelectionRange(node)) {
-            final IMethodBinding b = node.resolveConstructorBinding();
-            addUsedMethod(b);
-        }
+        final IMethodBinding b = node.resolveConstructorBinding();
+        addUsedMethod(b);
         return true;
     }
 
     @Override
     public boolean visit(final SuperConstructorInvocation node) {
-        if (isNodeInSelectionRange(node)) {
-            final IMethodBinding b = node.resolveConstructorBinding();
-            addUsedMethod(b);
-        }
+        final IMethodBinding b = node.resolveConstructorBinding();
+        addUsedMethod(b);
         return true;
     }
 
     @Override
     public boolean visit(final ConstructorInvocation node) {
-        if (isNodeInSelectionRange(node)) {
-            final IMethodBinding b = node.resolveConstructorBinding();
-            addUsedMethod(b);
-        }
+        final IMethodBinding b = node.resolveConstructorBinding();
+        addUsedMethod(b);
         return true;
     }
 
     @Override
     public boolean visit(final SuperMethodInvocation node) {
-        if (isNodeInSelectionRange(node)) {
-            final IMethodBinding b = node.resolveMethodBinding();
-            addUsedMethod(b);
-        }
+        final IMethodBinding b = node.resolveMethodBinding();
+        addUsedMethod(b);
         return true;
     }
 
     @Override
     public boolean visit(final MethodInvocation node) {
-        if (isNodeInSelectionRange(node)) {
-            final IMethodBinding b = node.resolveMethodBinding();
-            addUsedMethod(b);
-        }
+        final IMethodBinding b = node.resolveMethodBinding();
+        addUsedMethod(b);
         return true;
     }
 
     @Override
     public boolean visit(final SimpleName node) {
-        if (!isNodeInSelectionRange(node)) {
-            return true;
-        }
         final IBinding b = node.resolveBinding();
         if (b instanceof ITypeBinding) {
             addUsedType((ITypeBinding) b);
@@ -259,25 +197,9 @@ public class SearchRequestCreator extends ASTVisitor {
         }
     }
 
-    private boolean isNodeInSelectionRange(final ASTNode node) {
-        if (!hasUserSelectedSomeText()) {
-            return true;
-        }
-        final int nodeStart = node.getStartPosition();
-        final int nodeEnd = nodeStart + node.getLength();
-        final int selectionStart = selection.getOffset();
-        final int selectionEnd = selectionStart + selection.getLength();
-        final boolean nodeStartsAfterSelectionStart = nodeStart >= selectionStart;
-        final boolean nodeEndsBeforeSelectionEnd = nodeEnd <= selectionEnd;
-        return nodeStartsAfterSelectionStart && nodeEndsBeforeSelectionEnd;
-    }
-
-    private boolean hasUserSelectedSomeText() {
-        return selection.getLength() > 0;
-    }
-
     private boolean isPrimitiveOrArrayOrNullOrObjectOrString(final ITypeName type) {
         return type == null || type.isPrimitiveType() || type.isArrayType() || type == VmTypeName.OBJECT
                 || type == VmTypeName.STRING;
     }
+
 }

@@ -34,10 +34,10 @@ public class Proposal {
      */
     public float score;
 
-    /**
-     * The individual feature scores. This is for debugging purpose and may be
-     * removed.
-     */
-    public FeatureWeights individualFeatureScores;
+    // /**
+    // * The individual feature scores. This is for debugging purpose and may be
+    // * removed.
+    // */
+    // public FeatureWeights individualFeatureScores;
 
 }

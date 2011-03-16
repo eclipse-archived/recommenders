@@ -13,12 +13,17 @@ package org.eclipse.recommenders.internal.rcp.codesearch.views;
 import static java.lang.String.format;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.formatter.CodeFormatter;
+import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaSourceViewer;
 import org.eclipse.jdt.ui.JavaUI;
@@ -31,11 +36,14 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.FeedbackType;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.codesearch.client.CodeSearchClient;
+import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPResponse;
@@ -59,12 +67,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
-public class RelatedStatementsSummaryPage implements ExampleSummaryPage {
+public class RelatedStatementsSummaryPage implements CodeSummaryPage {
     private static Image IMG_REMOVE = AbstractUIPlugin.imageDescriptorFromPlugin(CodesearchPlugin.PLUGIN_ID,
             "icons/obj16/remove.png").createImage();
     private static Image IMG_ACCEPT = AbstractUIPlugin.imageDescriptorFromPlugin(CodesearchPlugin.PLUGIN_ID,
@@ -175,7 +185,9 @@ public class RelatedStatementsSummaryPage implements ExampleSummaryPage {
         javaSourceViewer = new JavaSourceViewer(rootControl, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
         final JavaSourceViewerConfiguration configuration = new JavaSourceViewerConfiguration(colorManager, store,
                 null, null);
+
         javaSourceViewer.configure(configuration);
+
         final Font font = JFaceResources.getFont(PreferenceConstants.EDITOR_TEXT_FONT);
         // final FontData[] fD = font.getFontData();
         // fD[0].setHeight(10);
@@ -183,7 +195,7 @@ public class RelatedStatementsSummaryPage implements ExampleSummaryPage {
 
         javaSourceViewer.getTextWidget().setFont(font);
         javaSourceViewer.setEditable(false);
-        javaSourceViewer.getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(5, 0).create());
+        javaSourceViewer.getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 10).create());
     }
 
     @Override
@@ -204,10 +216,63 @@ public class RelatedStatementsSummaryPage implements ExampleSummaryPage {
         for (final ASTNode i : summaryStatementNodes) {
             sb.append(i.toString());
         }
-        final Document document = new Document(sb.toString());
+        final String source = sb.toString(); // retrieve the source
+
+        final IDocument document = new Document(source);
+        formatCode(document);
+
         javaSourceViewer.setInput(document);
+
         final MethodDeclaration methodDeclaration = proposal.getAstMethodDeclaration(new NullProgressMonitor());
-        titleLink.setText(format("<a>%s {</a>", ASTStringUtils.toQualifiedString(methodDeclaration)));
+        final String title = methodDeclaration != null ? ASTStringUtils.toQualifiedString(methodDeclaration) : Names
+                .vm2srcQualifiedMethod(proposal.getMethodName());
+        titleLink.setText(format("<a>%s {</a>", title));
+    }
+
+    private void formatCode(final IDocument document) {
+
+        // final String content = sb.toString();
+        // final Document document = new Document(content);
+
+        // take default Eclipse formatting options
+        final Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
+        options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, 120);
+        // initialize the compiler settings to be able to format 1.5 code
+        options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
+        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
+        options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
+
+        final String alignment = DefaultCodeFormatterConstants.createAlignmentValue(true,
+                DefaultCodeFormatterConstants.WRAP_COMPACT, DefaultCodeFormatterConstants.INDENT_DEFAULT);
+
+        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_ALLOCATION_EXPRESSION, alignment);
+        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION, alignment);
+        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ASSIGNMENT, alignment);
+        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_SELECTOR_IN_METHOD_INVOCATION, alignment);
+
+        // instanciate the default code formatter with the given options
+        final CodeFormatter codeFormatter = ToolFactory.createCodeFormatter(options);
+
+        // retrieve the source to format
+        final TextEdit edit = codeFormatter.format(CodeFormatter.K_STATEMENTS, document.get(), // source
+                // to
+                // format
+                0, // starting position
+                document.getLength(), // length
+                0, // initial indentation
+                System.getProperty("line.separator") // line separator
+                );
+
+        if (edit != null) {
+            try {
+                edit.apply(document);
+            } catch (final MalformedTreeException e) {
+                e.printStackTrace();
+            } catch (final BadLocationException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private void findInterestingStatements() {

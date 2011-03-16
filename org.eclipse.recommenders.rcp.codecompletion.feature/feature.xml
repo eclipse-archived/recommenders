@@ -29,11 +29,6 @@
       %license
    </license>
 
-   <url>
-      <update label="Eclipse Code Recommenders Temporary Update Site" url="http://vandyk.st.informatik.tu-darmstadt.de/updates/sneak/"/>
-      <discovery label="Eclipse Code Recommenders Third-Party Dependencies" url="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-latest/"/>
-   </url>
-
    <plugin
          id="org.eclipse.recommenders.commons.analysis"
          download-size="0"
