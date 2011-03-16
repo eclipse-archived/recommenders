@@ -75,6 +75,8 @@ public class ChainingAlgorithm {
 
   private volatile AtomicInteger countWorkingThreads = new AtomicInteger(0);
 
+  private IClass receiverType;
+
   public ChainingAlgorithm() {
     expectedType = null;
     workingElement = new PriorityBlockingQueue<IChainElement>(100, new PriorityComparator());
@@ -120,15 +122,20 @@ public class ChainingAlgorithm {
 
   private List<LinkedList<IChainElement>> computeProposalChainsForLastElement(
       List<LinkedList<IChainElement>> resultChains) {
-    int depth = resultChains.get(0).get(0).getChainDepth();
-    for (int i = depth - 1; i >= 0; i--) {
+    // int depth = resultChains.get(0).get(0).getChainDepth();
+    for (int i = 2/* depth - 1 */; i >= 0; i--) {
       List<LinkedList<IChainElement>> tempChains = new ArrayList<LinkedList<IChainElement>>();
       for (LinkedList<IChainElement> list : resultChains) {
-        List<IChainElement> elements = list.getFirst().previousElements();
+        IChainElement firstListElement = list.getFirst();
+        if (firstListElement.isRootElement()) {
+          tempChains.add(list);
+        }
+        List<IChainElement> elements = firstListElement.previousElements();
         for (IChainElement element : elements) {
-          if (!element.getChainDepth().equals(i)) {
+          if (!(element.getChainDepth() <= i)) {
             continue;
           }
+
           LinkedList<IChainElement> linkedList = new LinkedList<IChainElement>(list);
           if (checkRedundance(list, element)) {
             continue;
@@ -156,6 +163,7 @@ public class ChainingAlgorithm {
   private void initializeChainCompletionContext(final IIntelligentCompletionContext ictx) {
     ctx = new ChainCompletionContext(ictx, javaelementResolver, walaService);
     expectedType = ctx.getExpectedType();
+    receiverType = ctx.getRevieverType();
   }
 
   private void processMembers() throws JavaModelException {
@@ -170,7 +178,7 @@ public class ChainingAlgorithm {
       executor = Executors.newFixedThreadPool(1);// Runtime.getRuntime().availableProcessors()
       try {
         executor.invokeAll(Collections.nCopies(1,
-            new ChainingAlgorithmWorker(this, expectedType, ctx.getExpectedTypeArrayDimension())),
+            new ChainingAlgorithmWorker(this, expectedType, ctx.getExpectedTypeArrayDimension(), receiverType)),
             Constants.AlgorithmSettings.EXECUTOR_ALIVE_TIME_IN_MS, TimeUnit.MILLISECONDS);
         executor.awaitTermination(Constants.AlgorithmSettings.EXECUTOR_ALIVE_TIME_IN_MS, TimeUnit.MILLISECONDS);
         executor.shutdownNow();

@@ -8,7 +8,7 @@ public class CompletionOnArrayWithCastsSubtype {
 		final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
         final Integer c = <@Ignore^Space>
         /* calling context --> static
-         * expected completion --> (Integer) obj.findme[i][i][i]
+         * expected completion --> (Integer) obj.findme[i][j][k]
          */
 	}
 	
@@ -16,7 +16,7 @@ public class CompletionOnArrayWithCastsSubtype {
 		final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
         final Integer[] c = <@Ignore^Space>
         /* calling context --> static
-         * expected completion --> (Integer[]) obj.findme[i][i]
+         * expected completion --> (Integer[]) obj.findme[i][j]
          */
 	}
 	

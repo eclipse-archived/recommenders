@@ -369,10 +369,8 @@ public class ChainTemplateProposalGenerator {
 
   private String computeArrayBracketsForCasting(ChainTemplateProposal proposal) {
     String brackets = new String();
-    // int proposalChainSize = proposal.getProposedChain().size();
-    for (int i = expectedTypeDimension; i > 0; i--) {// proposal.getProposedChain().get(proposalChainSize-1).getArrayDimension()
-                                                     // -
-      brackets += "[]";// + casting;
+    for (int i = expectedTypeDimension; i > 0; i--) {
+      brackets += "[]";
     }
     return brackets;
   }

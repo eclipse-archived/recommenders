@@ -22,6 +22,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
 import com.ibm.wala.classLoader.ArrayClass;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
+import com.ibm.wala.classLoader.IMember;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.types.TypeReference;
 
@@ -36,8 +37,11 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
 
   private final Integer expectedTypeDimension;
 
+  private final IClass receiverType;
+
   public ChainingAlgorithmWorker(final ChainingAlgorithm internalProposalStore, final IClass expectedType,
-      final Integer expectedTypeDimension) {
+      final Integer expectedTypeDimension, IClass enclosingType) {
+    this.receiverType = enclosingType;
     this.workingElement = null;
     this.internalProposalStore = internalProposalStore;
     this.expectedType = expectedType;
@@ -116,7 +120,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
    * if the chain has to be extended by a method
    */
   private IChainElement createMethodWorker(final IMethod m) throws JavaModelException {
-    if (m.isPublic()) {
+    if (checkVisibility(m)) {
       // XXX: Case: If calling context is subtype of typeToCheck than
       // field/method can be protected or package private
 
@@ -146,7 +150,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
    * if the chain has to be extended by a field
    */
   private IChainElement createFieldWorker(final IClass typeToCheck, final IField f) throws JavaModelException {
-    if (f.isPublic()) {
+    if (checkVisibility(f)) {
       FieldChainElement fieldChainElement = new FieldChainElement(f, workingElement.getChainDepth() + 1);
       if (f.getFieldTypeReference().isPrimitiveType()) {
         return null;
@@ -163,6 +167,26 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
       return fieldChainElement;
     }
     return null;
+  }
+
+  private boolean checkVisibility(final IMember m) {
+    if (m.isPublic()) {
+      return m.isPublic();
+    } else if (m.isPrivate()) {
+      return receiverType.equals(m.getDeclaringClass());
+    } else if (m.isProtected()) {
+      try {
+        boolean defaultVisibility = receiverType.getName().getPackage()
+            .equals(m.getDeclaringClass().getName().getPackage());
+        boolean subtypeVisibility = InheritanceHierarchyCache.isSubtype(m.getDeclaringClass(), receiverType, 0);
+        return defaultVisibility || subtypeVisibility;
+      } catch (JavaModelException e) {
+        return false;
+      }
+    } else {
+      // seems to be default
+      return receiverType.getName().getPackage().equals(m.getDeclaringClass().getName().getPackage());
+    }
   }
 
   private void storeListToProposalStore(final IChainElement element) {

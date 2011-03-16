@@ -120,6 +120,10 @@ public class ChainCompletionContext {
     return expectedType != null;
   }
 
+  public IClass getRevieverType() {
+    return receiverType;
+  }
+
   private boolean findReceiverClass() {
 
     if (ctx.isReceiverImplicitThis()) {
