@@ -7,7 +7,6 @@ import java.util.Set;
  * The context in which a proposal chain is created. Particularly, this includes
  * used variables.
  * 
- * @author Marko Martin
  */
 public class ProposalNameGenerator {
 
