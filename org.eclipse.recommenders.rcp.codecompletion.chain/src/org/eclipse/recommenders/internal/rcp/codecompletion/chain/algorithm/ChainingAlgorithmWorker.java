@@ -48,9 +48,6 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
 
   private void inspectType() throws JavaModelException {
     this.workingElement = internalProposalStore.getWorkingElement();
-    if (workingElement.getCompletion().equals("getHelpSystem")) {
-      System.out.println();
-    }
     final IClass typeToCheck = workingElement.getType();
     // check type if searched type --> store for proposal
     if (storeForProposal(typeToCheck)) {
