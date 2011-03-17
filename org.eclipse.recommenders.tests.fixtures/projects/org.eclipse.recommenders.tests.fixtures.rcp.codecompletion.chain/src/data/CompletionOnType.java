@@ -29,6 +29,6 @@ public class CompletionOnType {
 	}
 
 	public void __test() {
-		Integer i = (Integer) S.INSTANCE.findeMe()
+		Integer i = S.
 	}
 }
