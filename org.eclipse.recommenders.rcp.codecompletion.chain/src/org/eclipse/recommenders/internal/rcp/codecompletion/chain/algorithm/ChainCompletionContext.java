@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Andreas Kaluza - modified implementation
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
