@@ -18,6 +18,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.commons.analysis,
  org.eclipse.recommenders.rcp,
  com.google.guice,
+ com.google.guice.multibindings,
  org.eclipse.recommenders.commons.injection,
  org.eclipse.ui,
  javax.annotations.jsr305;bundle-version="0.0.0"
