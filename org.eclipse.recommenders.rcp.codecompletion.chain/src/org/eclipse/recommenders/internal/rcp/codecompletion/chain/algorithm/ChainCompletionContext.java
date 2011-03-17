@@ -135,7 +135,7 @@ public class ChainCompletionContext {
     int expectedTypeArrayDimension = expectedTypeName.getArrayDimensions();
     IClass expectedType = toWalaClass(expectedTypeName.isArrayType() ? expectedTypeName.getArrayBaseType()
         : expectedTypeName);
-    if (expectedType.getReference().getName().getClassName().toString().equals("Object")) {
+    if (expectedType != null && expectedType.getReference().getName().getClassName().toString().equals("Object")) {
       expectedType = null;
     }
     expectedTypeList.add(Tuple.create(expectedType, expectedTypeArrayDimension));
