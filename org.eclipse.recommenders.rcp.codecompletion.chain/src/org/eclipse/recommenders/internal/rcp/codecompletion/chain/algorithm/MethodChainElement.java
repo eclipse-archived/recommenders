@@ -49,7 +49,10 @@ public class MethodChainElement implements IChainElement {
 
   private boolean rootElement = false;
 
+  private final IMethod method;
+
   public MethodChainElement(final IMethod method, final Integer chainDepth) {
+    this.method = method;
     prevoiusElements = new ArrayList<IChainElement>();
     this.chainDepth = chainDepth;
     classHierarchy = method.getClassHierarchy();
@@ -179,5 +182,9 @@ public class MethodChainElement implements IChainElement {
   @Override
   public boolean isRootElement() {
     return rootElement;
+  }
+
+  public IMethod getMethod() {
+    return method;
   }
 }

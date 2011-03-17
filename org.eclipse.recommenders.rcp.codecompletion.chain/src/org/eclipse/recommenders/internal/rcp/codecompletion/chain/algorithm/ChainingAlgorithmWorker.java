@@ -17,6 +17,7 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
 
 import com.ibm.wala.classLoader.ArrayClass;
@@ -31,25 +32,25 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
 
   private IChainElement workingElement;
 
-  private final IClass expectedType;
+  private final List<Tuple<IClass, Integer>> expectedTypeList;
 
   private final ChainingAlgorithm internalProposalStore;
 
-  private final Integer expectedTypeDimension;
-
   private final IClass receiverType;
 
-  public ChainingAlgorithmWorker(final ChainingAlgorithm internalProposalStore, final IClass expectedType,
-      final Integer expectedTypeDimension, IClass enclosingType) {
-    this.receiverType = enclosingType;
+  public ChainingAlgorithmWorker(ChainingAlgorithm chainingAlgorithm, List<Tuple<IClass, Integer>> expectedTypeList,
+      IClass receiverType) {
+    this.receiverType = receiverType;
     this.workingElement = null;
-    this.internalProposalStore = internalProposalStore;
-    this.expectedType = expectedType;
-    this.expectedTypeDimension = expectedTypeDimension;
+    this.internalProposalStore = chainingAlgorithm;
+    this.expectedTypeList = expectedTypeList;
   }
 
   private void inspectType() throws JavaModelException {
     this.workingElement = internalProposalStore.getWorkingElement();
+    if (workingElement.getCompletion().equals("getHelpSystem")) {
+      System.out.println();
+    }
     final IClass typeToCheck = workingElement.getType();
     // check type if searched type --> store for proposal
     if (storeForProposal(typeToCheck)) {
@@ -124,7 +125,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
       // XXX: Case: If calling context is subtype of typeToCheck than
       // field/method can be protected or package private
 
-      if (m.getReturnType().isPrimitiveType()) {
+      if (m.getReturnType().isPrimitiveType() || m.getName().toString().equals("toString")) {
         return null;// return
       }
       MethodChainElement methodChainElement = new MethodChainElement(m, workingElement.getChainDepth() + 1);
@@ -206,32 +207,35 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
     if (typeToCheck == null) {
       return true;
     }
-    if (Constants.AlgorithmSettings.MIN_CHAIN_DEPTH > workingElement.getChainDepth() + 1) {
-      return false;
-    }
-    final int testResult = InheritanceHierarchyCache.equalityTest(typeToCheck, expectedType, expectedTypeDimension);
-    // if both types equal
-    if ((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0) {
-      internalProposalStore.storeLastChainElementForProposal(workingElement, null);
-      return false;
+    for (Tuple<IClass, Integer> expectedType : expectedTypeList) {
+      final int testResult = InheritanceHierarchyCache.equalityTest(typeToCheck, expectedType.getFirst(),
+          expectedType.getSecond());
+      // if both types equal
+      if ((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0) {
+        internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
+            expectedType.getSecond(), null);
+        continue;
 
-    }
-    // if typeToCheck is primitive return
-    if ((testResult & InheritanceHierarchyCache.RESULT_PRIMITIVE) > 0) {
-      return true;
-    }
+      }
+      // if typeToCheck is primitive return
+      if ((testResult & InheritanceHierarchyCache.RESULT_PRIMITIVE) > 0) {
+        continue;
+      }
 
-    // Consult type hierarchy for sub-/supertypes
-    if (InheritanceHierarchyCache.isSubtype(typeToCheck, expectedType, expectedTypeDimension)
-        && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
-      internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType);
-      return false;
-    }
-    /* else */
-    if (InheritanceHierarchyCache.isSupertype(typeToCheck, expectedType, expectedTypeDimension)
-        && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
-      internalProposalStore.storeLastChainElementForProposal(workingElement, null);
-      return false;
+      // Consult type hierarchy for sub-/supertypes
+      if (InheritanceHierarchyCache.isSubtype(typeToCheck, expectedType.getFirst(), expectedType.getSecond())
+          && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
+        internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
+            expectedType.getSecond(), expectedType.getFirst());
+        continue;
+      }
+      /* else */
+      if (InheritanceHierarchyCache.isSupertype(typeToCheck, expectedType.getFirst(), expectedType.getSecond())
+          && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
+        internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
+            expectedType.getSecond(), null);
+        continue;
+      }
     }
     // not equal, not in a hierarchical relation, not primitive
     return false;

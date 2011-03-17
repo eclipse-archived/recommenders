@@ -17,12 +17,9 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement;
 
 import com.ibm.wala.classLoader.IClass;
-import com.ibm.wala.types.TypeReference;
 
 public class ChainTemplateProposal {
   private final List<IChainElement> proposedChain;
-
-  TypeReference resultingType;
 
   private final IClass castingType;
 
@@ -58,23 +55,19 @@ public class ChainTemplateProposal {
    * @param castingType
    *          type to up-cast the chain's last element's resulting type to
    */
-  public ChainTemplateProposal(final List<IChainElement> proposedChain, IClass expectedType, final Integer expectedTypeDimension, boolean cast) {
+  public ChainTemplateProposal(final List<IChainElement> proposedChain, IClass expectedType,
+      final Integer expectedTypeDimension, boolean cast) {
     this.expectedType = expectedType;
     this.expectedTypeDimension = expectedTypeDimension;
     Checks.ensureIsNotNull(proposedChain);
     Checks.ensureIsTrue(proposedChain.size() >= 1);
     this.proposedChain = proposedChain;
-    resultingType = proposedChain.get(proposedChain.size() - 1).getResultingType();
     needsCast = cast;
-    this.castingType = cast ? expectedType:null;
+    this.castingType = cast ? expectedType : null;
   }
 
   public List<IChainElement> getProposedChain() {
     return proposedChain;
-  }
-
-  public TypeReference getResultingType() {
-    return resultingType;
   }
 
   public boolean needsCast() {
@@ -91,5 +84,21 @@ public class ChainTemplateProposal {
 
   public IClass getExpectedType() {
     return expectedType;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof ChainTemplateProposal)) {
+      return false;
+    }
+    ChainTemplateProposal otherProposal = (ChainTemplateProposal) obj;
+    if (!this.proposedChain.equals(otherProposal.getProposedChain())) {
+      return false;
+    }
+    if (needsCast) {
+      return this.castingType.equals(otherProposal.getCastingType());
+    } else {
+      return !otherProposal.needsCast();
+    }
   }
 }

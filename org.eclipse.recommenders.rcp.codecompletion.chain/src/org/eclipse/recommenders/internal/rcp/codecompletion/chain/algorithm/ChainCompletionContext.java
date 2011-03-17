@@ -13,13 +13,17 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 import static org.eclipse.recommenders.commons.utils.Checks.cast;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
@@ -33,6 +37,7 @@ import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMember;
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.types.TypeReference;
 
 @SuppressWarnings("restriction")
 public class ChainCompletionContext {
@@ -44,11 +49,10 @@ public class ChainCompletionContext {
   private final JavaElementResolver javaElementResolver;
   private final IClassHierarchyService walaChaService;
   private IClass receiverType;
-  private IClass expectedType;
+  private List<Tuple<IClass, Integer>> expectedTypeList;
   private IClass enclosingType;
   private IMethod enclosingMethod;
   private List<String> localNames;
-  private int expectedTypeArrayDimension;
 
   public ChainCompletionContext(final IIntelligentCompletionContext ctx, final JavaElementResolver javaElementResolver,
       final IClassHierarchyService walaChaService) {
@@ -59,10 +63,6 @@ public class ChainCompletionContext {
   }
 
   private void initializeAccessibleElements() {
-    if (!findExpectedClass()) {
-      return;
-    }
-
     if (!findEnclosingClass()) {
       return;
     }
@@ -73,8 +73,15 @@ public class ChainCompletionContext {
       return;
     }
     computeAccessibleMethods();
+
+    if (!findExpectedClass()) {
+      accessibleMethods.clear();
+      return;
+    }
+
     computeAccessibleLocals();
     computeAccessibleFields();
+
   }
 
   private boolean findEnclosingClass() {
@@ -83,7 +90,7 @@ public class ChainCompletionContext {
     return enclosingType != null;
   }
 
-  private IClass toWalaClass(final ITypeName typeName) {
+  public IClass toWalaClass(final ITypeName typeName) {
     if (typeName == null) {
       return null;
     }
@@ -115,8 +122,22 @@ public class ChainCompletionContext {
 
   private boolean findExpectedClass() {
     final ITypeName expectedTypeName = ctx.getExpectedType();
-    expectedTypeArrayDimension = expectedTypeName.getArrayDimensions();
-    expectedType = toWalaClass(expectedTypeName.isArrayType() ? expectedTypeName.getArrayBaseType() : expectedTypeName);
+    if (expectedTypeName == null) {
+      if (ctx.getCompletionNode() instanceof CompletionOnMessageSend) {
+        CompletionOnMessageSend completiononMessageSend = (CompletionOnMessageSend) ctx.getCompletionNode();
+        computeExpectedMethodTypes(completiononMessageSend);
+        return expectedTypeList.size() > 0;
+      }
+      return false;
+    }
+    expectedTypeList = new ArrayList<Tuple<IClass, Integer>>();
+    int expectedTypeArrayDimension = expectedTypeName.getArrayDimensions();
+    IClass expectedType = toWalaClass(expectedTypeName.isArrayType() ? expectedTypeName.getArrayBaseType()
+        : expectedTypeName);
+    if (expectedType.getReference().getName().getClassName().toString().equals("Object")) {
+      expectedType = null;
+    }
+    expectedTypeList.add(Tuple.create(expectedType, expectedTypeArrayDimension));
     return expectedType != null;
   }
 
@@ -129,6 +150,8 @@ public class ChainCompletionContext {
     if (ctx.isReceiverImplicitThis()) {
       receiverType = enclosingType;
     } else if (ctx.getCompletionNode() instanceof CompletionOnSingleNameReference) {
+      receiverType = enclosingType;
+    } else if (ctx.getCompletionNode() instanceof CompletionOnMessageSend) {
       receiverType = enclosingType;
     } else {
       final ITypeName receiverTypeName = ctx.getReceiverType();
@@ -171,13 +194,14 @@ public class ChainCompletionContext {
     }
 
     final Variable var = ctx.getVariable();
-    if (var == null) {
+    if (var == null && !(ctx.getCompletionNode() instanceof CompletionOnMessageSend)) {
       return member.isStatic();
     }
 
     if (member.getDeclaringClass() == receiverType) {
       return true;
     }
+
     if (!member.isPrivate()) {
       return true;
     }
@@ -216,7 +240,7 @@ public class ChainCompletionContext {
       return;
     }
 
-    if (!ctx.getVariable().isThis()) {
+    if (ctx.getVariable() == null || !ctx.getVariable().isThis()) {
       return;
     }
 
@@ -251,8 +275,75 @@ public class ChainCompletionContext {
     }
   }
 
-  public IClass getExpectedType() {
-    return expectedType;
+  private void computeExpectedMethodTypes(CompletionOnMessageSend completionOnMessageSend) {
+    String methodName = new String(completionOnMessageSend.selector);
+    List<ITypeName> methodArguments = new LinkedList<ITypeName>();
+    if (completionOnMessageSend.arguments != null) {
+      for (Expression exp : completionOnMessageSend.arguments) {
+        methodArguments.add(CompilerBindings.toTypeName(exp.resolvedType));
+      }
+    }
+    List<IMethod> possibleMethods = findMethodInContext(methodArguments, methodName);
+    expectedTypeList = new ArrayList<Tuple<IClass, Integer>>();
+    for (IMethod method : possibleMethods) {
+      oneMethod(method, methodArguments);
+    }
+  }
+
+  private void oneMethod(IMethod method, List<ITypeName> methodArguments) {
+    int usedParameters = methodArguments.size();
+    if (!method.isStatic()) {
+      usedParameters++;
+    }
+    TypeReference expectedTypeReference = method.getParameterType(usedParameters);
+    if (expectedTypeReference.isPrimitiveType()) {
+      return;
+    }
+    storeToExpectedTypeList(method, expectedTypeReference);
+  }
+
+  private void storeToExpectedTypeList(IMethod method, TypeReference expectedTypeReference) {
+    IClass expectedType = method.getClassHierarchy().lookupClass(expectedTypeReference);
+    if (expectedType == null || expectedType.getReference().getName().getClassName().toString().equals("Object")) {
+      return;
+    }
+    int expectedTypeArrayDimension = expectedType.getReference().getDimensionality();
+    expectedTypeList.add(Tuple.create(expectedType, expectedTypeArrayDimension));
+  }
+
+  private List<IMethod> findMethodInContext(List<ITypeName> methodArguments, String methodName) {
+    List<IMethod> possibleMethods = Lists.newArrayList();
+    for (IChainElement e : accessibleMethods) {
+      MethodChainElement element = (MethodChainElement) e;
+      if (!checkMethodRelevance(element, methodArguments, methodName)) {
+        continue;
+      }
+      possibleMethods.add(element.getMethod());
+    }
+    return possibleMethods;
+  }
+
+  private boolean checkMethodRelevance(MethodChainElement element, List<ITypeName> methodArguments, String methodName) {
+    int numberOfParameters = element.getMethod().getNumberOfParameters();
+    int usedParameters = methodArguments.size();
+    if (!element.getMethod().isStatic()) {
+      usedParameters++;
+    }
+    if (numberOfParameters <= usedParameters) {
+      return false;
+    }
+    for (int i = 0; i < methodArguments.size(); i++) {
+      IClass typeClass = toWalaClass(methodArguments.get(i));
+      if (!typeClass.getName().equals(
+          element.getMethod().getParameterType(i + (element.getMethod().isStatic() ? 0 : 1)).getName())) {
+        return false;
+      }
+    }
+    return element.getCompletion().equals(methodName);
+  }
+
+  public List<Tuple<IClass, Integer>> getExpectedTypeList() {
+    return expectedTypeList;
   }
 
   public IClass getCallingContext() {
@@ -269,10 +360,6 @@ public class ChainCompletionContext {
 
   public List<IChainElement> getProposedVariables() {
     return accessibleLocals;
-  }
-
-  public int getExpectedTypeArrayDimension() {
-    return expectedTypeArrayDimension;
   }
 
 }

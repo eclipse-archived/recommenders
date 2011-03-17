@@ -19,7 +19,7 @@ public class CompletionOnType {
 
 		private static S INSTANCE = new S();
 
-		public Integer findeMe() {
+		public Number findeMe() {
 			return 0;
 		}
 

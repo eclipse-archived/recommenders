@@ -75,7 +75,7 @@ public class ChainTemplateProposalGenerator {
     if (isValidProposal()) {
       return Collections.EMPTY_LIST;
     }
-    sort();
+    sortProposals();
     synchronized (proposals) {
       return computeProposalList(algortihmComputeTime, proposalStartTime);
     }
@@ -86,7 +86,7 @@ public class ChainTemplateProposalGenerator {
   }
 
   // This method sorts all computed 'raw' proposals.
-  private void sort() {
+  private void sortProposals() {
     // Prefer proposals that do not cope with casts
     Collections.sort(proposals, new ProposalComperator());
   }
@@ -112,10 +112,40 @@ public class ChainTemplateProposalGenerator {
   public static String getPrefixToEqualSymbol(final IDocument doc, int offset) throws BadLocationException {
     final IRegion lineRegion = doc.getLineInformationOfOffset(offset);
     final int lineStart = lineRegion.getOffset();
-    final StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
     char c = doc.getChar(--offset);
-    while (c != '=') {
+    boolean foundComma = false;
+    boolean foundClosingBracket = false;
+    boolean foundOpeningBracket = false;
+    String temp = new String();
+    for (;;) {
+
+      if (c == '=') {
+        break;
+      }
       sb.insert(0, c);
+      if (c == ',' && !foundComma) {
+        foundComma = true;
+        temp = sb.toString();
+      }
+      if (c == ')' || c == ']') {
+        foundClosingBracket = true;
+      }
+      if (c == '(' || c == '[') {
+        foundOpeningBracket = true;
+      }
+      if (foundClosingBracket && foundOpeningBracket) {
+        foundOpeningBracket = false;
+        foundClosingBracket = false;
+        foundComma = false;
+        temp = new String();
+      } else if (!foundClosingBracket && foundOpeningBracket || !foundClosingBracket && foundOpeningBracket
+          && foundComma) {
+        if (!temp.isEmpty()) {
+          sb = new StringBuilder(temp);
+        }
+        break;
+      }
       c = doc.getChar(--offset);
       if (offset <= lineStart) {
         return "";
@@ -131,7 +161,10 @@ public class ChainTemplateProposalGenerator {
   // the equals symbol is needed. --> //XXX need a solution, if this plug-in is
   // called to gain method parameter.
   private JavaContext computeJavaContext() {
-    final int offsetToEquals = computeOffsetToEquals(jctx);
+    int offsetToEquals;
+    offsetToEquals = computeOffsetToEquals(jctx);
+    offsetToEquals++;
+    offsetToEquals++;
     final IDocument document = jctx.getDocument();
     final JavaContext ctx = new JavaContext(templateContextType, document, offsetToEquals, 0, jctx.getCompilationUnit());
     ctx.setForceEvaluation(true);
@@ -144,9 +177,7 @@ public class ChainTemplateProposalGenerator {
       offsetToEquals = getOffsetToEqualSymbol(jctx.getDocument(), jctx.getInvocationOffset());
       if (offsetToEquals == -1) {
         offsetToEquals = jctx.getInvocationOffset();
-      } // else {
-      // offsetToEquals++;
-      // }
+      }
     } catch (final BadLocationException e) {
       JavaPlugin.log(e);
     }
@@ -157,8 +188,37 @@ public class ChainTemplateProposalGenerator {
     final IRegion lineRegion = doc.getLineInformationOfOffset(offset);
     final int lineStart = lineRegion.getOffset();
     char c = doc.getChar(offset - 1);
-    while (c != '=') {
-      c = doc.getChar(--offset - 1);
+    boolean foundComma = false;
+    boolean foundClosingBracket = false;
+    boolean foundOpeningBracket = false;
+    int temp = offset--;
+    for (;;) {
+      if (c == '=') {
+        break;
+      }
+      if (c == ',' && !foundComma) {
+        foundComma = true;
+        temp = offset++;
+      }
+      if (c == ')' || c == ']') {
+        foundClosingBracket = true;
+      }
+      if (c == '(' || c == '[') {
+        foundOpeningBracket = true;
+      }
+      if (foundClosingBracket && foundOpeningBracket) {
+        foundOpeningBracket = false;
+        foundClosingBracket = false;
+        foundComma = false;
+        temp = offset;
+      } else if (!foundClosingBracket && foundOpeningBracket && !foundClosingBracket && foundOpeningBracket
+          && foundComma) {
+        if (temp > offset) {
+          offset = temp;
+        }
+        break;
+      }
+      c = doc.getChar(--offset);
       if (offset <= lineStart) {
         return -1;
       }
@@ -178,22 +238,22 @@ public class ChainTemplateProposalGenerator {
     completionProposals = new ArrayList<IJavaCompletionProposal>();
 
     int proposalNo = 1;
-    for (final ChainTemplateProposal proposal : proposals) {
-      expectedType = proposal.getExpectedType();
-      expectedTypeDimension = proposal.getExpectedTypeDimension();
+    for (final ChainTemplateProposal chainProposal : proposals) {
+      expectedType = chainProposal.getExpectedType();
+      expectedTypeDimension = chainProposal.getExpectedTypeDimension();
       if (isMaxProposalCount(proposalNo) || isMaxPluginComputationTime(algortihmComputeTime, proposalStartTime)) {
         break;
       }
-      proposalNo = computeProposalPart(proposalNo, proposal);
+      proposalNo = computeProposalPart(proposalNo, chainProposal);
     }
     return completionProposals;
   }
 
-  private int computeProposalPart(int proposalNo, final ChainTemplateProposal proposal) {
+  private int computeProposalPart(int proposalNo, final ChainTemplateProposal chainProposal) {
     try {
-      final String code = generateCode(proposal);
+      final String code = generateCode(chainProposal);
       if (code != null) {
-        computeAndAddProposal(proposalNo, proposal, code);
+        computeAndAddProposal(proposalNo, chainProposal, code);
       }
       proposalNo++;
     } catch (final Exception e) {
@@ -202,10 +262,10 @@ public class ChainTemplateProposalGenerator {
     return proposalNo;
   }
 
-  private void computeAndAddProposal(final int proposalNo, final ChainTemplateProposal proposal, final String code)
+  private void computeAndAddProposal(final int proposalNo, final ChainTemplateProposal chainProposal, final String code)
       throws BadLocationException, TemplateException {
     final JavaContext ctx = computeJavaContext();
-    final Template template = generateTemplate(proposal, code); // name
+    final Template template = generateTemplate(chainProposal, code); // name
     final IRegion region = computeRegion(ctx);
     if (canEvaluateTemplate(ctx, template)) {
       final TemplateProposal prop = new TemplateProposal(template, ctx, region, templateIcon);
@@ -232,9 +292,9 @@ public class ChainTemplateProposalGenerator {
   }
 
   private IRegion computeRegion(final JavaContext ctx) {
-    int start = ctx.getStart();
+    int start = computeOffsetToEquals(jctx);
     try {
-      if (ctx.getDocument().getChar(start) == ' ') {
+      if (ctx.getDocument().getChar(start) != ' ') {
         start++;
       }
     } catch (BadLocationException e) {
@@ -245,9 +305,9 @@ public class ChainTemplateProposalGenerator {
     return region;
   }
 
-  private Template generateTemplate(final ChainTemplateProposal proposal, final String code) {
-    final String description = computeDescription(proposal);
-    final String name = computeName(proposal);
+  private Template generateTemplate(final ChainTemplateProposal chainProposal, final String code) {
+    final String description = computeDescription(chainProposal);
+    final String name = computeName(chainProposal);
     final Template template = new Template(name, description, "java", code, true);
     return template;
   }
@@ -262,9 +322,9 @@ public class ChainTemplateProposalGenerator {
   }
 
   // This method computes the name, which is displayed in the proposal box.
-  private String computeName(final ChainTemplateProposal proposal) {
+  private String computeName(final ChainTemplateProposal chainProposal) {
     StringBuilder name = null;
-    for (final IChainElement part : proposal.getProposedChain()) {
+    for (final IChainElement part : chainProposal.getProposedChain()) {
       final String partName = makePartName(part);
       if (partName == null) {
         return null;
@@ -275,13 +335,13 @@ public class ChainTemplateProposalGenerator {
         name.append(Signature.C_DOT).append(partName);
       }
     }
-    computeCastingForName(proposal, name);
+    computeCastingForName(chainProposal, name);
     return name.toString();
   }
 
-  private void computeCastingForName(final ChainTemplateProposal proposal, final StringBuilder code) {
-    if (proposal.needsCast()) {
-      code.insert(0, String.format("(%s) ", computeCasting(proposal)));
+  private void computeCastingForName(final ChainTemplateProposal chainProposal, final StringBuilder code) {
+    if (chainProposal.needsCast()) {
+      code.insert(0, String.format("(%s) ", computeCasting(chainProposal)));
     }
   }
 
@@ -303,7 +363,7 @@ public class ChainTemplateProposalGenerator {
       result = part.getCompletion();
       break;
     }
-    result += computeArrayBracketsForTemplate(part);
+    result += computeArrayBracketsForTemplate(part).replaceAll("[${}]", "");
     return result;
   }
 
@@ -319,25 +379,30 @@ public class ChainTemplateProposalGenerator {
   }
 
   // This method computes the description for the proposal box
-  private String computeDescription(final ChainTemplateProposal proposal) {
-    final int chainLength = proposal.getProposedChain().size();
-    String description = chainLength == 1 ? "(1 element" : "(" + chainLength + " elements";
-    if (proposal.needsCast()) {
-      description += ", type cast";
+  private String computeDescription(final ChainTemplateProposal chainProposal) {
+    final int chainLength = chainProposal.getProposedChain().size();
+    StringBuffer res = new StringBuffer();
+    res.append("(");
+    res.append(chainLength == 1 ? "1 element, " : chainLength + " elements, ");
+
+    if (chainProposal.needsCast()) {
+      res.append("type cast, ");
     }
-    description += ')';
-    return description;
+    res.append(chainProposal.getExpectedType().getName().getClassName().toString());
+    res.append(computeArrayBracketsForCasting(chainProposal));
+    res.append(")");
+    return res.toString();
   }
 
   // This method computes the code for the proposals. Therefore the hole string
   // is created, so that every prefix has
   // to be overridden.
-  private String generateCode(final ChainTemplateProposal proposal) throws JavaModelException {
+  private String generateCode(final ChainTemplateProposal chainProposal) throws JavaModelException {
 
     final String prefixToLastDot = computePrefixToLastDot();
 
     StringBuilder code = null;
-    for (final IChainElement part : proposal.getProposedChain()) {
+    for (final IChainElement part : chainProposal.getProposedChain()) {
       final String partCode = makePartCode(part, prefixToLastDot);
       if (partCode == null) {
         return null;
@@ -348,7 +413,7 @@ public class ChainTemplateProposalGenerator {
         code.append(Signature.C_DOT).append(partCode);
       }
     }
-    computeCastingForCode(proposal, code);
+    computeCastingForCode(chainProposal, code);
     code.append("${cursor}");
     return code.toString();
   }
@@ -359,15 +424,15 @@ public class ChainTemplateProposalGenerator {
     return prefixToLastDot;
   }
 
-  private void computeCastingForCode(final ChainTemplateProposal proposal, final StringBuilder code) {
-    if (proposal.needsCast()) {
-      final String castingString = String.format("(${type:newType(%s)}%s)", computeCasting(proposal),
-          computeArrayBracketsForCasting(proposal));
+  private void computeCastingForCode(final ChainTemplateProposal chainProposal, final StringBuilder code) {
+    if (chainProposal.needsCast()) {
+      final String castingString = String.format("(${type:newType(%s)}%s)", computeCasting(chainProposal),
+          computeArrayBracketsForCasting(chainProposal));
       code.insert(0, castingString);
     }
   }
 
-  private String computeArrayBracketsForCasting(ChainTemplateProposal proposal) {
+  private String computeArrayBracketsForCasting(ChainTemplateProposal chainProposal) {
     String brackets = new String();
     for (int i = expectedTypeDimension; i > 0; i--) {
       brackets += "[]";
@@ -375,8 +440,8 @@ public class ChainTemplateProposalGenerator {
     return brackets;
   }
 
-  private String computeCasting(final ChainTemplateProposal proposal) {
-    TypeName name = proposal.getCastingType().getName();
+  private String computeCasting(final ChainTemplateProposal chainProposal) {
+    TypeName name = chainProposal.getCastingType().getName();
     String casting = name.getPackage().toString() + "/" + name.getClassName().toString();
     casting = casting.replaceAll("/", ".");
     return casting;
