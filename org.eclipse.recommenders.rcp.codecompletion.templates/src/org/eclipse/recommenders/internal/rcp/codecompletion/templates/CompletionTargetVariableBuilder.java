@@ -125,7 +125,8 @@ public final class CompletionTargetVariableBuilder {
         int variableNameLength = 0;
         if (needsConstructor) {
             final String completionNode = context.getCompletionNode().toString();
-            variableNameLength = completionNode.substring(completionNode.indexOf(':') + 1).length() - 1;
+            variableNameLength = completionNode.substring(completionNode.indexOf(':') + 1, completionNode.indexOf('>'))
+                    .length();
         } else if (receiverName != null && receiverName.length() > 0) {
             // For variables other than implicit "this", add space for ".".
             variableNameLength = receiverName.length() + 1;

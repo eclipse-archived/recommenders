@@ -34,9 +34,9 @@ public final class UnitTestSuite {
     private static final CompletionTargetVariable CONSTRUCTORVARIABLE = new CompletionTargetVariable("unconstructed",
             VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), new HashSet<IMethodName>(), new Region(0, 0), true);
 
-    private static final IMethodName DEFAULTMETHOD = VmMethodName.get("Lorg/eclipse/swt/widgets/Button.setText()V");
-    private static final IMethodName CONSTRUCTORMETHOD = VmMethodName
-            .get("Lorg/eclipse/swt/widgets/Button.<init>(Lorg/eclipse/swt/widgets/Composite;Lint;)V");
+    private static final IMethodName DEFAULTMETHOD = createMethod("Lorg/eclipse/swt/widgets/Button.setText()V");
+    private static final IMethodName DEFAULTRETURNINGMETHOD = createMethod("Lorg/eclipse/swt/widgets/Button.getText()Ljava/lang/String;");
+    private static final IMethodName CONSTRUCTORMETHOD = createMethod("Lorg/eclipse/swt/widgets/Button.<init>(Lorg/eclipse/swt/widgets/Composite;I)V");
 
     private static final MethodCall METHODCALL = new MethodCall(DEFAULTVARIABLE.getName(), DEFAULTMETHOD);
     private static final MethodCall CONSTRUCTORCALL = new MethodCall(CONSTRUCTORVARIABLE.getName(), CONSTRUCTORMETHOD);
@@ -51,11 +51,15 @@ public final class UnitTestSuite {
         return METHODCALL;
     }
 
+    protected static IMethodName getDefaultReturningMethod() {
+        return DEFAULTRETURNINGMETHOD;
+    }
+
     /**
      * @return the constructor call which is used in most test cases.
      */
     protected static MethodCall getDefaultConstructorCall() {
-        return UnitTestSuite.CONSTRUCTORCALL;
+        return CONSTRUCTORCALL;
     }
 
     protected static CompletionTargetVariable getDefaultConstructorTargetVariable() {
@@ -64,5 +68,9 @@ public final class UnitTestSuite {
 
     protected static CodeBuilder getCodeBuilderMock() {
         return CODEBUILDERMOCK;
+    }
+
+    protected static IMethodName createMethod(final String identifier) {
+        return VmMethodName.get(identifier);
     }
 }

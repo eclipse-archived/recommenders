@@ -14,8 +14,6 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -79,10 +77,5 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
     @Override
     public int compareTo(final PatternRecommendation other) {
         return Integer.valueOf(probability).compareTo(other.probability);
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 }

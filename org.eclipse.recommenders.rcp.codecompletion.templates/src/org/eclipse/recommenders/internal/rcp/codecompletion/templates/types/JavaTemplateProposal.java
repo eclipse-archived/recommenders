@@ -48,6 +48,7 @@ public final class JavaTemplateProposal extends TemplateProposal {
     public JavaTemplateProposal(final Template template, final TemplateContext context, final IRegion region,
             final Image image, final int probability) {
         super(template, context, region, image);
+        JavaTemplateProposal.currentDocument = null;
         setRelevance(RELEVANCE_OFFSET + probability);
         computeStyledDisplayString();
     }

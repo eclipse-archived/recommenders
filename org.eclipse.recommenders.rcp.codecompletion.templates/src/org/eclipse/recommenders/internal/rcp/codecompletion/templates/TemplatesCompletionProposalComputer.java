@@ -38,6 +38,7 @@ import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.ModifiedJavaContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
@@ -183,7 +184,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         JavaContext templateContext = null;
         try {
             // TODO: new ModifiedJavaContext
-            templateContext = new JavaContext(templateContextType, new Document(compilationUnit.getSource()),
+            templateContext = new ModifiedJavaContext(templateContextType, new Document(compilationUnit.getSource()),
                     region.getOffset(), region.getLength(), compilationUnit);
             templateContext.setForceEvaluation(true);
         } catch (final JavaModelException e) {

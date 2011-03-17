@@ -59,7 +59,7 @@ public final class ModifiedJavaContext extends JavaContext {
         final IDocument document = JavaTemplateProposal.getCurrentDocument();
         if (document != null) {
             final int shift = document.getLength() - getDocument().getLength();
-            if (shift > 0) {
+            if (shift != 0) {
                 setCompletionOffset(getCompletionOffset() + shift);
                 shifted = true;
             }

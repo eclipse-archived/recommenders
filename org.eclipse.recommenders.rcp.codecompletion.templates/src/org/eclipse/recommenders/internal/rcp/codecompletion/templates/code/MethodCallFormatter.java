@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 import com.google.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
@@ -43,10 +42,8 @@ public final class MethodCallFormatter {
      *         definition of a new variable if something is returned and the
      *         variable with the invoked method, e.g. "
      *         <code>String text = button.getText()</code>".
-     * @throws JavaModelException
-     *             When the method could not be resolved by JDT.
      */
-    public String format(final MethodCall methodCall) throws JavaModelException {
+    public String format(final MethodCall methodCall) {
         String invocationPrefix;
         final IMethodName invokedMethod = methodCall.getInvokedMethod();
         if (invokedMethod.isInit()) {
@@ -80,8 +77,15 @@ public final class MethodCallFormatter {
     }
 
     private static String getNewVariableTypeString(final IMethodName invokedMethod) {
-        return Names.vm2srcSimpleTypeName(invokedMethod.isInit() ? invokedMethod.getDeclaringType() : invokedMethod
-                .getReturnType());
+        String typeString;
+        if (invokedMethod.isInit()) {
+            typeString = String.format("${constructedType:newType(%s)}",
+                    Names.vm2srcQualifiedType(invokedMethod.getDeclaringType()));
+        } else {
+            typeString = String.format("${returnedType:newType(%s)}",
+                    Names.vm2srcSimpleTypeName(invokedMethod.getReturnType()));
+        }
+        return typeString;
     }
 
     /**
@@ -117,21 +121,22 @@ public final class MethodCallFormatter {
         if (methodName.isInit()) {
             final String type = Names.vm2srcTypeName(methodName.getDeclaringType().getIdentifier());
             variableName = String.format("${unconstructed:newName(%s)}", type);
-        } else if (methodName.getName().startsWith("get")) {
-            variableName = getNewVariableNameFromGetter(methodCall);
         } else {
-            variableName = StringUtils.uncapitalize(methodName.getReturnType().getClassName());
+            if (methodName.getName().startsWith("get")) {
+                variableName = StringUtils.uncapitalize(methodCall.getInvokedMethod().getName().substring(3));
+            } else {
+                variableName = StringUtils.uncapitalize(methodName.getReturnType().getClassName());
+            }
+            if (variableName.equals(methodCall.getVariableName())) {
+                variableName = getNewVariableNameFromReturnType(methodCall);
+            }
         }
         return variableName;
     }
 
-    private static String getNewVariableNameFromGetter(final MethodCall methodCall) {
-        String variableName = StringUtils.uncapitalize(methodCall.getInvokedMethod().getName().substring(3));
-        if (variableName.equals(methodCall.getVariableName())) {
-            final String type = Names.vm2srcTypeName(methodCall.getInvokedMethod().getReturnType().getIdentifier());
-            variableName = String.format("${returned:newName(%s)}", type);
-        }
-        return variableName;
+    private static String getNewVariableNameFromReturnType(final MethodCall methodCall) {
+        final String type = Names.vm2srcTypeName(methodCall.getInvokedMethod().getReturnType().getIdentifier());
+        return String.format("${returned:newName(%s)}", type);
     }
 
     /**

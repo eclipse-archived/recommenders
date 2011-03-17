@@ -23,12 +23,14 @@ public final class MethodCallFormatterTest {
 
     @Test
     public void testPatternNamer() throws JavaModelException {
-        MethodCall methodCall = UnitTestSuite.getDefaultMethodCall();
-        Assert.assertEquals("constructed.setText(${intTest:link(0)});", methodCallFormatterMock.format(methodCall));
+        check(UnitTestSuite.getDefaultMethodCall(),
+                "constructed.setText(${intTest:link(0)}, ${arg0:link(false, true)}, ${arg1}, ${arg2});");
+        check(UnitTestSuite.getDefaultConstructorCall(),
+                "${constructedType:newType(org.eclipse.swt.widgets.Button)} unconstructed = new ${constructedType}(${intTest:link(0)}, ${arg3:link(false, true)}, ${arg4}, ${arg5});");
+    }
 
-        methodCall = UnitTestSuite.getDefaultConstructorCall();
-        Assert.assertEquals("Button unconstructed = new Button(${intTest:link(0)});",
-                methodCallFormatterMock.format(methodCall));
+    private void check(final MethodCall methodCall, final String expected) {
+        Assert.assertEquals(expected, methodCallFormatterMock.format(methodCall));
     }
 
     public static MethodCallFormatter getMethodCallFormatterMock() {
