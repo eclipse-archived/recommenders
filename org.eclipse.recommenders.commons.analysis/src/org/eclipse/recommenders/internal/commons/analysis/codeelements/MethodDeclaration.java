@@ -114,7 +114,7 @@ public class MethodDeclaration implements INamedCodeElement {
 
     public Variable findVariable(final String name) {
         for (final Variable variable : getVariables()) {
-            if (name.equals(variable.getName())) {
+            if (name.equals(variable.getNameLiteral())) {
                 return variable;
             }
         }
@@ -122,6 +122,7 @@ public class MethodDeclaration implements INamedCodeElement {
         return null;
     }
 
+    @Override
     public void accept(final CompilationUnitVisitor v) {
         if (v.visit(this)) {
             for (final TypeDeclaration nestedType : nestedTypes) {
