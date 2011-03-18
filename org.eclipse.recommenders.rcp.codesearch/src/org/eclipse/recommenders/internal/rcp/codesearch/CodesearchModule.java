@@ -10,11 +10,14 @@
  */
 package org.eclipse.recommenders.internal.rcp.codesearch;
 
-import com.google.inject.AbstractModule;
+import org.eclipse.recommenders.internal.rcp.codesearch.views.CodesearchController;
 
-public class ExamplesModule extends AbstractModule {
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
+
+public class CodesearchModule extends AbstractModule {
     @Override
     protected void configure() {
-
+        bind(CodesearchController.class).in(Scopes.SINGLETON);
     }
 }

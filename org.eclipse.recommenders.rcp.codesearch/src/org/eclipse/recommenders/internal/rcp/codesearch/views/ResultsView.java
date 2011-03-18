@@ -11,42 +11,28 @@
 package org.eclipse.recommenders.internal.rcp.codesearch.views;
 
 import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.recommenders.commons.codesearch.Feedback;
-import org.eclipse.recommenders.commons.codesearch.FeedbackType;
-import org.eclipse.recommenders.commons.codesearch.client.CodeSearchClient;
-import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
-import org.eclipse.recommenders.internal.rcp.codesearch.RCPResponse;
-import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendUserClickFeedbackJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.inject.Inject;
 
 public class ResultsView extends ViewPart {
     public static final String ID = ResultsView.class.getName();
     private ScrolledComposite rootContainer;
-    private Composite summariesContainer;
-    private RCPResponse response;
-    private final CodeSearchClient searchClient;
-    private Composite rootcontrol;
-    private BiMap<Control, RCPProposal> summaryControl2ProposalIndex;
+    Composite summariesContainer;
+    private final CodesearchController controller;
 
     @Inject
-    public ResultsView(final CodeSearchClient searchClient) {
-        this.searchClient = searchClient;
+    public ResultsView(final CodesearchController controller) {
+        this.controller = controller;
     }
 
     @Override
@@ -68,97 +54,24 @@ public class ResultsView extends ViewPart {
         summariesContainer.setLayoutData(GridDataFactory.fillDefaults().create());
         rootContainer.setContent(summariesContainer);
 
-        getViewSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), new Action() {
-            /* The control that currently has focus inside of this view */
-            private Control focusControl;
-
-            @Override
-            public void run() {
-
-                if (findFocusControl(summariesContainer)) {
-                    sendTextToClipboard();
-                    sendTextCopiedFeedback();
-                }
-
-            }
-
-            private void sendTextCopiedFeedback() {
-                final RCPProposal proposal = findProposalForControl(focusControl);
-                if (proposal == null) {
-                    return;
-                }
-                new SendUserClickFeedbackJob(response.getRequestId(), Feedback.newFeedback(proposal.getId(),
-                        FeedbackType.TEXT_COPIED), searchClient).schedule();
-            }
-
-            private void sendTextToClipboard() {
-                if (focusControl instanceof StyledText) {
-                    final StyledText widget = (StyledText) focusControl;
-                    widget.copy();
-                }
-            }
-
-            private RCPProposal findProposalForControl(final Control focus) {
-                if (focus == null) {
-                    return null;
-                }
-                final RCPProposal proposal = summaryControl2ProposalIndex.get(focus);
-                if (proposal != null) {
-                    return proposal;
-                }
-                return findProposalForControl(focus.getParent());
-            }
-
-            private boolean findFocusControl(final Control control) {
-                focusControl = recursiveFindFocusControl(control);
-                return focusControl != null;
-            }
-
-            private Control recursiveFindFocusControl(final Control control) {
-                if (control.isFocusControl()) {
-                    return control;
-                }
-                if (control instanceof Composite) {
-                    for (final Control child : ((Composite) control).getChildren()) {
-                        final Control focus = recursiveFindFocusControl(child);
-                        if (focus != null) {
-                            return focus;
-                        }
-                    }
-                }
-                // nothing found with focus?
-                return null;
-            }
-        });
-    }
-
-    public void setInput(final RCPResponse reply) {
-        this.response = reply;
-        disposeOldSourceViewers();
-        createNewSourceViewers();
-    }
-
-    private void disposeOldSourceViewers() {
-        for (final Control child : summariesContainer.getChildren()) {
-            child.dispose();
-        }
-    }
-
-    private void createNewSourceViewers() {
-        summaryControl2ProposalIndex = HashBiMap.create();
-        for (final RCPProposal proposal : response.getProposals()) {
-            final CodeSummaryPage page = new RelatedStatementsSummaryPage(searchClient);
-            page.createControl(summariesContainer);
-            page.setInput(response, proposal);
-            summaryControl2ProposalIndex.put(page.getControl(), proposal);
-        }
-        final Point preferredSize = summariesContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-        rootContainer.setMinSize(preferredSize);
-        rootContainer.layout(true, true);
+        getViewSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(),
+                new CopyAction(this, controller));
     }
 
     @Override
     public void setFocus() {
         summariesContainer.setFocus();
+    }
+
+    public Composite getSummaryArea() {
+        return summariesContainer;
+    }
+
+    public void update() {
+
+        final Point preferredSize = summariesContainer.computeSize(rootContainer.getParent().getSize().x - 20,
+                SWT.DEFAULT);
+        rootContainer.setMinSize(preferredSize);
+        rootContainer.layout(true, true);
     }
 }

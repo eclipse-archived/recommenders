@@ -21,8 +21,8 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.commons.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
+import org.eclipse.recommenders.internal.rcp.codesearch.views.CodesearchController;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
@@ -34,14 +34,14 @@ import com.google.inject.Inject;
 public class CodesearchCompletionProposalComputer implements IJavaCompletionProposalComputer {
     private final IArtifactStore artifactStore;
     private final IntelligentCompletionContextResolver contextResolver;
-    private final CodeSearchClient searchClient;
+    private final CodesearchController controller;
 
     @Inject
     public CodesearchCompletionProposalComputer(final IArtifactStore artifactStore,
-            final IntelligentCompletionContextResolver contextResolver, final CodeSearchClient searchClient) {
+            final IntelligentCompletionContextResolver contextResolver, final CodesearchController controller) {
         this.artifactStore = artifactStore;
         this.contextResolver = contextResolver;
-        this.searchClient = searchClient;
+        this.controller = controller;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class CodesearchCompletionProposalComputer implements IJavaCompletionProp
         // recContext, searchClient));
         // }
         if (recContext.getEnclosingMethod() != null) {
-            res.add(new SearchSimilarMethodsProposal(100, recCu, recContext, searchClient));
+            res.add(new SearchSimilarMethodsProposal(100, recCu, recContext, controller));
         }
         return res;
     }

@@ -13,17 +13,13 @@ package org.eclipse.recommenders.internal.rcp.codesearch.views;
 import static java.lang.String.format;
 
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.formatter.CodeFormatter;
-import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaSourceViewer;
 import org.eclipse.jdt.ui.JavaUI;
@@ -36,70 +32,64 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.FeedbackType;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
-import org.eclipse.recommenders.commons.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPResponse;
-import org.eclipse.recommenders.internal.rcp.codesearch.jobs.OpenSourceCodeInEditorJob;
-import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendUserClickFeedbackJob;
 import org.eclipse.recommenders.rcp.utils.ast.ASTStringUtils;
 import org.eclipse.recommenders.rcp.utils.ast.HeuristicUsedTypesAndMethodsLocationFinder;
 import org.eclipse.recommenders.rcp.utils.ast.UsedTypesAndMethodsLocationFinder;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.text.edits.MalformedTreeException;
-import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
-public class RelatedStatementsSummaryPage implements CodeSummaryPage {
+public class StatmentsBasedCodeSummaryBlock implements ICodeSummaryBlock {
+
     private static Image IMG_REMOVE = AbstractUIPlugin.imageDescriptorFromPlugin(CodesearchPlugin.PLUGIN_ID,
             "icons/obj16/remove.png").createImage();
-    private static Image IMG_ACCEPT = AbstractUIPlugin.imageDescriptorFromPlugin(CodesearchPlugin.PLUGIN_ID,
-            "icons/obj16/accept.png").createImage();
-    private final CodeSearchClient searchClient;
+
+    private final CodesearchController controller;
+    private final SummaryCodeFormatter formatter;
 
     private RCPResponse response;
     private RCPProposal proposal;
 
-    private Composite rootControl;
+    private Composite rootComposite;
+    private Composite headerComposite;
+    private Link headerTitleLink;
+    private JavaSourceViewer sourceCodeViewer;
 
     private Set<ASTNode> summaryStatementNodes;
-    private Link titleLink;
-    private JavaSourceViewer javaSourceViewer;
-    private Composite headerPane;
 
-    public RelatedStatementsSummaryPage(final CodeSearchClient searchClient) {
-        this.searchClient = searchClient;
+    public StatmentsBasedCodeSummaryBlock(final CodesearchController controller, final SummaryCodeFormatter formatter) {
+        this.controller = controller;
+        this.formatter = formatter;
     }
 
     @Override
-    public void createControl(final Composite parent) {
+    public Control createControl(final Composite parent) {
         createRootPane(parent);
         createHeaderArea();
         createSourceCodeArea();
+        return rootComposite;
 
     }
 
@@ -107,10 +97,10 @@ public class RelatedStatementsSummaryPage implements CodeSummaryPage {
         final Display display = parent.getDisplay();
         final Color white = display.getSystemColor(SWT.COLOR_WHITE);
 
-        rootControl = new Composite(parent, SWT.NONE);
-        rootControl.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        rootControl.setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).numColumns(1).create());
-        rootControl.setBackground(white);
+        rootComposite = new Composite(parent, SWT.NONE);
+        rootComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        rootComposite.setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).numColumns(1).create());
+        rootComposite.setBackground(white);
 
     }
 
@@ -121,60 +111,49 @@ public class RelatedStatementsSummaryPage implements CodeSummaryPage {
     }
 
     private void createHeaderComposite() {
-        headerPane = new Composite(rootControl, SWT.NONE);
-        headerPane.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).create());
-        headerPane.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        headerComposite = new Composite(rootComposite, SWT.NONE);
+        headerComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).create());
+        headerComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
     }
 
     private void createTitleLink() {
-        titleLink = new Link(headerPane, SWT.NONE);
-        titleLink.addSelectionListener(new SelectionAdapter() {
+        headerTitleLink = new Link(headerComposite, SWT.NONE);
+        headerTitleLink.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                new OpenSourceCodeInEditorJob(response.getRequest().query, proposal, "").schedule();
+                controller.openInEditor(proposal);
+                controller.sendFeedback(proposal, FeedbackType.EDITOR_OPENED);
             }
         });
         final Color color = JavaUI.getColorManager().getColor(IJavaColorConstants.JAVADOC_LINK);
-        titleLink.setLayoutData(GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).grab(true, false)
+        headerTitleLink.setLayoutData(GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).grab(true, false)
                 .indent(3, 1).create());
-        titleLink.setForeground(color);
+        headerTitleLink.setForeground(color);
+
         Font font = JFaceResources.getFont(PreferenceConstants.EDITOR_TEXT_FONT);
         final FontData[] fD = font.getFontData();
         fD[0].setHeight(fD[0].getHeight() + 1);
         fD[0].setStyle(SWT.BOLD);
-        font = new Font(rootControl.getDisplay(), fD[0]);
-        titleLink.setFont(font);
+        font = new Font(rootComposite.getDisplay(), fD[0]);
+        headerTitleLink.setFont(font);
     }
 
     private void createToolBar() {
-        final ToolBar toolBar = new ToolBar(headerPane, SWT.FLAT);
+        final ToolBar toolBar = new ToolBar(headerComposite, SWT.FLAT);
         final ToolItem dislikeItem = new ToolItem(toolBar, SWT.NONE);
         dislikeItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                final Feedback feedback = Feedback.newFeedback(proposal.getId(), FeedbackType.RATED_USELESS);
-                new SendUserClickFeedbackJob(response.getRequestId(), feedback, searchClient).schedule();
-                updateParentsLayout();
-            }
-
-            private void updateParentsLayout() {
-                // TODO this doesn't feel nice: Accessing the parent w/ type
-                // casts and updating the parent...
-                final Composite scrollableCompositeContentPane = rootControl.getParent();
-                final ScrolledComposite scrollableComposite = (ScrolledComposite) scrollableCompositeContentPane
-                        .getParent();
-
-                rootControl.dispose();
-                final Point preferredSize = scrollableCompositeContentPane.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                scrollableComposite.setMinSize(preferredSize);
-                scrollableComposite.update();
+                controller.removeProposal(proposal);
+                controller.sendFeedback(proposal, FeedbackType.CLEARED);
             }
         });
 
         dislikeItem.setImage(IMG_REMOVE);
         dislikeItem
                 .setToolTipText("Removes this proposal from the list and sends a 'This example was not helpful all' feedback to the server to improve code search.");
+        toolBar.setLayoutData(GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.BEGINNING).create());
     }
 
     private void createSourceCodeArea() {
@@ -182,31 +161,26 @@ public class RelatedStatementsSummaryPage implements CodeSummaryPage {
         final JavaTextTools javaTextTools = JavaPlugin.getDefault().getJavaTextTools();
         final IColorManager colorManager = javaTextTools.getColorManager();
 
-        javaSourceViewer = new JavaSourceViewer(rootControl, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
+        sourceCodeViewer = new JavaSourceViewer(rootComposite, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
         final JavaSourceViewerConfiguration configuration = new JavaSourceViewerConfiguration(colorManager, store,
                 null, null);
 
-        javaSourceViewer.configure(configuration);
+        sourceCodeViewer.configure(configuration);
 
         final Font font = JFaceResources.getFont(PreferenceConstants.EDITOR_TEXT_FONT);
         // final FontData[] fD = font.getFontData();
         // fD[0].setHeight(10);
         // font = new Font(rootControl.getDisplay(), fD[0]);
 
-        javaSourceViewer.getTextWidget().setFont(font);
-        javaSourceViewer.setEditable(false);
-        javaSourceViewer.getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 10).create());
+        sourceCodeViewer.getTextWidget().setFont(font);
+        sourceCodeViewer.setEditable(false);
+        sourceCodeViewer.getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 0).create());
     }
 
     @Override
-    public Control getControl() {
-        return rootControl;
-    }
-
-    @Override
-    public void setInput(final RCPResponse response, final RCPProposal proposalToDisplay) {
+    public void display(final RCPResponse response, final RCPProposal proposal) {
         this.response = response;
-        this.proposal = proposalToDisplay;
+        this.proposal = proposal;
         findInterestingStatements();
         createDocumentsFromStatements();
     }
@@ -216,63 +190,15 @@ public class RelatedStatementsSummaryPage implements CodeSummaryPage {
         for (final ASTNode i : summaryStatementNodes) {
             sb.append(i.toString());
         }
+        sb.append("\n");
         final String source = sb.toString(); // retrieve the source
 
         final IDocument document = new Document(source);
         formatCode(document);
+        sourceCodeViewer.setInput(document);
 
-        javaSourceViewer.setInput(document);
-
-        final MethodDeclaration methodDeclaration = proposal.getAstMethodDeclaration(new NullProgressMonitor());
-        final String title = methodDeclaration != null ? ASTStringUtils.toQualifiedString(methodDeclaration) : Names
-                .vm2srcQualifiedMethod(proposal.getMethodName());
-        titleLink.setText(format("<a>%s {</a>", title));
-    }
-
-    private void formatCode(final IDocument document) {
-
-        // final String content = sb.toString();
-        // final Document document = new Document(content);
-
-        // take default Eclipse formatting options
-        final Map options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
-        options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, 120);
-        // initialize the compiler settings to be able to format 1.5 code
-        options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
-        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
-        options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
-
-        final String alignment = DefaultCodeFormatterConstants.createAlignmentValue(true,
-                DefaultCodeFormatterConstants.WRAP_COMPACT, DefaultCodeFormatterConstants.INDENT_DEFAULT);
-
-        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_ALLOCATION_EXPRESSION, alignment);
-        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION, alignment);
-        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ASSIGNMENT, alignment);
-        options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_SELECTOR_IN_METHOD_INVOCATION, alignment);
-
-        // instanciate the default code formatter with the given options
-        final CodeFormatter codeFormatter = ToolFactory.createCodeFormatter(options);
-
-        // retrieve the source to format
-        final TextEdit edit = codeFormatter.format(CodeFormatter.K_STATEMENTS, document.get(), // source
-                // to
-                // format
-                0, // starting position
-                document.getLength(), // length
-                0, // initial indentation
-                System.getProperty("line.separator") // line separator
-                );
-
-        if (edit != null) {
-            try {
-                edit.apply(document);
-            } catch (final MalformedTreeException e) {
-                e.printStackTrace();
-            } catch (final BadLocationException e) {
-                e.printStackTrace();
-            }
-        }
-
+        final String title = computeSummaryTitle();
+        headerTitleLink.setText(format("<a>%s {</a>", title));
     }
 
     private void findInterestingStatements() {
@@ -297,14 +223,14 @@ public class RelatedStatementsSummaryPage implements CodeSummaryPage {
 
         for (final ASTNode node : finder.getTypeSimpleNames()) {
             final Statement statement = findClosestStatement(node);
-            if (statement != null) {
+            if (isRelevantStatement(statement)) {
                 summaryStatementNodes.add(statement);
             }
 
         }
         for (final ASTNode node : finder.getMethodSimpleNames()) {
             final Statement statement = findClosestStatement(node);
-            if (statement != null) {
+            if (isRelevantStatement(statement)) {
                 summaryStatementNodes.add(statement);
             }
 
@@ -313,12 +239,58 @@ public class RelatedStatementsSummaryPage implements CodeSummaryPage {
         for (final ASTNode node : HeuristicUsedTypesAndMethodsLocationFinder.find(root, query.usedTypes,
                 query.calledMethods)) {
             final Statement statement = findClosestStatement(node);
-            if (statement != null) {
+            if (isRelevantStatement(statement)) {
                 summaryStatementNodes.add(statement);
             }
 
         }
 
+    }
+
+    private boolean isRelevantStatement(final Statement statement) {
+        if (statement == null) {
+            return false;
+        }
+        switch (statement.getNodeType()) {
+        case ASTNode.IF_STATEMENT:
+        case ASTNode.FOR_STATEMENT:
+        case ASTNode.ENHANCED_FOR_STATEMENT:
+        case ASTNode.RETURN_STATEMENT:
+        case ASTNode.EXPRESSION_STATEMENT:
+        case ASTNode.CONSTRUCTOR_INVOCATION:
+        case ASTNode.SUPER_CONSTRUCTOR_INVOCATION:
+        case ASTNode.VARIABLE_DECLARATION_STATEMENT:
+            return true;
+        case ASTNode.BLOCK:
+        case ASTNode.WHILE_STATEMENT:
+        case ASTNode.DO_STATEMENT:
+        case ASTNode.TRY_STATEMENT:
+        case ASTNode.SWITCH_STATEMENT:
+        case ASTNode.SYNCHRONIZED_STATEMENT:
+        case ASTNode.THROW_STATEMENT:
+        case ASTNode.BREAK_STATEMENT:
+        case ASTNode.CONTINUE_STATEMENT:
+        case ASTNode.EMPTY_STATEMENT:
+        case ASTNode.LABELED_STATEMENT:
+        case ASTNode.ASSERT_STATEMENT:
+        case ASTNode.TYPE_DECLARATION_STATEMENT:
+        default:
+            return false;
+        }
+    }
+
+    private void formatCode(final IDocument document) {
+        formatter.format(document);
+    }
+
+    private String computeSummaryTitle() {
+        final MethodDeclaration methodDeclaration = proposal.getAstMethodDeclaration(new NullProgressMonitor());
+        final String title = methodDeclaration != null ? ASTStringUtils.toQualifiedString(methodDeclaration) : Names
+                .vm2srcQualifiedMethod(proposal.getMethodName());
+        return title;
+        // final String shortenTitle = Dialog.shortenText(title,
+        // headerTitleLink);
+        // return shortenTitle;
     }
 
     private SnippetSummary getQuery() {
@@ -347,15 +319,13 @@ public class RelatedStatementsSummaryPage implements CodeSummaryPage {
     private Statement findClosestStatement(final ASTNode tmp) {
         if (tmp == null) {
             return null;
+        } else if (tmp instanceof BodyDeclaration) {
+            return null;
         } else if (tmp instanceof Statement) {
             return (Statement) tmp;
         } else {
             return findClosestStatement(tmp.getParent());
         }
-    }
-
-    public JavaSourceViewer getJavaSourceViewer() {
-        return javaSourceViewer;
     }
 
 }

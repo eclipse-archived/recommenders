@@ -34,7 +34,8 @@ public enum FeedbackType {
     NOT_RATED,
 
     /**
-     * User rated this snippet as being not helpful
+     * User removed this item from the proposals list - thus, marked it as being
+     * irrelevant.
      */
-    RATED_USELESS,
+    CLEARED,
 }

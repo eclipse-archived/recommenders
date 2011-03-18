@@ -21,8 +21,7 @@ public class ClientConfiguration {
         return res;
     }
 
-    // TODO nuke hardcoded paths frmo configuration
-    private String baseUrl = "http://localhost:8080/codesearch/";
+    private String baseUrl;
 
     public String getBaseUrl() {
         return baseUrl;

@@ -12,6 +12,7 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -59,12 +60,13 @@ public class RCPProposal {
             final String source = getSource(monitor);
             final ITypeName primaryType = getSummary().className;
             lazyAst = CrASTUtil.createCompilationUnitFromString(primaryType, source, resolverContext);
-            // final IProblem[] problems = lazyAst.getProblems();
-            // if (problems.length > 0) {
-            // for (final Message m : lazyAst.getMessages()) {
-            // System.out.println(m.getMessage());
-            // }
-            // }
+            final IProblem[] problems = lazyAst.getProblems();
+            for (final IProblem problem : problems) {
+                if (problem.isError()) {
+                    System.out.println("compiler problem: " + problem.getMessage());
+                }
+
+            }
         }
         return lazyAst;
     }
@@ -116,10 +118,8 @@ public class RCPProposal {
     public String getSource(final IProgressMonitor monitor) {
         try {
             if (lazySource == null) {
-                System.out.println("loading " + getSourceURL());
                 final InputStream stream = getSourceURL().openStream();
                 lazySource = IOUtils.toString(stream);
-                System.out.println("loading " + getSourceURL() + " done.");
             }
             return lazySource;
         } catch (final IOException e) {

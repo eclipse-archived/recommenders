@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codesearch.jobs;
+package org.eclipse.recommenders.internal.rcp.codesearch.views;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -28,13 +28,13 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.ITextPresentationListener;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.recommenders.commons.codesearch.FeedbackType;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.ByteStorage;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
-import org.eclipse.recommenders.internal.rcp.codesearch.views.VariableUsagesHighlighter;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.rcp.utils.ast.TypeDeclarationFinder;
@@ -50,11 +50,12 @@ public class OpenSourceCodeInEditorJob extends WorkspaceJob {
     private final SnippetSummary request;
     private final RCPProposal hit;
     private Clipboard clipboard;
-    private final String searchData;
+    private final CodesearchController controller;
 
-    public OpenSourceCodeInEditorJob(final SnippetSummary request, final RCPProposal proposal, final String searchData) {
+    public OpenSourceCodeInEditorJob(final SnippetSummary request, final RCPProposal proposal,
+            final CodesearchController controller) {
         super("Loading Source Code from Examples Repository");
-        this.searchData = searchData;
+        this.controller = controller;
         previouslyCopiedClipboardContents = new ArrayList<String>();
         this.request = checkNotNull(request);
         this.hit = checkNotNull(proposal);
@@ -63,7 +64,9 @@ public class OpenSourceCodeInEditorJob extends WorkspaceJob {
 
     @Override
     public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
+        monitor.beginTask("Opening Source in Editor...", 1);
         openViews();
+        monitor.done();
         return Status.OK_STATUS;
     }
 
@@ -113,7 +116,7 @@ public class OpenSourceCodeInEditorJob extends WorkspaceJob {
 
         final JavaEditor openJavaEditor = JdtUtils.openJavaEditor(storage);
         final SourceViewer s = (SourceViewer) openJavaEditor.getViewer();
-        final ITextPresentationListener listener = new VariableUsagesHighlighter(s, request, hit, searchData);
+        final ITextPresentationListener listener = new VariableUsagesHighlighter(s, request, hit, "");
         s.addTextPresentationListener(listener);
         s.invalidateTextPresentation();
         s.getTextWidget().addFocusListener(new FocusListener() {
@@ -121,12 +124,16 @@ public class OpenSourceCodeInEditorJob extends WorkspaceJob {
             public void focusLost(final FocusEvent e) {
                 clipboard = new Clipboard(Display.getCurrent());
                 final TextTransfer textTransfer = TextTransfer.getInstance();
-                final String textData = ((String) clipboard.getContents(textTransfer)).replaceAll("\r", "");
+                final String contents = (String) clipboard.getContents(textTransfer);
+                if (contents == null) {
+                    return;
+                }
+                final String textData = contents.replaceAll("\r", "");
                 if (!previouslyCopiedClipboardContents.contains(textData)) {
                     final TextSelection sel = (TextSelection) s.getSelection();
                     if (sel.getText().equals(textData)) {
                         previouslyCopiedClipboardContents.add(textData);
-                        System.out.println("add send copy feedback here - line 122 in OpenSourceCodeInEditorJob.java");
+                        controller.sendFeedback(hit, FeedbackType.TEXT_COPIED);
                     }
                 }
                 return;
