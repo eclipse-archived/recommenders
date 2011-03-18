@@ -38,4 +38,5 @@ public class IntelligentCompletionModule extends AbstractModule {
         b.addBinding().to(AstBasedVariableUsageResolver.class);
         b.addBinding().to(AnonymousMemberAccessVariableUsageResolver.class);
     }
+
 }
