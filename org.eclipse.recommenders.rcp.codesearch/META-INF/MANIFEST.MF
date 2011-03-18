@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: RCP Codesearch Client
+Bundle-SymbolicName: org.eclipse.recommenders.rcp.codesearch;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Activator: org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.recommenders.commons.codesearch,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.core.resources,
+ org.eclipse.recommenders.commons.utils,
+ org.eclipse.recommenders.rcp.utils,
+ com.google.guava,
+ com.google.guice,
+ org.eclipse.recommenders.rcp.codecompletion,
+ org.eclipse.recommenders.commons.analysis,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.recommenders.commons.utils.gson,
+ org.eclipse.ui.ide,
+ org.apache.commons.collections,
+ org.apache.commons.lang3,
+ com.sun.jersey.client,
+ com.sun.jersey.core,
+ org.eclipse.recommenders.commons.utils.gson.jaxrs,
+ org.eclipse.recommenders.commons.injection,
+ org.apache.commons.io;bundle-version="2.0.1",
+ org.eclipse.ui.forms
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

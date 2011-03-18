@@ -1,8 +1,25 @@
+/**
+ * Copyright (c) 2010 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */
 package org.eclipse.recommenders.commons.utils;
 
 import static java.lang.String.format;
+import static org.eclipse.recommenders.commons.utils.Throws.throwIllegalArgumentException;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Triple<T0, T1, T2> {
+    private final int FIRST = 0;
+    private final int SECOND = 1;
+    private final int THRID = 2;
     private final T0 t0;
 
     private final T1 t1;
@@ -14,60 +31,46 @@ public class Triple<T0, T1, T2> {
         return new Triple<T0, T1, T2>(t0, t1, t2);
     }
 
-    protected Triple(final T0 t0, final T1 t1, T2 t2) {
+    protected Triple(final T0 t0, final T1 t1, final T2 t2) {
         this.t0 = t0;
         this.t1 = t1;
         this.t2 = t2;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof Tuple) {
-            final Triple<?, ?, ?> test = (Triple<?, ?, ?>) obj;
-            return safeEquals(getFirst(), test.getFirst()) && safeEquals(getSecond(), test.getSecond())
-                    && safeEquals(getThird(), test.getThird());
-        }
-        return false;
+    public T0 getFirst() {
+        return get(FIRST);
     }
 
-    private boolean safeEquals(Object arg0, Object arg1) {
-        return arg0 == null ? arg1 == null : arg0.equals(arg1);
+    public T1 getSecond() {
+        return get(SECOND);
+    }
+
+    public T2 getThird() {
+        return get(THRID);
     }
 
     @SuppressWarnings("unchecked")
     public <T> T get(final int index) {
         switch (index) {
-        case 0:
+        case FIRST:
             return (T) t0;
-        case 1:
+        case SECOND:
             return (T) t1;
-        case 2:
+        case THRID:
             return (T) t2;
+        default:
+            throw throwIllegalArgumentException("index '%d' is not allowed!", index);
         }
-        return null;
     }
 
-    public T0 getFirst() {
-        return t0;
-    }
-
-    public T1 getSecond() {
-        return t1;
-    }
-
-    public T2 getThird() {
-        return t2;
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
     public int hashCode() {
-        int h0 = t0 == null ? 0 : t0.hashCode();
-        int h1 = t1 == null ? 0 : t1.hashCode();
-        int h2 = t2 == null ? 0 : t2.hashCode();
-        return h0 + h1 + h2;
+        return HashCodeBuilder.reflectionHashCode(this);
     };
 
     @Override

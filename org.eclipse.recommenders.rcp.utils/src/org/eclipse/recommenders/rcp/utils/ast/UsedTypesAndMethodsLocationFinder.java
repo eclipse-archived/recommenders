@@ -16,7 +16,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -31,7 +30,7 @@ import com.google.common.collect.Sets;
 
 public class UsedTypesAndMethodsLocationFinder {
 
-    public static UsedTypesAndMethodsLocationFinder find(final CompilationUnit cu, final Set<ITypeName> expectedTypes,
+    public static UsedTypesAndMethodsLocationFinder find(final ASTNode cu, final Set<ITypeName> expectedTypes,
             final Set<IMethodName> expectedMethods) {
         try {
             return new UsedTypesAndMethodsLocationFinder(cu, expectedTypes, expectedMethods);

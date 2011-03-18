@@ -12,8 +12,10 @@ package org.eclipse.recommenders.rcp.utils.ast;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -32,8 +34,19 @@ public class ASTNodeUtils {
 
     public static boolean sameSimpleName(final Type jdtParam, final ITypeName crParam) {
         final String jdtSimpleName = jdtParam.toString();
-        final String crSimpleName = crParam.getClassName();
+        String crSimpleName = crParam.getClassName();
+        if (crSimpleName.contains("$")) {
+            crSimpleName = StringUtils.substringAfterLast(crSimpleName, "$");
+        }
         return jdtSimpleName.equals(crSimpleName);
+    }
+
+    public static Type getBaseType(final Type jdtType) {
+        if (!jdtType.isArrayType()) {
+            return jdtType;
+        }
+        final ArrayType arrayType = (ArrayType) jdtType;
+        return getBaseType(arrayType.getComponentType());
     }
 
     public static int getLineNumberOfNodeStart(final CompilationUnit cuNode, final ASTNode node) {
@@ -80,10 +93,24 @@ public class ASTNodeUtils {
     public static boolean haveSameParameterTypes(final List<SingleVariableDeclaration> jdtParams,
             final ITypeName[] crParams) {
         for (int i = crParams.length; i-- > 0;) {
-            final Type jdtParam = jdtParams.get(i).getType();
+            Type jdtParam = jdtParams.get(i).getType();
+            jdtParam = getBaseType(jdtParam);
             final ITypeName crParam = crParams[i];
-            //
-            if (jdtParam.isArrayType() || jdtParam.isPrimitiveType()) {
+
+            if (jdtParam.isArrayType()) {
+                if (!crParam.isArrayType()) {
+                    return false;
+                }
+                final ArrayType jdtArrayType = (ArrayType) jdtParam;
+                final int jdtDimensions = jdtArrayType.getDimensions();
+                final int crDimensions = crParam.getArrayDimensions();
+                if (jdtDimensions != crDimensions) {
+                    return false;
+                }
+                return !sameSimpleName(getBaseType(jdtArrayType), crParam.getArrayBaseType());
+            }
+
+            if (jdtParam.isPrimitiveType()) {
                 continue;
             }
             if (jdtParam.isSimpleType() && !sameSimpleName(jdtParam, crParam)) {

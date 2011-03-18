@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.ui,
  com.google.guice,
  org.eclipse.recommenders.commons.injection,
  org.eclipse.recommenders.rcp.analysis,
- com.google.guice.assistedinject
+ com.google.guice.assistedinject,
+ com.google.guice.multibindings
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion,
  org.eclipse.recommenders.rcp.codecompletion

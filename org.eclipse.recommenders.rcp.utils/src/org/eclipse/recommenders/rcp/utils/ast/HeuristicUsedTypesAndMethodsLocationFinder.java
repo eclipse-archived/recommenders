@@ -16,9 +16,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -27,7 +29,7 @@ import com.google.common.collect.Sets;
 
 public class HeuristicUsedTypesAndMethodsLocationFinder {
 
-    public static Set<SimpleName> find(final CompilationUnit cu, final Set<ITypeName> expectedTypes,
+    public static Set<SimpleName> find(final ASTNode cu, final Set<ITypeName> expectedTypes,
             final Set<IMethodName> expectedMethods) {
         return new HeuristicUsedTypesAndMethodsLocationFinder(cu, expectedTypes, expectedMethods)
                 .getHeuristicSimpleNames();
@@ -39,18 +41,18 @@ public class HeuristicUsedTypesAndMethodsLocationFinder {
         return guesses;
     }
 
-    final Set<String> names = Sets.newHashSet();
+    final Set<String> literals = Sets.newHashSet();
 
     public HeuristicUsedTypesAndMethodsLocationFinder(final ASTNode member, final Set<ITypeName> expectedTypes,
             final Set<IMethodName> expectedMethods) {
         for (final ITypeName type : expectedTypes) {
-            names.add(type.getClassName());
-            names.add(Names.vm2srcTypeName(type.getIdentifier()));
+            literals.add(type.getClassName());
+            literals.add(Names.vm2srcTypeName(type.getIdentifier()));
         }
         for (final IMethodName method : expectedMethods) {
-            names.add(method.getName());
+            literals.add(method.getName());
             if (!method.isVoid()) {
-                names.add(method.getReturnType().getClassName());
+                literals.add(method.getReturnType().getClassName());
             }
         }
         ensureIsNotNull(member);
@@ -62,7 +64,19 @@ public class HeuristicUsedTypesAndMethodsLocationFinder {
                 final IBinding b = node.resolveBinding();
                 if (b == null) {
                     final String identifier = node.getIdentifier();
-                    if (names.contains(identifier)) {
+                    if (literals.contains(identifier)) {
+                        final ASTNode parent = node.getParent();
+                        if (parent instanceof MethodInvocation) {
+
+                            final MethodInvocation parent2 = (MethodInvocation) parent;
+                            final ASTNode parent3 = parent2.getParent();
+                            if (parent3 instanceof VariableDeclarationFragment) {
+                                final SimpleName name = ((VariableDeclarationFragment) parent3).getName();
+                                literals.add(name.getIdentifier());
+                            }
+                            final Expression expression = parent2.getExpression();
+                            System.out.println();
+                        }
                         guesses.add(node);
                     }
                 }

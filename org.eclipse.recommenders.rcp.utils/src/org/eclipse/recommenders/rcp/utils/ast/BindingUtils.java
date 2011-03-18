@@ -13,6 +13,8 @@ package org.eclipse.recommenders.rcp.utils.ast;
 import static java.lang.String.format;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
@@ -23,12 +25,15 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 public class BindingUtils {
@@ -49,7 +54,7 @@ public class BindingUtils {
     }
 
     public static IType[] getMethodParameterTypes(final IMethodBinding b) {
-        // assertNotNull(b);
+        ensureIsNotNull(b);
         final ITypeBinding[] paramBindings = b.getParameterTypes();
         final IType[] paramTypes = new IType[paramBindings.length];
         for (int i = paramBindings.length; i-- > 0;) {
@@ -62,6 +67,17 @@ public class BindingUtils {
         // assertNotNull(b);
         final IJavaElement element = resolveJavaElementQuietly(b);
         return (IType) (resolveSucceeded(element, IType.class) ? element : null);
+    }
+
+    public static ITypeName toTypeName(@Nullable final Type type) {
+        if (type == null) {
+            return null;
+        }
+        final ITypeBinding b = type.resolveBinding();
+        if (b == null) {
+            return null;
+        }
+        return toTypeName(b);
     }
 
     public static IMethod getMethod(final IMethodBinding b) {
@@ -164,4 +180,16 @@ public class BindingUtils {
         final IBinding b = name.resolveBinding();
         return (IVariableBinding) (b instanceof IVariableBinding ? b : null);
     }
+
+    public static List<ITypeName> toTypeNames(final ITypeBinding[] interfaces) {
+        final List<ITypeName> res = Lists.newLinkedList();
+        for (final ITypeBinding b : interfaces) {
+            final ITypeName typeName = toTypeName(b);
+            if (typeName != null) {
+                res.add(typeName);
+            }
+        }
+        return res;
+    }
+
 }

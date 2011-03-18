@@ -38,6 +38,11 @@ public class Throws {
         throw new IllegalStateException("not implemented");
     }
 
+    public static IllegalStateException throwNotImplemented(final String message, final Object... args) {
+        final String formattedMessage = format(message, args);
+        throw new IllegalStateException(formattedMessage);
+    }
+
     public static IllegalStateException throwUnhandledException(final Exception e) {
         throw new IllegalStateException(e);
     }
