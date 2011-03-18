@@ -12,13 +12,14 @@ package data;
 
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
+//call chain 1 ok
 public class CompletionOnType {
 
 	static class S {
 
 		private static S INSTANCE = new S();
 
-		public Integer findeMe() {
+		public Number findeMe() {
 			return 0;
 		}
 

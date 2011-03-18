@@ -52,11 +52,14 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
   @SuppressWarnings("rawtypes")
   @Override
   public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+    long i = System.currentTimeMillis();
     if (context instanceof JavaContentAssistInvocationContext) {
       jCtx = (JavaContentAssistInvocationContext) context;
       if (contextResolver.hasProjectRecommendersNature(jCtx)) {
         iCtx = contextResolver.resolveContext(jCtx);
-        return doComputeCompletionProposals();
+        List<IJavaCompletionProposal> doComputeCompletionProposals = doComputeCompletionProposals();
+        System.out.println("Benchmark: " + (System.currentTimeMillis() - i));
+        return doComputeCompletionProposals;
       }
     }
     return Collections.emptyList();

@@ -13,7 +13,7 @@ package data;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
+//call chain 1 ok
 public class CompletionOnNonPublicMemberInMethod {
 
     protected AtomicBoolean findMe1 = new AtomicBoolean();

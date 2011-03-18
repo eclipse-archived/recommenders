@@ -68,13 +68,13 @@ public class StoreBasedVariableUsageResolver implements IVariableUsageResolver {
 
     private boolean findEnclosingMethodDeclaration() {
         ensureIsNotNull(recCompilationUnit);
-        enclosingMethod = recCompilationUnit.findMethod(localVariable.referenceContext);
+        enclosingMethod = recCompilationUnit.findMethod(localVariable.getReferenceContext());
         return enclosingMethod != null;
     }
 
     private boolean findUsages() {
         ensureIsNotNull(enclosingMethod);
-        matchingLocalVariable = enclosingMethod.findVariable(localVariable.name);
+        matchingLocalVariable = enclosingMethod.findVariable(localVariable.getNameLiteral());
         return matchingLocalVariable != null;
     }
 

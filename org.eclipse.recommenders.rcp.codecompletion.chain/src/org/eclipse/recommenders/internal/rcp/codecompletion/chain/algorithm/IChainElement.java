@@ -11,6 +11,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
+import java.util.List;
+
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.types.TypeReference;
 
@@ -55,5 +57,17 @@ public interface IChainElement {
    * @return the type reference this completion portion results in
    */
   public abstract TypeReference getResultingType();
+
+  public Integer getChainDepth();
+
+  public Integer getArrayDimension();
+
+  public void addPrevoiusElement(IChainElement prevoius);
+
+  public List<IChainElement> previousElements();
+
+  public void setRootElement(boolean rootElement);
+
+  public boolean isRootElement();
 
 }

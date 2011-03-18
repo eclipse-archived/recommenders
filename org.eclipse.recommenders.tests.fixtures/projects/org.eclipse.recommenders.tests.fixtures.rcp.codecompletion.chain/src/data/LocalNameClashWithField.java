@@ -10,6 +10,7 @@
  */
 package data;
 
+//call chain 1 ok --> 1 element chain does not lead to expected solution 
 public class LocalNameClashWithField {
 
     String var = "findMe";

@@ -12,6 +12,8 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
 import java.io.UTFDataFormatException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 
@@ -32,9 +34,21 @@ public class FieldChainElement implements IChainElement {
 
   private final IClassHierarchy classHierarchy;
 
-  private IClass returnType;
+  private IClass type;
 
-  public FieldChainElement(final IField field) {
+  private final Integer chainDepth;
+
+  private boolean thisQualifier = false;
+
+  private Integer arrayDimension = 0;
+
+  private final List<IChainElement> prevoiusElements;
+
+  private boolean rootElement = false;
+
+  public FieldChainElement(final IField field, final Integer chainDepth) {
+    prevoiusElements = new ArrayList<IChainElement>();
+    this.chainDepth = chainDepth;
     try {
       completion = field.getName().toUnicodeString();
     } catch (final UTFDataFormatException e) {
@@ -44,9 +58,10 @@ public class FieldChainElement implements IChainElement {
     fieldReference = field.getFieldTypeReference();
     classHierarchy = field.getClassHierarchy();
     if (fieldReference.isPrimitiveType()) {
-      returnType = null;
+      type = null;
     }
-    returnType = classHierarchy.lookupClass(fieldReference);
+    type = classHierarchy.lookupClass(fieldReference);
+    arrayDimension = fieldReference.getDimensionality();
   }
 
   @Override
@@ -66,6 +81,45 @@ public class FieldChainElement implements IChainElement {
 
   @Override
   public IClass getType() {
-    return returnType;
+    return type;
+  }
+
+  @Override
+  public Integer getChainDepth() {
+    return chainDepth;
+  }
+
+  public boolean hasThisQualifier() {
+    return thisQualifier;
+  }
+
+  public void setThisQualifier(boolean thisQualifier) {
+    this.thisQualifier = thisQualifier;
+  }
+
+  @Override
+  public Integer getArrayDimension() {
+    return arrayDimension;
+  }
+
+  @Override
+  public void addPrevoiusElement(IChainElement prevoius) {
+    prevoiusElements.add(prevoius);
+
+  }
+
+  @Override
+  public List<IChainElement> previousElements() {
+    return prevoiusElements;
+  }
+
+  @Override
+  public void setRootElement(boolean rootElement) {
+    this.rootElement = rootElement;
+  }
+
+  @Override
+  public boolean isRootElement() {
+    return rootElement;
   }
 }

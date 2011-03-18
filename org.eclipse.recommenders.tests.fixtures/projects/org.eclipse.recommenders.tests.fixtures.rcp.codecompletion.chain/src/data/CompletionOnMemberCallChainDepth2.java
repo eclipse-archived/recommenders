@@ -12,12 +12,17 @@ package data;
 
 import java.io.File;
 
+// call chain 1 ok
 public class CompletionOnMemberCallChainDepth2 {
-    class A {
+    public class A {
         public B b = new B();
 
-        class B {
+        public class B {
             public File findMe = new File("");
+            
+            public File findMethod() {
+            	return null;
+            }
         }
     }
     

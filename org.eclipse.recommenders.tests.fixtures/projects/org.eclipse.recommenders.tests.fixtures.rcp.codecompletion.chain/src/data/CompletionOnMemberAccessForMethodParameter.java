@@ -15,8 +15,9 @@ import java.io.File;
 public class CompletionOnMemberAccessForMethodParameter {
    
     File findMe = new File("");
+    Integer findMe2 = new Integer(0);
     
-    int bla = callMe(<@Ignore^Space>);
+    int bla = callMe(findMe, <@Ignore^Space>);
     /* calling context --> 'this' aka CompletionOnMemberAccessForMethodParameter
      * expected type --> File
      * variable name --> XXX here we need a convention!
@@ -32,10 +33,13 @@ public class CompletionOnMemberAccessForMethodParameter {
     }
     
     
-    public int callMe(final File fillMe){
+    public int callMe(final File fillMe, Integer i){
         return 0;
     }
     
+    public int callMe(final Integer fillMe){
+        return 0;
+    }
     
     public void method () {
         final int i = callMe(<@Ignore^Space>);

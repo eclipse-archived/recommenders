@@ -10,11 +10,11 @@
  */
 package org.eclipse.recommenders.commons.utils;
 
+import static java.lang.String.format;
 import static org.eclipse.recommenders.commons.utils.Throws.throwIllegalArgumentException;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Triple<T0, T1, T2> {
     private final int FIRST = 0;
@@ -75,6 +75,7 @@ public class Triple<T0, T1, T2> {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return format("<%s, %s, %s>", getFirst(), getSecond(), getThird());
     }
+
 }

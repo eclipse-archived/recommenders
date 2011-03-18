@@ -184,7 +184,8 @@ public class CodeElementsAdapterFactory implements IAdapterFactory {
 
     private Object handleVariable(final Variable key) {
         return new IWorkbenchAdapter() {
-            final LocalVariable jdt = new LocalVariable(null, key.name, -1, -1, -1, -1, key.type.getIdentifier(), null);
+            final LocalVariable jdt = new LocalVariable(null, key.getNameLiteral(), -1, -1, -1, -1,
+                    key.type.getIdentifier(), null);
 
             @Override
             public Object getParent(final Object o) {

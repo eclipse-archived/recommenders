@@ -14,6 +14,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
+//REVIEW: Should this be supported?
 public class CompletionOnIncompleteDeclaration {
     public void method() {
         

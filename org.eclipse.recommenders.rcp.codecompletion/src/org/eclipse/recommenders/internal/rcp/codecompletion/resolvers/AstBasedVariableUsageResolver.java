@@ -108,7 +108,7 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
                 if (var == null) {
                     return true;
                 }
-                if (var.getName().equals(localVariable.name)) {
+                if (var.getName().equals(localVariable.getName())) {
                     final ASTNode parent = node.getParent();
                     if (parent instanceof MethodInvocation) {
                         registerMethodCallOnReceiver((MethodInvocation) parent);
