@@ -35,7 +35,16 @@ public class CompilerBindings {
         if (binding == null) {
             return null;
         }
+        if (binding.isArrayType()) {
+            final int dimensions = binding.dimensions();
+            final TypeBinding leafComponentType = binding.leafComponentType();
+            return VmTypeName.get(StringUtils.repeat("[", dimensions) + toTypeName(leafComponentType));
+        }
         String signature = String.valueOf(binding.computeUniqueKey());
+        if (signature.length() == 1) {
+            return VmTypeName.get(signature);
+        }
+
         if (signature.endsWith(";")) {
             signature = StringUtils.substringBeforeLast(signature, ";");
         } else {

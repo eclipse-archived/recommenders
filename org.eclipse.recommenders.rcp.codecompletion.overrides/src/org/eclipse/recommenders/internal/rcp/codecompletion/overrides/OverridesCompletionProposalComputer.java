@@ -22,7 +22,6 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
-import org.eclipse.recommenders.internal.rcp.RecommenderAdapter;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.codecompletion.CompletionProposalDecorator;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -32,7 +31,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
-public class OverridesCompletionProposalComputer extends RecommenderAdapter implements IJavaCompletionProposalComputer {
+public class OverridesCompletionProposalComputer implements IJavaCompletionProposalComputer {
     private final IArtifactStore artifactStore;
 
     private IIntelligentCompletionContext ctx;

@@ -58,6 +58,5 @@ public class LocalNamesCollectingCallGraphAnalyzer implements ICallGraphAnalyzer
                 }
             }
         }
-        System.out.println("");
     }
 }

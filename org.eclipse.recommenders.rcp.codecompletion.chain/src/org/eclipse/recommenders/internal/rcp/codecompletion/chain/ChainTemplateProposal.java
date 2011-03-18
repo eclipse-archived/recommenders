@@ -17,26 +17,17 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement;
 
 import com.ibm.wala.classLoader.IClass;
-import com.ibm.wala.types.TypeReference;
 
 public class ChainTemplateProposal {
   private final List<IChainElement> proposedChain;
-
-  TypeReference resultingType;
 
   private final IClass castingType;
 
   private final boolean needsCast;
 
-  /**
-   * Constucts a proposal without cast
-   * 
-   * @param proposedChain
-   *          list of proposed chain elements (fields and/or methods)
-   */
-  public ChainTemplateProposal(final List<IChainElement> proposedChain) {
-    this(proposedChain, null);
-  }
+  private final Integer expectedTypeDimension;
+
+  private final IClass expectedType;
 
   /**
    * Constructs a proposal that needs an up-cast
@@ -64,21 +55,19 @@ public class ChainTemplateProposal {
    * @param castingType
    *          type to up-cast the chain's last element's resulting type to
    */
-  public ChainTemplateProposal(final List<IChainElement> proposedChain, final IClass castingType) {
+  public ChainTemplateProposal(final List<IChainElement> proposedChain, IClass expectedType,
+      final Integer expectedTypeDimension, boolean cast) {
+    this.expectedType = expectedType;
+    this.expectedTypeDimension = expectedTypeDimension;
     Checks.ensureIsNotNull(proposedChain);
     Checks.ensureIsTrue(proposedChain.size() >= 1);
     this.proposedChain = proposedChain;
-    resultingType = proposedChain.get(proposedChain.size() - 1).getResultingType();
-    needsCast = castingType != null;
-    this.castingType = castingType;
+    needsCast = cast;
+    this.castingType = cast ? expectedType : null;
   }
 
   public List<IChainElement> getProposedChain() {
     return proposedChain;
-  }
-
-  public TypeReference getResultingType() {
-    return resultingType;
   }
 
   public boolean needsCast() {
@@ -87,5 +76,29 @@ public class ChainTemplateProposal {
 
   public IClass getCastingType() {
     return castingType;
+  }
+
+  public Integer getExpectedTypeDimension() {
+    return expectedTypeDimension;
+  }
+
+  public IClass getExpectedType() {
+    return expectedType;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof ChainTemplateProposal)) {
+      return false;
+    }
+    ChainTemplateProposal otherProposal = (ChainTemplateProposal) obj;
+    if (!this.proposedChain.equals(otherProposal.getProposedChain())) {
+      return false;
+    }
+    if (needsCast) {
+      return this.castingType.equals(otherProposal.getCastingType());
+    } else {
+      return !otherProposal.needsCast();
+    }
   }
 }

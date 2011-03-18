@@ -12,6 +12,7 @@ package data;
 
 import java.io.File;
 
+//call chain 1 ok --> 1 element chain does not lead to expected solution 
 public class CompletionOnMemberAccessInGlobal {
     //@start
     File findMe = new File("");

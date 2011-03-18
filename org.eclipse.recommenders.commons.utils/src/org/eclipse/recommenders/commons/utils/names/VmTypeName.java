@@ -67,7 +67,7 @@ public class VmTypeName implements ITypeName {
     }
 
     private static String removeGenerics(final String typeName) {
-        final String replacement = typeName.replaceAll("<.*?>", "");
+        final String replacement = typeName.replaceAll("<.*>", "");
         return replacement;
     }
 

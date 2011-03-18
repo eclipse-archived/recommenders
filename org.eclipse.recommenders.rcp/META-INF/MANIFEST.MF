@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.ui,
  com.google.guice.multibindings,
  org.eclipse.recommenders.commons.analysis,
  org.eclipse.ui.ide,
- org.eclipse.recommenders.commons.injection
+ org.eclipse.recommenders.commons.injection,
+ com.google.guice.multibindings;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp,
  org.eclipse.recommenders.internal.rcp.views.recommendations,

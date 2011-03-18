@@ -13,6 +13,7 @@ package data;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+//call chain 1 ok
 public class CompletionOnSupertypeMemberInMethod {
 
     public static class Subtype extends CompletionOnSupertypeMemberInMethod {

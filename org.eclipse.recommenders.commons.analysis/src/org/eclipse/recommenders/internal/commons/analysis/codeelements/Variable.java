@@ -37,14 +37,14 @@ public class Variable implements Comparable<Variable>, INamedCodeElement {
         return res;
     }
 
-    public IMethodName referenceContext;
+    private IMethodName referenceContext;
 
     /**
      * To which instances does this variable point to?
      */
     public Set<ObjectInstanceKey> pointsTo = Sets.newHashSet();
 
-    public String name;
+    private String name;
 
     public ITypeName type;
 
@@ -55,6 +55,24 @@ public class Variable implements Comparable<Variable>, INamedCodeElement {
      */
     protected Variable() {
         // see create(..)
+    }
+
+    public ITypeName getType() {
+        return type;
+    }
+
+    public String getNameLiteral() {
+        return name;
+    }
+
+    // TODO rework to use variable names instead...
+    @Override
+    public IName getName() {
+        return VmVariableName.get(referenceContext.getIdentifier() + "#" + name);
+    }
+
+    public IMethodName getReferenceContext() {
+        return referenceContext;
     }
 
     public Set<ReceiverCallSite> getReceiverCallsites() {
@@ -124,12 +142,7 @@ public class Variable implements Comparable<Variable>, INamedCodeElement {
         return "this".equals(name);
     }
 
-    // TODO rework to use variable names instead...
     @Override
-    public IName getName() {
-        return VmVariableName.get(referenceContext.getIdentifier() + "#" + name);
-    }
-
     public void accept(final CompilationUnitVisitor v) {
         if (v.visit(this)) {
             for (final ReceiverCallSite callsite : getReceiverCallsites()) {
@@ -137,4 +150,5 @@ public class Variable implements Comparable<Variable>, INamedCodeElement {
             }
         }
     }
+
 }

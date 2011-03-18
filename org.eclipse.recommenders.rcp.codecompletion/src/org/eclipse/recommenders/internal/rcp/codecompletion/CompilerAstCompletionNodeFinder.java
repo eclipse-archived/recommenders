@@ -924,13 +924,19 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     @Override
     public boolean visit(final ReturnStatement returnStatement, final BlockScope scope) {
-        if (isCompletionOnVariableInitialization(returnStatement.expression)) {
-            if (scope.referenceContext() instanceof AbstractMethodDeclaration) {
-                final AbstractMethodDeclaration referenceContext = (AbstractMethodDeclaration) scope.referenceContext();
-                setExpectedReturnType(referenceContext.binding.returnType);
-                completionNodeParent = returnStatement;
-            }
+        if (!isCompletionOnVariableInitialization(returnStatement.expression)) {
+            return true;
         }
+        if (!(scope.referenceContext() instanceof AbstractMethodDeclaration)) {
+            return true;
+        }
+        final AbstractMethodDeclaration referenceContext = (AbstractMethodDeclaration) scope.referenceContext();
+        if (referenceContext.binding == null) {
+            return true;
+        }
+        setExpectedReturnType(referenceContext.binding.returnType);
+        completionNodeParent = returnStatement;
+
         return true;
     }
 

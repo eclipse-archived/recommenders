@@ -82,6 +82,13 @@ public class JavaElementResolver {
         // TODO woah, what a hack just to find a nested/anonymous type... this
         // definitely needs refactoring!
         ensureIsNotNull(recType);
+        if (recType.isArrayType()) {
+            // TODO see https://bugs.eclipse.org/bugs/show_bug.cgi?id=339806
+            // should throw an exception? or return an Array type?
+            System.err.println("array type in JavaElementResolver. Decision  bug 339806 pending...?");
+            return null;
+        }
+
         if (recType.isNestedType()) {
             final ITypeName declaringType = recType.getDeclaringType();
             final IType parent = resolveType(declaringType);

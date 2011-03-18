@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.rcp.utils.ast;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -34,6 +36,8 @@ public class TypeDeclarationFinder {
     }
 
     public TypeDeclarationFinder(final CompilationUnit cuNode, final ITypeName searchedType) {
+        ensureIsNotNull(cuNode);
+        ensureIsNotNull(searchedType);
         cuNode.accept(new ASTVisitor(false) {
 
             @Override

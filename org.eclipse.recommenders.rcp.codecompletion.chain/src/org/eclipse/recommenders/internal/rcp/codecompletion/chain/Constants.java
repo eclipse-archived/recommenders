@@ -11,9 +11,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain;
 
-import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.ChainingAlgorithmWorker;
-
-
 public class Constants {
   /**
    * This static class contains only the settings, which only affect the
@@ -29,17 +26,16 @@ public class Constants {
     public static final int EXECUTOR_ALIVE_TIME_IN_MS = 4000;
 
     /**
-     * This setting sets the maximal computation time of one chain worker.
-     * {@link ChainingAlgorithmWorker}
+     * This setting sets the maximal depth of every chain.
+     * 
      */
-
-    public static final int WORKER_KEEP_ALIVE_TIME_IN_MS = 1000;
+    public static final int MIN_CHAIN_DEPTH = 2;
 
     /**
      * This setting sets the maximal depth of every chain.
      * 
      */
-    public static final int MAX_CHAIN_DEPTH = 3;
+    public static final int MAX_CHAIN_DEPTH = 4;
   }
 
   /**

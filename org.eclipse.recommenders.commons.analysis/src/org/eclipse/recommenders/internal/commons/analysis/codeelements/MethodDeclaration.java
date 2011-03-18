@@ -114,7 +114,7 @@ public class MethodDeclaration implements INamedCodeElement {
 
     public Variable findVariable(final String name) {
         for (final Variable variable : getVariables()) {
-            if (name.equals(variable.name)) {
+            if (name.equals(variable.getName())) {
                 return variable;
             }
         }
