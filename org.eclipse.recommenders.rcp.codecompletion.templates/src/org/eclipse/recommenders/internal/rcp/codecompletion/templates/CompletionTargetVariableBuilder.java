@@ -33,7 +33,7 @@ public final class CompletionTargetVariableBuilder {
     private ITypeName receiverType;
     private String receiverName;
     private boolean needsConstructor;
-    private Set<IMethodName> receiverCalls = Sets.newHashSet();
+    private final Set<IMethodName> receiverCalls = Sets.newHashSet();
 
     /**
      * Hide the builder instance as it should directly be turned to the garbage
@@ -94,8 +94,10 @@ public final class CompletionTargetVariableBuilder {
                 receiverName = "";
                 needsConstructor = true;
             } else {
-                receiverType = resolvedVariable.type;
-                receiverCalls = resolvedVariable.getReceiverCalls();
+                // TODO: disabled because getReceiverCalls currently doesn't
+                // work.
+                // receiverType = resolvedVariable.type;
+                // receiverCalls = resolvedVariable.getReceiverCalls();
             }
         }
     }
