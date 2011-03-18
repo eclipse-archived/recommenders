@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.server.codesearch;
 
+import static java.lang.String.format;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
 import java.net.URI;
@@ -23,7 +24,7 @@ public class LocalSourceUriMapper implements ISourceUriMapper {
         try {
             final String part = uri.getSchemeSpecificPart();
             final String encodedPart = URLEncoder.encode(part, "UTF-8");
-            return new URI("http://localhost:8080/codesearch/source/" + encodedPart);
+            return new URI(format("%s/source/%s", Constants.WEB_BASE_URL, encodedPart));
         } catch (final Exception e) {
             throw throwUnhandledException(e);
         }

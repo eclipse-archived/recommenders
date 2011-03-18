@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
    <feature url="features/org.eclipse.recommenders.codecompletion_0.2.0.qualifier.jar" id="org.eclipse.recommenders.codecompletion" version="0.2.0.qualifier">
-      <category name="code-recommenders"/>
+      <category name="main"/>
    </feature>
    <feature url="features/org.eclipse.recommenders.rcp.codecompletion.source_0.2.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.source" version="0.2.0.qualifier">
-      <category name="code-recommenders"/>
+      <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201103111353.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201103111353"/>
-   <category-def name="code-recommenders" label="Eclipse Code Recommenders"/>
+   <feature url="features/org.eclipse.recommenders.rcp.codesearch_0.2.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codesearch" version="0.2.0.qualifier">
+      <category name="sandbox"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201103181456.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201103181456">
+      <category name="3rd"/>
+   </feature>
+   <category-def name="main" label="Eclipse Code Recommenders Main"/>
+   <category-def name="sandbox" label="Code Recommenders Sandbox"/>
+   <category-def name="3rd" label="Code Recommenders 3rd Party Dependencies (Don&apos;t Install)"/>
 </site>

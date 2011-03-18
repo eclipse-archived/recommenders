@@ -27,7 +27,10 @@ public class ClientConfiguration {
         return baseUrl;
     }
 
-    public void setBaseUrl(final String baseUrl) {
-        this.baseUrl = baseUrl;
+    public void setBaseUrl(String newBaseUrl) {
+        if (!newBaseUrl.endsWith("/")) {
+            newBaseUrl += "/";
+        }
+        this.baseUrl = newBaseUrl;
     }
 }

@@ -31,8 +31,8 @@
 <repository location="http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site/"/>
 </location>
 <location includeAllPlatforms="true" includeMode="slicer" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201103111353"/>
-<unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201103111353"/>
+<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201103181456"/>
+<unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201103181456"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head"/>
 </location>
 </locations>

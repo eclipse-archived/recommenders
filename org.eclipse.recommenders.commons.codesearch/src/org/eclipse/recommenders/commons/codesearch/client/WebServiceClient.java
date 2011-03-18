@@ -44,7 +44,9 @@ public class WebServiceClient {
     }
 
     public Builder createRequestBuilder(final String path) {
-        return addCookies(client.resource(getBaseUrl() + path).accept(MediaType.APPLICATION_JSON_TYPE)
+        final String baseUrl = getBaseUrl();
+        final String fullPath = baseUrl + path;
+        return addCookies(client.resource(fullPath).accept(MediaType.APPLICATION_JSON_TYPE)
                 .type(MediaType.APPLICATION_JSON));
     }
 
@@ -87,7 +89,8 @@ public class WebServiceClient {
             throws NotFoundException, ConflictException, UnauthorizedAccessException, ServerErrorException,
             ServerUnreachableException {
         try {
-            return createRequestBuilder(path).post(resultType, requestEntity);
+            Builder builder = createRequestBuilder(path);
+            return builder.post(resultType, requestEntity);
         } catch (final RuntimeException e) {
             return handlePutAndPostRequestException(e);
         }
