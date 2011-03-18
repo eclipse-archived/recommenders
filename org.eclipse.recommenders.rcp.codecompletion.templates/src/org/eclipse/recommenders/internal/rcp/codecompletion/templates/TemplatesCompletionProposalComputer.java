@@ -18,8 +18,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnLocalName;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
@@ -31,14 +29,11 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
-import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.ModifiedJavaContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
@@ -179,17 +174,10 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      */
     private DocumentTemplateContext getTemplateContext(final CompletionTargetVariable completionTargetVariable,
             final IIntelligentCompletionContext completionContext) {
-        final ICompilationUnit compilationUnit = completionContext.getCompilationUnit();
         final Region region = completionTargetVariable.getDocumentRegion();
-        JavaContext templateContext = null;
-        try {
-            // TODO: new ModifiedJavaContext
-            templateContext = new ModifiedJavaContext(templateContextType, new Document(compilationUnit.getSource()),
-                    region.getOffset(), region.getLength(), compilationUnit);
-            templateContext.setForceEvaluation(true);
-        } catch (final JavaModelException e) {
-            Throws.throwUnhandledException(e);
-        }
+        final JavaContext templateContext = new JavaContext(templateContextType, completionContext.getOriginalContext()
+                .getDocument(), region.getOffset(), region.getLength(), completionContext.getCompilationUnit());
+        templateContext.setForceEvaluation(true);
         return templateContext;
     }
 

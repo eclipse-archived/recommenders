@@ -4,7 +4,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Object Usage Templates
 Bundle-SymbolicName: org.eclipse.recommenders.rcp.codecompletion.templates;singleton:=true
 Bundle-Version: 0.2.0.qualifier
-Bundle-Activator: org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,

@@ -10,9 +10,10 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
 
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
+import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.CompletionTargetVariableBuilder;
@@ -55,22 +56,26 @@ public final class CompletionTargetVariableBuilderTest {
     protected static IIntelligentCompletionContext getMockedContext(final String code, final String variableName,
             final String typeName) {
         final IIntelligentCompletionContext context = Mockito.mock(IIntelligentCompletionContext.class);
-        final ICompilationUnit compUnit = Mockito.mock(ICompilationUnit.class);
 
         Mockito.when(context.getReceiverName()).thenReturn(variableName);
         if (typeName != null) {
             Mockito.when(context.getReceiverType()).thenReturn(VmTypeName.get(typeName));
         }
         Mockito.when(context.getPrefixToken()).thenReturn("");
-        Mockito.when(context.getCompilationUnit()).thenReturn(compUnit);
         Mockito.when(Integer.valueOf(context.getInvocationOffset())).thenReturn(Integer.valueOf(code.length()));
         Mockito.when(context.getReplacementRegion()).thenReturn(new Region(code.length(), 0));
         Mockito.when(context.getEnclosingMethod()).thenReturn(UnitTestSuite.getDefaultMethodCall().getInvokedMethod());
+
+        final JavaContentAssistInvocationContext originalContext = Mockito
+                .mock(JavaContentAssistInvocationContext.class);
+        final IDocument doc = Mockito.mock(IDocument.class);
         try {
-            Mockito.when(compUnit.getSource()).thenReturn(code);
-        } catch (final JavaModelException e) {
-            throw new IllegalArgumentException(e);
+            Mockito.when(doc.get(Mockito.anyInt(), Mockito.anyInt())).thenReturn("");
+        } catch (final BadLocationException e) {
+            throw new IllegalStateException(e);
         }
+        Mockito.when(originalContext.getDocument()).thenReturn(doc);
+        Mockito.when(context.getOriginalContext()).thenReturn(originalContext);
 
         return context;
     }

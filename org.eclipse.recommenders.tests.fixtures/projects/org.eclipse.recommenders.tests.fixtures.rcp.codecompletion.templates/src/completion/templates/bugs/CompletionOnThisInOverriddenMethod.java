@@ -11,18 +11,14 @@
 package completion.templates.bugs;
 
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 
-public class CompletionOnThisInOverriddenMethod extends Wizard {
+public class CompletionOnThisInOverriddenMethod extends Button {
 
-	@Override
-    public void addPages() {
-    	// Gives Lcompletion/templates/bugs/CompletionOnThisInOverriddenMethod as type. Should be corrected.
-        <^Space>
-    }
-
-	@Override
-	public boolean performFinish() {
-		return false;
+	public CompletionOnThisInOverriddenMethod(final Composite parent, final int style) {
+		super(parent, style);
+		// Should consider Button as reference for templates.
+		<^Space>
 	}
-
 }

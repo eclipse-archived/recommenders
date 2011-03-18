@@ -29,7 +29,7 @@ public class CompletionOnUninitializedAndUnqualifiedFieldName extends Dialog {
 		b = new Button(null, 0);
 		b.setText("test");
 		// TODO: receiverCalls
-		b<^Space|dynamic.*234.*%>
+		b<^Space|dynamic.*593.*%>
 		return null;
 	}
 }

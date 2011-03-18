@@ -11,13 +11,10 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.types;
 
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -27,7 +24,6 @@ import org.eclipse.swt.graphics.Image;
 @SuppressWarnings("restriction")
 public final class JavaTemplateProposal extends TemplateProposal {
 
-    private static IDocument currentDocument;
     private static final int RELEVANCE_OFFSET = 562;
 
     /**
@@ -48,7 +44,6 @@ public final class JavaTemplateProposal extends TemplateProposal {
     public JavaTemplateProposal(final Template template, final TemplateContext context, final IRegion region,
             final Image image, final int probability) {
         super(template, context, region, image);
-        JavaTemplateProposal.currentDocument = null;
         setRelevance(RELEVANCE_OFFSET + probability);
         computeStyledDisplayString();
     }
@@ -65,22 +60,5 @@ public final class JavaTemplateProposal extends TemplateProposal {
         styledString.append(getTemplate().getName().replace("pattern", "Pattern #"), StyledString.QUALIFIER_STYLER);
         styledString.append(String.format(" - %d %%", relevance), StyledString.COUNTER_STYLER);
         setDisplayString(styledString);
-    }
-
-    @Override
-    @Provisional
-    public void apply(final ITextViewer viewer, final char trigger, final int stateMask, final int offset) {
-        JavaTemplateProposal.setCurrentDocument(viewer.getDocument());
-        super.apply(viewer, trigger, stateMask, offset);
-    }
-
-    @Provisional
-    private static void setCurrentDocument(final IDocument document) {
-        JavaTemplateProposal.currentDocument = document;
-    }
-
-    @Provisional
-    static IDocument getCurrentDocument() {
-        return JavaTemplateProposal.currentDocument;
     }
 }

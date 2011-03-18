@@ -31,9 +31,9 @@ public final class CompletionProposalsBuilderTest {
     public void testProposalsBuilder() throws JavaModelException {
         final MethodCall methodCall = UnitTestSuite.getDefaultConstructorCall();
 
-        final List<PatternRecommendation> patterns = Lists
-                .newArrayList(PatternRecommendation.create("Pattern 1", methodCall.getInvokedMethod()
-                        .getDeclaringType(), Lists.newArrayList(methodCall.getInvokedMethod()), 50));
+        final List<PatternRecommendation> patterns = Lists.newArrayList();
+        patterns.add(PatternRecommendation.create("Pattern 1", methodCall.getInvokedMethod().getDeclaringType(),
+                Lists.newArrayList(methodCall.getInvokedMethod()), 50));
 
         final CompletionProposalsBuilder builder = new CompletionProposalsBuilder(null,
                 UnitTestSuite.getCodeBuilderMock());

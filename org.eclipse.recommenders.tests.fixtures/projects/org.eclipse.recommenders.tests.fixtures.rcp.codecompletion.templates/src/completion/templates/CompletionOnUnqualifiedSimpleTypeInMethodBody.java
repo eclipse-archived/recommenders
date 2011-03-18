@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package completion.templates.bugs;
+package completion.templates;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
@@ -19,9 +19,9 @@ public class CompletionOnUnqualifiedSimpleTypeInMethodBody extends Dialog {
 
     @Override
 	protected Control createDialogArea(final Composite parent) {
-		// Button<^Space> -> give patterns and import button then
+		// give patterns and import button then
 		// ensure Button is not imported as SWT or AWT Button before
-		Button<^Space>
+		Button<^Space|dynamic.*216.*%>
 		return null;
 	}
 
