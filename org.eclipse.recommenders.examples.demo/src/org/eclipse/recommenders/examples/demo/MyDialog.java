@@ -13,12 +13,9 @@ package org.eclipse.recommenders.examples.demo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
 /**
  * Demo outline:
@@ -37,13 +34,7 @@ public class MyDialog extends Dialog {
     protected Control createDialogArea(final Composite parent) {
         final Composite container = createContainer(parent);
 
-        swtTextWidget = new Text(container, SWT.BORDER);
-
-        final Button b = new Button(parent, 0);
-        b.addSelectionListener(null);
-        b.setSelection(true);
-        
-        final IWorkbenchHelpSystem help = PlatformUI.getWorkbench().getHelpSystem();
+        swtTextWidget = new Text(container, SWT.NONE);
 
         return container;
     }

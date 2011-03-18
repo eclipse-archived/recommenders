@@ -16,8 +16,6 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
-import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
-import org.eclipse.recommenders.rcp.IEditorChangedListener;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.inject.AbstractModule;
@@ -38,10 +36,12 @@ public class OverridesModule extends AbstractModule {
         bind(OverridesModelStore.class).in(Scopes.SINGLETON);
         bind(OverridesCompletionProposalComputer.class).in(Scopes.SINGLETON); //
         bind(InstantOverridesRecommender.class).in(Scopes.SINGLETON); //
-        Multibinder.newSetBinder(binder(), IEditorChangedListener.class).addBinding()
-                .to(OverridesCompletionProposalComputer.class);
-        Multibinder.newSetBinder(binder(), IArtifactStoreChangedListener.class).addBinding()
-                .to(OverridesCompletionProposalComputer.class);
+        // Multibinder.newSetBinder(binder(),
+        // IEditorChangedListener.class).addBinding()
+        // .to(OverridesCompletionProposalComputer.class);
+        // Multibinder.newSetBinder(binder(),
+        // IArtifactStoreChangedListener.class).addBinding()
+        // .to(OverridesCompletionProposalComputer.class);
         Multibinder.newSetBinder(binder(), IRecommendationsViewContentProvider.class).addBinding()
                 .to(InstantOverridesRecommender.class);
     }
