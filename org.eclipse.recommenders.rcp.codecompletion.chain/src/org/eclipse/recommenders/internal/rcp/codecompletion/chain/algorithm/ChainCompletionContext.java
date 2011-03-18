@@ -91,6 +91,7 @@ public class ChainCompletionContext {
   private boolean findEnclosingClass() {
     final ITypeName name = ctx.getEnclosingType();
     enclosingType = toWalaClass(name);
+    loader = enclosingType.getClassLoader();
     return enclosingType != null;
   }
 
@@ -138,7 +139,6 @@ public class ChainCompletionContext {
     IClass expectedType = toWalaClass(expectedTypeName.isArrayType() ? expectedTypeName.getArrayBaseType()
         : expectedTypeName);
     if (expectedType == null) {
-      loader = enclosingType.getClassLoader();
       // XXX test on array and change if clause, if bug 340686 is resolved
       expectedType = boxPrimitive(expectedTypeName.getClassName().substring(1));
     }

@@ -26,6 +26,9 @@ public class LocalChainElement implements IChainElement {
   private boolean rootElement = false;
   private boolean isPrimitive = false;
 
+  // private List<LinkedList<IChainElement>> proposalChains = new
+  // ArrayList<LinkedList<IChainElement>>();
+
   public LocalChainElement(final String name, final IClass type, final Integer chainDepth) {
     this.name = name;
     this.type = type;
@@ -104,4 +107,50 @@ public class LocalChainElement implements IChainElement {
   public boolean isStatic() {
     return false;
   }
+
+  // @Override
+  // public List<LinkedList<IChainElement>> constructProposalChains(int
+  // currentChainLength) {
+  // if (proposalChains.isEmpty()) {
+  // System.out.println(this.getCompletion());
+  // List<LinkedList<IChainElement>> descendingChains = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // if (currentChainLength <= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
+  // for (IChainElement element : previousElements()) {
+  // if (element.getCompletion() != this.getCompletion()) {
+  // descendingChains.addAll(element.constructProposalChains(currentChainLength
+  // + 1));
+  // }
+  // }
+  // }
+  //
+  // if (!this.isStatic()) {
+  // List<LinkedList<IChainElement>> temp = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // for (LinkedList<IChainElement> descendingElement : descendingChains) {
+  // IChainElement firstElement = descendingElement.getFirst();
+  // if (!(firstElement.getChainDepth() <= this.getChainDepth())
+  // || currentChainLength == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH &&
+  // !firstElement.isRootElement()
+  // || firstElement.isPrimitive() || descendingElement.contains(this)) {
+  // continue;
+  // }
+  // LinkedList<IChainElement> linkedList = new
+  // LinkedList<IChainElement>(descendingElement);
+  // linkedList.addLast(this);
+  // temp.add(linkedList);
+  // }
+  // descendingChains = temp;
+  // }
+  //
+  // if (descendingChains.isEmpty() && this.isRootElement()) {
+  // LinkedList<IChainElement> list = new LinkedList<IChainElement>();
+  // list.add(this);
+  // descendingChains.add(list);
+  // }
+  // proposalChains = descendingChains;
+  // return proposalChains;
+  // }
+  // return proposalChains;
+  // }
 }

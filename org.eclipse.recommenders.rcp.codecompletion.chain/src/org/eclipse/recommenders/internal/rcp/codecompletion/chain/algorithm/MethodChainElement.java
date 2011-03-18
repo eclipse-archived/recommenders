@@ -43,6 +43,9 @@ public class MethodChainElement implements IChainElement {
   private boolean isPrimitive = false;
   private IClass type;
 
+  // private final List<LinkedList<IChainElement>> proposalChains = new
+  // ArrayList<LinkedList<IChainElement>>();
+
   public MethodChainElement(final IMethod method, final Integer chainDepth) {
     this.method = method;
     prevoiusElements = new ArrayList<IChainElement>();
@@ -120,11 +123,6 @@ public class MethodChainElement implements IChainElement {
     return resultingType;
   }
 
-  // @Override
-  // public String getResultingTypeName() {
-  // return resultingType.getName().toUnicodeString();
-  // }
-
   /**
    * Returns array of types of formal parameters
    * 
@@ -201,4 +199,50 @@ public class MethodChainElement implements IChainElement {
   public boolean isStatic() {
     return method.isStatic();
   }
+
+  // @Override
+  // public List<LinkedList<IChainElement>> constructProposalChains(int
+  // currentChainLength) {
+  // if (proposalChains.isEmpty()) {
+  // System.out.println(getCompletion());
+  // List<LinkedList<IChainElement>> descendingChains = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // if (currentChainLength <= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
+  // for (IChainElement element : previousElements()) {
+  // if (element.getCompletion() != this.getCompletion()) {
+  // descendingChains.addAll(element.constructProposalChains(currentChainLength
+  // + 1));
+  // }
+  // }
+  // }
+  //
+  // if (!this.isStatic()) {
+  // List<LinkedList<IChainElement>> temp = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // for (LinkedList<IChainElement> descendingElement : descendingChains) {
+  // IChainElement firstElement = descendingElement.getFirst();
+  // if (!(firstElement.getChainDepth() <= this.getChainDepth())
+  // || currentChainLength == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH &&
+  // !firstElement.isRootElement()
+  // || firstElement.isPrimitive() || descendingElement.contains(this)) {
+  // continue;
+  // }
+  // LinkedList<IChainElement> linkedList = new
+  // LinkedList<IChainElement>(descendingElement);
+  // linkedList.addLast(this);
+  // temp.add(linkedList);
+  // }
+  // descendingChains = temp;
+  // }
+  //
+  // if (descendingChains.isEmpty() && this.isRootElement()) {
+  // LinkedList<IChainElement> list = new LinkedList<IChainElement>();
+  // list.add(this);
+  // descendingChains.add(list);
+  // }
+  // proposalChains = descendingChains;
+  // return proposalChains;
+  // }
+  // return proposalChains;
+  // }
 }

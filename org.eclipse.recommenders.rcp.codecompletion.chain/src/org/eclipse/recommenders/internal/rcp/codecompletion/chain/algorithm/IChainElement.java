@@ -76,4 +76,7 @@ public interface IChainElement {
 
   public boolean isStatic();
 
+  // public List<LinkedList<IChainElement>> constructProposalChains(int
+  // currentChainLength);
+
 }
