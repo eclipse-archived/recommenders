@@ -46,7 +46,12 @@ public class FieldChainElement implements IChainElement {
 
   private boolean rootElement = false;
 
+  private boolean isPrimitive = false;
+
+  private final IField field;
+
   public FieldChainElement(final IField field, final Integer chainDepth) {
+    this.field = field;
     prevoiusElements = new ArrayList<IChainElement>();
     this.chainDepth = chainDepth;
     try {
@@ -58,9 +63,12 @@ public class FieldChainElement implements IChainElement {
     fieldReference = field.getFieldTypeReference();
     classHierarchy = field.getClassHierarchy();
     if (fieldReference.isPrimitiveType()) {
-      type = null;
+      type = ChainCompletionContext.boxPrimitive(getResultingType().getName().getClassName().toString());
+      setPrimitive(true);
+    } else {
+      type = classHierarchy.lookupClass(fieldReference);
     }
-    type = classHierarchy.lookupClass(fieldReference);
+
     arrayDimension = fieldReference.getDimensionality();
   }
 
@@ -121,5 +129,22 @@ public class FieldChainElement implements IChainElement {
   @Override
   public boolean isRootElement() {
     return rootElement;
+  }
+
+  @Override
+  public boolean isPrimitive() {
+    return isPrimitive;
+
+  }
+
+  @Override
+  public void setPrimitive(boolean isPrimitive) {
+    this.isPrimitive = isPrimitive;
+
+  }
+
+  @Override
+  public boolean isStatic() {
+    return field.isStatic();
   }
 }

@@ -136,10 +136,14 @@ public class ChainingAlgorithm {
         if (firstListElement.isRootElement() && list.size() >= Constants.AlgorithmSettings.MIN_CHAIN_DEPTH) {
           tempChains.add(list);
         }
+        if (firstListElement.isStatic()) {
+          // XXX what to do with static elements?
+          continue;
+        }
         List<IChainElement> elements = firstListElement.previousElements();
         for (IChainElement element : elements) {
           if (!(element.getChainDepth() <= i) || i == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH
-              && !element.isRootElement()) {
+              && !element.isRootElement() || element.isPrimitive()) {
             continue;
           }
           LinkedList<IChainElement> linkedList = new LinkedList<IChainElement>(list);

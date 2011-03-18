@@ -24,6 +24,7 @@ public class LocalChainElement implements IChainElement {
   private Integer arrayDimension = 0;
   private final List<IChainElement> prevoiusElements;
   private boolean rootElement = false;
+  private boolean isPrimitive = false;
 
   public LocalChainElement(final String name, final IClass type, final Integer chainDepth) {
     this.name = name;
@@ -34,7 +35,6 @@ public class LocalChainElement implements IChainElement {
 
   @Override
   public IClass getType() {
-
     return type;
   }
 
@@ -45,7 +45,6 @@ public class LocalChainElement implements IChainElement {
 
   @Override
   public ChainElementType getElementType() {
-
     return ChainElementType.LOCAL;
   }
 
@@ -87,5 +86,22 @@ public class LocalChainElement implements IChainElement {
   @Override
   public boolean isRootElement() {
     return rootElement;
+  }
+
+  @Override
+  public boolean isPrimitive() {
+    // TODO Auto-generated method stub
+    return isPrimitive;
+  }
+
+  @Override
+  public void setPrimitive(boolean isPrimitive) {
+    this.isPrimitive = isPrimitive;
+
+  }
+
+  @Override
+  public boolean isStatic() {
+    return false;
   }
 }

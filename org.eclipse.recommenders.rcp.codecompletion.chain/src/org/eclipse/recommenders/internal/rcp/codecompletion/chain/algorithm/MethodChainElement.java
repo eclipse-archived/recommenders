@@ -32,30 +32,21 @@ import com.ibm.wala.types.TypeReference;
 @SuppressWarnings("restriction")
 public class MethodChainElement implements IChainElement {
   private String completion;
-
   private TypeReference[] parameterTypes;
-
   private TypeReference resultingType;
-
   private String[] parameterNames;
-
-  private final IClassHierarchy classHierarchy;
-
   private final Integer chainDepth;
-
   private Integer arrayDimension = 0;
-
   private final List<IChainElement> prevoiusElements;
-
   private boolean rootElement = false;
-
   private final IMethod method;
+  private boolean isPrimitive = false;
+  private IClass type;
 
   public MethodChainElement(final IMethod method, final Integer chainDepth) {
     this.method = method;
     prevoiusElements = new ArrayList<IChainElement>();
     this.chainDepth = chainDepth;
-    classHierarchy = method.getClassHierarchy();
     try {
       completion = method.getName().toUnicodeString();
     } catch (final UTFDataFormatException e1) {
@@ -64,12 +55,21 @@ public class MethodChainElement implements IChainElement {
     try {
       final int parameterMinCount = getParameterMinCount(method);
       resultingType = method.getReturnType();
+      IClassHierarchy classHierarchy = method.getClassHierarchy();
+      if (resultingType.isPrimitiveType()) {
+        // System.out.println(resultingType.getName().toString());
+        type = ChainCompletionContext.boxPrimitive(resultingType.getName().toString());
+        setPrimitive(true);
+      } else {
+        type = classHierarchy.lookupClass(resultingType);
+      }
       arrayDimension = resultingType.getDimensionality();
       computeParameterTypesAndNames(method, parameterMinCount);
     } catch (final Exception e) {
       parameterNames = new String[0];
       parameterTypes = new TypeReference[0];
       resultingType = null;
+      type = null;
       JavaPlugin.log(e);
     }
   }
@@ -147,10 +147,7 @@ public class MethodChainElement implements IChainElement {
 
   @Override
   public IClass getType() {
-    if (getResultingType().isPrimitiveType()) {
-      return null;
-    }
-    return classHierarchy.lookupClass(getResultingType());
+    return type;
   }
 
   @Override
@@ -186,5 +183,22 @@ public class MethodChainElement implements IChainElement {
 
   public IMethod getMethod() {
     return method;
+  }
+
+  @Override
+  public boolean isPrimitive() {
+    return isPrimitive;
+
+  }
+
+  @Override
+  public void setPrimitive(boolean isPrimitive) {
+    this.isPrimitive = isPrimitive;
+
+  }
+
+  @Override
+  public boolean isStatic() {
+    return method.isStatic();
   }
 }

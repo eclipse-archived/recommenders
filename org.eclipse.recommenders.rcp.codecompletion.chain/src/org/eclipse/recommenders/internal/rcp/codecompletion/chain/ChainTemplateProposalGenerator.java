@@ -325,7 +325,7 @@ public class ChainTemplateProposalGenerator {
   private String computeName(final ChainTemplateProposal chainProposal) {
     StringBuilder name = null;
     for (final IChainElement part : chainProposal.getProposedChain()) {
-      final String partName = makePartName(part);
+      final String partName = makePartName(part, chainProposal.getProposedChain().indexOf(part));
       if (partName == null) {
         return null;
       }
@@ -348,12 +348,11 @@ public class ChainTemplateProposalGenerator {
   // This method generates the part name for the proposal box. If the part is a
   // method with input parameters an
   // '(...)' is added, else '()'
-  private String makePartName(final IChainElement part) {
-    final String prefixToLastDot = computePrefixToLastDot();
+  private String makePartName(final IChainElement part, int chainPosition) {
     String result = new String();
     switch (part.getElementType()) {
     case FIELD:
-      result = checkForThisQualifier((FieldChainElement) part, prefixToLastDot) ? "this." + part.getCompletion() : part
+      result = checkForThisQualifier((FieldChainElement) part, chainPosition) ? "this." + part.getCompletion() : part
           .getCompletion();
       break;
     case METHOD:
@@ -388,6 +387,9 @@ public class ChainTemplateProposalGenerator {
     if (chainProposal.needsCast()) {
       res.append("type cast, ");
     }
+    if (chainProposal.getProposedChain().get(0).isStatic()) {
+      res.append("static, ");
+    }
     res.append(chainProposal.getExpectedType().getName().getClassName().toString());
     res.append(computeArrayBracketsForCasting(chainProposal));
     res.append(")");
@@ -403,7 +405,7 @@ public class ChainTemplateProposalGenerator {
 
     StringBuilder code = null;
     for (final IChainElement part : chainProposal.getProposedChain()) {
-      final String partCode = makePartCode(part, prefixToLastDot);
+      final String partCode = makePartCode(part, chainProposal.getProposedChain().indexOf(part));
       if (partCode == null) {
         return null;
       }
@@ -448,11 +450,11 @@ public class ChainTemplateProposalGenerator {
   }
 
   // This method generates a part of the code for one proposal.
-  private String makePartCode(final IChainElement part, String prefixToLastDot) throws JavaModelException {
+  private String makePartCode(final IChainElement part, int chainPosition) throws JavaModelException {
     String result = new String();
     switch (part.getElementType()) {
     case FIELD:
-      result = checkForThisQualifier((FieldChainElement) part, prefixToLastDot) ? "this." + part.getCompletion() : part
+      result = checkForThisQualifier((FieldChainElement) part, chainPosition) ? "this." + part.getCompletion() : part
           .getCompletion();
       break;
     case METHOD:
@@ -505,9 +507,10 @@ public class ChainTemplateProposalGenerator {
   }
 
   // XXX methods check
-  private boolean checkForThisQualifier(final FieldChainElement part, String prefixToLastDot) {
+  private boolean checkForThisQualifier(final FieldChainElement part, int chainPosition) {
     if (part.hasThisQualifier()) {
-      return prefixToLastDot.isEmpty() || prefixToLastDot.equals(" ");
+      return chainPosition == 0;// prefixToLastDot.isEmpty() ||
+                                // prefixToLastDot.equals(" ");
     }
     return false;
   }

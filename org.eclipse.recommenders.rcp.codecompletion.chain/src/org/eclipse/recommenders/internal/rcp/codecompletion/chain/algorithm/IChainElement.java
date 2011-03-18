@@ -70,4 +70,10 @@ public interface IChainElement {
 
   public boolean isRootElement();
 
+  public boolean isPrimitive();
+
+  public void setPrimitive(boolean isPrimitive);
+
+  public boolean isStatic();
+
 }

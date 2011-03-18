@@ -18,7 +18,7 @@
     }
   ],
   "kind": "SNAPSHOT",
-  "analysedOn": "2011-03-17T16:52:59.574+01:00",
+  "analysedOn": "2011-03-18T03:03:54.306+01:00",
   "fingerprint": "99ee55a37a912ac72771f71ce6bb171789a52fdb",
   "name": "Lhelper/FieldsWithDifferentVisibilities",
   "primaryType": {
@@ -26,8 +26,8 @@
     "superclass": "Ljava/lang/Object",
     "interfaces": [],
     "fields": [
-      "Ljava/util/concurrent/atomic/AtomicLong",
       "Ljava/util/concurrent/atomic/AtomicInteger",
+      "Ljava/util/concurrent/atomic/AtomicLong",
       "Ljava/util/concurrent/atomic/AtomicBoolean"
     ],
     "methods": [
@@ -40,18 +40,20 @@
         "modifiers": 1,
         "objects": [
           {
-            "type": "Ljava/util/concurrent/atomic/AtomicInteger",
+            "type": "Ljava/util/concurrent/atomic/AtomicLong",
             "names": [
-              "findMe2"
+              "findMe3"
             ],
-            "kind": "FIELD",
-            "definitionSite": {
-              "kind": "FIELD",
-              "definedByField": "Lhelper/FieldsWithDifferentVisibilities.findMe2;Ljava/util/concurrent/atomic/AtomicInteger",
-              "lineNumber": 0
-            },
+            "kind": "LOCAL",
             "parameterCallSites": [],
-            "receiverCallSites": []
+            "receiverCallSites": [
+              {
+                "receiver": "findMe3",
+                "targetMethod": "Ljava/util/concurrent/atomic/AtomicLong.\u003cinit\u003e()V",
+                "sourceMethod": "Lhelper/FieldsWithDifferentVisibilities.\u003cinit\u003e()V",
+                "line": 12
+              }
+            ]
           },
           {
             "type": "Ljava/lang/Object",
@@ -66,22 +68,6 @@
                 "targetMethod": "Ljava/lang/Object.\u003cinit\u003e()V",
                 "sourceMethod": "Lhelper/FieldsWithDifferentVisibilities.\u003cinit\u003e()V",
                 "line": 7
-              }
-            ]
-          },
-          {
-            "type": "Ljava/util/concurrent/atomic/AtomicLong",
-            "names": [
-              "findMe3"
-            ],
-            "kind": "LOCAL",
-            "parameterCallSites": [],
-            "receiverCallSites": [
-              {
-                "receiver": "findMe3",
-                "targetMethod": "Ljava/util/concurrent/atomic/AtomicLong.\u003cinit\u003e()V",
-                "sourceMethod": "Lhelper/FieldsWithDifferentVisibilities.\u003cinit\u003e()V",
-                "line": 12
               }
             ]
           },
@@ -116,6 +102,22 @@
             ]
           },
           {
+            "type": "Ljava/util/concurrent/atomic/AtomicInteger",
+            "names": [
+              "findMe2"
+            ],
+            "kind": "LOCAL",
+            "parameterCallSites": [],
+            "receiverCallSites": [
+              {
+                "receiver": "findMe2",
+                "targetMethod": "Ljava/util/concurrent/atomic/AtomicInteger.\u003cinit\u003e()V",
+                "sourceMethod": "Lhelper/FieldsWithDifferentVisibilities.\u003cinit\u003e()V",
+                "line": 10
+              }
+            ]
+          },
+          {
             "type": "Ljava/util/concurrent/atomic/AtomicLong",
             "names": [
               "findMe3"
@@ -134,16 +136,14 @@
             "names": [
               "findMe2"
             ],
-            "kind": "LOCAL",
+            "kind": "FIELD",
+            "definitionSite": {
+              "kind": "FIELD",
+              "definedByField": "Lhelper/FieldsWithDifferentVisibilities.findMe2;Ljava/util/concurrent/atomic/AtomicInteger",
+              "lineNumber": 0
+            },
             "parameterCallSites": [],
-            "receiverCallSites": [
-              {
-                "receiver": "findMe2",
-                "targetMethod": "Ljava/util/concurrent/atomic/AtomicInteger.\u003cinit\u003e()V",
-                "sourceMethod": "Lhelper/FieldsWithDifferentVisibilities.\u003cinit\u003e()V",
-                "line": 10
-              }
-            ]
+            "receiverCallSites": []
           }
         ]
       }

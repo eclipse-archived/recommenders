@@ -119,10 +119,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
    */
   private IChainElement createMethodWorker(final IMethod m) throws JavaModelException {
     if (checkVisibility(m)) {
-      // XXX: Case: If calling context is subtype of typeToCheck than
-      // field/method can be protected or package private
-
-      if (m.getReturnType().isPrimitiveType() || m.getName().toString().equals("toString")) {
+      if (ChainCompletionContext.unwantedNames(m.getName().toString())) {
         return null;// return
       }
       MethodChainElement methodChainElement = new MethodChainElement(m, workingElement.getChainDepth() + 1);
@@ -137,8 +134,6 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
       }
       methodChainElement.addPrevoiusElement(workingElement);
       storeListToProposalStore(methodChainElement);
-      // ChainingAlgorithm.boxPrimitiveTyp(m.getDeclaringClass(),
-      // m.getReturnType().getName().toString().toCharArray());
       return methodChainElement;
     }
     return null;
@@ -150,9 +145,6 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
   private IChainElement createFieldWorker(final IClass typeToCheck, final IField f) throws JavaModelException {
     if (checkVisibility(f)) {
       FieldChainElement fieldChainElement = new FieldChainElement(f, workingElement.getChainDepth() + 1);
-      if (f.getFieldTypeReference().isPrimitiveType()) {
-        return null;
-      }
 
       for (IChainElement element : ChainingAlgorithm.getStoreElementList()) {
         if (element.getCompletion().equals(fieldChainElement.getCompletion())) {
