@@ -139,8 +139,7 @@ public class ChainCompletionContext {
     IClass expectedType = toWalaClass(expectedTypeName.isArrayType() ? expectedTypeName.getArrayBaseType()
         : expectedTypeName);
     if (expectedType == null) {
-      // XXX test on array and change if clause, if bug 340686 is resolved
-      expectedType = boxPrimitive(expectedTypeName.getClassName().substring(1));
+      expectedType = boxPrimitive(expectedTypeName.getClassName());
     }
     if (expectedType != null && expectedType.getReference().getName().getClassName().toString().equals("Object")) {
       expectedType = null;
@@ -267,8 +266,7 @@ public class ChainCompletionContext {
       IClass localType = toWalaClass(typeName);
       boolean isPrimitive = false;
       if (localType == null) {
-        // XXX test on array and change if clause, if bug 340686 is resolved
-        localType = boxPrimitive(typeName.getClassName().substring(1));
+        localType = boxPrimitive(typeName.getClassName());
         isPrimitive = true;
       }
       if (localType == null) {

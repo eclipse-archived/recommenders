@@ -15,22 +15,24 @@ public class CompletionOnPrimitiveTypeInMethod {
 	private class A{
 		public int findMe = 5;
 		
-		public int findMe(){
-	    	return 0;
+		public int[] findMe2(){
+	    	return new int[1];
 	    }
 	}
 	
-	public int findMe;
+	final A useMe = new A();
 
-    public static void method() {
+    public void method() {
         final A useMe = new A();
-        final int findMe;
         final int c = <@Ignore^Space>
         /*
          * calling context --> static expected type --> int expected completion
          * --> useMe.findMe variable name --> c
          */
     }
+    
+    
+    
     
     
 }

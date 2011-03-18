@@ -48,9 +48,15 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
 
   private void inspectType() throws JavaModelException {
     this.workingElement = internalProposalStore.getWorkingElement();
+    if (workingElement.getCompletion().equals("findMe2")) {
+      System.out.println();
+    }
     final IClass typeToCheck = workingElement.getType();
+    if (typeToCheck == null) {
+      return;
+    }
     // check type if searched type --> store for proposal
-    if (storeForProposal(typeToCheck)) {
+    if (storeForProposal()) {
       return;
     }
     // check fields of type --> store in search map && and create new worker
@@ -192,13 +198,10 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
    * function to check if the call chain meets the expectations, so that it can
    * be processed for proposal computation
    */
-  private boolean storeForProposal(final IClass typeToCheck) throws JavaModelException {
-    if (typeToCheck == null) {
-      return true;
-    }
+  private boolean storeForProposal() throws JavaModelException {
     for (Tuple<IClass, Integer> expectedType : expectedTypeList) {
-      final int testResult = InheritanceHierarchyCache.equalityTest(typeToCheck, expectedType.getFirst(),
-          expectedType.getSecond());
+      final int testResult = InheritanceHierarchyCache.equalityTest(workingElement.getType(),
+          workingElement.getArrayDimension(), expectedType.getFirst(), expectedType.getSecond());
       // if both types equal
       if ((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0) {
         internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
@@ -212,14 +215,16 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
       }
 
       // Consult type hierarchy for sub-/supertypes
-      if (InheritanceHierarchyCache.isSubtype(typeToCheck, expectedType.getFirst(), expectedType.getSecond())
+      if (InheritanceHierarchyCache.isSubtype(workingElement.getType(), expectedType.getFirst(),
+          expectedType.getSecond())
           && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
         internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
             expectedType.getSecond(), expectedType.getFirst());
         continue;
       }
       /* else */
-      if (InheritanceHierarchyCache.isSupertype(typeToCheck, expectedType.getFirst(), expectedType.getSecond())
+      if (InheritanceHierarchyCache.isSupertype(workingElement.getType(), expectedType.getFirst(),
+          expectedType.getSecond())
           && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
         internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
             expectedType.getSecond(), null);

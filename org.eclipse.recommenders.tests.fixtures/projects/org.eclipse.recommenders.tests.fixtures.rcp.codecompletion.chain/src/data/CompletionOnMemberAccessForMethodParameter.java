@@ -15,7 +15,7 @@ import java.io.File;
 public class CompletionOnMemberAccessForMethodParameter {
    
     File findMe = new File("");
-    Integer findMe2 = new Integer(0);
+    int findMe2 = new Integer(0);
     
     int bla = callMe(findMe, <@Ignore^Space>);
     /* calling context --> 'this' aka CompletionOnMemberAccessForMethodParameter

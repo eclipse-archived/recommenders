@@ -33,7 +33,6 @@ import com.ibm.wala.types.TypeReference;
 public class MethodChainElement implements IChainElement {
   private String completion;
   private TypeReference[] parameterTypes;
-  private TypeReference resultingType;
   private String[] parameterNames;
   private final Integer chainDepth;
   private Integer arrayDimension = 0;
@@ -57,21 +56,24 @@ public class MethodChainElement implements IChainElement {
     }
     try {
       final int parameterMinCount = getParameterMinCount(method);
-      resultingType = method.getReturnType();
+      TypeReference resultingType = method.getReturnType();
       IClassHierarchy classHierarchy = method.getClassHierarchy();
       if (resultingType.isPrimitiveType()) {
-        // System.out.println(resultingType.getName().toString());
         type = ChainCompletionContext.boxPrimitive(resultingType.getName().toString());
+        arrayDimension = 0;
         setPrimitive(true);
       } else {
-        type = classHierarchy.lookupClass(resultingType);
+        if (resultingType.isArrayType() && resultingType.getInnermostElementType().isPrimitiveType()) {
+          type = ChainCompletionContext.boxPrimitive(resultingType.getInnermostElementType().getName().toString());
+        } else {
+          type = classHierarchy.lookupClass(resultingType);
+        }
+        arrayDimension = resultingType.getDimensionality();
       }
-      arrayDimension = resultingType.getDimensionality();
       computeParameterTypesAndNames(method, parameterMinCount);
     } catch (final Exception e) {
       parameterNames = new String[0];
       parameterTypes = new TypeReference[0];
-      resultingType = null;
       type = null;
       JavaPlugin.log(e);
     }
@@ -116,11 +118,6 @@ public class MethodChainElement implements IChainElement {
   @Override
   public String getCompletion() {
     return completion;
-  }
-
-  @Override
-  public TypeReference getResultingType() {
-    return resultingType;
   }
 
   /**

@@ -341,7 +341,8 @@ public class ChainTemplateProposalGenerator {
 
   private void computeCastingForName(final ChainTemplateProposal chainProposal, final StringBuilder code) {
     if (chainProposal.needsCast()) {
-      code.insert(0, String.format("(%s) ", computeCasting(chainProposal)));
+      code.insert(0,
+          String.format("(%s) ", chainProposal.getCastingType().getReference().getName().getClassName().toString()));
     }
   }
 
@@ -428,7 +429,7 @@ public class ChainTemplateProposalGenerator {
 
   private void computeCastingForCode(final ChainTemplateProposal chainProposal, final StringBuilder code) {
     if (chainProposal.needsCast()) {
-      final String castingString = String.format("(${type:newType(%s)}%s)", computeCasting(chainProposal),
+      final String castingString = String.format("(${type:newType(%s)}%s)", computeCastingForCode(chainProposal),
           computeArrayBracketsForCasting(chainProposal));
       code.insert(0, castingString);
     }
@@ -442,7 +443,7 @@ public class ChainTemplateProposalGenerator {
     return brackets;
   }
 
-  private String computeCasting(final ChainTemplateProposal chainProposal) {
+  private String computeCastingForCode(final ChainTemplateProposal chainProposal) {
     TypeName name = chainProposal.getCastingType().getName();
     String casting = name.getPackage().toString() + "/" + name.getClassName().toString();
     casting = casting.replaceAll("/", ".");
@@ -503,7 +504,7 @@ public class ChainTemplateProposalGenerator {
   }
 
   private boolean isEqualToExpectedType(final IChainElement part) {
-    return expectedType.getName().equals(part.getResultingType().getInnermostElementType().getName());
+    return expectedType.getName().equals(part.getType().getReference().getInnermostElementType().getName());
   }
 
   // XXX methods check

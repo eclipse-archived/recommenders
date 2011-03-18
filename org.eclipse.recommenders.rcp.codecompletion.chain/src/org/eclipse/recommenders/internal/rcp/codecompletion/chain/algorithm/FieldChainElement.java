@@ -29,7 +29,6 @@ import com.ibm.wala.types.TypeReference;
 @SuppressWarnings("restriction")
 public class FieldChainElement implements IChainElement {
   private String completion;
-  private final TypeReference fieldReference;
   private final IClassHierarchy classHierarchy;
   private IClass type;
   private final Integer chainDepth;
@@ -53,16 +52,20 @@ public class FieldChainElement implements IChainElement {
       completion = field.getName().toString();
       JavaPlugin.log(e);
     }
-    fieldReference = field.getFieldTypeReference();
+    TypeReference fieldReference = field.getFieldTypeReference();
     classHierarchy = field.getClassHierarchy();
     if (fieldReference.isPrimitiveType()) {
-      type = ChainCompletionContext.boxPrimitive(getResultingType().getName().getClassName().toString());
+      type = ChainCompletionContext.boxPrimitive(fieldReference.getName().toString());
+      arrayDimension = 0;
       setPrimitive(true);
     } else {
-      type = classHierarchy.lookupClass(fieldReference);
+      if (fieldReference.isArrayType() && fieldReference.getInnermostElementType().isPrimitiveType()) {
+        type = ChainCompletionContext.boxPrimitive(fieldReference.getInnermostElementType().getName().toString());
+      } else {
+        type = classHierarchy.lookupClass(fieldReference);
+      }
+      arrayDimension = fieldReference.getDimensionality();
     }
-
-    arrayDimension = fieldReference.getDimensionality();
   }
 
   @Override
@@ -73,11 +76,6 @@ public class FieldChainElement implements IChainElement {
   @Override
   public String getCompletion() {
     return completion;
-  }
-
-  @Override
-  public TypeReference getResultingType() {
-    return fieldReference;
   }
 
   @Override

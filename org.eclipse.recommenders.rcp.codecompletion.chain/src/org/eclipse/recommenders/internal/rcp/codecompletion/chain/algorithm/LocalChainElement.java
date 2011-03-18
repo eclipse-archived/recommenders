@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ibm.wala.classLoader.IClass;
-import com.ibm.wala.types.TypeReference;
 
 public class LocalChainElement implements IChainElement {
   private final String name;
@@ -39,11 +38,6 @@ public class LocalChainElement implements IChainElement {
   @Override
   public IClass getType() {
     return type;
-  }
-
-  @Override
-  public TypeReference getResultingType() {
-    return type.getReference();
   }
 
   @Override
