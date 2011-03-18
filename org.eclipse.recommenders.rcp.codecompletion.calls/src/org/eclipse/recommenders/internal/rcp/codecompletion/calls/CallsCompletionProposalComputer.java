@@ -133,19 +133,17 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private boolean findVariableUsageAndInvocationContext() {
         firstMethodDeclaration = ctx.getEnclosingMethodsFirstDeclaration();
         receiverMethodInvocations = receiver.getReceiverCalls();
-        // for (final IVariableUsageResolver resolver :
-        // usageResolversProvider.get()) {
-        // if (resolver.canResolve(ctx)) {
-        //
-        // // XXX this is a bit dirty: we need to handle this
-        // // appropriately... here ctx.getVariable() makes a hack for the
-        // // recevier type which noone can understand in 3 months.
-        // receiverType = receiver.isThis() ? receiver.type :
-        // ctx.getReceiverType();
-        // receiverMethodInvocations = resolver.getReceiverMethodInvocations();
-        // return true;
-        // }
-        // }
+        for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
+            if (resolver.canResolve(ctx)) {
+
+                // XXX this is a bit dirty: we need to handle this
+                // appropriately... here ctx.getVariable() makes a hack for the
+                // recevier type which noone can understand in 3 months.
+                receiverType = receiver.isThis() ? receiver.type : ctx.getReceiverType();
+                receiverMethodInvocations = resolver.getReceiverMethodInvocations();
+                return true;
+            }
+        }
         return true;
     }
 
