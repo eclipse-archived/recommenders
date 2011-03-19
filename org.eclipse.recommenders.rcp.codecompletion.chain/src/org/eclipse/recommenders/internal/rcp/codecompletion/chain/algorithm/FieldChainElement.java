@@ -27,24 +27,21 @@ import com.ibm.wala.types.TypeReference;
 @SuppressWarnings("restriction")
 public class FieldChainElement implements IChainElement {
   private String completion;
-
-  private final TypeReference fieldReference;
-
   private final IClassHierarchy classHierarchy;
-
   private IClass type;
-
   private final Integer chainDepth;
-
   private boolean thisQualifier = false;
-
   private Integer arrayDimension = 0;
-
   private final List<IChainElement> prevoiusElements;
-
   private boolean rootElement = false;
+  private boolean isPrimitive = false;
+  private final IField field;
+
+  // private final List<LinkedList<IChainElement>> proposalChains = new
+  // ArrayList<LinkedList<IChainElement>>();
 
   public FieldChainElement(final IField field, final Integer chainDepth) {
+    this.field = field;
     prevoiusElements = new ArrayList<IChainElement>();
     this.chainDepth = chainDepth;
     try {
@@ -53,13 +50,20 @@ public class FieldChainElement implements IChainElement {
       completion = field.getName().toString();
       JavaPlugin.log(e);
     }
-    fieldReference = field.getFieldTypeReference();
+    TypeReference fieldReference = field.getFieldTypeReference();
     classHierarchy = field.getClassHierarchy();
     if (fieldReference.isPrimitiveType()) {
-      type = null;
+      type = ChainCompletionContext.boxPrimitive(fieldReference.getName().toString());
+      arrayDimension = 0;
+      setPrimitive(true);
+    } else {
+      if (fieldReference.isArrayType() && fieldReference.getInnermostElementType().isPrimitiveType()) {
+        type = ChainCompletionContext.boxPrimitive(fieldReference.getInnermostElementType().getName().toString());
+      } else {
+        type = classHierarchy.lookupClass(fieldReference);
+      }
+      arrayDimension = fieldReference.getDimensionality();
     }
-    type = classHierarchy.lookupClass(fieldReference);
-    arrayDimension = fieldReference.getDimensionality();
   }
 
   @Override
@@ -70,11 +74,6 @@ public class FieldChainElement implements IChainElement {
   @Override
   public String getCompletion() {
     return completion;
-  }
-
-  @Override
-  public TypeReference getResultingType() {
-    return fieldReference;
   }
 
   @Override
@@ -120,4 +119,67 @@ public class FieldChainElement implements IChainElement {
   public boolean isRootElement() {
     return rootElement;
   }
+
+  @Override
+  public boolean isPrimitive() {
+    return isPrimitive;
+
+  }
+
+  @Override
+  public void setPrimitive(boolean isPrimitive) {
+    this.isPrimitive = isPrimitive;
+
+  }
+
+  @Override
+  public boolean isStatic() {
+    return field.isStatic();
+  }
+
+  // @Override
+  // public List<LinkedList<IChainElement>> constructProposalChains(int
+  // currentChainLength) {
+  // if (proposalChains.isEmpty()) {
+  // System.out.println(getCompletion());
+  // List<LinkedList<IChainElement>> descendingChains = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // if (currentChainLength <= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
+  // for (IChainElement element : previousElements()) {
+  // if (element.getCompletion() != this.getCompletion()) {
+  // descendingChains.addAll(element.constructProposalChains(currentChainLength
+  // + 1));
+  // }
+  // }
+  // }
+  //
+  // if (!this.isStatic()) {
+  // List<LinkedList<IChainElement>> temp = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // for (LinkedList<IChainElement> descendingElement : descendingChains) {
+  // IChainElement firstElement = descendingElement.getFirst();
+  // if (!(firstElement.getChainDepth() <= this.getChainDepth())
+  // || currentChainLength == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH &&
+  // !firstElement.isRootElement()
+  // || firstElement.isPrimitive() || descendingElement.contains(this)) {
+  // continue;
+  // }
+  // LinkedList<IChainElement> linkedList = new
+  // LinkedList<IChainElement>(descendingElement);
+  // linkedList.addLast(this);
+  // temp.add(linkedList);
+  // }
+  // descendingChains = temp;
+  // }
+  //
+  // if (descendingChains.isEmpty() && this.isRootElement()) {
+  // LinkedList<IChainElement> list = new LinkedList<IChainElement>();
+  // list.add(this);
+  // descendingChains.add(list);
+  // }
+  // proposalChains = descendingChains;
+  // return proposalChains;
+  // }
+  // return proposalChains;
+  // }
 }

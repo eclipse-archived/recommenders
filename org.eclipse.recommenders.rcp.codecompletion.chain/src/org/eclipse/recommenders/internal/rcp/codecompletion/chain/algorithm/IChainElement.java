@@ -56,7 +56,6 @@ public interface IChainElement {
    * 
    * @return the type reference this completion portion results in
    */
-  public abstract TypeReference getResultingType();
 
   public Integer getChainDepth();
 
@@ -69,5 +68,14 @@ public interface IChainElement {
   public void setRootElement(boolean rootElement);
 
   public boolean isRootElement();
+
+  public boolean isPrimitive();
+
+  public void setPrimitive(boolean isPrimitive);
+
+  public boolean isStatic();
+
+  // public List<LinkedList<IChainElement>> constructProposalChains(int
+  // currentChainLength);
 
 }

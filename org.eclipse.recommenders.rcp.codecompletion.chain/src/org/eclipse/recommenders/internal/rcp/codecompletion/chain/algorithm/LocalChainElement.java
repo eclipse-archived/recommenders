@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ibm.wala.classLoader.IClass;
-import com.ibm.wala.types.TypeReference;
 
 public class LocalChainElement implements IChainElement {
   private final String name;
@@ -22,6 +21,10 @@ public class LocalChainElement implements IChainElement {
   private Integer arrayDimension = 0;
   private final List<IChainElement> prevoiusElements;
   private boolean rootElement = false;
+  private boolean isPrimitive = false;
+
+  // private List<LinkedList<IChainElement>> proposalChains = new
+  // ArrayList<LinkedList<IChainElement>>();
 
   public LocalChainElement(final String name, final IClass type, final Integer chainDepth) {
     this.name = name;
@@ -32,18 +35,11 @@ public class LocalChainElement implements IChainElement {
 
   @Override
   public IClass getType() {
-
     return type;
   }
 
   @Override
-  public TypeReference getResultingType() {
-    return type.getReference();
-  }
-
-  @Override
   public ChainElementType getElementType() {
-
     return ChainElementType.LOCAL;
   }
 
@@ -86,4 +82,67 @@ public class LocalChainElement implements IChainElement {
   public boolean isRootElement() {
     return rootElement;
   }
+
+  @Override
+  public boolean isPrimitive() {
+    // TODO Auto-generated method stub
+    return isPrimitive;
+  }
+
+  @Override
+  public void setPrimitive(boolean isPrimitive) {
+    this.isPrimitive = isPrimitive;
+
+  }
+
+  @Override
+  public boolean isStatic() {
+    return false;
+  }
+
+  // @Override
+  // public List<LinkedList<IChainElement>> constructProposalChains(int
+  // currentChainLength) {
+  // if (proposalChains.isEmpty()) {
+  // System.out.println(this.getCompletion());
+  // List<LinkedList<IChainElement>> descendingChains = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // if (currentChainLength <= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
+  // for (IChainElement element : previousElements()) {
+  // if (element.getCompletion() != this.getCompletion()) {
+  // descendingChains.addAll(element.constructProposalChains(currentChainLength
+  // + 1));
+  // }
+  // }
+  // }
+  //
+  // if (!this.isStatic()) {
+  // List<LinkedList<IChainElement>> temp = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // for (LinkedList<IChainElement> descendingElement : descendingChains) {
+  // IChainElement firstElement = descendingElement.getFirst();
+  // if (!(firstElement.getChainDepth() <= this.getChainDepth())
+  // || currentChainLength == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH &&
+  // !firstElement.isRootElement()
+  // || firstElement.isPrimitive() || descendingElement.contains(this)) {
+  // continue;
+  // }
+  // LinkedList<IChainElement> linkedList = new
+  // LinkedList<IChainElement>(descendingElement);
+  // linkedList.addLast(this);
+  // temp.add(linkedList);
+  // }
+  // descendingChains = temp;
+  // }
+  //
+  // if (descendingChains.isEmpty() && this.isRootElement()) {
+  // LinkedList<IChainElement> list = new LinkedList<IChainElement>();
+  // list.add(this);
+  // descendingChains.add(list);
+  // }
+  // proposalChains = descendingChains;
+  // return proposalChains;
+  // }
+  // return proposalChains;
+  // }
 }

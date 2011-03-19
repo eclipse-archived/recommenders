@@ -32,30 +32,23 @@ import com.ibm.wala.types.TypeReference;
 @SuppressWarnings("restriction")
 public class MethodChainElement implements IChainElement {
   private String completion;
-
   private TypeReference[] parameterTypes;
-
-  private TypeReference resultingType;
-
   private String[] parameterNames;
-
-  private final IClassHierarchy classHierarchy;
-
   private final Integer chainDepth;
-
   private Integer arrayDimension = 0;
-
   private final List<IChainElement> prevoiusElements;
-
   private boolean rootElement = false;
-
   private final IMethod method;
+  private boolean isPrimitive = false;
+  private IClass type;
+
+  // private final List<LinkedList<IChainElement>> proposalChains = new
+  // ArrayList<LinkedList<IChainElement>>();
 
   public MethodChainElement(final IMethod method, final Integer chainDepth) {
     this.method = method;
     prevoiusElements = new ArrayList<IChainElement>();
     this.chainDepth = chainDepth;
-    classHierarchy = method.getClassHierarchy();
     try {
       completion = method.getName().toUnicodeString();
     } catch (final UTFDataFormatException e1) {
@@ -63,13 +56,25 @@ public class MethodChainElement implements IChainElement {
     }
     try {
       final int parameterMinCount = getParameterMinCount(method);
-      resultingType = method.getReturnType();
-      arrayDimension = resultingType.getDimensionality();
+      TypeReference resultingType = method.getReturnType();
+      IClassHierarchy classHierarchy = method.getClassHierarchy();
+      if (resultingType.isPrimitiveType()) {
+        type = ChainCompletionContext.boxPrimitive(resultingType.getName().toString());
+        arrayDimension = 0;
+        setPrimitive(true);
+      } else {
+        if (resultingType.isArrayType() && resultingType.getInnermostElementType().isPrimitiveType()) {
+          type = ChainCompletionContext.boxPrimitive(resultingType.getInnermostElementType().getName().toString());
+        } else {
+          type = classHierarchy.lookupClass(resultingType);
+        }
+        arrayDimension = resultingType.getDimensionality();
+      }
       computeParameterTypesAndNames(method, parameterMinCount);
     } catch (final Exception e) {
       parameterNames = new String[0];
       parameterTypes = new TypeReference[0];
-      resultingType = null;
+      type = null;
       JavaPlugin.log(e);
     }
   }
@@ -115,16 +120,6 @@ public class MethodChainElement implements IChainElement {
     return completion;
   }
 
-  @Override
-  public TypeReference getResultingType() {
-    return resultingType;
-  }
-
-  // @Override
-  // public String getResultingTypeName() {
-  // return resultingType.getName().toUnicodeString();
-  // }
-
   /**
    * Returns array of types of formal parameters
    * 
@@ -147,10 +142,7 @@ public class MethodChainElement implements IChainElement {
 
   @Override
   public IClass getType() {
-    if (getResultingType().isPrimitiveType()) {
-      return null;
-    }
-    return classHierarchy.lookupClass(getResultingType());
+    return type;
   }
 
   @Override
@@ -187,4 +179,67 @@ public class MethodChainElement implements IChainElement {
   public IMethod getMethod() {
     return method;
   }
+
+  @Override
+  public boolean isPrimitive() {
+    return isPrimitive;
+
+  }
+
+  @Override
+  public void setPrimitive(boolean isPrimitive) {
+    this.isPrimitive = isPrimitive;
+
+  }
+
+  @Override
+  public boolean isStatic() {
+    return method.isStatic();
+  }
+
+  // @Override
+  // public List<LinkedList<IChainElement>> constructProposalChains(int
+  // currentChainLength) {
+  // if (proposalChains.isEmpty()) {
+  // System.out.println(getCompletion());
+  // List<LinkedList<IChainElement>> descendingChains = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // if (currentChainLength <= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
+  // for (IChainElement element : previousElements()) {
+  // if (element.getCompletion() != this.getCompletion()) {
+  // descendingChains.addAll(element.constructProposalChains(currentChainLength
+  // + 1));
+  // }
+  // }
+  // }
+  //
+  // if (!this.isStatic()) {
+  // List<LinkedList<IChainElement>> temp = new
+  // ArrayList<LinkedList<IChainElement>>();
+  // for (LinkedList<IChainElement> descendingElement : descendingChains) {
+  // IChainElement firstElement = descendingElement.getFirst();
+  // if (!(firstElement.getChainDepth() <= this.getChainDepth())
+  // || currentChainLength == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH &&
+  // !firstElement.isRootElement()
+  // || firstElement.isPrimitive() || descendingElement.contains(this)) {
+  // continue;
+  // }
+  // LinkedList<IChainElement> linkedList = new
+  // LinkedList<IChainElement>(descendingElement);
+  // linkedList.addLast(this);
+  // temp.add(linkedList);
+  // }
+  // descendingChains = temp;
+  // }
+  //
+  // if (descendingChains.isEmpty() && this.isRootElement()) {
+  // LinkedList<IChainElement> list = new LinkedList<IChainElement>();
+  // list.add(this);
+  // descendingChains.add(list);
+  // }
+  // proposalChains = descendingChains;
+  // return proposalChains;
+  // }
+  // return proposalChains;
+  // }
 }

@@ -35,9 +35,11 @@ import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 import com.google.common.collect.Lists;
 import com.ibm.wala.classLoader.IClass;
+import com.ibm.wala.classLoader.IClassLoader;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMember;
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.types.TypeName;
 import com.ibm.wala.types.TypeReference;
 
 @SuppressWarnings("restriction")
@@ -54,6 +56,7 @@ public class ChainCompletionContext {
   private IClass enclosingType;
   private IMethod enclosingMethod;
   private List<String> localNames;
+  private static IClassLoader loader;
 
   public ChainCompletionContext(final IIntelligentCompletionContext ctx, final JavaElementResolver javaElementResolver,
       final IClassHierarchyService walaChaService) {
@@ -88,6 +91,7 @@ public class ChainCompletionContext {
   private boolean findEnclosingClass() {
     final ITypeName name = ctx.getEnclosingType();
     enclosingType = toWalaClass(name);
+    loader = enclosingType.getClassLoader();
     return enclosingType != null;
   }
 
@@ -132,12 +136,15 @@ public class ChainCompletionContext {
       return false;
     }
     expectedTypeList = new ArrayList<Tuple<IClass, Integer>>();
-    int expectedTypeArrayDimension = expectedTypeName.getArrayDimensions();
     IClass expectedType = toWalaClass(expectedTypeName.isArrayType() ? expectedTypeName.getArrayBaseType()
         : expectedTypeName);
+    if (expectedType == null) {
+      expectedType = boxPrimitive(expectedTypeName.getClassName());
+    }
     if (expectedType != null && expectedType.getReference().getName().getClassName().toString().equals("Object")) {
       expectedType = null;
     }
+    int expectedTypeArrayDimension = expectedTypeName.getArrayDimensions();
     expectedTypeList.add(Tuple.create(expectedType, expectedTypeArrayDimension));
     return expectedType != null;
   }
@@ -189,7 +196,9 @@ public class ChainCompletionContext {
   private boolean isAccessible(final IMember member) {
 
     if (ctx.isReceiverImplicitThis()) {
-      if (enclosingMethod != null && enclosingMethod.isStatic() && !member.isStatic()) {
+      if (enclosingMethod != null && enclosingMethod.isStatic() && !member.isStatic()
+          && !(member instanceof IMethod && ((IMethod) member).getReturnType().isPrimitiveType())
+          && !(member instanceof IField && ((IField) member).getFieldTypeReference().isPrimitiveType())) {
         return false;
       }
     }
@@ -231,6 +240,9 @@ public class ChainCompletionContext {
 
       final MethodChainElement chainElement = new MethodChainElement(method, 0);
       chainElement.setRootElement(true);
+      if (unwantedNames(chainElement.getCompletion())) {
+        continue;
+      }
       accessibleMethods.add(chainElement);
     }
   }
@@ -251,7 +263,12 @@ public class ChainCompletionContext {
     }
     for (final LocalDeclaration local : ctx.getLocalDeclarations()) {
       final ITypeName typeName = CompilerBindings.toTypeName(local.type);
-      final IClass localType = toWalaClass(typeName);
+      IClass localType = toWalaClass(typeName);
+      boolean isPrimitive = false;
+      if (localType == null) {
+        localType = boxPrimitive(typeName.getClassName());
+        isPrimitive = true;
+      }
       if (localType == null) {
         continue;
       }
@@ -272,6 +289,7 @@ public class ChainCompletionContext {
       final LocalChainElement element = new LocalChainElement(localName, localType, 0);
       element.setArrayDimension(typeName.getArrayDimensions());
       element.setRootElement(true);
+      element.setPrimitive(isPrimitive);
       accessibleLocals.add(element);
     }
   }
@@ -363,4 +381,32 @@ public class ChainCompletionContext {
     return accessibleLocals;
   }
 
+  public static IClass boxPrimitive(String primitiveName) {
+    if (primitiveName.equals("boolean") || primitiveName.equals("Z")) {
+      return loader.lookupClass(TypeName.findOrCreateClassName("java/lang", "Boolean"));
+    } else if (primitiveName.equals("byte") || primitiveName.equals("B")) {
+      return loader.lookupClass(TypeName.findOrCreateClassName("java/lang", "Byte"));
+    } else if (primitiveName.equals("char") || primitiveName.equals("C")) {
+      return loader.lookupClass(TypeName.findOrCreateClassName("java/lang", "Character"));
+    } else if (primitiveName.equals("double") || primitiveName.equals("D")) {
+      return loader.lookupClass(TypeName.findOrCreateClassName("java/lang", "Double"));
+    } else if (primitiveName.equals("float") || primitiveName.equals("F")) {
+      return loader.lookupClass(TypeName.findOrCreateClassName("java/lang", "Float"));
+    } else if (primitiveName.equals("int") || primitiveName.equals("I")) {
+      return loader.lookupClass(TypeName.findOrCreateClassName("java/lang", "Integer"));
+    } else if (primitiveName.equals("long") || primitiveName.equals("J")) {
+      return loader.lookupClass(TypeName.findOrCreateClassName("java/lang", "Long"));
+    } else if (primitiveName.equals("void") || primitiveName.equals("V")) {
+      return null;
+    } else if (primitiveName.equals("shoart") || primitiveName.equals("S")) {
+      return loader.lookupClass(TypeName.findOrCreateClassName("java/lang", "Short"));
+    }
+    return null;
+  }
+
+  public static boolean unwantedNames(String name) {
+    boolean toString = name.equals("toString");
+    boolean hashCode = name.equals("hashCode");
+    return toString || hashCode;
+  }
 }

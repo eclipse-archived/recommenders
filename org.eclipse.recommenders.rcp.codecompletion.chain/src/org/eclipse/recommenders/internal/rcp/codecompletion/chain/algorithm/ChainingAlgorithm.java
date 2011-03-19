@@ -100,11 +100,12 @@ public class ChainingAlgorithm {
   }
 
   private void computeProposalChains() {
+    System.out.println("graph size:" + searchMap.keySet().size());
     // for each result element type
     for (Entry<IChainElement, List<Triple<IClass, Integer, IClass>>> lastElement : lastChainElementForProposal
         .entrySet()) {
       // for each expected type
-      List<LinkedList<IChainElement>> resultChains = computeLastChainsElementForProposal(lastElement.getKey());
+      List<LinkedList<IChainElement>> resultChains = computeLastChainsElementForProposal(lastElement.getKey());// lastElement.getKey().constructProposalChains(0);
       for (Triple<IClass, Integer, IClass> expectedTypeAndCast : lastElement.getValue()) {
         if (expectedTypeAndCast.getThird() == null) {
           this.addNonCastedProposal(resultChains, expectedTypeAndCast.getFirst(), expectedTypeAndCast.getSecond());
@@ -133,10 +134,14 @@ public class ChainingAlgorithm {
         if (firstListElement.isRootElement() && list.size() >= Constants.AlgorithmSettings.MIN_CHAIN_DEPTH) {
           tempChains.add(list);
         }
+        if (firstListElement.isStatic()) {
+          // XXX what to do with static elements?
+          continue;
+        }
         List<IChainElement> elements = firstListElement.previousElements();
         for (IChainElement element : elements) {
           if (!(element.getChainDepth() <= i) || i == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH
-              && !element.isRootElement()) {
+              && !element.isRootElement() || element.isPrimitive()) {
             continue;
           }
           LinkedList<IChainElement> linkedList = new LinkedList<IChainElement>(list);

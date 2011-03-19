@@ -325,7 +325,7 @@ public class ChainTemplateProposalGenerator {
   private String computeName(final ChainTemplateProposal chainProposal) {
     StringBuilder name = null;
     for (final IChainElement part : chainProposal.getProposedChain()) {
-      final String partName = makePartName(part);
+      final String partName = makePartName(part, chainProposal.getProposedChain().indexOf(part));
       if (partName == null) {
         return null;
       }
@@ -341,19 +341,19 @@ public class ChainTemplateProposalGenerator {
 
   private void computeCastingForName(final ChainTemplateProposal chainProposal, final StringBuilder code) {
     if (chainProposal.needsCast()) {
-      code.insert(0, String.format("(%s) ", computeCasting(chainProposal)));
+      code.insert(0,
+          String.format("(%s) ", chainProposal.getCastingType().getReference().getName().getClassName().toString()));
     }
   }
 
   // This method generates the part name for the proposal box. If the part is a
   // method with input parameters an
   // '(...)' is added, else '()'
-  private String makePartName(final IChainElement part) {
-    final String prefixToLastDot = computePrefixToLastDot();
+  private String makePartName(final IChainElement part, int chainPosition) {
     String result = new String();
     switch (part.getElementType()) {
     case FIELD:
-      result = checkForThisQualifier((FieldChainElement) part, prefixToLastDot) ? "this." + part.getCompletion() : part
+      result = checkForThisQualifier((FieldChainElement) part, chainPosition) ? "this." + part.getCompletion() : part
           .getCompletion();
       break;
     case METHOD:
@@ -388,6 +388,9 @@ public class ChainTemplateProposalGenerator {
     if (chainProposal.needsCast()) {
       res.append("type cast, ");
     }
+    if (chainProposal.getProposedChain().get(0).isStatic()) {
+      res.append("static, ");
+    }
     res.append(chainProposal.getExpectedType().getName().getClassName().toString());
     res.append(computeArrayBracketsForCasting(chainProposal));
     res.append(")");
@@ -403,7 +406,7 @@ public class ChainTemplateProposalGenerator {
 
     StringBuilder code = null;
     for (final IChainElement part : chainProposal.getProposedChain()) {
-      final String partCode = makePartCode(part, prefixToLastDot);
+      final String partCode = makePartCode(part, chainProposal.getProposedChain().indexOf(part));
       if (partCode == null) {
         return null;
       }
@@ -426,7 +429,7 @@ public class ChainTemplateProposalGenerator {
 
   private void computeCastingForCode(final ChainTemplateProposal chainProposal, final StringBuilder code) {
     if (chainProposal.needsCast()) {
-      final String castingString = String.format("(${type:newType(%s)}%s)", computeCasting(chainProposal),
+      final String castingString = String.format("(${type:newType(%s)}%s)", computeCastingForCode(chainProposal),
           computeArrayBracketsForCasting(chainProposal));
       code.insert(0, castingString);
     }
@@ -440,7 +443,7 @@ public class ChainTemplateProposalGenerator {
     return brackets;
   }
 
-  private String computeCasting(final ChainTemplateProposal chainProposal) {
+  private String computeCastingForCode(final ChainTemplateProposal chainProposal) {
     TypeName name = chainProposal.getCastingType().getName();
     String casting = name.getPackage().toString() + "/" + name.getClassName().toString();
     casting = casting.replaceAll("/", ".");
@@ -448,11 +451,11 @@ public class ChainTemplateProposalGenerator {
   }
 
   // This method generates a part of the code for one proposal.
-  private String makePartCode(final IChainElement part, String prefixToLastDot) throws JavaModelException {
+  private String makePartCode(final IChainElement part, int chainPosition) throws JavaModelException {
     String result = new String();
     switch (part.getElementType()) {
     case FIELD:
-      result = checkForThisQualifier((FieldChainElement) part, prefixToLastDot) ? "this." + part.getCompletion() : part
+      result = checkForThisQualifier((FieldChainElement) part, chainPosition) ? "this." + part.getCompletion() : part
           .getCompletion();
       break;
     case METHOD:
@@ -501,13 +504,14 @@ public class ChainTemplateProposalGenerator {
   }
 
   private boolean isEqualToExpectedType(final IChainElement part) {
-    return expectedType.getName().equals(part.getResultingType().getInnermostElementType().getName());
+    return expectedType.getName().equals(part.getType().getReference().getInnermostElementType().getName());
   }
 
   // XXX methods check
-  private boolean checkForThisQualifier(final FieldChainElement part, String prefixToLastDot) {
+  private boolean checkForThisQualifier(final FieldChainElement part, int chainPosition) {
     if (part.hasThisQualifier()) {
-      return prefixToLastDot.isEmpty() || prefixToLastDot.equals(" ");
+      return chainPosition == 0;// prefixToLastDot.isEmpty() ||
+                                // prefixToLastDot.equals(" ");
     }
     return false;
   }

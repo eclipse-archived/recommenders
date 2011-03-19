@@ -12,14 +12,27 @@ package data;
 
 public class CompletionOnPrimitiveTypeInMethod {
 
-    public int findMe = 5;
+	private class A{
+		public int findMe = 5;
+		
+		public int[] findMe2(){
+	    	return new int[1];
+	    }
+	}
+	
+	final A useMe = new A();
 
-    public static void method() {
-        final CompletionOnPrimitiveTypeInMethod useMe = new CompletionOnPrimitiveTypeInMethod();
+    public void method() {
+        final A useMe = new A();
         final int c = <@Ignore^Space>
         /*
          * calling context --> static expected type --> int expected completion
          * --> useMe.findMe variable name --> c
          */
     }
+    
+    
+    
+    
+    
 }

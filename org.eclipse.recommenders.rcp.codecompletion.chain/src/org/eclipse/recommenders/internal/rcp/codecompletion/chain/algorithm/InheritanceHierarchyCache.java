@@ -48,7 +48,8 @@ public class InheritanceHierarchyCache {
    * @return true, in case of supertype relation, else false
    * @throws JavaModelException
    */
-  public static boolean isSupertype(final IClass context, final IClass supertype, Integer supertypeDimension) throws JavaModelException {
+  public static boolean isSupertype(final IClass context, final IClass supertype, Integer supertypeDimension)
+      throws JavaModelException {
     List<IClass> superclasses = InheritanceHierarchyCache.hierarchies.get(context);
     if (superclasses == null) {
       superclasses = InheritanceUtils.getAllSuperclasses(context);
@@ -63,7 +64,7 @@ public class InheritanceHierarchyCache {
         InheritanceHierarchyCache.hierarchies.put(context, superclasses);
       }
     }
-    for (IClass clazz: superclasses) {
+    for (IClass clazz : superclasses) {
       if (clazz.getReference().getDimensionality() >= supertypeDimension) {
         if (clazz.getReference().getInnermostElementType().getName().equals(supertype.getName())) {
           return true;
@@ -81,11 +82,12 @@ public class InheritanceHierarchyCache {
    *          base type
    * @param subtype
    *          type to test to be a subtype or not
-   * @param subTypeDimension 
+   * @param subTypeDimension
    * @return true, in case of subtype relation, else false
    * @throws JavaModelException
    */
-  public static boolean isSubtype(final IClass context, final IClass subtype, Integer subTypeDimension) throws JavaModelException {
+  public static boolean isSubtype(final IClass context, final IClass subtype, Integer subTypeDimension)
+      throws JavaModelException {
     List<IClass> superclasses = InheritanceHierarchyCache.hierarchies.get(subtype);
     if (superclasses == null) {
       superclasses = InheritanceUtils.getAllSuperclasses(subtype);
@@ -101,7 +103,7 @@ public class InheritanceHierarchyCache {
       }
     }
     if (context.isArrayClass()) {
-      for (IClass clazz: superclasses) {
+      for (IClass clazz : superclasses) {
         if (context.getReference().getDimensionality() >= subTypeDimension) {
           if (clazz.getReference().getName().equals(context.getReference().getInnermostElementType().getName())) {
             return true;
@@ -113,7 +115,8 @@ public class InheritanceHierarchyCache {
   }
 
   private static boolean isObject(final IClass clazz) {
-    if (clazz.isArrayClass() && clazz.getReference().getInnermostElementType().getName().equals(TypeReference.JavaLangObject.getName())) {
+    if (clazz.isArrayClass()
+        && clazz.getReference().getInnermostElementType().getName().equals(TypeReference.JavaLangObject.getName())) {
       return true;
     } else {
       return clazz.getName().equals(TypeReference.JavaLangObject.getName());
@@ -132,18 +135,17 @@ public class InheritanceHierarchyCache {
    */
   // XXX need to look closer on this... here happens magic :)
   // do not look at this... a magician never tells the trick ;)
-  public static int equalityTest(final IClass resultingType, final IClass expectedType, Integer expectedTypeDimension) {
+  public static int equalityTest(final IClass resultingType, Integer resultingTypeDimension, final IClass expectedType,
+      Integer expectedTypeDimension) {
     TypeReference resultingReference = resultingType.getReference();
     TypeReference expectedReference = expectedType.getReference();
     int result = 0;
     if (resultingReference.isPrimitiveType()) {
       result |= InheritanceHierarchyCache.RESULT_PRIMITIVE;
     }
-    if (resultingReference.getName().equals(expectedReference.getName())) {
-      result |= InheritanceHierarchyCache.RESULT_EQUAL;
-    } else if (resultingReference.getDimensionality() >= expectedTypeDimension){
-      //array types
-      if (resultingReference.getInnermostElementType().getName().equals(expectedReference.getName())){
+    if (resultingTypeDimension >= expectedTypeDimension) {
+      // array types
+      if (resultingReference.getInnermostElementType().getName().equals(expectedReference.getName())) {
         result |= InheritanceHierarchyCache.RESULT_EQUAL;
       }
     }
