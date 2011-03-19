@@ -11,6 +11,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.ibm.wala.classLoader.IClass;
@@ -59,6 +60,8 @@ public interface IChainElement {
 
   public Integer getChainDepth();
 
+  public void setChainDepth(Integer chainDepth);
+
   public Integer getArrayDimension();
 
   public void addPrevoiusElement(IChainElement prevoius);
@@ -75,7 +78,6 @@ public interface IChainElement {
 
   public boolean isStatic();
 
-  // public List<LinkedList<IChainElement>> constructProposalChains(int
-  // currentChainLength);
+  public List<LinkedList<IChainElement>> constructProposalChains(int currentChainLength);
 
 }

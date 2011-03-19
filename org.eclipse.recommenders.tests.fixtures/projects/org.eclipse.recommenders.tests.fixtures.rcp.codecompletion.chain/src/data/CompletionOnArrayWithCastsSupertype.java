@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 //call chain 1 ok
 public class CompletionOnArrayWithCastsSupertype {
 	public Integer[][][] findme;
+	public int i;
 	
 	public static void method1() {
 		final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();

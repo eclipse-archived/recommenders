@@ -240,7 +240,7 @@ public class ChainCompletionContext {
 
       final MethodChainElement chainElement = new MethodChainElement(method, 0);
       chainElement.setRootElement(true);
-      if (unwantedNames(chainElement.getCompletion())) {
+      if (unwantedMethodNames(chainElement.getCompletion())) {
         continue;
       }
       accessibleMethods.add(chainElement);
@@ -404,9 +404,13 @@ public class ChainCompletionContext {
     return null;
   }
 
-  public static boolean unwantedNames(String name) {
+  public static boolean unwantedMethodNames(String name) {
     boolean toString = name.equals("toString");
     boolean hashCode = name.equals("hashCode");
     return toString || hashCode;
+  }
+
+  public static boolean unwantedFieldNames(String name) {
+    return false;
   }
 }

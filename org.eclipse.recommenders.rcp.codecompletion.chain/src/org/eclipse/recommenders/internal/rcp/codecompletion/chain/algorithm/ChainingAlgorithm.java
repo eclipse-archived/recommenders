@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -72,7 +73,7 @@ public class ChainingAlgorithm {
 
   private static Map<IClass, List<IChainElement>> searchMap;
 
-  private static List<IChainElement> storeElementList;
+  private static List<IChainElement> graph;
 
   private final JavaElementResolver javaelementResolver;
 
@@ -87,9 +88,23 @@ public class ChainingAlgorithm {
     walaService = InjectionService.getInstance().requestInstance(IClassHierarchyService.class);
     javaelementResolver = InjectionService.getInstance().requestInstance(JavaElementResolver.class);
     searchMap = Collections.synchronizedMap(new HashMap<IClass, List<IChainElement>>());
-    storeElementList = Collections.synchronizedList(new ArrayList<IChainElement>());
+    graph = Collections.synchronizedList(new ArrayList<IChainElement>());
     lastChainElementForProposal = Collections
-        .synchronizedMap(new HashMap<IChainElement, List<Triple<IClass, Integer, IClass>>>());
+        .synchronizedMap(new TreeMap<IChainElement, List<Triple<IClass, Integer, IClass>>>(
+            new Comparator<IChainElement>() {
+
+              @Override
+              public int compare(IChainElement o1, IChainElement o2) {
+                if (!o1.equals(o2)) {
+                  int depth = o1.getChainDepth().compareTo(o2.getChainDepth());
+                  if (depth == 0) {
+                    return 1;
+                  }
+                  return depth;
+                }
+                return 0;
+              }
+            }));
   }
 
   public void execute(final IIntelligentCompletionContext ictx) throws JavaModelException {
@@ -98,23 +113,37 @@ public class ChainingAlgorithm {
     }
     initializeChainCompletionContext(ictx);
     processMembers();
+    long i = System.currentTimeMillis();
     waitForThreadPoolTermination();
+    long j = System.currentTimeMillis();
     computeProposalChains();
+    System.out.println("Algo: " + (j - i) + " lastElement size: " + lastChainElementForProposal.size()
+        + " proposal size: " + proposals.size() + " graph size: " + graph.size() + " chains: "
+        + (System.currentTimeMillis() - j));
   }
 
   private void computeProposalChains() {
-    System.out.println("graph size:" + searchMap.keySet().size());
+    System.out.println();
     // for each result element type
+    int chainDepth = 0;
     for (Entry<IChainElement, List<Triple<IClass, Integer, IClass>>> lastElement : lastChainElementForProposal
         .entrySet()) {
-      // for each expected type
-      List<LinkedList<IChainElement>> resultChains = computeLastChainsElementForProposal(lastElement.getKey());// lastElement.getKey().constructProposalChains(0);
-      for (Triple<IClass, Integer, IClass> expectedTypeAndCast : lastElement.getValue()) {
-        if (expectedTypeAndCast.getThird() == null) {
-          this.addNonCastedProposal(resultChains, expectedTypeAndCast.getFirst(), expectedTypeAndCast.getSecond());
-        } else {
-          this.addCastedProposal(resultChains, expectedTypeAndCast.getFirst(), expectedTypeAndCast.getSecond());
+      System.out.println("last element: " + lastElement.getKey().getCompletion());
+      if (proposals.size() < Constants.ProposalSettings.MAX_PROPOSAL_COUNT
+          || (proposals.size() >= Constants.ProposalSettings.MAX_PROPOSAL_COUNT && chainDepth < lastElement.getKey()
+              .getChainDepth())) {
+        // for each expected type
+        List<LinkedList<IChainElement>> resultChains = lastElement.getKey().constructProposalChains(0);// computeLastChainsElementForProposal(lastElement.getKey());
+        for (Triple<IClass, Integer, IClass> expectedTypeAndCast : lastElement.getValue()) {
+          if (expectedTypeAndCast.getThird() == null) {
+            this.addNonCastedProposal(resultChains, expectedTypeAndCast.getFirst(), expectedTypeAndCast.getSecond());
+          } else {
+            this.addCastedProposal(resultChains, expectedTypeAndCast.getFirst(), expectedTypeAndCast.getSecond());
+          }
         }
+        chainDepth = lastElement.getKey().getChainDepth();
+      } else {
+        break;
       }
     }
   }
@@ -200,14 +229,14 @@ public class ChainingAlgorithm {
 
   private void processMethods() throws JavaModelException {
     for (final IChainElement methodProposal : ctx.getProposedMethods()) {
-      storeElementList.add(methodProposal);
+      graph.add(methodProposal);
       workingElement.add(methodProposal);
     }
   }
 
   private void processLocalVariables() throws JavaModelException {
     for (final IChainElement variableProposal : ctx.getProposedVariables()) {
-      storeElementList.add(variableProposal);
+      graph.add(variableProposal);
       workingElement.add(variableProposal);
       ProposalNameGenerator.markVariableNameAsUsed(variableProposal.getCompletion());
     }
@@ -215,7 +244,7 @@ public class ChainingAlgorithm {
 
   private void processInitialFields() throws JavaModelException {
     for (final IChainElement fieldProposal : ctx.getProposedFields()) {
-      storeElementList.add(fieldProposal);
+      graph.add(fieldProposal);
       workingElement.add(fieldProposal);
       ProposalNameGenerator.markVariableNameAsUsed(fieldProposal.getCompletion());
     }
@@ -243,14 +272,11 @@ public class ChainingAlgorithm {
       Integer expectedTypeDimension, boolean casting) {
     synchronized (proposals) {
       for (LinkedList<IChainElement> workingChain : workingChains) {
-        ChainTemplateProposal chainTemplateProposal = new ChainTemplateProposal(workingChain, expectedType,
-            expectedTypeDimension, casting);
-        // for (ChainTemplateProposal proposal : proposals) {
-        // if (chainTemplateProposal.equals(proposal)) {
-        // return;
-        // }
-        // }
-        proposals.add(chainTemplateProposal);
+        if (!proposals.contains(workingChain)) {
+          ChainTemplateProposal chainTemplateProposal = new ChainTemplateProposal(workingChain, expectedType,
+              expectedTypeDimension, casting);
+          proposals.add(chainTemplateProposal);
+        }
       }
     }
   }
@@ -284,6 +310,15 @@ public class ChainingAlgorithm {
     return workingElement.size();
   }
 
+  public boolean containsWorkingElement(IChainElement element) {
+    for (IChainElement e : workingElement) {
+      if (e.getCompletion().equals(element.getCompletion()) && e.getElementType().equals(element.getElementType())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * This method should be called by worker threads before they are actively
    * processing a queue element.
@@ -311,8 +346,8 @@ public class ChainingAlgorithm {
     return executor.isShutdown();
   }
 
-  public static List<IChainElement> getStoreElementList() {
-    return storeElementList;
+  public static List<IChainElement> getGraph() {
+    return graph;
   }
 
 }

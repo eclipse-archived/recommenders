@@ -13,9 +13,11 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm;
 
 import java.io.UTFDataFormatException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
 
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
@@ -34,7 +36,7 @@ public class MethodChainElement implements IChainElement {
   private String completion;
   private TypeReference[] parameterTypes;
   private String[] parameterNames;
-  private final Integer chainDepth;
+  private Integer chainDepth;
   private Integer arrayDimension = 0;
   private final List<IChainElement> prevoiusElements;
   private boolean rootElement = false;
@@ -42,8 +44,7 @@ public class MethodChainElement implements IChainElement {
   private boolean isPrimitive = false;
   private IClass type;
 
-  // private final List<LinkedList<IChainElement>> proposalChains = new
-  // ArrayList<LinkedList<IChainElement>>();
+  private List<LinkedList<IChainElement>> proposalChains = new ArrayList<LinkedList<IChainElement>>();
 
   public MethodChainElement(final IMethod method, final Integer chainDepth) {
     this.method = method;
@@ -67,6 +68,7 @@ public class MethodChainElement implements IChainElement {
           type = ChainCompletionContext.boxPrimitive(resultingType.getInnermostElementType().getName().toString());
         } else {
           type = classHierarchy.lookupClass(resultingType);
+          type = type.getClassLoader().lookupClass(type.getReference().getInnermostElementType().getName());
         }
         arrayDimension = resultingType.getDimensionality();
       }
@@ -151,6 +153,11 @@ public class MethodChainElement implements IChainElement {
   }
 
   @Override
+  public void setChainDepth(Integer chainDepth) {
+    this.chainDepth = chainDepth;
+  }
+
+  @Override
   public Integer getArrayDimension() {
     return arrayDimension;
   }
@@ -197,49 +204,56 @@ public class MethodChainElement implements IChainElement {
     return method.isStatic();
   }
 
-  // @Override
-  // public List<LinkedList<IChainElement>> constructProposalChains(int
-  // currentChainLength) {
-  // if (proposalChains.isEmpty()) {
-  // System.out.println(getCompletion());
-  // List<LinkedList<IChainElement>> descendingChains = new
-  // ArrayList<LinkedList<IChainElement>>();
-  // if (currentChainLength <= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
-  // for (IChainElement element : previousElements()) {
-  // if (element.getCompletion() != this.getCompletion()) {
-  // descendingChains.addAll(element.constructProposalChains(currentChainLength
-  // + 1));
-  // }
-  // }
-  // }
-  //
-  // if (!this.isStatic()) {
-  // List<LinkedList<IChainElement>> temp = new
-  // ArrayList<LinkedList<IChainElement>>();
-  // for (LinkedList<IChainElement> descendingElement : descendingChains) {
-  // IChainElement firstElement = descendingElement.getFirst();
-  // if (!(firstElement.getChainDepth() <= this.getChainDepth())
-  // || currentChainLength == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH &&
-  // !firstElement.isRootElement()
-  // || firstElement.isPrimitive() || descendingElement.contains(this)) {
-  // continue;
-  // }
-  // LinkedList<IChainElement> linkedList = new
-  // LinkedList<IChainElement>(descendingElement);
-  // linkedList.addLast(this);
-  // temp.add(linkedList);
-  // }
-  // descendingChains = temp;
-  // }
-  //
-  // if (descendingChains.isEmpty() && this.isRootElement()) {
-  // LinkedList<IChainElement> list = new LinkedList<IChainElement>();
-  // list.add(this);
-  // descendingChains.add(list);
-  // }
-  // proposalChains = descendingChains;
-  // return proposalChains;
-  // }
-  // return proposalChains;
-  // }
+  @Override
+  public List<LinkedList<IChainElement>> constructProposalChains(int currentChainLength) {
+    if (proposalChains.isEmpty()) {
+      // System.out.println(getCompletion() + " " + chainDepth);
+      List<LinkedList<IChainElement>> descendingChains = new ArrayList<LinkedList<IChainElement>>();
+      if (currentChainLength < Constants.AlgorithmSettings.MAX_CHAIN_DEPTH
+      /* && currentChainLength + 1 > Constants.AlgorithmSettings.MIN_CHAIN_DEPTH */) {
+        for (IChainElement element : previousElements()) {
+          if (element.getCompletion() != this.getCompletion()) {
+            descendingChains.addAll(element.constructProposalChains(currentChainLength + 1));
+          }
+        }
+      }
+
+      if (proposalChains.isEmpty()) {
+        List<LinkedList<IChainElement>> temp = new ArrayList<LinkedList<IChainElement>>();
+        for (LinkedList<IChainElement> descendingElement : descendingChains) {
+          IChainElement lastDescendingElement = descendingElement.getLast();
+          if (!(lastDescendingElement.getChainDepth() <= this.getChainDepth())
+              || (currentChainLength == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH && !lastDescendingElement
+                  .isRootElement()) || lastDescendingElement.isPrimitive() || descendingElement.contains(this)
+              || descendingElement.size() >= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
+            continue;
+          }
+          LinkedList<IChainElement> linkedList = new LinkedList<IChainElement>(descendingElement);
+          linkedList.addLast(this);
+          temp.add(linkedList);
+        }
+        descendingChains = temp;
+
+        if (descendingChains.isEmpty() && this.isRootElement()) {
+          LinkedList<IChainElement> list = new LinkedList<IChainElement>();
+          list.add(this);
+          descendingChains.add(list);
+        }
+        proposalChains = descendingChains;
+      }
+
+      return proposalChains;
+    }
+    // List<LinkedList<IChainElement>> temp = new
+    // ArrayList<LinkedList<IChainElement>>();
+    // for (LinkedList<IChainElement> element : proposalChains) {
+    // LinkedList<IChainElement> list = new LinkedList<IChainElement>(element);
+    // if (!element.contains(this) || !element.getLast().isPrimitive()) {
+    // element.addLast(this);
+    // }
+    // temp.add(list);
+    // }
+    // proposalChains = temp;
+    return proposalChains;
+  }
 }
