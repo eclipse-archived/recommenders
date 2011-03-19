@@ -51,9 +51,13 @@ public class NetworkBuilder {
 
     private final Network network;
 
-    private AvailabilityNode availabilityNode;
-
     private final ITypeName typeName;
+
+    private int availibilityNodeId;
+
+    private int contextNodeId;
+
+    private int patternNodeId;
 
     public NetworkBuilder(final ITypeName typeName, final List<InstanceUsage> typeUsages) {
         this.typeName = typeName;
@@ -81,26 +85,25 @@ public class NetworkBuilder {
         methodContexts.add(UNKNOWN_METHOD, unknownFrequency);
     }
 
-    public ContextNode createContextNode() {
+    public void createContextNode() {
         createContextNodeInNetwork();
         createContextNodeOutcomesInNetwork();
         createContextNodeDefinitionInNetwork();
-        return new ContextNode(network);
     }
 
     private void createContextNodeInNetwork() {
-        network.addNode(Network.NodeType.Cpt, ContextNode.ID);
+        contextNodeId = network.addNode(Network.NodeType.Cpt, ContextNode.NAME);
     }
 
     private Set<IMethodName> createContextNodeOutcomesInNetwork() {
         final Set<IMethodName> methodCtxs = methodContexts.elements();
-        network.addOutcome(ContextNode.ID, "none");
+        network.addOutcome(contextNodeId, "none");
         for (final IMethodName methodCtx : methodCtxs) {
             final String escapedOutcomeId = ObjectMethodCallsNet.escape(methodCtx);
-            network.addOutcome(ContextNode.ID, escapedOutcomeId);
+            network.addOutcome(contextNodeId, escapedOutcomeId);
         }
-        network.deleteOutcome(ContextNode.ID, 0);
-        network.deleteOutcome(ContextNode.ID, 0);
+        network.deleteOutcome(contextNodeId, 0);
+        network.deleteOutcome(contextNodeId, 0);
         addContextNodeDocInfo(methodCtxs);
         return methodCtxs;
     }
@@ -112,7 +115,7 @@ public class NetworkBuilder {
                     .append("\n");
         }
         final DocItemInfo info = new DocItemInfo(ContextNode.PROPERTY_ESCAPED_METHOD_REFERENCES, sb.toString());
-        network.setNodeDocumentation(ContextNode.ID, new DocItemInfo[] { info });
+        network.setNodeDocumentation(contextNodeId, new DocItemInfo[] { info });
     }
 
     private void createContextNodeDefinitionInNetwork() {
@@ -120,21 +123,19 @@ public class NetworkBuilder {
         final double[] definition = new double[ctxMethods.size() + 1];
         Arrays.fill(definition, MIN);
         definition[0] = 1 - MIN * ctxMethods.size();
-        network.setNodeDefinition(ContextNode.ID, definition);
+        network.setNodeDefinition(contextNodeId, definition);
     }
 
-    public AvailabilityNode createAvailabilityNode() {
+    public void createAvailabilityNode() {
         createAvailabilityNodeInNetwork();
         createAvailabilityNodeDefinitionInNetwork();
-        availabilityNode = new AvailabilityNode(network);
-        return availabilityNode;
     }
 
     private void createAvailabilityNodeInNetwork() {
-        network.addNode(NodeType.Cpt, AvailabilityNode.ID);
-        network.addArc(ContextNode.ID, AvailabilityNode.ID);
-        network.setOutcomeId(AvailabilityNode.ID, 0, "true");
-        network.setOutcomeId(AvailabilityNode.ID, 1, "false");
+        availibilityNodeId = network.addNode(NodeType.Cpt, AvailabilityNode.NAME);
+        network.addArc(contextNodeId, availibilityNodeId);
+        network.setOutcomeId(availibilityNodeId, 0, "true");
+        network.setOutcomeId(availibilityNodeId, 1, "false");
     }
 
     private void createAvailabilityNodeDefinitionInNetwork() {
@@ -153,33 +154,36 @@ public class NetworkBuilder {
             res[2 * i] = array[i];
             res[2 * i + 1] = 1.0 - array[i];
         }
-        network.setNodeDefinition(AvailabilityNode.ID, res);
+        network.setNodeDefinition(availibilityNodeId, res);
     }
 
-    public PatternNode createPatternsNode() {
+    public void createPatternsNode() {
         createPatternNodeInNetwork();
         createPatternNodeOutcomesInNetwork();
         createPatternNodeDefinitionInNetwork();
-        return new PatternNode(network);
     }
 
     private void createPatternNodeInNetwork() {
-        network.addNode(Network.NodeType.Cpt, PatternNode.ID);
-        network.setNodeName(PatternNode.ID, "Patterns");
-        network.addArc(ContextNode.ID, PatternNode.ID);
-        network.addArc(AvailabilityNode.ID, PatternNode.ID);
+        patternNodeId = network.addNode(Network.NodeType.Cpt, PatternNode.NAME);
+        network.setNodeName(patternNodeId, "Patterns");
+        network.addArc(contextNodeId, patternNodeId);
+        network.addArc(availibilityNodeId, patternNodeId);
     }
 
     private void createPatternNodeOutcomesInNetwork() {
-        network.addOutcome(PatternNode.ID, "none");
+        network.addOutcome(patternNodeId, "none");
         int i = 0;
         for (final InstanceUsage pattern : typeUsages) {
             i++;
             final String name = pattern.name == null ? "pattern" + String.valueOf(i) : pattern.name;
-            network.addOutcome(PatternNode.ID, name);
+            addPatternNodeOutcome(name);
         }
-        network.deleteOutcome(PatternNode.ID, 0);
-        network.deleteOutcome(PatternNode.ID, 0);
+        network.deleteOutcome(patternNodeId, 0);
+        network.deleteOutcome(patternNodeId, 0);
+    }
+
+    private void addPatternNodeOutcome(final String name) {
+        network.addOutcome(patternNodeId, name);
     }
 
     private void createPatternNodeDefinitionInNetwork() {
@@ -211,7 +215,7 @@ public class NetworkBuilder {
             }
             definition.addAll(subDefinition);
         }
-        network.setNodeDefinition(PatternNode.ID, definition.toArray());
+        network.setNodeDefinition(patternNodeId, definition.toArray());
     }
 
     private void scaleMaximalValue(final ArrayDoubleList subDefinition) {
@@ -256,15 +260,15 @@ public class NetworkBuilder {
         final LinkedList<MethodNode> res = new LinkedList<MethodNode>();
         int i = 1;
         for (final IMethodName ref : methods) {
-            final String nodeId = "m" + i++;
-            network.addNode(NodeType.Cpt, nodeId);
-            network.setNodeName(nodeId, ref.toString());
-            network.addArc(PatternNode.ID, nodeId);
-            network.setOutcomeId(nodeId, 0, "true");
-            network.setOutcomeId(nodeId, 1, "false");
-            createMethodNodeDefinition(ref, nodeId);
-            createMethodNodeDocumentation(ref, nodeId);
-            res.add(new MethodNode(network, nodeId));
+            final String nodeName = "m" + i++;
+            final int methodNodeId = network.addNode(NodeType.Cpt, nodeName);
+            network.setNodeName(nodeName, ref.toString());
+            network.addArc(patternNodeId, methodNodeId);
+            network.setOutcomeId(methodNodeId, 0, "true");
+            network.setOutcomeId(methodNodeId, 1, "false");
+            createMethodNodeDefinition(ref, methodNodeId);
+            createMethodNodeDocumentation(ref, methodNodeId);
+            res.add(new MethodNode(network, methodNodeId));
         }
         return res;
     }
@@ -273,12 +277,12 @@ public class NetworkBuilder {
         return new ObjectMethodCallsNet(typeName, network);
     }
 
-    private void createMethodNodeDocumentation(final IMethodName ref, final String nodeId) {
+    private void createMethodNodeDocumentation(final IMethodName ref, final int nodeId) {
         final DocItemInfo IMethodNameInfo = new DocItemInfo("IMethodName", ref.getIdentifier());
         network.setNodeDocumentation(nodeId, new DocItemInfo[] { IMethodNameInfo });
     }
 
-    private void createMethodNodeDefinition(final IMethodName ref, final String nodeId) {
+    private void createMethodNodeDefinition(final IMethodName ref, final int nodeId) {
         final ArrayDoubleList definition = new ArrayDoubleList();
         definition.add(0.0);
         definition.add(1.0);

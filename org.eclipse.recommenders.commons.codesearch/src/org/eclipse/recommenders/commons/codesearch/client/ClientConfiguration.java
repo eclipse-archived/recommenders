@@ -22,16 +22,21 @@ public class ClientConfiguration {
     }
 
     public ClientConfiguration() {
+        Thread.dumpStack();
         System.out.println("client config: " + hashCode());
     }
 
     private String baseUrl;
 
     public String getBaseUrl() {
+        System.out.println("codesearch uri: " + baseUrl);
+        Thread.dumpStack();
         return baseUrl;
     }
 
     public void setBaseUrl(String newBaseUrl) {
+        System.out.println("set base url : " + newBaseUrl);
+        Thread.dumpStack();
         if (!newBaseUrl.endsWith("/")) {
             newBaseUrl += "/";
         }

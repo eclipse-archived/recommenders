@@ -28,14 +28,14 @@ public class AbstractNode {
      * In smile, each node has a (network-wide) unique id. This id is stored
      * here.
      */
-    protected final String nodeId;
+    protected final int nodeId;
 
-    protected AbstractNode(final Network network, final String nodeId) {
+    protected AbstractNode(final Network network, final int nodeId) {
         this.network = network;
         this.nodeId = nodeId;
     }
 
-    protected String getNodeId() {
+    protected int getNodeId() {
         return nodeId;
     }
 

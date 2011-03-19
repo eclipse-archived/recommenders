@@ -35,8 +35,6 @@ public class MyWizardPage extends WizardPage {
 
         // Strange usage of Composite:
         final Composite container = new Composite(parent, SWT.NONE);
-        container.setLayout(null);
-        container.setLayoutData(null);
 
         // container.setLayout(null);
         // container.setLayout(null);

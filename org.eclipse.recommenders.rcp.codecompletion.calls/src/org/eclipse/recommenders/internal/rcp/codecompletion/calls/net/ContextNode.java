@@ -28,14 +28,14 @@ import com.google.common.collect.Maps;
 
 public class ContextNode extends AbstractNode {
 
-    protected static String ID = "ctx";
+    protected static final String NAME = "context";
 
     protected static final String PROPERTY_ESCAPED_METHOD_REFERENCES = "escapedMethodReferences";
 
     private final Map<String, IMethodName> knownMethodContexts;
 
     protected ContextNode(final Network network) {
-        super(network, ID);
+        super(network, network.getNode(NAME));
         knownMethodContexts = computeKnownMethodContexts();
     }
 
@@ -52,7 +52,7 @@ public class ContextNode extends AbstractNode {
     }
 
     private DocItemInfo findMethodReferenceToNameUserProperty() {
-        final DocItemInfo[] docs = network.getNodeDocumentation(ContextNode.ID);
+        final DocItemInfo[] docs = network.getNodeDocumentation(getNodeId());
         for (final DocItemInfo doc : docs) {
             if (doc.title.equals(PROPERTY_ESCAPED_METHOD_REFERENCES)) {
                 return doc;

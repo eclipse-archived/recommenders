@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -35,6 +36,7 @@ import com.google.inject.name.Named;
 public class CallsModelLoader implements ICallsModelLoader {
 
     private final URL fileUrl;
+    private JarFile modelsFile;
 
     @Inject
     public CallsModelLoader(@Named("calls.model.fileUrl") final URL fileUrl) {
@@ -67,12 +69,15 @@ public class CallsModelLoader implements ICallsModelLoader {
     }
 
     private JarFile getModelsFile() {
-        try {
-            final String file = fileUrl.getFile();
-            return new JarFile(file);
-        } catch (final IOException e) {
-            throw throwUnhandledException(e);
+        if (modelsFile == null) {
+            try {
+                final String file = fileUrl.getFile();
+                modelsFile = new JarFile(file);
+            } catch (final IOException e) {
+                throw throwUnhandledException(e);
+            }
         }
+        return modelsFile;
     }
 
     @Override
@@ -86,6 +91,7 @@ public class CallsModelLoader implements ICallsModelLoader {
         final String entryName = name.getIdentifier().replace('/', '.').concat(".json");
         final ZipEntry entry = modelsFile.getEntry(entryName);
         final InputStream is = modelsFile.getInputStream(entry);
-        return is;
+        return new BufferedInputStream(is);
+        // return is;
     }
 }

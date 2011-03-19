@@ -13,14 +13,15 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.net;
 import smile.Network;
 
 public class AvailabilityNode extends AbstractNode {
-    static String ID = "availability";
+
+    public static final String NAME = "availability";
 
     private static int TRUE = 0;
 
     private static int FALSE = 1;
 
     protected AvailabilityNode(final Network network) {
-        super(network, ID);
+        super(network, network.getNode(NAME));
     }
 
     public double getProbability() {

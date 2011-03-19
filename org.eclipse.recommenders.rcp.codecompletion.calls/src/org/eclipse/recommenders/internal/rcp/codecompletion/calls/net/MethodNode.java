@@ -25,7 +25,7 @@ public class MethodNode extends AbstractNode {
 
     private static int FALSE = 1;
 
-    protected MethodNode(final Network network, final String nodeId) {
+    protected MethodNode(final Network network, final int nodeId) {
         super(network, nodeId);
     }
 

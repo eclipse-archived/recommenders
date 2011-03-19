@@ -13,13 +13,9 @@ package org.eclipse.recommenders.examples.demo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
 /**
  * Demo outline:
@@ -38,16 +34,7 @@ public class MyDialog extends Dialog {
     protected Control createDialogArea(final Composite parent) {
         final Composite container = createContainer(parent);
         swtTextWidget = new Text(container, SWT.NONE);
-        swtTextWidget.setLayoutData(null);
-        swtTextWidget.setText("Hello Code Recommenders!");
-        swtTextWidget.addModifyListener(new ModifyListener() {
 
-            @Override
-            public void modifyText(final ModifyEvent e) {
-                swtTextWidget.getText();
-            }
-        });
-        final IWorkbenchHelpSystem help = PlatformUI.getWorkbench().getHelpSystem();
         return container;
     }
 

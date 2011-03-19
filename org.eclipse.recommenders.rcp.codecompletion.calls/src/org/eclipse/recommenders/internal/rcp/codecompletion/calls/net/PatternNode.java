@@ -24,11 +24,11 @@ import smile.Network;
 import com.google.common.collect.Lists;
 
 public class PatternNode extends AbstractNode {
+    public static String NAME = "patterns";
     private static final double MIN_PROBABILITY = 0.01d;
-    static final String ID = "n0";
 
     protected PatternNode(final Network network) {
-        super(network, ID);
+        super(network, network.getNode(NAME));
     }
 
     public String[] getPatternNames() {
