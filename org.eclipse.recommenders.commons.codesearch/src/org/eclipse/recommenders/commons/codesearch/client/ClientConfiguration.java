@@ -21,6 +21,10 @@ public class ClientConfiguration {
         return res;
     }
 
+    public ClientConfiguration() {
+        System.out.println("client config: " + hashCode());
+    }
+
     private String baseUrl;
 
     public String getBaseUrl() {
