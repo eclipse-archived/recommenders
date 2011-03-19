@@ -176,8 +176,10 @@ public class SimilarMethodsSearchRequestCreator extends ASTVisitor {
         final IMethodName method = BindingUtils.toMethodName(b);
         if (method != null) {
             request.query.calledMethods.add(method);
-            addMethodParametersToUses(method);
-            addMethodReturnTypeToUses(method);
+            // XXX Marcel: no need for those "eager" query enrichments. I tend
+            // to think that this is too eager
+            // addMethodParametersToUses(method);
+            // addMethodReturnTypeToUses(method);
         }
     }
 

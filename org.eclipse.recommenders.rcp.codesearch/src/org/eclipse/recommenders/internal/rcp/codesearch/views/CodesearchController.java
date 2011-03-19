@@ -68,7 +68,7 @@ public class CodesearchController {
         System.out.printf("send feedback: %s %s %s\n", feedbackType, response.getRequestId(), proposal.getId());
     }
 
-    public void sendRequest(final Request request, final IJavaProject issuingProject) {
+    public synchronized void sendRequest(final Request request, final IJavaProject issuingProject) {
         uiClearResultsView();
         showedProposalIndex = 0;
         controls2ProposalsIndex.clear();
@@ -85,6 +85,7 @@ public class CodesearchController {
             @Override
             public void done(final IJobChangeEvent event) {
                 if (event.getResult().isOK()) {
+                    updateQueryView(response, issuingProject);
                     showNextProposals(7);
                 }
             }
@@ -111,6 +112,20 @@ public class CodesearchController {
 
     public ResultsView showResultsView() {
         return CodesearchPlugin.showExamplesView();
+    }
+
+    private QueryView uiShowQueryView() {
+        return CodesearchPlugin.showQueryView();
+    }
+
+    private void updateQueryView(final RCPResponse response, final IJavaProject issuingProject) {
+        Display.getDefault().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                uiShowQueryView().setInput(response.getRequest(), issuingProject);
+            }
+        });
     }
 
     public void removeProposal(final RCPProposal proposal) {

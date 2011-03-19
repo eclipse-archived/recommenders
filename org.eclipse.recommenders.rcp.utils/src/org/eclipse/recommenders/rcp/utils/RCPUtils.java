@@ -9,6 +9,8 @@
  */
 package org.eclipse.recommenders.rcp.utils;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
 import java.util.List;
 
 import org.eclipse.jface.text.ITextSelection;
@@ -16,6 +18,7 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -45,6 +48,7 @@ public class RCPUtils {
     }
 
     public static IWorkbenchPage getActiveWorkbenchPage() {
+        ensureIsNotNull(Display.getCurrent(), "not called from ui thread");
         final IWorkbench workbench = PlatformUI.getWorkbench();
         if (workbench == null) {
             return null;

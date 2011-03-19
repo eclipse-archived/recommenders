@@ -9,6 +9,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codesearch;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -20,6 +22,7 @@ import org.eclipse.recommenders.internal.rcp.codesearch.views.QueryView;
 import org.eclipse.recommenders.internal.rcp.codesearch.views.ResultsView;
 import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.recommenders.rcp.utils.RCPUtils;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -60,10 +63,10 @@ public class CodesearchPlugin extends AbstractUIPlugin {
     }
 
     public static QueryView showQueryView() {
+        ensureIsNotNull(Display.getCurrent(), "not called from ui thread");
         final IWorkbenchPage page = RCPUtils.getActiveWorkbenchPage();
-        IViewPart showView;
         try {
-            showView = page.showView(QueryView.ID);
+            final IViewPart showView = page.showView(QueryView.ID);
             return (QueryView) showView;
         } catch (final PartInitException e) {
             log(e);
@@ -72,10 +75,10 @@ public class CodesearchPlugin extends AbstractUIPlugin {
     }
 
     public static ResultsView showExamplesView() {
+        ensureIsNotNull(Display.getCurrent(), "not called from ui thread");
         final IWorkbenchPage page = RCPUtils.getActiveWorkbenchPage();
-        IViewPart showView;
         try {
-            showView = page.showView(ResultsView.ID);
+            final IViewPart showView = page.showView(ResultsView.ID);
             return (ResultsView) showView;
         } catch (final PartInitException e) {
             log(e);
@@ -109,8 +112,8 @@ public class CodesearchPlugin extends AbstractUIPlugin {
     }
 
     private void initializeConfiguration() {
-        IPreferenceStore store = getPreferenceStore();
-        String host = store.getString(PreferenceConstants.WEBSERVICE_HOST);
+        final IPreferenceStore store = getPreferenceStore();
+        final String host = store.getString(PreferenceConstants.WEBSERVICE_HOST);
         config.setBaseUrl(host);
     }
 

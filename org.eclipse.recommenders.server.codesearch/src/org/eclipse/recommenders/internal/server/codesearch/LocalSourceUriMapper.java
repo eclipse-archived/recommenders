@@ -24,7 +24,8 @@ public class LocalSourceUriMapper implements ISourceUriMapper {
         try {
             final String part = uri.getSchemeSpecificPart();
             final String encodedPart = URLEncoder.encode(part, "UTF-8");
-            return new URI(format("%s/source/%s", Constants.WEB_BASE_URL, encodedPart));
+            final String url = format("%s/source/%s", Constants.WEB_BASE_URL, encodedPart);
+            return new URI(url);
         } catch (final Exception e) {
             throw throwUnhandledException(e);
         }

@@ -9,12 +9,22 @@
  */
 package org.eclipse.recommenders.internal.server.codesearch;
 
-import org.apache.commons.lang3.StringUtils;
+import static java.lang.System.getProperty;
+import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFalse;
 
 public class Constants {
 
-    public static String WEB_BASE_URL = StringUtils.defaultString(
-            System.getProperty("org.recommenders.server.codesearch.baseUrl"), "http://localhost:8080/codesearch/");
-    public static String COUCHDB_USER = System.getProperty("org.recommenders.server.codesearch.couchdb.username");
-    public static String COUCHDB_PASSWORD = System.getProperty("org.recommenders.server.codesearch.couchdb.password");
+    private static final String PREFIX = "org.eclipse.recommenders.server.codesearch";
+    public static String WEB_BASE_URL = defaultString(getProperty(PREFIX + ".baseUrl"),
+            "http://localhost:29757/codesearch");
+    public static String COUCHDB_USER = getProperty(PREFIX + ".couchdb.username");
+    public static String COUCHDB_PASSWORD = getProperty(PREFIX + ".couchdb.password");
+
+    static {
+        // make small sanity check:
+        ensureIsFalse(WEB_BASE_URL.isEmpty(), "no server url given");
+        ensureIsFalse(WEB_BASE_URL.endsWith("/"),
+                "we assume that no trailing slash is used internally. Otherwise url concatenations dont work as expected.");
+    }
 }
