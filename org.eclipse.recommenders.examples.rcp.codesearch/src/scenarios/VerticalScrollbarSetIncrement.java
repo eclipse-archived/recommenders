@@ -1,15 +1,21 @@
+/**
+ * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ */
 package scenarios;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.ScrollBar;
-import org.eclipse.swt.widgets.Scrollable;
 
 public class VerticalScrollbarSetIncrement {
 
-	private void __test() {
-		ScrolledComposite scrollable = new ScrolledComposite(null, SWT.V_SCROLL);
-		// ScrollBar verticalBar = scrollable.getVerticalBar();
-	}
+    private void __test() {
+        final ScrolledComposite scrollable = new ScrolledComposite(null, SWT.V_SCROLL);
+        // ScrollBar verticalBar = scrollable.getVerticalBar();
+    }
 }
