@@ -14,9 +14,29 @@ package data;
 public class LocalNameClashWithField {
 
     String var = "findMe";
+    
+    class A {
+    	public Integer findMe() {
+    		return 0;
+    	}
+    }
+    
+    class B {
+    	public boolean findMe() {
+    		return true;
+    	}
+    }
+    
 
     public LocalNameClashWithField() {
         //@start
+    	
+    	A a;
+    	B b;
+    	
+    	boolean c = 
+    	
+    	
         final String var = <^Space|.*var.*(1 element).*>
         //@end
         //final String var = this.var

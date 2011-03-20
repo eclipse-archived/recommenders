@@ -59,6 +59,7 @@ public class MethodChainElement implements IChainElement {
       final int parameterMinCount = getParameterMinCount(method);
       TypeReference resultingType = method.getReturnType();
       IClassHierarchy classHierarchy = method.getClassHierarchy();
+      // System.out.println(method.getReference().getDeclaringClass().getName().toString());
       if (resultingType.isPrimitiveType()) {
         type = ChainCompletionContext.boxPrimitive(resultingType.getName().toString());
         arrayDimension = 0;
@@ -68,7 +69,9 @@ public class MethodChainElement implements IChainElement {
           type = ChainCompletionContext.boxPrimitive(resultingType.getInnermostElementType().getName().toString());
         } else {
           type = classHierarchy.lookupClass(resultingType);
-          type = type.getClassLoader().lookupClass(type.getReference().getInnermostElementType().getName());
+          if (type != null) {
+            type = type.getClassLoader().lookupClass(type.getReference().getInnermostElementType().getName());
+          }
         }
         arrayDimension = resultingType.getDimensionality();
       }
@@ -86,14 +89,14 @@ public class MethodChainElement implements IChainElement {
     parameterTypes = new TypeReference[method.getNumberOfParameters() - parameterMinCount];
     for (int i = parameterMinCount; i < method.getNumberOfParameters(); i++) {
       String name = null;
-      try {
-        name = method.getLocalVariableName(0, i);
-      } catch (final NullPointerException e) {
-        // Andreas Kaluza: Marcel you said, you would like to look at this
-        // particular code fragment. I have no clue how to solve this error.
-
-        // this should never happen, but somehow it happens...
-        // JavaPlugin.log(e); <-- there are to many exceptions to log
+      if (method.isNative() || method.isAbstract()) {
+        name = "arg" + Integer.toString(i - parameterMinCount);
+      } else {
+        try {
+          name = method.getLocalVariableName(0, i);
+        } catch (final NullPointerException e) {
+          JavaPlugin.log(e);// <-- there are to many exceptions to log
+        }
       }
       if (name == null) {
         name = "arg" + Integer.toString(i - parameterMinCount);
