@@ -69,4 +69,6 @@ public class Constants {
      */
     public static final String PLUGIN_ID = "org.eclipse.recommenders.rcp.codecompletion.chain";
   }
+
+  public static final boolean DEBUG = false;
 }

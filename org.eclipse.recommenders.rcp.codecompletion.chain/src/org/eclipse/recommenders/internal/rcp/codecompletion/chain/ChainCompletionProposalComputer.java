@@ -58,7 +58,9 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
       if (contextResolver.hasProjectRecommendersNature(jCtx)) {
         iCtx = contextResolver.resolveContext(jCtx);
         List<IJavaCompletionProposal> doComputeCompletionProposals = doComputeCompletionProposals();
-        System.out.println("Benchmark: " + (System.currentTimeMillis() - i));
+        if (Constants.DEBUG) {
+          System.out.println("Benchmark Codecompletion chain: " + (System.currentTimeMillis() - i));
+        }
         return doComputeCompletionProposals;
       }
     }

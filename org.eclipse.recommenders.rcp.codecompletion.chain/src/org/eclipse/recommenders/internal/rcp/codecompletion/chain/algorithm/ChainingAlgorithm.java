@@ -117,9 +117,11 @@ public class ChainingAlgorithm {
     waitForThreadPoolTermination();
     long j = System.currentTimeMillis();
     computeProposalChains();
-    System.out.println("Algo: " + (j - i) + " lastElement size: " + lastChainElementForProposal.size()
-        + " proposal size: " + proposals.size() + " graph size: " + graph.size() + " chains: "
-        + (System.currentTimeMillis() - j));
+    if (Constants.DEBUG) {
+      System.out.println("Algo: " + (j - i) + " lastElement size: " + lastChainElementForProposal.size()
+          + " proposal size: " + proposals.size() + " graph size: " + graph.size() + " chains: "
+          + (System.currentTimeMillis() - j));
+    }
   }
 
   private void computeProposalChains() {
@@ -127,8 +129,6 @@ public class ChainingAlgorithm {
     int chainDepth = 0;
     for (Entry<IChainElement, List<Triple<IClass, Integer, IClass>>> lastElement : lastChainElementForProposal
         .entrySet()) {
-      System.out.println("last element: " + lastElement.getKey().getCompletion() + " depth: "
-          + lastElement.getKey().getChainDepth());
       if (proposals.size() < Constants.ProposalSettings.MAX_PROPOSAL_COUNT
           || (proposals.size() >= Constants.ProposalSettings.MAX_PROPOSAL_COUNT && chainDepth >= lastElement.getKey()
               .getChainDepth())) {

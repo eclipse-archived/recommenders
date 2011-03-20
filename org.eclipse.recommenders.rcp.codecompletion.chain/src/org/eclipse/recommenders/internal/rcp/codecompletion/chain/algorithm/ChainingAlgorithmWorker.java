@@ -86,9 +86,6 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
           && workingElement.getElementType().equals(ChainElementType.METHOD) || m.isStatic()) {
         continue;
       }
-      // if (m.getName().toString().equals("getSite")) {
-      // System.out.println();
-      // }
       final IChainElement result = createMethodWorker(m);
       if (result != null) {
         list.add(result);
