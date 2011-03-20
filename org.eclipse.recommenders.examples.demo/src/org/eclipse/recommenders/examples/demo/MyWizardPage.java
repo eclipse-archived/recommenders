@@ -27,7 +27,6 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 public class MyWizardPage extends WizardPage {
 
     private Button button;
-
     private Text text;
 
     @Override
@@ -58,7 +57,7 @@ public class MyWizardPage extends WizardPage {
         //
         // button = new Button(container, 0);
 
-        // this.setControl() ?
+        // this.setControl();?
 
         final IWorkbenchHelpSystem help = PlatformUI.getWorkbench().getHelpSystem();
 

@@ -29,6 +29,7 @@ public class MyView extends ViewPart {
     public void updateMessage(final String newMessage) {
 
         // How do I get an instance of IStatusLineManager?
+
         final IStatusLineManager manager = null;
         manager.setMessage(newMessage);
     }
