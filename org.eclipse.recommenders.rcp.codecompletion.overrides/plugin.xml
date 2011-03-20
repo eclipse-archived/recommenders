@@ -18,7 +18,7 @@
       </factory>
    </extension>
 	 <extension
-         id="org.eclipse.recommenders"
+         id="org.eclipse.recommenders.rcp.category.completion.overrides"
          name="Code Recommenders Overrides Proposals"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <javaCompletionProposalComputer

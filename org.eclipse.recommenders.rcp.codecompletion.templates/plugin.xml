@@ -8,8 +8,8 @@
       </module>
    </extension>
    <extension
-         id="org.eclipse.recommenders"
-         name="Code Recommenders Calls Proposals"
+         id="org.eclipse.recommenders.rcp.category.completion.templates"
+         name="Code Recommenders Dynymic Template Proposals"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <javaCompletionProposalComputer
             activate="true"

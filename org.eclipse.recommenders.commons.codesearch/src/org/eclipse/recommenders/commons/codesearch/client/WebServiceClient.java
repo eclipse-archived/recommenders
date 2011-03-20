@@ -89,7 +89,8 @@ public class WebServiceClient {
             throws NotFoundException, ConflictException, UnauthorizedAccessException, ServerErrorException,
             ServerUnreachableException {
         try {
-            Builder builder = createRequestBuilder(path);
+            final Builder builder = createRequestBuilder(path);
+            System.out.println("webservice client request path: " + path);
             return builder.post(resultType, requestEntity);
         } catch (final RuntimeException e) {
             return handlePutAndPostRequestException(e);
