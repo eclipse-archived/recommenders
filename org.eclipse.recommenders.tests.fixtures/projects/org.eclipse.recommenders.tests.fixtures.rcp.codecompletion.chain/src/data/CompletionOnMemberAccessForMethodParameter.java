@@ -33,8 +33,8 @@ public class CompletionOnMemberAccessForMethodParameter {
     }
     
     
-    public int callMe(final File fillMe, Integer i){
-        return 0;
+    public Integer callMe(final File fillMe, Integer i){
+        return null;
     }
     
     public int callMe(final Integer fillMe){

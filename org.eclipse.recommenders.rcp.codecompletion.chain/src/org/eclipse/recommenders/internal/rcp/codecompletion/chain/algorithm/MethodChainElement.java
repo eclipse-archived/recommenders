@@ -59,6 +59,7 @@ public class MethodChainElement implements IChainElement {
       final int parameterMinCount = getParameterMinCount(method);
       final TypeReference resultingType = method.getReturnType();
       final IClassHierarchy classHierarchy = method.getClassHierarchy();
+      // System.out.println(method.getReference().getDeclaringClass().getName().toString());
       if (resultingType.isPrimitiveType()) {
         type = ChainCompletionContext.boxPrimitive(resultingType.getName().toString());
         arrayDimension = 0;
@@ -88,15 +89,13 @@ public class MethodChainElement implements IChainElement {
     parameterTypes = new TypeReference[method.getNumberOfParameters() - parameterMinCount];
     for (int i = parameterMinCount; i < method.getNumberOfParameters(); i++) {
       String name = null;
-      if (!(method.isAbstract() || method.isNative())) {
+      if (method.isNative() || method.isAbstract()) {
+        name = "arg" + Integer.toString(i - parameterMinCount);
+      } else {
         try {
           name = method.getLocalVariableName(0, i);
         } catch (final NullPointerException e) {
-          // Andreas Kaluza: Marcel you said, you would like to look at this
-          // particular code fragment. I have no clue how to solve this error.
-
-          // this should never happen, but somehow it happens...
-          // JavaPlugin.log(e); <-- there are to many exceptions to log
+          JavaPlugin.log(e);// <-- there are to many exceptions to log
         }
       }
       if (name == null) {
@@ -211,7 +210,6 @@ public class MethodChainElement implements IChainElement {
   @Override
   public List<LinkedList<IChainElement>> constructProposalChains(final int currentChainLength) {
     if (proposalChains.isEmpty()) {
-      // System.out.println(getCompletion() + " " + chainDepth);
       List<LinkedList<IChainElement>> descendingChains = new ArrayList<LinkedList<IChainElement>>();
       if (currentChainLength < Constants.AlgorithmSettings.MAX_CHAIN_DEPTH
       /* && currentChainLength + 1 > Constants.AlgorithmSettings.MIN_CHAIN_DEPTH */) {

@@ -110,7 +110,6 @@ public class LocalChainElement implements IChainElement {
   @Override
   public List<LinkedList<IChainElement>> constructProposalChains(int currentChainLength) {
     if (proposalChains.isEmpty()) {
-      // System.out.println(getCompletion() + " " + chainDepth);
       List<LinkedList<IChainElement>> descendingChains = new ArrayList<LinkedList<IChainElement>>();
       if (currentChainLength < Constants.AlgorithmSettings.MAX_CHAIN_DEPTH - 1
       /* && currentChainLength + 1 > Constants.AlgorithmSettings.MIN_CHAIN_DEPTH */) {

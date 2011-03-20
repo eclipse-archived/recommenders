@@ -91,7 +91,9 @@ public class ChainCompletionContext {
   private boolean findEnclosingClass() {
     final ITypeName name = ctx.getEnclosingType();
     enclosingType = toWalaClass(name);
-    loader = enclosingType.getClassLoader();
+    if (enclosingType != null) {
+      loader = enclosingType.getClassLoader();
+    }
     return enclosingType != null;
   }
 

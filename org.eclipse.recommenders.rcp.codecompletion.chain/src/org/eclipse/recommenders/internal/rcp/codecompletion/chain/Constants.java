@@ -29,11 +29,10 @@ public class Constants {
      * This setting sets the maximal depth of every chain.
      * 
      */
-    public static final int MIN_CHAIN_DEPTH = 1;
+    public static final int MIN_CHAIN_DEPTH = 2;
 
-    /**
+    /*
      * This setting sets the maximal depth of every chain.
-     * 
      */
     public static final int MAX_CHAIN_DEPTH = 4;
   }
@@ -70,4 +69,6 @@ public class Constants {
      */
     public static final String PLUGIN_ID = "org.eclipse.recommenders.rcp.codecompletion.chain";
   }
+
+  public static final boolean DEBUG = false;
 }

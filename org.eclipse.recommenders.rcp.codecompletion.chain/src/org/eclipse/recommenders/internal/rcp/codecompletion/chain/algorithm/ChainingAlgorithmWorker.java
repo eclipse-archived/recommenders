@@ -45,28 +45,33 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
 
   private void inspectType() throws JavaModelException {
     this.workingElement = internalProposalStore.getWorkingElement();
-    if (workingElement.getType() == null) {
+    if (workingElement.getType() == null || internalProposalStore.containsWorkingElement(workingElement)) {
       return;
+    }
+    if (workingElement.getChainDepth() >= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
+      internalProposalStore.shutDownExecutor();
     }
     // check type if searched type --> store for proposal
     if (storeForProposal()) {
       return;
     }
-    if (workingElement.getChainDepth() >= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH
-        || internalProposalStore.containsWorkingElement(workingElement)) {
-      return;
-    }
-    // check fields of type --> store in search map && and create new worker
+
+    // check fields of type --> store in search map
     processCheckingAndStoring();
   }
 
   private void processCheckingAndStoring() throws JavaModelException {
-    final List<IChainElement> list = computeFields(workingElement.getType());
-    // check methods of type --> store in search map && and create new
-    // worker
-    list.addAll(computeMethods(workingElement.getType()));
-    ChainingAlgorithm.getSearchMap().put(workingElement.getType(), list);
-
+    IClass typeToCheck = workingElement.getType();
+    if (ChainingAlgorithm.getSearchMap().containsKey(typeToCheck)) {
+      List<IChainElement> list = ChainingAlgorithm.getSearchMap().get(typeToCheck);
+      for (IChainElement element : list) {
+        refreshMember(element);
+      }
+    } else {
+      final List<IChainElement> list = computeFields(typeToCheck);
+      list.addAll(computeMethods(typeToCheck));
+      ChainingAlgorithm.getSearchMap().put(typeToCheck, list);
+    }
   }
 
   /*
@@ -76,7 +81,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
     final List<IChainElement> list = new ArrayList<IChainElement>();
     for (final IMethod m : typeToCheck.getAllMethods()) {
       if (m.getName().toString().equals(workingElement.getCompletion())
-          && workingElement.getElementType().equals(ChainElementType.METHOD)) {
+          && workingElement.getElementType().equals(ChainElementType.METHOD) || m.isStatic()) {
         continue;
       }
       final IChainElement result = createMethodWorker(m);
@@ -95,7 +100,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
     final List<IChainElement> list = new ArrayList<IChainElement>();
     for (final IField f : typeToCheck.getAllFields()) {
       if (f.getName().toString().equals(workingElement.getCompletion())
-          && workingElement.getElementType().equals(ChainElementType.FIELD)) {
+          && workingElement.getElementType().equals(ChainElementType.FIELD) || f.isStatic()) {
         continue;
       }
       final IChainElement result = createFieldWorker(typeToCheck, f);
@@ -117,7 +122,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
 
     if (checkVisibility(m)) {
       MethodChainElement methodChainElement = new MethodChainElement(m, workingElement.getChainDepth() + 1);
-      if (!refreshMember(methodChainElement)) {
+      if (methodChainElement.getType() == null || !refreshMember(methodChainElement)) {
         return null;
       }
       methodChainElement.addPrevoiusElement(workingElement);
@@ -131,16 +136,16 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
     for (IChainElement element : ChainingAlgorithm.getGraph()) {
       // same element in store?
       if (element.getCompletion().equals(chainElement.getCompletion())
-          && element.getElementType().equals(chainElement.getElementType())) {
+          && element.getElementType().equals(chainElement.getElementType())
+          && element.getType().equals(chainElement.getType()) && element.isPrimitive() == chainElement.isPrimitive()
+          && element.getArrayDimension().equals(chainElement.getArrayDimension())) {
         // check for redundancy
         if (!element.previousElements().contains(workingElement)) {
           element.addPrevoiusElement(workingElement);
-          // get higher chain depth
-          // if (element.getChainDepth() < chainElement.getChainDepth()
-          // && !internalProposalStore.containsWorkingElement(element)) {
-          // element.setChainDepth(chainElement.getChainDepth());
-          // }
         }
+        // if (!element.isRootElement() && chainElement.isRootElement()) {
+        // element.setRootElement(true);
+        // }
         return false;
       }
     }

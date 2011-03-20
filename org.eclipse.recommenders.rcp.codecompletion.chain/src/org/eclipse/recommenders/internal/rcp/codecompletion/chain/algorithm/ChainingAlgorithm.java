@@ -114,21 +114,24 @@ public class ChainingAlgorithm {
     waitForThreadPoolTermination();
     long j = System.currentTimeMillis();
     computeProposalChains();
-    System.out.println("Algo: " + (j - i) + " lastElement size: " + lastChainElementForProposal.size()
-        + " proposal size: " + proposals.size() + " graph size: " + graph.size() + " chains: "
-        + (System.currentTimeMillis() - j));
+    if (Constants.DEBUG) {
+      System.out.println("Algo: " + (j - i) + " lastElement size: " + lastChainElementForProposal.size()
+          + " proposal size: " + proposals.size() + " graph size: " + graph.size() + " chains: "
+          + (System.currentTimeMillis() - j));
+    }
   }
 
   private void computeProposalChains() {
-    System.out.println();
     // for each result element type
     int chainDepth = 0;
     for (Entry<IChainElement, List<Triple<IClass, Integer, IClass>>> lastElement : lastChainElementForProposal
         .entrySet()) {
-      System.out.println("last element: " + lastElement.getKey().getCompletion());
       if (proposals.size() < Constants.ProposalSettings.MAX_PROPOSAL_COUNT
-          || (proposals.size() >= Constants.ProposalSettings.MAX_PROPOSAL_COUNT && chainDepth < lastElement.getKey()
+          || (proposals.size() >= Constants.ProposalSettings.MAX_PROPOSAL_COUNT && chainDepth >= lastElement.getKey()
               .getChainDepth())) {
+        if (lastElement.getKey().getChainDepth() < Constants.AlgorithmSettings.MIN_CHAIN_DEPTH - 1) {
+          continue;
+        }
         // for each expected type
         List<LinkedList<IChainElement>> resultChains = lastElement.getKey().constructProposalChains(0);// computeLastChainsElementForProposal(lastElement.getKey());
         for (Triple<IClass, Integer, IClass> expectedTypeAndCast : lastElement.getValue()) {
@@ -249,14 +252,34 @@ public class ChainingAlgorithm {
 
   public void storeLastChainElementForProposal(IChainElement element, IClass expectedType,
       Integer expectedTypeDimension, IClass castingType) {
-    if (!lastChainElementForProposal.containsKey(element)) {
+    if (lastChainElementForProposal.isEmpty()) {
+      List<Triple<IClass, Integer, IClass>> list = new ArrayList<Triple<IClass, Integer, IClass>>();
+      list.add(Triple.create(expectedType, expectedTypeDimension, castingType));
+      lastChainElementForProposal.put(element, list);
+    } else {
+      IChainElement contains = null;
+      for (Entry<IChainElement, List<Triple<IClass, Integer, IClass>>> e : lastChainElementForProposal.entrySet()) {
+        if (e.getKey().getCompletion().equals(element.getCompletion())
+            && e.getKey().getElementType().equals(element.getElementType())
+            && e.getKey().getType().equals(element.getType()) && element.isPrimitive() == e.getKey().isPrimitive()
+            && element.getArrayDimension().equals(e.getKey().getArrayDimension())) {
+          for (Triple<IClass, Integer, IClass> dreier : e.getValue()) {
+            if (dreier.getFirst().equals(expectedType) && dreier.getSecond().equals(expectedTypeDimension)
+                && (dreier.getThird() != null && dreier.getThird().equals(castingType) || castingType == null)) {
+              contains = e.getKey();
+            }
+          }
+        }
+      }
+      if (contains != null) {
+        lastChainElementForProposal.remove(contains);
+      }
       List<Triple<IClass, Integer, IClass>> list = lastChainElementForProposal.get(element);
       if (list == null) {
         list = new ArrayList<Triple<IClass, Integer, IClass>>();
       }
       list.add(Triple.create(expectedType, expectedTypeDimension, castingType));
       lastChainElementForProposal.put(element, list);
-
     }
   }
 
@@ -309,7 +332,9 @@ public class ChainingAlgorithm {
 
   public boolean containsWorkingElement(IChainElement element) {
     for (IChainElement e : workingElement) {
-      if (e.getCompletion().equals(element.getCompletion()) && e.getElementType().equals(element.getElementType())) {
+      if (e.getCompletion().equals(element.getCompletion()) && e.getElementType().equals(element.getElementType())
+          && e.getType().equals(element.getType()) && element.isPrimitive() == e.isPrimitive()
+          && element.getArrayDimension().equals(e.getArrayDimension())) {
         return true;
       }
     }
