@@ -19,6 +19,6 @@ public class CodesearchModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(CodesearchController.class).in(Scopes.SINGLETON);
-        bind(ClientConfiguration.class).in(Scopes.SINGLETON);
+        bind(ClientConfiguration.class).toInstance(ClientConfiguration.create("http://localhost:29757/codesearch/"));
     }
 }

@@ -11,6 +11,8 @@ package org.eclipse.recommenders.commons.codesearch.client;
  *    Johannes Lerch - initial API and implementation.
  */
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsTrue;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
@@ -35,6 +37,7 @@ public class WebServiceClient {
     @Inject
     public WebServiceClient(final ClientConfiguration configuration) {
         this.configuration = configuration;
+        ensureIsTrue(configuration.getBaseUrl() != null);
         this.client = new Client();
         cookies = new LinkedHashMap<String, Cookie>();
     }
