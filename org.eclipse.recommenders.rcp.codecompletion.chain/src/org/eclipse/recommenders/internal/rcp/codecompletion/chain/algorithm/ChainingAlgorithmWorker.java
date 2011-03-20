@@ -17,13 +17,12 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.internal.rcp.codecompletion.chain.Constants;
+import org.eclipse.recommenders.internal.rcp.codecompletion.chain.algorithm.IChainElement.ChainElementType;
 
-import com.ibm.wala.classLoader.ArrayClass;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMember;
 import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.types.TypeReference;
 
 @SuppressWarnings("restriction")
 public class ChainingAlgorithmWorker implements Callable<Void> {
@@ -46,47 +45,28 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
 
   private void inspectType() throws JavaModelException {
     this.workingElement = internalProposalStore.getWorkingElement();
-    if (workingElement.getCompletion().equals("findMe2")) {
-      System.out.println();
-    }
-    final IClass typeToCheck = workingElement.getType();
-    if (typeToCheck == null) {
+    if (workingElement.getType() == null) {
       return;
     }
     // check type if searched type --> store for proposal
     if (storeForProposal()) {
       return;
     }
+    if (workingElement.getChainDepth() >= Constants.AlgorithmSettings.MAX_CHAIN_DEPTH
+        || internalProposalStore.containsWorkingElement(workingElement)) {
+      return;
+    }
     // check fields of type --> store in search map && and create new worker
-    processCheckingAndStoring(typeToCheck);
+    processCheckingAndStoring();
   }
 
-  private void processCheckingAndStoring(final IClass typeToCheck) throws JavaModelException {
-    if (!typeToCheck.isArrayClass()) {
-      final List<IChainElement> list = computeFields(typeToCheck);
-      // check methods of type --> store in search map && and create new
-      // worker
-      list.addAll(computeMethods(typeToCheck));
-      ChainingAlgorithm.getSearchMap().put(typeToCheck, list);
-    } else {
-      handleArrayType(typeToCheck);
-    }
-  }
-
-  private void handleArrayType(final IClass typeToCheck) throws JavaModelException {
-    final ArrayClass arrayTypeToCheck = (ArrayClass) typeToCheck;
-    final IClass classOfArray = arrayTypeToCheck.getInnermostElementClass();
-    if (classOfArray == null) {
-      final TypeReference elementType = arrayTypeToCheck.getReference().getArrayElementType();
-      if (elementType.isPrimitiveType()) {
-        return;
-      }
-    }
-    final List<IChainElement> list = computeFields(classOfArray);
+  private void processCheckingAndStoring() throws JavaModelException {
+    final List<IChainElement> list = computeFields(workingElement.getType());
     // check methods of type --> store in search map && and create new
     // worker
-    list.addAll(computeMethods(classOfArray));
-    ChainingAlgorithm.getSearchMap().put(typeToCheck, list);
+    list.addAll(computeMethods(workingElement.getType()));
+    ChainingAlgorithm.getSearchMap().put(workingElement.getType(), list);
+
   }
 
   /*
@@ -95,10 +75,14 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
   private List<IChainElement> computeMethods(final IClass typeToCheck) throws JavaModelException {
     final List<IChainElement> list = new ArrayList<IChainElement>();
     for (final IMethod m : typeToCheck.getAllMethods()) {
+      if (m.getName().toString().equals(workingElement.getCompletion())
+          && workingElement.getElementType().equals(ChainElementType.METHOD)) {
+        continue;
+      }
       final IChainElement result = createMethodWorker(m);
       if (result != null) {
         list.add(result);
-        ChainingAlgorithm.getStoreElementList().add(result);
+        ChainingAlgorithm.getGraph().add(result);
       }
     }
     return list;
@@ -110,9 +94,14 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
   private List<IChainElement> computeFields(final IClass typeToCheck) throws JavaModelException {
     final List<IChainElement> list = new ArrayList<IChainElement>();
     for (final IField f : typeToCheck.getAllFields()) {
+      if (f.getName().toString().equals(workingElement.getCompletion())
+          && workingElement.getElementType().equals(ChainElementType.FIELD)) {
+        continue;
+      }
       final IChainElement result = createFieldWorker(typeToCheck, f);
       if (result != null) {
         list.add(result);
+        ChainingAlgorithm.getGraph().add(result);
       }
     }
     return list;
@@ -122,19 +111,14 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
    * if the chain has to be extended by a method
    */
   private IChainElement createMethodWorker(final IMethod m) throws JavaModelException {
-    if (checkVisibility(m)) {
-      if (ChainCompletionContext.unwantedNames(m.getName().toString())) {
-        return null;// return
-      }
-      MethodChainElement methodChainElement = new MethodChainElement(m, workingElement.getChainDepth() + 1);
+    if (ChainCompletionContext.unwantedMethodNames(m.getName().toString())) {
+      return null;// return
+    }
 
-      for (IChainElement element : ChainingAlgorithm.getStoreElementList()) {
-        if (element.getCompletion().equals(methodChainElement.getCompletion())) {
-          if (!element.previousElements().contains(workingElement)) {
-            element.addPrevoiusElement(workingElement);
-          }
-          return null;
-        }
+    if (checkVisibility(m)) {
+      MethodChainElement methodChainElement = new MethodChainElement(m, workingElement.getChainDepth() + 1);
+      if (!refreshMember(methodChainElement)) {
+        return null;
       }
       methodChainElement.addPrevoiusElement(workingElement);
       storeListToProposalStore(methodChainElement);
@@ -143,18 +127,39 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
     return null;
   }
 
+  private boolean refreshMember(IChainElement chainElement) {
+    for (IChainElement element : ChainingAlgorithm.getGraph()) {
+      // same element in store?
+      if (element.getCompletion().equals(chainElement.getCompletion())
+          && element.getElementType().equals(chainElement.getElementType())) {
+        // check for redundancy
+        if (!element.previousElements().contains(workingElement)) {
+          element.addPrevoiusElement(workingElement);
+          // get higher chain depth
+          // if (element.getChainDepth() < chainElement.getChainDepth()
+          // && !internalProposalStore.containsWorkingElement(element)) {
+          // element.setChainDepth(chainElement.getChainDepth());
+          // }
+        }
+        return false;
+      }
+    }
+    return true;
+  }
+
   /*
    * if the chain has to be extended by a field
    */
   private IChainElement createFieldWorker(final IClass typeToCheck, final IField f) throws JavaModelException {
+    if (ChainCompletionContext.unwantedFieldNames(f.getName().toString())) {
+      return null;// return
+    }
+
     if (checkVisibility(f)) {
       FieldChainElement fieldChainElement = new FieldChainElement(f, workingElement.getChainDepth() + 1);
 
-      for (IChainElement element : ChainingAlgorithm.getStoreElementList()) {
-        if (element.getCompletion().equals(fieldChainElement.getCompletion())) {
-          element.addPrevoiusElement(workingElement);
-          return null;
-        }
+      if (!refreshMember(fieldChainElement)) {
+        return null;
       }
       fieldChainElement.addPrevoiusElement(workingElement);
       storeListToProposalStore(fieldChainElement);
@@ -164,6 +169,9 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
   }
 
   private boolean checkVisibility(final IMember m) {
+    if (m.getName().toString().contains("$")) {
+      return false;
+    }
     if (m.isPublic()) {
       return m.isPublic();
     } else if (m.isPrivate()) {
@@ -184,12 +192,13 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
   }
 
   private void storeListToProposalStore(final IChainElement element) {
-    if (element.getChainDepth() + 1 > Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
-      return;
-    }
-    // if (!ChainingAlgorithm.getSearchMap().containsKey(element.getType())) {
-    internalProposalStore.addWorkingElement(element);
+    // if (element.getChainDepth() + 1 >
+    // Constants.AlgorithmSettings.MAX_CHAIN_DEPTH) {
+    // return;
     // }
+    if (!internalProposalStore.containsWorkingElement(element)) {
+      internalProposalStore.addWorkingElement(element);
+    }
   }
 
   /*
@@ -237,10 +246,15 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
   public Void call() throws Exception {
     try {
       while (!internalProposalStore.isCanceled()) {
+        long i = System.currentTimeMillis();
         internalProposalStore.notifyThreadWorking();
         inspectType();
         internalProposalStore.notifyThreadPausing();
         tryTerminateExecutor();
+        // System.out.println(workingElement.getCompletion() + " " +
+        // workingElement.getChainDepth() + ": "
+        // + (System.currentTimeMillis() - i) + " left: " +
+        // internalProposalStore.getWorkingElementsSize());
       }
     } catch (final JavaModelException e) {
       JavaPlugin.log(e);
