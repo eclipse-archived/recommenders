@@ -42,6 +42,8 @@ public interface Bag<T> extends Iterable<T> {
      */
     public abstract void addAll(final T... elements);
 
+    public abstract void addAll(Bag<? extends T> bag);
+
     /**
      * @return the count how often the given object was added to this bag before
      */
@@ -78,6 +80,8 @@ public interface Bag<T> extends Iterable<T> {
      */
     public abstract void removeAll(final T element);
 
+    public abstract void remove(Bag<? extends T> bag);
+
     /**
      * @return the total number of elements stored in this bag. This sums up the
      *         frequency of each unique object stored in the key set of this
@@ -96,4 +100,5 @@ public interface Bag<T> extends Iterable<T> {
      * Returns true if the given element is already stored in this bag.
      */
     public abstract boolean contains(T element);
+
 }

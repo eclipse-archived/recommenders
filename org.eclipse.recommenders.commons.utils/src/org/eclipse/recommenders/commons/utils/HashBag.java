@@ -90,6 +90,13 @@ public class HashBag<T> implements Bag<T> {
     }
 
     @Override
+    public void addAll(final Bag<? extends T> bag) {
+        for (final T element : bag) {
+            add(element, bag.count(element));
+        }
+    }
+
+    @Override
     public int count(final Object element) {
         final Integer count = index.get(element);
         return count == null ? 0 : count;
@@ -162,6 +169,13 @@ public class HashBag<T> implements Bag<T> {
             } else {
                 index.put(key, curFrequency - frequency);
             }
+        }
+    }
+
+    @Override
+    public void remove(final Bag<? extends T> bag) {
+        for (final T element : bag) {
+            remove(element, bag.count(element));
         }
     }
 

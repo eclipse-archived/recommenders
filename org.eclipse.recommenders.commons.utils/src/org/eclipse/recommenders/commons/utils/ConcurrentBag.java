@@ -92,6 +92,13 @@ public class ConcurrentBag<T> implements Bag<T> {
     }
 
     @Override
+    public void addAll(final Bag<? extends T> bag) {
+        for (final T element : bag) {
+            add(element, bag.count(element));
+        }
+    }
+
+    @Override
     public int count(final Object element) {
         final AtomicInteger count = index.get(element);
         return count == null ? 0 : count.get();
@@ -164,6 +171,13 @@ public class ConcurrentBag<T> implements Bag<T> {
             } else {
                 index.put(key, new AtomicInteger(curFrequency.intValue() - frequency));
             }
+        }
+    }
+
+    @Override
+    public void remove(final Bag<? extends T> bag) {
+        for (final T element : bag) {
+            remove(element, bag.count(element));
         }
     }
 
