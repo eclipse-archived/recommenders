@@ -17,9 +17,15 @@ import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 
 /**
+ * <p>
  * Sets the line number of the <b>first bytecode instruction</b> of this method.
  * This is clearly not identical to the line number the method has been declared
- * but a valuable pointer in code when debuging.
+ * but a valuable pointer in code when debugging.
+ * </p>
+ * <p>
+ * In the case of abstract methods or where no line number table is preserved,
+ * -1 is returned.
+ * </p>
  */
 public class LineNumberMethodAnalyzer implements IMethodAnalyzer {
     @Override
