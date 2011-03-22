@@ -51,7 +51,7 @@ public final class MethodCallFormatter {
             invocationPrefix = "new ";
         } else {
             String variableName = methodCall.getVariableName();
-            if (variableName == null || variableName.isEmpty()) {
+            if (variableName.isEmpty()) {
                 variableName = "${unconstructed}";
             }
             invocationPrefix = String.format("%s.", variableName);
@@ -77,6 +77,12 @@ public final class MethodCallFormatter {
         return variableString;
     }
 
+    /**
+     * @param invokedMethod
+     *            The method which will return or construct the new variable.
+     * @return How the type of the new variable is declared, as part of the
+     *         variable declaration, e.g. " <code>Button</code>".
+     */
     private static String getNewVariableTypeString(final IMethodName invokedMethod) {
         String typeString;
         if (invokedMethod.isInit()) {
@@ -135,6 +141,12 @@ public final class MethodCallFormatter {
         return variableName;
     }
 
+    /**
+     * @param returnType
+     *            The type as returned by the invoked method.
+     * @return The template code which generates a new variable name based on
+     *         the new variable type (as given by the return type).
+     */
     private static String getNewVariableNameFromReturnType(final ITypeName returnType) {
         final String type = Names.vm2srcTypeName(returnType.getIdentifier());
         return String.format("${returned:newName(%s)}", type);

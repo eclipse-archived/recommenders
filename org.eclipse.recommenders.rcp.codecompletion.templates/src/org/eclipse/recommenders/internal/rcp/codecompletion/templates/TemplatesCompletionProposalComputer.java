@@ -108,25 +108,12 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             final IProgressMonitor monitor) {
         final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
         if (contextResolver.hasProjectRecommendersNature(jCtx)) {
-            return computeCompletionProposals(contextResolver.resolveContext(jCtx));
-        }
-        return Collections.emptyList();
-    }
-
-    /**
-     * @param context
-     *            The context from where the completion request was invoked.
-     * @return The completion proposals to be displayed in the editor.
-     */
-    public ImmutableList<IJavaCompletionProposal> computeCompletionProposals(final IIntelligentCompletionContext context) {
-        if (shouldComputeProposalsForContext(context)) {
-            final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
-                    .createInvokedVariable(context);
-            if (completionTargetVariable != null) {
-                return buildProposalsForTargetVariable(completionTargetVariable, context);
+            final IIntelligentCompletionContext completionContext = contextResolver.resolveContext(jCtx);
+            if (shouldComputeProposalsForContext(completionContext)) {
+                return computeCompletionProposals(completionContext);
             }
         }
-        return ImmutableList.of();
+        return Collections.emptyList();
     }
 
     /**
@@ -147,18 +134,32 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     }
 
     /**
-     * @param completionTargetVariable
-     *            The variable on which the completion request was executed.
-     * @param context
+     * @param completionContext
      *            The context from where the completion request was invoked.
      * @return The completion proposals to be displayed in the editor.
      */
-    private ImmutableList<IJavaCompletionProposal> buildProposalsForTargetVariable(
-            final CompletionTargetVariable completionTargetVariable, final IIntelligentCompletionContext context) {
-        final Collection<PatternRecommendation> patternRecommendations = patternRecommender.computeRecommendations(
-                completionTargetVariable, context);
+    public ImmutableList<IJavaCompletionProposal> computeCompletionProposals(
+            final IIntelligentCompletionContext completionContext) {
+        final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
+                .createInvokedVariable(completionContext);
+        if (completionTargetVariable != null) {
+            return computeCompletionProposalsForTargetVariable(completionTargetVariable);
+        }
+        return ImmutableList.of();
+    }
+
+    /**
+     * @param completionTargetVariable
+     *            The variable for which the completion proposals shall be
+     *            created.
+     * @return The completion proposals to be displayed in the editor.
+     */
+    private ImmutableList<IJavaCompletionProposal> computeCompletionProposalsForTargetVariable(
+            final CompletionTargetVariable completionTargetVariable) {
+        final Collection<PatternRecommendation> patternRecommendations = patternRecommender
+                .computeRecommendations(completionTargetVariable);
         if (!patternRecommendations.isEmpty()) {
-            final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable, context);
+            final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable);
             return completionProposalsBuilder.computeProposals(patternRecommendations, templateContext,
                     completionTargetVariable.getName());
         }
@@ -168,13 +169,11 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     /**
      * @param completionTargetVariable
      *            The variable on which the completion request was executed.
-     * @param completionContext
-     *            The context from where the completion request was invoked.
      * @return A {@link DocumentTemplateContext} suiting the completion context.
      */
-    private DocumentTemplateContext getTemplateContext(final CompletionTargetVariable completionTargetVariable,
-            final IIntelligentCompletionContext completionContext) {
+    private DocumentTemplateContext getTemplateContext(final CompletionTargetVariable completionTargetVariable) {
         final Region region = completionTargetVariable.getDocumentRegion();
+        final IIntelligentCompletionContext completionContext = completionTargetVariable.getContext();
         final JavaContext templateContext = new JavaContext(templateContextType, completionContext.getOriginalContext()
                 .getDocument(), region.getOffset(), region.getLength(), completionContext.getCompilationUnit());
         templateContext.setForceEvaluation(true);
