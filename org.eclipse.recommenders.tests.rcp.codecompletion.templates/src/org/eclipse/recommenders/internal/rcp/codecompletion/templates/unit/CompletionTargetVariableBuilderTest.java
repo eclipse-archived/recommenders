@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+@SuppressWarnings("restriction")
 public final class CompletionTargetVariableBuilderTest {
 
     @Test
@@ -48,7 +49,7 @@ public final class CompletionTargetVariableBuilderTest {
                 .createInvokedVariable(context);
 
         Assert.assertEquals(needsConstructor, completionTargetVariable.isNeedsConstructor());
-        Assert.assertEquals(variableName, completionTargetVariable.getName());
+        Assert.assertEquals(variableName == null ? "" : variableName, completionTargetVariable.getName());
         Assert.assertEquals(VmTypeName.get(typeName), completionTargetVariable.getType());
         Assert.assertEquals(region, completionTargetVariable.getDocumentRegion());
     }
@@ -80,7 +81,6 @@ public final class CompletionTargetVariableBuilderTest {
         return context;
     }
 
-    @SuppressWarnings("restriction")
     public static IIntelligentCompletionContext getConstructorContextMock(final String code, final String variableName,
             final String typeName) {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(code,

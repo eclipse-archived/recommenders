@@ -14,7 +14,8 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 
 /**
- * Models a call of a certain method on a given variable name.
+ * Models a call of a certain method on a given variable name. The type of the
+ * variable is extracted from the method.
  */
 public final class MethodCall {
 
@@ -22,15 +23,20 @@ public final class MethodCall {
     private final IMethodName invokedMethod;
 
     /**
+     * @param variableName
+     *            The name of the variable on which the method shall be invoked.
      * @param invokedMethod
      *            A handler containing information about the method which shall
      *            be invoked on the given variable name.
      */
     public MethodCall(final String variableName, final IMethodName invokedMethod) {
-        this.variableName = variableName;
+        this.variableName = Checks.ensureIsNotNull(variableName);
         this.invokedMethod = Checks.ensureIsNotNull(invokedMethod);
     }
 
+    /**
+     * @return The name of the variable on which the method shall be invoked.
+     */
     public String getVariableName() {
         return variableName;
     }

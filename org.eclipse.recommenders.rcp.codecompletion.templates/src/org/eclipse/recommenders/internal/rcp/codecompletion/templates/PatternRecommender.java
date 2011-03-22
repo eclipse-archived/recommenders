@@ -72,15 +72,12 @@ public final class PatternRecommender {
     /**
      * @param targetVariable
      *            The variable on which the completion request was invoked.
-     * @param completionContext
-     *            The context from where the completion request was invoked.
      * @return The {@link PatternRecommendation}s holding information for the
      *         templates to be displayed.
      */
-    public ImmutableSet<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable,
-            final IIntelligentCompletionContext completionContext) {
+    public ImmutableSet<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable) {
         final Builder<PatternRecommendation> recommendations = ImmutableSet.builder();
-        context = completionContext;
+        context = targetVariable.getContext();
         if (canFindVariableUsage(targetVariable)) {
             for (final ObjectMethodCallsNet typeModel : findModelsForType(targetVariable.getType())) {
                 model = typeModel;
@@ -121,6 +118,14 @@ public final class PatternRecommender {
         return false;
     }
 
+    /**
+     * @param receiverType
+     *            The type for which suiteable models should be found. Can be
+     *            fully qualified and simple.
+     * @return Empty set when no model could be found. One-element set when the
+     *         type is fully qualified. Multiple elements when the type is
+     *         simple (i.e. it matches several classes).
+     */
     private ImmutableSet<ObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
         final Builder<ObjectMethodCallsNet> models = ImmutableSet.builder();
         if (receiverType.getPackage().getIdentifier().length() == 0) {
@@ -131,6 +136,10 @@ public final class PatternRecommender {
         return models.build();
     }
 
+    /**
+     * Updates the model with respect to the context and the observed method
+     * invocations on the target variable.
+     */
     private void updateModel() {
         model.clearEvidence();
         model.setAvailablity(true);
@@ -192,13 +201,13 @@ public final class PatternRecommender {
      *         given pattern.
      */
     private ImmutableList<IMethodName> getMethodCallsForPattern(final String patternName) {
-        final List<IMethodName> recommendedMethods = Lists.newArrayList();
+        final com.google.common.collect.ImmutableList.Builder<IMethodName> recommendedMethods = ImmutableList.builder();
         model.setPattern(patternName);
         model.updateBeliefs();
         for (final Tuple<IMethodName, Double> pair : model.getRecommendedMethodCalls(METHOD_PROBABILITY_THRESHOLD)) {
             recommendedMethods.add(pair.getFirst());
         }
-        return ImmutableList.copyOf(recommendedMethods);
+        return recommendedMethods.build();
     }
 
     /**

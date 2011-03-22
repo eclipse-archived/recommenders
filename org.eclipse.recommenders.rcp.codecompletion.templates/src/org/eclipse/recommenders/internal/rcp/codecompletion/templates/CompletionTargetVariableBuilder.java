@@ -108,13 +108,16 @@ public final class CompletionTargetVariableBuilder {
      *         case it was invoked while defining a new variable.
      */
     private CompletionTargetVariable buildInvokedVariable() {
+        if (receiverName == null) {
+            receiverName = "";
+        }
         final int variableNameLength = getVariableNameLength();
         int documentOffset = context.getReplacementRegion().getOffset() - variableNameLength;
         if (needsConstructor) {
             documentOffset += context.getReplacementRegion().getLength();
         }
         return new CompletionTargetVariable(receiverName, receiverType, receiverCalls, new Region(documentOffset,
-                variableNameLength), needsConstructor);
+                variableNameLength), needsConstructor, context);
     }
 
     /**
@@ -129,7 +132,7 @@ public final class CompletionTargetVariableBuilder {
             final String completionNode = context.getCompletionNode().toString();
             variableNameLength = completionNode.substring(completionNode.indexOf(':') + 1, completionNode.indexOf('>'))
                     .length();
-        } else if (receiverName != null && receiverName.length() > 0) {
+        } else if (receiverName.length() > 0) {
             // For variables other than implicit "this", add space for ".".
             variableNameLength = receiverName.length() + 1;
         }
