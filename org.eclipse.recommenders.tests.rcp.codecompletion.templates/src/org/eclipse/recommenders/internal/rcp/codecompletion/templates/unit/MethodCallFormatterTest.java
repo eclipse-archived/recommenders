@@ -22,11 +22,18 @@ public final class MethodCallFormatterTest {
             MethodFormatterTest.getMethodFormatterMock());
 
     @Test
-    public void testPatternNamer() throws JavaModelException {
+    public void testMethodCallFormatter() throws JavaModelException {
+        // ...
         check(UnitTestSuite.getDefaultMethodCall(),
-                "constructed.setText(${intTest:link(0)}, ${arg0:link(false, true)}, ${arg1}, ${arg2});");
+                "button123.setText(${intTest:link(0)}, ${arg0:link(false, true)}, ${arg1}, ${arg2:var(org/eclipse/swt/widgets/Button)});");
+
+        // ...
         check(UnitTestSuite.getDefaultConstructorCall(),
-                "${constructedType:newType(org.eclipse.swt.widgets.Button)} unconstructed = new ${constructedType}(${intTest:link(0)}, ${arg3:link(false, true)}, ${arg4}, ${arg5});");
+                "${constructedType:newType(org.eclipse.swt.widgets.Button)} ${unconstructed:newName(org.eclipse.swt.widgets.Button)} = new ${constructedType}(${intTest:link(0)}, ${arg3:link(false, true)}, ${arg4}, ${arg5:var(org/eclipse/swt/widgets/Button)});");
+
+        // Invoke getText() on an "unconstructed" variable.
+        check(new MethodCall("", UnitTestSuite.getDefaultReturningMethodCall().getInvokedMethod()),
+                "${returnedType:newType(String)} text = ${unconstructed}.getText(${intTest:link(0)}, ${arg6:link(false, true)}, ${arg7}, ${arg8:var(org/eclipse/swt/widgets/Button)});");
     }
 
     private void check(final MethodCall methodCall, final String expected) {
