@@ -27,8 +27,8 @@ public final class MethodFormatterTest {
     public void testFormat() throws JavaModelException {
         final IMethodName methodName = UnitTestSuite.getDefaultConstructorCall().getInvokedMethod();
         final String code = getMethodFormatterMock().format(methodName);
-
-        Assert.assertEquals("${constructedType}(${intTest:link(0)}, ${arg0:link(false, true)}, ${arg1}, ${arg2})", code);
+        final String expected = "${constructedType}(${intTest:link(0)}, ${arg0:link(false, true)}, ${arg1}, ${arg2:var(org/eclipse/swt/widgets/Button)})";
+        Assert.assertEquals(expected, code);
     }
 
     protected static MethodFormatter getMethodFormatterMock() {
@@ -39,7 +39,7 @@ public final class MethodFormatterTest {
             throw new IllegalStateException(e);
         }
         Mockito.when(jdtMethod.getParameterTypes()).thenReturn(
-                new String[] { "I", "Z", "Ljava/lang/String", "Lorg/eclipse/swt/widgets/Button", });
+                new String[] { "I", "Z", "Ljava/lang/String;", "Lorg/eclipse/swt/widgets/Button;", });
 
         final JavaElementResolver resolver = Mockito.mock(JavaElementResolver.class);
         Mockito.when(resolver.toJdtMethod(Matchers.any(IMethodName.class))).thenReturn(jdtMethod);

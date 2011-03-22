@@ -17,5 +17,4 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ UiTest.class })
 public final class UiTestSuite {
-
 }

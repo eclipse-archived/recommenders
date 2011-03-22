@@ -50,11 +50,6 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<buildCommand>
-			<name>net.sf.eclipsecs.core.CheckstyleBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
@@ -65,6 +60,5 @@
 		<nature>org.eclipse.recommenders.rcp.RecommendersNature</nature>
 		<nature>org.eclipse.recommenders.rcp.analysis.RecommendersNature</nature>
 		<nature>com.instantiations.assist.eclipse.coverage.codeCoverageNature</nature>
-		<nature>net.sf.eclipsecs.core.CheckstyleNature</nature>
 	</natures>
 </projectDescription>

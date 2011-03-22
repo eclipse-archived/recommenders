@@ -34,8 +34,9 @@ public final class UnitTestSuite {
     private static final IMethodName DEFAULTRETURNINGMETHOD = createMethod("Lorg/eclipse/swt/widgets/Button.getText()Ljava/lang/String;");
     private static final IMethodName CONSTRUCTORMETHOD = createMethod("Lorg/eclipse/swt/widgets/Button.<init>(Lorg/eclipse/swt/widgets/Composite;I)V");
 
-    private static final MethodCall METHODCALL = new MethodCall("constructed", DEFAULTMETHOD);
-    private static final MethodCall CONSTRUCTORCALL = new MethodCall("unconstructed", CONSTRUCTORMETHOD);
+    private static final MethodCall METHODCALL = new MethodCall("button123", DEFAULTMETHOD);
+    private static final MethodCall RETURNINGMETHODCALL = new MethodCall("button456", DEFAULTRETURNINGMETHOD);
+    private static final MethodCall CONSTRUCTORCALL = new MethodCall("", CONSTRUCTORMETHOD);
 
     private static final CodeBuilder CODEBUILDERMOCK = new CodeBuilder(
             MethodCallFormatterTest.getMethodCallFormatterMock());
@@ -47,8 +48,8 @@ public final class UnitTestSuite {
         return METHODCALL;
     }
 
-    protected static IMethodName getDefaultReturningMethod() {
-        return DEFAULTRETURNINGMETHOD;
+    protected static MethodCall getDefaultReturningMethodCall() {
+        return RETURNINGMETHODCALL;
     }
 
     /**
