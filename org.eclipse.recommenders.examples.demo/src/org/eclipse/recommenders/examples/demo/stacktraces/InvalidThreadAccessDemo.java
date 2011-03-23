@@ -9,11 +9,11 @@
  *    Marcel Bruch - initial API and implementation.
  */
 package org.eclipse.recommenders.examples.demo.stacktraces;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
-
 
 public class InvalidThreadAccessDemo {
 

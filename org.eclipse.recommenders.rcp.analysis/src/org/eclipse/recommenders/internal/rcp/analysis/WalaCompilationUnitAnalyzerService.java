@@ -55,12 +55,9 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
 
     private Injector injector;
 
-    private final InjectionService injectionService;
-
     @Inject
-    public WalaCompilationUnitAnalyzerService(final IClassHierarchyService wala, final InjectionService injectionService) {
+    public WalaCompilationUnitAnalyzerService(final IClassHierarchyService wala) {
         this.wala = wala;
-        this.injectionService = injectionService;
     }
 
     @Override
@@ -78,7 +75,7 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         final CompilationUnit recCompilationUnit = CompilationUnit.create();
         //
         //
-        final Injector masterInjector = injectionService.getInjector();
+        final Injector masterInjector = InjectionService.getInstance().getInjector();
         injector = masterInjector.createChildInjector(new NameClassAnalyzerPluginModule(),
                 new ExtendsClauseClassAnalyzerPluginModule(), new ImplementsClauseClassAnalyzerPluginModule(),
                 new DeclaredFieldsClassAnalyzerPluginModule(), new NameMethodAnalyzerPluginModule(),

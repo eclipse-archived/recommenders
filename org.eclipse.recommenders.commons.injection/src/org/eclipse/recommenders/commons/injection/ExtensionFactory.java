@@ -24,6 +24,10 @@ public class ExtensionFactory implements IExecutableExtension, IExecutableExtens
     private String propertyName;
     private Object data;
 
+    public ExtensionFactory() {
+        InjectionService.getInstance().getInjector();
+    }
+
     @Override
     public void setInitializationData(final IConfigurationElement config, final String propertyName, final Object data)
             throws CoreException {

@@ -46,7 +46,7 @@ public class RecommendersPlugin extends AbstractUIPlugin {
     public void start(final BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
-        initInjector();
+        // initInjector();
     }
 
     private void initInjector() {

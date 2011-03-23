@@ -114,6 +114,9 @@ public class Variable implements Comparable<Variable>, INamedCodeElement {
     }
 
     public boolean fuzzyIsParameter() {
+        if (kind == Kind.PARAMETER) {
+            return true;
+        }
         for (final ObjectInstanceKey obj : pointsTo) {
             if (obj.kind == ObjectInstanceKey.Kind.PARAMETER) {
                 return true;
@@ -128,6 +131,9 @@ public class Variable implements Comparable<Variable>, INamedCodeElement {
     }
 
     public boolean fuzzyIsDefinedByMethodReturn() {
+        if (kind == Kind.RETURN) {
+            return true;
+        }
         for (final ObjectInstanceKey obj : pointsTo) {
             if (obj.definitionSite != null) {
                 if (obj.definitionSite.kind == DefinitionSite.Kind.METHOD_RETURN) {

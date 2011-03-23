@@ -15,7 +15,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.internal.rcp.views.cu.CompilationUnitViewPublisher;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
@@ -59,7 +58,7 @@ public class RecommendersModule extends AbstractModule implements Module {
 
     private void configureAstProvider() {
         final CachingAstProvider p = new CachingAstProvider();
-        JavaCore.addElementChangedListener(p, ElementChangedEvent.POST_RECONCILE);
+        JavaCore.addElementChangedListener(p);
         bind(IAstProvider.class).toInstance(p);
     }
 

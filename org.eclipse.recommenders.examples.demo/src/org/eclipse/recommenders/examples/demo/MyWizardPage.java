@@ -26,45 +26,32 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
  */
 public class MyWizardPage extends WizardPage {
 
-    private Button button;
-    private Text text;
+	private Text text;
 
-    @Override
-    public void createControl(final Composite parent) {
+	@Override
+	public void createControl(final Composite parent) {
+		final Composite container = new Composite(parent, SWT.NONE);
+		container.setFont(parent.getFont());
+		container.setLayout(null);
+		container.setLayoutData(null);
 
-        // Strange usage of Composite:
-        final Composite container = new Composite(parent, SWT.NONE);
+		// Strange usage of Text:
+		text = new Text(container, SWT.BORDER);
+		// text.setLayoutData(null);
+		// text.setText("");
+		text.addModifyListener(new ModifyListener() {
 
-        // container.setLayout(null);
-        // container.setLayout(null);
-        // container.setLayoutData(null);
+			@Override
+			public void modifyText(final ModifyEvent arg0) {
+				// usage of 'text' in listener?
 
-        // Strange usage of Text:
-        text = new Text(container, SWT.BORDER);
+			}
+		});
 
-        // text.setLayoutData(null);
-        // text.setText("");
+	}
 
-        text.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(final ModifyEvent arg0) {
-                // usage of 'text' in listener?
-
-            }
-        });
-
-        //
-        // button = new Button(container, 0);
-
-        // this.setControl();?
-
-        final IWorkbenchHelpSystem help = PlatformUI.getWorkbench().getHelpSystem();
-
-    }
-
-    protected MyWizardPage() {
-        super("");
-    }
+	protected MyWizardPage() {
+		super("");
+	}
 
 }
