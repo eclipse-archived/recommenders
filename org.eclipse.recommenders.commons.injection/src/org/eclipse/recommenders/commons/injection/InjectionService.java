@@ -22,25 +22,34 @@ public class InjectionService {
 
     private static InjectionService instance = new InjectionService();
 
+    @Deprecated
     public static InjectionService getInstance() {
         return instance;
     }
 
-    private Injector lazyInjector;
+    private static Injector lazyInjector;
+    private static boolean creatingModules;
 
-    public Injector getInjector() {
+    public static Injector getInjector() {
         if (lazyInjector == null) {
+            if (creatingModules) {
+                throw new IllegalStateException(
+                        "Trying to access InjectionService while creating module configuration.");
+            }
+
+            creatingModules = true;
             final List<Module> modules = InjectionDescriptor.createModules();
+            creatingModules = false;
             lazyInjector = Guice.createInjector(modules);
         }
         return lazyInjector;
     }
 
-    public void injectMembers(final Object obj) {
+    public static void injectMembers(final Object obj) {
         getInjector().injectMembers(obj);
     }
 
-    public <T> T requestInstance(final Class<T> clazz) {
+    public static <T> T requestInstance(final Class<T> clazz) {
         return getInjector().getInstance(clazz);
     }
 
