@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.commons.codesearch;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * A feedback is basically a tuple "snippet-id, user-feedback" that allows the
  * server to learn better rankings for codesearch.
@@ -37,4 +40,8 @@ public class Feedback {
      */
     public FeedbackType event;
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

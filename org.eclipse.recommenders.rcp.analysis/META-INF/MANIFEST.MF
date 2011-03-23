@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.core.runtime,
  com.google.guice,
  org.eclipse.recommenders.commons.injection,
  org.eclipse.ui,
- javax.annotations.jsr305;bundle-version="0.0.0"
+ javax.annotations.jsr305;bundle-version="0.0.0",
+ com.google.guice.multibindings;bundle-version="3.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.analysis,

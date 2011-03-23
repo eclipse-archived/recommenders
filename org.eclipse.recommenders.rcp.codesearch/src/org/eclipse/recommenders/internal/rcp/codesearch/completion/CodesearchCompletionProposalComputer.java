@@ -22,7 +22,7 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
+import org.eclipse.recommenders.internal.rcp.codesearch.views.CodesearchController;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
@@ -30,17 +30,18 @@ import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextR
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
+@SuppressWarnings("rawtypes")
 public class CodesearchCompletionProposalComputer implements IJavaCompletionProposalComputer {
     private final IArtifactStore artifactStore;
     private final IntelligentCompletionContextResolver contextResolver;
-    private final CodeSearchClient searchClient;
+    private final CodesearchController controller;
 
     @Inject
     public CodesearchCompletionProposalComputer(final IArtifactStore artifactStore,
-            final IntelligentCompletionContextResolver contextResolver, final CodeSearchClient searchClient) {
+            final IntelligentCompletionContextResolver contextResolver, final CodesearchController controller) {
         this.artifactStore = artifactStore;
         this.contextResolver = contextResolver;
-        this.searchClient = searchClient;
+        this.controller = controller;
     }
 
     @Override
@@ -57,14 +58,12 @@ public class CodesearchCompletionProposalComputer implements IJavaCompletionProp
         }
         final CompilationUnit recCu = artifactStore.loadArtifact(jdtCu, CompilationUnit.class);
         final List<IJavaCompletionProposal> res = Lists.newArrayList();
-        if (recContext.getVariable() != null) {
-            res.add(new SearchSimilarVariableUsagesProposal(100, recCu, recContext, searchClient));
-        }
+        // if (recContext.getVariable() != null) {
+        // res.add(new SearchSimilarVariableUsagesProposal(100, recCu,
+        // recContext, searchClient));
+        // }
         if (recContext.getEnclosingMethod() != null) {
-            res.add(new SearchSimilarMethodsProposal(100, recCu, recContext, searchClient));
-        }
-        {
-            res.add(new SearchSimilarClassesProposal(100, recCu, recContext, searchClient));
+            res.add(new SearchSimilarMethodsProposal(100, recCu, recContext, controller));
         }
         return res;
     }

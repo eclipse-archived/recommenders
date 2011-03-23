@@ -14,5 +14,5 @@ package org.eclipse.recommenders.commons.codesearch;
  * Is the proposed code snippet a class or a method?
  */
 public enum SnippetType {
-    CLASS, METHOD
+    CLASS, METHOD, UNKNOWN
 }

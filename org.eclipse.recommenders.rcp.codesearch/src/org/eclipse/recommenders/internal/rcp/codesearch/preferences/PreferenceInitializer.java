@@ -13,18 +13,14 @@ package org.eclipse.recommenders.internal.rcp.codesearch.preferences;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.ClientConfiguration;
-
-import com.google.inject.Inject;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    @Inject
-    private ClientConfiguration config;
+    private static final String SERVER_URL = "http://localhost:8080/codesearch/";
 
     @Override
     public void initializeDefaultPreferences() {
         final IPreferenceStore preferenceStore = CodesearchPlugin.getDefault().getPreferenceStore();
-        preferenceStore.setDefault(PreferenceConstants.WEBSERVICE_HOST, config.getBaseUrl());
+        preferenceStore.setDefault(PreferenceConstants.WEBSERVICE_HOST, SERVER_URL);
     }
 }

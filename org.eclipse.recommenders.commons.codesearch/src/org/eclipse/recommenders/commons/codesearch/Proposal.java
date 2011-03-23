@@ -17,6 +17,13 @@ public class Proposal {
         return proposal;
     }
 
+    public static Proposal newProposal(final float score, final SnippetSummary snippet) {
+        final Proposal proposal = new Proposal();
+        proposal.score = score;
+        proposal.snippet = snippet;
+        return proposal;
+    }
+
     /**
      * The proposed code snippet.
      */
@@ -27,10 +34,10 @@ public class Proposal {
      */
     public float score;
 
-    /**
-     * The individual feature scores. This is for debugging purpose and may be
-     * removed.
-     */
-    public FeatureWeights individualFeatureScores;
+    // /**
+    // * The individual feature scores. This is for debugging purpose and may be
+    // * removed.
+    // */
+    // public FeatureWeights individualFeatureScores;
 
 }

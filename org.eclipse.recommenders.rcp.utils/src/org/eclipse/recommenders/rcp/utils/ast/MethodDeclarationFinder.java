@@ -69,7 +69,7 @@ public class MethodDeclarationFinder {
                         }
                     }
                 }
-                return false;
+                return true;
             }
         });
     }

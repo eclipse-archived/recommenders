@@ -11,110 +11,67 @@
 package org.eclipse.recommenders.internal.rcp.codesearch.views;
 
 import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.recommenders.commons.codesearch.Request;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.RCPResponse.RCPProposal;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Inject;
 
 public class ResultsView extends ViewPart {
     public static final String ID = ResultsView.class.getName();
-    private ScrolledComposite scrollContainer;
-    private Composite container;
-    private Request request;
-    private RCPResponse response;
-    private CodeSearchClient searchClient;
+    private ScrolledComposite rootContainer;
+    Composite summariesContainer;
+    private final CodesearchController controller;
 
     @Inject
-    public ResultsView(final CodeSearchClient searchClient) {
-        this.searchClient = searchClient;
+    public ResultsView(final CodesearchController controller) {
+        this.controller = controller;
     }
 
     @Override
     public void createPartControl(final Composite parent) {
-        final Composite composite = new Composite(parent, SWT.FILL);
-        composite.setBackground(JavaUI.getColorManager().getColor(new RGB(255, 255, 255)));
-        GridLayout gl = GridLayoutFactory.fillDefaults().spacing(1, 1).create();
-        parent.setLayout(gl);
-        gl.numColumns = 1;
-        GridData gd = new GridData(GridData.FILL_BOTH);
-        parent.setLayoutData(gd);
-        gl = GridLayoutFactory.fillDefaults().spacing(1, 1).create();
-        gl.numColumns = 2;
-        composite.setLayout(gl);
-        final Label label = new Label(composite, SWT.NONE);
-        label.setText("Filter: ");
-        final Text filterText = new Text(composite, SWT.BORDER);
-        gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.minimumWidth = 300;
-        filterText.setLayoutData(gd);
-        filterText.addKeyListener(new KeyListener() {
-            @Override
-            public void keyReleased(final KeyEvent e) {
-                disposeOldSourceViewers();
-                createNewSourceViewers(filterText.getText());
-            }
+        rootContainer = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        rootContainer.setBackground(JavaUI.getColorManager().getColor(new RGB(255, 255, 255)));
+        rootContainer.setExpandHorizontal(true);
+        rootContainer.setExpandVertical(true);
+        rootContainer.setLayout(GridLayoutFactory.fillDefaults().create());
+        rootContainer.setLayoutData(GridDataFactory.fillDefaults().create());
 
-            @Override
-            public void keyPressed(final KeyEvent e) {
-            }
-        });
-        scrollContainer = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
-        container = new Composite(scrollContainer, SWT.NONE);
-        container.setLayout(GridLayoutFactory.fillDefaults().spacing(1, 1).create());
-        gd = new GridData(GridData.FILL_BOTH);
-        gd.grabExcessHorizontalSpace = true;
-        gd.grabExcessVerticalSpace = true;
-        scrollContainer.setLayoutData(gd);
-        container.setBackground(JavaUI.getColorManager().getColor(new RGB(255, 255, 255)));
-        scrollContainer.setContent(container);
-        scrollContainer.setExpandHorizontal(true);
-        scrollContainer.setExpandVertical(true);
-    }
+        // Speed up scrolling when using a wheel mouse
+        final ScrollBar vBar = rootContainer.getVerticalBar();
+        vBar.setIncrement(10);
 
-    public void setInput(final Request request, final RCPResponse reply) {
-        this.request = request;
-        this.response = reply;
-        disposeOldSourceViewers();
-        createNewSourceViewers("");
-    }
+        summariesContainer = new Composite(rootContainer, SWT.NONE);
+        summariesContainer.setBackground(JavaUI.getColorManager().getColor(new RGB(255, 255, 255)));
+        summariesContainer.setLayout(GridLayoutFactory.fillDefaults().create());
+        summariesContainer.setLayoutData(GridDataFactory.fillDefaults().create());
+        rootContainer.setContent(summariesContainer);
 
-    private void disposeOldSourceViewers() {
-        for (final Control child : container.getChildren()) {
-            child.dispose();
-        }
-    }
-
-    private void createNewSourceViewers(final String searchCritera) {
-        if (response.isEmpty()) {
-        }
-        for (final RCPProposal codeExample : response.getProposals()) {
-            final ExampleSummaryPage page = new SimpleSummaryPage(searchClient);
-            page.createControl(container);
-            page.setInput(request, response, codeExample, searchCritera);
-        }
-        final int minWidth = 300;
-        final int minHeight = response.getNumberOfProposals() * 80;
-        scrollContainer.setMinSize(minWidth, minHeight);
-        scrollContainer.layout(true, true);
+        getViewSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(),
+                new CopyAction(this, controller));
     }
 
     @Override
     public void setFocus() {
-        container.setFocus();
+        summariesContainer.setFocus();
+    }
+
+    public Composite getSummaryArea() {
+        return summariesContainer;
+    }
+
+    public void update() {
+
+        final Point preferredSize = summariesContainer.computeSize(rootContainer.getParent().getSize().x - 20,
+                SWT.DEFAULT);
+        rootContainer.setMinSize(preferredSize);
+        rootContainer.layout(true, true);
     }
 }

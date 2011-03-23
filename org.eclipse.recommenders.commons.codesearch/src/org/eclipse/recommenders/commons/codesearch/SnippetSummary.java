@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.commons.codesearch;
 
+import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
+
 import java.net.URI;
 import java.util.Set;
 
@@ -19,7 +21,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import com.google.common.collect.Sets;
 import com.google.gson.annotations.SerializedName;
 
-public class SnippetSummary {
+public class SnippetSummary implements Cloneable {
 
     public static final SnippetSummary NULL = new SnippetSummary();
 
@@ -131,5 +133,36 @@ public class SnippetSummary {
      * </pre>
      */
     public Set<IMethodName> calledMethods = Sets.newHashSet();
+
+    public void nullEmptySets() {
+        if (usedTypes.isEmpty()) {
+            usedTypes = null;
+        }
+        if (calledMethods.isEmpty()) {
+            calledMethods = null;
+        }
+        if (overriddenMethods.isEmpty()) {
+            overriddenMethods = null;
+        }
+        if (extendedTypes.isEmpty()) {
+            extendedTypes = null;
+        }
+        if (implementedTypes.isEmpty()) {
+            implementedTypes = null;
+        }
+        if (fieldTypes.isEmpty()) {
+            fieldTypes = null;
+        }
+
+    }
+
+    @Override
+    public SnippetSummary clone() {
+        try {
+            return (SnippetSummary) super.clone();
+        } catch (final CloneNotSupportedException e) {
+            throw throwUnhandledException(e);
+        }
+    }
 
 }

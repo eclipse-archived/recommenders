@@ -20,7 +20,6 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.utils.Names;
@@ -28,11 +27,9 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
-import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendCodeSearchRequestJob;
 import org.eclipse.recommenders.internal.rcp.codesearch.utils.CrASTUtil;
+import org.eclipse.recommenders.internal.rcp.codesearch.views.CodesearchController;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.utils.RCPUtils;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PartInitException;
@@ -45,14 +42,14 @@ public final class SearchSimilarMethodsProposal extends JavaCompletionProposal {
     private final MethodDeclaration method;
     private final CompilationUnit recCu;
     private final IIntelligentCompletionContext ctx;
-    private final CodeSearchClient searchClient;
+    private final CodesearchController controller;
 
     public SearchSimilarMethodsProposal(final int relevance, final CompilationUnit cu,
-            final IIntelligentCompletionContext ctx, final CodeSearchClient searchClient) {
+            final IIntelligentCompletionContext ctx, final CodesearchController controller) {
         super("", getOffSet(ctx), 0, icon, createTitle(ctx.getEnclosingMethod()), relevance);
         recCu = cu;
         this.ctx = ctx;
-        this.searchClient = searchClient;
+        this.controller = controller;
         method = recCu.findMethod(ctx.getEnclosingMethod());
     }
 
@@ -75,23 +72,21 @@ public final class SearchSimilarMethodsProposal extends JavaCompletionProposal {
         try {
             final Request request = createRequestFromEnclosingMethod();
             request.issuedBy = UUIDHelper.getUUID();
-            scheduleSearchRequest(request);
+            controller.sendRequest(request, ctx.getOriginalContext().getProject());
         } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void scheduleSearchRequest(final Request request) {
-        new SendCodeSearchRequestJob(request, ctx.getOriginalContext().getProject(), searchClient).schedule();
-    }
-
     private Request createRequestFromEnclosingMethod() throws JavaModelException, PartInitException {
         final JavaEditor editor = (JavaEditor) JavaUI.openInEditor(ctx.getCompilationUnit());
-        final ITextSelection selection = RCPUtils.getTextSelection(editor);
-        final ASTNode node = CrASTUtil.resolveClosesMethodOrTypeDeclarationNode(editor);
+        final ASTNode node = CrASTUtil.resolveClosestMethodOrTypeDeclarationNode(editor);
         if (node != null) {
-            final SearchRequestCreator searchRequestCreator = new SearchRequestCreator(node, selection);
-            return searchRequestCreator.getRequest();
+            return new SimilarMethodsSearchRequestCreator((org.eclipse.jdt.core.dom.MethodDeclaration) node)
+                    .getRequest();
+            // final SearchRequestCreator searchRequestCreator = new
+            // SearchRequestCreator(node, selection);
+            // return searchRequestCreator.getRequest();
         }
         throw throwUnreachable("unexpected selection - please report this issue.");
     }

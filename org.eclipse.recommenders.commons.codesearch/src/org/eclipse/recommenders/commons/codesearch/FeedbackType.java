@@ -13,23 +13,29 @@ package org.eclipse.recommenders.commons.codesearch;
 public enum FeedbackType {
 
     /**
-     * User opened the given code snippet in his/her editor.
-     */
-    EDITOR_OPENED,
-
-    /**
      * User opened the code snippet in his editor and also copied some content
      * from the snippet's source.
      */
     TEXT_COPIED,
 
     /**
-     * User rated this snippet as being not helpful
+     * User opened the given code snippet in his/her editor.
      */
-    RATED_USELESS,
+    EDITOR_OPENED,
 
     /**
      * User rated this snippet as being helpful
      */
     RATED_USEFUL,
+
+    /**
+     * This item has not been rated at all.
+     */
+    NOT_RATED,
+
+    /**
+     * User removed this item from the proposals list - thus, marked it as being
+     * irrelevant.
+     */
+    CLEARED,
 }

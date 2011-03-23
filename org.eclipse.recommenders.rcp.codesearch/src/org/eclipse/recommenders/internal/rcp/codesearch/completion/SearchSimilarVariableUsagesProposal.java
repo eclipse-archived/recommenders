@@ -24,8 +24,7 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Compilati
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
-import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendCodeSearchRequestJob;
+import org.eclipse.recommenders.internal.rcp.codesearch.views.CodesearchController;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.swt.graphics.Image;
@@ -38,12 +37,12 @@ public final class SearchSimilarVariableUsagesProposal extends JavaCompletionPro
             "icons/obj16/search.png").createImage();
     private final IJavaProject javaProject;
     private final MethodDeclaration method;
-    private final CodeSearchClient searchClient;
+    private final CodesearchController controller;
 
     public SearchSimilarVariableUsagesProposal(final int relevance, final CompilationUnit cu,
-            final IIntelligentCompletionContext ctx, final CodeSearchClient searchClient) {
+            final IIntelligentCompletionContext ctx, final CodesearchController controller) {
         super("", getOffSet(ctx), 0, icon, createTitle(ctx), relevance);
-        this.searchClient = searchClient;
+        this.controller = controller;
         method = cu.findMethod(ctx.getEnclosingMethod());
         variable = Variable.create(ctx.getReceiverName(), ctx.getReceiverType(), ctx.getEnclosingMethod());
         javaProject = ctx.getCompilationUnit().getJavaProject();
@@ -72,7 +71,7 @@ public final class SearchSimilarVariableUsagesProposal extends JavaCompletionPro
     }
 
     private void scheduleSearchRequest(final Request request) {
-        new SendCodeSearchRequestJob(request, javaProject, searchClient).schedule();
+        controller.sendRequest(request, javaProject);
     }
 
     private Request createRequestFromVariable() {

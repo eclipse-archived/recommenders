@@ -45,8 +45,7 @@ public class Checks {
         ensureIsNotNull(file);
         if (!file.exists()) {
             try {
-                final File canonicalFile = file.getCanonicalFile();
-                System.out.println(canonicalFile);
+                file.getCanonicalFile();
             } catch (final IOException e) {
                 e.printStackTrace();
             }

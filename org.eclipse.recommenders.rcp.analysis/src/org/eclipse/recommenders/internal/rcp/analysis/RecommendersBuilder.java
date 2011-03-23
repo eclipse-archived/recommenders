@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
@@ -164,7 +165,10 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         final IClassHierarchy cha = chaService.getClassHierachy(cu);
         if (cha instanceof LazyClassHierarchy) {
             final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
-            lcha.remove(javaElementResolver.toRecType(cu.findPrimaryType()));
+            final IType primaryType = cu.findPrimaryType();
+            if (primaryType != null) {
+                lcha.remove(javaElementResolver.toRecType(primaryType));
+            }
         }
         if (!cu.isStructureKnown()) {
             monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");

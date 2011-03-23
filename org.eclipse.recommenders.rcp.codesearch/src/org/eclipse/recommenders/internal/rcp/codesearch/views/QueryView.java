@@ -19,8 +19,6 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
-import org.eclipse.recommenders.internal.rcp.codesearch.client.CodeSearchClient;
-import org.eclipse.recommenders.internal.rcp.codesearch.jobs.SendCodeSearchRequestJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Font;
@@ -39,11 +37,11 @@ public class QueryView extends ViewPart {
     private SourceViewer viewer;
     private Action sendQueryAction;
     private IJavaProject issuingProject;
-    private final CodeSearchClient searchClient;
+    private final CodesearchController controller;
 
     @Inject
-    public QueryView(final CodeSearchClient searchClient) {
-        this.searchClient = searchClient;
+    public QueryView(final CodesearchController controller) {
+        this.controller = controller;
 
     }
 
@@ -62,7 +60,7 @@ public class QueryView extends ViewPart {
             @Override
             public void run() {
                 final Request request = getInput();
-                new SendCodeSearchRequestJob(request, issuingProject, searchClient).schedule();
+                controller.sendRequest(request, issuingProject);
             }
         };
         sendQueryAction.setToolTipText("Submits the view's code search query");

@@ -10,9 +10,11 @@
  */
 package org.eclipse.recommenders.internal.rcp.codesearch.utils;
 
+import static java.lang.String.format;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICodeAssist;
@@ -20,6 +22,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -41,7 +44,6 @@ import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Region;
-import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.rcp.utils.RCPUtils;
@@ -118,24 +120,28 @@ public class CrASTUtil {
         }
     }
 
-    public static CompilationUnit createCompilationUnitFromString(final ITypeName ITypeName, final String source,
+    public static CompilationUnit createCompilationUnitFromString(final ITypeName type, final String source,
             final IJavaProject javaProject) {
         final ASTParser parser = ASTParser.newParser(AST.JLS3);
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
         parser.setSource(source.toCharArray());
         parser.setResolveBindings(true);
         // XXX does this hurt?
-        final String srcClassName = Names.vm2srcTypeName(ITypeName.getIdentifier());
-        parser.setUnitName(srcClassName + ".java");
+        final String srcClassName = format("/code-recommenders-virtual-project/src/%s/%s.java", type.getPackage()
+                .getIdentifier(), type.getClassName());
+        System.out.println("unit name:" + srcClassName);
+        parser.setUnitName(srcClassName);
         parser.setProject(javaProject);
-        parser.setWorkingCopyOwner(new MyWorkingCopyOwner());
+        final Map compilerOpts = JavaCore.getOptions();
+        parser.setCompilerOptions(compilerOpts);
+        // parser.setWorkingCopyOwner(new MyWorkingCopyOwner());
         parser.setBindingsRecovery(true);
         parser.setStatementsRecovery(true);
         final ASTNode ast = parser.createAST(null);
         return (CompilationUnit) ast;
     }
 
-    public static ASTNode resolveClosesMethodOrTypeDeclarationNode(final JavaEditor editor) throws JavaModelException {
+    public static ASTNode resolveClosestMethodOrTypeDeclarationNode(final JavaEditor editor) throws JavaModelException {
         final ITypeRoot root = EditorUtility.getEditorInputJavaElement(editor, true);
         if (root == null) {
             return null;
@@ -226,7 +232,7 @@ public class CrASTUtil {
             }
             final IJavaElement[] elements = ((ICodeAssist) input).codeSelect(selection.getOffset(),
                     selection.getLength());
-            if ((elements != null) && (elements.length > 0)) {
+            if (elements != null && elements.length > 0) {
                 return elements;
             }
         }
