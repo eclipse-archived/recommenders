@@ -14,12 +14,16 @@ import static java.lang.String.format;
 
 public class Tuple<T0, T1> {
 
-    private final T0 t0;
+    private T0 t0;
 
-    private final T1 t1;
+    private T1 t1;
 
     public static <T0, S0 extends T0, T1, S1 extends T1> Tuple<T0, T1> create(final S0 t0, final S1 t1) {
         return new Tuple<T0, T1>(t0, t1);
+    }
+
+    protected Tuple() {
+        // Used for deserialization
     }
 
     protected Tuple(final T0 t0, final T1 t1) {
@@ -39,7 +43,7 @@ public class Tuple<T0, T1> {
         return false;
     }
 
-    private boolean safeEquals(Object arg0, Object arg1) {
+    private boolean safeEquals(final Object arg0, final Object arg1) {
         return arg0 == null ? arg1 == null : arg0.equals(arg1);
     }
 
@@ -58,8 +62,8 @@ public class Tuple<T0, T1> {
 
     @Override
     public int hashCode() {
-        int h0 = t0 == null ? 0 : t0.hashCode();
-        int h1 = t1 == null ? 0 : t1.hashCode();
+        final int h0 = t0 == null ? 0 : t0.hashCode();
+        final int h1 = t1 == null ? 0 : t1.hashCode();
         return h0 + h1;
     };
 

@@ -77,7 +77,7 @@ public class GenericWhatElseFeatureScorer implements SingleFeatureScorer {
             }
         }
         for (final Term term : terms) {
-            otherTerms.remove(term.text());
+            otherTerms.removeAll(term.text());
         }
         final List<String> top = otherTerms.topElements(5);
         topElements = Sets.newHashSet(top);

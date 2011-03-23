@@ -22,7 +22,8 @@ public interface Bag<T> extends Iterable<T> {
     public abstract void add(final T element);
 
     /**
-     * Adds the given elements to this bag and increases the counter to count(key)+frequency.
+     * Adds the given elements to this bag and increases the counter to
+     * count(key)+frequency.
      */
     public abstract void add(final T element, final int count);
 
@@ -41,6 +42,8 @@ public interface Bag<T> extends Iterable<T> {
      */
     public abstract void addAll(final T... elements);
 
+    public abstract void addAll(Bag<? extends T> bag);
+
     /**
      * @return the count how often the given object was added to this bag before
      */
@@ -53,8 +56,9 @@ public interface Bag<T> extends Iterable<T> {
     public abstract Iterator<T> iterator();
 
     /**
-     * @return a copy of the bag's (distinct) set of elements, i.e., a set without any duplicates. Note, changes to this
-     *         key set are not propagates to the bag.
+     * @return a copy of the bag's (distinct) set of elements, i.e., a set
+     *         without any duplicates. Note, changes to this key set are not
+     *         propagates to the bag.
      */
     public abstract Set<T> elements();
 
@@ -64,13 +68,24 @@ public interface Bag<T> extends Iterable<T> {
     public abstract int elementsCount();
 
     /**
-     * Clears the given element completely from the bag (it does not decrease the counter by one).
+     * Removes one element multiple times from the bag. The multiplicity is
+     * given by parameter frequency. If the element count is 0 after removing
+     * the element the Bag itself will not contain element anymore.
      */
-    public abstract void remove(final T element);
+    public abstract void remove(final T element, final int frequency);
 
     /**
-     * @return the total number of elements stored in this bag. This sums up the frequency of each unique object stored
-     *         in the key set of this bag.
+     * Clears the given element completely from the bag (it does not decrease
+     * the counter by one).
+     */
+    public abstract void removeAll(final T element);
+
+    public abstract void remove(Bag<? extends T> bag);
+
+    /**
+     * @return the total number of elements stored in this bag. This sums up the
+     *         frequency of each unique object stored in the key set of this
+     *         bag.
      * 
      * @see #elementsCount()
      */
@@ -85,4 +100,5 @@ public interface Bag<T> extends Iterable<T> {
      * Returns true if the given element is already stored in this bag.
      */
     public abstract boolean contains(T element);
+
 }
