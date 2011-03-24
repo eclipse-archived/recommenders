@@ -145,10 +145,21 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
             }
 
             private void checkIsAssignmentForMethodReturn(final VariableDeclarationFragment fragment) {
-                final SimpleName name = fragment.getName();
-                if (name.getIdentifier().equals(localVariable.getNameLiteral())) {
+
+                if (isVariableDeclarationOfCurrentVariable(fragment) && !isConstructorCall(fragment.getInitializer())) {
                     localVariableKind = Kind.RETURN;
                 }
+            }
+
+            private boolean isConstructorCall(final Expression initializer) {
+                return initializer instanceof ClassInstanceCreation;
+            }
+
+            private boolean isVariableDeclarationOfCurrentVariable(final VariableDeclarationFragment fragment) {
+                final SimpleName astName = fragment.getName();
+                final String astNameLiteral = astName.getIdentifier();
+                final String recNameLiteral = localVariable.getNameLiteral();
+                return astNameLiteral.equals(recNameLiteral);
             }
 
             private void evaluateAssignment(final Assignment a) {
