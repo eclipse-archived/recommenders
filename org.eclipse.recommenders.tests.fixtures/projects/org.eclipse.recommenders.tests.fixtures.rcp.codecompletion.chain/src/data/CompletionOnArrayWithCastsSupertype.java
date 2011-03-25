@@ -22,7 +22,7 @@ public class CompletionOnArrayWithCastsSupertype {
         final Number c = <^Space|obj.findme.*2 elements.*>
         //@end
         //final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        //final Number c = obj.findme[i][j][k]
+        //final Number c = obj.findme[j][k][l]
 	}
 
     public static void method2() {
@@ -31,7 +31,7 @@ public class CompletionOnArrayWithCastsSupertype {
         final Number[] c = <^Space|obj.findme.*2 elements.*>
         // @end
         // final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        //final Number[] c = obj.findme[i][j]
+        //final Number[] c = obj.findme[j][k]
     }
 
     public static void method3() {
@@ -40,7 +40,7 @@ public class CompletionOnArrayWithCastsSupertype {
         final Number[][] c = <^Space|obj.findme.*2 elements.*>
         //@end
         //final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        //final Number[][] c = obj.findme[i]
+        //final Number[][] c = obj.findme[j]
 	}
 
     public static void method4() {

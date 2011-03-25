@@ -70,6 +70,6 @@ public class CompletionOnArrayMemberAccessInMethod {
         final AtomicBoolean c = <^Space|obj.findUs.*>
         //@end
         //final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-        //final AtomicBoolean c = obj.findUs[i][j][k]
+        //final AtomicBoolean c = obj.findUs1[i][j][k]
     }
 }
