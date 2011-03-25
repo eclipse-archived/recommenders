@@ -10,18 +10,16 @@
  */
 package data;
 
+import helper.FileFindHelper;
+
 import java.io.File;
 
 //call chain 1 ok --> 1 element chain does not lead to expected solution 
 public class CompletionOnMemberAccessInGlobal {
     //@start
-    File findMe = new File("");
-    File c = <^Space|findMe.*(1 element).*>;
+    FileFindHelper helper = new FileFindHelper();
+    File c = <^Space|helper.findMe.*2 elements.*>;
     //@end
-    //File findMe = new File("");
-    //File c = findMe;
-    /* calling context --> 'this' aka CompletionOnMemberAccessInGlobal
-     * expected type --> File
-     * variable name --> c
-     */
+    //FileFindHelper helper = new FileFindHelper();
+    //File c = helper.findMe;
 }

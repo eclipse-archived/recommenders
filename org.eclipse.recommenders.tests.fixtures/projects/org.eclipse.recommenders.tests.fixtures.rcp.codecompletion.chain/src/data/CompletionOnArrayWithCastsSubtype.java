@@ -11,37 +11,41 @@ package data;
 
 //call chain 1 ok
 public class CompletionOnArrayWithCastsSubtype {
-	public Number[][][] findme;
-	
-	public static void method1() {
+    public Number[][][] findme;
+
+    public static void method1() {
+	    //@start
 		final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
-        final Integer c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> (Integer) obj.findme[i][j][k]
-         */
+        final Integer c = <^Space|.*Integer.*obj.findme.*>
+        //@end
+        //final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
+        //final Integer c = (Integer) obj.findme[i][j][k]
 	}
-	
-	public static void method2() {
+
+    public static void method2() {
+        //@start
 		final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
-        final Integer[] c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> (Integer[]) obj.findme[i][j]
-         */
+        final Integer[] c = <^Space|.*obj.findme.*>
+        //@end
+        //final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
+        //final Integer[] c = (Integer[]) obj.findme[i][j]
 	}
-	
-	public static void method3() {
+
+    public static void method3() {
+        //@start
 		final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
-        final Integer[][] c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> (Integer[][]) obj.findme[i]
-         */
+        final Integer[][] c = <^Space|.*obj.findme.*>
+        //@end
+        //final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
+        //final Integer[][] c = (Integer[][]) obj.findme[i]
 	}
-	
-	public static void method4() {
+
+    public static void method4() {
+        //@start
 		final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
-        final Integer[][][] c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> (Integer[][][]) obj.findme
-         */
+        final Integer[][][] c = <^Space|.*obj.findme.*>
+        //@end
+        //final CompletionOnArrayWithCastsSubtype obj = new CompletionOnArrayWithCastsSubtype();
+        //final Integer[][][] c = (Integer[][][]) obj.findme
 	}
 }

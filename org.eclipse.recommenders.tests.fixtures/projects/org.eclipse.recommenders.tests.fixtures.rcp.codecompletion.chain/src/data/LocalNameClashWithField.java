@@ -10,35 +10,38 @@
  */
 package data;
 
+import java.io.File;
+
+import helper.FileFindHelper;
+
 //call chain 1 ok --> 1 element chain does not lead to expected solution 
 public class LocalNameClashWithField {
 
-    String var = "findMe";
-    
+    FileFindHelper var = new FileFindHelper();
+
     class A {
-    	public Integer findMe() {
-    		return 0;
-    	}
+        public Integer findMe() {
+            return 0;
+        }
     }
-    
+
     class B {
-    	public boolean findMe() {
-    		return true;
-    	}
+        public boolean findMe() {
+            return true;
+        }
     }
-    
 
     public LocalNameClashWithField() {
-        //@start
     	
-    	A a;
-    	B b;
+    	final A a;
+    	final B b;
     	
-    	boolean c = 
+    	final boolean c = 
     	
     	
-        final String var = <^Space|.*var.*(1 element).*>
+    	//@start
+        final File var = <^Space|.*var.findMe.*2 elements.*>
         //@end
-        //final String var = this.var
+        //final File var = this.var.findMe
     }
 }

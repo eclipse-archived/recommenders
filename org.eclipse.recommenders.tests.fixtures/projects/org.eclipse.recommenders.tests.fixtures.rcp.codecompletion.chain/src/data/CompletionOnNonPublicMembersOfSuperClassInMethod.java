@@ -22,32 +22,31 @@ public class CompletionOnNonPublicMembersOfSuperClassInMethod extends FieldsWith
     public static CompletionOnNonPublicMembersOfSuperClassInMethod useMe = new CompletionOnNonPublicMembersOfSuperClassInMethod();
 
     public static void test_protected() {
-		final AtomicBoolean c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> AtomicBoolean
-         * expected completion --> useMe.findMe1
-		 * variable name --> c
-		 */
+        //@start
+		final AtomicBoolean c = <^Space|useMe.findMe.*>
+		//@end
+		//final AtomicBoolean c = useMe.findMe1
 	}
 
     public static void test_default() {
-		final AtomicInteger c = <@Ignore^Space>
+        //@start
+		final AtomicInteger c = <^Space|useMe.*>
+		//@end
+		//final AtomicInteger c = useMe
+		
 		/*
-		 * calling context --> static
-		 * expected type --> AtomicInteger
          * NOT expected completion --> useMe.findMe2
-		 * variable name --> c
 		 */
 	}
 
     public static void test_private() {
-		final AtomicLong c = <@Ignore^Space>
+        //@start
+		final AtomicLong c = <^Space|useMe.*>
+		//@end
+		//final AtomicLong c = useMe
+		
 		/*
-		 * calling context --> static
-		 * expected type --> AtomicLong
          * NOT expected completion --> useMe.findMe3
-		 * variable name --> c
 		 */
 	}
 }

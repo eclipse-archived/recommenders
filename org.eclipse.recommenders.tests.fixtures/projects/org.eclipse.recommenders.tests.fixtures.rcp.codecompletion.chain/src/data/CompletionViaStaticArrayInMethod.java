@@ -21,11 +21,9 @@ public class CompletionViaStaticArrayInMethod {
             new CompletionViaStaticArrayInMethod() };
 
     public static void method1() {
-		final AtomicBoolean c = <@Ignore^Space>
-        /* calling context --> static
-         * expected type --> AtomicBoolean
-         * expected completion --> useUs[i].findMe
-         * variable name --> c
-         */
+        //@start
+		final AtomicBoolean c = <^Space|useUs.*findMe.*>
+		//@end
+		//final AtomicBoolean c = useUs[i].findMe
     }
 }

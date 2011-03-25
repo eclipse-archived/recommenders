@@ -18,62 +18,58 @@ public class CompletionOnArrayMemberAccessInMethod {
 
     public AtomicInteger findUs[] = { new AtomicInteger(1), new AtomicInteger(2) };
     public AtomicBoolean findUs1[][][] = new AtomicBoolean[1][1][1];
-    
+
     public static void method1() {
+        //@start
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-        final AtomicInteger c = <@Ignore^Space>
-        /* calling context --> static
-         * expected type --> AtomicInteger
-         * expected completion --> obj.findUs[i]
-         * variable name --> c
-         */
+        final AtomicInteger c = <^Space|obj.findUs\[.+\].*>
+        //@end
+        //final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
+        //final AtomicInteger c = obj.findUs[i]
     }
 
     public static void method2() {
+        //@start
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-		final AtomicInteger[] c = <@Ignore^Space>
-        /* calling context --> static
-         * expected type --> AtomicInteger[]
-         * expected completion --> obj.findUs
-         * variable name --> c
-         */
+		final AtomicInteger[] c = <^Space|obj.findUs.*>
+		//@end
+//		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
+//      final AtomicInteger[] c = obj.findUs
     }
 
     public static void method3() {
+        //@start
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-        final AtomicInteger[][] c = <@Ignore^Space>
-        /* calling context --> static
-         * expected type --> AtomicInteger[][]
-         * NOT expected completion --> obj.findUs
-         * variable name --> c
-         */
+        final AtomicBoolean[][][] c = <^Space|obj.findUs.*>
+        //@end
+        //final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
+        //final AtomicBoolean[][][] c = obj.findUs1
     }
-    
+
     public static void method4() {
+        //@start
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-        final AtomicBoolean[][] c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> obj.findUs1[i]
-         * variable name --> c
-         */
+        final AtomicBoolean[][] c = <^Space|obj.findUs.*>
+        //@end
+        //final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
+        //final AtomicBoolean[][] c = obj.findUs1[i]
     }
-    
+
     public static void method5() {
+        //@start
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-        final AtomicBoolean c[] = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> obj.findUs1[i][j]
-         * variable name --> c
-         */
+        final AtomicBoolean c[] = <^Space|obj.findUs.*>
+        //@end
+        //final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
+        //final AtomicBoolean c[] = obj.findUs1[i][j]
     }
-    
+
     public static void method6() {
+        //@start
 		final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
-        final AtomicBoolean c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> obj.findUs1[i][j][k]
-         * variable name --> c
-         */
+        final AtomicBoolean c = <^Space|obj.findUs.*>
+        //@end
+        //final CompletionOnArrayMemberAccessInMethod obj = new CompletionOnArrayMemberAccessInMethod();
+        //final AtomicBoolean c = obj.findUs[i][j][k]
     }
-    
 }

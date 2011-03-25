@@ -19,13 +19,11 @@ public class CompletionOnSupertypeInMethod {
     public ByteArrayInputStream findMe = new ByteArrayInputStream(new byte[] { 0, 1, 2, 3 });
 
     public static void method() {
+        //@start
 		final CompletionOnSupertypeInMethod useMe = new CompletionOnSupertypeInMethod();
-		final InputStream c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> InputStream
-         * expected completion --> useMe.findMe
-		 * variable name --> c
-		 */
+		final InputStream c = <^Space|useMe.findMe.*2 elements.*>
+		//@end
+		//final CompletionOnSupertypeInMethod useMe = new CompletionOnSupertypeInMethod();
+		//final InputStream c = useMe.findMe
 	}
 }

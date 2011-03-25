@@ -26,8 +26,7 @@ public class AvoidRecursiveCallsToMember {
         final AvoidRecursiveCallsToMember useMe = new AvoidRecursiveCallsToMember();
         final AtomicBoolean c = useMe.get<^Space|.*findMe.*>
         // @end
-        // final CompletionOnMemberInMethodWithPrefix useMe = new
-        // CompletionOnMemberInMethodWithPrefix();
+        // final AvoidRecursiveCallsToMember useMe = new AvoidRecursiveCallsToMember();
         // final AtomicBoolean c = useMe.getSubElement().findMe
     }
 }
