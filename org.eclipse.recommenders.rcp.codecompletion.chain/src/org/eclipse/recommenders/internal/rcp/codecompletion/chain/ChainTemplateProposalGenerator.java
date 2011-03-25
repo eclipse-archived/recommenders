@@ -283,7 +283,7 @@ public class ChainTemplateProposalGenerator {
     try {
       isEvaluable = ctx.evaluate(template) != null;
       hasProposalString = ctx.evaluate(template).getString() != null;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       isEvaluable = false;
       hasProposalString = false;
     }
@@ -297,7 +297,7 @@ public class ChainTemplateProposalGenerator {
       if (ctx.getDocument().getChar(start) != ' ') {
         start++;
       }
-    } catch (BadLocationException e) {
+    } catch (final BadLocationException e) {
       JavaPlugin.log(e);
     }
     final int end = ctx.getEnd();
@@ -349,7 +349,7 @@ public class ChainTemplateProposalGenerator {
   // This method generates the part name for the proposal box. If the part is a
   // method with input parameters an
   // '(...)' is added, else '()'
-  private String makePartName(final IChainElement part, int chainPosition) {
+  private String makePartName(final IChainElement part, final int chainPosition) {
     String result = new String();
     switch (part.getElementType()) {
     case FIELD:
@@ -381,7 +381,7 @@ public class ChainTemplateProposalGenerator {
   // This method computes the description for the proposal box
   private String computeDescription(final ChainTemplateProposal chainProposal) {
     final int chainLength = chainProposal.getProposedChain().size();
-    StringBuffer res = new StringBuffer();
+    final StringBuffer res = new StringBuffer();
     res.append("(");
     res.append(chainLength == 1 ? "1 element, " : chainLength + " elements, ");
 
@@ -435,7 +435,7 @@ public class ChainTemplateProposalGenerator {
     }
   }
 
-  private String computeArrayBracketsForCasting(ChainTemplateProposal chainProposal) {
+  private String computeArrayBracketsForCasting(final ChainTemplateProposal chainProposal) {
     String brackets = new String();
     for (int i = expectedTypeDimension; i > 0; i--) {
       brackets += "[]";
@@ -444,14 +444,14 @@ public class ChainTemplateProposalGenerator {
   }
 
   private String computeCastingForCode(final ChainTemplateProposal chainProposal) {
-    TypeName name = chainProposal.getCastingType().getName();
+    final TypeName name = chainProposal.getCastingType().getName();
     String casting = name.getPackage().toString() + "/" + name.getClassName().toString();
     casting = casting.replaceAll("/", ".");
     return casting;
   }
 
   // This method generates a part of the code for one proposal.
-  private String makePartCode(final IChainElement part, int chainPosition) throws JavaModelException {
+  private String makePartCode(final IChainElement part, final int chainPosition) throws JavaModelException {
     String result = new String();
     switch (part.getElementType()) {
     case FIELD:
@@ -475,6 +475,7 @@ public class ChainTemplateProposalGenerator {
 
   private String computeArrayBracketsForTemplate(final IChainElement part) {
     String result = new String();
+    ProposalNameGenerator.resetSequence();
     if (isEqualToExpectedType(part) || isInSubtypeHierarchie(part) || isInSupertypeHierarchie(part)) {
       for (int i = part.getArrayDimension() - expectedTypeDimension; i > 0; i--) {
         result += "[${" + ProposalNameGenerator.generateFreeVariableName() + "}]";
@@ -487,18 +488,18 @@ public class ChainTemplateProposalGenerator {
     return result;
   }
 
-  private boolean isInSupertypeHierarchie(IChainElement part) {
+  private boolean isInSupertypeHierarchie(final IChainElement part) {
     try {
       return InheritanceHierarchyCache.isSupertype(part.getType(), expectedType, expectedTypeDimension);
-    } catch (JavaModelException e) {
+    } catch (final JavaModelException e) {
       return false;
     }
   }
 
-  private boolean isInSubtypeHierarchie(IChainElement part) {
+  private boolean isInSubtypeHierarchie(final IChainElement part) {
     try {
       return InheritanceHierarchyCache.isSubtype(part.getType(), expectedType, expectedTypeDimension);
-    } catch (JavaModelException e) {
+    } catch (final JavaModelException e) {
       return false;
     }
   }
@@ -508,7 +509,7 @@ public class ChainTemplateProposalGenerator {
   }
 
   // XXX methods check
-  private boolean checkForThisQualifier(final FieldChainElement part, int chainPosition) {
+  private boolean checkForThisQualifier(final FieldChainElement part, final int chainPosition) {
     if (part.hasThisQualifier()) {
       return chainPosition == 0;// prefixToLastDot.isEmpty() ||
                                 // prefixToLastDot.equals(" ");
