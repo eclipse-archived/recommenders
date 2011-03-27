@@ -1,0 +1,40 @@
+package org.eclipse.recommenders.internal.rcp.analysis.cp;
+
+import java.util.Set;
+
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.recommenders.commons.utils.Version;
+import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.ClasspathEntry;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
+public class VersionClasspathEntryAnalyzer implements IClasspathEntryAnalyzer {
+
+    private final Provider<Set<IVersionFinder>> provider;
+
+    @Inject
+    public VersionClasspathEntryAnalyzer(final Provider<Set<IVersionFinder>> provider) {
+        this.provider = provider;
+    }
+
+    @Override
+    public void analyze(final IClasspathEntry jdtEntry, final ClasspathEntry recEntry) {
+        for (final IVersionFinder finder : provider.get()) {
+            try {
+                final Version version = finder.find(recEntry.location);
+                if (version != IVersionFinder.UNKNOWN) {
+                    recEntry.version = version;
+                    return;
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+        setVersionToUnknown(recEntry);
+    }
+
+    private void setVersionToUnknown(final ClasspathEntry recEntry) {
+        recEntry.version = IVersionFinder.UNKNOWN;
+    }
+}

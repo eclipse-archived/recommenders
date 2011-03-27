@@ -15,9 +15,11 @@ import java.lang.reflect.Modifier;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 
+import com.google.inject.Singleton;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 
+@Singleton
 public class ModifiersMethodAnalyzer implements IMethodAnalyzer {
     @Override
     public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl,

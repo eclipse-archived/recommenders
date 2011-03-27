@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureExists;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFile;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -58,7 +59,7 @@ public class Fingerprints {
         }
     }
 
-    public static byte[] sha1(final File file) {
+    public static String sha1(final File file) {
         ensureIsNotNull(file);
         ensureExists(file);
         ensureIsFile(file);
@@ -70,7 +71,7 @@ public class Fingerprints {
             final ByteBuffer buffer = channel.map(MapMode.READ_ONLY, 0, (int) channel.size());
             final MessageDigest digest = createMessageDigest();
             digest.update(buffer);
-            return digest.digest();
+            return toString(digest);
         } catch (final Exception e) {
             throw Throws.throwUnhandledException(e);
         } finally {
@@ -80,29 +81,34 @@ public class Fingerprints {
         }
     }
 
-    public static byte[] sha1(final String message) {
+    private static String toString(final MessageDigest digest) {
+        final byte[] res = digest.digest();
+        return toHexString(res);
+    }
+
+    public static String sha1(final String message) {
         ensureIsNotNull(message);
         //
         try {
             final MessageDigest digest = createMessageDigest();
             digest.update(message.getBytes());
-            return digest.digest();
+            return toString(digest);
         } catch (final Exception e) {
             throw Throws.throwUnhandledException(e);
         }
     }
 
-    public static byte[] sha1(final InputStream stream) {
+    public static String sha1(final InputStream stream) {
         ensureIsNotNull(stream);
         try {
             final MessageDigest digest = createMessageDigest();
-            final DigestInputStream digestStream = new DigestInputStream(stream, digest);
+            final DigestInputStream digestStream = new DigestInputStream(new BufferedInputStream(stream), digest);
             while (digestStream.read() != -1) {
                 // simply read the stream data one-by-one
                 // XXX this may be slow. Maybe we should use byte[] to read more
                 // data in a single pass?
             }
-            return digest.digest();
+            return toString(digest);
         } catch (final Exception e) {
             throw Throws.throwUnhandledException(e);
         } finally {
@@ -110,7 +116,7 @@ public class Fingerprints {
         }
     }
 
-    public static String toHexString(final byte[] hash) {
+    private static String toHexString(final byte[] hash) {
         ensureIsNotNull(hash);
         // this is said to be very slow... - we may look at this if hashing
         // actually takes too long.
@@ -121,18 +127,18 @@ public class Fingerprints {
         return formatter.toString();
     }
 
-    public static String sha1AsHex(final String message) {
-        ensureIsNotNull(message);
-        //
-        try {
-            final MessageDigest digest = createMessageDigest();
-            digest.update(message.getBytes());
-            final byte[] res = digest.digest();
-            return toHexString(res);
-        } catch (final Exception e) {
-            throw Throws.throwUnhandledException(e);
-        }
-    }
+    // private static String sha1AsHex(final String message) {
+    // ensureIsNotNull(message);
+    // //
+    // try {
+    // final MessageDigest digest = createMessageDigest();
+    // digest.update(message.getBytes());
+    // final byte[] res = digest.digest();
+    // return toHexString(res);
+    // } catch (final Exception e) {
+    // throw Throws.throwUnhandledException(e);
+    // }
+    // }
 
     private Fingerprints() {
         // this is a utility class - no instances of this class can be created.

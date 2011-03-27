@@ -12,7 +12,7 @@ package org.eclipse.recommenders.rcp;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 
 /**
@@ -28,5 +28,5 @@ public interface IArtifactStoreChangedListener {
      * given compilation unit changed. This method is called in a background
      * job.
      */
-    void unitChanged(ICompilationUnit cu, IProgressMonitor monitor) throws CoreException;
+    void unitChanged(IJavaElement cu, IProgressMonitor monitor) throws CoreException;
 }

@@ -14,7 +14,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 
 import com.ibm.wala.classLoader.IClass;
-import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 
 public interface IClassHierarchyService {
@@ -23,6 +22,6 @@ public interface IClassHierarchyService {
 
     IClass getType(IType jdtType);
 
-    IMethod getMethod(org.eclipse.jdt.core.IMethod jdtMethod);
+    com.ibm.wala.classLoader.IMethod getMethod(org.eclipse.jdt.core.IMethod jdtMethod);
 
 }

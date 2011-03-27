@@ -19,8 +19,10 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectIns
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.ReceiverCallSite;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 
+import com.google.inject.Singleton;
 import com.ibm.wala.classLoader.IClass;
 
+@Singleton
 public class ThisObjectInstanceKeyCompilationUnitFinalizer implements CompilationUnitFinalizer {
     @Override
     public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass,

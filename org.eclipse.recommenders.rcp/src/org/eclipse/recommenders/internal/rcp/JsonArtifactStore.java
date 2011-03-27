@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.utils.IOUtils;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.annotations.Nullable;
@@ -47,7 +48,7 @@ import com.google.inject.Singleton;
 
 @Singleton
 public class JsonArtifactStore implements IArtifactStore {
-    private final Map<Tuple<ICompilationUnit, Class<?>>, Object> index = Maps.newHashMap();
+    private final Map<Tuple<IJavaElement, Class<?>>, Object> index = Maps.newHashMap();
 
     private final List<IArtifactStoreChangedListener> listener;
 
@@ -57,19 +58,19 @@ public class JsonArtifactStore implements IArtifactStore {
     }
 
     @Override
-    public boolean hasArtifact(final @Nullable ICompilationUnit cu, final Class<?> clazz) {
+    public boolean hasArtifact(final @Nullable IJavaElement cu, final Class<?> clazz) {
         if (cu == null) {
             return false;
         }
         return isArtifactInIndex(cu, clazz) ? true : existsCompilationUnitArtifactFileOnDisk(cu, clazz);
     }
 
-    private <T> boolean isArtifactInIndex(final ICompilationUnit cu, final Class<T> clazz) {
-        final Tuple<ICompilationUnit, Class<?>> key = createIndexKey(cu, clazz);
+    private <T> boolean isArtifactInIndex(final IJavaElement cu, final Class<T> clazz) {
+        final Tuple<IJavaElement, Class<?>> key = createIndexKey(cu, clazz);
         return index.containsKey(key);
     }
 
-    private boolean existsCompilationUnitArtifactFileOnDisk(final ICompilationUnit cu, final Class<?> clazz) {
+    private boolean existsCompilationUnitArtifactFileOnDisk(final IJavaElement cu, final Class<?> clazz) {
         return getCompilationUnitArtifactFile(cu, clazz).exists();
     }
 
@@ -89,26 +90,26 @@ public class JsonArtifactStore implements IArtifactStore {
 
     @SuppressWarnings("unchecked")
     private <T> T getArtifactInIndex(final ICompilationUnit cu, final Class<T> clazz) {
-        final Tuple<ICompilationUnit, Class<?>> key = createIndexKey(cu, clazz);
+        final Tuple<IJavaElement, Class<?>> key = createIndexKey(cu, clazz);
         return (T) index.get(key);
     }
 
     private Object putArtifactInIndex(final ICompilationUnit cu, final Class<?> clazz, final Object artifact) {
-        final Tuple<ICompilationUnit, Class<?>> key = createIndexKey(cu, clazz);
+        final Tuple<IJavaElement, Class<?>> key = createIndexKey(cu, clazz);
         return index.put(key, artifact);
     }
 
-    private <T> Tuple<ICompilationUnit, Class<?>> createIndexKey(final ICompilationUnit cu, final Class<T> clazz) {
+    private <T> Tuple<IJavaElement, Class<?>> createIndexKey(final IJavaElement cu, final Class<T> clazz) {
         return Tuple.create(cu, clazz);
     }
 
-    private IFile getCompilationUnitArtifactFile(final ICompilationUnit cu, final Class<?> artifactType) {
+    private IFile getCompilationUnitArtifactFile(final IJavaElement cu, final Class<?> artifactType) {
         final IFolder folder = getCompilationUnitArtifactsFolder(cu);
         final IFile file = folder.getFile(artifactType.getSimpleName() + ".json");
         return file;
     }
 
-    private IFolder getCompilationUnitArtifactsFolder(final ICompilationUnit unit) {
+    private IFolder getCompilationUnitArtifactsFolder(final IJavaElement unit) {
         final IResource cuFile = unit.getResource();
         final IProject project = cuFile.getProject();
         final IPath cuPath = cuFile.getProjectRelativePath();
@@ -134,7 +135,7 @@ public class JsonArtifactStore implements IArtifactStore {
     }
 
     @Override
-    public <T> void storeArtifacts(final ICompilationUnit cu, final List<T> newArtifacts) {
+    public <T> void storeArtifacts(final IJavaElement cu, final List<T> newArtifacts) {
         ensureIsNotNull(cu, "null compilation unit not allowed");
         ensureIsNotNull(newArtifacts, "null artifacts  list not allowed");
         final IFolder folder = getCompilationUnitArtifactsFolder(cu);
@@ -146,13 +147,13 @@ public class JsonArtifactStore implements IArtifactStore {
         fireArtifactsChanged(cu);
     }
 
-    private <T> void updateIndex(final ICompilationUnit cu, final T artifact) {
-        final Tuple<ICompilationUnit, Class<?>> key = createIndexKey(cu, artifact.getClass());
+    private <T> void updateIndex(final IJavaElement cu, final T artifact) {
+        final Tuple<IJavaElement, Class<?>> key = createIndexKey(cu, artifact.getClass());
         index.put(key, artifact);
     }
 
     @Override
-    public <T> void storeArtifact(final ICompilationUnit cu, final T artifact) {
+    public <T> void storeArtifact(final IJavaElement cu, final T artifact) {
         final IFolder folder = getCompilationUnitArtifactsFolder(cu);
         createResource(folder, new NullProgressMonitor());
         writeArtifactToDisk(folder, artifact);
@@ -160,7 +161,7 @@ public class JsonArtifactStore implements IArtifactStore {
         fireArtifactsChanged(cu);
     }
 
-    private void fireArtifactsChanged(final ICompilationUnit cu) {
+    private void fireArtifactsChanged(final IJavaElement cu) {
         new WorkspaceJob(format("Notifying artifact change listeners for '%s' ...", cu.getElementName())) {
             @Override
             public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
@@ -213,7 +214,7 @@ public class JsonArtifactStore implements IArtifactStore {
     }
 
     @Override
-    public void removeArtifacts(final ICompilationUnit cu) {
+    public void removeArtifacts(final IJavaElement cu) {
         try {
             getCompilationUnitArtifactsFolder(cu).delete(true, null);
         } catch (final Exception x) {

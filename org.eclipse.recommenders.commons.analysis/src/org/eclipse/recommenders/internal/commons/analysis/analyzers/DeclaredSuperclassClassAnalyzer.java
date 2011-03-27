@@ -14,8 +14,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
 
+import com.google.inject.Singleton;
 import com.ibm.wala.classLoader.IClass;
 
+@Singleton
 public class DeclaredSuperclassClassAnalyzer implements IClassAnalyzer {
     @Override
     public void analyzeClass(final IClass exampleClass, final TypeDeclaration type, final IProgressMonitor monitor) {

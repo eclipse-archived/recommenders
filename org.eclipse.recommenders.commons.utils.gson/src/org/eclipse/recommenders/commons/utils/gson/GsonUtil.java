@@ -51,6 +51,9 @@ public class GsonUtil {
             builder.registerTypeAdapter(IFieldName.class, new GsonNameSerializer());
             builder.registerTypeAdapter(VmFieldName.class, new GsonFieldNameDeserializer());
             builder.registerTypeAdapter(IFieldName.class, new GsonFieldNameDeserializer());
+            //
+            builder.registerTypeAdapter(File.class, new GsonFileDeserializer());
+            builder.registerTypeAdapter(File.class, new GsonFileSerializer());
             builder.setPrettyPrinting();
             // builder.setDateFormat("dd.MM.yyyy HH:mm:ss");
             builder.registerTypeAdapter(Date.class, new ISO8601DateParser());

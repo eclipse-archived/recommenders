@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 
+import com.google.inject.Singleton;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 
@@ -27,6 +28,7 @@ import com.ibm.wala.ipa.callgraph.Entrypoint;
  * -1 is returned.
  * </p>
  */
+@Singleton
 public class LineNumberMethodAnalyzer implements IMethodAnalyzer {
     @Override
     public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl,

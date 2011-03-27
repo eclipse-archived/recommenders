@@ -16,6 +16,6 @@ public class EmptyStackExample {
 
     public static void main(final String[] args) {
         final Stack<?> stack = new Stack<Object>();
-        stack.pop();
+        stack.pop(); 
     }
 }

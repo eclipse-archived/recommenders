@@ -18,6 +18,7 @@ Require-Bundle: org.apache.commons.lang3,
  com.google.guice.multibindings,
  com.google.guice.assistedinject
 Export-Package: org.eclipse.recommenders.internal.commons.analysis.analyzers,
+ org.eclipse.recommenders.internal.commons.analysis.analyzers.codemodules,
  org.eclipse.recommenders.internal.commons.analysis.analyzers.modules,
  org.eclipse.recommenders.internal.commons.analysis.codeelements,
  org.eclipse.recommenders.internal.commons.analysis.entrypoints,

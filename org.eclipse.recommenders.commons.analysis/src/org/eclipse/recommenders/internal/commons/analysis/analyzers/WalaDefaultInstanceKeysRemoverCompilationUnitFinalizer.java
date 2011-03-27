@@ -19,8 +19,10 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDec
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 
+import com.google.inject.Singleton;
 import com.ibm.wala.classLoader.IClass;
 
+@Singleton
 public class WalaDefaultInstanceKeysRemoverCompilationUnitFinalizer implements CompilationUnitFinalizer {
     @Override
     public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass,

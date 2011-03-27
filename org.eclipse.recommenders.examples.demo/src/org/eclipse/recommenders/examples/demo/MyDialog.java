@@ -13,11 +13,10 @@ package org.eclipse.recommenders.examples.demo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.help.IWorkbenchHelpSystem;
 
 /**
  * Demo outline:
@@ -30,24 +29,25 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
  */
 public class MyDialog extends Dialog {
 
-    private Text swtTextWidget;
+	private Text swtTextWidget;
 
-    @Override
-    protected Control createDialogArea(final Composite parent) {
-        final Composite container = createContainer(parent);
-        swtTextWidget.setLayoutData(null);
-        final IWorkbenchHelpSystem help = PlatformUI.getWorkbench().getHelpSystem();
-        
-        return container;
-    }
+	@Override
+	protected Control createDialogArea(final Composite parent) {
+		final Composite container = createContainer(parent);
 
-    private Composite createContainer(final Composite parent) {
-        final Composite container = new Composite(parent, SWT.NONE);
-        // container.setLayout(null);
-        return container;
-    }
+		final Text text = new Text(container, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		text.setText(""); 
 
-    protected MyDialog(final IShellProvider parentShell) {
-        super(parentShell);
-    }
+		return container;
+	}
+
+	private Composite createContainer(final Composite parent) {
+		final Composite container = new Composite(parent, SWT.NONE);
+		return container;
+	}
+
+	protected MyDialog(final IShellProvider parentShell) {
+		super(parentShell);
+	}
 }

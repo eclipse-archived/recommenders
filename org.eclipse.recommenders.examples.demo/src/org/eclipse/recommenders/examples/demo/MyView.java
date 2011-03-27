@@ -30,7 +30,7 @@ public class MyView extends ViewPart {
 
         // How do I get an instance of IStatusLineManager?
 
-        final IStatusLineManager manager = null;
+        final IStatusLineManager manager = getViewSite().getActionBars().getStatusLineManager();
         manager.setMessage(newMessage);
     }
 

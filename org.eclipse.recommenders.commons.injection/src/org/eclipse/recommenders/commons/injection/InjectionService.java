@@ -28,7 +28,6 @@ public final class InjectionService {
     }
 
     private InjectionService(final int blockDI) {
-        System.out.println("");
         // no need to instantiate this class. Call getInstance instead.
     }
 

@@ -22,7 +22,7 @@ public class ClientConfiguration {
     }
 
     public ClientConfiguration() {
-        Thread.dumpStack();
+        // Thread.dumpStack();
     }
 
     private String baseUrl;
