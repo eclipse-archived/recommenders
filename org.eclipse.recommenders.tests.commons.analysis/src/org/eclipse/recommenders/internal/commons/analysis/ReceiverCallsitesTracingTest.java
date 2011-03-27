@@ -10,11 +10,12 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis;
 
+import static junit.framework.Assert.fail;
+import static junit.framework.Assert.format;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import static java.lang.String.*;
-import static junit.framework.Assert.*;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.CallGraphMethodAnalyzer;
@@ -78,7 +79,7 @@ public class ReceiverCallsitesTracingTest {
         opts = new AnalysisOptions();
         opts.setAnalysisScope(cha.getScope());
         cache = new AnalysisCache();
-        cgBuilder = new InstanceCallGraphBuilder(opts, cache, cha);
+        cgBuilder = new InstanceCallGraphBuilder(opts, cache, cha, WalaTestUtils.getNativeSummaries(cha));
         output = MethodDeclaration.create();
         final Set<ICallGraphAnalyzer> analyzers = Sets.newHashSet();
         analyzers.add(new ReceiverCallsitesCallGraphAnalyzer());

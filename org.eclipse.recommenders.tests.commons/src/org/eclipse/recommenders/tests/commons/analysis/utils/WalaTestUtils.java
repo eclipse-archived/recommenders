@@ -12,12 +12,17 @@ package org.eclipse.recommenders.tests.commons.analysis.utils;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
+import java.io.InputStream;
+
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
 
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.ipa.callgraph.AnalysisScope;
+import com.ibm.wala.ipa.callgraph.impl.Util;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
+import com.ibm.wala.ipa.summaries.XMLMethodSummaryReader;
 import com.ibm.wala.types.ClassLoaderReference;
 import com.ibm.wala.types.TypeName;
 import com.ibm.wala.types.TypeReference;
@@ -32,21 +37,29 @@ public class WalaTestUtils {
      *         matching wala class could be found in the class hierarchy
      * 
      */
-    public static IClass lookupClass(IClassHierarchy cha, Class<?> javaClass) {
-        TypeName typeName = WalaNameUtils.java2walaTypeName(javaClass);
-        TypeReference typeReference = TypeReference.findOrCreate(ClassLoaderReference.Application, typeName);
-        IClass res = cha.lookupClass(typeReference);
+    public static IClass lookupClass(final IClassHierarchy cha, final Class<?> javaClass) {
+        final TypeName typeName = WalaNameUtils.java2walaTypeName(javaClass);
+        final TypeReference typeReference = TypeReference.findOrCreate(ClassLoaderReference.Application, typeName);
+        final IClass res = cha.lookupClass(typeReference);
         return ensureIsNotNull(res, "failed to lookup class '%s' in cha.", javaClass);
     }
 
-    public static IMethod lookupTestMethod(IClassHierarchy cha, Class<?> javaClass) {
-        IClass clazz = lookupClass(cha, javaClass);
-        for (IMethod m : clazz.getDeclaredMethods()) {
-            String name = m.getName().toString();
+    public static IMethod lookupTestMethod(final IClassHierarchy cha, final Class<?> javaClass) {
+        final IClass clazz = lookupClass(cha, javaClass);
+        for (final IMethod m : clazz.getDeclaredMethods()) {
+            final String name = m.getName().toString();
             if (name.equals("__test")) {
                 return m;
             }
         }
         throw Throws.throwIllegalArgumentException("class '%s' does not have a '__test' method.", javaClass);
+    }
+
+    public static XMLMethodSummaryReader getNativeSummaries(final IClassHierarchy cha) {
+        final ClassLoader cl = Util.class.getClassLoader();
+        final InputStream s = cl.getResourceAsStream("natives.xml");
+        final AnalysisScope scope = cha.getScope();
+        final XMLMethodSummaryReader summary = new XMLMethodSummaryReader(s, scope);
+        return summary;
     }
 }

@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.eclipse.recommenders.commons.injection;singleton:=true
 Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: com.google.guice;bundle-version="3.0.0",
+Require-Bundle: com.google.inject;bundle-version="3.0.0",
  com.google.guava,
  org.eclipse.core.runtime
 Export-Package: org.eclipse.recommenders.commons.injection,

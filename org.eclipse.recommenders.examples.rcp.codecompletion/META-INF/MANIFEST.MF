@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.rcp.codecompletion,
  org.eclipse.recommenders.commons.utils;bundle-version="0.1.0",
  org.eclipse.recommenders.rcp,
- com.google.guice;bundle-version="3.0.0",
+ com.google.inject;bundle-version="3.0.0",
  org.apache.commons.lang3,
  org.eclipse.recommenders.commons.injection;bundle-version="0.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

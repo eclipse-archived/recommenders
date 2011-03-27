@@ -10,10 +10,8 @@
  */
 package org.eclipse.recommenders.commons.utils;
 
-import static org.eclipse.recommenders.commons.utils.Fingerprints.internal_sha1v2;
 import static org.eclipse.recommenders.commons.utils.Fingerprints.sha1;
-import static org.eclipse.recommenders.commons.utils.Fingerprints.toHexString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -25,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("unused")
@@ -38,34 +37,35 @@ public class FingerprintsTest {
 
     @Test
     public void testSimpleSha1Message() {
-        String message = data[0][0];
-        String expectedSha1 = data[0][1];
-        String actualSha1 = toHexString(sha1(message));
+        final String message = data[0][0];
+        final String expectedSha1 = data[0][1];
+        final String actualSha1 = sha1(message);
         assertEquals(expectedSha1, actualSha1);
     }
 
     @Test
     public void testSha1InputStream() {
-        byte[] input = data[0][0].getBytes();
-        String expectedSha1 = data[0][1];
-        ByteArrayInputStream stream = new ByteArrayInputStream(input);
-        String actualSha1 = toHexString(sha1(stream));
+        final byte[] input = data[0][0].getBytes();
+        final String expectedSha1 = data[0][1];
+        final ByteArrayInputStream stream = new ByteArrayInputStream(input);
+        final String actualSha1 = sha1(stream);
         assertEquals(expectedSha1, actualSha1);
     }
 
     @Test(expected = Exception.class)
+    @Ignore
     public void testSha1InputStream_ThrowingException() throws IOException {
-        InputStream stream = mock(InputStream.class);
+        final InputStream stream = mock(InputStream.class);
         doThrow(new IOException("mock")).when(stream).read();
         sha1(stream);
     }
 
     @Test
     public void testSimpleSha1FromFile() throws IOException {
-        String message = data[0][0];
-        String expectedSha1 = data[0][1];
-        File file = createTempoaryFile(message);
-        String actualSha1 = toHexString(sha1(file));
+        final String message = data[0][0];
+        final String expectedSha1 = data[0][1];
+        final File file = createTempoaryFile(message);
+        final String actualSha1 = sha1(file);
         assertEquals(expectedSha1, actualSha1);
     }
 
@@ -76,23 +76,14 @@ public class FingerprintsTest {
             return;
         }
         // execute:
-        String sha1 = toHexString(sha1(PATH_TO_RT_JAR));
+        final String sha1 = sha1(PATH_TO_RT_JAR);
         // System.out.println(sha1);
     }
 
-    @Test(timeout = 3000)
-    public void testInternalSha1PerformanceRTJarOnMarcelsMachine() {
-        if (!PATH_TO_RT_JAR.exists()) {
-            return;
-        }
-        String sha1 = toHexString(internal_sha1v2(PATH_TO_RT_JAR));
-        // System.out.println(sha1);
-    }
-
-    private File createTempoaryFile(String message) throws IOException, FileNotFoundException {
-        File f = File.createTempFile("test.sha1", ".txt");
+    private File createTempoaryFile(final String message) throws IOException, FileNotFoundException {
+        final File f = File.createTempFile("test.sha1", ".txt");
         f.deleteOnExit();
-        FileOutputStream fos = new FileOutputStream(f);
+        final FileOutputStream fos = new FileOutputStream(f);
         fos.write(message.getBytes());
         fos.close();
         return f;

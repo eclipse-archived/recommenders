@@ -9,10 +9,11 @@
    <feature url="features/org.eclipse.recommenders.rcp.codesearch_0.2.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codesearch" version="0.2.0.qualifier">
       <category name="sandbox"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201103181456.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201103181456">
+   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201103271924.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201103271924">
       <category name="3rd"/>
    </feature>
    <category-def name="main" label="Eclipse Code Recommenders - Code Completion"/>
    <category-def name="sandbox" label="Eclipse Code Recommenders - Sandbox"/>
    <category-def name="3rd" label="Eclipse Code Recommenders - Third Party Dependencies (Don&apos;t Install)"/>
+   <category-def name="code-recommenders" label="Eclipse Code Recommenders"/>
 </site>
