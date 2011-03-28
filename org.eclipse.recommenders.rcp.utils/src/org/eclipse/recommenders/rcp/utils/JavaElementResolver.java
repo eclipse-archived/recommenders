@@ -13,6 +13,8 @@ package org.eclipse.recommenders.rcp.utils;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
+import java.util.HashSet;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -41,6 +43,7 @@ import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class JavaElementResolver {
@@ -52,14 +55,23 @@ public class JavaElementResolver {
     }
 
     private final BiMap<IName, IJavaElement> cache = HashBiMap.create();
+    public HashSet<IMethodName> failedRecMethods = Sets.newHashSet();
+    public HashSet<ITypeName> failedRecTypes = Sets.newHashSet();
 
     public IType toJdtType(final ITypeName recType) {
         ensureIsNotNull(recType);
+        if (failedRecTypes.contains(recType)) {
+            return null;
+        }
+
         IType jdtType = (IType) cache.get(recType);
         if (jdtType == null) {
             jdtType = resolveType(recType);
+
             if (jdtType != null) {
                 registerRecJdtElementPair(recType, jdtType);
+            } else {
+                failedRecTypes.add(recType);
             }
         }
         return jdtType;
@@ -154,12 +166,17 @@ public class JavaElementResolver {
 
     public IMethod toJdtMethod(final IMethodName recMethod) {
         ensureIsNotNull(recMethod);
+        if (failedRecMethods.contains(recMethod)) {
+            return null;
+        }
+
         IMethod jdtMethod = (IMethod) cache.get(recMethod);
         if (jdtMethod == null) {
             jdtMethod = resolveMethod(recMethod);
             if (jdtMethod == null) {
                 System.err.printf("resolving %s failed. Is it an compiler generated constructor?\n.",
                         recMethod.getIdentifier());
+                failedRecMethods.add(recMethod);
                 return null;
             }
             registerRecJdtElementPair(recMethod, jdtMethod);
