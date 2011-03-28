@@ -50,6 +50,7 @@ public class EditorTrackingService {
     private abstract class BackgroundNotificationJob extends WorkspaceJob {
         public BackgroundNotificationJob(final String title) {
             super(title);
+            setSystem(true);
         }
 
         @Override
