@@ -22,7 +22,7 @@ import com.google.inject.Singleton;
 import com.ibm.wala.classLoader.IClass;
 
 @Singleton
-public class JavaLangInstanceKeysRemoverCompilationUnitFinalizer implements CompilationUnitFinalizer {
+public class JavaLangInstanceKeysRemoverCompilationUnitFinalizer implements ICompilationUnitFinalizer {
     @Override
     public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass,
             final IProgressMonitor monitor) {

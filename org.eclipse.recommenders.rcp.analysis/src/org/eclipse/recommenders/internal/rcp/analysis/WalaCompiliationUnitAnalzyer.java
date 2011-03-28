@@ -18,7 +18,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.recommenders.internal.commons.analysis.analyzers.CompilationUnitFinalizer;
+import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitFinalizer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitConsumer;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
@@ -28,7 +28,7 @@ import com.google.inject.Provider;
 import com.ibm.wala.classLoader.IClass;
 
 public class WalaCompiliationUnitAnalzyer {
-    private final Set<CompilationUnitFinalizer> compilationUnitFinalizers;
+    private final Set<ICompilationUnitFinalizer> compilationUnitFinalizers;
 
     private final Set<ICompilationUnitConsumer> compilationUnitConsumers;
 
@@ -44,7 +44,7 @@ public class WalaCompiliationUnitAnalzyer {
 
     @Inject
     public WalaCompiliationUnitAnalzyer(final Provider<WalaTypeAnalyzer> walaTypeAnalyzerProvider,
-            final Set<CompilationUnitFinalizer> compilationUnitFinalizers,
+            final Set<ICompilationUnitFinalizer> compilationUnitFinalizers,
             final Set<ICompilationUnitConsumer> compilationUnitConsumers) {
         this.walaTypeAnalyzerProvider = walaTypeAnalyzerProvider;
         this.compilationUnitFinalizers = compilationUnitFinalizers;
@@ -82,7 +82,7 @@ public class WalaCompiliationUnitAnalzyer {
     }
 
     private void finalizeCompilationUnit() {
-        for (final CompilationUnitFinalizer cuFinalizer : compilationUnitFinalizers) {
+        for (final ICompilationUnitFinalizer cuFinalizer : compilationUnitFinalizers) {
             cuFinalizer.finalizeClass(recCompilationUnit, walaClass, monitor);
         }
     }

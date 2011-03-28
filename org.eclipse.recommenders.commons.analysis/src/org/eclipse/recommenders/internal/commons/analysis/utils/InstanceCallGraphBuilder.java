@@ -45,8 +45,8 @@ import com.ibm.wala.util.strings.Atom;
 public class InstanceCallGraphBuilder implements ICallGraphBuilder {
     public static void build(final InstanceCallGraphBuilder cgBuilder, final Collection<Entrypoint> entryPoints,
             final IClass thisType) {
-        cgBuilder.setEntryPoints(entryPoints);
         cgBuilder.setThisType(thisType);
+        cgBuilder.setEntryPoints(entryPoints);
         cgBuilder.buildClassTargetSelector();
         cgBuilder.buildMethodTargetSelector();
         cgBuilder.buildContextSelector();
@@ -56,21 +56,34 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
 
     private final AnalysisOptions options;
 
-    private final SSAPropagationCallGraphBuilder callGraphBuilder;
+    private SSAPropagationCallGraphBuilder callGraphBuilder;
 
     private CallGraph callGraph;
 
     private IClass thisType;
 
+    private final AnalysisCache cache;
+
+    private final XMLMethodSummaryReader summary;
+
     @Inject
     public InstanceCallGraphBuilder(final AnalysisOptions options, final AnalysisCache cache,
-            final IClassHierarchy cha, final XMLMethodSummaryReader summary) {
+            final XMLMethodSummaryReader summary) {
         this.options = ensureIsNotNull(options);
-        callGraphBuilder = copyit(options, cache, cha, summary);
+        this.cache = ensureIsNotNull(cache);
+        this.summary = ensureIsNotNull(summary);
     }
 
-    private ZeroXCFABuilder copyit(final AnalysisOptions options, final AnalysisCache cache, final IClassHierarchy cha,
-            final XMLMethodSummaryReader summary) {
+    /**
+     * Call this method before any other method!
+     */
+    public void setThisType(final IClass clazz) {
+        this.thisType = clazz;
+        callGraphBuilder = initializeBuilder(options, cache, clazz.getClassHierarchy(), summary);
+    }
+
+    private ZeroXCFABuilder initializeBuilder(final AnalysisOptions options, final AnalysisCache cache,
+            final IClassHierarchy cha, final XMLMethodSummaryReader summary) {
         options.setSelector(new ClassHierarchyMethodTargetSelector(cha));
         options.setSelector(new ClassHierarchyClassTargetSelector(cha));
 
@@ -146,7 +159,4 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
         return callGraphBuilder.getPointerAnalysis();
     }
 
-    public void setThisType(final IClass clazz) {
-        this.thisType = clazz;
-    }
 }
