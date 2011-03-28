@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.commons.analysis.analyzers.modules;
 
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IMethodAnalyzer;
-import org.eclipse.recommenders.internal.commons.analysis.analyzers.NameMethodAnalyzer;
+import org.eclipse.recommenders.internal.commons.analysis.analyzers.LineNumberMethodAnalyzer;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
@@ -20,6 +20,6 @@ public class LineNumberMethodAnalyzerPluginModule extends AbstractModule {
     @Override
     public void configure() {
         final Multibinder<IMethodAnalyzer> binder = Multibinder.newSetBinder(binder(), IMethodAnalyzer.class);
-        binder.addBinding().to(NameMethodAnalyzer.class);
+        binder.addBinding().to(LineNumberMethodAnalyzer.class);
     }
 }

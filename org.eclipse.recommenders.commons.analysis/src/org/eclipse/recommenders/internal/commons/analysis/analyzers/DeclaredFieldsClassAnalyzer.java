@@ -15,10 +15,12 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
 
+import com.google.inject.Singleton;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.types.TypeReference;
 
+@Singleton
 public class DeclaredFieldsClassAnalyzer implements IClassAnalyzer {
     @Override
     public void analyzeClass(final IClass exampleClass, final TypeDeclaration type, final IProgressMonitor monitor) {

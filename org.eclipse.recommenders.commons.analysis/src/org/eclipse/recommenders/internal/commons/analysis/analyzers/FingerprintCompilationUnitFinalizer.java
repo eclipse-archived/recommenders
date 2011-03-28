@@ -30,7 +30,7 @@ import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.types.TypeReference;
 
-public class FingerprintCompilationUnitFinalizer implements CompilationUnitFinalizer {
+public class FingerprintCompilationUnitFinalizer implements ICompilationUnitFinalizer {
     private final Map<IClass, String/* fingerprint */> map = new MapMaker().softKeys().makeMap();
 
     @Override

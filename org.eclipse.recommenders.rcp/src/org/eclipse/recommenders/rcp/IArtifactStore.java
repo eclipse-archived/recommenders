@@ -15,6 +15,7 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 
 /**
@@ -40,19 +41,19 @@ public interface IArtifactStore {
      * Persists the given artifact for the given compilation unit.
      * 
      */
-    public <T> void storeArtifact(final ICompilationUnit cu, final T artifact);
+    public <T> void storeArtifact(final IJavaElement element, final T artifact);
 
     /**
      * Convenience method.
      * 
      * @see #storeArtifact(ICompilationUnit, Object)
      */
-    public <T> void storeArtifacts(ICompilationUnit cu, List<T> artifacts);
+    public <T> void storeArtifacts(IJavaElement element, List<T> artifacts);
 
     /**
      * Removes all artifacts stored for the given compilation unit.
      */
-    public void removeArtifacts(final ICompilationUnit cu);
+    public void removeArtifacts(final IJavaElement element);
 
     /**
      * Clears the whole artifact store and discards all artifacts for the given
@@ -61,5 +62,5 @@ public interface IArtifactStore {
      */
     public void cleanStore(final IProject project) throws CoreException;
 
-    public boolean hasArtifact(ICompilationUnit jdtCu, Class<?> class1);
+    public boolean hasArtifact(IJavaElement element, Class<?> class1);
 }

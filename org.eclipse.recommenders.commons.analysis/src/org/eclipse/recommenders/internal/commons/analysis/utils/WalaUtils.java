@@ -175,7 +175,7 @@ public class WalaUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static Collection<File> getAllJarsInDirectory(final File directory, final boolean recursively) {
+    public static Collection<File> getAllJarsInDirectoryRecursively(final File directory) {
         // not working with OSX circular directory links
         // return FileUtils.listFiles(directory, new String[] { "jar" },
         // recursively);

@@ -44,8 +44,8 @@ public class ClassUtils {
     }
 
     /**
-     * Tries to resolve the WALA {@link IClass} representation of the given Java class using the given
-     * {@link IClassHierarchy}.
+     * Tries to resolve the WALA {@link IClass} representation of the given Java
+     * class using the given {@link IClassHierarchy}.
      */
     public static IClass findClass(final Class<?> javaClazz, final IClassHierarchy cha) {
         ensureIsNotNull(javaClazz, "javaClazz");
@@ -58,9 +58,11 @@ public class ClassUtils {
     }
 
     /**
-     * Searches for a class named classReference within the given {@link IClassHierarchy}.
+     * Searches for a class named classReference within the given
+     * {@link IClassHierarchy}.
      * <p>
-     * <b>Note:</b> Uses the application classloader only! Primordial classes are not resolved.
+     * <b>Note:</b> Uses the application classloader only! Primordial classes
+     * are not resolved.
      */
     public static IClass findClass(final String classReference, final IClassHierarchy cha) {
         ensureIsNotNull(classReference, "classReference");
@@ -88,8 +90,8 @@ public class ClassUtils {
     }
 
     /**
-     * Returns true if the given class belongs to the primordinal (determined by checking the
-     * {@link ClassLoaderReference}.
+     * Returns true if the given class belongs to the primordinal (determined by
+     * checking the {@link ClassLoaderReference}.
      * 
      * @param clazz
      *            the class to check
@@ -113,8 +115,7 @@ public class ClassUtils {
             final ShrikeClass shrike = (ShrikeClass) clazz;
             final ClassReader reader = shrike.getReader();
             final byte[] rawbytes = reader.getBytes();
-            final byte[] sha1Bytes = Fingerprints.sha1(new ByteArrayInputStream(rawbytes));
-            final String sha1 = Fingerprints.toHexString(sha1Bytes);
+            final String sha1 = Fingerprints.sha1(new ByteArrayInputStream(rawbytes));
             return sha1;
         }
         return "";

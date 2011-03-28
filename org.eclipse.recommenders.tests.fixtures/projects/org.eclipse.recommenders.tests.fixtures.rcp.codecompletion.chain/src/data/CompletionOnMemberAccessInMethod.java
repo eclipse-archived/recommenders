@@ -10,21 +10,19 @@
  */
 package data;
 
+import helper.FileFindHelper;
+
 import java.io.File;
 
 //call chain 1 ok --> 1 element chain does not lead to expected solution 
 public class CompletionOnMemberAccessInMethod {
 
-    File findMe = new File("");
+    FileFindHelper helper = new FileFindHelper();
 
     public void method() {
         //@start
-        final File c = <^Space|findMe.*(1 element).*>
+        final File c = <^Space|helper.findMe.*2 elements.*>
         //@end
-        //final File c = findMe
-        /* calling context --> 'this' aka CompletionOnMemberAccessInMethod
-         * expected type --> File
-         * variable name --> c
-         */
+        //final File c = helper.findMe
     }
 }

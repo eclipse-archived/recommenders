@@ -17,11 +17,14 @@ import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
 
+import com.google.inject.Singleton;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 
+@Singleton
 public class ConstructorSuperDeclarationMethodAnalyzer implements IMethodAnalyzer {
+
     @Override
     public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl,
             final IProgressMonitor monitor) {

@@ -13,39 +13,42 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 //call chain 1 ok
 public class CompletionOnArrayWithCastsSupertype {
-	public Integer[][][] findme;
-	public int i;
-	
-	public static void method1() {
-		final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        final Number c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> obj.findme[i][i][i]
-         */
+    public Integer[][][] findme;
+    public int i;
+
+    public static void method1() {
+		//@start
+	    final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
+        final Number c = <^Space|obj.findme.*2 elements.*>
+        //@end
+        //final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
+        //final Number c = obj.findme[j][k][l]
 	}
-	
-	public static void method2() {
+
+    public static void method2() {
+        // @start
+        final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
+        final Number[] c = <^Space|obj.findme.*2 elements.*>
+        // @end
+        // final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
+        //final Number[] c = obj.findme[j][k]
+    }
+
+    public static void method3() {
+        //@start
 		final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        final Number[] c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> obj.findme[i][i]
-         */
+        final Number[][] c = <^Space|obj.findme.*2 elements.*>
+        //@end
+        //final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
+        //final Number[][] c = obj.findme[j]
 	}
-	
-	public static void method3() {
+
+    public static void method4() {
+        //@start
 		final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        final Number[][] c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> obj.findme[i]
-         */
+        final Number[][][] c = <^Space|obj.findme.*>
+        //@end
+        //final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
+        //final Number[][][] c = obj.findme
 	}
-	
-	public static void method4() {
-		final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        final Number[][][] c = <@Ignore^Space>
-        /* calling context --> static
-         * expected completion --> obj.findme
-         */
-	}
-	
 }

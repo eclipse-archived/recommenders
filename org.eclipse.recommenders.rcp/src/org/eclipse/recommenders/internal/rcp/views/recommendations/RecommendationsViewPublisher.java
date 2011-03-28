@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.rcp.IDs;
@@ -54,8 +55,10 @@ public class RecommendationsViewPublisher extends RecommenderAdapter {
     }
 
     @Override
-    public void unitChanged(final ICompilationUnit cu, final IProgressMonitor monitor) throws CoreException {
-        publishViewIfOpen(cu);
+    public void unitChanged(final IJavaElement cu, final IProgressMonitor monitor) throws CoreException {
+        if (cu instanceof ICompilationUnit) {
+            publishViewIfOpen((ICompilationUnit) cu);
+        }
     }
 
     private void publishViewIfOpen(final @Nullable ICompilationUnit jdtCu) {

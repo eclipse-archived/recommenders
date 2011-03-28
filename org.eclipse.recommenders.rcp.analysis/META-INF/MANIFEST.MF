@@ -17,12 +17,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.pde.core,
  org.eclipse.recommenders.commons.analysis,
  org.eclipse.recommenders.rcp,
- com.google.guice,
- com.google.guice.multibindings,
+ com.google.inject,
  org.eclipse.recommenders.commons.injection,
  org.eclipse.ui,
  javax.annotations.jsr305;bundle-version="0.0.0",
- com.google.guice.multibindings;bundle-version="3.0.0"
+ com.google.inject.multibindings,
+ org.eclipse.recommenders.commons.utils.gson
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.analysis,

@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 
 public class ObjectInstanceKey implements ICodeElement {
     public static enum Kind {
-        LOCAL, FIELD, PARAMETER
+        LOCAL, FIELD, PARAMETER, RETURN
     }
 
     public static ObjectInstanceKey create(final ITypeName varType, final Kind kind) {

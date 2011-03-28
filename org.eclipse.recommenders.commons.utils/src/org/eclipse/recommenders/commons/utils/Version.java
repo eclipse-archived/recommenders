@@ -76,6 +76,9 @@ public class Version implements Comparable<Version> {
         st.nextToken();
     }
 
+    protected Version() {
+    }
+
     protected Version(final int major, final int minor, final int micro, final String qualifier) {
         this.major = major;
         this.minor = minor;
@@ -83,13 +86,13 @@ public class Version implements Comparable<Version> {
         this.qualifier = qualifier;
     }
 
-    public final int major;
+    public int major;
 
-    public final int minor;
+    public int minor;
 
-    public final int micro;
+    public int micro;
 
-    public final String qualifier;
+    public String qualifier;
 
     @Override
     public int compareTo(final Version v) {

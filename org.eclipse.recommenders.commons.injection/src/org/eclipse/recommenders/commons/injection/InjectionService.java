@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.commons.injection;
 
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.recommenders.commons.internal.injection.InjectionDescriptor;
 
@@ -18,20 +19,36 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
-public class InjectionService {
+public final class InjectionService {
 
-    private static InjectionService instance = new InjectionService();
+    private static InjectionService instance = new InjectionService(1);
 
     public static InjectionService getInstance() {
         return instance;
     }
 
+    private InjectionService(final int blockDI) {
+        // no need to instantiate this class. Call getInstance instead.
+    }
+
     private Injector lazyInjector;
 
-    public Injector getInjector() {
-        if (lazyInjector == null) {
-            final List<Module> modules = InjectionDescriptor.createModules();
-            lazyInjector = Guice.createInjector(modules);
+    ReentrantLock lock = new ReentrantLock();
+
+    public synchronized Injector getInjector() {
+        if (lock.isLocked()) {
+            throw new IllegalStateException(
+                    "reentrant access during injector creation is prohibited! Check your plug-in startup behavior");
+        }
+        try {
+            lock.lock();
+            if (lazyInjector == null) {
+                final List<Module> modules = InjectionDescriptor.createModules();
+                lazyInjector = Guice.createInjector(modules);
+
+            }
+        } finally {
+            lock.unlock();
         }
         return lazyInjector;
     }

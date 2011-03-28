@@ -82,4 +82,9 @@ public class StoreBasedVariableUsageResolver implements IVariableUsageResolver {
     public Set<IMethodName> getReceiverMethodInvocations() {
         return matchingLocalVariable.getReceiverCalls();
     }
+
+    @Override
+    public Variable getResolvedVariable() {
+        return matchingLocalVariable;
+    }
 }

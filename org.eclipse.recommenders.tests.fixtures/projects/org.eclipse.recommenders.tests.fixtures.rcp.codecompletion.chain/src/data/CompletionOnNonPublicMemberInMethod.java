@@ -13,6 +13,7 @@ package data;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+
 //call chain 1 ok
 public class CompletionOnNonPublicMemberInMethod {
 
@@ -23,35 +24,29 @@ public class CompletionOnNonPublicMemberInMethod {
     private final AtomicLong findMe3 = new AtomicLong();
 
     public static void test_protected() {
+        //@start
 		final CompletionOnNonPublicMemberInMethod useMe = new CompletionOnNonPublicMemberInMethod();
-		final AtomicBoolean c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> AtomicBoolean
-         * expected completion --> useMe.findMe1
-		 * variable name --> c
-		 */
+		final AtomicBoolean c = <^Space|useMe.findMe.*>
+		//@end
+		//final CompletionOnNonPublicMemberInMethod useMe = new CompletionOnNonPublicMemberInMethod();
+		//final AtomicBoolean c = useMe.findMe1
 	}
 
     public static void test_default() {
+        //@start
 		final CompletionOnNonPublicMemberInMethod useMe = new CompletionOnNonPublicMemberInMethod();
-		final AtomicInteger c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> AtomicInteger
-         * expected completion --> useMe.findMe2
-		 * variable name --> c
-		 */
+		final AtomicInteger c = <^Space|useMe.findMe.*>
+		//@end
+		//final CompletionOnNonPublicMemberInMethod useMe = new CompletionOnNonPublicMemberInMethod();
+		//final AtomicInteger c = useMe.findMe2
 	}
 
     public static void test_private() {
+        //@start
 		final CompletionOnNonPublicMemberInMethod useMe = new CompletionOnNonPublicMemberInMethod();
-		final AtomicLong c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> AtomicLong
-         * expected completion --> useMe.findMe3
-		 * variable name --> c
-		 */
+		final AtomicLong c = <^Space|useMe.findMe.*>
+		//@end
+		//final CompletionOnNonPublicMemberInMethod useMe = new CompletionOnNonPublicMemberInMethod();
+		//final AtomicLong c = useMe.findMe3
 	}
 }

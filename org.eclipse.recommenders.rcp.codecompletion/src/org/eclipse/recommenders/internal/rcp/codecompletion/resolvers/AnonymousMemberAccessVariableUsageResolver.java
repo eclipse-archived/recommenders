@@ -18,15 +18,19 @@ import java.util.Set;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey.Kind;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 
 @SuppressWarnings("restriction")
 public class AnonymousMemberAccessVariableUsageResolver implements IVariableUsageResolver {
 
+    private IIntelligentCompletionContext ctx;
+
     @Override
     public boolean canResolve(final IIntelligentCompletionContext ctx) {
-        ensureIsNotNull(ctx);
+        this.ctx = ensureIsNotNull(ctx);
         final ASTNode completionNode = ctx.getCompletionNode();
         return completionNode instanceof CompletionOnMemberAccess;
     }
@@ -34,5 +38,14 @@ public class AnonymousMemberAccessVariableUsageResolver implements IVariableUsag
     @Override
     public Set<IMethodName> getReceiverMethodInvocations() {
         return Collections.emptySet();
+    }
+
+    @Override
+    public Variable getResolvedVariable() {
+        final Variable var = ctx.getVariable();
+        final Variable res = Variable.create(null, var.getType(), ctx.getEnclosingMethod());
+        res.kind = Kind.RETURN;
+        return res;
+
     }
 }

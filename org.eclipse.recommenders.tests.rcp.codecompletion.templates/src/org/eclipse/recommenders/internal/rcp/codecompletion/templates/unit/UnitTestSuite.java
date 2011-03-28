@@ -27,7 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ CodeBuilderTest.class, CompletionProposalsBuilderTest.class, CompletionTargetVariableBuilderTest.class,
         MethodCallFormatterTest.class, MethodFormatterTest.class, PatternRecommenderTest.class,
-        TemplatesCompletionProposalComputerTest.class })
+        TemplatesCompletionModuleTest.class, TemplatesCompletionProposalComputerTest.class })
 public final class UnitTestSuite {
 
     private static final IMethodName DEFAULTMETHOD = createMethod("Lorg/eclipse/swt/widgets/Button.setText()V");

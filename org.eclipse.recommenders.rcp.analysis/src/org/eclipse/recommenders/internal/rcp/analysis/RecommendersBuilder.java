@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
 import org.eclipse.recommenders.internal.rcp.InterruptingProgressMonitor;
+import org.eclipse.recommenders.internal.rcp.analysis.cp.IProjectClasspathAnalyzer;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
@@ -59,6 +60,8 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
     private Set<ICompilationUnitAnalyzer> analyzers;
 
     @Inject
+    private IProjectClasspathAnalyzer cpAnalyzer;
+    @Inject
     private IClassHierarchyService chaService;
 
     @Inject
@@ -72,7 +75,8 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
     }
 
     @Testing
-    protected RecommendersBuilder(final IArtifactStore store, final Set<ICompilationUnitAnalyzer> analyzers) {
+    protected RecommendersBuilder(final IArtifactStore store, final Set<ICompilationUnitAnalyzer> analyzers,
+            final IProjectClasspathAnalyzer cpAnalyzer) {
         this.store = store;
         this.analyzers = analyzers;
     }
@@ -129,8 +133,19 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
                 return element != null;
             }
         });
-        monitor.done();
+
+        analyzeClasspath();
+
         ticksLastFullBuild = monitor.actualWork;
+    }
+
+    private void analyzeClasspath() {
+        // final IJavaProject javaProject = JavaCore.create(getProject());
+        // final SubProgressMonitor submonitor = new SubProgressMonitor(monitor,
+        // 5);
+        // final ProjectClasspath cp = cpAnalyzer.analyze(javaProject,
+        // submonitor);
+        // store.storeArtifact(javaProject, cp);
     }
 
     private void performIncrementalBuild(final IResourceDelta delta) throws CoreException {

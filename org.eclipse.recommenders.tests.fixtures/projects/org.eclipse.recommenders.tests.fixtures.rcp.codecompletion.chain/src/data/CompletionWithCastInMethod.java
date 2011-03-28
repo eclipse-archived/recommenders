@@ -24,24 +24,20 @@ public class CompletionWithCastInMethod {
     public Collection<String> findMe2 = new ArrayList<String>();
 
     public static void test_castToSubClass() {
+        //@start
 		final CompletionWithCastInMethod useMe = new CompletionWithCastInMethod();
-		final ByteArrayInputStream c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> ByteArrayInputStream
-         * expected completion --> (ByteArrayInputStream) useMe.findMe
-		 * variable name --> c
-		 */
+		final ByteArrayInputStream c = <^Space|.*useMe.findMe.*2 elements.*>
+		//@end
+		//final CompletionWithCastInMethod useMe = new CompletionWithCastInMethod();
+		//final ByteArrayInputStream c = (ByteArrayInputStream) useMe.findMe
 	}
 
     public static void test_castToInterface() {
+        //@start
 		final CompletionWithCastInMethod useMe = new CompletionWithCastInMethod();
-		final List<String> c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> List<String>
-         * expected completion --> (List) useMe.findMe2
-		 * variable name --> c
-		 */
+		final List<String> c = <^Space|.*useMe.findMe.*>
+		//@end
+		//final CompletionWithCastInMethod useMe = new CompletionWithCastInMethod();
+		//final List<String> c = (List) useMe.findMe2
 	}
 }

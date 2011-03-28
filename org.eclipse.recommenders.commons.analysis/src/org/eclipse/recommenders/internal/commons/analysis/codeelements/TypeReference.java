@@ -19,6 +19,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 
 public class TypeReference implements Comparable<TypeReference> {
+
+    public final CodeElementKind kind = CodeElementKind.TYPE_REFERENCE;
+
     public ITypeName name;
 
     public String fingerprint;

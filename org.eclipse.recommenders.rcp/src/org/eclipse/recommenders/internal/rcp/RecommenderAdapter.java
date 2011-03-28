@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
 import org.eclipse.recommenders.rcp.IEditorChangedListener;
 import org.eclipse.recommenders.rcp.IEditorDashboard;
@@ -117,7 +118,7 @@ public class RecommenderAdapter implements IEditorChangedListener, IArtifactStor
      * </p>
      */
     @Override
-    public void unitChanged(final ICompilationUnit cu, final IProgressMonitor monitor) throws CoreException {
+    public void unitChanged(final IJavaElement cu, final IProgressMonitor monitor) throws CoreException {
     }
 
     /**

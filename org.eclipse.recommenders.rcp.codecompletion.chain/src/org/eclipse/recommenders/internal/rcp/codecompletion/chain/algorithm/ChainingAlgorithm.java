@@ -91,9 +91,9 @@ public class ChainingAlgorithm {
             new Comparator<IChainElement>() {
 
               @Override
-              public int compare(IChainElement o1, IChainElement o2) {
+              public int compare(final IChainElement o1, final IChainElement o2) {
                 if (!o1.equals(o2)) {
-                  int depth = o1.getChainDepth().compareTo(o2.getChainDepth());
+                  final int depth = o1.getChainDepth().compareTo(o2.getChainDepth());
                   if (depth == 0) {
                     return 1;
                   }
@@ -110,9 +110,9 @@ public class ChainingAlgorithm {
     }
     initializeChainCompletionContext(ictx);
     processMembers();
-    long i = System.currentTimeMillis();
+    final long i = System.currentTimeMillis();
     waitForThreadPoolTermination();
-    long j = System.currentTimeMillis();
+    final long j = System.currentTimeMillis();
     computeProposalChains();
     if (Constants.DEBUG) {
       System.out.println("Algo: " + (j - i) + " lastElement size: " + lastChainElementForProposal.size()
@@ -124,7 +124,7 @@ public class ChainingAlgorithm {
   private void computeProposalChains() {
     // for each result element type
     int chainDepth = 0;
-    for (Entry<IChainElement, List<Triple<IClass, Integer, IClass>>> lastElement : lastChainElementForProposal
+    for (final Entry<IChainElement, List<Triple<IClass, Integer, IClass>>> lastElement : lastChainElementForProposal
         .entrySet()) {
       if (proposals.size() < Constants.ProposalSettings.MAX_PROPOSAL_COUNT
           || (proposals.size() >= Constants.ProposalSettings.MAX_PROPOSAL_COUNT && chainDepth >= lastElement.getKey()
@@ -133,8 +133,8 @@ public class ChainingAlgorithm {
           continue;
         }
         // for each expected type
-        List<LinkedList<IChainElement>> resultChains = lastElement.getKey().constructProposalChains(0);// computeLastChainsElementForProposal(lastElement.getKey());
-        for (Triple<IClass, Integer, IClass> expectedTypeAndCast : lastElement.getValue()) {
+        final List<LinkedList<IChainElement>> resultChains = lastElement.getKey().constructProposalChains(0);// computeLastChainsElementForProposal(lastElement.getKey());
+        for (final Triple<IClass, Integer, IClass> expectedTypeAndCast : lastElement.getValue()) {
           if (expectedTypeAndCast.getThird() == null) {
             this.addNonCastedProposal(resultChains, expectedTypeAndCast.getFirst(), expectedTypeAndCast.getSecond());
           } else {
@@ -148,9 +148,9 @@ public class ChainingAlgorithm {
     }
   }
 
-  private List<LinkedList<IChainElement>> computeLastChainsElementForProposal(IChainElement workingElement) {
+  private List<LinkedList<IChainElement>> computeLastChainsElementForProposal(final IChainElement workingElement) {
     List<LinkedList<IChainElement>> resultChains = new ArrayList<LinkedList<IChainElement>>();
-    LinkedList<IChainElement> chain = new LinkedList<IChainElement>();
+    final LinkedList<IChainElement> chain = new LinkedList<IChainElement>();
     chain.add(workingElement);
     resultChains.add(chain);
     resultChains = computeProposalChainsForLastElement(resultChains);
@@ -160,9 +160,9 @@ public class ChainingAlgorithm {
   private List<LinkedList<IChainElement>> computeProposalChainsForLastElement(
       List<LinkedList<IChainElement>> resultChains) {
     for (int i = Constants.AlgorithmSettings.MAX_CHAIN_DEPTH; i >= Constants.AlgorithmSettings.MIN_CHAIN_DEPTH; i--) {
-      List<LinkedList<IChainElement>> tempChains = new ArrayList<LinkedList<IChainElement>>();
-      for (LinkedList<IChainElement> list : resultChains) {
-        IChainElement firstListElement = list.getFirst();
+      final List<LinkedList<IChainElement>> tempChains = new ArrayList<LinkedList<IChainElement>>();
+      for (final LinkedList<IChainElement> list : resultChains) {
+        final IChainElement firstListElement = list.getFirst();
         if (firstListElement.isRootElement() && list.size() >= Constants.AlgorithmSettings.MIN_CHAIN_DEPTH) {
           tempChains.add(list);
         }
@@ -170,13 +170,13 @@ public class ChainingAlgorithm {
           // XXX what to do with static elements?
           continue;
         }
-        List<IChainElement> elements = firstListElement.previousElements();
-        for (IChainElement element : elements) {
+        final List<IChainElement> elements = firstListElement.previousElements();
+        for (final IChainElement element : elements) {
           if (!(element.getChainDepth() <= i) || i == Constants.AlgorithmSettings.MIN_CHAIN_DEPTH
               && !element.isRootElement() || element.isPrimitive()) {
             continue;
           }
-          LinkedList<IChainElement> linkedList = new LinkedList<IChainElement>(list);
+          final LinkedList<IChainElement> linkedList = new LinkedList<IChainElement>(list);
           if (checkRedundance(list, element)) {
             continue;
           }
@@ -184,15 +184,15 @@ public class ChainingAlgorithm {
           tempChains.add(linkedList);
         }
       }
-      ArrayList<LinkedList<IChainElement>> list = new ArrayList<LinkedList<IChainElement>>(tempChains);
+      final ArrayList<LinkedList<IChainElement>> list = new ArrayList<LinkedList<IChainElement>>(tempChains);
       resultChains = list;
 
     }
     return resultChains;
   }
 
-  private boolean checkRedundance(LinkedList<IChainElement> list, IChainElement element) {
-    for (IChainElement e : list) {
+  private boolean checkRedundance(final LinkedList<IChainElement> list, final IChainElement element) {
+    for (final IChainElement e : list) {
       if (e.getCompletion().equals(element.getCompletion())) {
         return true;
       }
@@ -250,20 +250,20 @@ public class ChainingAlgorithm {
     }
   }
 
-  public void storeLastChainElementForProposal(IChainElement element, IClass expectedType,
-      Integer expectedTypeDimension, IClass castingType) {
+  public void storeLastChainElementForProposal(final IChainElement element, final IClass expectedType,
+      final Integer expectedTypeDimension, final IClass castingType) {
     if (lastChainElementForProposal.isEmpty()) {
-      List<Triple<IClass, Integer, IClass>> list = new ArrayList<Triple<IClass, Integer, IClass>>();
+      final List<Triple<IClass, Integer, IClass>> list = new ArrayList<Triple<IClass, Integer, IClass>>();
       list.add(Triple.create(expectedType, expectedTypeDimension, castingType));
       lastChainElementForProposal.put(element, list);
     } else {
       IChainElement contains = null;
-      for (Entry<IChainElement, List<Triple<IClass, Integer, IClass>>> e : lastChainElementForProposal.entrySet()) {
+      for (final Entry<IChainElement, List<Triple<IClass, Integer, IClass>>> e : lastChainElementForProposal.entrySet()) {
         if (e.getKey().getCompletion().equals(element.getCompletion())
             && e.getKey().getElementType().equals(element.getElementType())
             && e.getKey().getType().equals(element.getType()) && element.isPrimitive() == e.getKey().isPrimitive()
             && element.getArrayDimension().equals(e.getKey().getArrayDimension())) {
-          for (Triple<IClass, Integer, IClass> dreier : e.getValue()) {
+          for (final Triple<IClass, Integer, IClass> dreier : e.getValue()) {
             if (dreier.getFirst().equals(expectedType) && dreier.getSecond().equals(expectedTypeDimension)
                 && (dreier.getThird() != null && dreier.getThird().equals(castingType) || castingType == null)) {
               contains = e.getKey();
@@ -284,16 +284,16 @@ public class ChainingAlgorithm {
   }
 
   private void addCastedProposal(final List<LinkedList<IChainElement>> workingChains, final IClass expectedType,
-      Integer expectedTypeDimension) {
+      final Integer expectedTypeDimension) {
     addProposal(workingChains, expectedType, expectedTypeDimension, true);
   }
 
   private void addProposal(final List<LinkedList<IChainElement>> workingChains, final IClass expectedType,
-      Integer expectedTypeDimension, boolean casting) {
+      final Integer expectedTypeDimension, final boolean casting) {
     synchronized (proposals) {
-      for (LinkedList<IChainElement> workingChain : workingChains) {
+      for (final LinkedList<IChainElement> workingChain : workingChains) {
         if (!proposals.contains(workingChain)) {
-          ChainTemplateProposal chainTemplateProposal = new ChainTemplateProposal(workingChain, expectedType,
+          final ChainTemplateProposal chainTemplateProposal = new ChainTemplateProposal(workingChain, expectedType,
               expectedTypeDimension, casting);
           proposals.add(chainTemplateProposal);
         }
@@ -301,8 +301,8 @@ public class ChainingAlgorithm {
     }
   }
 
-  private void addNonCastedProposal(final List<LinkedList<IChainElement>> workingChains, IClass expectedType,
-      Integer expectedTypeDimension) {
+  private void addNonCastedProposal(final List<LinkedList<IChainElement>> workingChains, final IClass expectedType,
+      final Integer expectedTypeDimension) {
     addProposal(workingChains, expectedType, expectedTypeDimension, false);
   }
 
@@ -314,7 +314,7 @@ public class ChainingAlgorithm {
     return searchMap;
   }
 
-  public boolean addWorkingElement(IChainElement element) {
+  public boolean addWorkingElement(final IChainElement element) {
     return workingElement.add(element);
   }
 
@@ -330,8 +330,8 @@ public class ChainingAlgorithm {
     return workingElement.size();
   }
 
-  public boolean containsWorkingElement(IChainElement element) {
-    for (IChainElement e : workingElement) {
+  public boolean containsWorkingElement(final IChainElement element) {
+    for (final IChainElement e : workingElement) {
       if (e.getCompletion().equals(element.getCompletion()) && e.getElementType().equals(element.getElementType())
           && e.getType().equals(element.getType()) && element.isPrimitive() == e.isPrimitive()
           && element.getArrayDimension().equals(e.getArrayDimension())) {

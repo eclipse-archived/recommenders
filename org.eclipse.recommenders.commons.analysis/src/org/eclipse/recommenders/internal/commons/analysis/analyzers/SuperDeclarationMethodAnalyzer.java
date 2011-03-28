@@ -15,9 +15,11 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDec
 import org.eclipse.recommenders.internal.commons.analysis.utils.MethodUtils;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
 
+import com.google.inject.Singleton;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 
+@Singleton
 public class SuperDeclarationMethodAnalyzer implements IMethodAnalyzer {
     @Override
     public void analyzeMethod(final Entrypoint entrypoint, final MethodDeclaration methodDecl,

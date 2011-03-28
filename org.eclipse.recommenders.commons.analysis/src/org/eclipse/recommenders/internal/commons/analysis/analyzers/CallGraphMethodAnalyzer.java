@@ -124,8 +124,8 @@ public class CallGraphMethodAnalyzer implements IMethodAnalyzer {
 
     private void buildCallGraph(final Entrypoint entrypoint) {
         cgBuilder = cgBuilderProvider.get();
-        cgBuilder.setEntryPoints(singleton(entrypoint));
         cgBuilder.setThisType(entrypointMethod.getDeclaringClass());
+        cgBuilder.setEntryPoints(singleton(entrypoint));
         cgBuilder.buildClassTargetSelector();
         cgBuilder.buildMethodTargetSelector();
         cgBuilder.buildContextSelector();

@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang3,
  org.junit,
  org.eclipse.jdt.ui,
- com.google.guice,
+ com.google.inject,
  org.eclipse.recommenders.rcp.codecompletion.calls,
  org.eclipse.recommenders.commons.injection
 Bundle-ActivationPolicy: lazy

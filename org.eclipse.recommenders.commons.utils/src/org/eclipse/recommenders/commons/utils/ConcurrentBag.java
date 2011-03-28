@@ -57,11 +57,13 @@ public class ConcurrentBag<T> implements Bag<T> {
         return res;
     }
 
+    @Override
     public void add(final T obj) {
         add(obj, 1);
     }
 
-    public void add(final T key, final int frequency) {
+    @Override
+    public synchronized void add(final T key, final int frequency) {
         final AtomicInteger curFrequency = index.get(key);
         if (curFrequency == null) {
             index.put(key, new AtomicInteger(frequency));
@@ -70,19 +72,29 @@ public class ConcurrentBag<T> implements Bag<T> {
         }
     }
 
+    @Override
     public void addAll(final Collection<? extends T> col) {
         addAll(col, 1);
     }
 
+    @Override
     public void addAll(final Collection<? extends T> col, final int count) {
         for (final T elem : col) {
             add(elem, count);
         }
     }
 
+    @Override
     public void addAll(final T... elements) {
-        for (T element : elements) {
+        for (final T element : elements) {
             add(element, 1);
+        }
+    }
+
+    @Override
+    public void addAll(final Bag<? extends T> bag) {
+        for (final T element : bag) {
+            add(element, bag.count(element));
         }
     }
 
@@ -92,10 +104,12 @@ public class ConcurrentBag<T> implements Bag<T> {
         return count == null ? 0 : count.get();
     }
 
+    @Override
     public Set<T> elements() {
         return new TreeSet<T>(index.keySet());
     }
 
+    @Override
     public int elementsCount() {
         return index.size();
     }
@@ -109,6 +123,7 @@ public class ConcurrentBag<T> implements Bag<T> {
         final ArrayList<T> res = new ArrayList<T>(index.keySet());
         Collections.sort(res, new Comparator<T>() {
 
+            @Override
             public int compare(final T o1, final T o2) {
                 return count(o2) - count(o1);
             }
@@ -117,19 +132,19 @@ public class ConcurrentBag<T> implements Bag<T> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!(obj instanceof Bag<?>)) {
             return false;
         }
-        Bag<?> other = (Bag<?>) obj;
-        Set<?> otherElements = other.elements();
-        Set<?> thisElements = elements();
+        final Bag<?> other = (Bag<?>) obj;
+        final Set<?> otherElements = other.elements();
+        final Set<?> thisElements = elements();
         if (!otherElements.equals(thisElements)) {
             return false;
         }
-        for (Object element : thisElements) {
-            int thisCount = count(element);
-            int otherCount = other.count(element);
+        for (final Object element : thisElements) {
+            final int thisCount = count(element);
+            final int otherCount = other.count(element);
             if (thisCount != otherCount) {
                 return false;
             }
@@ -142,18 +157,39 @@ public class ConcurrentBag<T> implements Bag<T> {
         return index.hashCode();
     }
 
+    @Override
     public Iterator<T> iterator() {
         return index.keySet().iterator();
     }
 
-    public void remove(final T element) {
+    @Override
+    public synchronized void remove(final T key, final int frequency) {
+        final AtomicInteger curFrequency = index.get(key);
+        if (curFrequency != null) {
+            if (curFrequency.intValue() == frequency) {
+                index.remove(key);
+            } else {
+                index.put(key, new AtomicInteger(curFrequency.intValue() - frequency));
+            }
+        }
+    }
+
+    @Override
+    public void remove(final Bag<? extends T> bag) {
+        for (final T element : bag) {
+            remove(element, bag.count(element));
+        }
+    }
+
+    @Override
+    public void removeAll(final T element) {
         index.remove(element);
     }
 
     @Override
     public List<T> topElements(final int numberOfMaxTopElements) {
         final List<T> sortedKeys = elementsOrderedByFrequency();
-        int minElementsCount = Math.min(numberOfMaxTopElements, sortedKeys.size());
+        final int minElementsCount = Math.min(numberOfMaxTopElements, sortedKeys.size());
         final List<T> topList = sortedKeys.subList(0, minElementsCount);
         return topList;
     }
@@ -169,6 +205,7 @@ public class ConcurrentBag<T> implements Bag<T> {
         return sb.toString();
     }
 
+    @Override
     public int totalElementsCount() {
         int res = 0;
         for (final T t : index.keySet()) {
@@ -178,7 +215,7 @@ public class ConcurrentBag<T> implements Bag<T> {
     }
 
     @Override
-    public boolean contains(T element) {
+    public boolean contains(final T element) {
         return index.containsKey(element);
     }
 }

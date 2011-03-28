@@ -19,7 +19,7 @@ public class CompletionOnLocal {
     public void method() {
         //@start
 	    final IWorkbench wb = PlatformUI.getWorkbench();
-        final IWorkbenchHelpSystem c = wb.<^Space|getHelpSystem.*(1 element).*>
+        final IWorkbenchHelpSystem c = wb.<^Space|getHelpSystem.*>
         //@end
         //final IWorkbench wb = PlatformUI.getWorkbench();
         //final IWorkbenchHelpSystem c = wb.getHelpSystem()

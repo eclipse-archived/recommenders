@@ -31,6 +31,8 @@ import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey.Kind;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -54,7 +56,7 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
     private IMethod jdtEnclosingMethodDeclaration;
 
     private Variable localVariable;
-
+    private Kind localVariableKind;
     private final Set<IMethodName> receiverMethodInvocations = Sets.newHashSet();
 
     @Inject
@@ -109,6 +111,7 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
                     return true;
                 }
                 if (var.getName().equals(localVariable.getNameLiteral())) {
+                    determineVariableKind(var);
                     final ASTNode parent = node.getParent();
                     if (parent instanceof MethodInvocation) {
                         registerMethodCallOnReceiver((MethodInvocation) parent);
@@ -121,17 +124,49 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
                 return true;
             }
 
+            private void determineVariableKind(final IVariableBinding var) {
+
+                if (var.isParameter()) {
+                    localVariableKind = ObjectInstanceKey.Kind.PARAMETER;
+                } else if (var.isField()) {
+                    localVariableKind = Kind.FIELD;
+                } else {
+                    localVariableKind = Kind.LOCAL;
+
+                }
+            }
+
             private void evaluateVariableDeclarationFragment(final VariableDeclarationFragment fragment) {
+                checkIsAssignmentForMethodReturn(fragment);
                 final Expression initializer = fragment.getInitializer();
                 if (initializer instanceof ClassInstanceCreation) {
                     registerConstructorCallOnVariable((ClassInstanceCreation) initializer);
                 }
             }
 
+            private void checkIsAssignmentForMethodReturn(final VariableDeclarationFragment fragment) {
+
+                if (isVariableDeclarationOfCurrentVariable(fragment) && !isConstructorCall(fragment.getInitializer())) {
+                    localVariableKind = Kind.RETURN;
+                }
+            }
+
+            private boolean isConstructorCall(final Expression initializer) {
+                return initializer instanceof ClassInstanceCreation;
+            }
+
+            private boolean isVariableDeclarationOfCurrentVariable(final VariableDeclarationFragment fragment) {
+                final SimpleName astName = fragment.getName();
+                final String astNameLiteral = astName.getIdentifier();
+                final String recNameLiteral = localVariable.getNameLiteral();
+                return astNameLiteral.equals(recNameLiteral);
+            }
+
             private void evaluateAssignment(final Assignment a) {
                 final Expression rhs = a.getRightHandSide();
                 if (rhs instanceof ClassInstanceCreation) {
                     registerConstructorCallOnVariable((ClassInstanceCreation) rhs);
+                    localVariableKind = Kind.LOCAL;
                 }
             }
 
@@ -157,5 +192,13 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
     @Override
     public Set<IMethodName> getReceiverMethodInvocations() {
         return receiverMethodInvocations;
+    }
+
+    @Override
+    public Variable getResolvedVariable() {
+        final Variable res = Variable.create(localVariable.getNameLiteral(), localVariable.getType(),
+                localVariable.getReferenceContext());
+        res.kind = localVariableKind;
+        return res;
     }
 }

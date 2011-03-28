@@ -72,7 +72,7 @@ public class CompletionVerifier {
             } else {
                 storeLine = currentLine.substring(0, startIndex);
             }
-            storeLine += currentLine.substring(currentLine.indexOf(">") + 1, currentLine.length());
+            storeLine += currentLine.substring(currentLine.lastIndexOf(">") + 1, currentLine.length());
         } else {
             storeLine = currentLine;
         }

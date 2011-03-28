@@ -32,7 +32,7 @@ public class ProposalNameGenerator {
    * @param name
    * @return true if the variable name was free
    */
-  public static boolean markVariableNameAsUsed(String name) {
+  public static boolean markVariableNameAsUsed(final String name) {
     return variableNames.add(name);
   }
 
@@ -43,32 +43,38 @@ public class ProposalNameGenerator {
    */
   public static String generateFreeVariableName() {
     while (true) {
-      String varName = getNextFreeVariableName();
+      final String varName = getNextFreeVariableName();
       toggleFreeVariableName();
-      if (markVariableNameAsUsed(varName))
+      if (!variableNames.contains(varName)) {
         return varName;
+      }
     }
   }
 
   private static String getNextFreeVariableName() {
-    StringBuilder str = new StringBuilder(String.valueOf(nextFreeVariableName));
-    if (freeVariableSequenceCounter > 1)
+    final StringBuilder str = new StringBuilder(String.valueOf(nextFreeVariableName));
+    if (freeVariableSequenceCounter > 1) {
       str.append(freeVariableSequenceCounter);
+    }
     return str.toString();
   }
 
   private static void toggleFreeVariableName() {
-    if (nextFreeVariableName < 'z')
+    if (nextFreeVariableName < 'z') {
       nextFreeVariableName++;
-    else {
+    } else {
       nextFreeVariableName = 'i';
       freeVariableSequenceCounter++;
     }
   }
 
-  public static void resetProposalNameGenerator() {
-    variableNames.clear();
+  public static void resetSequence() {
     nextFreeVariableName = 'i';
     freeVariableSequenceCounter = 1;
+  }
+
+  public static void resetProposalNameGenerator() {
+    variableNames.clear();
+    resetSequence();
   }
 }

@@ -141,6 +141,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
                 // recevier type which noone can understand in 3 months.
                 receiverType = receiver.isThis() ? receiver.type : ctx.getReceiverType();
                 receiverMethodInvocations = resolver.getReceiverMethodInvocations();
+                receiver = resolver.getResolvedVariable();
                 return true;
             }
         }
@@ -160,6 +161,9 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         model.setAvailablity(true);
         model.setMethodContext(firstMethodDeclaration);
         model.setObservedMethodCalls(receiverType, receiverMethodInvocations);
+        if (receiver.fuzzyIsParameter() || receiver.fuzzyIsDefinedByMethodReturn()) {
+            model.negateConstructors();
+        }
         model.updateBeliefs();
         // update
         final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model.getRecommendedMethodCalls(

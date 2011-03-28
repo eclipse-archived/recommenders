@@ -18,13 +18,11 @@ public class LocalWithPrefix {
     public AtomicBoolean findMe = new AtomicBoolean();
 
     public static void method1() {
+        //@start
         final LocalWithPrefix useMe = new LocalWithPrefix();
-        final AtomicBoolean c = use<@Ignore^Space>
-        /*
-         * calling context --> static
-         * expected type --> AtomicBoolean
-         * expected completion --> [use]Me.findMe
-         * variable name --> c
-         */
+        final AtomicBoolean c = use<^Space|useMe.findMe.*>
+        //@end
+        //final LocalWithPrefix useMe = new LocalWithPrefix();
+        //final AtomicBoolean c = useMe.findMe
     }
 }

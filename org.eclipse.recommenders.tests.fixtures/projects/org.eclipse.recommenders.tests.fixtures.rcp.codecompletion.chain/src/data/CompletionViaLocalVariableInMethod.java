@@ -18,13 +18,11 @@ public class CompletionViaLocalVariableInMethod {
     public AtomicBoolean findMe = new AtomicBoolean();
 
     public static void method() {
+        //@start
 		final CompletionViaLocalVariableInMethod variable = new CompletionViaLocalVariableInMethod();
-		final AtomicBoolean c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> AtomicBoolean
-         * expected completion --> variable.findMe
-		 * variable name --> c
-		 */
+		final AtomicBoolean c = <^Space|variable.findMe.*>
+		//@end
+		//final CompletionViaLocalVariableInMethod variable = new CompletionViaLocalVariableInMethod();
+		//final AtomicBoolean c = variable.findMe
 	}
 }

@@ -26,24 +26,20 @@ public class CompletionOnSupertypeMemberInMethod {
     }
 
     public static void test_onAttribute() {
+        //@start
 		final Subtype useMe = new Subtype();
-		final AtomicBoolean c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> AtomicBoolean
-         * expected completion --> useMe.findMe
-		 * variable name --> c
-		 */
+		final AtomicBoolean c = <^Space|useMe.findMe.*>
+		//@end
+		//final Subtype useMe = new Subtype();
+		//final AtomicBoolean c = useMe.findMe
 	}
 
     public static void test_onMethod() {
+        //@start
 		final Subtype useMe = new Subtype();
-		final AtomicInteger c = <@Ignore^Space>
-		/*
-		 * calling context --> static
-		 * expected type --> AtomicInteger
-         * expected completion --> useMe.findMe()
-		 * variable name --> c
-		 */
+		final AtomicInteger c = <^Space|useMe.findMe.*>
+		//@end
+		//final Subtype useMe = new Subtype();
+		//final AtomicInteger c = useMe.findMe() 
 	}
 }

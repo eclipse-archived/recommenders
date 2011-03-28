@@ -18,7 +18,7 @@ public class CompletionOnMemberCallChainDepth2 {
         public B b = new B();
 
         public class B {
-            public File findMe = new File("");
+            public File findMember = new File("");
             
             public File findMethod() {
             	return null;
@@ -28,18 +28,31 @@ public class CompletionOnMemberCallChainDepth2 {
     
     //@start
     A a = new A();
-    File c = <^Space|a.b.findMe.*>
+    File c = <^Space|a.b.findMember.*>
     //@end
     //A a = new A();
-    //File c = a.b.findMe
+    //File c = a.b.findMember
+    
+  //@start
+    File c2 = <^Space|a.b.findMethod.*>
+    //@end
+    //File c2 = a.b.findMethod()
 
     public CompletionOnMemberCallChainDepth2(){
+        //@start
         final A a = new A();
-        final File c =<@Ignore^Space>
+        final File c = <^Space|a.b.findMember.*>
+        //@end
+//        final A a = new A();
+//        final File c = a.b.findMember
     }
     
     public void method() {
+        //@start
         final A a = new A();
-        final File c =<@Ignore^Space>
+        final File c = <^Space|this.a.b.findMember.*>
+        //@end
+//        final A a = new A();
+//        final File c = this.a.b.findMember
     }
 }

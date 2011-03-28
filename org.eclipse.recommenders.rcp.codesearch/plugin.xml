@@ -56,7 +56,7 @@
      <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codesearch.preferences.PreferenceInitializer">
+            class="org.eclipse.recommenders.internal.rcp.codesearch.preferences.PreferenceInitializer">
       </initializer>
    </extension>
 </plugin>
