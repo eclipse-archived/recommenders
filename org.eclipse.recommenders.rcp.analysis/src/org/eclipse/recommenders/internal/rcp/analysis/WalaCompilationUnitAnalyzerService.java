@@ -36,7 +36,8 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
 
     @Override
     public CompilationUnit analyze(final ICompilationUnit jdtCompilationUnit, final IProgressMonitor monitor) {
-        System.out.println("start analyzing " + jdtCompilationUnit.getElementName());
+        final StopWatch w = new StopWatch();
+        w.start();
         final IType jdtType = jdtCompilationUnit.findPrimaryType();
         if (jdtType == null) {
             return null;
@@ -58,14 +59,15 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         } catch (final UnimplementedError x) {
             RcpAnalysisPlugin.logError(x, "error during analysis if '%s'", walaClass.getName());
         }
-        System.out.println("end analyzing " + jdtCompilationUnit.getElementName());
+        w.stop();
+        System.out.printf("Analyzing %s took '%s'\n", jdtCompilationUnit.getElementName(), w);
 
         return recCompilationUnit;
     }
 
     private void createAnalysisInjector(final IClass walaClass) {
-        final StopWatch w = new StopWatch();
-        w.start();
+        // final StopWatch w = new StopWatch();
+        // w.start();
 
         final Injector masterInjector = InjectionService.getInstance().getInjector();
         injector = masterInjector;
@@ -150,7 +152,7 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         // return new AllMethodsAndContructorsEntrypointSelector();
         // }
         // });
-        w.stop();
-        System.out.println(w);
+        // w.stop();
+        // System.out.println(w);
     }
 }
