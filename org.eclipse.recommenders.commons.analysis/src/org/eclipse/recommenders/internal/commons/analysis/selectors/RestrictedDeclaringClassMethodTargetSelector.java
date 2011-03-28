@@ -12,6 +12,8 @@ package org.eclipse.recommenders.internal.commons.analysis.selectors;
 
 import java.util.Set;
 
+import org.eclipse.recommenders.commons.utils.Bag;
+import org.eclipse.recommenders.commons.utils.HashBag;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.internal.commons.analysis.utils.ClassUtils;
 import org.eclipse.recommenders.internal.commons.analysis.utils.MethodUtils;
@@ -39,6 +41,7 @@ public class RestrictedDeclaringClassMethodTargetSelector implements MethodTarge
     private final Set<IClass> acceptedDeclaringClasses = Sets.newHashSet();
 
     private final SSAPropagationCallGraphBuilder builder;
+    private Bag<MethodReference> reentryCounter = HashBag.newHashBag();
 
     public RestrictedDeclaringClassMethodTargetSelector(final MethodTargetSelector delegate,
             final IClass restrictedReceiverType, final SSAPropagationCallGraphBuilder builder) {
@@ -57,6 +60,12 @@ public class RestrictedDeclaringClassMethodTargetSelector implements MethodTarge
         // receiverType);
         // experimental(caller, call, receiverType);
         final MethodReference declaredCallTarget = call.getDeclaredTarget();
+        final int count = reentryCounter.count(declaredCallTarget);
+        if (count > 100) {
+            return null;
+        }
+
+        reentryCounter.add(declaredCallTarget);
         if (RecommendersInits.isRecommendersInit(declaredCallTarget)) {
             return RecommendersInits.createRecommendersInit(caller, call, receiverType, builder,
                     new DeclaredNonPrimitiveOrArrayFieldsSelector());
