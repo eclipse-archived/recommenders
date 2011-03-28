@@ -31,7 +31,8 @@ import com.ibm.wala.ssa.SSAPutInstruction;
 public class LocalNamesCollector {
     public static final String UNKNOWN = "unnamed";
 
-    // private static final Logger log = Logger.getLogger(LocalNamesCollector.class);
+    // private static final Logger log =
+    // Logger.getLogger(LocalNamesCollector.class);
     private final Multimap<Integer/* value number */, String> names = HashMultimap.create();
 
     private IR ir;
@@ -103,12 +104,16 @@ public class LocalNamesCollector {
                     final int val = instruction.getVal();
                     storeLocalNameForValueNumber(val, name);
                 } else if (instr instanceof SSACheckCastInstruction) {
-                    // TODO cast need special treatment. Instance keys need refinement because of cast.
-                    // handle cases like ' Composite container = (Composite) super.createDialogArea(parent);'
-                    // XXX w/o updating the instance key this results in worse recommendations. ignore for now and let
+                    // TODO cast need special treatment. Instance keys need
+                    // refinement because of cast.
+                    // handle cases like ' Composite container = (Composite)
+                    // super.createDialogArea(parent);'
+                    // XXX w/o updating the instance key this results in worse
+                    // recommendations. ignore for now and let
                     // instant code completion handle this.
                     //
-                    // final SSACheckCastInstruction instruction = (SSACheckCastInstruction) instr;
+                    // final SSACheckCastInstruction instruction =
+                    // (SSACheckCastInstruction) instr;
                     // final int use = instruction.getUse(0);
                     // final int def = instruction.getDef();
                     // findLocalNamesForValueNumberInBasicBlocks(def);
@@ -131,6 +136,9 @@ public class LocalNamesCollector {
     }
 
     private void findLocalNamesForValueNumberInBasicBlocks(final int valueNumber) {
+        if (names.containsKey(valueNumber)) {
+            return;
+        }
         for (final ISSABasicBlock block : basicBlocks) {
             final int last = block.getLastInstructionIndex();
             final String[] localNames = ir.getLocalNames(last, valueNumber);
@@ -141,8 +149,8 @@ public class LocalNamesCollector {
     /**
      * Returns the name for a given value number - if one exists.
      * 
-     * @return {@link #UNKNOWN} if no name could be found for the given value number or the first name under which found
-     *         for this value number
+     * @return {@link #UNKNOWN} if no name could be found for the given value
+     *         number or the first name under which found for this value number
      */
     public String getName(final int valueNumber) {
         if (!names.containsKey(valueNumber)) {
@@ -156,7 +164,9 @@ public class LocalNamesCollector {
     }
 
     // private void logMoreThanOneNameFoundWarning(final int valueNumber) {
-    // final String msg = String.format("%s:\n\tMore than one name for vale %d found: %s", ir.getMethod()
+    // final String msg =
+    // String.format("%s:\n\tMore than one name for vale %d found: %s",
+    // ir.getMethod()
     // .getSignature(), valueNumber, names);
     // log.warn(msg);
     // }
