@@ -64,7 +64,7 @@ public class ParameterCallsitesTracingTest {
         opts = new AnalysisOptions();
         opts.setAnalysisScope(cha.getScope());
         cache = new AnalysisCache();
-        cgBuilder = new InstanceCallGraphBuilder(opts, cache, cha, WalaTestUtils.getNativeSummaries(cha));
+        cgBuilder = new InstanceCallGraphBuilder(opts, cache, WalaTestUtils.getNativeSummaries(cha));
         output = MethodDeclaration.create();
         final Set<ICallGraphAnalyzer> analyzers = Sets.newHashSet();
         analyzers.add(new ParameterCallsitesCallGraphAnalyzer());
