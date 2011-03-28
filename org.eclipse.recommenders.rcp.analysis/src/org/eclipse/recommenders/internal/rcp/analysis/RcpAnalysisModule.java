@@ -61,6 +61,7 @@ import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
+import com.ibm.wala.ipa.callgraph.AnalysisCache;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.callgraph.impl.Util;
 import com.ibm.wala.ipa.summaries.XMLMethodSummaryReader;
@@ -84,7 +85,7 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
         configureCallgraphAnalyzer();
         configureCompilationUnitFinalizer();
         configureCompilationUnitConsumer();
-        // bind(AnalysisCache.class).toInstance(new AnalysisCache());
+        bind(AnalysisCache.class).toInstance(new AnalysisCache());
         bind(IEntrypointSelector.class).to(AllMethodsAndContructorsEntrypointSelector.class);
     }
 

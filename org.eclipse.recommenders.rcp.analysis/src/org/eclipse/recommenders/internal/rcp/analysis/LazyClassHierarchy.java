@@ -39,6 +39,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.BinaryType;
 import org.eclipse.jdt.internal.core.SourceType;
+import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaAnalysisUtils;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
@@ -52,7 +53,9 @@ import com.ibm.wala.classLoader.IClassLoader;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.ShrikeClass;
+import com.ibm.wala.ipa.callgraph.AnalysisCache;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
+import com.ibm.wala.ipa.callgraph.impl.Everywhere;
 import com.ibm.wala.ipa.callgraph.impl.FakeRootClass;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.ipa.summaries.BypassSyntheticClassLoader;
@@ -188,7 +191,7 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
         } catch (final InvalidClassFileException e) {
             throw throwUnhandledException(e);
         }
-        System.out.println("loading from output folder: " + res.getName());
+        // System.out.println("loading from output folder: " + res.getName());
         clazzes.put(res.getName(), res);
         watchlist.put(eclipseFile, res.getName());
         res.getSuperclass();
@@ -411,7 +414,9 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
                         if (pathDescribesAnExistingFileHandle(resource)) {
                             final TypeName typeName = watchlist.get(resource);
                             if (null != typeName) {
-                                System.out.println("removed wala class: " + typeName);
+                                // System.out.println("removed wala class: " +
+                                // typeName);
+                                invalidateObsoleteMethodsInCache(typeName);
                                 clazzes.remove(typeName);
                             }
                         }
@@ -420,6 +425,7 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
                     }
                     return true;
                 }
+
             });
         } catch (final CoreException e) {
             throwUnhandledException(e);
@@ -429,6 +435,18 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
     public void remove(final ITypeName recType) {
         ensureIsNotNull(recType);
         final TypeName name = WalaNameUtils.rec2walaType(recType).getName();
+        invalidateObsoleteMethodsInCache(name);
         clazzes.remove(name);
+    }
+
+    private void invalidateObsoleteMethodsInCache(final TypeName typeName) {
+        final AnalysisCache cache = InjectionService.getInstance().getInjector().getInstance(AnalysisCache.class);
+        final IClass clazz = clazzes.get(typeName);
+        if (clazz != null) {
+            for (final IMethod m : clazz.getDeclaredMethods()) {
+                cache.getSSACache().invalidate(m, Everywhere.EVERYWHERE);
+
+            }
+        }
     }
 }
