@@ -41,7 +41,7 @@ public class RestrictedDeclaringClassMethodTargetSelector implements MethodTarge
     private final Set<IClass> acceptedDeclaringClasses = Sets.newHashSet();
 
     private final SSAPropagationCallGraphBuilder builder;
-    private Bag<MethodReference> reentryCounter = HashBag.newHashBag();
+    private Bag<CallSiteReference> reentryCounter = HashBag.newHashBag();
 
     public RestrictedDeclaringClassMethodTargetSelector(final MethodTargetSelector delegate,
             final IClass restrictedReceiverType, final SSAPropagationCallGraphBuilder builder) {
@@ -60,12 +60,7 @@ public class RestrictedDeclaringClassMethodTargetSelector implements MethodTarge
         // receiverType);
         // experimental(caller, call, receiverType);
         final MethodReference declaredCallTarget = call.getDeclaredTarget();
-        final int count = reentryCounter.count(declaredCallTarget);
-        if (count > 100) {
-            return null;
-        }
 
-        reentryCounter.add(declaredCallTarget);
         if (RecommendersInits.isRecommendersInit(declaredCallTarget)) {
             return RecommendersInits.createRecommendersInit(caller, call, receiverType, builder,
                     new DeclaredNonPrimitiveOrArrayFieldsSelector());
@@ -90,6 +85,15 @@ public class RestrictedDeclaringClassMethodTargetSelector implements MethodTarge
                         receiverType == null ? resolvedCalleeTarget.getDeclaringClass() : receiverType);
             }
         }
+
+        // call on this:
+        final int count = reentryCounter.count(call);
+        if (count > 5) {
+            return null;
+        }
+
+        reentryCounter.add(call);
+
         return resolvedCalleeTarget;
     }
 
