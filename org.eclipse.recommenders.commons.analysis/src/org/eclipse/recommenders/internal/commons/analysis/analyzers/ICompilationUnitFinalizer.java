@@ -15,6 +15,6 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Compilati
 
 import com.ibm.wala.classLoader.IClass;
 
-public interface CompilationUnitFinalizer {
+public interface ICompilationUnitFinalizer {
     void finalizeClass(CompilationUnit compilationUnit, IClass exampleClass, IProgressMonitor monitor);
 }

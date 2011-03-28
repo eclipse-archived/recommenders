@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers.modules;
 
-import org.eclipse.recommenders.internal.commons.analysis.analyzers.CompilationUnitFinalizer;
+import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitFinalizer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.JavaLangInstanceKeysRemoverCompilationUnitFinalizer;
 
 import com.google.inject.AbstractModule;
@@ -20,8 +20,8 @@ import com.google.inject.multibindings.Multibinder;
 public class JavaLangInstanceKeysCompilationUnitFinalizerPluginModule extends AbstractModule {
     @Override
     public void configure() {
-        final Multibinder<CompilationUnitFinalizer> binder = Multibinder.newSetBinder(binder(),
-                CompilationUnitFinalizer.class);
+        final Multibinder<ICompilationUnitFinalizer> binder = Multibinder.newSetBinder(binder(),
+                ICompilationUnitFinalizer.class);
         binder.addBinding().to(JavaLangInstanceKeysRemoverCompilationUnitFinalizer.class).in(Singleton.class);
     }
 }
