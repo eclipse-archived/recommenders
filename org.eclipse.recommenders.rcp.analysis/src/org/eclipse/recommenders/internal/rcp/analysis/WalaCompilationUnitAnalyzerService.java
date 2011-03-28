@@ -116,7 +116,6 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         // Multibinder.newSetBinder(binder(), ICallGraphAnalyzer.class);
         // b.addBinding().to(ParameterCallsitesCallGraphAnalyzer.class);
         // b.addBinding().to(ReceiverCallsitesCallGraphAnalyzer.class);
-        // b.addBinding().to(ReceiverCallsitesCallGraphAnalyzer.class);
         // b.addBinding().to(LocalNamesCollectingCallGraphAnalyzer.class);
         //
         // }

@@ -118,7 +118,6 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
         final Multibinder<ICallGraphAnalyzer> b = Multibinder.newSetBinder(binder(), ICallGraphAnalyzer.class);
         b.addBinding().to(ParameterCallsitesCallGraphAnalyzer.class);
         b.addBinding().to(ReceiverCallsitesCallGraphAnalyzer.class);
-        b.addBinding().to(ReceiverCallsitesCallGraphAnalyzer.class);
         b.addBinding().to(LocalNamesCollectingCallGraphAnalyzer.class);
 
     }
