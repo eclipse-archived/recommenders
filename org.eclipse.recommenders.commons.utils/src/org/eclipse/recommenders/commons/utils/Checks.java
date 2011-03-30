@@ -83,9 +83,9 @@ public class Checks {
         return file;
     }
 
-    public static void ensureIsFalse(final boolean expression, final String message) {
+    public static void ensureIsFalse(final boolean expression, final String message, final Object... args) {
         if (expression) {
-            throwIllegalArgumentException(message);
+            throwIllegalArgumentException(message, args);
         }
     }
 
@@ -163,14 +163,6 @@ public class Checks {
         return ensureIsNotNull(arg, "???");
     }
 
-    /**
-     * @return the given file or raises an exception with the corresponding
-     *         message given in argument name
-     */
-    public static <T> T ensureIsNotNull(final T arg, final String argName) {
-        return ensureIsNotNull(arg, "Argument '%s' is null.", argName);
-    }
-
     public static <T> T ensureIsNotNull(final T arg, final String message, final Object... args) {
         if (arg == null) {
             throwIllegalArgumentException(message, args);
@@ -190,10 +182,6 @@ public class Checks {
 
     public static void ensureIsNull(final Object arg) {
         ensureIsNull(arg, "Expected object to be null but got:%s", arg);
-    }
-
-    public static void ensureIsNull(final Object arg, final String msg) {
-        ensureIsNull(arg, msg, (Object[]) null);
     }
 
     public static void ensureIsNull(final Object arg, final String message, final Object... args) {
@@ -220,9 +208,9 @@ public class Checks {
         ensureIsTrue(exp, "assertion failed.");
     }
 
-    public static void ensureIsTrue(final boolean exp, final String message) {
+    public static void ensureIsTrue(final boolean exp, final String message, final Object... args) {
         if (!exp) {
-            throwIllegalArgumentException(message);
+            throwIllegalArgumentException(message, args);
         }
     }
 
