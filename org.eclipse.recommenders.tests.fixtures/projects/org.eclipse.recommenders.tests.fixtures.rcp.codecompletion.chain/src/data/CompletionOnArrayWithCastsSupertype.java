@@ -26,28 +26,28 @@ public class CompletionOnArrayWithCastsSupertype {
 	}
 
     public static void method2() {
-        // @start
+        // @Ignore-start
         final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        final Number[] c = <^Space|obj.findme.*2 elements.*>
-        // @end
+        final Number[] c = <@Ignore^Space|obj.findme.*2 elements.*>
+        // @Ignore-end
         // final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
         //final Number[] c = obj.findme[j][k]
     }
 
     public static void method3() {
-        //@start
+        //@Ignore-start
 		final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        final Number[][] c = <^Space|obj.findme.*2 elements.*>
-        //@end
+        final Number[][] c = <@Ignore^Space|obj.findme.*2 elements.*>
+        //@Ignore-end
         //final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
         //final Number[][] c = obj.findme[j]
 	}
 
     public static void method4() {
-        //@start
+        //@Ignore-start
 		final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
-        final Number[][][] c = <^Space|obj.findme.*>
-        //@end
+        final Number[][][] c = <@Ignore^Space|obj.findme.*>
+        //@Ignore-end
         //final CompletionOnArrayWithCastsSupertype obj = new CompletionOnArrayWithCastsSupertype();
         //final Number[][][] c = obj.findme
 	}
