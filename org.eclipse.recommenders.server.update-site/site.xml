@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.recommenders.server.feature_0.2.0.qualifier.jar" id="org.eclipse.recommenders.server.feature" version="0.2.0.qualifier">
+      <category name="webservices"/>
+   </feature>
+   <category-def name="webservices" label="Eclipse Code Recommenders - Webservices"/>
+</site>

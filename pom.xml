@@ -229,18 +229,20 @@
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.templates</module>
 		<!-- module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module -->
-
+		
 		<module>org.eclipse.recommenders.rcp.utils</module>
 		<module>org.eclipse.recommenders.tests.commons</module>
 		<module>org.eclipse.recommenders.tests.commons.unit</module>
 		<module>org.eclipse.recommenders.examples.rcp.codecompletion</module>
 
 
-		<!-- Codesearch Client -->
+		<!-- Codesearch -->
 		
 		<module>org.eclipse.recommenders.commons.codesearch</module>
 		<module>org.eclipse.recommenders.rcp.codesearch</module>
-
+		<module>org.eclipse.recommenders.server.codesearch</module>
+		<module>org.eclipse.recommenders.server.commons</module>
+		
 		<module>org.eclipse.recommenders.doc.user</module>
 
 
@@ -250,6 +252,9 @@
 		<module>org.eclipse.recommenders.rcp.codesearch.feature</module>
 		<module>org.eclipse.recommenders.rcp.codecompletion.source-feature</module>
 		<module>org.eclipse.recommenders.rcp.update-site</module>
+		
+		<module>org.eclipse.recommenders.server.feature</module>
+		<module>org.eclipse.recommenders.server.update-site</module>
 	</modules>
 
 </project>

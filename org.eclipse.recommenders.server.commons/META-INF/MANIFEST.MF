@@ -2,10 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Commons for Servers
 Bundle-SymbolicName: org.eclipse.recommenders.server.commons
-Bundle-Version: 0.1.0.qualifier
+Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.google.inject
 Require-Bundle: com.sun.jersey.core;bundle-version="1.5.0",
- com.sun.jersey.server;bundle-version="1.5.0"
+ com.sun.jersey.server;bundle-version="1.5.0",
+ javax.servlet;bundle-version="2.5.0"
 Export-Package: org.eclipse.recommenders.server.commons

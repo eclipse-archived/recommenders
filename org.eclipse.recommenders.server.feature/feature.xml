@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.recommenders.server.feature"
+      label="Code Recommenders: Webservices (Incubation)"
+      version="0.2.0.qualifier"
+      provider-name="Eclipse Code Recommenders">
+
+   <description url="pom.xml">
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+       %license
+   </license>
+
+   <plugin
+         id="org.eclipse.recommenders.server.codesearch"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.server.commons"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
