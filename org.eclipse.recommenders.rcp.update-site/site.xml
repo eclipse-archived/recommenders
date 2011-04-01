@@ -9,7 +9,7 @@
    <feature url="features/org.eclipse.recommenders.rcp.codesearch_0.2.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codesearch" version="0.2.0.qualifier">
       <category name="sandbox"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.3rd.feature_1.0.0.201102081957.jar" id="org.eclipse.recommenders.3rd.feature" version="1.0.0.201102081957">
+   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201104011609.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201104011609">
       <category name="3rd"/>
    </feature>
    <category-def name="main" label="Eclipse Code Recommenders - Code Completion"/>
