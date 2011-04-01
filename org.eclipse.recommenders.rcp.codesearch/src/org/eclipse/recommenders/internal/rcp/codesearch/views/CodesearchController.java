@@ -63,9 +63,9 @@ public class CodesearchController {
                 client.addFeedback(response.getRequestId(), Feedback.newFeedback(proposal.getId(), feedbackType));
                 return Status.OK_STATUS;
             }
-        };
-        // .schedule()
-        System.out.printf("send feedback: %s %s %s\n", feedbackType, response.getRequestId(), proposal.getId());
+        }.schedule();
+        // System.out.printf("send feedback: %s %s %s\n", feedbackType,
+        // response.getRequestId(), proposal.getId());
     }
 
     public synchronized void sendRequest(final Request request, final IJavaProject issuingProject) {
