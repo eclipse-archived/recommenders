@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Gson JAX-RS JSON Serializer (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.commons.utils.gson.jaxrs
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.recommenders.commons.utils.gson;bundle-version="0.1.0",
+ com.sun.jersey.core;bundle-version="1.4.0"

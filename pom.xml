@@ -239,6 +239,7 @@
 		<!-- Codesearch -->
 		
 		<module>org.eclipse.recommenders.commons.codesearch</module>
+		<module>org.eclipse.recommenders.commons.utils.gson.jaxrs</module>
 		<module>org.eclipse.recommenders.rcp.codesearch</module>
 		<module>org.eclipse.recommenders.server.codesearch</module>
 		<module>org.eclipse.recommenders.server.commons</module>
