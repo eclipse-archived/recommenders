@@ -40,11 +40,6 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<!--buildCommand>
-			<name>net.sf.eclipsecs.core.CheckstyleBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand-->
 		<buildCommand>
 			<name>org.eclipse.recommenders.rcp.analysis.RecommendersBuilder</name>
 			<arguments>
@@ -63,7 +58,6 @@
 		<nature>com.jutils.lint4j.core.Nature</nature>
 		<nature>edu.umd.cs.findbugs.plugin.eclipse.findbugsNature</nature>
 		<nature>org.eclipse.recommenders.rcp.RecommendersNature</nature>
-		<nature>net.sf.eclipsecs.core.CheckstyleNature</nature>
 		<nature>org.eclipse.recommenders.rcp.analysis.RecommendersNature</nature>
 		<nature>com.instantiations.assist.eclipse.coverage.codeCoverageNature</nature>
 	</natures>

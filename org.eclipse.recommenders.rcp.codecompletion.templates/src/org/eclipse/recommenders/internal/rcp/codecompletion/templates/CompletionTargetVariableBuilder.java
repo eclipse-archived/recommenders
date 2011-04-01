@@ -32,8 +32,11 @@ public final class CompletionTargetVariableBuilder {
     private IIntelligentCompletionContext context;
     private ITypeName receiverType;
     private String receiverName;
+    private int replacementOffset;
     private boolean needsConstructor;
     private final Set<IMethodName> receiverCalls = Sets.newHashSet();
+
+    private boolean isCallOnThis;
 
     /**
      * Hide the builder instance as it should directly be turned to the garbage
@@ -67,6 +70,7 @@ public final class CompletionTargetVariableBuilder {
         context = completionContext;
         receiverType = context.getReceiverType();
         receiverName = context.getReceiverName();
+        replacementOffset = context.getReplacementRegion().getOffset();
         if (receiverType == null) {
             handleUnresolvedType();
         } else {
@@ -86,6 +90,7 @@ public final class CompletionTargetVariableBuilder {
         if (receiverName == null || receiverName.isEmpty()) {
             receiverName = "this";
             receiverType = context.getEnclosingType();
+            isCallOnThis = true;
         } else {
             final Variable resolvedVariable = ((IntelligentCompletionContext) context)
                     .findMatchingVariable(receiverName);
@@ -93,6 +98,7 @@ public final class CompletionTargetVariableBuilder {
                 receiverType = VmTypeName.get(String.format("L%s", receiverName));
                 receiverName = "";
                 needsConstructor = true;
+                replacementOffset += context.getReplacementRegion().getLength();
             } else {
                 // TODO: disabled because getReceiverCalls currently doesn't
                 // work.
@@ -108,13 +114,12 @@ public final class CompletionTargetVariableBuilder {
      *         case it was invoked while defining a new variable.
      */
     private CompletionTargetVariable buildInvokedVariable() {
-        final int variableNameLength = getVariableNameLength();
-        int documentOffset = context.getReplacementRegion().getOffset() - variableNameLength;
-        if (needsConstructor) {
-            documentOffset += context.getReplacementRegion().getLength();
+        if (receiverName == null) {
+            receiverName = "";
         }
-        return new CompletionTargetVariable(receiverName, receiverType, receiverCalls, new Region(documentOffset,
-                variableNameLength), needsConstructor);
+        final int variableNameLength = getVariableNameLength();
+        return new CompletionTargetVariable(receiverName, receiverType, receiverCalls, new Region(replacementOffset
+                - variableNameLength, variableNameLength), needsConstructor, context);
     }
 
     /**
@@ -129,7 +134,7 @@ public final class CompletionTargetVariableBuilder {
             final String completionNode = context.getCompletionNode().toString();
             variableNameLength = completionNode.substring(completionNode.indexOf(':') + 1, completionNode.indexOf('>'))
                     .length();
-        } else if (receiverName != null && receiverName.length() > 0) {
+        } else if (receiverName.length() > 0 && !isCallOnThis) {
             // For variables other than implicit "this", add space for ".".
             variableNameLength = receiverName.length() + 1;
         }

@@ -31,6 +31,8 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
     /**
      * @param name
      *            The name this pattern was given within the models store.
+     * @param type
+     *            The type of the variable this recommendation was created for.
      * @param methods
      *            The pattern's methods as obtained from the model store.
      * @param probability
@@ -56,6 +58,9 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
         return name;
     }
 
+    /**
+     * @return The type of the variable this recommendation was created for.
+     */
     public ITypeName getType() {
         return type;
     }
@@ -75,7 +80,17 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
     }
 
     @Override
+    public int hashCode() {
+        return methods.hashCode();
+    }
+
+    @Override
     public int compareTo(final PatternRecommendation other) {
         return Integer.valueOf(probability).compareTo(other.probability);
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        return object instanceof PatternRecommendation && methods.equals(((PatternRecommendation) object).methods);
     }
 }

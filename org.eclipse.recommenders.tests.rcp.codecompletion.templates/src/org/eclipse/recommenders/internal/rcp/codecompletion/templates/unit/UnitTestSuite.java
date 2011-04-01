@@ -19,6 +19,7 @@ import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
+import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -29,17 +30,13 @@ import org.junit.runners.Suite.SuiteClasses;
         TemplatesCompletionProposalComputerTest.class })
 public final class UnitTestSuite {
 
-    private static final CompletionTargetVariable DEFAULTVARIABLE = new CompletionTargetVariable("constructed",
-            VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), new HashSet<IMethodName>(), new Region(0, 0), false);
-    private static final CompletionTargetVariable CONSTRUCTORVARIABLE = new CompletionTargetVariable("unconstructed",
-            VmTypeName.get("Lorg/eclipse/swt/widgets/Button"), new HashSet<IMethodName>(), new Region(0, 0), true);
-
     private static final IMethodName DEFAULTMETHOD = createMethod("Lorg/eclipse/swt/widgets/Button.setText()V");
     private static final IMethodName DEFAULTRETURNINGMETHOD = createMethod("Lorg/eclipse/swt/widgets/Button.getText()Ljava/lang/String;");
     private static final IMethodName CONSTRUCTORMETHOD = createMethod("Lorg/eclipse/swt/widgets/Button.<init>(Lorg/eclipse/swt/widgets/Composite;I)V");
 
-    private static final MethodCall METHODCALL = new MethodCall(DEFAULTVARIABLE.getName(), DEFAULTMETHOD);
-    private static final MethodCall CONSTRUCTORCALL = new MethodCall(CONSTRUCTORVARIABLE.getName(), CONSTRUCTORMETHOD);
+    private static final MethodCall METHODCALL = new MethodCall("button123", DEFAULTMETHOD);
+    private static final MethodCall RETURNINGMETHODCALL = new MethodCall("button456", DEFAULTRETURNINGMETHOD);
+    private static final MethodCall CONSTRUCTORCALL = new MethodCall("", CONSTRUCTORMETHOD);
 
     private static final CodeBuilder CODEBUILDERMOCK = new CodeBuilder(
             MethodCallFormatterTest.getMethodCallFormatterMock());
@@ -51,8 +48,8 @@ public final class UnitTestSuite {
         return METHODCALL;
     }
 
-    protected static IMethodName getDefaultReturningMethod() {
-        return DEFAULTRETURNINGMETHOD;
+    protected static MethodCall getDefaultReturningMethodCall() {
+        return RETURNINGMETHODCALL;
     }
 
     /**
@@ -62,8 +59,12 @@ public final class UnitTestSuite {
         return CONSTRUCTORCALL;
     }
 
-    protected static CompletionTargetVariable getDefaultConstructorTargetVariable() {
-        return CONSTRUCTORVARIABLE;
+    protected static CompletionTargetVariable getMockedTargetVariable(final String code, final String variableName,
+            final String typeName, final boolean needsConstructor) {
+        final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(code,
+                variableName, typeName);
+        return new CompletionTargetVariable(variableName, VmTypeName.get(typeName), new HashSet<IMethodName>(),
+                new Region(0, 0), needsConstructor, context);
     }
 
     protected static CodeBuilder getCodeBuilderMock() {
