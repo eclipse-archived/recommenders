@@ -53,47 +53,47 @@ public class ChecksTest {
 
     @Test
     public void testEnsureEquals() {
-        String value = "message";
-        String expected = new String("message");
+        final String value = "message";
+        final String expected = new String("message");
         ensureEquals(value, expected, "");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEnsureEqualsFails() {
-        String value = "message-different";
-        String expected = new String("message");
+        final String value = "message-different";
+        final String expected = new String("message");
         ensureEquals(value, expected, "");
     }
 
     @Test
     public void testEnsureExists() {
-        File file = getTempDir();
+        final File file = getTempDir();
         ensureExists(file);
     }
 
     private File getTempDir() {
-        String tmp = System.getProperties().getProperty("java.io.tmpdir");
-        File file = new File(tmp);
+        final String tmp = System.getProperties().getProperty("java.io.tmpdir");
+        final File file = new File(tmp);
         return file;
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEnsureExistsFails() {
-        String tmp = System.getProperties().getProperty("java.io.tmpdir") + "-invalid";
-        File file = new File(tmp);
+        final String tmp = System.getProperties().getProperty("java.io.tmpdir") + "-invalid";
+        final File file = new File(tmp);
         ensureExists(file);
     }
 
     @Test
     public void testEnsureIsDirectory() {
-        File file = getTempDir();
+        final File file = getTempDir();
         ensureIsDirectory(file);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEnsureIsDirectoryFails() {
-        String tmp = System.getProperties().getProperty("java.io.tmpdir") + "-invalid";
-        File file = new File(tmp);
+        final String tmp = System.getProperties().getProperty("java.io.tmpdir") + "-invalid";
+        final File file = new File(tmp);
         ensureIsDirectory(file);
     }
 
@@ -104,7 +104,7 @@ public class ChecksTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testEnsureIsFalseFails() {
-        ensureIsFalse(true, null);
+        ensureIsFalse(true, "");
     }
 
     @Test
@@ -209,7 +209,7 @@ public class ChecksTest {
 
     @Test
     public void testEnsureIsFile_WithFile() throws IOException {
-        File file = File.createTempFile("test", ".test");
+        final File file = File.createTempFile("test", ".test");
         file.deleteOnExit();
         ensureIsFile(file);
     }
