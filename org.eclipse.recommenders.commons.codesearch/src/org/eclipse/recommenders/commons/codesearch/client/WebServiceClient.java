@@ -21,12 +21,16 @@ import java.util.Map;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 
+import org.eclipse.recommenders.commons.client.GsonProvider;
+
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource.Builder;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 
 public class WebServiceClient {
 
@@ -38,7 +42,7 @@ public class WebServiceClient {
     public WebServiceClient(final ClientConfiguration configuration) {
         this.configuration = configuration;
         ensureIsTrue(configuration.getBaseUrl() != null);
-        this.client = new Client();
+        this.client = new Client(new URLConnectionClientHandler(), new DefaultClientConfig(GsonProvider.class));
         cookies = new LinkedHashMap<String, Cookie>();
     }
 

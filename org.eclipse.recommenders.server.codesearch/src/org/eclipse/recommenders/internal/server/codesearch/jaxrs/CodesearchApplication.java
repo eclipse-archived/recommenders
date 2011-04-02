@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.recommenders.commons.client.GsonProvider;
 import org.eclipse.recommenders.internal.server.codesearch.IDataAccessService;
 import org.eclipse.recommenders.internal.server.codesearch.ISourceUriMapper;
 import org.eclipse.recommenders.internal.server.codesearch.LocalSourceUriMapper;
@@ -61,6 +62,7 @@ public class CodesearchApplication extends DefaultResourceConfig {
     public Set<Object> getSingletons() {
         final HashSet<Object> result = new HashSet<Object>();
         result.add(getGuiceProvider());
+        result.add(new GsonProvider());
         return result;
     }
 

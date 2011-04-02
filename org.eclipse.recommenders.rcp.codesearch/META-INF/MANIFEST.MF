@@ -27,7 +27,7 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang3,
  com.sun.jersey.client,
  com.sun.jersey.core,
- org.eclipse.recommenders.commons.utils.gson.jaxrs,
+ org.eclipse.recommenders.commons.client,
  org.eclipse.recommenders.commons.injection,
  org.apache.commons.io;bundle-version="2.0.1",
  org.eclipse.ui.forms

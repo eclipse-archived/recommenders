@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.utils.gson.jaxrs;
+package org.eclipse.recommenders.commons.client;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.eclipse.recommenders.commons.client.GsonProvider;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.internal.server.codesearch.IDataAccessService;
 import org.eclipse.recommenders.internal.server.codesearch.RequestLogEntry;
@@ -25,6 +26,8 @@ import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource.Builder;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 
 public class CouchDbDataAccessService implements IDataAccessService {
 
@@ -41,7 +44,8 @@ public class CouchDbDataAccessService implements IDataAccessService {
     }
 
     private final String baseUrl = "http://localhost:5984/codesearch/";
-    private final Client client = new Client();
+    private final Client client = new Client(new URLConnectionClientHandler(), new DefaultClientConfig(
+            GsonProvider.class));
 
     private Builder createRequestBuilder(final String path) {
         return client.resource(baseUrl + path).accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON);
