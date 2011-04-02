@@ -44,14 +44,14 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.commons.utils.gson.jaxrs"
+         id="org.eclipse.recommenders.commons.utils.gson"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.commons.utils.gson"
+         id="org.eclipse.recommenders.commons.client"
          download-size="0"
          install-size="0"
          version="0.0.0"
