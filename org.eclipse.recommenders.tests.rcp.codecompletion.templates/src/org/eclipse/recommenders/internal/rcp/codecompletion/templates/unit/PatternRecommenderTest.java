@@ -36,6 +36,9 @@ import org.mockito.Mockito;
 
 import junit.framework.Assert;
 
+/**
+ * Unit tests for covering the {@link PatternRecommender} class.
+ */
 public final class PatternRecommenderTest {
 
     @Test
@@ -82,6 +85,10 @@ public final class PatternRecommenderTest {
         return model;
     }
 
+    /**
+     * @return The methods which ought to be returned my the mocked
+     *         {@link ObjectMethodCallsNet}.
+     */
     private static SortedSet<Tuple<IMethodName, Double>> getRecommendedMethods() {
         final SortedSet<Tuple<IMethodName, Double>> methodsSet = Sets
                 .newTreeSet(new Comparator<Tuple<IMethodName, Double>>() {

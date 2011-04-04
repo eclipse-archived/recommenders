@@ -20,15 +20,19 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 
+/**
+ * Unit tests for covering the {@link CodeBuilder} class.
+ */
 public final class CodeBuilderTest {
 
+    private final CodeBuilder codeBuilder = new CodeBuilder(MethodCallFormatterTest.getMethodCallFormatterMock());
+
+    /**
+     * Ensures the correct behavior of many of the {@link CodeBuilder}'s
+     * features by giving...
+     */
     @Test
     public void testBuildCode() {
-        final CodeBuilder codeBuilder = new CodeBuilder(MethodCallFormatterTest.getMethodCallFormatterMock());
-
-        // No methods
-        Assert.assertEquals("${cursor}", codeBuilder.buildCode(new ArrayList<IMethodName>(), ""));
-
         final List<IMethodName> methods = new LinkedList<IMethodName>();
         methods.add(UnitTestSuite.getDefaultConstructorCall().getInvokedMethod());
         methods.add(UnitTestSuite.getDefaultMethodCall().getInvokedMethod());
@@ -38,5 +42,14 @@ public final class CodeBuilderTest {
 
         final String expected = "${constructedType:newType(org.eclipse.swt.widgets.Button)} someWidget = new ${constructedType}(${intTest:link(0)}, ${arg0:link(false, true)}, ${arg1}, ${arg2:var(org/eclipse/swt/widgets/Button)}); someWidget.setText(${intTest:link(0)}, ${arg3:link(false, true)}, ${arg4}, ${arg5:var(org/eclipse/swt/widgets/Button)}); ${returnedType:newType(String)} text = someWidget.getText(${intTest:link(0)}, ${arg6:link(false, true)}, ${arg7}, ${arg8:var(org/eclipse/swt/widgets/Button)}); ${returnedType:newType(SomeWidget)} ${returned:newName(org.eclipse.swt.widgets.SomeWidget)} = someWidget.someMethod(${intTest:link(0)}, ${arg9:link(false, true)}, ${arg10}, ${arg11:var(org/eclipse/swt/widgets/Button)}); ${cursor}";
         Assert.assertEquals(expected, codeBuilder.buildCode(methods, "someWidget").replaceAll("[\\s]+", " "));
+    }
+
+    /**
+     * When no methods are given the {@link CodeBuilder} should throw an
+     * exception.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testBuildCodeNoMethods() {
+        codeBuilder.buildCode(new ArrayList<IMethodName>(), "");
     }
 }

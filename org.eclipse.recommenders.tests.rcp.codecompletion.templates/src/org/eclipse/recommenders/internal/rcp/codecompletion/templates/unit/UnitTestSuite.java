@@ -24,6 +24,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+/**
+ * All Unit tests to be executed are included here. Furthermore this class
+ * provides access to several constructs, like defined {@link MethodCalls}s,
+ * that are used troughout the tests.
+ */
 @RunWith(Suite.class)
 @SuiteClasses({ CodeBuilderTest.class, CompletionProposalsBuilderTest.class, CompletionTargetVariableBuilderTest.class,
         MethodCallFormatterTest.class, MethodFormatterTest.class, PatternRecommenderTest.class,
@@ -40,6 +45,9 @@ public final class UnitTestSuite {
 
     private static final CodeBuilder CODEBUILDERMOCK = new CodeBuilder(
             MethodCallFormatterTest.getMethodCallFormatterMock());
+
+    private UnitTestSuite() {
+    }
 
     /**
      * @return the method which is used in most test cases.

@@ -14,7 +14,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+/**
+ * Test suite to run the UI tests driven by SWTBot. Other UI tests might later
+ * be included in this suite as well.
+ */
 @RunWith(Suite.class)
-@SuiteClasses({ UiTest.class })
+@SuiteClasses(UiTest.class)
 public final class UiTestSuite {
 }
