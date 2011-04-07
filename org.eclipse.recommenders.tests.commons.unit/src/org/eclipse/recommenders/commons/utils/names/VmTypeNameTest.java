@@ -15,10 +15,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.recommenders.commons.utils.NamesTest;
-import org.eclipse.recommenders.commons.utils.names.IPackageName;
-import org.eclipse.recommenders.commons.utils.names.ITypeName;
-import org.eclipse.recommenders.commons.utils.names.VmPackageName;
-import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -26,119 +22,119 @@ public class VmTypeNameTest {
 
     @Test
     public void testGetArrayBaseType() {
-        ITypeName actual = NamesTest.LONG_ARRAY_3DIM.getArrayBaseType();
+        final ITypeName actual = NamesTest.LONG_ARRAY_3DIM.getArrayBaseType();
         assertEquals(NamesTest.LONG, actual);
     }
 
     @Test
     public void testGetArrayDimensions_3dLongArray() {
-        int actual = NamesTest.LONG_ARRAY_3DIM.getArrayDimensions();
+        final int actual = NamesTest.LONG_ARRAY_3DIM.getArrayDimensions();
         assertEquals(3, actual);
     }
 
     @Test
     public void testGetArrayDimensions_LongArray() {
-        int actual = NamesTest.LONG_ARRAY.getArrayDimensions();
+        final int actual = NamesTest.LONG_ARRAY.getArrayDimensions();
         assertEquals(1, actual);
     }
 
     @Test
     public void testDifferentNameObjectsAfterGC() {
-        String key = "Lweak/Value";
-        int hashCode1 = VmTypeName.get(key).hashCode();
-        int hashCode2 = VmTypeName.get(key).hashCode();
+        final String key = "Lweak/Value";
+        final int hashCode1 = VmTypeName.get(key).hashCode();
+        final int hashCode2 = VmTypeName.get(key).hashCode();
         assertTrue(hashCode1 == hashCode2);
         System.gc();
-        int hashCode3 = VmTypeName.get(key).hashCode();
+        final int hashCode3 = VmTypeName.get(key).hashCode();
         assertFalse(hashCode1 == hashCode3);
     }
 
     @Test
     public void testSameNameObjectsAfterGCWithHardReferenceInCode() {
-        String key = "Lweak/Value";
-        VmTypeName expected = VmTypeName.get(key);
+        final String key = "Lweak/Value";
+        final VmTypeName expected = VmTypeName.get(key);
         System.gc();
         assertEquals(expected, VmTypeName.get(key));
     }
 
     @Test
     public void testGetArrayDimensions_Long() {
-        int actual = NamesTest.LONG.getArrayDimensions();
+        final int actual = NamesTest.LONG.getArrayDimensions();
         assertEquals(0, actual);
     }
 
     @Test
     public void testGetArrayDimensions_String() {
-        int actual = NamesTest.STRING.getArrayDimensions();
+        final int actual = NamesTest.STRING.getArrayDimensions();
         assertEquals(0, actual);
     }
 
     @Test
     public void testGetClassName_String() {
-        String actual = NamesTest.STRING.getClassName();
+        final String actual = NamesTest.STRING.getClassName();
         assertEquals("String", actual);
     }
 
     @Test
     public void testGetClassName_MapEntry() {
-        String actual = NamesTest.MAP$ENTRY.getClassName();
+        final String actual = NamesTest.MAP$ENTRY.getClassName();
         assertEquals("Map$Entry", actual);
     }
 
     @Test
     public void testGetClassName_PrimitiveLong() {
-        String actual = NamesTest.LONG.getClassName();
+        final String actual = NamesTest.LONG.getClassName();
         assertEquals("J", actual);
     }
 
     @Test
     public void testGetPackage_Primitive() {
-        IPackageName actual = NamesTest.LONG.getPackage();
-        IPackageName expected = VmPackageName.get("");
+        final IPackageName actual = NamesTest.LONG.getPackage();
+        final IPackageName expected = VmPackageName.get("");
         assertEquals(expected, actual);
     }
 
     @Test
     public void testGetPackage_String() {
-        IPackageName actual = NamesTest.STRING.getPackage();
-        IPackageName expected = VmPackageName.get("java/lang");
+        final IPackageName actual = NamesTest.STRING.getPackage();
+        final IPackageName expected = VmPackageName.get("java/lang");
         assertEquals(expected, actual);
     }
 
     @Test
     public void testGetPackage_ClassInDefaultPackage() {
-        IPackageName actual = NamesTest.CLASS_IN_DEFAULT_PACAKGE.getPackage();
-        IPackageName expected = VmPackageName.get("");
+        final IPackageName actual = NamesTest.CLASS_IN_DEFAULT_PACAKGE.getPackage();
+        final IPackageName expected = VmPackageName.get("");
         assertEquals(expected, actual);
     }
 
     @Test
     public void testIsAnonymousType_DefaultPackage() {
-        boolean actual = NamesTest.CLASS_IN_DEFAULT_PACAKGE.isAnonymousType();
+        final boolean actual = NamesTest.CLASS_IN_DEFAULT_PACAKGE.isAnonymousType();
         assertEquals(false, actual);
     }
 
     @Test
     public void testIsAnonymousType_Primitive() {
-        boolean actual = NamesTest.LONG.isAnonymousType();
+        final boolean actual = NamesTest.LONG.isAnonymousType();
         assertEquals(false, actual);
     }
 
     @Test
     public void testIsAnonymousType_PrimitiveArray() {
-        boolean actual = NamesTest.LONG_ARRAY.isAnonymousType();
+        final boolean actual = NamesTest.LONG_ARRAY.isAnonymousType();
         assertEquals(false, actual);
     }
 
     @Test
     public void testIsAnonymousType_Map$Entry() {
-        boolean actual = NamesTest.MAP$ENTRY.isAnonymousType();
+        final boolean actual = NamesTest.MAP$ENTRY.isAnonymousType();
         assertEquals(false, actual);
     }
 
     @Test
     public void testIsAnonymousType_Anonymous() {
-        boolean actual = NamesTest.ANONYMOUS.isAnonymousType();
+        final boolean actual = NamesTest.ANONYMOUS.isAnonymousType();
         assertEquals(true, actual);
     }
 
@@ -200,7 +196,7 @@ public class VmTypeNameTest {
     @Test
     @Ignore("does not work in OSGI test suite")
     public void testNewVmTypeName_Nested() {
-        VmTypeName actual = new VmTypeName(NamesTest.MAP$ENTRY.getIdentifier());
+        final VmTypeName actual = new VmTypeName(NamesTest.MAP$ENTRY.getIdentifier());
         // NOTE: object identity is different. Don't use equals on VmTypeNames!
         assertEquals(NamesTest.MAP$ENTRY.getIdentifier(), actual.getIdentifier());
     }
@@ -219,5 +215,10 @@ public class VmTypeNameTest {
     @Test(expected = IllegalArgumentException.class)
     public void testGetDeclaringType_Exception() {
         NamesTest.MAP.getDeclaringType();
+    }
+
+    @Test
+    public void testNameWithGenerics() {
+        new VmTypeName("Lm/M<Lpackage/N>");
     }
 }

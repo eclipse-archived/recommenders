@@ -127,11 +127,10 @@ public class VmMethodName implements IMethodName {
         final char[] desc = identifier.substring(openingBracket + 1).toCharArray();
         int off = 0;
         while (true) {
-            final char current = desc[off];
-            if (current == ')') {
+            if (desc[off] == ')') {
                 break;
             }
-            switch (current) {
+            switch (desc[off]) {
             case 'V':
                 argTypes.add(VOID);
                 break;
@@ -160,12 +159,29 @@ public class VmMethodName implements IMethodName {
                 argTypes.add(DOUBLE);
                 break;
             case 'L': {
-                final int start = off++;
-                while (desc[off] != ';') {
+                final int start = off;
+                do {
                     off++;
-                }
+                    // TODO Marcel: Generics 'handling' is a bit strange... need
+                    // to fix that here when fully supporting generics later on.
+                    if (desc[off] == '<') {
+                        off++;
+                        int numberOfOpenGenerics = 1;
+                        while (numberOfOpenGenerics != 0) {
+                            switch (desc[off]) {
+                            case '>':
+                                numberOfOpenGenerics -= 1;
+                                break;
+                            case '<':
+                                numberOfOpenGenerics += 1;
+                                break;
+                            }
+                            off++;
+                        }
+                    }
+                } while (desc[off] != ';');
                 // off points to the ';' now
-                String argumentTypeName = new String(desc, start, off - start);
+                final String argumentTypeName = new String(desc, start, off - start);
                 argTypes.add(VmTypeName.get(argumentTypeName));
                 break;
             }

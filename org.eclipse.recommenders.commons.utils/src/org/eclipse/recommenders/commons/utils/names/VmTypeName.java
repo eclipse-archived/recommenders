@@ -102,7 +102,8 @@ public class VmTypeName implements ITypeName {
         int off = 0;
         while (off < vmTypeName.length()) {
             final char c = vmTypeName.charAt(off);
-            if (c == '[' || c == '/' || c == '-'/* as in 'package-info.class' */|| Character.isJavaIdentifierPart(c)) {
+            if (c == '[' || c == '/' || c == '-'/* as in 'package-info.class' */|| c == '<' || c == '>'
+                    || Character.isJavaIdentifierPart(c)) {
                 off++;
                 continue;
             }
