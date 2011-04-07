@@ -219,6 +219,6 @@ public class VmTypeNameTest {
 
     @Test
     public void testNameWithGenerics() {
-        new VmTypeName("Lm/M<Lpackage/N>");
+        VmTypeName.get("Lm/M<Lpackage/N>");
     }
 }
