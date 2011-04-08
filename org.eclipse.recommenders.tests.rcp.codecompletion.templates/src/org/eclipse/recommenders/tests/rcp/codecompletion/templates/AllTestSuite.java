@@ -8,10 +8,10 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
+package org.eclipse.recommenders.tests.rcp.codecompletion.templates;
 
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.ui.UiTestSuite;
-import org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit.UnitTestSuite;
+import org.eclipse.recommenders.tests.rcp.codecompletion.templates.ui.UiTestSuite;
+import org.eclipse.recommenders.tests.rcp.codecompletion.templates.unit.UnitTestSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
