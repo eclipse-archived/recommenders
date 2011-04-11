@@ -82,8 +82,12 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
         callGraphBuilder = initializeBuilder(options, cache, clazz.getClassHierarchy(), summary);
     }
 
-    private ZeroXCFABuilder initializeBuilder(final AnalysisOptions options, final AnalysisCache cache,
+    private SSAPropagationCallGraphBuilder initializeBuilder(final AnalysisOptions options, final AnalysisCache cache,
             final IClassHierarchy cha, final XMLMethodSummaryReader summary) {
+
+        // return Util.makeVanillaZeroOneCFABuilder(options, cache, cha,
+        // cha.getScope(), null, null);
+
         options.setSelector(new ClassHierarchyMethodTargetSelector(cha));
         options.setSelector(new ClassHierarchyClassTargetSelector(cha));
 
@@ -109,7 +113,7 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
     @Override
     public void buildClassTargetSelector() {
         final BypassingAbstractClassesClassTargetSelector myClassTargetSelector = new BypassingAbstractClassesClassTargetSelector();
-        options.setSelector(myClassTargetSelector);
+        // options.setSelector(myClassTargetSelector);
     }
 
     @Override
@@ -137,7 +141,6 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
         // stick with the default one.
         // final RTAContextInterpreter contextInterpreter =
         // callGraphBuilder.getContextInterpreter();
-        // System.out.println();
     }
 
     @Override

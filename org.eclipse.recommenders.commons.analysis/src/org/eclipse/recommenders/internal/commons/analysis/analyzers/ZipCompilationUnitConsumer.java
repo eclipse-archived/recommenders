@@ -10,14 +10,13 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
+import static java.lang.String.format;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -25,14 +24,22 @@ import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.recommenders.commons.utils.IOUtils;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
+import org.eclipse.recommenders.internal.commons.analysis.fixture.IAnalysisFixture;
+
+import com.google.inject.Inject;
 
 public class ZipCompilationUnitConsumer implements ICompilationUnitConsumer {
     private ZipOutputStream zos;
 
     private File dest;
 
-    public ZipCompilationUnitConsumer() throws IOException {
+    private IAnalysisFixture fixture;
+
+    @Inject
+    public ZipCompilationUnitConsumer(final IAnalysisFixture fixture) throws IOException {
+        this.fixture = fixture;
         openZipStream();
+
     }
 
     private void openZipStream() throws FileNotFoundException {
@@ -43,8 +50,7 @@ public class ZipCompilationUnitConsumer implements ICompilationUnitConsumer {
     private void initZipFileDestination() {
         final File basedir = new File(SystemUtils.getUserDir(), "target/");
         basedir.mkdirs();
-        final String fileName = new StringBuilder().append("analysis-export")
-                .append(new SimpleDateFormat("yyyy.MM.dd_HHmmss").format(new Date())).append(".zip").toString();
+        final String fileName = format("%s.zip", fixture.getName());
         dest = new File(basedir, fileName);
     }
 

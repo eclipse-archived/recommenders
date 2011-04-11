@@ -22,4 +22,5 @@ public class TreeBag<T extends Comparable<T>> extends HashBag<T> {
         super();
         index = Maps.newTreeMap();
     }
+
 }

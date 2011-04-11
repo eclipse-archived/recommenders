@@ -20,6 +20,7 @@ import java.util.jar.JarFile;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.google.inject.Inject;
+import com.ibm.wala.classLoader.BinaryDirectoryTreeModule;
 import com.ibm.wala.classLoader.JarFileModule;
 import com.ibm.wala.classLoader.Module;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
@@ -50,9 +51,15 @@ public class DefaultAnalysisScopeBuilder implements IAnalysisScopeBuilder {
     }
 
     private void addJarToClassLoaderRef(final File path, final ClassLoaderReference classloader) {
+
         try {
-            final JarFile jarFile = new JarFile(path);
-            final Module module = new JarFileModule(jarFile);
+            Module module = null;
+            if (path.isDirectory()) {
+                module = new BinaryDirectoryTreeModule(path);
+            } else {
+                final JarFile jarFile = new JarFile(path);
+                module = new JarFileModule(jarFile);
+            }
             scope.addToScope(classloader, module);
         } catch (final IOException e) {
             final String message = format("Failed to add '%s' to classloader '%s'. Reason: %s\n", path,

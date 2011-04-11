@@ -95,9 +95,9 @@ public class RestrictedDeclaringClassMethodTargetSelector implements MethodTarge
     }
 
     private boolean isAnalysisReentrant(final CallSiteReference call) {
-        final boolean contains = reentryCounter.contains(call);
+        final int count = reentryCounter.count(call);
         reentryCounter.add(call);
-        return contains;
+        return count > 5;
     }
 
     private boolean isCallFromNestedClassToEnclosingClass(final IMethod calleeTarget) {

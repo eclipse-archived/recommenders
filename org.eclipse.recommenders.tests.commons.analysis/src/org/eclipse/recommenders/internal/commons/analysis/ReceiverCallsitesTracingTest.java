@@ -45,6 +45,7 @@ import tracing.Tracing__Calls_To_Parameter;
 import tracing.Tracing__Calls_To_Private_Return_Value_Is_Unitialized_Field;
 import tracing.Tracing__Calls_To_Private_Return_Value_With_Init;
 import tracing.Tracing__Calls_To_Several_Locals_Using_Delegate_Method;
+import tracing.Tracing__Calls_To_Several_Locals_Using_Two_Delegate_Methods;
 import tracing.Tracing__Calls_To_Several_Parameters;
 import tracing.Tracing__Collects_Duplicated_Calls;
 import tracing.Tracing__Hierarchy_Subclass;
@@ -261,6 +262,15 @@ public class ReceiverCallsitesTracingTest {
         exerciseSUTAndFilterValues(entrypoint);
         // verify
         checkReceiversCallSitesCount(output, 3/* this */, 2, 3, 4);
+    }
+
+    @Test
+    public void testCallsToSeveralSameTypeLocalsUsingTwoDelegateMethods() throws Exception {
+        // setup
+        final RecommendersEntrypoint entrypoint = lookupEntrypoint(Tracing__Calls_To_Several_Locals_Using_Two_Delegate_Methods.class);
+        exerciseSUTAndFilterValues(entrypoint);
+        // verify
+        checkReceiversCallSitesCount(output, 4/* this */, 2, 3, 4);
     }
 
     @Test

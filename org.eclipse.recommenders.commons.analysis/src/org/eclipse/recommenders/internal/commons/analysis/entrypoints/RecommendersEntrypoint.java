@@ -10,14 +10,17 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.entrypoints;
 
+import org.eclipse.recommenders.internal.commons.analysis.newsites.NewSiteReferenceForThis;
 import org.eclipse.recommenders.internal.commons.analysis.utils.RecommendersInits;
 
 import com.ibm.wala.classLoader.CallSiteReference;
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.classLoader.NewSiteReference;
 import com.ibm.wala.ipa.callgraph.impl.AbstractRootMethod;
 import com.ibm.wala.ipa.callgraph.impl.DefaultEntrypoint;
 import com.ibm.wala.ipa.callgraph.impl.FakeRootMethod;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
+import com.ibm.wala.ssa.SSAAbstractInvokeInstruction;
 import com.ibm.wala.ssa.SSANewInstruction;
 import com.ibm.wala.types.TypeReference;
 
@@ -35,6 +38,35 @@ public class RecommendersEntrypoint extends DefaultEntrypoint {
 
     public RecommendersEntrypoint(final IMethod method) {
         this(method, method.getDeclaringClass().getClassHierarchy());
+    }
+
+    @Override
+    public SSAAbstractInvokeInstruction addCall(final AbstractRootMethod m) {
+        final int[] paramValues = new int[getNumberOfParameters()];
+        final CallSiteReference site = makeSite(0);
+        if (site == null) {
+            return null;
+        }
+        for (int j = 0; j < paramValues.length; j++) {
+            final int paramValue = paramValues[j];
+            if (isThisParameter(site, j)) {
+                final TypeReference typeRef = getParameterTypes(paramValue)[0];
+                final NewSiteReference thisNewSiteRef = NewSiteReferenceForThis.create(m.getStatements().length,
+                        typeRef);
+                m.addNewInstruction(paramValue, thisNewSiteRef);
+            }
+            paramValues[j] = makeArgument(m, j);
+            if (paramValue == -1) {
+                // there was a problem
+                return null;
+            }
+        }
+
+        return m.addInvocation(paramValues, site);
+    }
+
+    private boolean isThisParameter(final CallSiteReference site, final int j) {
+        return j == 0 && !site.isStatic();
     }
 
     /**

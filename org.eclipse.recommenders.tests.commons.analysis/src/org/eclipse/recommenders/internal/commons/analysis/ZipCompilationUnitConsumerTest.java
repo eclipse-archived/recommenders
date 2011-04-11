@@ -11,11 +11,14 @@
 package org.eclipse.recommenders.internal.commons.analysis;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ZipCompilationUnitConsumer;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
+import org.eclipse.recommenders.internal.commons.analysis.fixture.IAnalysisFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +29,9 @@ public class ZipCompilationUnitConsumerTest {
 
     @Before
     public void before() throws IOException {
-        sut = new ZipCompilationUnitConsumer();
+        final IAnalysisFixture fixture = mock(IAnalysisFixture.class);
+        when(fixture.getName()).thenReturn("dummy");
+        sut = new ZipCompilationUnitConsumer(fixture);
     }
 
     @After
