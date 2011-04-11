@@ -35,8 +35,8 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
 
   private final IClass receiverType;
 
-  public ChainingAlgorithmWorker(ChainingAlgorithm chainingAlgorithm, List<Tuple<IClass, Integer>> expectedTypeList,
-      IClass receiverType) {
+  public ChainingAlgorithmWorker(final ChainingAlgorithm chainingAlgorithm,
+      final List<Tuple<IClass, Integer>> expectedTypeList, final IClass receiverType) {
     this.receiverType = receiverType;
     this.workingElement = null;
     this.internalProposalStore = chainingAlgorithm;
@@ -61,10 +61,10 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
   }
 
   private void processCheckingAndStoring() throws JavaModelException {
-    IClass typeToCheck = workingElement.getType();
+    final IClass typeToCheck = workingElement.getType();
     if (ChainingAlgorithm.getSearchMap().containsKey(typeToCheck)) {
-      List<IChainElement> list = ChainingAlgorithm.getSearchMap().get(typeToCheck);
-      for (IChainElement element : list) {
+      final List<IChainElement> list = ChainingAlgorithm.getSearchMap().get(typeToCheck);
+      for (final IChainElement element : list) {
         refreshMember(element);
       }
     } else {
@@ -121,7 +121,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
     }
 
     if (checkVisibility(m)) {
-      MethodChainElement methodChainElement = new MethodChainElement(m, workingElement.getChainDepth() + 1);
+      final MethodChainElement methodChainElement = new MethodChainElement(m, workingElement.getChainDepth() + 1);
       if (methodChainElement.getType() == null || !refreshMember(methodChainElement)) {
         return null;
       }
@@ -132,8 +132,8 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
     return null;
   }
 
-  private boolean refreshMember(IChainElement chainElement) {
-    for (IChainElement element : ChainingAlgorithm.getGraph()) {
+  private boolean refreshMember(final IChainElement chainElement) {
+    for (final IChainElement element : ChainingAlgorithm.getGraph()) {
       // same element in store?
       if (element.getCompletion().equals(chainElement.getCompletion())
           && element.getElementType().equals(chainElement.getElementType())
@@ -161,7 +161,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
     }
 
     if (checkVisibility(f)) {
-      FieldChainElement fieldChainElement = new FieldChainElement(f, workingElement.getChainDepth() + 1);
+      final FieldChainElement fieldChainElement = new FieldChainElement(f, workingElement.getChainDepth() + 1);
 
       if (!refreshMember(fieldChainElement)) {
         return null;
@@ -183,11 +183,11 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
       return receiverType.equals(m.getDeclaringClass());
     } else if (m.isProtected()) {
       try {
-        boolean defaultVisibility = receiverType.getName().getPackage()
+        final boolean defaultVisibility = receiverType.getName().getPackage()
             .equals(m.getDeclaringClass().getName().getPackage());
-        boolean subtypeVisibility = InheritanceHierarchyCache.isSubtype(m.getDeclaringClass(), receiverType, 0);
+        final boolean subtypeVisibility = InheritanceHierarchyCache.isSubtype(m.getDeclaringClass(), receiverType, 0);
         return defaultVisibility || subtypeVisibility;
-      } catch (JavaModelException e) {
+      } catch (final JavaModelException e) {
         return false;
       }
     } else {
@@ -211,19 +211,18 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
    * be processed for proposal computation
    */
   private boolean storeForProposal() throws JavaModelException {
-    for (Tuple<IClass, Integer> expectedType : expectedTypeList) {
+    for (final Tuple<IClass, Integer> expectedType : expectedTypeList) {
       final int testResult = InheritanceHierarchyCache.equalityTest(workingElement.getType(),
           workingElement.getArrayDimension(), expectedType.getFirst(), expectedType.getSecond());
       // if both types equal
       if ((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0) {
         internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
             expectedType.getSecond(), null);
-        continue;
-
+        return true;
       }
       // if typeToCheck is primitive return
       if ((testResult & InheritanceHierarchyCache.RESULT_PRIMITIVE) > 0) {
-        continue;
+        return true;
       }
 
       // Consult type hierarchy for sub-/supertypes
@@ -232,7 +231,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
           && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
         internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
             expectedType.getSecond(), expectedType.getFirst());
-        continue;
+        return true;
       }
       /* else */
       if (InheritanceHierarchyCache.isSupertype(workingElement.getType(), expectedType.getFirst(),
@@ -240,7 +239,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
           && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
         internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
             expectedType.getSecond(), null);
-        continue;
+        return true;
       }
     }
     // not equal, not in a hierarchical relation, not primitive
@@ -251,7 +250,7 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
   public Void call() throws Exception {
     try {
       while (!internalProposalStore.isCanceled()) {
-        long i = System.currentTimeMillis();
+        final long i = System.currentTimeMillis();
         internalProposalStore.notifyThreadWorking();
         inspectType();
         internalProposalStore.notifyThreadPausing();
