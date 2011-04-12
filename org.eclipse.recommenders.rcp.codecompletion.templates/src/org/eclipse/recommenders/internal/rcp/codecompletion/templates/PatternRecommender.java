@@ -15,17 +15,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -37,6 +26,17 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Comp
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
  * Computes {@link PatternRecommendation}s from the {@link CallsModelStore}.
@@ -142,7 +142,6 @@ public final class PatternRecommender {
      */
     private void updateModel() {
         model.clearEvidence();
-        model.setAvailablity(true);
         model.setMethodContext(context.getEnclosingMethodsFirstDeclaration());
         model.setObservedMethodCalls(model.getType(), receiverMethodInvocations);
         if (shallNegateConstructors(context.getVariable())) {

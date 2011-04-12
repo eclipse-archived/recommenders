@@ -19,7 +19,7 @@ import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelLoader;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelLoader;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.FrameworkUtil;
@@ -45,7 +45,7 @@ public class CallsModelStoreAndLoaderTest {
         final CallsModelStore store = injector.getInstance(CallsModelStore.class);
 
         // exercise:
-        final ObjectMethodCallsNet model = store.getModel(VmTypeName.get("Lorg/eclipse/compare/BufferedContent"));
+        final IObjectMethodCallsNet model = store.getModel(VmTypeName.get("Lorg/eclipse/compare/BufferedContent"));
         final boolean hasBufferedContent = store.hasModel(VmTypeName.get("Lorg/eclipse/compare/BufferedContent"));
         final boolean hasCompareConfiguration = store.hasModel(VmTypeName
                 .get("Lorg/eclipse/compare/CompareConfiguration"));

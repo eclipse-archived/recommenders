@@ -16,9 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.inject.Provider;
+import junit.framework.Assert;
 
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -34,7 +32,9 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
-import junit.framework.Assert;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.inject.Provider;
 
 public final class PatternRecommenderTest {
 

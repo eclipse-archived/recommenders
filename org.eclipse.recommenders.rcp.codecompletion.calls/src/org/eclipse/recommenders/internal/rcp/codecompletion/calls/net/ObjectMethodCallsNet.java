@@ -37,7 +37,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Clumsy
-public class ObjectMethodCallsNet {
+public class ObjectMethodCallsNet implements IObjectMethodCallsNet {
 
     public static String escape(final IMethodName ref) {
         ensureIsNotNull(ref);
@@ -65,6 +65,7 @@ public class ObjectMethodCallsNet {
         availabilityNode = new AvailabilityNode(network);
         patternsNode = new PatternNode(network);
         methodNodes = findMethodNodes();
+        setAvailablity(true);
     }
 
     public IMethodName getMethodReferenceFromEscapedName(final String escapedName) {
@@ -82,6 +83,7 @@ public class ObjectMethodCallsNet {
         return res;
     }
 
+    @Override
     public ITypeName getType() {
         return type;
     }
@@ -102,6 +104,7 @@ public class ObjectMethodCallsNet {
         return methodNodes.values();
     }
 
+    @Override
     public void setCalled(final IMethodName calledMethod) {
         final MethodNode callNode = methodNodes.get(calledMethod);
         if (callNode == null) {
@@ -111,6 +114,7 @@ public class ObjectMethodCallsNet {
         callNode.setEvidence(true);
     }
 
+    @Override
     public void updateBeliefs() {
         network.updateBeliefs();
     }
@@ -119,8 +123,10 @@ public class ObjectMethodCallsNet {
         return network;
     }
 
+    @Override
     public void clearEvidence() {
         network.clearAllEvidence();
+        setAvailablity(true);
     }
 
     public void saveNetwork() {
@@ -135,14 +141,16 @@ public class ObjectMethodCallsNet {
         return "Model for " + type.getIdentifier();
     }
 
-    public void setAvailablity(final boolean newValue) {
+    private void setAvailablity(final boolean newValue) {
         getAvailabilityNode().setEvidence(newValue);
     }
 
+    @Override
     public void setMethodContext(final IMethodName newActiveMethodContext) {
         getContextNode().setContext(newActiveMethodContext);
     }
 
+    @Override
     public void setObservedMethodCalls(final @Nullable ITypeName rebaseType, final Set<IMethodName> invokedMethods) {
         for (final IMethodName invokedMethod : invokedMethods) {
             final IMethodName rebased = rebaseType == null ? invokedMethod : VmMethodName.rebase(rebaseType,
@@ -151,6 +159,7 @@ public class ObjectMethodCallsNet {
         }
     }
 
+    @Override
     public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold) {
         final TreeSet<Tuple<IMethodName, Double>> res = createSortedSet();
         for (final MethodNode node : getMethodNodes()) {
@@ -181,6 +190,7 @@ public class ObjectMethodCallsNet {
         return res;
     }
 
+    @Override
     public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold,
             final int maxNumberOfRecommendations) {
         final SortedSet<Tuple<IMethodName, Double>> recommendations = getRecommendedMethodCalls(minProbabilityThreshold);
@@ -196,6 +206,7 @@ public class ObjectMethodCallsNet {
         return res;
     }
 
+    @Override
     public void negateConstructors() {
         for (final MethodNode node : getMethodNodes()) {
             if (node.getMethod().isInit()) {

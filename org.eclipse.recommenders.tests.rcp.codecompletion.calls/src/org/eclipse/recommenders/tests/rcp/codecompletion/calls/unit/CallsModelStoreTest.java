@@ -24,8 +24,8 @@ import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelLoader;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.InstanceUsage;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +80,7 @@ public class CallsModelStoreTest {
         loader.observations.put(VmTypeName.BOOLEAN, observations);
 
         // exercise
-        final ObjectMethodCallsNet model = store.getModel(VmTypeName.BOOLEAN);
+        final IObjectMethodCallsNet model = store.getModel(VmTypeName.BOOLEAN);
 
         // verify
         Assert.assertNotNull(model);

@@ -19,7 +19,7 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Compilati
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnitVisitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.eclipse.recommenders.rcp.IRecommendation;
 
@@ -40,7 +40,7 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
 
     private Variable variable;
 
-    private ObjectMethodCallsNet model;
+    private IObjectMethodCallsNet model;
 
     @Inject
     public RecommendationsViewPublisherForCalls(final CallsModelStore modelsStore) {
@@ -87,7 +87,6 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
 
     private void computeRecommendationsForObjectInstance() {
         model.clearEvidence();
-        model.setAvailablity(true);
         model.setMethodContext(method.firstDeclaration);
         model.setObservedMethodCalls(variable.type, variable.getReceiverCalls());
         if (variable.isThis() && !method.name.isInit()) {

@@ -33,7 +33,7 @@ import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.rcp.codecompletion.CompletionProposalDecorator;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
@@ -64,7 +64,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private ITypeName receiverType;
 
-    private ObjectMethodCallsNet model;
+    private IObjectMethodCallsNet model;
 
     private Variable receiver;
 
@@ -158,7 +158,6 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private void findRecommendations() {
         recommendations = Lists.newLinkedList();
         model.clearEvidence();
-        model.setAvailablity(true);
         model.setMethodContext(firstMethodDeclaration);
         model.setObservedMethodCalls(receiverType, receiverMethodInvocations);
         if (receiver.fuzzyIsParameter() || receiver.fuzzyIsDefinedByMethodReturn()) {
