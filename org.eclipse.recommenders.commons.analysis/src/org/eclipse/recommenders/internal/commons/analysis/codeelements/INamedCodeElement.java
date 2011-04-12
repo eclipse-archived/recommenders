@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.commons.analysis.codeelements;
 
 import org.eclipse.recommenders.commons.utils.names.IName;
 
-
 public interface INamedCodeElement extends ICodeElement {
 
     public IName getName();

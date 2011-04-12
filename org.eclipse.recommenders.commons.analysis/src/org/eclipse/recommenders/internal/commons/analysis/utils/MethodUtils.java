@@ -133,8 +133,9 @@ public class MethodUtils {
     }
 
     /**
-     * @return the absolute first method declaration of the given method (AKA 'root method')- or the method itself if it
-     *         does not override any other methods
+     * @return the absolute first method declaration of the given method (AKA
+     *         'root method')- or the method itself if it does not override any
+     *         other methods
      */
     public static IMethod findRootDeclaration(final IMethod method) {
         ensureIsNotNull(method);
@@ -248,16 +249,19 @@ public class MethodUtils {
     }
 
     /**
-     * Searches a method that matches the given parameters within the hierarchy of the given base-class. <b>Note:</b> If
-     * the class doe not contain a matching method all its superclasses and all its implemented interfaces are searched
-     * (uses wala internal methods that behave in that way).
+     * Searches a method that matches the given parameters within the hierarchy
+     * of the given base-class. <b>Note:</b> If the class doe not contain a
+     * matching method all its superclasses and all its implemented interfaces
+     * are searched (uses wala internal methods that behave in that way).
      * 
      * @param clazz
      *            the class where to start the lookup
      * @param methodReference
-     *            the method's name like 'toString' for java.lang.Object.toString()
+     *            the method's name like 'toString' for
+     *            java.lang.Object.toString()
      * @param returnType
-     *            the concrete typeReference of the return value or {@code null} if void
+     *            the concrete typeReference of the return value or {@code null}
+     *            if void
      * @param paramTypes
      *            the param types - may be {@code null}.
      * @return a method object declared by clazz or one of its superclasses

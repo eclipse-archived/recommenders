@@ -25,10 +25,12 @@ import com.ibm.wala.ssa.SSAPhiInstruction;
 import com.ibm.wala.ssa.SSAPutInstruction;
 
 /**
- * The {@code VariableTable} is a helper class for resolving the names of a method's values.
+ * The {@code VariableTable} is a helper class for resolving the names of a
+ * method's values.
  * <p>
- * Note: This is not working properly right now - it cannot resolve every name. This would require a better code
- * analysis as we have right now. However, it is at least a nice beginning.
+ * Note: This is not working properly right now - it cannot resolve every name.
+ * This would require a better code analysis as we have right now. However, it
+ * is at least a nice beginning.
  */
 public class MethodVariableTable {
     public static final String STATIC = "<static>";

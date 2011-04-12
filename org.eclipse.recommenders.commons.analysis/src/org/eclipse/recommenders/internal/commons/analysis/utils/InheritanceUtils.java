@@ -61,7 +61,8 @@ public class InheritanceUtils {
     }
 
     /**
-     * returns all subclasses (i.e., all classes that extend the given class directly or indirectly.
+     * returns all subclasses (i.e., all classes that extend the given class
+     * directly or indirectly.
      * 
      * @param clazz
      *            the base-class to search its sub-types for
@@ -70,8 +71,9 @@ public class InheritanceUtils {
      * @param cha
      *            cha used to lookup the subclasses
      * @param resultFilter
-     *            the filter that finally decides whether a subclass should be added to the result set. This filter does
-     *            not affect the traversal.
+     *            the filter that finally decides whether a subclass should be
+     *            added to the result set. This filter does not affect the
+     *            traversal.
      */
     public static void findAllSubclasses(final IClass clazz, final List<IClass> subclasses) {
         IClassHierarchy cha = clazz.getClassHierarchy();
