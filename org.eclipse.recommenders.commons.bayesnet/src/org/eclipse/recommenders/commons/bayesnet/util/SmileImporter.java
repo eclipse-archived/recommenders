@@ -87,7 +87,7 @@ public class SmileImporter {
         for (final Node node : nodes) {
             final String smileId = nodeToSmileIdMapping.getValue(node);
             final double[] propabilities = smileNetwork.getNodeDefinition(smileId);
-            node.setPropabilities(propabilities);
+            node.setProbabilities(propabilities);
         }
     }
 

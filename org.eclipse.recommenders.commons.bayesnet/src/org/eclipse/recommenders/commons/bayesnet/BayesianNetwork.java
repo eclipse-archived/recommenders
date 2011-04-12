@@ -60,6 +60,10 @@ public class BayesianNetwork {
         return nodeById.get(nodeId);
     }
 
+    public Collection<Node> getNodes() {
+        return nodes;
+    }
+
     @Override
     public String toString() {
         return ReflectionToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);

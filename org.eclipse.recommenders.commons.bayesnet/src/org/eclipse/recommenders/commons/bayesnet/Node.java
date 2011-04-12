@@ -19,7 +19,7 @@ public class Node {
     private String[] parentIds;
     private transient Node[] parents;
     private String[] states;
-    private double[] propabilities;
+    private double[] probabilities;
 
     protected Node() {
     }
@@ -56,8 +56,8 @@ public class Node {
         return this.parents;
     }
 
-    public void setPropabilities(final double[] propabilities) {
-        this.propabilities = propabilities;
+    public void setProbabilities(final double[] probabilities) {
+        this.probabilities = probabilities;
     }
 
     public boolean isValid() {
@@ -66,11 +66,20 @@ public class Node {
             for (final Node parent : parents) {
                 parentStates *= parent.numberOfStates();
             }
-            if (propabilities.length != parentStates * states.length) {
+            if (probabilities.length != parentStates * states.length) {
                 return false;
             }
-        } else if (propabilities.length != states.length) {
+        } else if (probabilities.length != states.length) {
             return false;
+        }
+
+        for (int i = 0; i < probabilities.length; i++) {
+            if (Double.isInfinite(probabilities[i])) {
+                return false;
+            }
+            if (Double.isNaN(probabilities[i])) {
+                return false;
+            }
         }
 
         return true;
@@ -78,6 +87,14 @@ public class Node {
 
     public String getIdentifier() {
         return identifier;
+    }
+
+    public String[] getStates() {
+        return states;
+    }
+
+    public double[] getProbabilities() {
+        return probabilities;
     }
 
     public void restore(final BayesianNetwork network) {
