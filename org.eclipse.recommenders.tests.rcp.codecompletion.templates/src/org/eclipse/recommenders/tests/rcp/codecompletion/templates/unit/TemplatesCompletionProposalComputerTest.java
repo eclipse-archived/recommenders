@@ -19,10 +19,14 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 
+/**
+ * Unit tests for covering the {@link TemplatesCompletionProposalComputer}
+ * class.
+ */
 public final class TemplatesCompletionProposalComputerTest {
 
     @Test
-    public void testTemplatesCompletionEngine() throws Exception {
+    public void testTemplatesCompletionEngine() {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getConstructorContextMock(
                 "Button bu", "bu", "Lorg/eclipse/swt/widgets/Button");
 

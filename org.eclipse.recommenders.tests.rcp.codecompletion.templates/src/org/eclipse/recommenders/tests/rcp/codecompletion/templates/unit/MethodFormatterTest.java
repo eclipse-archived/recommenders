@@ -21,6 +21,9 @@ import org.mockito.Mockito;
 
 import junit.framework.Assert;
 
+/**
+ * Unit tests for covering the {@link MethodFormatter} class.
+ */
 public final class MethodFormatterTest {
 
     @Test

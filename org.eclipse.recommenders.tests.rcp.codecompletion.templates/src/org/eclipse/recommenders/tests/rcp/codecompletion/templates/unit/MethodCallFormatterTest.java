@@ -16,6 +16,9 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Meth
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * Unit tests for covering the {@link MethodCallFormatter} class.
+ */
 public final class MethodCallFormatterTest {
 
     private static MethodCallFormatter methodCallFormatterMock = new MethodCallFormatter(
@@ -36,10 +39,23 @@ public final class MethodCallFormatterTest {
                 "${returnedType:newType(String)} text = ${unconstructed}.getText(${intTest:link(0)}, ${arg6:link(false, true)}, ${arg7}, ${arg8:var(org/eclipse/swt/widgets/Button)});");
     }
 
+    /**
+     * @param methodCall
+     *            The method call which ought to be formatted by the
+     *            {@link MethodCallFormatter}.
+     * @param expected
+     *            The string which is expected to be given by the formatter.
+     */
     private void check(final MethodCall methodCall, final String expected) {
         Assert.assertEquals(expected, methodCallFormatterMock.format(methodCall));
     }
 
+    /**
+     * @return A {@link MethodCallFormatter} using a mocked
+     *         <code>MethodFormatter</code> to simulate Eclipse's behavior in
+     *         resolving a method's parameters, which is not available during
+     *         tests.
+     */
     public static MethodCallFormatter getMethodCallFormatterMock() {
         return methodCallFormatterMock;
     }

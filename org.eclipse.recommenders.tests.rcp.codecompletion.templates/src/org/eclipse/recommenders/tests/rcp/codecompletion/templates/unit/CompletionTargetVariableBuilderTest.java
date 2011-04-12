@@ -24,10 +24,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+/**
+ * Unit tests for covering the {@link CompletionTargetVariableBuilder} class.
+ */
 @SuppressWarnings("restriction")
 public final class CompletionTargetVariableBuilderTest {
 
-    private final static ITypeName ENCLOSINGTYPE = UnitTestSuite.getDefaultMethodCall().getInvokedMethod()
+    private static final ITypeName ENCLOSINGTYPE = UnitTestSuite.getDefaultMethodCall().getInvokedMethod()
             .getDeclaringType();
 
     @Test

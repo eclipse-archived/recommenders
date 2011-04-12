@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.types;
 
 import java.util.Set;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 
 import org.eclipse.jface.text.Region;
@@ -105,12 +104,5 @@ public final class CompletionTargetVariable {
      */
     public IIntelligentCompletionContext getContext() {
         return context;
-    }
-
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this).add("name", name).add("type", typeName)
-                .add("needsConstructor", needsConstructor).add("documentRegion", documentRegion)
-                .add("receiverCalls", receiverCalls).toString();
     }
 }

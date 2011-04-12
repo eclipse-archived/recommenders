@@ -182,6 +182,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
 
     @Override
     public void sessionStarted() {
+        // This particular event is not of interest for us.
     }
 
     @Override
@@ -197,5 +198,6 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
 
     @Override
     public void sessionEnded() {
+        // This particular event is not of interest for us.
     }
 }

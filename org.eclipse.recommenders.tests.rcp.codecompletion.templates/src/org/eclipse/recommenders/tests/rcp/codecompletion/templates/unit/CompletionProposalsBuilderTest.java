@@ -14,7 +14,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Position;
@@ -24,19 +23,26 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Patt
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * Unit tests for covering the {@link CompletionProposalsBuilder} class.
+ */
 @SuppressWarnings("restriction")
 public final class CompletionProposalsBuilderTest {
 
-    @Test
-    public void testProposalsBuilder() throws JavaModelException {
-        final MethodCall methodCall = UnitTestSuite.getDefaultConstructorCall();
+    private final CompletionProposalsBuilder builder = new CompletionProposalsBuilder(null,
+            UnitTestSuite.getCodeBuilderMock());
 
-        final List<PatternRecommendation> patterns = Lists.newArrayList();
+    /**
+     * Tests the {@link CompletionProposalsBuilder} using a constructor
+     * scenario.
+     */
+    @Test
+    public void testProposalsBuilder() {
+        final List<PatternRecommendation> patterns = Lists.newLinkedList();
+
+        final MethodCall methodCall = UnitTestSuite.getDefaultConstructorCall();
         patterns.add(PatternRecommendation.create("Pattern 1", methodCall.getInvokedMethod().getDeclaringType(),
                 Lists.newArrayList(methodCall.getInvokedMethod()), 50));
-
-        final CompletionProposalsBuilder builder = new CompletionProposalsBuilder(null,
-                UnitTestSuite.getCodeBuilderMock());
 
         final JavaContext javaContext = new JavaContext(null, new Document(), new Position(0), null);
         Assert.assertEquals(1, builder.computeProposals(patterns, javaContext, methodCall.getVariableName()).size());
