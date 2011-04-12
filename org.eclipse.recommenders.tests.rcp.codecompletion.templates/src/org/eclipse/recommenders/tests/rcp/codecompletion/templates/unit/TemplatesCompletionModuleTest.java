@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
+package org.eclipse.recommenders.tests.rcp.codecompletion.templates.unit;
 
 import com.google.inject.Binder;
 import com.google.inject.binder.AnnotatedBindingBuilder;

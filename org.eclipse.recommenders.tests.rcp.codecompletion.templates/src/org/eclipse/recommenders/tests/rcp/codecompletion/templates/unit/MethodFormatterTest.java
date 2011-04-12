@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates.unit;
+package org.eclipse.recommenders.tests.rcp.codecompletion.templates.unit;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;

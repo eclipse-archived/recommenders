@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.templates.ui;
+package org.eclipse.recommenders.tests.rcp.codecompletion.templates.ui;
 
 import org.eclipse.recommenders.tests.commons.ui.utils.DefaultUiTest;
 import org.eclipse.recommenders.tests.commons.ui.utils.FixtureUtil;
