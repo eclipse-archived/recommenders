@@ -10,48 +10,50 @@
  */
 package org.eclipse.recommenders.commons.bayesnet;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Node {
 
     private String identifier;
-    private final List<String> parentIds;
-    private transient final List<Node> parents;
-    private final List<String> states;
+    private String[] parentIds;
+    private transient Node[] parents;
+    private String[] states;
     private double[] propabilities;
 
     protected Node() {
-        parentIds = new ArrayList<String>();
-        parents = new ArrayList<Node>();
-        states = new ArrayList<String>();
     }
 
     public Node(final String identifier) {
-        this();
         this.identifier = identifier;
     }
 
-    public void addState(final String stateName) {
-        states.add(stateName);
+    public void setStates(final String[] states) {
+        this.states = states;
     }
 
     public int numberOfStates() {
-        return states.size();
+        return states.length;
     }
 
-    public void addParent(final Node parent) {
-        parents.add(parent);
-        parentIds.add(parent.getIdentifier());
+    public void setParents(final Node[] parents) {
+        this.parents = parents;
+        this.parentIds = new String[parents.length];
+        for (int i = 0; i < parents.length; i++) {
+            this.parentIds[i] = parents[i].getIdentifier();
+        }
     }
 
     public int numberOfParents() {
-        return parentIds.size();
+        if (parentIds == null) {
+            return 0;
+        } else {
+            return parentIds.length;
+        }
     }
 
-    public List<Node> getParents() {
-        return Collections.unmodifiableList(parents);
+    public Node[] getParents() {
+        return this.parents;
     }
 
     public void setPropabilities(final double[] propabilities) {
@@ -59,15 +61,15 @@ public class Node {
     }
 
     public boolean isValid() {
-        if (parents.size() > 0) {
+        if (parents.length > 0) {
             int parentStates = 1;
             for (final Node parent : parents) {
                 parentStates *= parent.numberOfStates();
             }
-            if (propabilities.length != parentStates * states.size()) {
+            if (propabilities.length != parentStates * states.length) {
                 return false;
             }
-        } else if (propabilities.length != states.size()) {
+        } else if (propabilities.length != states.length) {
             return false;
         }
 
@@ -79,9 +81,18 @@ public class Node {
     }
 
     public void restore(final BayesianNetwork network) {
-        parents.clear();
-        for (final String parentId : parentIds) {
-            parents.add(network.getNode(parentId));
+        if (parentIds == null) {
+            this.parents = null;
+        } else {
+            this.parents = new Node[parentIds.length];
+            for (int i = 0; i < parentIds.length; i++) {
+                this.parents[i] = network.getNode(parentIds[i]);
+            }
         }
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

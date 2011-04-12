@@ -34,6 +34,10 @@ public class SmileImporter {
         importPropabilities();
     }
 
+    public BayesianNetwork getNetwork() {
+        return bayesNetwork;
+    }
+
     private void importNodes() {
         final String[] nodeIds = smileNetwork.getAllNodeIds();
         for (int i = 0; i < nodeIds.length; i++) {
@@ -52,10 +56,7 @@ public class SmileImporter {
 
     private void createNode(final String identifier, final String smileId) {
         final Node node = new Node(identifier);
-        final int outcomeCount = smileNetwork.getOutcomeCount(smileId);
-        for (int i = 0; i < outcomeCount; i++) {
-            node.addState(smileNetwork.getOutcomeLabel(smileId, i));
-        }
+        node.setStates(smileNetwork.getOutcomeIds(smileId));
         bayesNetwork.addNode(node);
         insertToMapping(node, smileId);
     }
@@ -73,9 +74,11 @@ public class SmileImporter {
         for (final Node node : nodes) {
             final String smileId = nodeToSmileIdMapping.getValue(node);
             final String[] parentIds = smileNetwork.getParentIds(smileId);
-            for (final String parentId : parentIds) {
-                node.addParent(nodeToSmileIdMapping.getKey(parentId));
+            final Node[] parents = new Node[parentIds.length];
+            for (int i = 0; i < parents.length; i++) {
+                parents[i] = nodeToSmileIdMapping.getKey(parentIds[i]);
             }
+            node.setParents(parents);
         }
     }
 
@@ -83,7 +86,7 @@ public class SmileImporter {
         final Set<Node> nodes = nodeToSmileIdMapping.keySet();
         for (final Node node : nodes) {
             final String smileId = nodeToSmileIdMapping.getValue(node);
-            final double[] propabilities = smileNetwork.getNodeValue(smileId);
+            final double[] propabilities = smileNetwork.getNodeDefinition(smileId);
             node.setPropabilities(propabilities);
         }
     }

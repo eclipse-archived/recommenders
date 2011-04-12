@@ -14,10 +14,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class BayesianNetwork {
 
     private final Collection<Node> nodes;
-    private final HashMap<String, Node> nodeById;
+    private transient final HashMap<String, Node> nodeById;
 
     public BayesianNetwork() {
         this.nodes = new LinkedList<Node>();
@@ -36,6 +39,9 @@ public class BayesianNetwork {
 
     public void restore() {
         for (final Node node : nodes) {
+            nodeById.put(node.getIdentifier(), node);
+        }
+        for (final Node node : nodes) {
             node.restore(this);
         }
     }
@@ -52,5 +58,10 @@ public class BayesianNetwork {
 
     public Node getNode(final String nodeId) {
         return nodeById.get(nodeId);
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }
