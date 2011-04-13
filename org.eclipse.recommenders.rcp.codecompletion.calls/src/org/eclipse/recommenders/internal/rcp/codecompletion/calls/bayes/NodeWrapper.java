@@ -11,10 +11,14 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayes;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.recommenders.commons.bayesnet.Node;
+import org.eclipse.recommenders.commons.utils.Tuple;
 
 import smile.Network;
+
+import com.google.common.collect.Lists;
 
 public class NodeWrapper {
 
@@ -60,6 +64,22 @@ public class NodeWrapper {
 
     public double[] getProbability() {
         return smileNetwork.getNodeValue(nodeHandle);
+    }
+
+    public List<Tuple<String, Double>> getStatesWithProbability() {
+        final double[] probs = smileNetwork.getNodeValue(nodeHandle);
+        final List<Tuple<String, Double>> res = Lists.newArrayListWithCapacity(probs.length);
+        final String[] states = node.getStates();
+        for (int i = 0; i < states.length; i++) {
+            final int probIndex = stateMapping.get(states[i]);
+            final double p = probs[probIndex];
+            if (0.01 > p) {
+                continue;
+            }
+            final String name = states[i];
+            res.add(Tuple.create(name, p));
+        }
+        return res;
     }
 
 }

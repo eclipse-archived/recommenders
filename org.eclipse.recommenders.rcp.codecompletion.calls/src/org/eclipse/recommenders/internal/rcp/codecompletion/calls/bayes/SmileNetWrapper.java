@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureEquals;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -41,6 +42,7 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     private NodeWrapper patternNode;
     private final HashMap<VmMethodName, NodeWrapper> methodNodes;
     private HashMap<String, NodeWrapper> nodeMapping;
+    private NodeWrapper availabilityNode;
 
     public SmileNetWrapper(final ITypeName typeName, final BayesianNetwork bayesNetwork) {
         this.typeName = typeName;
@@ -55,6 +57,7 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
         initializeNodes();
         initializeArcs();
         initializeProbabilities();
+        availabilityNode.observeState("true");
     }
 
     private void initializeNodes() {
@@ -67,6 +70,9 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
             } else if (node.getIdentifier().equalsIgnoreCase("Patterns")) {
                 patternNode = new NodeWrapper(node, smileNetwork);
                 nodeMapping.put(node.getIdentifier(), patternNode);
+            } else if (node.getIdentifier().equals("availability")) {
+                availabilityNode = new NodeWrapper(node, smileNetwork);
+                nodeMapping.put(node.getIdentifier(), availabilityNode);
             } else {
                 final NodeWrapper methodNode = initializeMethodNode(node);
                 nodeMapping.put(node.getIdentifier(), methodNode);
@@ -83,7 +89,7 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     private void initializeArcs() {
         final Collection<Node> nodes = bayesNetwork.getNodes();
         for (final Node node : nodes) {
-            final NodeWrapper nodeWrapper = nodeMapping.get(node);
+            final NodeWrapper nodeWrapper = nodeMapping.get(node.getIdentifier());
             final Node[] parents = node.getParents();
             for (int i = 0; i < parents.length; i++) {
                 final NodeWrapper parentWrapper = nodeMapping.get(parents[i].getIdentifier());
@@ -119,11 +125,13 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     @Override
     public void clearEvidence() {
         smileNetwork.clearAllEvidence();
+        availabilityNode.observeState("true");
     }
 
     @Override
     public void setMethodContext(final IMethodName newActiveMethodContext) {
-        contextNode.observeState(newActiveMethodContext.getIdentifier());
+        // TODO: Remove escaping
+        contextNode.observeState(newActiveMethodContext.getIdentifier().replaceAll("\\W", "_"));
     }
 
     @Override
@@ -190,6 +198,16 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
                 methodNodes.get(method).observeState("false");
             }
         }
+    }
+
+    @Override
+    public List<Tuple<String, Double>> getPatternsWithProbability() {
+        return patternNode.getStatesWithProbability();
+    }
+
+    @Override
+    public void setPattern(final String patternName) {
+        patternNode.observeState(patternName);
     }
 
 }

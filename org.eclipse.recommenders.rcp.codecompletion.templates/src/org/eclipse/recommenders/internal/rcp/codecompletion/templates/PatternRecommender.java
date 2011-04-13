@@ -21,7 +21,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -52,7 +52,7 @@ public final class PatternRecommender {
 
     private IIntelligentCompletionContext context;
     private Set<IMethodName> receiverMethodInvocations;
-    private ObjectMethodCallsNet model;
+    private IObjectMethodCallsNet model;
 
     /**
      * @param callsModelStore
@@ -79,7 +79,7 @@ public final class PatternRecommender {
         final Builder<PatternRecommendation> recommendations = ImmutableSet.builder();
         context = targetVariable.getContext();
         if (canFindVariableUsage(targetVariable)) {
-            for (final ObjectMethodCallsNet typeModel : findModelsForType(targetVariable.getType())) {
+            for (final IObjectMethodCallsNet typeModel : findModelsForType(targetVariable.getType())) {
                 model = typeModel;
                 updateModel();
                 recommendations.addAll(computeRecommendationsForModel(targetVariable.isNeedsConstructor()));
@@ -126,8 +126,8 @@ public final class PatternRecommender {
      *         type is fully qualified. Multiple elements when the type is
      *         simple (i.e. it matches several classes).
      */
-    private ImmutableSet<ObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
-        final Builder<ObjectMethodCallsNet> models = ImmutableSet.builder();
+    private ImmutableSet<IObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
+        final Builder<IObjectMethodCallsNet> models = ImmutableSet.builder();
         if (receiverType.getPackage().getIdentifier().length() == 0) {
             models.addAll(callsModelStore.getModelsForSimpleName(receiverType));
         } else if (callsModelStore.hasModel(receiverType)) {
@@ -185,7 +185,7 @@ public final class PatternRecommender {
      *         the size of <code>MAX_PATTERNS</code>.
      */
     private ImmutableList<Tuple<String, Double>> findMostLikelyPatterns() {
-        List<Tuple<String, Double>> patterns = model.getPatternsNode().getPatternsWithProbability();
+        List<Tuple<String, Double>> patterns = model.getPatternsWithProbability();
         patterns = Lists.newArrayList(Iterators.filter(patterns.iterator(), new PatternProbabilityFilter()));
         Collections.sort(patterns, new PatternSorter());
         patterns = patterns.subList(0, Math.min(patterns.size(), MAX_PATTERNS));

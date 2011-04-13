@@ -32,8 +32,11 @@ public class CallsCompletionModule extends AbstractModule {
     }
 
     private void configureModelStore() {
-        bind(CallsModelStore.class).to(BayesianNetworkCallsModelStore.class).in(Scopes.SINGLETON);
         bind(ICallsModelLoader.class).to(CallsModelLoader.class).in(Scopes.SINGLETON);
+
+        // bind(CallsModelStore.class).in(Scopes.SINGLETON);
+        bind(CallsModelStore.class).to(BayesianNetworkCallsModelStore.class).in(Scopes.SINGLETON);
+
         bind(URL.class).annotatedWith(Names.named("calls.model.fileUrl")).toInstance(getCallsModelFileUrl());
     }
 
@@ -43,6 +46,7 @@ public class CallsCompletionModule extends AbstractModule {
     }
 
     private URL getCallsModelFileUrl() {
+        // final Path basedir = new Path("/data/models.zip");
         final Path basedir = new Path("/data/json-models.zip");
         try {
             return FileLocator.resolve(FileLocator.find(FrameworkUtil.getBundle(getClass()), basedir, null));

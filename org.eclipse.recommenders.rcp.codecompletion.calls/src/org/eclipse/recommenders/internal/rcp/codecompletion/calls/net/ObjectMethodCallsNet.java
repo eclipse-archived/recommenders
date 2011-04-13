@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -119,7 +120,7 @@ public class ObjectMethodCallsNet implements IObjectMethodCallsNet {
         network.updateBeliefs();
     }
 
-    protected Network getNetwork() {
+    public Network getNetwork() {
         return network;
     }
 
@@ -215,8 +216,14 @@ public class ObjectMethodCallsNet implements IObjectMethodCallsNet {
         }
     }
 
+    @Override
     public void setPattern(final String patternName) {
         patternsNode.setPattern(patternName);
 
+    }
+
+    @Override
+    public List<Tuple<String, Double>> getPatternsWithProbability() {
+        return patternsNode.getPatternsWithProbability();
     }
 }
