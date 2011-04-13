@@ -10,10 +10,12 @@
  */
 package org.eclipse.recommenders.commons.bayesnet;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class Node {
+public class Node implements Serializable {
 
     private String identifier;
     private String[] parentIds;

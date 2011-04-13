@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.commons.bayesnet;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,15 +18,10 @@ import java.util.LinkedList;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class BayesianNetwork {
+public class BayesianNetwork implements Serializable {
 
-    private final Collection<Node> nodes;
-    private transient final HashMap<String, Node> nodeById;
-
-    public BayesianNetwork() {
-        this.nodes = new LinkedList<Node>();
-        this.nodeById = new HashMap<String, Node>();
-    }
+    private final Collection<Node> nodes = new LinkedList<Node>();
+    private transient HashMap<String, Node> nodeById = new HashMap<String, Node>();
 
     public void addNode(final Node node) {
         if (nodeById.containsKey(node.getIdentifier())) {
@@ -38,6 +34,7 @@ public class BayesianNetwork {
     }
 
     public void restore() {
+        nodeById = new HashMap<String, Node>();
         for (final Node node : nodes) {
             nodeById.put(node.getIdentifier(), node);
         }
@@ -62,6 +59,14 @@ public class BayesianNetwork {
 
     public Collection<Node> getNodes() {
         return nodes;
+    }
+
+    public void setNodes(final Collection<Node> nodes) {
+        this.nodes.clear();
+        this.nodeById.clear();
+        for (final Node node : nodes) {
+            addNode(node);
+        }
     }
 
     @Override
