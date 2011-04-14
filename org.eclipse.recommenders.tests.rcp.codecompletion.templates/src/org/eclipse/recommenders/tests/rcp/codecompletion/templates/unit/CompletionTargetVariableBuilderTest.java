@@ -24,10 +24,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+/**
+ * Unit tests for covering the {@link CompletionTargetVariableBuilder} class.
+ */
 @SuppressWarnings("restriction")
 public final class CompletionTargetVariableBuilderTest {
 
-    private final static ITypeName ENCLOSINGTYPE = UnitTestSuite.getDefaultMethodCall().getInvokedMethod()
+    private static final ITypeName ENCLOSINGTYPE = UnitTestSuite.getDefaultMethodCall().getInvokedMethod()
             .getDeclaringType();
 
     @Test
@@ -41,6 +44,8 @@ public final class CompletionTargetVariableBuilderTest {
     public void testConstructor() {
         testCompletionTargetVariableBuilder("Button bu", "bu", "Button", new Region(0, 9), true);
         testCompletionTargetVariableBuilder("Button", null, "Button", new Region(0, 6), true);
+        // TODO: CompletionTargetVariableBuilder.resolveTypeFromReceiverName()
+        // uses a cast which will fail due to Mockito.
         // testCompletionTargetVariableBuilder("Button b", "b", null, new
         // Region(0, 8), true);
     }

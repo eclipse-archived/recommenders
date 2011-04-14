@@ -14,6 +14,7 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 
@@ -34,7 +35,7 @@ public final class CodeBuilder {
      */
     @Inject
     public CodeBuilder(final MethodCallFormatter methodCallFormatter) {
-        this.methodCallFormatter = methodCallFormatter;
+        this.methodCallFormatter = Checks.ensureIsNotNull(methodCallFormatter);
     }
 
     /**
@@ -47,6 +48,7 @@ public final class CodeBuilder {
      *         recommended method calls and the given target variable.
      */
     public String buildCode(final List<IMethodName> methods, final String targetVariableName) {
+        Checks.ensureIsNotEmpty(methods, "Methods must not be empty.");
         final StringBuilder code = new StringBuilder(methods.size() * 16);
         for (final IMethodName method : methods) {
             code.append(methodCallFormatter.format(new MethodCall(targetVariableName, method)));

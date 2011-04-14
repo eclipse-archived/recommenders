@@ -18,17 +18,25 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * Triggers SWTBot to test a given fixture project.
+ */
 @RunWith(SWTBotJunit4ClassRunner.class)
 public final class UiTest extends DefaultUiTest {
 
-    private static final String FIXTUREPROJECTNAME = "org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.templates";
+    private static final String FIXTUREPROJECT = "org.eclipse.recommenders.tests.fixtures.rcp.codecompletion.templates";
 
+    /**
+     * @throws Exception
+     *             Thrown, when an error occurs during copying the fixture
+     *             project into the workspace used during test execution.
+     */
     @Test
     @Ignore
     public void testClassesInFixtureProject() throws Exception {
-        FixtureUtil.copyProjectToWorkspace(FIXTUREPROJECTNAME);
+        FixtureUtil.copyProjectToWorkspace(FIXTUREPROJECT);
         final TestProjectClassesHelper helper = new TestProjectClassesHelper(bot);
-        helper.searchAndTestClasses(FIXTUREPROJECTNAME);
+        helper.searchAndTestClasses(FIXTUREPROJECT);
     }
 
 }

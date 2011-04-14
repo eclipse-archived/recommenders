@@ -23,10 +23,10 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
  */
 public final class PatternRecommendation implements Comparable<PatternRecommendation> {
 
-    private String name;
-    private ITypeName type;
-    private ImmutableList<IMethodName> methods;
-    private int probability;
+    private final String name;
+    private final ITypeName type;
+    private final ImmutableList<IMethodName> methods;
+    private final int probability;
 
     /**
      * @param name
@@ -38,17 +38,13 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
      * @param probability
      *            Probability that this pattern is used in the observed
      *            occasion.
-     * @return The <code>PatternRecommendation</code> encapsulating the given
-     *         parameters.
      */
-    public static PatternRecommendation create(final String name, final ITypeName type,
-            final List<IMethodName> methods, final int probability) {
-        final PatternRecommendation recommendation = new PatternRecommendation();
-        recommendation.name = Checks.ensureIsNotNull(name);
-        recommendation.type = Checks.ensureIsNotNull(type);
-        recommendation.methods = ImmutableList.copyOf(methods);
-        recommendation.probability = probability;
-        return recommendation;
+    public PatternRecommendation(final String name, final ITypeName type, final List<IMethodName> methods,
+            final int probability) {
+        this.name = Checks.ensureIsNotNull(name);
+        this.type = Checks.ensureIsNotNull(type);
+        this.methods = ImmutableList.copyOf(methods);
+        this.probability = probability;
     }
 
     /**
@@ -86,7 +82,7 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
 
     @Override
     public int compareTo(final PatternRecommendation other) {
-        return Integer.valueOf(probability).compareTo(other.probability);
+        return Integer.valueOf(probability).compareTo(Integer.valueOf(other.probability));
     }
 
     @Override
