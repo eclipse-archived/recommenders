@@ -16,4 +16,7 @@ package org.eclipse.recommenders.commons.utils.names;
  */
 public interface IPackageName extends IName {
     // offers basically not more than a plain getIdentifier...
+
+    // REVIEW: add to API
+    // boolean isDefaultPackage()
 }

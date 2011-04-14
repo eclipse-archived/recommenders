@@ -12,8 +12,6 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -22,6 +20,8 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
+
+import com.google.common.collect.Sets;
 
 /**
  * Extracts the {@link CompletionTargetVariable} from a given
@@ -73,9 +73,12 @@ public final class CompletionTargetVariableBuilder {
         if (receiverType == null) {
             handleUnresolvedType();
         } else {
+            // REVIEW: Example? No idea why this is needed?
+            // Button b<^Space>
+            // Button x = b. --> new test case? StringBuilder.append("")
             needsConstructor = receiverType.equals(context.getExpectedType());
         }
-        return (receiverType == null) ? null : buildCompletionTargetVariable();
+        return receiverType == null ? null : buildCompletionTargetVariable();
     }
 
     /**
@@ -121,7 +124,7 @@ public final class CompletionTargetVariableBuilder {
     private CompletionTargetVariable buildCompletionTargetVariable() {
         final int variableNameLength = getVariableNameLength();
         final Region region = new Region(replacementOffset - variableNameLength, variableNameLength);
-        return new CompletionTargetVariable((receiverName == null) ? "" : receiverName, receiverType, receiverCalls,
+        return new CompletionTargetVariable(receiverName == null ? "" : receiverName, receiverType, receiverCalls,
                 region, needsConstructor, context);
     }
 
@@ -136,6 +139,8 @@ public final class CompletionTargetVariableBuilder {
         if (needsConstructor) {
             // TODO: Gets the token to be replaced from the completion node,
             // e.g. "<CompleteOnLocalName:Button b>;". To be refactored.
+            // REVIEW: is node.name appropriate?
+            // REVIEW double check - ICtx doesn't deliver the type of this node?
             final String node = context.getCompletionNode().toString();
             variableNameLength = node.substring(node.indexOf(':') + 1, node.indexOf('>')).length();
         } else if (receiverName.length() > 0 && !isCallOnThis) {

@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
-import com.google.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
@@ -19,6 +17,8 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+
+import com.google.inject.Inject;
 
 /**
  * Generates the <code>String</code> representation of an {@link IMethod}.
@@ -84,13 +84,18 @@ public class MethodFormatter {
      *         <code>${listener:var(org.eclipse.swt.events.SelectionListener)}</code>
      *         .
      */
+    // REVIEW: maybe use ITypeName instead of String parameterType?
     private String getParameterString(final String parameterName, final String parameterType) {
         final StringBuilder parameter = new StringBuilder(16);
         parameter.append(getParameterName(parameterName));
+        // REVIEW: what happens with Long, Double, Float ... char? maybe switch
+        // (char first character of typeName.getIdentfier?)
         if ("I".equals(parameterType)) {
             parameter.append(":link(0)");
         } else if ("Z".equals(parameterType)) {
             parameter.append(":link(false, true)");
+            // REVIEW: why just java? How about org.... com.. etc?
+            // check for is primitive or is reference type?
         } else if (parameterType.endsWith(";") && !parameterType.startsWith("Ljava")) {
             parameter.append(String.format(":var(%s)", parameterType.substring(1, parameterType.length() - 1)));
         }
