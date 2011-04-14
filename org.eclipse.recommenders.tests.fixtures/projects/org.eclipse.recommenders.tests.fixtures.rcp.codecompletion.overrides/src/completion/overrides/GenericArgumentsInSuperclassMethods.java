@@ -15,7 +15,7 @@ import completion.overrides.util.SuperClassWithGenericArguments;
 public class GenericArgumentsInSuperclassMethods extends SuperClassWithGenericArguments {
 
     // @start
-    // <^Space|test.*%>
+    // <^Space|test.*>
     // @end
     // @Override
     // public void test(Collection<String> list) {
