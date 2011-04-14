@@ -20,6 +20,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class BayesianNetwork implements Serializable {
 
+    private static final long serialVersionUID = 8910268803395952578L;
+
     private final Collection<Node> nodes = new LinkedList<Node>();
     private transient HashMap<String, Node> nodeById = new HashMap<String, Node>();
 

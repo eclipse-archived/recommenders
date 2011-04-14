@@ -42,6 +42,7 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     private NodeWrapper patternNode;
     private final HashMap<VmMethodName, NodeWrapper> methodNodes;
     private HashMap<String, NodeWrapper> nodeMapping;
+    // TODO Remove availability node
     private NodeWrapper availabilityNode;
 
     public SmileNetWrapper(final ITypeName typeName, final BayesianNetwork bayesNetwork) {

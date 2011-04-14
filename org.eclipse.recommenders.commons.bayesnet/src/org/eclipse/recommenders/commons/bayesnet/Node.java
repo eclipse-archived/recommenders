@@ -17,6 +17,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Node implements Serializable {
 
+    private static final long serialVersionUID = 6120294183622148914L;
+
     private String identifier;
     private String[] parentIds;
     private transient Node[] parents;

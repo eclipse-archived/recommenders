@@ -96,7 +96,6 @@ public class BinaryCallsModelLoader implements ICallsModelLoader {
         final ZipEntry entry = modelsFile.getEntry(entryName);
         final InputStream is = modelsFile.getInputStream(entry);
         return new BufferedInputStream(is);
-        // return is;
     }
 
 }
