@@ -225,15 +225,6 @@ public class ChainingAlgorithmWorker implements Callable<Void> {
         return true;
       }
 
-      // Consult type hierarchy for sub-/supertypes
-      if (InheritanceHierarchyCache.isSubtype(workingElement.getType(), expectedType.getFirst(),
-          expectedType.getSecond())
-          && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {
-        internalProposalStore.storeLastChainElementForProposal(workingElement, expectedType.getFirst(),
-            expectedType.getSecond(), expectedType.getFirst());
-        return true;
-      }
-      /* else */
       if (InheritanceHierarchyCache.isSupertype(workingElement.getType(), expectedType.getFirst(),
           expectedType.getSecond())
           && !((testResult & InheritanceHierarchyCache.RESULT_EQUAL) > 0)) {

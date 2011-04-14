@@ -111,7 +111,7 @@ public class ChainingAlgorithm {
     initializeChainCompletionContext(ictx);
     processMembers();
     final long i = System.currentTimeMillis();
-    waitForThreadPoolTermination();
+    startWorkersAndWaitForTermination();
     final long j = System.currentTimeMillis();
     computeProposalChains();
     if (Constants.DEBUG) {
@@ -213,7 +213,7 @@ public class ChainingAlgorithm {
     processMethods();
   }
 
-  private void waitForThreadPoolTermination() {
+  private void startWorkersAndWaitForTermination() {
     if (workingElement.size() > 0) {
       executor = Executors.newFixedThreadPool(1);// Runtime.getRuntime().availableProcessors()
       try {
