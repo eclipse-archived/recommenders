@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Bayesian Network
+Bundle-SymbolicName: org.eclipse.recommenders.commons.bayesnet
+Bundle-Version: 0.2.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: smile;bundle-version="1.0.0",
+ org.eclipse.recommenders.commons.utils;bundle-version="0.2.0",
+ org.apache.commons.lang3;bundle-version="3.0.0"
+Export-Package: org.eclipse.recommenders.commons.bayesnet,
+ org.eclipse.recommenders.commons.bayesnet.util

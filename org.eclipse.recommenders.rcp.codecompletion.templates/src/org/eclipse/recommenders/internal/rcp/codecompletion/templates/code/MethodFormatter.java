@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
@@ -34,7 +35,7 @@ public class MethodFormatter {
      */
     @Inject
     public MethodFormatter(final JavaElementResolver elementResolver) {
-        this.elementResolver = elementResolver;
+        this.elementResolver = Checks.ensureIsNotNull(elementResolver);
     }
 
     /**
@@ -103,12 +104,11 @@ public class MethodFormatter {
      *         <code>arg0</code>" format.
      */
     private String getParameterName(final String parameterName) {
-        String name = parameterName;
         if (parameterName.startsWith("arg")) {
             ++argumentCounter;
-            name = String.format("arg%d", Integer.valueOf(argumentCounter));
+            return String.format("arg%d", Integer.valueOf(argumentCounter));
         }
-        return name;
+        return parameterName;
     }
 
     /**

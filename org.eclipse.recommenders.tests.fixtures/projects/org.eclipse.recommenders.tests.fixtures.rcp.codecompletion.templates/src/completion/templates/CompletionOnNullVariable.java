@@ -7,7 +7,7 @@
  *
  * Contributors:
  */
-package completion.templates.bugs;
+package completion.templates;
 
 import org.eclipse.swt.widgets.Button;
 
@@ -16,7 +16,6 @@ public class CompletionOnNullVariable {
 	CompletionOnNullVariable(){
 		Button b = null;
 		b.setEnabled(true);
-		// Why did we expect 218 but don't receive it anymore?
 		b.<^Space|dynamic.*218.*%>
 	}
 

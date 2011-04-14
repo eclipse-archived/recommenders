@@ -39,7 +39,8 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 
 /**
- * Computes {@link PatternRecommendation}s from the {@link CallsModelStore}.
+ * Computes context-sensitive {@link PatternRecommendation}s from the
+ * {@link CallsModelStore}.
  */
 public final class PatternRecommender {
 
@@ -56,7 +57,7 @@ public final class PatternRecommender {
 
     /**
      * @param callsModelStore
-     *            The place where all patterns for every available class are
+     *            The place where all patterns for all available classes are
      *            stored.
      * @param usageResolvers
      *            A set of resolvers which are able to compute a variable's type
@@ -71,7 +72,8 @@ public final class PatternRecommender {
 
     /**
      * @param targetVariable
-     *            The variable on which the completion request was invoked.
+     *            The variable information which could be extracted from the
+     *            completion context.
      * @return The {@link PatternRecommendation}s holding information for the
      *         templates to be displayed.
      */
@@ -173,7 +175,7 @@ public final class PatternRecommender {
         for (final Tuple<String, Double> patternWithProbablity : findMostLikelyPatterns()) {
             final String patternName = patternWithProbablity.getFirst();
             final List<IMethodName> patternMethods = getMethodCallsForPattern(patternName);
-            if (keepPattern(patternMethods, constructorRequired)) {
+            if (shouldKeepPattern(patternMethods, constructorRequired)) {
                 final int percentage = (int) (patternWithProbablity.getSecond().doubleValue() * 100);
                 typeRecs.add(PatternRecommendation.create(patternName, model.getType(), patternMethods, percentage));
             }
@@ -195,8 +197,8 @@ public final class PatternRecommender {
 
     /**
      * @param patternName
-     *            The interal names, used to identify the pattern inside the
-     *            pattern store.
+     *            The internal pattern name, used to identify the pattern inside
+     *            the pattern store.
      * @return The methods which shall be invoked by the template built from the
      *         given pattern.
      */
@@ -219,7 +221,7 @@ public final class PatternRecommender {
      * @return True, if methods exist and they either contain a constructor or a
      *         constructor is not required.
      */
-    private boolean keepPattern(final List<IMethodName> patternMethods, final boolean constructorRequired) {
+    private boolean shouldKeepPattern(final List<IMethodName> patternMethods, final boolean constructorRequired) {
         if (patternMethods.isEmpty() || constructorRequired && !patternMethods.get(0).isInit()) {
             return false;
         }

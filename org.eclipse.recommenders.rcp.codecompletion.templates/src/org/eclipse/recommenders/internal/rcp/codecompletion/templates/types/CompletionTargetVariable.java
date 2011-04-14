@@ -58,7 +58,7 @@ public final class CompletionTargetVariable {
         this.receiverCalls = ImmutableSet.copyOf(receiverCalls);
         this.documentRegion = Checks.ensureIsNotNull(documentRegion);
         this.needsConstructor = needsConstructor;
-        this.context = context;
+        this.context = Checks.ensureIsNotNull(context);
     }
 
     /**

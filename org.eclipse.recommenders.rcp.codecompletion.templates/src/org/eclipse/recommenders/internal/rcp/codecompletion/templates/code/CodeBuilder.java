@@ -35,7 +35,7 @@ public final class CodeBuilder {
      */
     @Inject
     public CodeBuilder(final MethodCallFormatter methodCallFormatter) {
-        this.methodCallFormatter = methodCallFormatter;
+        this.methodCallFormatter = Checks.ensureIsNotNull(methodCallFormatter);
     }
 
     /**
