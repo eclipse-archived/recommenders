@@ -123,7 +123,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      * @return True, if the computer should try to find proposals for the given
      *         context.
      */
-    private boolean shouldComputeProposalsForContext(final IIntelligentCompletionContext context) {
+    private static boolean shouldComputeProposalsForContext(final IIntelligentCompletionContext context) {
         if (context.getEnclosingMethod() == null) {
             return false;
         }

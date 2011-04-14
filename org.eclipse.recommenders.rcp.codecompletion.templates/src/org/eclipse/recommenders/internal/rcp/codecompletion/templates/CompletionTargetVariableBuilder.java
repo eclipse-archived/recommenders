@@ -75,7 +75,7 @@ public final class CompletionTargetVariableBuilder {
         } else {
             needsConstructor = receiverType.equals(context.getExpectedType());
         }
-        return receiverType == null ? null : buildCompletionTargetVariable();
+        return (receiverType == null) ? null : buildCompletionTargetVariable();
     }
 
     /**
@@ -121,7 +121,7 @@ public final class CompletionTargetVariableBuilder {
     private CompletionTargetVariable buildCompletionTargetVariable() {
         final int variableNameLength = getVariableNameLength();
         final Region region = new Region(replacementOffset - variableNameLength, variableNameLength);
-        return new CompletionTargetVariable(receiverName == null ? "" : receiverName, receiverType, receiverCalls,
+        return new CompletionTargetVariable((receiverName == null) ? "" : receiverName, receiverType, receiverCalls,
                 region, needsConstructor, context);
     }
 

@@ -29,7 +29,7 @@ public final class CodeBuilderTest {
 
     /**
      * Ensures the correct behavior of many of the {@link CodeBuilder}'s
-     * features by giving...
+     * features by giving several different methods to the builder.
      */
     @Test
     public void testBuildCode() {

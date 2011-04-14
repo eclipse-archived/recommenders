@@ -158,13 +158,12 @@ public final class PatternRecommender {
      *            The target variable as given by the context.
      * @return True, if the patterns should definitely contain no constructors.
      */
-    private boolean shallNegateConstructors(final Variable contextVariable) {
+    private static boolean shallNegateConstructors(final Variable contextVariable) {
         return contextVariable != null
                 && (contextVariable.fuzzyIsParameter() || contextVariable.fuzzyIsDefinedByMethodReturn());
     }
 
     /**
-     * @param prefixToken
      * @param constructorRequired
      *            True, if patterns without constructors should be filtered out.
      * @return The most probable patterns regarding the updated model, limited
@@ -177,7 +176,7 @@ public final class PatternRecommender {
             final List<IMethodName> patternMethods = getMethodCallsForPattern(patternName);
             if (shouldKeepPattern(patternMethods, constructorRequired)) {
                 final int percentage = (int) (patternWithProbablity.getSecond().doubleValue() * 100);
-                typeRecs.add(PatternRecommendation.create(patternName, model.getType(), patternMethods, percentage));
+                typeRecs.add(new PatternRecommendation(patternName, model.getType(), patternMethods, percentage));
             }
         }
         return ImmutableSet.copyOf(typeRecs);

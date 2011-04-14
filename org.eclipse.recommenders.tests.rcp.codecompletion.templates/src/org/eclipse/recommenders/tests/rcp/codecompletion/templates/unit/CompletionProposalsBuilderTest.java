@@ -41,8 +41,8 @@ public final class CompletionProposalsBuilderTest {
         final List<PatternRecommendation> patterns = Lists.newLinkedList();
 
         final MethodCall methodCall = UnitTestSuite.getDefaultConstructorCall();
-        patterns.add(PatternRecommendation.create("Pattern 1", methodCall.getInvokedMethod().getDeclaringType(),
-                Lists.newArrayList(methodCall.getInvokedMethod()), 50));
+        patterns.add(new PatternRecommendation("Pattern 1", methodCall.getInvokedMethod().getDeclaringType(), Lists
+                .newArrayList(methodCall.getInvokedMethod()), 50));
 
         final JavaContext javaContext = new JavaContext(null, new Document(), new Position(0), null);
         Assert.assertEquals(1, builder.computeProposals(patterns, javaContext, methodCall.getVariableName()).size());
