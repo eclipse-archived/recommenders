@@ -12,16 +12,15 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import java.util.Set;
 
+import com.google.common.collect.Sets;
+
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
-
-import com.google.common.collect.Sets;
 
 /**
  * Extracts the {@link CompletionTargetVariable} from a given
@@ -101,7 +100,7 @@ public final class CompletionTargetVariableBuilder {
      * the given name indicates a new type, e.g. in <code>Button<^Space></code>.
      */
     private void resolveTypeFromReceiverName() {
-        final Variable resolvedVariable = ((IntelligentCompletionContext) context).findMatchingVariable(receiverName);
+        final Variable resolvedVariable = context.findMatchingVariable(receiverName);
         if (resolvedVariable == null) {
             receiverType = VmTypeName.get(String.format("L%s", receiverName));
             receiverName = "";

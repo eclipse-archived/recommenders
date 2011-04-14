@@ -17,6 +17,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.CompletionTargetVariableBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -38,16 +39,15 @@ public final class CompletionTargetVariableBuilderTest {
         testCompletionTargetVariableBuilder("Button butto = new Button();\nbutto.", "butto", "Button",
                 new Region(29, 6), false);
         testCompletionTargetVariableBuilder("", null, null, new Region(0, 0), false);
+        // testCompletionTargetVariableBuilder("b", "b", null, new Region(0, 1),
+        // false);
     }
 
     @Test
     public void testConstructor() {
         testCompletionTargetVariableBuilder("Button bu", "bu", "Button", new Region(0, 9), true);
         testCompletionTargetVariableBuilder("Button", null, "Button", new Region(0, 6), true);
-        // TODO: CompletionTargetVariableBuilder.resolveTypeFromReceiverName()
-        // uses a cast which will fail due to Mockito.
-        // testCompletionTargetVariableBuilder("Button b", "b", null, new
-        // Region(0, 8), true);
+        testCompletionTargetVariableBuilder("Text", "Text", null, new Region(0, 4), true);
     }
 
     private void testCompletionTargetVariableBuilder(final String code, final String variableName,
@@ -58,10 +58,12 @@ public final class CompletionTargetVariableBuilderTest {
         final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                 .createInvokedVariable(context);
 
-        Assert.assertEquals(variableName == null ? (typeName == null ? "this" : "") : variableName,
-                completionTargetVariable.getName());
-        Assert.assertEquals(typeName == null ? ENCLOSINGTYPE : VmTypeName.get(typeName),
-                completionTargetVariable.getType());
+        final String expectedVariable = variableName == null ? (typeName == null ? "this" : "")
+                : (typeName == null ? "" : variableName);
+        final ITypeName expectedType = typeName == null ? ("Text".equals(variableName) ? VmTypeName.get("L"
+                + variableName) : ENCLOSINGTYPE) : VmTypeName.get(typeName);
+        Assert.assertEquals(expectedVariable, completionTargetVariable.getName());
+        Assert.assertEquals(expectedType, completionTargetVariable.getType());
         Assert.assertEquals(region, completionTargetVariable.getDocumentRegion());
         Assert.assertEquals(needsConstructor, completionTargetVariable.isNeedsConstructor());
     }
@@ -90,6 +92,7 @@ public final class CompletionTargetVariableBuilderTest {
         }
         Mockito.when(originalContext.getDocument()).thenReturn(doc);
         Mockito.when(context.getOriginalContext()).thenReturn(originalContext);
+        Mockito.when(context.findMatchingVariable(variableName)).thenReturn(Variable.create(variableName, null, null));
 
         return context;
     }
@@ -101,10 +104,11 @@ public final class CompletionTargetVariableBuilderTest {
         if (typeName != null) {
             Mockito.when(context.getExpectedType()).thenReturn(VmTypeName.get(typeName));
         }
+        Mockito.when(context.findMatchingVariable(variableName)).thenReturn(null);
         final Statement node = Mockito.mock(Statement.class);
-        Mockito.when(node.toString()).thenReturn(
-                "<test:" + (typeName == null ? code : VmTypeName.get(typeName).getClassName())
-                        + (variableName != null ? " " + variableName : "") + ">");
+        final String bla = "Text".equals(variableName) ? variableName : ((typeName == null ? code : VmTypeName.get(
+                typeName).getClassName()) + (variableName != null ? " " + variableName : ""));
+        Mockito.when(node.toString()).thenReturn("<test:" + bla + ">");
         Mockito.when(context.getCompletionNode()).thenReturn(node);
         return context;
     }

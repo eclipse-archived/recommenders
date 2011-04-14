@@ -15,8 +15,11 @@ package org.eclipse.recommenders.commons.utils.names;
  * package path.
  */
 public interface IPackageName extends IName {
-    // offers basically not more than a plain getIdentifier...
 
-    // REVIEW: add to API
-    // boolean isDefaultPackage()
+	/**
+	 * @return True, if the package is the default package, i.e. its identifier
+	 *         is empty.
+	 */
+	public boolean isDefaultPackage();
+
 }
