@@ -25,7 +25,6 @@ public class BayesianNetworkCallsModelStore extends CallsModelStore {
     protected IObjectMethodCallsNet loadNetwork(final ITypeName name) {
         try {
             final BayesianNetwork network = loader.loadObjectForTypeName(name, BayesianNetwork.class);
-            network.restore();
             return new SmileNetWrapper(name, network);
         } catch (final IOException x) {
             throw throwUnhandledException(x);

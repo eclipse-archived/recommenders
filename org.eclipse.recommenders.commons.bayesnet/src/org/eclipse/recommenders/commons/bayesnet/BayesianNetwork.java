@@ -23,9 +23,11 @@ public class BayesianNetwork implements Serializable {
     private static final long serialVersionUID = 8910268803395952578L;
 
     private final Collection<Node> nodes = new LinkedList<Node>();
+    private transient boolean initialized = false;
     private transient HashMap<String, Node> nodeById = new HashMap<String, Node>();
 
     public void addNode(final Node node) {
+        initialize();
         if (nodeById.containsKey(node.getIdentifier())) {
             throw new IllegalArgumentException(
                     "A node with that identifier already exists in this network. Identifier: " + node.getIdentifier());
@@ -35,13 +37,13 @@ public class BayesianNetwork implements Serializable {
         this.nodeById.put(node.getIdentifier(), node);
     }
 
-    public void restore() {
-        nodeById = new HashMap<String, Node>();
-        for (final Node node : nodes) {
-            nodeById.put(node.getIdentifier(), node);
-        }
-        for (final Node node : nodes) {
-            node.restore(this);
+    private void initialize() {
+        if (!initialized) {
+            nodeById = new HashMap<String, Node>();
+            for (final Node node : nodes) {
+                nodeById.put(node.getIdentifier(), node);
+            }
+            initialized = true;
         }
     }
 
@@ -56,6 +58,7 @@ public class BayesianNetwork implements Serializable {
     }
 
     public Node getNode(final String nodeId) {
+        initialize();
         return nodeById.get(nodeId);
     }
 

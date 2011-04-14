@@ -19,14 +19,10 @@ public class Node implements Serializable {
 
     private static final long serialVersionUID = 6120294183622148914L;
 
-    private String identifier;
-    private String[] parentIds;
-    private transient Node[] parents;
+    private final String identifier;
+    private Node[] parents;
     private String[] states;
     private double[] probabilities;
-
-    protected Node() {
-    }
 
     public Node(final String identifier) {
         this.identifier = identifier;
@@ -42,18 +38,13 @@ public class Node implements Serializable {
 
     public void setParents(final Node[] parents) {
         this.parents = parents;
-        this.parentIds = new String[parents.length];
-        for (int i = 0; i < parents.length; i++) {
-            this.parentIds[i] = parents[i].getIdentifier();
-        }
     }
 
     public int numberOfParents() {
-        if (parentIds == null) {
+        if (parents == null) {
             return 0;
-        } else {
-            return parentIds.length;
         }
+        return parents.length;
     }
 
     public Node[] getParents() {
@@ -99,17 +90,6 @@ public class Node implements Serializable {
 
     public double[] getProbabilities() {
         return probabilities;
-    }
-
-    public void restore(final BayesianNetwork network) {
-        if (parentIds == null) {
-            this.parents = null;
-        } else {
-            this.parents = new Node[parentIds.length];
-            for (int i = 0; i < parentIds.length; i++) {
-                this.parents[i] = network.getNode(parentIds[i]);
-            }
-        }
     }
 
     @Override
