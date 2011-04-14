@@ -78,6 +78,7 @@ public final class PatternRecommenderTest {
 
         Mockito.when(model.getType()).thenReturn(receiverType);
         Mockito.when(model.getPatternsNode()).thenReturn(node);
+        Mockito.when(model.getPatternsWithProbability()).thenReturn(patterns);
         Mockito.when(model.getRecommendedMethodCalls(Matchers.anyDouble())).thenReturn(getRecommendedMethods());
         return model;
     }

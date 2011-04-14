@@ -229,7 +229,7 @@
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.chain</module>
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.templates</module>
-		<!-- module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module-->
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module>
 		
 		<module>org.eclipse.recommenders.rcp.utils</module>
 		<module>org.eclipse.recommenders.tests.commons</module>

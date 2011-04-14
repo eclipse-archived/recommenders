@@ -218,12 +218,11 @@ public class ObjectMethodCallsNet implements IObjectMethodCallsNet {
 
     @Override
     public void setPattern(final String patternName) {
-        patternsNode.setPattern(patternName);
-
+        getPatternsNode().setPattern(patternName);
     }
 
     @Override
     public List<Tuple<String, Double>> getPatternsWithProbability() {
-        return patternsNode.getPatternsWithProbability();
+        return getPatternsNode().getPatternsWithProbability();
     }
 }
