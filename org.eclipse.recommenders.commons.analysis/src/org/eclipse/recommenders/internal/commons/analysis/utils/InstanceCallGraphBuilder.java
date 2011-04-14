@@ -40,6 +40,7 @@ import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.ipa.summaries.BypassClassTargetSelector;
 import com.ibm.wala.ipa.summaries.BypassMethodTargetSelector;
 import com.ibm.wala.ipa.summaries.XMLMethodSummaryReader;
+import com.ibm.wala.util.MonitorUtil.IProgressMonitor;
 import com.ibm.wala.util.strings.Atom;
 
 public class InstanceCallGraphBuilder implements ICallGraphBuilder {
@@ -146,7 +147,32 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
     @Override
     public void buildCallGraph() {
         try {
-            callGraph = callGraphBuilder.makeCallGraph(options);
+            callGraph = callGraphBuilder.makeCallGraph(options, new IProgressMonitor() {
+
+                InterruptsCheckingProgressMonitor delegate = new InterruptsCheckingProgressMonitor();
+
+                @Override
+                public void worked(int units) {
+
+                }
+
+                @Override
+                public boolean isCanceled() {
+                    return delegate.isCanceled();
+                }
+
+                @Override
+                public void done() {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void beginTask(String task, int totalWork) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
         } catch (final Exception e) {
             throw Throws.throwUnhandledException(e);
         }

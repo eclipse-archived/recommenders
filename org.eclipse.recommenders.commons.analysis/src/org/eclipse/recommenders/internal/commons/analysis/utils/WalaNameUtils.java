@@ -35,11 +35,12 @@ import com.ibm.wala.types.Selector;
 import com.ibm.wala.types.TypeReference;
 
 /**
- * Contains utility methods that convert wala method (and type) names to their corresponding recommenders method (and
- * type) name - and maybe reverse.
+ * Contains utility methods that convert wala method (and type) names to their
+ * corresponding recommenders method (and type) name - and maybe reverse.
  * <p>
- * Conversion methods that convert wala names to Strings directly may be added over time. But then use and extend
- * {@link Names} for doing all the string works.
+ * Conversion methods that convert wala names to Strings directly may be added
+ * over time. But then use and extend {@link Names} for doing all the string
+ * works.
  * 
  * @see Names
  */

@@ -66,13 +66,27 @@ public class TypeDeclaration implements INamedCodeElement {
     public void accept(final CompilationUnitVisitor v) {
 
         if (v.visit(this)) {
-            for (final TypeDeclaration type : memberTypes) {
-                type.accept(v);
-            }
-            for (final MethodDeclaration method : methods) {
-                method.accept(v);
-            }
+
+            if (memberTypes != null)
+                for (final TypeDeclaration type : memberTypes) {
+                    type.accept(v);
+                }
+            if (methods != null)
+                for (final MethodDeclaration method : methods) {
+                    method.accept(v);
+                }
         }
+    }
+
+    public void clearEmptySets() {
+        if (interfaces.isEmpty())
+            interfaces = null;
+        if (fields.isEmpty())
+            fields = null;
+        if (methods.isEmpty())
+            methods = null;
+        if (memberTypes.isEmpty())
+            memberTypes = null;
     }
 
     @Override

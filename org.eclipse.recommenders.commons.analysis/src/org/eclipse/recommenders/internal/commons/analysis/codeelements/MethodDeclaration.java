@@ -105,6 +105,13 @@ public class MethodDeclaration implements INamedCodeElement {
         this.variables = variables;
     }
 
+    public void clearEmptySets() {
+        if (nestedTypes.isEmpty())
+            nestedTypes = null;
+        if (objects.isEmpty())
+            objects = null;
+    }
+
     public synchronized Set<Variable> getVariables() {
         if (variables == null) {
             initVariables();
@@ -125,15 +132,18 @@ public class MethodDeclaration implements INamedCodeElement {
     @Override
     public void accept(final CompilationUnitVisitor v) {
         if (v.visit(this)) {
-            for (final TypeDeclaration nestedType : nestedTypes) {
-                nestedType.accept(v);
-            }
-            for (final ObjectInstanceKey obj : objects) {
-                obj.accept(v);
-            }
-            for (final Variable var : getVariables()) {
-                var.accept(v);
-            }
+            if (nestedTypes != null)
+                for (final TypeDeclaration nestedType : nestedTypes) {
+                    nestedType.accept(v);
+                }
+            if (objects != null)
+                for (final ObjectInstanceKey obj : objects) {
+                    obj.accept(v);
+                }
+            if (variables != null)
+                for (final Variable var : getVariables()) {
+                    var.accept(v);
+                }
         }
 
     }

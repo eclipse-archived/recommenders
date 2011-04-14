@@ -54,7 +54,8 @@ import com.ibm.wala.types.TypeReference;
 
 public class WalaAnalysisUtils {
     /**
-     * Checks every get/put field instruction whether it accesses a (non-static) field on this.
+     * Checks every get/put field instruction whether it accesses a (non-static)
+     * field on this.
      */
     private static final class ThisFieldAccessVisitor extends Visitor {
         public boolean usesFields;
@@ -86,8 +87,9 @@ public class WalaAnalysisUtils {
     }
 
     /**
-     * Creates an almost empty method stub for the given method. It returns an empty method body in the case of
-     * void-methods and a two-instructions IR in the case that method returns something else like:
+     * Creates an almost empty method stub for the given method. It returns an
+     * empty method body in the case of void-methods and a two-instructions IR
+     * in the case that method returns something else like:
      * 
      * <pre>
      * ... &lt;T&gt; method(...)
@@ -97,7 +99,8 @@ public class WalaAnalysisUtils {
      * }
      * </pre>
      * 
-     * Note that no constructor call is used - just an allocation is used to enforce WALA to create a new instance key.
+     * Note that no constructor call is used - just an allocation is used to
+     * enforce WALA to create a new instance key.
      */
     public static IR createStub(final IMethod method) {
         final SSAInstructionFactory instructionFactory = Language.JAVA.instructionFactory();
@@ -138,7 +141,11 @@ public class WalaAnalysisUtils {
         final int local = target.isStatic() ? ref.getNumberOfParameters() + 1 : ref.getNumberOfParameters() + 2;
         //
         final NewSiteReference site = NewSiteReferenceForMethodReturn.create(target.isStatic() ? 1 : 2 /*
-                                                                                                        * why 2 ? ? ?
+                                                                                                        * why
+                                                                                                        * 2
+                                                                                                        * ?
+                                                                                                        * ?
+                                                                                                        * ?
                                                                                                         */, ret,
                 target.getReference());
         sum.addStatement(ret.isArrayType() ? instructionFactory.NewInstruction(local, site, new int[0])
@@ -178,8 +185,9 @@ public class WalaAnalysisUtils {
     }
 
     /**
-     * Returns all fields that are accessible from internal, i.e., from {@code this}. This includes all private fields
-     * declared in the given clazz and all non-private fields declared in the parents of clazz.
+     * Returns all fields that are accessible from internal, i.e., from
+     * {@code this}. This includes all private fields declared in the given
+     * clazz and all non-private fields declared in the parents of clazz.
      */
     public static List<IField> getInternalAccessibleFields(final IClass clazz) throws ClassHierarchyException {
         final LinkedList<IField> accessibleFields = new LinkedList<IField>();
@@ -202,8 +210,9 @@ public class WalaAnalysisUtils {
     }
 
     /**
-     * Find local names for the given variable - if exist (anonymous calls for instance using call chaining do not have
-     * a local name. Also constructor calls do not have a local name.
+     * Find local names for the given variable - if exist (anonymous calls for
+     * instance using call chaining do not have a local name. Also constructor
+     * calls do not have a local name.
      */
     public static HashSet<String> getReceiverReferences(final IR ir, final SSAAbstractInvokeInstruction instruction) {
         final HashSet<String> res = new HashSet<String>();
@@ -264,8 +273,8 @@ public class WalaAnalysisUtils {
     }
 
     /**
-     * Returns true if the given class belongs to the primordinal (determined by checking the
-     * {@link ClassLoaderReference}.
+     * Returns true if the given class belongs to the primordinal (determined by
+     * checking the {@link ClassLoaderReference}.
      * 
      * @param clazz
      *            the class to check
@@ -296,9 +305,10 @@ public class WalaAnalysisUtils {
     }
 
     /**
-     * Returns {@code true} iff inside this IR no (non-static) fields of {@code this} (i.e. the class definition that
-     * declared the method whos IR we are examining) are accessed or a Reference on this is given as argument to any
-     * other object.
+     * Returns {@code true} iff inside this IR no (non-static) fields of
+     * {@code this} (i.e. the class definition that declared the method whos IR
+     * we are examining) are accessed or a Reference on this is given as
+     * argument to any other object.
      * 
      * @param ir
      * @return

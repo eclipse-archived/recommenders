@@ -40,35 +40,6 @@ public class RecommendersEntrypoint extends DefaultEntrypoint {
         this(method, method.getDeclaringClass().getClassHierarchy());
     }
 
-    @Override
-    public SSAAbstractInvokeInstruction addCall(final AbstractRootMethod m) {
-        final int[] paramValues = new int[getNumberOfParameters()];
-        final CallSiteReference site = makeSite(0);
-        if (site == null) {
-            return null;
-        }
-        for (int j = 0; j < paramValues.length; j++) {
-            final int paramValue = paramValues[j];
-            if (isThisParameter(site, j)) {
-                final TypeReference typeRef = getParameterTypes(paramValue)[0];
-                final NewSiteReference thisNewSiteRef = NewSiteReferenceForThis.create(m.getStatements().length,
-                        typeRef);
-                m.addNewInstruction(paramValue, thisNewSiteRef);
-            }
-            paramValues[j] = makeArgument(m, j);
-            if (paramValue == -1) {
-                // there was a problem
-                return null;
-            }
-        }
-
-        return m.addInvocation(paramValues, site);
-    }
-
-    private boolean isThisParameter(final CallSiteReference site, final int j) {
-        return j == 0 && !site.isStatic();
-    }
-
     /**
      * Creates allocation sites for all non-primitive parameters. If a new
      * allocation site is created a call to its recommenders-initializer is

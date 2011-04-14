@@ -25,8 +25,8 @@ public interface ICallGraphBuilder {
     void buildCallGraph();
 
     /*
-     * XXX let's try to work without the wala callgraph builder directly. almost everything needed is the callgraph and
-     * the pointer analysis.
+     * XXX let's try to work without the wala callgraph builder directly. almost
+     * everything needed is the callgraph and the pointer analysis.
      * 
      * CallGraphBuilder getCallGraphBuilder();
      */

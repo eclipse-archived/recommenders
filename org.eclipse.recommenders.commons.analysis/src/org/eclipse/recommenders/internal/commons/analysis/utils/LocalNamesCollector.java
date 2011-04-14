@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.recommenders.commons.utils.Throws;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.ibm.wala.ssa.IR;
@@ -90,6 +92,9 @@ public class LocalNamesCollector {
 
     private void collectLocalValueNames() {
         for (final Iterator<SSAInstruction> it = ir.iterateAllInstructions(); it.hasNext();) {
+            if (Thread.currentThread().isInterrupted()) {
+                Throws.throwCancelationException();
+            }
             final SSAInstruction instr = it.next();
             {
                 // check for field access

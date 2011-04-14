@@ -63,6 +63,16 @@ public class ObjectInstanceKey implements ICodeElement {
         return res;
     }
 
+    public void clearEmptySets() {
+        if (parameterCallSites.isEmpty())
+            parameterCallSites = null;
+        if (receiverCallSites.isEmpty())
+            receiverCallSites = null;
+        if (names.isEmpty())
+            names = null;
+
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);

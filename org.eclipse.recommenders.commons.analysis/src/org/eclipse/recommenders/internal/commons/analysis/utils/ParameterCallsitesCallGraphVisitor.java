@@ -106,8 +106,9 @@ public class ParameterCallsitesCallGraphVisitor extends SSAInstruction.Visitor i
             final String argumentName = curVariableNameHelper.getName(use);
             final Set<InstanceKey> usesForArgAtIndexI = getFilteredArguments(instruction, targetMethod, use);
             /*
-             * wala uses 'this' as first argument to a method call. I would like to keep method arguments starting with
-             * '0'. That's why we decrease the argumentIndex by one here.
+             * wala uses 'this' as first argument to a method call. I would like
+             * to keep method arguments starting with '0'. That's why we
+             * decrease the argumentIndex by one here.
              */
             final int realArgumentIndex = argIndex - 1;
             final WalaParameterCallsite parameterCallSite = WalaParameterCallsite.create(curMethod, argumentName,

@@ -49,8 +49,10 @@ public class RecommendersInits {
         return methodRef.getName().toString().equals(NAME_RECOMMENDERS_INIT);
     }
 
-    // public static IMethod createRecommendersSmallInit(final IClass receiver, final MethodReference ref) {
-    // final SSAInstructionFactory instructionFactory = Language.JAVA.instructionFactory();
+    // public static IMethod createRecommendersSmallInit(final IClass receiver,
+    // final MethodReference ref) {
+    // final SSAInstructionFactory instructionFactory =
+    // Language.JAVA.instructionFactory();
     // final MethodSummary sum = new MethodSummary(ref);
     // if (receiver.isArrayClass()) {
     // return new SummarizedMethod(ref, sum, receiver);
@@ -68,8 +70,10 @@ public class RecommendersInits {
     // continue;
     // }
     // final NewSiteReference site = NewSiteReference.make(pc++, fieldRef);
-    // final SSANewInstruction newInstruction = instructionFactory.NewInstruction(local, site);
-    // final SSAPutInstruction putInstruction = instructionFactory.PutInstruction(1, local, f.getReference());
+    // final SSANewInstruction newInstruction =
+    // instructionFactory.NewInstruction(local, site);
+    // final SSAPutInstruction putInstruction =
+    // instructionFactory.PutInstruction(1, local, f.getReference());
     // sum.addStatement(newInstruction);
     // if (f.getFieldTypeReference().isReferenceType()) {
     // // sum.addStatement(SSAInstructionFactory.InvokeInstruction(new
@@ -88,8 +92,11 @@ public class RecommendersInits {
                 Dispatch.SPECIAL);
     }
 
-    // public static IMethod createRecommendersInitThatInitalizesEnclosingFieldReferencesToo(final CGNode caller,
-    // final CallSiteReference call, final IClass receiverType, final SSAPropagationCallGraphBuilder builder) {
+    // public static IMethod
+    // createRecommendersInitThatInitalizesEnclosingFieldReferencesToo(final
+    // CGNode caller,
+    // final CallSiteReference call, final IClass receiverType, final
+    // SSAPropagationCallGraphBuilder builder) {
     // ensureIsNotNull(caller);
     // ensureIsNotNull(call);
     // ensureIsNotNull(receiverType);
@@ -112,7 +119,8 @@ public class RecommendersInits {
     // //
     // // create a new key for this field and add some pseudo new/put
     // // operations to the method stub
-    // final Tuple<SSANewInstruction, SSAPutInstruction> instr = createKeyForField(programCounter++, field,
+    // final Tuple<SSANewInstruction, SSAPutInstruction> instr =
+    // createKeyForField(programCounter++, field,
     // builder, caller, localValuePointer);
     // sum.addStatement(instr.getFirst());
     // sum.addStatement(instr.getSecond());
@@ -125,15 +133,18 @@ public class RecommendersInits {
     // continue;
     // }
     // if (ClassUtils.isNestedClass(receiverType, fieldTypeClass)) {
-    // final CallSiteReference newRecommendersInitCall = makeRecommendersInit(field.getFieldTypeReference());
+    // final CallSiteReference newRecommendersInitCall =
+    // makeRecommendersInit(field.getFieldTypeReference());
     // final int[] params = new int[] { localValuePointer };
-    // sum.addStatement(factory.InvokeInstruction(params, localValuePointer + 1, newRecommendersInitCall));
+    // sum.addStatement(factory.InvokeInstruction(params, localValuePointer + 1,
+    // newRecommendersInitCall));
     // }
     // }
     // sum.addStatement(factory.ReturnInstruction());
     // return new SummarizedMethod(call.getDeclaredTarget(), sum, receiverType);
     // // }
-    // private static Collection<IField> getAllAccessibleFields(final IClass baseclass) {
+    // private static Collection<IField> getAllAccessibleFields(final IClass
+    // baseclass) {
     // final List<IField> accessibleFields = Lists.newLinkedList();
     // for (final IField field : baseclass.getAllFields()) {
     // if (field.getDeclaringClass() == baseclass) {
@@ -144,9 +155,12 @@ public class RecommendersInits {
     // }
     // return accessibleFields;
     // }
-    // public static IMethod createRecommendersInit2(final CGNode caller, final IClass receiver,
-    // final MethodReference ref, final SSAPropagationCallGraphBuilder builder) {
-    // final SSAInstructionFactory instructionFactory = Language.JAVA.instructionFactory();
+    // public static IMethod createRecommendersInit2(final CGNode caller, final
+    // IClass receiver,
+    // final MethodReference ref, final SSAPropagationCallGraphBuilder builder)
+    // {
+    // final SSAInstructionFactory instructionFactory =
+    // Language.JAVA.instructionFactory();
     // final MethodSummary sum = new MethodSummary(ref);
     // if (receiver.isArrayClass()) {
     // return new SummarizedMethod(ref, sum, receiver);
@@ -167,12 +181,15 @@ public class RecommendersInits {
     // // create a resolved new site instance
     // final NewSiteReference site = NewSiteReference.make(pc++, fieldRef);
     // builder.getInstanceKeyForAllocation(caller, site);
-    // final SSANewInstruction newInstruction = instructionFactory.NewInstruction(local, site);
-    // final SSAPutInstruction putInstruction = instructionFactory.PutInstruction(1, local, f.getReference());
+    // final SSANewInstruction newInstruction =
+    // instructionFactory.NewInstruction(local, site);
+    // final SSAPutInstruction putInstruction =
+    // instructionFactory.PutInstruction(1, local, f.getReference());
     // sum.addStatement(newInstruction);
     // if (f.getFieldTypeReference().isReferenceType()
     // && !WalaAnalysisUtils.isPrimordial(f.getReference().getFieldType())) {
-    // sum.addStatement(instructionFactory.InvokeInstruction(new int[] { local }, local + 1,
+    // sum.addStatement(instructionFactory.InvokeInstruction(new int[] { local
+    // }, local + 1,
     // RecommendersInits.makeRecommendersInit(f.getFieldTypeReference())));
     // }
     // sum.addStatement(putInstruction);

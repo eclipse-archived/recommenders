@@ -18,8 +18,9 @@ import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 
 /**
- * Returns all declared (instance and static) fields of the given class as well as every public OR protected field
- * declared in any superclass of the given base class.
+ * Returns all declared (instance and static) fields of the given class as well
+ * as every public OR protected field declared in any superclass of the given
+ * base class.
  */
 public class AllAccessibleFieldsSelector implements IFieldsSelector {
     @Override
