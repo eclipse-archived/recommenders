@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) 2010 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */
 package org.eclipse.recommenders.internal.commons.analysis.analyzers;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -14,23 +24,24 @@ import com.ibm.wala.classLoader.IClass;
 public class EmptySetsClearerCompilationUnitFinalizer implements ICompilationUnitFinalizer {
 
     @Override
-    public void finalizeClass(CompilationUnit compilationUnit, IClass exampleClass, IProgressMonitor monitor) {
+    public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass,
+            final IProgressMonitor monitor) {
         compilationUnit.accept(new CompilationUnitVisitor() {
 
             @Override
-            public boolean visit(TypeDeclaration type) {
+            public boolean visit(final TypeDeclaration type) {
                 type.clearEmptySets();
                 return true;
             }
 
             @Override
-            public boolean visit(MethodDeclaration method) {
+            public boolean visit(final MethodDeclaration method) {
                 method.clearEmptySets();
                 return true;
             }
 
             @Override
-            public boolean visit(ObjectInstanceKey objectInstanceKey) {
+            public boolean visit(final ObjectInstanceKey objectInstanceKey) {
                 objectInstanceKey.clearEmptySets();
                 return false;
             }
