@@ -29,7 +29,7 @@ public class Throws {
         throw new IllegalStateException(message);
     }
 
-    public static IllegalStateException throwIIllegalStateException(final String message, final Object... args) {
+    public static IllegalStateException throwIllegalStateException(final String message, final Object... args) {
         final String formattedMessage = format(message, args);
         throw new IllegalStateException(formattedMessage);
     }
