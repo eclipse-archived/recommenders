@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayes;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureEquals;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -121,7 +122,9 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     @Override
     public void setCalled(final IMethodName calledMethod) {
         final NodeWrapper nodeWrapper = methodNodes.get(calledMethod);
-        nodeWrapper.observeState("True");
+        if (nodeWrapper != null) {
+            nodeWrapper.observeState("True");
+        }
     }
 
     @Override
@@ -221,6 +224,32 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     @Override
     public Collection<IMethodName> getMethodCalls() {
         return new LinkedList<IMethodName>(methodNodes.keySet());
+    }
+
+    private void printNetworkState() {
+        System.out.println("---- Context Node ----");
+        printStates(contextNode);
+        System.out.println("---- Pattern Node ----");
+        printStates(patternNode);
+        System.out.println("---- Probabilities for Calls ----");
+        for (final IMethodName method : methodNodes.keySet()) {
+            final NodeWrapper nodeWrapper = methodNodes.get(method);
+            final double probability = nodeWrapper.getProbability()[nodeWrapper.getStateIndex("True")];
+            System.out.printf("%.4f\t%s\n", probability, method.getIdentifier());
+        }
+    }
+
+    private void printStates(final NodeWrapper wrapper) {
+        final List<Tuple<String, Double>> statesWithProbability = wrapper.getStatesWithProbability();
+        Collections.sort(statesWithProbability, new Comparator<Tuple<String, Double>>() {
+            @Override
+            public int compare(final Tuple<String, Double> o1, final Tuple<String, Double> o2) {
+                return o2.getSecond().compareTo(o1.getSecond());
+            }
+        });
+        for (final Tuple<String, Double> tuple : statesWithProbability) {
+            System.out.printf("%.4f\t%s\n", tuple.getSecond(), tuple.getFirst());
+        }
     }
 
 }
