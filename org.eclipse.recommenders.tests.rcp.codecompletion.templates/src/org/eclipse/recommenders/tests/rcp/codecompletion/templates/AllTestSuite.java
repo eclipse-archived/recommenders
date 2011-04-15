@@ -16,6 +16,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+/**
+ * Suite for running both test systems at once, the JUnit tests and the UI tests
+ * driven by SWTBot.
+ */
 @RunWith(Suite.class)
 @SuiteClasses({ UnitTestSuite.class, UiTestSuite.class })
 public class AllTestSuite {

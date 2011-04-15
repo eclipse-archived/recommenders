@@ -32,6 +32,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
@@ -69,8 +70,8 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     @Inject
     public TemplatesCompletionProposalComputer(final PatternRecommender patternRecommender,
             final CodeBuilder codeBuilder, final IntelligentCompletionContextResolver contextResolver) {
-        this.patternRecommender = patternRecommender;
-        this.contextResolver = contextResolver;
+        this.patternRecommender = Checks.ensureIsNotNull(patternRecommender);
+        this.contextResolver = Checks.ensureIsNotNull(contextResolver);
         initializeProposalBuilder(codeBuilder);
         initializeTemplateContextType();
     }
@@ -118,11 +119,11 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
 
     /**
      * @param context
-     *            The context from where the completion request was invoked.
+     *            The context from which the completion request was invoked.
      * @return True, if the computer should try to find proposals for the given
      *         context.
      */
-    private boolean shouldComputeProposalsForContext(final IIntelligentCompletionContext context) {
+    private static boolean shouldComputeProposalsForContext(final IIntelligentCompletionContext context) {
         if (context.getEnclosingMethod() == null) {
             return false;
         }
@@ -182,6 +183,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
 
     @Override
     public void sessionStarted() {
+        // This particular event is not of interest for us.
     }
 
     @Override
@@ -197,5 +199,6 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
 
     @Override
     public void sessionEnded() {
+        // This particular event is not of interest for us.
     }
 }

@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.parent</artifactId>
+		<groupId>org.eclipse.recommenders</groupId>
 		<version>0.2.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -15,7 +15,6 @@
 		<emma.filter>+org.eclipse.recommenders.internal.rcp.codecompletion.templates.*,+org.eclipse.recommenders.rcp.codecompletion.templates.*</emma.filter>
 		<eclemma.instrument.bundles>org.eclipse.recommenders.rcp.codecompletion.templates</eclemma.instrument.bundles>
 	</properties>
-	
 	<profiles>
 		<profile>
 			<id>ui-tests</id>

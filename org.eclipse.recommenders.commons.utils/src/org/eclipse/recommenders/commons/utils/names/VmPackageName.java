@@ -42,6 +42,11 @@ public class VmPackageName implements IPackageName {
         return identifier;
     }
 
+	@Override
+	public boolean isDefaultPackage() {
+		return getIdentifier().isEmpty();
+	}
+
     public int compareTo(final IName o) {
         return getIdentifier().compareTo(o.getIdentifier());
     }
