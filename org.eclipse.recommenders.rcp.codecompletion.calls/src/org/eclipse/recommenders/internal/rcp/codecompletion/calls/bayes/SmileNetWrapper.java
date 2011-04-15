@@ -36,181 +36,203 @@ import com.google.common.collect.Sets;
 
 public class SmileNetWrapper implements IObjectMethodCallsNet {
 
-    private final BayesianNetwork bayesNetwork;
-    private final ITypeName typeName;
-    private Network smileNetwork;
-    private NodeWrapper contextNode;
-    private NodeWrapper patternNode;
-    private final HashMap<VmMethodName, NodeWrapper> methodNodes;
-    private HashMap<String, NodeWrapper> nodeMapping;
-    // TODO Remove availability node
-    private NodeWrapper availabilityNode;
+	private final BayesianNetwork bayesNetwork;
+	private final ITypeName typeName;
+	private Network smileNetwork;
+	private NodeWrapper contextNode;
+	private NodeWrapper patternNode;
+	private final HashMap<VmMethodName, NodeWrapper> methodNodes;
+	private HashMap<String, NodeWrapper> nodeMapping;
 
-    public SmileNetWrapper(final ITypeName typeName, final BayesianNetwork bayesNetwork) {
-        this.typeName = typeName;
-        this.bayesNetwork = bayesNetwork;
-        methodNodes = new HashMap<VmMethodName, NodeWrapper>();
+	// TODO Remove availability node
+	// private NodeWrapper availabilityNode;
 
-        initializeSmileNetwork();
-    }
+	public SmileNetWrapper(final ITypeName typeName,
+			final BayesianNetwork bayesNetwork) {
+		this.typeName = typeName;
+		this.bayesNetwork = bayesNetwork;
+		methodNodes = new HashMap<VmMethodName, NodeWrapper>();
 
-    private void initializeSmileNetwork() {
-        smileNetwork = new Network();
-        initializeNodes();
-        initializeArcs();
-        initializeProbabilities();
-        availabilityNode.observeState("true");
-    }
+		initializeSmileNetwork();
+	}
 
-    private void initializeNodes() {
-        nodeMapping = new HashMap<String, NodeWrapper>();
-        final Collection<Node> nodes = bayesNetwork.getNodes();
-        for (final Node node : nodes) {
-            if (node.getIdentifier().equalsIgnoreCase("context")) {
-                contextNode = new NodeWrapper(node, smileNetwork);
-                nodeMapping.put(node.getIdentifier(), contextNode);
-            } else if (node.getIdentifier().equalsIgnoreCase("Patterns")) {
-                patternNode = new NodeWrapper(node, smileNetwork);
-                nodeMapping.put(node.getIdentifier(), patternNode);
-            } else if (node.getIdentifier().equals("availability")) {
-                availabilityNode = new NodeWrapper(node, smileNetwork);
-                nodeMapping.put(node.getIdentifier(), availabilityNode);
-            } else {
-                final NodeWrapper methodNode = initializeMethodNode(node);
-                nodeMapping.put(node.getIdentifier(), methodNode);
-            }
-        }
-    }
+	private void initializeSmileNetwork() {
+		smileNetwork = new Network();
+		initializeNodes();
+		initializeArcs();
+		initializeProbabilities();
+		// availabilityNode.observeState("true");
+	}
 
-    private NodeWrapper initializeMethodNode(final Node node) {
-        final NodeWrapper nodeWrapper = new NodeWrapper(node, smileNetwork);
-        methodNodes.put(VmMethodName.get(node.getIdentifier()), nodeWrapper);
-        return nodeWrapper;
-    }
+	private void initializeNodes() {
+		nodeMapping = new HashMap<String, NodeWrapper>();
+		final Collection<Node> nodes = bayesNetwork.getNodes();
+		for (final Node node : nodes) {
+			if (node.getIdentifier().equalsIgnoreCase("calling context")) {
+				contextNode = new NodeWrapper(node, smileNetwork);
+				nodeMapping.put(node.getIdentifier(), contextNode);
+			} else if (node.getIdentifier().equalsIgnoreCase("call groups")) {
+				patternNode = new NodeWrapper(node, smileNetwork);
+				nodeMapping.put(node.getIdentifier(), patternNode);
+				// } else if (node.getIdentifier().equals("availability")) {
+				// availabilityNode = new NodeWrapper(node, smileNetwork);
+				// nodeMapping.put(node.getIdentifier(), availabilityNode);
+			} else {
+				final NodeWrapper methodNode = initializeMethodNode(node);
+				nodeMapping.put(node.getIdentifier(), methodNode);
+			}
+		}
+	}
 
-    private void initializeArcs() {
-        final Collection<Node> nodes = bayesNetwork.getNodes();
-        for (final Node node : nodes) {
-            final NodeWrapper nodeWrapper = nodeMapping.get(node.getIdentifier());
-            final Node[] parents = node.getParents();
-            for (int i = 0; i < parents.length; i++) {
-                final NodeWrapper parentWrapper = nodeMapping.get(parents[i].getIdentifier());
-                smileNetwork.addArc(parentWrapper.getHandle(), nodeWrapper.getHandle());
-            }
-        }
-    }
+	private NodeWrapper initializeMethodNode(final Node node) {
+		final NodeWrapper nodeWrapper = new NodeWrapper(node, smileNetwork);
+		String methodeName = node.getIdentifier();
+		methodNodes.put(VmMethodName.get(methodeName), nodeWrapper);
+		return nodeWrapper;
+	}
 
-    private void initializeProbabilities() {
-        final Collection<Node> nodes = bayesNetwork.getNodes();
-        for (final Node node : nodes) {
-            final NodeWrapper nodeWrapper = nodeMapping.get(node.getIdentifier());
-            smileNetwork.setNodeDefinition(nodeWrapper.getHandle(), node.getProbabilities());
-        }
-    }
+	private void initializeArcs() {
+		final Collection<Node> nodes = bayesNetwork.getNodes();
+		for (final Node node : nodes) {
+			final NodeWrapper nodeWrapper = nodeMapping.get(node
+					.getIdentifier());
+			final Node[] parents = node.getParents();
+			if (parents == null)
+				continue;
+			for (int i = 0; i < parents.length; i++) {
+				final NodeWrapper parentWrapper = nodeMapping.get(parents[i]
+						.getIdentifier());
+				smileNetwork.addArc(parentWrapper.getHandle(),
+						nodeWrapper.getHandle());
+			}
+		}
+	}
 
-    @Override
-    public ITypeName getType() {
-        return typeName;
-    }
+	private void initializeProbabilities() {
+		final Collection<Node> nodes = bayesNetwork.getNodes();
+		for (final Node node : nodes) {
+			final NodeWrapper nodeWrapper = nodeMapping.get(node
+					.getIdentifier());
+			smileNetwork.setNodeDefinition(nodeWrapper.getHandle(),
+					node.getProbabilities());
+		}
+	}
 
-    @Override
-    public void setCalled(final IMethodName calledMethod) {
-        final NodeWrapper nodeWrapper = methodNodes.get(calledMethod);
-        nodeWrapper.observeState("true");
-    }
+	@Override
+	public ITypeName getType() {
+		return typeName;
+	}
 
-    @Override
-    public void updateBeliefs() {
-        smileNetwork.updateBeliefs();
-    }
+	@Override
+	public void setCalled(final IMethodName calledMethod) {
+		final NodeWrapper nodeWrapper = methodNodes.get(calledMethod);
+		nodeWrapper.observeState("True");
+	}
 
-    @Override
-    public void clearEvidence() {
-        smileNetwork.clearAllEvidence();
-        availabilityNode.observeState("true");
-    }
+	@Override
+	public void updateBeliefs() {
+		smileNetwork.updateBeliefs();
+	}
 
-    @Override
-    public void setMethodContext(final IMethodName newActiveMethodContext) {
-        // TODO: Remove escaping
-        contextNode.observeState(newActiveMethodContext.getIdentifier().replaceAll("\\W", "_"));
-    }
+	@Override
+	public void clearEvidence() {
+		smileNetwork.clearAllEvidence();
+		// availabilityNode.observeState("true");
+	}
 
-    @Override
-    public void setObservedMethodCalls(final ITypeName rebaseType, final Set<IMethodName> invokedMethods) {
-        for (final IMethodName invokedMethod : invokedMethods) {
-            final IMethodName rebased = rebaseType == null ? invokedMethod : VmMethodName.rebase(rebaseType,
-                    invokedMethod);
-            setCalled(rebased);
-        }
-    }
+	@Override
+	public void setMethodContext(final IMethodName newActiveMethodContext) {
+		// TODO: Remove escaping
+		contextNode.observeState(newActiveMethodContext.getIdentifier());// .replaceAll("\\W",
+																			// "_"));
+	}
 
-    @Override
-    public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold) {
-        final TreeSet<Tuple<IMethodName, Double>> res = createSortedSet();
-        for (final IMethodName method : methodNodes.keySet()) {
-            final NodeWrapper nodeWrapper = methodNodes.get(method);
+	@Override
+	public void setObservedMethodCalls(final ITypeName rebaseType,
+			final Set<IMethodName> invokedMethods) {
+		for (final IMethodName invokedMethod : invokedMethods) {
+			final IMethodName rebased = rebaseType == null ? invokedMethod
+					: VmMethodName.rebase(rebaseType, invokedMethod);
+			setCalled(rebased);
+		}
+	}
 
-            if (nodeWrapper.isEvidence()) {
-                continue;
-            }
-            final double probability = nodeWrapper.getProbability()[nodeWrapper.getStateIndex("true")];
-            if (probability < minProbabilityThreshold) {
-                continue;
-            }
-            res.add(Tuple.create(method, probability));
-        }
-        return res;
-    }
+	@Override
+	public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(
+			final double minProbabilityThreshold) {
+		final TreeSet<Tuple<IMethodName, Double>> res = createSortedSet();
+		for (final IMethodName method : methodNodes.keySet()) {
+			final NodeWrapper nodeWrapper = methodNodes.get(method);
 
-    private TreeSet<Tuple<IMethodName, Double>> createSortedSet() {
-        final TreeSet<Tuple<IMethodName, Double>> res = Sets.newTreeSet(new Comparator<Tuple<IMethodName, Double>>() {
+			if (nodeWrapper.isEvidence()) {
+				continue;
+			}
+			final double probability = nodeWrapper.getProbability()[nodeWrapper
+					.getStateIndex("True")];
+			if (probability < minProbabilityThreshold) {
+				continue;
+			}
+			res.add(Tuple.create(method, probability));
+		}
+		return res;
+	}
 
-            @Override
-            public int compare(final Tuple<IMethodName, Double> o1, final Tuple<IMethodName, Double> o2) {
-                // the higher probability will be sorted above the lower
-                // values:
-                final int probabilityCompare = Double.compare(o2.getSecond(), o1.getSecond());
-                return probabilityCompare != 0 ? probabilityCompare : o1.getFirst().compareTo(o2.getFirst());
-            }
-        });
-        return res;
-    }
+	private TreeSet<Tuple<IMethodName, Double>> createSortedSet() {
+		final TreeSet<Tuple<IMethodName, Double>> res = Sets
+				.newTreeSet(new Comparator<Tuple<IMethodName, Double>>() {
 
-    @Override
-    public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold,
-            final int maxNumberOfRecommendations) {
-        final SortedSet<Tuple<IMethodName, Double>> recommendations = getRecommendedMethodCalls(minProbabilityThreshold);
-        if (recommendations.size() <= maxNumberOfRecommendations) {
-            return recommendations;
-        }
-        // need to remove smaller items:
-        final Tuple<IMethodName, Double> firstExcludedRecommendation = Iterables.get(recommendations,
-                maxNumberOfRecommendations);
-        final SortedSet<Tuple<IMethodName, Double>> res = recommendations.headSet(firstExcludedRecommendation);
-        ensureEquals(res.size(), maxNumberOfRecommendations,
-                "filter op did not return expected number of compilationUnits2recommendationsIndex");
-        return res;
-    }
+					@Override
+					public int compare(final Tuple<IMethodName, Double> o1,
+							final Tuple<IMethodName, Double> o2) {
+						// the higher probability will be sorted above the lower
+						// values:
+						final int probabilityCompare = Double.compare(
+								o2.getSecond(), o1.getSecond());
+						return probabilityCompare != 0 ? probabilityCompare
+								: o1.getFirst().compareTo(o2.getFirst());
+					}
+				});
+		return res;
+	}
 
-    @Override
-    public void negateConstructors() {
-        for (final VmMethodName method : methodNodes.keySet()) {
-            if (method.isInit()) {
-                methodNodes.get(method).observeState("false");
-            }
-        }
-    }
+	@Override
+	public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(
+			final double minProbabilityThreshold,
+			final int maxNumberOfRecommendations) {
+		final SortedSet<Tuple<IMethodName, Double>> recommendations = getRecommendedMethodCalls(minProbabilityThreshold);
+		if (recommendations.size() <= maxNumberOfRecommendations) {
+			return recommendations;
+		}
+		// need to remove smaller items:
+		final Tuple<IMethodName, Double> firstExcludedRecommendation = Iterables
+				.get(recommendations, maxNumberOfRecommendations);
+		final SortedSet<Tuple<IMethodName, Double>> res = recommendations
+				.headSet(firstExcludedRecommendation);
+		ensureEquals(
+				res.size(),
+				maxNumberOfRecommendations,
+				"filter op did not return expected number of compilationUnits2recommendationsIndex");
+		return res;
+	}
 
-    @Override
-    public List<Tuple<String, Double>> getPatternsWithProbability() {
-        return patternNode.getStatesWithProbability();
-    }
+	@Override
+	public void negateConstructors() {
+		for (final VmMethodName method : methodNodes.keySet()) {
+			if (method.isInit()) {
+				methodNodes.get(method).observeState("false");
+			}
+		}
+	}
 
-    @Override
-    public void setPattern(final String patternName) {
-        patternNode.observeState(patternName);
-    }
+	@Override
+	public List<Tuple<String, Double>> getPatternsWithProbability() {
+		return patternNode.getStatesWithProbability();
+	}
+
+	@Override
+	public void setPattern(final String patternName) {
+		patternNode.observeState(patternName);
+	}
 
     @Override
     public Collection<IMethodName> getMethodCalls() {

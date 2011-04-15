@@ -27,7 +27,7 @@
 							<version>0.1.0</version>
 							<packaging>zip</packaging>
 							<downloadUrl>
-								http://vandyk.st.informatik.tu-darmstadt.de/updates/models/calls-models.{packaging}
+								http://vandyk.st.informatik.tu-darmstadt.de/updates/models/binary-calls-models.{packaging}
                         </downloadUrl>
 							<!-- checksum>671a3d4431df7e9ce29c08f7fcd7533d</checksum -->
 						</artifactItem>
