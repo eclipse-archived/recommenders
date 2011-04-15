@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureEquals;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -209,6 +210,11 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     @Override
     public void setPattern(final String patternName) {
         patternNode.observeState(patternName);
+    }
+
+    @Override
+    public Collection<IMethodName> getMethodCalls() {
+        return new LinkedList<IMethodName>(methodNodes.keySet());
     }
 
 }

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.net;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -44,5 +45,7 @@ public interface IObjectMethodCallsNet {
     public abstract List<Tuple<String, Double>> getPatternsWithProbability();
 
     public abstract void setPattern(String patternName);
+
+    public abstract Collection<IMethodName> getMethodCalls();
 
 }
