@@ -95,6 +95,13 @@ public class Checks {
         }
     }
 
+    public static void ensureIsGreaterOrEqualTo(final double value, final double min, final String message,
+            final Object... args) {
+        if (value < min) {
+            throwIllegalArgumentException(message, args);
+        }
+    }
+
     public static double ensureIsProbability(final double value) {
         return ensureIsInRange(value, 0.0d, 1.0d, "value not in range [0,1]: %3.3f", value);
     }

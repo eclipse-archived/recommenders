@@ -10,13 +10,17 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayes;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.commons.utils.Tuple;
 
 import smile.Network;
+import smile.SMILEException;
 
 import com.google.common.collect.Lists;
 
@@ -46,6 +50,10 @@ public class NodeWrapper {
         }
     }
 
+    public String[] getStates() {
+        return node.getStates();
+    }
+
     public int getHandle() {
         return nodeHandle;
     }
@@ -65,7 +73,20 @@ public class NodeWrapper {
     }
 
     public double[] getProbability() {
-        return smileNetwork.getNodeValue(nodeHandle);
+        try {
+            return smileNetwork.getNodeValue(nodeHandle);
+        } catch (final SMILEException x) {
+            final File tmpDir = SystemUtils.getJavaIoTmpDir();
+            final File netFile = new File(tmpDir, "error.xdsl");
+            final File logFile = new File(tmpDir, "error.log");
+            try {
+                FileUtils.write(logFile, x.toString());
+                smileNetwork.writeFile(netFile.getAbsolutePath());
+            } catch (final Exception e) {
+                // silently ignore if writing debug output fails
+            }
+            return new double[stateMapping.size()];
+        }
     }
 
     public List<Tuple<String, Double>> getStatesWithProbability() {

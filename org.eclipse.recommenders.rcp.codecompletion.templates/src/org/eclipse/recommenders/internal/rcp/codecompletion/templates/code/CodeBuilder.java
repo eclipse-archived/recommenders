@@ -49,7 +49,9 @@ public final class CodeBuilder {
     public String buildCode(final List<IMethodName> methods, final String targetVariableName) {
         final StringBuilder code = new StringBuilder(methods.size() * 16);
         for (final IMethodName method : methods) {
-            code.append(methodCallFormatter.format(new MethodCall(targetVariableName, method)));
+            MethodCall methodCall = new MethodCall(targetVariableName, method);
+            String statement = methodCallFormatter.format(methodCall);
+            code.append(statement);
             code.append(lineSeparator);
         }
         methodCallFormatter.resetArgumentCounter();

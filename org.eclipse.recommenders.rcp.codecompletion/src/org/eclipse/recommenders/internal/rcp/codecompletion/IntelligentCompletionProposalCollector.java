@@ -22,6 +22,7 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
  * public.
  * 
  */
+@Deprecated
 public final class IntelligentCompletionProposalCollector extends CompletionProposalCollector {
 
     public IntelligentCompletionProposalCollector(final ICompilationUnit cu) {

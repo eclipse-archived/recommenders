@@ -24,7 +24,7 @@
 						<artifactItem>
 							<groupId>org.eclipse.recommenders</groupId>
 							<artifactId>rcp.codecompletion.calls.models</artifactId>
-							<version>0.2.0</version>
+							<version>0.2.0-SNAPSHOT</version>
 							<packaging>zip</packaging>
 							<downloadUrl>
 								http://vandyk.st.informatik.tu-darmstadt.de/updates/models/binary-calls-models.{packaging}
@@ -73,7 +73,7 @@
 								<artifactItem>
 									<groupId>org.eclipse.recommenders</groupId>
 									<artifactId>rcp.codecompletion.calls.models</artifactId>
-									<version>0.2.0</version>
+									<version>0.2.0-SNAPSHOT</version>
 									<type>zip</type>
 									<outputDirectory>data/</outputDirectory>
 									<destFileName>models.zip</destFileName>

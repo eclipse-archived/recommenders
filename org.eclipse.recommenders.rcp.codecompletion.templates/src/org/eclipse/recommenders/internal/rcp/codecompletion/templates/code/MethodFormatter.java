@@ -10,14 +10,16 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
-import com.google.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+
+import com.google.inject.Inject;
 
 /**
  * Generates the <code>String</code> representation of an {@link IMethod}.
@@ -63,9 +65,10 @@ public class MethodFormatter {
         final IMethod jdtMethod = elementResolver.toJdtMethod(methodName);
         try {
             final String[] parameterNames = jdtMethod.getParameterNames();
-            final String[] parameterTypes = jdtMethod.getParameterTypes();
+            final ITypeName[] parameterTypes = methodName.getParameterTypes();
             for (int i = 0; i < parameterNames.length; ++i) {
-                parameters.append(getParameterString(parameterNames[i], parameterTypes[i]));
+                final String typeName = Names.vm2srcTypeName(parameterTypes[i].getIdentifier());
+                parameters.append(getParameterString(parameterNames[i], typeName));
                 parameters.append(", ");
             }
         } catch (final JavaModelException e) {

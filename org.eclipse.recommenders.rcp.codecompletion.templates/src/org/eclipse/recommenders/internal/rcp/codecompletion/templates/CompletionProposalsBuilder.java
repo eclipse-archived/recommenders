@@ -62,7 +62,8 @@ public final class CompletionProposalsBuilder {
             final DocumentTemplateContext context, final String targetVariableName) {
         final Builder<IJavaCompletionProposal> proposals = ImmutableList.builder();
         for (final PatternRecommendation pattern : patterns) {
-            proposals.add(buildTemplateProposal(pattern, context, targetVariableName));
+            TemplateProposal template = buildTemplateProposal(pattern, context, targetVariableName);
+            proposals.add(template);
         }
         return proposals.build();
     }
