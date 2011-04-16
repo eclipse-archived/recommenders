@@ -14,7 +14,7 @@
 	<properties>
 		<emma.filter>+org.eclipse.recommenders.internal.rcp.codecompletion.calls.*,+org.eclipse.recommenders.rcp.codecompletion.calls.*</emma.filter>
 		<eclemma.instrument.bundles>org.eclipse.recommenders.rcp.codecompletion.calls</eclemma.instrument.bundles>
-		<ui.test.vmargs>-Xmx512m -XX:MaxPermSize=256m -XstartOnFirstThread</ui.test.vmargs>
+		<ui.test.vmargs>-Xmx512m -XX:MaxPermSize=256m</ui.test.vmargs>
 	</properties>
 	<profiles>
 		<profile>
