@@ -31,11 +31,7 @@ public class SmileImporter {
 
         importNodes();
         importArcs();
-        importPropabilities();
-    }
-
-    public BayesianNetwork getNetwork() {
-        return bayesNetwork;
+        importProbabilities();
     }
 
     private void importNodes() {
@@ -82,7 +78,7 @@ public class SmileImporter {
         }
     }
 
-    private void importPropabilities() {
+    private void importProbabilities() {
         final Set<Node> nodes = nodeToSmileIdMapping.keySet();
         for (final Node node : nodes) {
             final String smileId = nodeToSmileIdMapping.getValue(node);
@@ -91,4 +87,7 @@ public class SmileImporter {
         }
     }
 
+    public BayesianNetwork getNetwork() {
+        return bayesNetwork;
+    }
 }

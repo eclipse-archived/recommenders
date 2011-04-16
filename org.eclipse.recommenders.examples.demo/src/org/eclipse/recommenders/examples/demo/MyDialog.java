@@ -13,7 +13,10 @@ package org.eclipse.recommenders.examples.demo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
@@ -36,8 +39,18 @@ public class MyDialog extends Dialog {
 		final Composite container = createContainer(parent);
 
 		final Text text = new Text(container, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-  
+		text.setText("");
+		text.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				// TODO Auto-generated method stub
+			}
+		});
+		Button b = new Button(null, 0);
+		b.setText("");
+		b.setLayoutData(null);
+		b.setFont(null);
 		return container;
 	}
 

@@ -10,15 +10,17 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
+import com.google.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-
-import com.google.inject.Inject;
 
 /**
  * Generates the <code>String</code> representation of an {@link IMethod}.
@@ -66,7 +68,8 @@ public class MethodFormatter {
             final String[] parameterNames = jdtMethod.getParameterNames();
             final String[] parameterTypes = jdtMethod.getParameterTypes();
             for (int i = 0; i < parameterNames.length; ++i) {
-                parameters.append(getParameterString(parameterNames[i], parameterTypes[i]));
+                final String typeIdentifier = StringUtils.chomp(parameterTypes[i], ";");
+                parameters.append(getParameterString(parameterNames[i], VmTypeName.get(typeIdentifier)));
                 parameters.append(", ");
             }
         } catch (final JavaModelException e) {
@@ -84,22 +87,21 @@ public class MethodFormatter {
      *         <code>${listener:var(org.eclipse.swt.events.SelectionListener)}</code>
      *         .
      */
-    // REVIEW: maybe use ITypeName instead of String parameterType?
-    private String getParameterString(final String parameterName, final String parameterType) {
-        final StringBuilder parameter = new StringBuilder(16);
-        parameter.append(getParameterName(parameterName));
-        // REVIEW: what happens with Long, Double, Float ... char? maybe switch
-        // (char first character of typeName.getIdentfier?)
-        if ("I".equals(parameterType)) {
-            parameter.append(":link(0)");
-        } else if ("Z".equals(parameterType)) {
-            parameter.append(":link(false, true)");
-            // REVIEW: why just java? How about org.... com.. etc?
-            // check for is primitive or is reference type?
-        } else if (parameterType.endsWith(";") && !parameterType.startsWith("Ljava")) {
-            parameter.append(String.format(":var(%s)", parameterType.substring(1, parameterType.length() - 1)));
+    private String getParameterString(final String parameterName, final ITypeName parameterType) {
+        String appendix;
+        // TODO: Appendix for more types.
+        if (parameterType.isDeclaredType()) {
+            appendix = String.format(":var(%s)", parameterType.getIdentifier().substring(1));
+        } else if (parameterType == VmTypeName.BOOLEAN) {
+            appendix = ":link(false, true)";
+        } else if (parameterType == VmTypeName.INT || parameterType == VmTypeName.DOUBLE
+                || parameterType == VmTypeName.FLOAT || parameterType == VmTypeName.LONG
+                || parameterType == VmTypeName.SHORT) {
+            appendix = ":link(0)";
+        } else {
+            appendix = "";
         }
-        return String.format("${%s}", parameter);
+        return String.format("${%s%s}", getParameterName(parameterName), appendix);
     }
 
     /**

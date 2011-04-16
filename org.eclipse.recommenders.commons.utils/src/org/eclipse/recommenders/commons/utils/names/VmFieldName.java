@@ -48,8 +48,8 @@ public class VmFieldName implements IFieldName {
     /**
      * @see #get(String)
      */
-    protected VmFieldName(final String vmTypeName) {
-        identifier = vmTypeName;
+    protected VmFieldName(final String vmFieldName) {
+        identifier = vmFieldName;
         ensureIsNotNull(identifier);
         ensureIsNotNull(getDeclaringType());
         ensureIsNotNull(getFieldName());

@@ -17,10 +17,10 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 
 public class DefinitionSite {
     public enum Kind {
-        METHOD_RETURN, NEW, FIELD, PARAMETER
+        METHOD_RETURN, NEW, FIELD, PARAMETER, THIS, UNKNOWN
     }
 
-    public static DefinitionSite create(final Kind definitionKind, final IMethodName sourceMethod,
+    public static DefinitionSite newSite(final Kind definitionKind, final IMethodName sourceMethod,
             final int lineNumber, final IMethodName definedByMethod) {
         final DefinitionSite res = new DefinitionSite();
         res.kind = definitionKind;
@@ -28,6 +28,10 @@ public class DefinitionSite {
         res.lineNumber = lineNumber;
         res.definedByMethod = definedByMethod;
         return res;
+    }
+
+    public static DefinitionSite newSite(final Kind definitionKind) {
+        return newSite(definitionKind, null, -1, null);
     }
 
     public static DefinitionSite create(final IFieldName definedByField) {
@@ -51,7 +55,7 @@ public class DefinitionSite {
     public IMethodName definedByMethod;
 
     /**
-     * @see #create(Kind, IMethodName, int, IMethodName)
+     * @see #newSite(Kind, IMethodName, int, IMethodName)
      */
     protected DefinitionSite() {
         // use create methods instead

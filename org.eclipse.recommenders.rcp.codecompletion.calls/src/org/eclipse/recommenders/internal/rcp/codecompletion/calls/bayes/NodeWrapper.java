@@ -51,7 +51,9 @@ public class NodeWrapper {
     }
 
     public void observeState(final String state) {
-        smileNetwork.setEvidence(nodeHandle, stateMapping.get(state));
+        if (stateMapping.containsKey(state)) {
+            smileNetwork.setEvidence(nodeHandle, stateMapping.get(state));
+        }
     }
 
     public boolean isEvidence() {

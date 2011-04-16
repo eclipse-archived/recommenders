@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -224,5 +225,10 @@ public class ObjectMethodCallsNet implements IObjectMethodCallsNet {
     @Override
     public List<Tuple<String, Double>> getPatternsWithProbability() {
         return getPatternsNode().getPatternsWithProbability();
+    }
+
+    @Override
+    public Collection<IMethodName> getMethodCalls() {
+        return new LinkedList<IMethodName>(methodNodes.keySet());
     }
 }
