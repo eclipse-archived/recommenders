@@ -13,10 +13,12 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 import com.google.inject.Inject;
@@ -36,7 +38,7 @@ public class MethodFormatter {
      */
     @Inject
     public MethodFormatter(final JavaElementResolver elementResolver) {
-        this.elementResolver = elementResolver;
+        this.elementResolver = Checks.ensureIsNotNull(elementResolver);
     }
 
     /**
@@ -65,10 +67,12 @@ public class MethodFormatter {
         final IMethod jdtMethod = elementResolver.toJdtMethod(methodName);
         try {
             final String[] parameterNames = jdtMethod.getParameterNames();
-            final ITypeName[] parameterTypes = methodName.getParameterTypes();
+            final String[] parameterTypes = jdtMethod.getParameterTypes();
             for (int i = 0; i < parameterNames.length; ++i) {
-                final String typeName = Names.vm2srcTypeName(parameterTypes[i].getIdentifier());
-                parameters.append(getParameterString(parameterNames[i], typeName));
+                final String typeIdentifier = StringUtils.chomp(parameterTypes[i].replace('.', '/'), ";");
+                final VmTypeName parameterType = VmTypeName.get(typeIdentifier);
+                final String parameterString = getParameterString(parameterNames[i], parameterType);
+                parameters.append(parameterString);
                 parameters.append(", ");
             }
         } catch (final JavaModelException e) {
@@ -86,17 +90,22 @@ public class MethodFormatter {
      *         <code>${listener:var(org.eclipse.swt.events.SelectionListener)}</code>
      *         .
      */
-    private String getParameterString(final String parameterName, final String parameterType) {
-        final StringBuilder parameter = new StringBuilder(16);
-        parameter.append(getParameterName(parameterName));
-        if ("I".equals(parameterType)) {
-            parameter.append(":link(0)");
-        } else if ("Z".equals(parameterType)) {
-            parameter.append(":link(false, true)");
-        } else if (parameterType.endsWith(";") && !parameterType.startsWith("Ljava")) {
-            parameter.append(String.format(":var(%s)", parameterType.substring(1, parameterType.length() - 1)));
+    private String getParameterString(final String parameterName, final ITypeName parameterType) {
+        String appendix;
+        // TODO: Appendix for more types.
+        if (parameterType.isDeclaredType() || parameterType.isArrayType()) {
+            final String typeName = Names.vm2srcTypeName(parameterType.getIdentifier());
+            appendix = String.format(":var(%s)", typeName);
+        } else if (parameterType == VmTypeName.BOOLEAN) {
+            appendix = ":link(false, true)";
+        } else if (parameterType == VmTypeName.INT || parameterType == VmTypeName.DOUBLE
+                || parameterType == VmTypeName.FLOAT || parameterType == VmTypeName.LONG
+                || parameterType == VmTypeName.SHORT) {
+            appendix = ":link(0)";
+        } else {
+            appendix = "";
         }
-        return String.format("${%s}", parameter);
+        return String.format("${%s%s}", getParameterName(parameterName), appendix);
     }
 
     /**
@@ -106,12 +115,11 @@ public class MethodFormatter {
      *         <code>arg0</code>" format.
      */
     private String getParameterName(final String parameterName) {
-        String name = parameterName;
         if (parameterName.startsWith("arg")) {
             ++argumentCounter;
-            name = String.format("arg%d", Integer.valueOf(argumentCounter));
+            return String.format("arg%d", Integer.valueOf(argumentCounter));
         }
-        return name;
+        return parameterName;
     }
 
     /**

@@ -21,13 +21,16 @@ import org.mockito.Mockito;
 
 import junit.framework.Assert;
 
+/**
+ * Unit tests for covering the {@link MethodFormatter} class.
+ */
 public final class MethodFormatterTest {
 
     @Test
     public void testFormat() throws JavaModelException {
         final IMethodName methodName = UnitTestSuite.getDefaultConstructorCall().getInvokedMethod();
         final String code = getMethodFormatterMock().format(methodName);
-        final String expected = "${constructedType}(${intTest:link(0)}, ${arg0:link(false, true)}, ${arg1}, ${arg2:var(org/eclipse/swt/widgets/Button)})";
+        final String expected = "${constructedType}(${intTest:link(0)}, ${arg0:link(false, true)}, ${arg1:var(java/lang/String)}, ${arg2:var(org/eclipse/swt/widgets/Button)})";
         Assert.assertEquals(expected, code);
     }
 

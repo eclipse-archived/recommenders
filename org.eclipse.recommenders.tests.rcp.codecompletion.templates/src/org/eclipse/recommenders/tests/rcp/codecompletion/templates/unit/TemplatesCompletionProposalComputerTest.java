@@ -15,20 +15,26 @@ import java.util.List;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionProposalComputer;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
+import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.junit.Test;
 
 import junit.framework.Assert;
 
+/**
+ * Unit tests for covering the {@link TemplatesCompletionProposalComputer}
+ * class.
+ */
 public final class TemplatesCompletionProposalComputerTest {
 
     @Test
-    public void testTemplatesCompletionEngine() throws Exception {
+    public void testTemplatesCompletionEngine() {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getConstructorContextMock(
                 "Button bu", "bu", "Lorg/eclipse/swt/widgets/Button");
 
         final TemplatesCompletionProposalComputer engine = new TemplatesCompletionProposalComputer(
                 PatternRecommenderTest.getPatternRecommenderMock(context.getReceiverType()),
-                UnitTestSuite.getCodeBuilderMock(), null);
+                UnitTestSuite.getCodeBuilderMock(), new IntelligentCompletionContextResolver(new JavaElementResolver()));
 
         final List<IJavaCompletionProposal> proposals = engine.computeCompletionProposals(context);
 

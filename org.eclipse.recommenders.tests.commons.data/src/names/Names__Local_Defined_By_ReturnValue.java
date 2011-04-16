@@ -10,7 +10,6 @@
  */
 package names;
 
-
 @SuppressWarnings("unused")
 public class Names__Local_Defined_By_ReturnValue {
 

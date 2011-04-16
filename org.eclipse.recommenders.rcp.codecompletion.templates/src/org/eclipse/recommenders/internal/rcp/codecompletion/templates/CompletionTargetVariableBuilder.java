@@ -19,12 +19,11 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionContext;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 
 /**
- * Extracts the {@link CompletionTargetVariable} from an
+ * Extracts the {@link CompletionTargetVariable} from a given
  * {@link IIntelligentCompletionContext}.
  */
 public final class CompletionTargetVariableBuilder {
@@ -39,15 +38,15 @@ public final class CompletionTargetVariableBuilder {
     private boolean isCallOnThis;
 
     /**
-     * Hide the builder instance as it should directly be turned to the garbage
-     * collector after the variable is built.
+     * Hide the builder instantiation as it should directly be turned to the
+     * garbage collector after the variable is built.
      */
     private CompletionTargetVariableBuilder() {
     }
 
     /**
      * @param context
-     *            The context holding information about the completion request.
+     *            The context from which the completion request was invoked.
      * @return The {@link CompletionTargetVariable} representing the variable on
      *         which the request is invoked or which shall be constructed in
      *         case it is invoked while defining a new variable, e.g.
@@ -59,14 +58,13 @@ public final class CompletionTargetVariableBuilder {
 
     /**
      * @param completionContext
-     *            The context holding information about the completion request.
+     *            The context from which the completion request was invoked.
      * @return The {@link CompletionTargetVariable} representing the variable on
      *         which the request is invoked or which shall be constructed in
-     *         case it is invoked while defining a new variable, e.g.
+     *         case it is invoked while defining a new variable, e.g. using
      *         <code>Button b<^Space></code>.
      */
     private CompletionTargetVariable buildInvokedVariable(final IIntelligentCompletionContext completionContext) {
-        CompletionTargetVariable completionTargetVariable = null;
         context = completionContext;
         receiverType = context.getReceiverType();
         receiverName = context.getReceiverName();
@@ -74,17 +72,18 @@ public final class CompletionTargetVariableBuilder {
         if (receiverType == null) {
             handleUnresolvedType();
         } else {
+            // REVIEW: Example? No idea why this is needed?
+            // Button b<^Space>
+            // Button x = b. --> new test case? StringBuilder.append("")
             needsConstructor = receiverType.equals(context.getExpectedType());
         }
-        if (receiverType != null) {
-            completionTargetVariable = buildInvokedVariable();
-        }
-        return completionTargetVariable;
+        return receiverType == null ? null : buildCompletionTargetVariable();
     }
 
     /**
-     * Try to find all required information when the target variable is not
-     * fully declared in the context, i.e. its type is missing.
+     * Tries to find all required information when the target variable is not
+     * fully declared in the context, i.e. its type is missing, and stores them
+     * in the attributes of the builder.
      */
     private void handleUnresolvedType() {
         if (receiverName == null || receiverName.isEmpty()) {
@@ -92,34 +91,40 @@ public final class CompletionTargetVariableBuilder {
             receiverType = context.getEnclosingType();
             isCallOnThis = true;
         } else {
-            final Variable resolvedVariable = ((IntelligentCompletionContext) context)
-                    .findMatchingVariable(receiverName);
-            if (resolvedVariable == null) {
-                receiverType = VmTypeName.get(String.format("L%s", receiverName));
-                receiverName = "";
-                needsConstructor = true;
-                replacementOffset += context.getReplacementRegion().getLength();
-            } else {
-                // TODO: disabled because getReceiverCalls currently doesn't
-                // work.
-                // receiverType = resolvedVariable.type;
-                // receiverCalls = resolvedVariable.getReceiverCalls();
-            }
+            resolveTypeFromReceiverName();
         }
     }
 
     /**
-     * @return The {@link CompletionTargetVariable} representing the variable on
-     *         which the request was invoked or which shall be constructed in
-     *         case it was invoked while defining a new variable.
+     * Either finds a variable declaration matching the receiver name or assumes
+     * the given name indicates a new type, e.g. in <code>Button<^Space></code>.
      */
-    private CompletionTargetVariable buildInvokedVariable() {
-        if (receiverName == null) {
+    private void resolveTypeFromReceiverName() {
+        final Variable resolvedVariable = context.findMatchingVariable(receiverName);
+        if (resolvedVariable == null) {
+            receiverType = VmTypeName.get(String.format("L%s", receiverName));
             receiverName = "";
+            needsConstructor = true;
+            replacementOffset += context.getReplacementRegion().getLength();
+        } else {
+            // TODO: getReceiverCalls currently doesn't work and will therefore
+            // cause the recommender to propose patterns with constructors, even
+            // though they might already exist.
+            // receiverType = resolvedVariable.type;
+            // receiverCalls = resolvedVariable.getReceiverCalls();
         }
+    }
+
+    /**
+     * @return A {@link CompletionTargetVariable} object representing the
+     *         variable on which the request was invoked or which shall be
+     *         constructed in case it was invoked while defining a new variable.
+     */
+    private CompletionTargetVariable buildCompletionTargetVariable() {
         final int variableNameLength = getVariableNameLength();
-        return new CompletionTargetVariable(receiverName, receiverType, receiverCalls, new Region(replacementOffset
-                - variableNameLength, variableNameLength), needsConstructor, context);
+        final Region region = new Region(replacementOffset - variableNameLength, variableNameLength);
+        return new CompletionTargetVariable(receiverName == null ? "" : receiverName, receiverType, receiverCalls,
+                region, needsConstructor, context);
     }
 
     /**
@@ -131,9 +136,12 @@ public final class CompletionTargetVariableBuilder {
     private int getVariableNameLength() {
         int variableNameLength = 0;
         if (needsConstructor) {
-            final String completionNode = context.getCompletionNode().toString();
-            variableNameLength = completionNode.substring(completionNode.indexOf(':') + 1, completionNode.indexOf('>'))
-                    .length();
+            // TODO: Gets the token to be replaced from the completion node,
+            // e.g. "<CompleteOnLocalName:Button b>;". To be refactored.
+            // REVIEW: is node.name appropriate?
+            // REVIEW double check - ICtx doesn't deliver the type of this node?
+            final String node = context.getCompletionNode().toString();
+            variableNameLength = node.substring(node.indexOf(':') + 1, node.indexOf('>')).length();
         } else if (receiverName.length() > 0 && !isCallOnThis) {
             // For variables other than implicit "this", add space for ".".
             variableNameLength = receiverName.length() + 1;

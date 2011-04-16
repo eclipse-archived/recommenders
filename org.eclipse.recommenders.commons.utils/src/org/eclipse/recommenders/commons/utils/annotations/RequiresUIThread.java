@@ -18,7 +18,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the annotated method or constructor should be called from the UI thread only.
+ * This annotation indicates that the annotated method or constructor should be
+ * called from the UI thread only.
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)

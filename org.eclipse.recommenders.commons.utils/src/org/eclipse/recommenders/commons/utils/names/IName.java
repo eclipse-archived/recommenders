@@ -11,12 +11,13 @@
 package org.eclipse.recommenders.commons.utils.names;
 
 /**
- * References are basically full qualified names which allow clients to resolve and map these references to something
- * else.
+ * References are basically full qualified names which allow clients to resolve
+ * and map these references to something else.
  */
 public interface IName {
     /**
-     * As a guideline, names should return a meaningful representation of themselves here.
+     * As a guideline, names should return a meaningful representation of
+     * themselves here.
      */
     String getIdentifier();
 }

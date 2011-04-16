@@ -28,8 +28,8 @@ import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 
 /**
  * 
- * Contains utility methods for parsing and converting plain vm strings (or their corresponding {@link IName}s
- * respectively) to source strings.
+ * Contains utility methods for parsing and converting plain vm strings (or
+ * their corresponding {@link IName}s respectively) to source strings.
  * 
  */
 public class Names {
@@ -310,7 +310,8 @@ public class Names {
     }
 
     /**
-     * @return the <b>&lt;method name&gt;(&lt;parameter simple types...&gt;)</b> - no return value.
+     * @return the <b>&lt;method name&gt;(&lt;parameter simple types...&gt;)</b>
+     *         - no return value.
      */
     public static String vm2srcSimpleMethod(final IMethodName name) {
         ensureIsNotNull(name, "name");

@@ -10,7 +10,6 @@
  */
 package names;
 
-
 public class Names__Local_With_Branch {
 
     void test(final boolean flag) {

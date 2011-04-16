@@ -207,4 +207,14 @@ public interface IIntelligentCompletionContext {
 
     public boolean isReceiverImplicitThis();
 
+    /**
+     * Searches the list of locals and fields declared for exact match. This
+     * method may return <code>null</code>.
+     * <p>
+     * Note, this method does not perform a search on inherited fields. Only
+     * declarations in "this" are considered.
+     * </p>
+     */
+    public Variable findMatchingVariable(final String variableName);
+
 }

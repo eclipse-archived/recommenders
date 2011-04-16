@@ -17,6 +17,6 @@ public class CreateAst {
         final ASTParser parser = null;
         parser.setSource(source.toCharArray());
         final CompilationUnit cu;
-        
+
     }
 }

@@ -36,6 +36,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Provider;
 
+/**
+ * Unit tests for covering the {@link PatternRecommender} class.
+ */
 public final class PatternRecommenderTest {
 
     @Test
@@ -83,16 +86,21 @@ public final class PatternRecommenderTest {
         return model;
     }
 
+    /**
+     * @return The methods which ought to be returned my the mocked
+     *         {@link ObjectMethodCallsNet}.
+     */
     private static SortedSet<Tuple<IMethodName, Double>> getRecommendedMethods() {
-        final SortedSet<Tuple<IMethodName, Double>> methodsSet = Sets
+        final SortedSet<Tuple<IMethodName, Double>> methods = Sets
                 .newTreeSet(new Comparator<Tuple<IMethodName, Double>>() {
                     @Override
-                    public int compare(final Tuple<IMethodName, Double> arg0, final Tuple<IMethodName, Double> arg1) {
-                        return arg0.getFirst().compareTo(arg1.getFirst());
+                    public int compare(final Tuple<IMethodName, Double> method1,
+                            final Tuple<IMethodName, Double> method2) {
+                        return method1.getFirst().compareTo(method2.getFirst());
                     }
                 });
-        methodsSet.add(Tuple.create(UnitTestSuite.getDefaultConstructorCall().getInvokedMethod(), 0.5));
-        methodsSet.add(Tuple.create(UnitTestSuite.getDefaultMethodCall().getInvokedMethod(), 0.5));
-        return methodsSet;
+        methods.add(Tuple.create(UnitTestSuite.getDefaultConstructorCall().getInvokedMethod(), 0.5));
+        methods.add(Tuple.create(UnitTestSuite.getDefaultMethodCall().getInvokedMethod(), 0.5));
+        return methods;
     }
 }

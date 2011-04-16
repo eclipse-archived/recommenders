@@ -10,7 +10,6 @@
  */
 package names;
 
-
 public class Names__Local_Method {
 
     void __test() {

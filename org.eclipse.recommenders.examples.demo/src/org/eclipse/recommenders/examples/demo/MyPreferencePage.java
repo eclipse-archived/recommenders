@@ -22,13 +22,13 @@ import org.eclipse.swt.widgets.Text;
 
 public class MyPreferencePage extends PreferencePage {
 
-	private Button button;
-	private Text text;
+    private Button button;
+    private Text text;
 
-	@Override
-	protected Control createContents(final Composite arg0) {
-		button = new Button(arg0, 0);
-		CheckboxTableViewer v = new CheckboxTableViewer(null);
-		return null;
-	}
+    @Override
+    protected Control createContents(final Composite arg0) {
+        button = new Button(arg0, 0);
+        CheckboxTableViewer v = new CheckboxTableViewer(null);
+        return null;
+    }
 }

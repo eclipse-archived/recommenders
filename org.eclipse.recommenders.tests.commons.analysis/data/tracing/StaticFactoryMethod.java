@@ -10,10 +10,9 @@
  */
 package tracing;
 
-
 public class StaticFactoryMethod {
 
-	public static StaticFactoryMethod __test() {
-		return new StaticFactoryMethod();
-	}
+    public static StaticFactoryMethod __test() {
+        return new StaticFactoryMethod();
+    }
 }

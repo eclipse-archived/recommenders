@@ -1,4 +1,5 @@
 package org.eclipse.recommenders.tests.rcp.codecompletion.chain.ui;
+
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
@@ -9,7 +10,6 @@ package org.eclipse.recommenders.tests.rcp.codecompletion.chain.ui;
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

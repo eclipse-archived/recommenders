@@ -18,9 +18,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that the annotated variable may be / is allowed to be <code>null</code>. Programmers using such variables
- * need to ensure appropriate handling, clients passing arguments to method annotated with this annotation may pass null
- * for the annotated arguments.
+ * Indicates that the annotated variable may be / is allowed to be
+ * <code>null</code>. Programmers using such variables need to ensure
+ * appropriate handling, clients passing arguments to method annotated with this
+ * annotation may pass null for the annotated arguments.
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)

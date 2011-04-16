@@ -1,4 +1,5 @@
 package org.eclipse.recommenders.tests.rcp.codecompletion.overrides;
+
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials

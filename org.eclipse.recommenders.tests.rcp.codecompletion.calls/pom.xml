@@ -14,7 +14,7 @@
 	<properties>
 		<emma.filter>+org.eclipse.recommenders.internal.rcp.codecompletion.calls.*,+org.eclipse.recommenders.rcp.codecompletion.calls.*</emma.filter>
 		<eclemma.instrument.bundles>org.eclipse.recommenders.rcp.codecompletion.calls</eclemma.instrument.bundles>
-		<ui.test.vmargs>-Xmx512m -XX:MaxPermSize=256m</ui.test.vmargs>
+		<ui.test.vmargs>-Xmx512m -XX:MaxPermSize=256m -XstartOnFirstThread</ui.test.vmargs>
 	</properties>
 	<profiles>
 		<profile>
@@ -29,7 +29,7 @@
 							<testSuite>org.eclipse.recommenders.tests.rcp.codecompletion.calls</testSuite>
 							<testClass>org.eclipse.recommenders.tests.rcp.codecompletion.calls.AllTestSuite</testClass>
 							<useUIHarness>true</useUIHarness>
-							<useUIThread>false</useUIThread>
+							<useUIThread>true</useUIThread>
 							<product>org.eclipse.sdk.ide</product>
 							<argLine>${ui.test.vmargs}</argLine>
 							<application>org.eclipse.ui.ide.workbench</application>

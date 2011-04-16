@@ -54,7 +54,7 @@ public class RecommendersNatureToggleAction implements IObjectActionDelegate {
     private void computeNewActionText(final IAction action) {
         if (projectsWithNature.isEmpty() && projectsWithoutNature.isEmpty()) {
             // do nothing
-            //throwUnreachable("no project selected! Configuration mistake in plugin.xml.");
+            // throwUnreachable("no project selected! Configuration mistake in plugin.xml.");
         } else if (!projectsWithNature.isEmpty() && !projectsWithoutNature.isEmpty()) {
             action.setText("Flip Recommenders Natures");
         } else if (!projectsWithNature.isEmpty()) {

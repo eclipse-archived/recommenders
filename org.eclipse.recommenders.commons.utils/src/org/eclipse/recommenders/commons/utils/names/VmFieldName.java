@@ -24,7 +24,8 @@ public class VmFieldName implements IFieldName {
     private static Map<String /* vmTypeName */, VmFieldName> index = new MapMaker().weakValues().makeMap();
 
     /**
-     * Format: DeclaringType'.'fieldName;FieldType, i.e., &lt;VmTypeName&gt;.&lt;String&gt;;&lt;VmTypeName&gt;
+     * Format: DeclaringType'.'fieldName;FieldType, i.e.,
+     * &lt;VmTypeName&gt;.&lt;String&gt;;&lt;VmTypeName&gt;
      * 
      * @param fieldName
      * @return

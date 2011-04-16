@@ -14,13 +14,14 @@ import smile.Network;
 
 public class AbstractNode {
     /**
-     * The network this node belongs to. In smile the network is a central data structure which participates in may
-     * operations.
+     * The network this node belongs to. In smile the network is a central data
+     * structure which participates in may operations.
      */
     protected final Network network;
 
     /**
-     * In smile, each node has a (network-wide) unique id. This id is stored here.
+     * In smile, each node has a (network-wide) unique id. This id is stored
+     * here.
      */
     protected final String nodeId;
 

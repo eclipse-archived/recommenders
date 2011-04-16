@@ -10,7 +10,6 @@
  */
 package names;
 
-
 public class Names__Field_Method_Uninitialized {
 
     Button field;
