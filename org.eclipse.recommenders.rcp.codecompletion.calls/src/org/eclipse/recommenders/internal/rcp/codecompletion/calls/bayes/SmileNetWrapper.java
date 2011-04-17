@@ -149,10 +149,11 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     }
 
     @Override
-    public void setMethodContext(final IMethodName newActiveMethodContext) {
-        // TODO: Remove escaping
-        contextNode.observeState(newActiveMethodContext.getIdentifier());// .replaceAll("\\W",
-                                                                         // "_"));
+    public void setMethodContext(IMethodName newActiveMethodContext) {
+        if (newActiveMethodContext == null) {
+            newActiveMethodContext = NetworkUtils.CTX_DUMMY;
+        }
+        contextNode.observeState(newActiveMethodContext.getIdentifier());
     }
 
     @Override
