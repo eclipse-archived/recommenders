@@ -50,6 +50,24 @@ public class NetworksRandomLoadTests {
     }
 
     @Test
+    public void testNullArguments() {
+        for (final ITypeName type : availableTypes) {
+            try {
+                final IObjectMethodCallsNet model = modelStore.getModel(type);
+                model.clearEvidence();
+                model.setMethodContext(null);
+                model.setCalled(null);
+                model.setPattern(null);
+                model.updateBeliefs();
+                model.getRecommendedMethodCalls(0.0);
+            } catch (final Exception e) {
+                throwUnhandledException("error during setting null values tests in model " + type, e);
+            }
+        }
+
+    }
+
+    @Test
     // @Ignore
     public void testObservations() {
         int numberOfModelsChecked = 0;
