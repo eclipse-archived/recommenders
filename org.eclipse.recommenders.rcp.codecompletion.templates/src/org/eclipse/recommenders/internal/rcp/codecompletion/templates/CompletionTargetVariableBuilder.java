@@ -67,7 +67,7 @@ public final class CompletionTargetVariableBuilder {
     private CompletionTargetVariable buildInvokedVariable(final IIntelligentCompletionContext completionContext) {
         context = completionContext;
         receiverType = context.getReceiverType();
-        receiverName = context.getReceiverName();
+        receiverName = context.getReceiverName() == null ? "" : context.getReceiverName();
         replacementOffset = context.getReplacementRegion().getOffset();
         if (receiverType == null) {
             handleUnresolvedType();
@@ -86,7 +86,7 @@ public final class CompletionTargetVariableBuilder {
      * in the attributes of the builder.
      */
     private void handleUnresolvedType() {
-        if (receiverName == null || receiverName.isEmpty()) {
+        if (receiverName.isEmpty()) {
             receiverName = "this";
             receiverType = context.getEnclosingType();
             isCallOnThis = true;
@@ -123,8 +123,8 @@ public final class CompletionTargetVariableBuilder {
     private CompletionTargetVariable buildCompletionTargetVariable() {
         final int variableNameLength = getVariableNameLength();
         final Region region = new Region(replacementOffset - variableNameLength, variableNameLength);
-        return new CompletionTargetVariable(receiverName == null ? "" : receiverName, receiverType, receiverCalls,
-                region, needsConstructor, context);
+        return new CompletionTargetVariable(receiverName, receiverType, receiverCalls, region, needsConstructor,
+                context);
     }
 
     /**
