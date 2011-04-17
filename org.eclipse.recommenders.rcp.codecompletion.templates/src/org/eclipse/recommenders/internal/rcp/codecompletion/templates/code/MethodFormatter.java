@@ -10,6 +10,11 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
@@ -21,15 +26,13 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
-import com.google.inject.Inject;
-
 /**
  * Generates the <code>String</code> representation of an {@link IMethod}.
  */
 public class MethodFormatter {
 
     private final JavaElementResolver elementResolver;
-    private int argumentCounter = -1;
+    private final Map<String, Integer> argumentCounter = new HashMap<String, Integer>();
 
     /**
      * @param elementResolver
@@ -91,19 +94,19 @@ public class MethodFormatter {
      *         .
      */
     private String getParameterString(final String parameterName, final ITypeName parameterType) {
-        String appendix;
-        // TODO: Appendix for more types.
-        if (parameterType.isDeclaredType() || parameterType.isArrayType()) {
-            final String typeName = Names.vm2srcTypeName(parameterType.getIdentifier());
-            appendix = String.format(":var(%s)", typeName);
+        String appendix = "";
+        // TODO: Appendix for more types, add array support.
+        if (parameterType.isDeclaredType()) {
+            if (!parameterType.getIdentifier().startsWith("Ljava")) {
+                final String typeName = Names.vm2srcTypeName(parameterType.getIdentifier());
+                appendix = String.format(":var(%s)", typeName);
+            }
         } else if (parameterType == VmTypeName.BOOLEAN) {
             appendix = ":link(false, true)";
         } else if (parameterType == VmTypeName.INT || parameterType == VmTypeName.DOUBLE
                 || parameterType == VmTypeName.FLOAT || parameterType == VmTypeName.LONG
                 || parameterType == VmTypeName.SHORT) {
             appendix = ":link(0)";
-        } else {
-            appendix = "";
         }
         return String.format("${%s%s}", getParameterName(parameterName), appendix);
     }
@@ -111,26 +114,31 @@ public class MethodFormatter {
     /**
      * @param parameterName
      *            The parameter's name as resolved by JDT.
-     * @return The parameter name after it is modified in case it was in "
-     *         <code>arg0</code>" format.
+     * @return The unique parameter name, i.e. if there already has been a name
+     *         "button" in the current template, the new parameter name will be
+     *         "button2".
      */
     private String getParameterName(final String parameterName) {
-        if (parameterName.startsWith("arg")) {
-            ++argumentCounter;
-            return String.format("arg%d", Integer.valueOf(argumentCounter));
+        final String name = parameterName.length() <= 5 && parameterName.startsWith("arg") ? "arg" : parameterName;
+        if (argumentCounter.containsKey(name)) {
+            final Integer counter = argumentCounter.get(name);
+            argumentCounter.put(name, counter + 1);
+            return String.format("%s%s", name, counter + 1);
+        } else {
+            argumentCounter.put(name, 1);
         }
-        return parameterName;
+        return name;
     }
 
     /**
      * Eclipse templates disallow the use of same names for different
-     * parameters. If parameter names are unknown they usually are named
-     * <code>arg0</code>, <code>arg1</code>, etc. This enumeration starts at 0
-     * with each new expression so we have to ensure a continuous enumeration.
-     * This method resets the counter (e.g. after the pattern is completed).
+     * parameters. Therefore we count the occurrences of each parameter name, so
+     * we can assign unique names, e.g. turn "<code>button</code>" into "
+     * <code>button3</code>". This method resets the counter (usually called
+     * after the pattern is completed).
      */
     final void resetArgumentCounter() {
-        argumentCounter = -1;
+        argumentCounter.clear();
     }
 
 }

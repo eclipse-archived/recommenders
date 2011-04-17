@@ -24,7 +24,7 @@ public class CompletionOnLocaWithCompletionPrefix extends Dialog {
 	protected Control createDialogArea(final Composite parent) {
 		final Button b = new Button(null, 0);
 		// pattern w/o constructor but w/ setText
-		b.sett<^Space|dynamic.*216.*%>
+		b.sett<^Space|dynamic.*55.*%>
 		
 		b.settt<@Ignore^Space>
 		

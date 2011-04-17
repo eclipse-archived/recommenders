@@ -27,14 +27,14 @@ public final class MethodCallFormatterTest {
     @Test
     public void testMethodCallFormatter() throws JavaModelException {
         check(UnitTestSuite.getDefaultMethodCall(),
-                "button123.setText(${intTest:link(0)}, ${arg0:link(false, true)}, ${arg1:var(java/lang/String)}, ${arg2:var(org/eclipse/swt/widgets/Button)});");
+                "button123.setText(${intTest:link(0)}, ${arg:link(false, true)}, ${arg2}, ${arg3:var(org.eclipse.swt.widgets.Button)});");
 
         check(UnitTestSuite.getDefaultConstructorCall(),
-                "${constructedType:newType(org.eclipse.swt.widgets.Button)} ${unconstructed:newName(org.eclipse.swt.widgets.Button)} = new ${constructedType}(${intTest:link(0)}, ${arg3:link(false, true)}, ${arg4:var(java/lang/String)}, ${arg5:var(org/eclipse/swt/widgets/Button)});");
+                "${constructedType:newType(org.eclipse.swt.widgets.Button)} ${unconstructed:newName(org.eclipse.swt.widgets.Button)} = new ${constructedType}(${intTest2:link(0)}, ${arg4:link(false, true)}, ${arg5}, ${arg6:var(org.eclipse.swt.widgets.Button)});");
 
         // Invoke getText() on an "unconstructed" variable.
         check(new MethodCall("", UnitTestSuite.getDefaultReturningMethodCall().getInvokedMethod()),
-                "${returnedType:newType(String)} text = ${unconstructed}.getText(${intTest:link(0)}, ${arg6:link(false, true)}, ${arg7:var(java/lang/String)}, ${arg8:var(org/eclipse/swt/widgets/Button)});");
+                "${returnedType:newType(String)} text = ${unconstructed}.getText(${intTest3:link(0)}, ${arg7:link(false, true)}, ${arg8}, ${arg9:var(org.eclipse.swt.widgets.Button)});");
     }
 
     /**

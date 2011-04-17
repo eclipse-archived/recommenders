@@ -23,7 +23,7 @@ public class CompletionOnFieldWithObservedContructor extends Dialog {
 	@Override
     protected Control createDialogArea(final Composite parent) {
         b = new Button(null, 0);
-        b.<^Space|dynamic.*234.*%>
+        b.<^Space|dynamic.*761.*%>
         return null;
     }
 

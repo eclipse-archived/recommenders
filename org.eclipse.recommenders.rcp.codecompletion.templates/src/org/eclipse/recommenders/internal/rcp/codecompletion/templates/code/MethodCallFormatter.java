@@ -150,10 +150,10 @@ public final class MethodCallFormatter {
 
     /**
      * Eclipse templates disallow the use of same names for different
-     * parameters. If parameter names are unknown they usually are named
-     * <code>arg0</code>, <code>arg1</code>, etc. This enumeration starts at 0
-     * with each new expression so we have to ensure a continuous enumeration.
-     * This method resets the counter (e.g. after the pattern is completed).
+     * parameters. Therefore we count the occurrences of each parameter name, so
+     * we can assign unique names, e.g. turn "<code>button</code>" into "
+     * <code>button3</code>". This method resets the counter (usually called
+     * after the pattern is completed).
      */
     public void resetArgumentCounter() {
         methodFormatter.resetArgumentCounter();
