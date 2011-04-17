@@ -16,7 +16,7 @@ public class CompletionOnNullVariable {
 	CompletionOnNullVariable(){
 		Button b = null;
 		b.setEnabled(true);
-		b.<^Space|dynamic.*218.*%>
+		b.<^Space|dynamic.*79.*%>
 	}
 
 }

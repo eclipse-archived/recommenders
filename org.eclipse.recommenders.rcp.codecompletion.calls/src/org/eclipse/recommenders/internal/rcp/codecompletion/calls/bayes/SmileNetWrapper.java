@@ -151,7 +151,7 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     @Override
     public void setMethodContext(IMethodName newActiveMethodContext) {
         if (newActiveMethodContext == null) {
-            newActiveMethodContext = NetworkUtils.CTX_DUMMY;
+            newActiveMethodContext = NetworkUtils.CTX_NULL;
         }
         contextNode.observeState(newActiveMethodContext.getIdentifier());
     }
