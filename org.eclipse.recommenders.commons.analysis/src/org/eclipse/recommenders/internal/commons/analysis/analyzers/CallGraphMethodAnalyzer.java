@@ -99,7 +99,8 @@ public class CallGraphMethodAnalyzer implements IMethodAnalyzer {
                     final NewSiteReferenceForMethodReturn newsiteForField = (NewSiteReferenceForMethodReturn) site;
                     recInstanceKey.kind = Kind.LOCAL;
                     recInstanceKey.definitionSite = DefinitionSite
-                            .newSite(org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite.Kind.METHOD_RETURN,
+                            .newSite(
+                                    org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite.Kind.METHOD_RETURN,
                                     null, 0, WalaNameUtils.wala2recMethodName(newsiteForField.def));
                 } else if (MethodUtils.isFakeRoot(alloc.getNode())) {
                     // we assume that it is parameter when it is initialized in

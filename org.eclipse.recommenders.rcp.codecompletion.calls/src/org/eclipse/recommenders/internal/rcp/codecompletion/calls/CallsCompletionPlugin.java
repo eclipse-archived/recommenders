@@ -24,6 +24,7 @@ public class CallsCompletionPlugin extends AbstractUIPlugin {
     public void start(final BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        new ModelStoreInitializerJob().schedule(1000);
     }
 
     @Override

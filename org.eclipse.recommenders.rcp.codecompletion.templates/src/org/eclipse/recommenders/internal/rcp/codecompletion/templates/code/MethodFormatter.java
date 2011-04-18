@@ -10,13 +10,20 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 /**
@@ -25,7 +32,7 @@ import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 public class MethodFormatter {
 
     private final JavaElementResolver elementResolver;
-    private int argumentCounter = -1;
+    private final Map<String, Integer> argumentCounter = new HashMap<String, Integer>();
 
     /**
      * @param elementResolver
@@ -34,7 +41,7 @@ public class MethodFormatter {
      */
     @Inject
     public MethodFormatter(final JavaElementResolver elementResolver) {
-        this.elementResolver = elementResolver;
+        this.elementResolver = Checks.ensureIsNotNull(elementResolver);
     }
 
     /**
@@ -65,7 +72,10 @@ public class MethodFormatter {
             final String[] parameterNames = jdtMethod.getParameterNames();
             final String[] parameterTypes = jdtMethod.getParameterTypes();
             for (int i = 0; i < parameterNames.length; ++i) {
-                parameters.append(getParameterString(parameterNames[i], parameterTypes[i]));
+                final String typeIdentifier = StringUtils.chomp(parameterTypes[i].replace('.', '/'), ";");
+                final VmTypeName parameterType = VmTypeName.get(typeIdentifier);
+                final String parameterString = getParameterString(parameterNames[i], parameterType);
+                parameters.append(parameterString);
                 parameters.append(", ");
             }
         } catch (final JavaModelException e) {
@@ -83,43 +93,52 @@ public class MethodFormatter {
      *         <code>${listener:var(org.eclipse.swt.events.SelectionListener)}</code>
      *         .
      */
-    private String getParameterString(final String parameterName, final String parameterType) {
-        final StringBuilder parameter = new StringBuilder(16);
-        parameter.append(getParameterName(parameterName));
-        if ("I".equals(parameterType)) {
-            parameter.append(":link(0)");
-        } else if ("Z".equals(parameterType)) {
-            parameter.append(":link(false, true)");
-        } else if (parameterType.endsWith(";") && !parameterType.startsWith("Ljava")) {
-            parameter.append(String.format(":var(%s)", parameterType.substring(1, parameterType.length() - 1)));
+    private String getParameterString(final String parameterName, final ITypeName parameterType) {
+        String appendix = "";
+        // TODO: Appendix for more types, add array support.
+        if (parameterType.isDeclaredType()) {
+            if (!parameterType.getIdentifier().startsWith("Ljava")) {
+                final String typeName = Names.vm2srcTypeName(parameterType.getIdentifier());
+                appendix = String.format(":var(%s)", typeName);
+            }
+        } else if (parameterType == VmTypeName.BOOLEAN) {
+            appendix = ":link(false, true)";
+        } else if (parameterType == VmTypeName.INT || parameterType == VmTypeName.DOUBLE
+                || parameterType == VmTypeName.FLOAT || parameterType == VmTypeName.LONG
+                || parameterType == VmTypeName.SHORT) {
+            appendix = ":link(0)";
         }
-        return String.format("${%s}", parameter);
+        return String.format("${%s%s}", getParameterName(parameterName), appendix);
     }
 
     /**
      * @param parameterName
      *            The parameter's name as resolved by JDT.
-     * @return The parameter name after it is modified in case it was in "
-     *         <code>arg0</code>" format.
+     * @return The unique parameter name, i.e. if there already has been a name
+     *         "button" in the current template, the new parameter name will be
+     *         "button2".
      */
     private String getParameterName(final String parameterName) {
-        String name = parameterName;
-        if (parameterName.startsWith("arg")) {
-            ++argumentCounter;
-            name = String.format("arg%d", Integer.valueOf(argumentCounter));
+        final String name = parameterName.length() <= 5 && parameterName.startsWith("arg") ? "arg" : parameterName;
+        if (argumentCounter.containsKey(name)) {
+            final Integer counter = argumentCounter.get(name);
+            argumentCounter.put(name, counter + 1);
+            return String.format("%s%s", name, counter + 1);
+        } else {
+            argumentCounter.put(name, 1);
         }
         return name;
     }
 
     /**
      * Eclipse templates disallow the use of same names for different
-     * parameters. If parameter names are unknown they usually are named
-     * <code>arg0</code>, <code>arg1</code>, etc. This enumeration starts at 0
-     * with each new expression so we have to ensure a continuous enumeration.
-     * This method resets the counter (e.g. after the pattern is completed).
+     * parameters. Therefore we count the occurrences of each parameter name, so
+     * we can assign unique names, e.g. turn "<code>button</code>" into "
+     * <code>button3</code>". This method resets the counter (usually called
+     * after the pattern is completed).
      */
     final void resetArgumentCounter() {
-        argumentCounter = -1;
+        argumentCounter.clear();
     }
 
 }

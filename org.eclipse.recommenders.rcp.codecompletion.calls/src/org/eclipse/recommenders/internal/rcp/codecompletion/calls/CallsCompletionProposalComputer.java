@@ -46,8 +46,7 @@ import com.google.inject.Provider;
 
 @SuppressWarnings("restriction")
 public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
-    private static final double MIN_PROBABILITY_THRESHOLD = 0.05d;
-
+    private static final double MIN_PROBABILITY_THRESHOLD = 0.1d;
     private Set<Class<?>> supportedCompletionRequests;
 
     private final CallsModelStore modelsStore;

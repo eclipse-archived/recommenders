@@ -30,52 +30,51 @@ import com.ibm.wala.types.TypeReference;
 
 public class BypassingClassTargetSelectorTest {
 
-	private static IClassHierarchy cha = BundleClassloaderBasedClassHierarchy
-			.newInstance(BypassingAbstractClassesClassTargetSelector.class);
-	private final BypassingAbstractClassesClassTargetSelector sut = new BypassingAbstractClassesClassTargetSelector();
+    private static IClassHierarchy cha = BundleClassloaderBasedClassHierarchy
+            .newInstance(BypassingAbstractClassesClassTargetSelector.class);
+    private final BypassingAbstractClassesClassTargetSelector sut = new BypassingAbstractClassesClassTargetSelector();
 
-	private NewSiteReference site;
+    private NewSiteReference site;
 
-	private CGNode caller;
+    private CGNode caller;
 
-	@Test
-	public void testGetAllocatedTarget_Primitive() {
-		// setup
-		setupSiteAndCGNode(TypeReference.Boolean);
-		// exercise
-		final IClass actual = sut.getAllocatedTarget(caller, site);
-		// verify
-		assertEquals(null, actual);
-	}
+    @Test
+    public void testGetAllocatedTarget_Primitive() {
+        // setup
+        setupSiteAndCGNode(TypeReference.Boolean);
+        // exercise
+        final IClass actual = sut.getAllocatedTarget(caller, site);
+        // verify
+        assertEquals(null, actual);
+    }
 
-	@Test
-	public void testGetAllocatedTarget_Primordial_JavaLangCharacter() {
-		// setup
-		setupSiteAndCGNode(TypeReference.JavaLangCharacter);
-		// exercise
-		final IClass allocated = sut.getAllocatedTarget(caller, site);
-		// verify
-		assertEquals(TypeReference.JavaLangCharacter, allocated.getReference());
-	}
+    @Test
+    public void testGetAllocatedTarget_Primordial_JavaLangCharacter() {
+        // setup
+        setupSiteAndCGNode(TypeReference.JavaLangCharacter);
+        // exercise
+        final IClass allocated = sut.getAllocatedTarget(caller, site);
+        // verify
+        assertEquals(TypeReference.JavaLangCharacter, allocated.getReference());
+    }
 
-	@Test
-	public void testGetAllocatedTarget_Interface_JavaLangSet() {
-		// setup
-		setupSiteAndCGNode(TypeReference.JavaUtilSet);
-		// exercise
-		final IClass allocated = sut.getAllocatedTarget(caller, site);
-		// verify
-		assertTrue(allocated instanceof BypassSyntheticClass);
-		final IClass realType = ((BypassSyntheticClass) allocated)
-				.getRealType();
-		assertEquals(TypeReference.JavaUtilSet, realType.getReference());
-	}
+    @Test
+    public void testGetAllocatedTarget_Interface_JavaLangSet() {
+        // setup
+        setupSiteAndCGNode(TypeReference.JavaUtilSet);
+        // exercise
+        final IClass allocated = sut.getAllocatedTarget(caller, site);
+        // verify
+        assertTrue(allocated instanceof BypassSyntheticClass);
+        final IClass realType = ((BypassSyntheticClass) allocated).getRealType();
+        assertEquals(TypeReference.JavaUtilSet, realType.getReference());
+    }
 
-	private void setupSiteAndCGNode(final TypeReference declaredNewSiteType) {
-		site = createNewSiteMock();
-		caller = createCGNodeMock();
+    private void setupSiteAndCGNode(final TypeReference declaredNewSiteType) {
+        site = createNewSiteMock();
+        caller = createCGNodeMock();
 
-		mockNewSiteGetDeclaredType(site, declaredNewSiteType);
-		mockCGNodeGetClassHierarchy(caller, cha);
-	}
+        mockNewSiteGetDeclaredType(site, declaredNewSiteType);
+        mockCGNodeGetClassHierarchy(caller, cha);
+    }
 }

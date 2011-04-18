@@ -19,10 +19,14 @@ public class Node implements Serializable {
 
     private static final long serialVersionUID = 6120294183622148914L;
 
+    private static final Node[] EMPTY_PARENTS = new Node[0];
+    private static final String[] EMPTY_STATES = new String[0];
+    private static final double[] EMPTY_PROBABILITIES = new double[0];
+
     private final String identifier;
-    private Node[] parents;
-    private String[] states;
-    private double[] probabilities;
+    private Node[] parents = EMPTY_PARENTS;
+    private String[] states = EMPTY_STATES;
+    private double[] probabilities = EMPTY_PROBABILITIES;
 
     public Node(final String identifier) {
         this.identifier = identifier;
@@ -48,7 +52,7 @@ public class Node implements Serializable {
     }
 
     public Node[] getParents() {
-        return this.parents;
+        return parents;
     }
 
     public void setProbabilities(final double[] probabilities) {

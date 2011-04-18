@@ -29,7 +29,7 @@ public class CompletionOnLocalFromNestedAnonymousClass extends DialogPage {
             @Override
             public void modifyText(final ModifyEvent e) {
             	// The new variable created from return type has to be declared properly.
-                text.<^Space|dynamic.*44.*%>
+                text.<^Space|dynamic.*142.*%>
             }
         });
     }

@@ -48,4 +48,8 @@ public interface IObjectMethodCallsNet {
 
     public abstract Collection<IMethodName> getMethodCalls();
 
+    public abstract Collection<IMethodName> getContexts();
+
+    public abstract Collection<String> getPatterns();
+
 }

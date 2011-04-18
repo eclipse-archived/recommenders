@@ -34,21 +34,21 @@ import com.ibm.wala.ipa.callgraph.Entrypoint;
 
 public class ProtectedMethodsEntrypointSelectorTest {
 
-  IEntrypointSelector sut = new ProtectedMethodsEntrypointSelector();
+    IEntrypointSelector sut = new ProtectedMethodsEntrypointSelector();
 
-  @Test
-  public void testSelectEntryPoints() {
-    // setup
-    final IClass clazz = createClassMock();
-    final IMethod expected = createProtectedMethodMock();
-    final List<IMethod> declaredMethods = Lists.newArrayList(createPublicClinitMock(), createPrivateMethodMock(),
-        createPublicConstructorMock(), createPublicClinitMock(), createPublicFinalMethodMock(),
-        createPublicNativeMock(), createPublicStaticMethodMock(), createProtectedStaticMethodMock(), expected);
-    mockClassGetDeclareMethods(clazz, declaredMethods);
-    // exercise
-    final List<Entrypoint> selectedMethods = sut.selectEntrypoints(clazz);
-    // verify
-    assertEquals(1, selectedMethods.size());
-    assertEquals(expected, Iterables.getFirst(selectedMethods, null).getMethod());
-  }
+    @Test
+    public void testSelectEntryPoints() {
+        // setup
+        final IClass clazz = createClassMock();
+        final IMethod expected = createProtectedMethodMock();
+        final List<IMethod> declaredMethods = Lists.newArrayList(createPublicClinitMock(), createPrivateMethodMock(),
+                createPublicConstructorMock(), createPublicClinitMock(), createPublicFinalMethodMock(),
+                createPublicNativeMock(), createPublicStaticMethodMock(), createProtectedStaticMethodMock(), expected);
+        mockClassGetDeclareMethods(clazz, declaredMethods);
+        // exercise
+        final List<Entrypoint> selectedMethods = sut.selectEntrypoints(clazz);
+        // verify
+        assertEquals(1, selectedMethods.size());
+        assertEquals(expected, Iterables.getFirst(selectedMethods, null).getMethod());
+    }
 }

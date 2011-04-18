@@ -21,7 +21,7 @@ public class CompletionOnUnqualifiedSimpleTypeInMethodBody extends Dialog {
 	protected Control createDialogArea(final Composite parent) {
 		// give patterns and import button then
 		// ensure Button is not imported as SWT or AWT Button before
-		Button<^Space|dynamic.*216.*%>
+		Button<^Space|dynamic.*55.*%>
 		return null;
 	}
 

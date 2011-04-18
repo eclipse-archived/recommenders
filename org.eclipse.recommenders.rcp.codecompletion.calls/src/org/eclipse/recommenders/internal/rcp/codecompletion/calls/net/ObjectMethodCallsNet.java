@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureEquals;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -230,5 +231,16 @@ public class ObjectMethodCallsNet implements IObjectMethodCallsNet {
     @Override
     public Collection<IMethodName> getMethodCalls() {
         return new LinkedList<IMethodName>(methodNodes.keySet());
+    }
+
+    @Override
+    public Collection<IMethodName> getContexts() {
+        return getContextNode().getKnownMethodContexts();
+    }
+
+    @Override
+    public Collection<String> getPatterns() {
+        final String[] patternNames = getPatternsNode().getPatternNames();
+        return Arrays.asList(patternNames);
     }
 }

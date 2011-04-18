@@ -81,9 +81,9 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
             final JavaElementResolver resolver) {
         ensureIsNotNull(jdtCtx);
         ensureIsNotNull(resolver);
-        this.jdtCompletionContext = jdtCtx;
+        jdtCompletionContext = jdtCtx;
         this.resolver = resolver;
-        this.jdtCompilationUnit = (org.eclipse.jdt.internal.core.CompilationUnit) jdtCtx.getCompilationUnit();
+        jdtCompilationUnit = (org.eclipse.jdt.internal.core.CompilationUnit) jdtCtx.getCompilationUnit();
         initializeCompletionPrefixToken();
         initializeRequestor();
         initializeCompletionEngine();
@@ -130,7 +130,7 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
     }
 
     private void findCompletionNode() {
-        this.astCompletionNodeFinder = new CompilerAstCompletionNodeFinder();
+        astCompletionNodeFinder = new CompilerAstCompletionNodeFinder();
         final ReferenceContext referenceContext = completionParser.referenceContext;
         if (completionParser.compilationUnit != null) {
             final CompilationUnitDeclaration compilationUnit = completionParser.compilationUnit;
@@ -361,14 +361,7 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
                 && getReceiverType() == null;
     }
 
-    /**
-     * Searches the list of locals and fields declared for exact match. This
-     * method may return <code>null</code>.
-     * <p>
-     * Note, this method does not perform a search on inherited fields. Only
-     * declarations in "this" are considered.
-     * </p>
-     */
+    @Override
     public Variable findMatchingVariable(final String variableName) {
         AbstractVariableDeclaration match = findMatchingLocalVariable(getReceiverName());
         if (match == null) {

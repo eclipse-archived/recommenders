@@ -18,8 +18,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the annotated method or constructor should be called from a background job/thread -
- * most common because its execution may take some time.
+ * This annotation indicates that the annotated method or constructor should be
+ * called from a background job/thread - most common because its execution may
+ * take some time.
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)

@@ -20,6 +20,7 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.JavaTemplateProposal;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
@@ -41,28 +42,29 @@ public final class CompletionProposalsBuilder {
      *            The icon to be shown along with the completion proposals.
      * @param codeBuilder
      *            The {@link CodeBuilder} will turn {@link MethodCall}s into the
-     *            code to be used by the eclipse template engine.
+     *            code to be used by the Eclipse template engine.
      */
     public CompletionProposalsBuilder(final Image templateIcon, final CodeBuilder codeBuilder) {
         this.templateIcon = templateIcon;
-        this.codeBuilder = codeBuilder;
+        this.codeBuilder = Checks.ensureIsNotNull(codeBuilder);
     }
 
     /**
      * @param patterns
      *            The patterns which shall be turned into completion proposals.
      * @param context
-     *            The context from where the completion request was invoked.
+     *            The context from which the completion request was invoked.
      * @param targetVariableName
-     *            The name of the variable on which the proposed methods shall
-     *            be invoked.
+     *            The name of the variable on which the methods proposed by the
+     *            patterns shall be invoked.
      * @return A list of completion proposals for the given patterns.
      */
     public ImmutableList<IJavaCompletionProposal> computeProposals(final Collection<PatternRecommendation> patterns,
             final DocumentTemplateContext context, final String targetVariableName) {
         final Builder<IJavaCompletionProposal> proposals = ImmutableList.builder();
         for (final PatternRecommendation pattern : patterns) {
-            proposals.add(buildTemplateProposal(pattern, context, targetVariableName));
+            final TemplateProposal template = buildTemplateProposal(pattern, context, targetVariableName);
+            proposals.add(template);
         }
         return proposals.build();
     }
@@ -71,10 +73,10 @@ public final class CompletionProposalsBuilder {
      * @param patternRecommendation
      *            The pattern which shall be turned into a completion proposal.
      * @param context
-     *            The context from where the completion request was invoked.
+     *            The context from which the completion request was invoked.
      * @param targetVariableName
-     *            The name of the variable on which the proposed methods shall
-     *            be invoked.
+     *            The name of the variable on which the methods proposed by the
+     *            pattern shall be invoked.
      * @return The given pattern turned into a proposal object.
      */
     private TemplateProposal buildTemplateProposal(final PatternRecommendation patternRecommendation,
@@ -84,8 +86,8 @@ public final class CompletionProposalsBuilder {
         final String templateDescription = patternRecommendation.getType().getClassName();
         final Template template = new Template(templateName, templateDescription, "java", code, false);
 
-        final Region region = new Region(context.getCompletionOffset(), context.getCompletionLength());
+        final Region replacementRegion = new Region(context.getCompletionOffset(), context.getCompletionLength());
         final int probability = patternRecommendation.getProbability();
-        return new JavaTemplateProposal(template, context, region, templateIcon, probability);
+        return new JavaTemplateProposal(template, context, replacementRegion, templateIcon, probability);
     }
 }

@@ -11,12 +11,10 @@
 package org.eclipse.recommenders.examples.demo;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
@@ -32,34 +30,25 @@ import org.eclipse.swt.widgets.Text;
  */
 public class MyDialog extends Dialog {
 
-	private Text swtTextWidget;
+    private Text swtTextWidget;
 
-	@Override
-	protected Control createDialogArea(final Composite parent) {
-		final Composite container = createContainer(parent);
+    @Override
+    protected Control createDialogArea(final Composite parent) {
+        final Composite container = createContainer(parent);
 
-		final Text text = new Text(container, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
-		text.setText("");
-		text.addModifyListener(new ModifyListener() {
-			
-			@Override
-			public void modifyText(ModifyEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
-		Button b = new Button(null, 0);
-		b.setText("");
-		b.setLayoutData(null);
-		b.setFont(null);
-		return container;
-	}
+        final Text text = new Text(container, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
+        text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        CheckboxTableViewer v = new CheckboxTableViewer(null);
 
-	private Composite createContainer(final Composite parent) {
-		final Composite container = new Composite(parent, SWT.NONE);
-		return container;
-	}
+        return container;
+    }
 
-	protected MyDialog(final IShellProvider parentShell) {
-		super(parentShell);
-	}
+    private Composite createContainer(final Composite parent) {
+        final Composite container = new Composite(parent, SWT.NONE);
+        return container;
+    }
+
+    protected MyDialog(final IShellProvider parentShell) {
+        super(parentShell);
+    }
 }

@@ -101,7 +101,8 @@ public class UsedTypesAndMethodsFinder {
             }
 
             /**
-             * returns true iff the give type was relevant, and thus added to the list of returned types
+             * returns true iff the give type was relevant, and thus added to
+             * the list of returned types
              */
             private boolean addTypeBinding(final ITypeBinding b) {
                 final ITypeName type = BindingUtils.toTypeName(b);

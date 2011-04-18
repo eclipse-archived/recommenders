@@ -15,6 +15,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -27,19 +38,9 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Patt
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
 /**
- * Computes {@link PatternRecommendation}s from the {@link CallsModelStore}.
+ * Computes context-sensitive {@link PatternRecommendation}s from the
+ * {@link CallsModelStore}.
  */
 public final class PatternRecommender {
 
@@ -56,7 +57,7 @@ public final class PatternRecommender {
 
     /**
      * @param callsModelStore
-     *            The place where all patterns for every available class are
+     *            The place where all patterns for all available classes are
      *            stored.
      * @param usageResolvers
      *            A set of resolvers which are able to compute a variable's type
@@ -71,7 +72,8 @@ public final class PatternRecommender {
 
     /**
      * @param targetVariable
-     *            The variable on which the completion request was invoked.
+     *            The variable information which could be extracted from the
+     *            completion context.
      * @return The {@link PatternRecommendation}s holding information for the
      *         templates to be displayed.
      */
@@ -128,7 +130,7 @@ public final class PatternRecommender {
      */
     private ImmutableSet<IObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
         final Builder<IObjectMethodCallsNet> models = ImmutableSet.builder();
-        if (receiverType.getPackage().getIdentifier().length() == 0) {
+        if (receiverType.getPackage().isDefaultPackage()) {
             models.addAll(callsModelStore.getModelsForSimpleName(receiverType));
         } else if (callsModelStore.hasModel(receiverType)) {
             models.add(callsModelStore.getModel(receiverType));
@@ -155,13 +157,12 @@ public final class PatternRecommender {
      *            The target variable as given by the context.
      * @return True, if the patterns should definitely contain no constructors.
      */
-    private boolean shallNegateConstructors(final Variable contextVariable) {
+    private static boolean shallNegateConstructors(final Variable contextVariable) {
         return contextVariable != null
                 && (contextVariable.fuzzyIsParameter() || contextVariable.fuzzyIsDefinedByMethodReturn());
     }
 
     /**
-     * @param prefixToken
      * @param constructorRequired
      *            True, if patterns without constructors should be filtered out.
      * @return The most probable patterns regarding the updated model, limited
@@ -172,9 +173,9 @@ public final class PatternRecommender {
         for (final Tuple<String, Double> patternWithProbablity : findMostLikelyPatterns()) {
             final String patternName = patternWithProbablity.getFirst();
             final List<IMethodName> patternMethods = getMethodCallsForPattern(patternName);
-            if (keepPattern(patternMethods, constructorRequired)) {
+            if (shouldKeepPattern(patternMethods, constructorRequired)) {
                 final int percentage = (int) (patternWithProbablity.getSecond().doubleValue() * 100);
-                typeRecs.add(PatternRecommendation.create(patternName, model.getType(), patternMethods, percentage));
+                typeRecs.add(new PatternRecommendation(patternName, model.getType(), patternMethods, percentage));
             }
         }
         return ImmutableSet.copyOf(typeRecs);
@@ -194,8 +195,8 @@ public final class PatternRecommender {
 
     /**
      * @param patternName
-     *            The interal names, used to identify the pattern inside the
-     *            pattern store.
+     *            The internal pattern name, used to identify the pattern inside
+     *            the pattern store.
      * @return The methods which shall be invoked by the template built from the
      *         given pattern.
      */
@@ -218,7 +219,7 @@ public final class PatternRecommender {
      * @return True, if methods exist and they either contain a constructor or a
      *         constructor is not required.
      */
-    private boolean keepPattern(final List<IMethodName> patternMethods, final boolean constructorRequired) {
+    private boolean shouldKeepPattern(final List<IMethodName> patternMethods, final boolean constructorRequired) {
         if (patternMethods.isEmpty() || constructorRequired && !patternMethods.get(0).isInit()) {
             return false;
         }

@@ -39,15 +39,14 @@ public class InvalidThreadAccessDemo {
 
             @Override
             public void run() {
-            	try {
-	                for (int i = 0; i < 10; i++) {
-	                    doSomething();
-	                    progressBar.setSelection(i * 10);
-	                }
-            	}
-            	catch(Exception e) {
-            		throw new RuntimeException(e);
-            	}
+                try {
+                    for (int i = 0; i < 10; i++) {
+                        doSomething();
+                        progressBar.setSelection(i * 10);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         });

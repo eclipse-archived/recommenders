@@ -84,6 +84,7 @@
 
 	
 	<build>
+		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.sonatype.tycho</groupId>
@@ -196,6 +197,54 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <configLocation>org.eclipse.recommenders.releng/checkstyle.xml</configLocation>
+          <failsOnError>true</failsOnError>
+          <failsOnViolation>true</failsOnViolation>
+          <executions>
+		        <execution>
+		          <goals>
+		            <goal>checkstyle</goal>
+		            <goal>check</goal>
+		          </goals>
+		        </execution>
+		      </executions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+        	<targetJdk>1.6</targetJdk>
+        	<minimumPriority>1</minimumPriority>
+        	<failurePriority>0</failurePriority>
+          <rulesets>
+            <ruleset>rulesets/basic.xml</ruleset>
+						<ruleset>rulesets/unusedcode.xml</ruleset>
+						<ruleset>rulesets/design.xml</ruleset>
+						<ruleset>rulesets/imports.xml</ruleset>
+						<ruleset>rulesets/junit.xml</ruleset>
+						<ruleset>rulesets/strings.xml</ruleset>
+						<ruleset>rulesets/braces.xml</ruleset>
+						<ruleset>rulesets/codesize.xml</ruleset>
+						<ruleset>rulesets/coupling.xml</ruleset>
+						<ruleset>rulesets/strictexception.xml</ruleset>
+          </rulesets>
+        </configuration>
+        <executions>
+	        <execution>
+	          <goals>
+	            <goal>check</goal>
+	            <!--goal>cpd-check</goal-->
+	          </goals>
+	        </execution>
+	      </executions>
+      </plugin>
 		</plugins>
 	</build>
 
@@ -229,7 +278,7 @@
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.chain</module>
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.templates</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module>
+		<!--module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module-->
 		
 		<module>org.eclipse.recommenders.rcp.utils</module>
 		<module>org.eclipse.recommenders.tests.commons</module>

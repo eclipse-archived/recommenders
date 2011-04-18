@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 import com.google.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -32,7 +33,7 @@ public final class MethodCallFormatter {
      */
     @Inject
     public MethodCallFormatter(final MethodFormatter methodFormatter) {
-        this.methodFormatter = methodFormatter;
+        this.methodFormatter = Checks.ensureIsNotNull(methodFormatter);
     }
 
     /**
@@ -67,14 +68,13 @@ public final class MethodCallFormatter {
      * @return The left side of an assignment, e.g. "<code>Button b = </code>".
      */
     private static String getNewVariableString(final MethodCall methodCall) {
-        String variableString = "";
         final IMethodName invokedMethod = methodCall.getInvokedMethod();
         if (!invokedMethod.isVoid() || invokedMethod.isInit()) {
             final String variableType = getNewVariableTypeString(invokedMethod);
             final String variableName = getNewVariableName(methodCall);
-            variableString = String.format("%s %s = ", variableType, variableName);
+            return String.format("%s %s = ", variableType, variableName);
         }
-        return variableString;
+        return "";
     }
 
     /**
@@ -84,15 +84,11 @@ public final class MethodCallFormatter {
      *         variable declaration, e.g. " <code>Button</code>".
      */
     private static String getNewVariableTypeString(final IMethodName invokedMethod) {
-        String typeString;
         if (invokedMethod.isInit()) {
-            typeString = String.format("${constructedType:newType(%s)}",
+            return String.format("${constructedType:newType(%s)}",
                     Names.vm2srcQualifiedType(invokedMethod.getDeclaringType()));
-        } else {
-            typeString = String.format("${returnedType:newType(%s)}",
-                    Names.vm2srcSimpleTypeName(invokedMethod.getReturnType()));
         }
-        return typeString;
+        return String.format("${returnedType:newType(%s)}", Names.vm2srcSimpleTypeName(invokedMethod.getReturnType()));
     }
 
     /**
@@ -148,16 +144,16 @@ public final class MethodCallFormatter {
      *         the new variable type (as given by the return type).
      */
     private static String getNewVariableNameFromReturnType(final ITypeName returnType) {
-        final String type = Names.vm2srcTypeName(returnType.getIdentifier());
-        return String.format("${returned:newName(%s)}", type);
+        final String returnTypeName = Names.vm2srcTypeName(returnType.getIdentifier());
+        return String.format("${returned:newName(%s)}", returnTypeName);
     }
 
     /**
      * Eclipse templates disallow the use of same names for different
-     * parameters. If parameter names are unknown they usually are named
-     * <code>arg0</code>, <code>arg1</code>, etc. This enumeration starts at 0
-     * with each new expression so we have to ensure a continuous enumeration.
-     * This method resets the counter (e.g. after the pattern is completed).
+     * parameters. Therefore we count the occurrences of each parameter name, so
+     * we can assign unique names, e.g. turn "<code>button</code>" into "
+     * <code>button3</code>". This method resets the counter (usually called
+     * after the pattern is completed).
      */
     public void resetArgumentCounter() {
         methodFormatter.resetArgumentCounter();

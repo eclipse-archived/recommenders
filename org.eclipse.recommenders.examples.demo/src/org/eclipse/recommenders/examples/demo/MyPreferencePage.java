@@ -11,10 +11,13 @@
 package org.eclipse.recommenders.examples.demo;
 
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 
 public class MyPreferencePage extends PreferencePage {
@@ -24,9 +27,8 @@ public class MyPreferencePage extends PreferencePage {
 
     @Override
     protected Control createContents(final Composite arg0) {
-        final Composite container = new Composite(arg0, SWT.NONE);
-
-        return container;
+        button = new Button(arg0, 0);
+        CheckboxTableViewer v = new CheckboxTableViewer(null);
+        return null;
     }
-
 }
