@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.corext.template.java.SignatureUtil;
 import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -31,7 +32,7 @@ public class CompilerBindings {
      * TODO nested anonymous types are not resolved correctly. JDT uses line
      * numbers for inner types instead of $1,..,$n
      */
-    public static ITypeName toTypeName(final @Nullable TypeBinding binding) {
+    public static ITypeName toTypeName(@Nullable TypeBinding binding) {
         if (binding == null) {
             return null;
         }
@@ -39,6 +40,12 @@ public class CompilerBindings {
             final int dimensions = binding.dimensions();
             final TypeBinding leafComponentType = binding.leafComponentType();
             return VmTypeName.get(StringUtils.repeat("[", dimensions) + toTypeName(leafComponentType));
+        }
+        // TODO: handling of generics is bogus!
+        if (binding instanceof TypeVariableBinding) {
+            final TypeVariableBinding generic = (TypeVariableBinding) binding;
+            binding = (TypeBinding) generic.declaringElement;
+
         }
         String signature = String.valueOf(binding.computeUniqueKey());
         if (signature.length() == 1) {
