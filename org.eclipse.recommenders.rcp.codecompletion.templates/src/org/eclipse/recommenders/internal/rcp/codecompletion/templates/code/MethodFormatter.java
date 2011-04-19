@@ -16,11 +16,11 @@ import java.util.Map;
 import com.google.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.core.IJavaModelStatusConstants;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Names;
-import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
@@ -49,7 +49,7 @@ public class MethodFormatter {
      *            The method which shall be turned into java code.
      * @return A string containing the java code for the given method.
      */
-    public final String format(final IMethodName methodName) {
+    public final String format(final IMethodName methodName) throws JavaModelException {
         String method;
         if (methodName.isInit()) {
             method = "${constructedType}";
@@ -65,21 +65,20 @@ public class MethodFormatter {
      * @return The method's parameters as template code, e.g.
      *         <code>${string}, ${selected:link(false, true)}</code>.
      */
-    private String getParametersString(final IMethodName methodName) {
+    private String getParametersString(final IMethodName methodName) throws JavaModelException {
         final StringBuilder parameters = new StringBuilder(32);
         final IMethod jdtMethod = elementResolver.toJdtMethod(methodName);
-        try {
-            final String[] parameterNames = jdtMethod.getParameterNames();
-            final String[] parameterTypes = jdtMethod.getParameterTypes();
-            for (int i = 0; i < parameterNames.length; ++i) {
-                final String typeIdentifier = StringUtils.chomp(parameterTypes[i].replace('.', '/'), ";");
-                final VmTypeName parameterType = VmTypeName.get(typeIdentifier);
-                final String parameterString = getParameterString(parameterNames[i], parameterType);
-                parameters.append(parameterString);
-                parameters.append(", ");
-            }
-        } catch (final JavaModelException e) {
-            Throws.throwUnhandledException(e);
+        if (jdtMethod == null) {
+            throw new JavaModelException(new IllegalStateException(), IJavaModelStatusConstants.CORE_EXCEPTION);
+        }
+        final String[] parameterNames = jdtMethod.getParameterNames();
+        final String[] parameterTypes = jdtMethod.getParameterTypes();
+        for (int i = 0; i < parameterNames.length; ++i) {
+            final String typeIdentifier = StringUtils.chomp(parameterTypes[i].replace('.', '/'), ";");
+            final VmTypeName parameterType = VmTypeName.get(typeIdentifier);
+            final String parameterString = getParameterString(parameterNames[i], parameterType);
+            parameters.append(parameterString);
+            parameters.append(", ");
         }
         return StringUtils.chomp(parameters.toString(), ", ");
     }

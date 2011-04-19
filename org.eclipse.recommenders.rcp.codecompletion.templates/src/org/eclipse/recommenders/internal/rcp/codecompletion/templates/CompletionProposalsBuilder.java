@@ -15,6 +15,7 @@ import java.util.Collection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jface.text.Region;
@@ -63,8 +64,12 @@ public final class CompletionProposalsBuilder {
             final DocumentTemplateContext context, final String targetVariableName) {
         final Builder<IJavaCompletionProposal> proposals = ImmutableList.builder();
         for (final PatternRecommendation pattern : patterns) {
-            final TemplateProposal template = buildTemplateProposal(pattern, context, targetVariableName);
-            proposals.add(template);
+            try {
+                final TemplateProposal template = buildTemplateProposal(pattern, context, targetVariableName);
+                proposals.add(template);
+            } catch (final JavaModelException e) {
+                continue;
+            }
         }
         return proposals.build();
     }
@@ -80,7 +85,7 @@ public final class CompletionProposalsBuilder {
      * @return The given pattern turned into a proposal object.
      */
     private TemplateProposal buildTemplateProposal(final PatternRecommendation patternRecommendation,
-            final DocumentTemplateContext context, final String targetVariableName) {
+            final DocumentTemplateContext context, final String targetVariableName) throws JavaModelException {
         final String code = codeBuilder.buildCode(patternRecommendation.getMethods(), targetVariableName);
         final String templateName = patternRecommendation.getName();
         final String templateDescription = patternRecommendation.getType().getClassName();

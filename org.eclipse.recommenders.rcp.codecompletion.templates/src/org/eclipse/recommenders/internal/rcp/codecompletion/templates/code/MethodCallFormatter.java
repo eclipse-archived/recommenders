@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 import com.google.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -45,7 +46,7 @@ public final class MethodCallFormatter {
      *         variable with the invoked method, e.g. "
      *         <code>String text = button.getText()</code>".
      */
-    public String format(final MethodCall methodCall) {
+    public String format(final MethodCall methodCall) throws JavaModelException {
         String invocationPrefix;
         final IMethodName invokedMethod = methodCall.getInvokedMethod();
         if (invokedMethod.isInit()) {

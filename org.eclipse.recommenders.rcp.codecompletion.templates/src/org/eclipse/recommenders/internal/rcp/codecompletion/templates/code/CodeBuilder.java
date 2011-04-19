@@ -14,6 +14,7 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
@@ -47,7 +48,7 @@ public final class CodeBuilder {
      * @return The code to be inserted into the document, built from the
      *         recommended method calls and the given target variable.
      */
-    public String buildCode(final List<IMethodName> methods, final String targetVariableName) {
+    public String buildCode(final List<IMethodName> methods, final String targetVariableName) throws JavaModelException {
         Checks.ensureIsNotEmpty(methods, "Methods must not be empty.");
         final StringBuilder code = new StringBuilder(methods.size() * 16);
         for (final IMethodName method : methods) {

@@ -44,7 +44,7 @@ public final class MethodCallFormatterTest {
      * @param expected
      *            The string which is expected to be given by the formatter.
      */
-    private void check(final MethodCall methodCall, final String expected) {
+    private void check(final MethodCall methodCall, final String expected) throws JavaModelException {
         Assert.assertEquals(expected, methodCallFormatterMock.format(methodCall));
     }
 

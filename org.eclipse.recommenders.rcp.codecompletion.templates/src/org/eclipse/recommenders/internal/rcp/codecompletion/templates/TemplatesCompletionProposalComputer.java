@@ -14,6 +14,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
+import com.google.inject.Inject;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnLocalName;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
@@ -39,9 +42,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
 
 /**
  * Controls the process of template recommendations.

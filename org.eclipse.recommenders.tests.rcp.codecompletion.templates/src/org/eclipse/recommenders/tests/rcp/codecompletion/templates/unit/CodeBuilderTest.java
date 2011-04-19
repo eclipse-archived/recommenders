@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public final class CodeBuilderTest {
      * features by giving several different methods to the builder.
      */
     @Test
-    public void testBuildCode() {
+    public void testBuildCode() throws JavaModelException {
         final List<IMethodName> methods = new LinkedList<IMethodName>();
         methods.add(UnitTestSuite.getDefaultConstructorCall().getInvokedMethod());
         methods.add(UnitTestSuite.getDefaultMethodCall().getInvokedMethod());
@@ -49,7 +50,7 @@ public final class CodeBuilderTest {
      * exception.
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testBuildCodeNoMethods() {
+    public void testBuildCodeNoMethods() throws JavaModelException {
         codeBuilder.buildCode(new ArrayList<IMethodName>(), "");
     }
 }
