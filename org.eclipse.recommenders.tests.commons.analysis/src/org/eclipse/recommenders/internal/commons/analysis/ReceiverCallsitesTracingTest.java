@@ -50,6 +50,7 @@ import tracing.Tracing__Calls_To_Several_Parameters;
 import tracing.Tracing__Collects_Duplicated_Calls;
 import tracing.Tracing__Hierarchy_Subclass;
 import tracing.Tracing__Hierarchy_Subclass_Call_To_CreatorMethod;
+import tracing.Tracing__InterfaceUsages;
 import tracing.Tracing__Recursive_Calls_To_This;
 
 import com.google.common.collect.Lists;
@@ -100,6 +101,16 @@ public class ReceiverCallsitesTracingTest {
         exerciseSUTAndFilterValues(entrypoint);
         // verify
         checkReceiversCallSitesCount(output, 1);
+    }
+
+    @Test
+    public void testCallToInterface() {
+        // setup
+        final RecommendersEntrypoint entrypoint = lookupEntrypoint(Tracing__InterfaceUsages.class);
+        // exercise
+        exerciseSUTAndFilterValues(entrypoint);
+        // verify
+        checkReceiversCallSitesCount(output, 2);
     }
 
     @Test

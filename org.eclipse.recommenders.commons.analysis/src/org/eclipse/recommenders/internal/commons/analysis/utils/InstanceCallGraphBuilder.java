@@ -114,7 +114,7 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
     @Override
     public void buildClassTargetSelector() {
         final BypassingAbstractClassesClassTargetSelector myClassTargetSelector = new BypassingAbstractClassesClassTargetSelector();
-        // options.setSelector(myClassTargetSelector);
+        options.setSelector(myClassTargetSelector);
     }
 
     @Override
@@ -152,7 +152,7 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
                 InterruptsCheckingProgressMonitor delegate = new InterruptsCheckingProgressMonitor();
 
                 @Override
-                public void worked(int units) {
+                public void worked(final int units) {
 
                 }
 
@@ -168,7 +168,7 @@ public class InstanceCallGraphBuilder implements ICallGraphBuilder {
                 }
 
                 @Override
-                public void beginTask(String task, int totalWork) {
+                public void beginTask(final String task, final int totalWork) {
                     // TODO Auto-generated method stub
 
                 }
