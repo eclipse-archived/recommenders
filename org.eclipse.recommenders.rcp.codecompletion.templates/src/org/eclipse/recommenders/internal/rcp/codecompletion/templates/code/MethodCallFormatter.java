@@ -89,7 +89,7 @@ public final class MethodCallFormatter {
             return String.format("${constructedType:newType(%s)}",
                     Names.vm2srcQualifiedType(invokedMethod.getDeclaringType()));
         }
-        return String.format("${returnedType:newType(%s)}", Names.vm2srcSimpleTypeName(invokedMethod.getReturnType()));
+        return String.format("${returnedType:newType(%s)}", Names.vm2srcQualifiedType(invokedMethod.getReturnType()));
     }
 
     /**
