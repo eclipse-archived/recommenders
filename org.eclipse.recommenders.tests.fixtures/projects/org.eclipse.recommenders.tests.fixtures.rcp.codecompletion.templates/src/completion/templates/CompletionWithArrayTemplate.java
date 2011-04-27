@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package completion.templates.bugs;
+package completion.templates;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -24,9 +24,8 @@ public class CompletionWithArrayTemplate extends Dialog {
 
 	@Override
 	protected Control createDialogArea(final Composite parent) {
-		final CheckboxTableViewer v = new CheckboxTableViewer(null);
-		// Missing array support.
-		v.<^Space>
+		final CheckboxTableViewer v = new CheckboxTableViewer(parent);
+		v.<^Space|dynamic.*131.*%>
 		return null;
 	}
 }
