@@ -34,7 +34,7 @@ public final class MethodCallFormatterTest {
 
         // Invoke getText() on an "unconstructed" variable.
         check(new MethodCall("", UnitTestSuite.getDefaultReturningMethodCall().getInvokedMethod()),
-                "${returnedType:newType(String)} text = ${unconstructed}.getText(${intTest3:link(0)}, ${arg7:link(false, true)}, ${arg8}, ${arg9:var(org.eclipse.swt.widgets.Button)});");
+                "${returnedType:newType(java.lang.String)} text = ${unconstructed}.getText(${intTest3:link(0)}, ${arg7:link(false, true)}, ${arg8}, ${arg9:var(org.eclipse.swt.widgets.Button)});");
     }
 
     /**

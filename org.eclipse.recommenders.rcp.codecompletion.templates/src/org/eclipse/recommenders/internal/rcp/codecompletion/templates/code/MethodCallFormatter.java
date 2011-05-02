@@ -86,10 +86,15 @@ public final class MethodCallFormatter {
      */
     private static String getNewVariableTypeString(final IMethodName invokedMethod) {
         if (invokedMethod.isInit()) {
-            return String.format("${constructedType:newType(%s)}",
-                    Names.vm2srcQualifiedType(invokedMethod.getDeclaringType()));
+            return String.format("${constructedType:newType(%s)}", getTypeIdentifier(invokedMethod.getDeclaringType()));
         }
-        return String.format("${returnedType:newType(%s)}", Names.vm2srcSimpleTypeName(invokedMethod.getReturnType()));
+        final ITypeName returnType = invokedMethod.getReturnType();
+        if (returnType.isPrimitiveType()) {
+            return Names.vm2srcSimpleTypeName(returnType);
+        } else {
+            return String.format("${returnedType:newType(%s)}%s", getTypeIdentifier(returnType),
+                    returnType.isArrayType() ? StringUtils.repeat("[]", returnType.getArrayDimensions()) : "");
+        }
     }
 
     /**
@@ -123,8 +128,8 @@ public final class MethodCallFormatter {
         String variableName;
         final IMethodName invokedMethod = methodCall.getInvokedMethod();
         if (invokedMethod.isInit()) {
-            final String type = Names.vm2srcTypeName(invokedMethod.getDeclaringType().getIdentifier());
-            variableName = String.format("${unconstructed:newName(%s)}", type);
+            variableName = String.format("${unconstructed:newName(%s)}",
+                    getTypeIdentifier(invokedMethod.getDeclaringType()));
         } else {
             if (invokedMethod.getName().startsWith("get")) {
                 variableName = StringUtils.uncapitalize(invokedMethod.getName().substring(3));
@@ -145,8 +150,17 @@ public final class MethodCallFormatter {
      *         the new variable type (as given by the return type).
      */
     private static String getNewVariableNameFromReturnType(final ITypeName returnType) {
-        final String returnTypeName = Names.vm2srcTypeName(returnType.getIdentifier());
-        return String.format("${returned:newName(%s)}", returnTypeName);
+        return String.format("${returned:newName(%s)}", getTypeIdentifier(returnType));
+    }
+
+    /**
+     * @param typeName
+     *            The type name to format.
+     * @return The fully qualified type name, suiting the templates format.
+     */
+    private static String getTypeIdentifier(final ITypeName typeName) {
+        return typeName.isPrimitiveType() ? Names.vm2srcSimpleTypeName(typeName) : typeName.getIdentifier()
+                .replace('/', '.').substring(1);
     }
 
     /**
