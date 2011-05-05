@@ -11,8 +11,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<build-alias>b000</build-alias>
-		<tycho-version>0.11.0</tycho-version>
-		<osgi-test-version>0.11.0</osgi-test-version>
+		<tycho-version>0.10.0</tycho-version>
+		<osgi-test-version>0.10.0</osgi-test-version>
 		<emma.session.out.file>${project.build.directory}/emma/${project.artifactId}.es</emma.session.out.file>
 		<emma.filter>*</emma.filter>
 		<eclemma.instrument.bundles>
