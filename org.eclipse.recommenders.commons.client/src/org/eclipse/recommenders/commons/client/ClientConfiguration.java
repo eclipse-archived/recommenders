@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.codesearch.client;
+package org.eclipse.recommenders.commons.client;
 
 import com.google.inject.Singleton;
 

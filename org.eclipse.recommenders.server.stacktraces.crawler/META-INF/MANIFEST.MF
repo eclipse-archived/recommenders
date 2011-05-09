@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Stacktrace Crawler
+Bundle-SymbolicName: org.eclipse.recommenders.server.stacktraces.crawler
+Bundle-Version: 0.2.0.qualifier
+Bundle-Activator: org.eclipse.recommenders.server.stacktraces.crawler.Activator
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.core.runtime,
+ org.apache.log4j,
+ org.eclipse.recommenders.commons.client;bundle-version="0.2.0",
+ com.google.gson;bundle-version="1.6.0",
+ com.sun.jersey.core,
+ com.sun.jersey.client,
+ org.apache.commons.lang3;bundle-version="3.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

@@ -23,6 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import org.apache.commons.lang3.time.StopWatch;
+import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.Proposal;
 import org.eclipse.recommenders.commons.codesearch.Request;
@@ -32,7 +33,6 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.server.codesearch.IDataAccessService;
 import org.eclipse.recommenders.internal.server.codesearch.ISourceUriMapper;
 import org.eclipse.recommenders.internal.server.codesearch.RequestLogEntry;
-import org.eclipse.recommenders.internal.server.codesearch.couchdb.TransactionResult;
 import org.eclipse.recommenders.internal.server.codesearch.lucene.LuceneSearchResult;
 import org.eclipse.recommenders.internal.server.codesearch.lucene.LuceneSearchService;
 

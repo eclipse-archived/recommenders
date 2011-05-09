@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.commons.codesearch.client;
 
+import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.codesearch.Feedback;
 import org.eclipse.recommenders.commons.codesearch.ICodeSearchResource;
 import org.eclipse.recommenders.commons.codesearch.Request;

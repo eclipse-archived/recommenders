@@ -10,7 +10,7 @@
 package org.eclipse.recommenders.internal.rcp.codesearch;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.commons.codesearch.client.ClientConfiguration;
+import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.internal.rcp.codesearch.views.CodesearchController;
 
 import com.google.inject.AbstractModule;

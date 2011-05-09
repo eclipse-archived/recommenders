@@ -17,7 +17,7 @@ import java.net.URL;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.recommenders.commons.codesearch.client.ClientConfiguration;
+import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.internal.rcp.codesearch.preferences.PreferenceConstants;
 
 import com.google.inject.Inject;

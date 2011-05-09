@@ -17,7 +17,10 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.client.GsonProvider;
+import org.eclipse.recommenders.commons.client.ResultObject;
+import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
 import org.eclipse.recommenders.internal.server.codesearch.IDataAccessService;
 import org.eclipse.recommenders.internal.server.codesearch.RequestLogEntry;
