@@ -66,6 +66,11 @@
 		
 		<module>org.eclipse.recommenders.server.feature</module>
 		<module>org.eclipse.recommenders.server.update-site</module>
+		
+		<!-- Tools -->
+		<module>org.eclipse.recommenders.tools</module>
+		<module>org.eclipse.recommenders.tests.tools</module>
+		
 	</modules>
 
 </project>
