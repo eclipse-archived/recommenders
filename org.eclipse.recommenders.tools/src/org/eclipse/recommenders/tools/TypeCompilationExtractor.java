@@ -40,7 +40,7 @@ public class TypeCompilationExtractor extends AbstractExtractor {
     }
 
     private String getTypeName(final String filename) {
-        return filename.substring(0, filename.length() - ".class".length());
+        return filename.substring(0, filename.length() - ".class".length()).replaceAll("/", ".");
     }
 
     public Collection<TypeCompilation> getTypes() {
