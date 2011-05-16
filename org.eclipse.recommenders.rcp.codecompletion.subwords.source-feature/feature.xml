@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.recommenders.rcp.codecompletion.subwords.source"
-      label="Code Recommenders: Subwords Completion Sources (Incubation)"
+      label="Code Recommenders: Naive Subwords Completion Source (Incubation)"
       version="0.2.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

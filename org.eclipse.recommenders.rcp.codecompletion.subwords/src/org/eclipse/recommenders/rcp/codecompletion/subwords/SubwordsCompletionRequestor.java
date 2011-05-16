@@ -42,9 +42,11 @@ final class SubwordsCompletionRequestor extends CompletionRequestor {
     }
 
     private Pattern createRegexPatternFromPrefix(final String prefixToken) {
+
+        final String lowerCaseToken = prefixToken.toLowerCase();
         final StringBuilder sb = new StringBuilder();
         sb.append(".*");
-        for (final char c : prefixToken.toCharArray()) {
+        for (final char c : lowerCaseToken.toCharArray()) {
             sb.append(c);
             sb.append(".*");
         }
@@ -74,7 +76,8 @@ final class SubwordsCompletionRequestor extends CompletionRequestor {
             @Override
             protected boolean isPrefix(final String prefix, final String completion) {
                 final String testee = getIdentifierInLowerCase(completion);
-                final Matcher m = createRegexPatternFromPrefix(prefix).matcher(testee);
+                final String lowerCasePrefix = prefix.toLowerCase();
+                final Matcher m = createRegexPatternFromPrefix(lowerCasePrefix).matcher(testee);
                 final boolean matches = m.matches();
                 return matches;
             };
