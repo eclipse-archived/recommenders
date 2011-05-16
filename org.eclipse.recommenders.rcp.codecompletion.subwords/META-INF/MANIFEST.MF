@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Example Code Completion Engine (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.rcp.codecompletion.subwords;singleton:=true
+Bundle-Version: 0.2.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.ui,
+ org.apache.commons.lang3,
+ com.google.guava
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
