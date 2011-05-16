@@ -14,10 +14,7 @@ import java.io.InputStream;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.eclipse.recommenders.commons.utils.GenericEnumerationUtils;
-import org.eclipse.recommenders.commons.utils.Version;
 
 public class MavenPomJarIdExtractor extends JarIdExtractor {
 
@@ -31,10 +28,10 @@ public class MavenPomJarIdExtractor extends JarIdExtractor {
     }
 
     private void extract(final String filename, final InputStream inputStream) throws Exception {
-        final MavenXpp3Reader reader = new MavenXpp3Reader();
-        final Model model = reader.read(inputStream);
-        setVersion(Version.valueOf(model.getVersion()));
-        setName(model.getGroupId() + "." + model.getArtifactId());
+        // final MavenXpp3Reader reader = new MavenXpp3Reader();
+        // final Model model = reader.read(inputStream);
+        // setVersion(Version.valueOf(model.getVersion()));
+        // setName(model.getGroupId() + "." + model.getArtifactId());
     }
 
     private boolean isPomFile(final String filename) {
