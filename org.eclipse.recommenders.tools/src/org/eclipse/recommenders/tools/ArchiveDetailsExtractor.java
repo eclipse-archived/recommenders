@@ -53,6 +53,7 @@ public class ArchiveDetailsExtractor {
             try {
                 extractor.extract(jarFile);
             } catch (final Exception e) {
+                System.err.println("Error while extracting from file: " + jarFile.getName());
                 e.printStackTrace();
             }
         }
