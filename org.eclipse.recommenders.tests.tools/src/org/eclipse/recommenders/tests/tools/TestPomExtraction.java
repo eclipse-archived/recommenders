@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.tests.tools;
 
+import java.io.ByteArrayInputStream;
+
 import junit.framework.Assert;
 
 import org.eclipse.recommenders.commons.utils.Version;
@@ -33,12 +35,37 @@ public class TestPomExtraction {
     @Test
     public void testPom() throws Exception {
         final MockJarFileBuilder builder = new MockJarFileBuilder();
-        builder.addEntry("xyz/pom.xml", getClass().getResourceAsStream("fixtures/pom.xml"));
+        builder.addEntry("xyz/pom.properties", new ByteArrayInputStream(
+                "version=1.2.3\ngroupId=test\nartifactId=project.pom".getBytes()));
 
         final MavenPomJarIdExtractor extractor = new MavenPomJarIdExtractor();
         extractor.extract(builder.build());
 
         Assert.assertEquals("test.project.pom", extractor.getName());
         Assert.assertEquals(Version.create(1, 2, 3), extractor.getVersion());
+    }
+
+    @Test
+    public void testNoGroupId() throws Exception {
+        final MockJarFileBuilder builder = new MockJarFileBuilder();
+        builder.addEntry("xyz/pom.properties",
+                new ByteArrayInputStream("version=1.2.3\nartifactId=test.project.pom".getBytes()));
+
+        final MavenPomJarIdExtractor extractor = new MavenPomJarIdExtractor();
+        extractor.extract(builder.build());
+
+        Assert.assertEquals("test.project.pom", extractor.getName());
+    }
+
+    @Test
+    public void testGroupIdRepeatedInArtifactId() throws Exception {
+        final MockJarFileBuilder builder = new MockJarFileBuilder();
+        builder.addEntry("xyz/pom.properties", new ByteArrayInputStream(
+                "version=1.2.3\ngroupId=test\nartifactId=test.project.pom".getBytes()));
+
+        final MavenPomJarIdExtractor extractor = new MavenPomJarIdExtractor();
+        extractor.extract(builder.build());
+
+        Assert.assertEquals("test.project.pom", extractor.getName());
     }
 }
