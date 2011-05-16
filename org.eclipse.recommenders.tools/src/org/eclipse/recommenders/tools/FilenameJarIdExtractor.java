@@ -10,19 +10,14 @@
  */
 package org.eclipse.recommenders.tools;
 
-import java.io.InputStream;
 import java.util.jar.JarFile;
 
-public class FilenameExtractor extends AbstractExtractor {
+public class FilenameJarIdExtractor extends JarIdExtractor {
 
     @Override
     public void extract(final JarFile jarFile) throws Exception {
         final String name = jarFile.getName();
         setName(name.substring(0, name.lastIndexOf(".")));
-    }
-
-    @Override
-    public void extract(final String filename, final InputStream inputStream) throws Exception {
     }
 
 }

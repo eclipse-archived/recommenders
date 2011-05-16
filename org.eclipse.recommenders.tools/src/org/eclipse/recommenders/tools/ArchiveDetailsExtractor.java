@@ -13,63 +13,61 @@ package org.eclipse.recommenders.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Enumeration;
+import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.jar.JarEntry;
+import java.util.List;
+import java.util.TreeSet;
 import java.util.jar.JarFile;
 
 import org.eclipse.recommenders.commons.utils.Fingerprints;
+import org.eclipse.recommenders.commons.utils.Version;
 
 public class ArchiveDetailsExtractor {
 
-    private LinkedList<AbstractExtractor> extractors;
-    private TypeCompilationExtractor typeCompilationExtractor;
+    private List<JarIdExtractor> jarIdExtractors;
+    private ClassIdExtractor classIdExtractor;
     private String fingerprint;
 
     public ArchiveDetailsExtractor(final File file) throws IOException {
         initializeExtractors();
         createFingerprint(file);
-        extract(new JarFile(file));
+        final JarFile jarFile = new JarFile(file);
+        extractClassIds(jarFile);
+        extractJarIds(jarFile);
     }
 
     private void initializeExtractors() {
-        extractors = new LinkedList<AbstractExtractor>();
-        typeCompilationExtractor = new TypeCompilationExtractor();
-        extractors.add(typeCompilationExtractor);
-        extractors.add(new ManifestExtractor());
-        extractors.add(new PomExtractor());
-        extractors.add(new FilenameExtractor());
+        classIdExtractor = new ClassIdExtractor();
+        jarIdExtractors = new LinkedList<JarIdExtractor>();
+        jarIdExtractors.add(new OsgiManifestJarIdExtractor());
+        jarIdExtractors.add(new MavenPomJarIdExtractor());
+        jarIdExtractors.add(new FilenameJarIdExtractor());
     }
 
     private void createFingerprint(final File file) {
         fingerprint = Fingerprints.sha1(file);
     }
 
-    private void extract(final JarFile jarFile) {
-        for (final AbstractExtractor extractor : extractors) {
+    private void extractJarIds(final JarFile jarFile) {
+        for (final IExtractor extractor : jarIdExtractors) {
             try {
                 extractor.extract(jarFile);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
-            extractByContent(extractor, jarFile);
         }
     }
 
-    private void extractByContent(final AbstractExtractor extractor, final JarFile jarFile) {
-        final Enumeration<JarEntry> entries = jarFile.entries();
-        while (entries.hasMoreElements()) {
-            final JarEntry entry = entries.nextElement();
-            try {
-                extractor.extract(entry.getName(), jarFile.getInputStream(entry));
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
+    private void extractClassIds(final JarFile jarFile) {
+        try {
+            classIdExtractor.extract(jarFile);
+        } catch (final Exception e) {
+            e.printStackTrace();
         }
     }
 
     public String getName() {
-        for (final AbstractExtractor extractor : extractors) {
+        for (final JarIdExtractor extractor : jarIdExtractors) {
             final String name = extractor.getName();
             if (name != null) {
                 return name;
@@ -78,26 +76,34 @@ public class ArchiveDetailsExtractor {
         return null;
     }
 
-    public String getVersion() {
-        for (final AbstractExtractor extractor : extractors) {
-            final String version = extractor.getVersion();
-            if (version != null) {
+    public Version getVersion() {
+        for (final JarIdExtractor extractor : jarIdExtractors) {
+            final Version version = extractor.getVersion();
+            if (!version.isUnknown()) {
                 return version;
             }
         }
-        return null;
+        return Version.UNKNOWN;
     }
 
-    public Collection<TypeCompilation> getTypes() {
-        return typeCompilationExtractor.getTypes();
+    public Collection<ClassId> getClassIds() {
+        final TreeSet<ClassId> treeSet = new TreeSet<ClassId>(new Comparator<ClassId>() {
+
+            @Override
+            public int compare(final ClassId o1, final ClassId o2) {
+                return o1.typeName.compareTo(o2.typeName);
+            }
+        });
+        treeSet.addAll(classIdExtractor.getClassIds());
+        return treeSet;
     }
 
-    public Archive getArchive() {
-        final Archive archive = new Archive();
+    public ArchiveMetaData getArchiveMetaData() {
+        final ArchiveMetaData archive = new ArchiveMetaData();
         archive.fingerprint = fingerprint;
         archive.name = getName();
         archive.version = getVersion();
-        archive.types = getTypes();
+        archive.types = getClassIds();
         return archive;
     }
 }

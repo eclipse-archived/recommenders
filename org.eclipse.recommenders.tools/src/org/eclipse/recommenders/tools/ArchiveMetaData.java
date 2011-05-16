@@ -10,8 +10,19 @@
  */
 package org.eclipse.recommenders.tools;
 
-public class TypeCompilation {
+import java.util.Collection;
 
-    public String typeName;
+import org.eclipse.recommenders.commons.utils.Version;
+
+import com.google.gson.annotations.SerializedName;
+
+public class ArchiveMetaData {
+
+    @SerializedName("_id")
+    public String id;
+
     public String fingerprint;
+    public String name;
+    public Version version;
+    public Collection<ClassId> types;
 }

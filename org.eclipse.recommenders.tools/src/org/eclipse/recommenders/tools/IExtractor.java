@@ -10,17 +10,10 @@
  */
 package org.eclipse.recommenders.tools;
 
-import java.util.Collection;
+import java.util.jar.JarFile;
 
-import com.google.gson.annotations.SerializedName;
+public interface IExtractor {
 
-public class Archive {
+    public abstract void extract(JarFile jarFile) throws Exception;
 
-    @SerializedName("_id")
-    public String id;
-
-    public String fingerprint;
-    public String name;
-    public String version;
-    public Collection<TypeCompilation> types;
 }

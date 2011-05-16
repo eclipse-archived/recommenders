@@ -12,24 +12,29 @@ package org.eclipse.recommenders.tools;
 
 import java.io.InputStream;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.eclipse.recommenders.commons.utils.GenericEnumerationUtils;
+import org.eclipse.recommenders.commons.utils.Version;
 
-public class PomExtractor extends AbstractExtractor {
+public class MavenPomJarIdExtractor extends JarIdExtractor {
 
     @Override
     public void extract(final JarFile jarFile) throws Exception {
+        for (final ZipEntry entry : GenericEnumerationUtils.iterable(jarFile.entries())) {
+            if (isPomFile(entry.getName())) {
+                extract(entry.getName(), jarFile.getInputStream(entry));
+            }
+        }
     }
 
-    @Override
-    public void extract(final String filename, final InputStream inputStream) throws Exception {
-        if (isPomFile(filename)) {
-            final MavenXpp3Reader reader = new MavenXpp3Reader();
-            final Model model = reader.read(inputStream);
-            setVersion(model.getVersion());
-            setName(model.getGroupId() + "." + model.getArtifactId());
-        }
+    private void extract(final String filename, final InputStream inputStream) throws Exception {
+        final MavenXpp3Reader reader = new MavenXpp3Reader();
+        final Model model = reader.read(inputStream);
+        setVersion(Version.valueOf(model.getVersion()));
+        setName(model.getGroupId() + "." + model.getArtifactId());
     }
 
     private boolean isPomFile(final String filename) {

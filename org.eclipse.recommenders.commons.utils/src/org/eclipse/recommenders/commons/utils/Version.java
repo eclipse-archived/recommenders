@@ -20,6 +20,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Version implements Comparable<Version> {
 
+    public static final Version UNKNOWN = create(0, 0, 0);
     public static final Version LATEST = create(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     public static Version create(final int major, final int minor, final int micro, final String qualifier) {
@@ -122,5 +123,9 @@ public class Version implements Comparable<Version> {
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    public boolean isUnknown() {
+        return equals(UNKNOWN);
     }
 }

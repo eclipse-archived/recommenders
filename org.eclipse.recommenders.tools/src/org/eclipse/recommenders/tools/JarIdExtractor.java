@@ -10,17 +10,17 @@
  */
 package org.eclipse.recommenders.tools;
 
-import java.io.InputStream;
 import java.util.jar.JarFile;
 
-public abstract class AbstractExtractor {
+import org.eclipse.recommenders.commons.utils.Version;
+
+public abstract class JarIdExtractor implements IExtractor {
 
     private String name;
-    private String version;
+    private Version version;
 
+    @Override
     public abstract void extract(JarFile jarFile) throws Exception;
-
-    public abstract void extract(final String filename, final InputStream inputStream) throws Exception;
 
     public String getName() {
         return name;
@@ -30,11 +30,11 @@ public abstract class AbstractExtractor {
         this.name = name;
     }
 
-    public String getVersion() {
+    public Version getVersion() {
         return version;
     }
 
-    public void setVersion(final String version) {
+    public void setVersion(final Version version) {
         this.version = version;
     }
 

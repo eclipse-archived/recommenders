@@ -9,7 +9,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.maven.ide.eclipse.maven_embedder,
  org.apache.log4j,
  org.eclipse.recommenders.commons.client;bundle-version="0.2.0",
- com.google.gson;bundle-version="1.6.0"
+ com.google.gson;bundle-version="1.6.0",
+ org.apache.commons.lang3;bundle-version="3.0.0",
+ org.apache.commons.collections;bundle-version="3.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.recommenders.tools

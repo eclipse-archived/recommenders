@@ -12,7 +12,7 @@ package org.eclipse.recommenders.tests.tools;
 
 import java.util.jar.JarFile;
 
-import org.eclipse.recommenders.tools.FilenameExtractor;
+import org.eclipse.recommenders.tools.FilenameJarIdExtractor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -24,7 +24,7 @@ public class TestFilenameExtraction {
         final JarFile file = Mockito.mock(JarFile.class);
         Mockito.when(file.getName()).thenReturn("test.name.jar");
 
-        final FilenameExtractor extractor = new FilenameExtractor();
+        final FilenameJarIdExtractor extractor = new FilenameJarIdExtractor();
         extractor.extract(file);
         Assert.assertEquals("test.name", extractor.getName());
     }

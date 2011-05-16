@@ -17,7 +17,8 @@ import java.util.jar.Manifest;
 
 import junit.framework.Assert;
 
-import org.eclipse.recommenders.tools.ManifestExtractor;
+import org.eclipse.recommenders.commons.utils.Version;
+import org.eclipse.recommenders.tools.OsgiManifestJarIdExtractor;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.osgi.framework.Constants;
@@ -29,7 +30,7 @@ public class TestManifestExtraction {
         final JarFile jarFile = Mockito.mock(JarFile.class);
         Mockito.when(jarFile.getManifest()).thenReturn(new Manifest());
 
-        final ManifestExtractor extractor = new ManifestExtractor();
+        final OsgiManifestJarIdExtractor extractor = new OsgiManifestJarIdExtractor();
         extractor.extract(jarFile);
 
         Assert.assertNull(extractor.getName());
@@ -41,7 +42,7 @@ public class TestManifestExtraction {
         final JarFile jarFile = Mockito.mock(JarFile.class);
         Mockito.when(jarFile.getManifest()).thenReturn(null);
 
-        final ManifestExtractor extractor = new ManifestExtractor();
+        final OsgiManifestJarIdExtractor extractor = new OsgiManifestJarIdExtractor();
         extractor.extract(jarFile);
 
         Assert.assertNull(extractor.getName());
@@ -59,11 +60,11 @@ public class TestManifestExtraction {
         final JarFile jarFile = Mockito.mock(JarFile.class);
         Mockito.when(jarFile.getManifest()).thenReturn(manifest);
 
-        final ManifestExtractor extractor = new ManifestExtractor();
+        final OsgiManifestJarIdExtractor extractor = new OsgiManifestJarIdExtractor();
         extractor.extract(jarFile);
 
         Assert.assertEquals("test.bundle.name", extractor.getName());
-        Assert.assertEquals("1.2.3", extractor.getVersion());
+        Assert.assertEquals(Version.create(1, 2, 3), extractor.getVersion());
     }
 
     @Test
@@ -77,10 +78,10 @@ public class TestManifestExtraction {
         final JarFile jarFile = Mockito.mock(JarFile.class);
         Mockito.when(jarFile.getManifest()).thenReturn(manifest);
 
-        final ManifestExtractor extractor = new ManifestExtractor();
+        final OsgiManifestJarIdExtractor extractor = new OsgiManifestJarIdExtractor();
         extractor.extract(jarFile);
 
         Assert.assertEquals("test.bundle.name", extractor.getName());
-        Assert.assertEquals("1.2.3", extractor.getVersion());
+        Assert.assertEquals(Version.create(1, 2, 3), extractor.getVersion());
     }
 }

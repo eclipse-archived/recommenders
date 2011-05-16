@@ -22,7 +22,7 @@ public class StorageService {
         dbClient = new WebServiceClient(configuration);
     }
 
-    public void store(final Archive archive) {
+    public void store(final ArchiveMetaData archive) {
         archive.id = archive.fingerprint;
         final TransactionResult transactionResult = dbClient.doPutRequest(WebServiceClient.encode(archive.id), archive,
                 TransactionResult.class);

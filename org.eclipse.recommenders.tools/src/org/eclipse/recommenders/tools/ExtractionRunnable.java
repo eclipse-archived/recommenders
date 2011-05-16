@@ -41,7 +41,7 @@ public class ExtractionRunnable implements Runnable {
             final ArchiveDetailsExtractor extractor = new ArchiveDetailsExtractor(file);
             logger.info(String.format("Extraction from file %s\nName: %s\nVersion: %s\n", file.getName(),
                     extractor.getName(), extractor.getVersion()));
-            storage.store(extractor.getArchive());
+            storage.store(extractor.getArchiveMetaData());
         } catch (final IOException e) {
             logger.warn("Extraction for file " + file.getName() + " failed.", e);
         }

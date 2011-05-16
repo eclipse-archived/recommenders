@@ -11,15 +11,16 @@
 package org.eclipse.recommenders.tools;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.commons.utils.Version;
 import org.osgi.framework.Constants;
 
-public class ManifestExtractor extends AbstractExtractor {
+public class OsgiManifestJarIdExtractor extends JarIdExtractor {
 
     private static final Name BUNDLE_NAME = new Attributes.Name(Constants.BUNDLE_SYMBOLICNAME);
     private static final Name BUNDLE_VERSION = new Attributes.Name(Constants.BUNDLE_VERSION);
@@ -30,21 +31,17 @@ public class ManifestExtractor extends AbstractExtractor {
         if (manifest != null) {
             final Attributes attributes = manifest.getMainAttributes();
             setName(attributes.getValue(BUNDLE_NAME));
-            setVersion(attributes.getValue(BUNDLE_VERSION));
+            final String version = attributes.getValue(BUNDLE_VERSION);
+            if (version != null) {
+                setVersion(Version.valueOf(version));
+            }
         }
-    }
-
-    @Override
-    public void extract(final String filename, final InputStream inputStream) {
     }
 
     @Override
     public void setName(String name) {
         if (name != null) {
-            final int index = name.indexOf(";");
-            if (index >= 0) {
-                name = name.substring(0, index);
-            }
+            name = StringUtils.substringBefore(name, ";");
             name = name.trim();
         }
         super.setName(name);

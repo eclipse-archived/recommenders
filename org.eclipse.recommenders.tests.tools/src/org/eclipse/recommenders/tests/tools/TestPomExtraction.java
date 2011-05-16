@@ -12,15 +12,19 @@ package org.eclipse.recommenders.tests.tools;
 
 import junit.framework.Assert;
 
-import org.eclipse.recommenders.tools.PomExtractor;
+import org.eclipse.recommenders.commons.utils.Version;
+import org.eclipse.recommenders.tools.MavenPomJarIdExtractor;
 import org.junit.Test;
 
 public class TestPomExtraction {
 
     @Test
     public void testNoPom() throws Exception {
-        final PomExtractor extractor = new PomExtractor();
-        extractor.extract("xyz/no/pom.txt", null);
+        final MockJarFileBuilder builder = new MockJarFileBuilder();
+        builder.addEntry("xyz/no/pom.txt", null);
+
+        final MavenPomJarIdExtractor extractor = new MavenPomJarIdExtractor();
+        extractor.extract(builder.build());
 
         Assert.assertNull(extractor.getName());
         Assert.assertNull(extractor.getVersion());
@@ -28,10 +32,13 @@ public class TestPomExtraction {
 
     @Test
     public void testPom() throws Exception {
-        final PomExtractor extractor = new PomExtractor();
-        extractor.extract("xyz/pom.xml", getClass().getResourceAsStream("fixtures/pom.xml"));
+        final MockJarFileBuilder builder = new MockJarFileBuilder();
+        builder.addEntry("xyz/pom.xml", getClass().getResourceAsStream("fixtures/pom.xml"));
+
+        final MavenPomJarIdExtractor extractor = new MavenPomJarIdExtractor();
+        extractor.extract(builder.build());
 
         Assert.assertEquals("test.project.pom", extractor.getName());
-        Assert.assertEquals("1.2.3", extractor.getVersion());
+        Assert.assertEquals(Version.create(1, 2, 3), extractor.getVersion());
     }
 }
