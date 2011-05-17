@@ -39,6 +39,8 @@
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.templates</module>
 		<!--module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module-->
+
+		<module>org.eclipse.recommenders.rcp.codecompletion.subwords</module>
 		
 		<module>org.eclipse.recommenders.rcp.utils</module>
 		<module>org.eclipse.recommenders.tests.commons</module>
@@ -60,8 +62,13 @@
 		<!-- features 'n update sites -->
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.feature</module>
-		<module>org.eclipse.recommenders.rcp.codesearch.feature</module>
 		<module>org.eclipse.recommenders.rcp.codecompletion.source-feature</module>
+
+		<module>org.eclipse.recommenders.rcp.codecompletion.subwords.feature</module>
+		<module>org.eclipse.recommenders.rcp.codecompletion.subwords.source-feature</module>
+
+		<module>org.eclipse.recommenders.rcp.codesearch.feature</module>
+
 		<module>org.eclipse.recommenders.rcp.update-site</module>
 		
 		<module>org.eclipse.recommenders.server.feature</module>
