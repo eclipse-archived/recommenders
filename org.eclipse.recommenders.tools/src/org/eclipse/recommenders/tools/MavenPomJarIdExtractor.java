@@ -16,9 +16,11 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.eclipse.recommenders.commons.utils.GenericEnumerationUtils;
-import org.eclipse.recommenders.commons.utils.Version;
+import org.eclipse.recommenders.commons.utils.parser.MavenVersionParser;
 
 public class MavenPomJarIdExtractor extends JarIdExtractor {
+
+    private final MavenVersionParser parser = new MavenVersionParser();
 
     @Override
     public void extract(final JarFile jarFile) throws Exception {
@@ -54,7 +56,7 @@ public class MavenPomJarIdExtractor extends JarIdExtractor {
     private void parseVersion(final Properties properties) {
         final String version = properties.getProperty("version");
         if (version != null) {
-            setVersion(Version.valueOf(version));
+            setVersion(parser.parse(version));
         }
     }
 

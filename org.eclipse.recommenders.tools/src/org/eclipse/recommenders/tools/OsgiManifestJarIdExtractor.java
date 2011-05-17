@@ -17,13 +17,15 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.recommenders.commons.utils.Version;
+import org.eclipse.recommenders.commons.utils.parser.OsgiVersionParser;
 import org.osgi.framework.Constants;
 
 public class OsgiManifestJarIdExtractor extends JarIdExtractor {
 
     private static final Name BUNDLE_NAME = new Attributes.Name(Constants.BUNDLE_SYMBOLICNAME);
     private static final Name BUNDLE_VERSION = new Attributes.Name(Constants.BUNDLE_VERSION);
+
+    private final OsgiVersionParser parser = new OsgiVersionParser();
 
     @Override
     public void extract(final JarFile jarFile) throws IOException {
@@ -33,7 +35,7 @@ public class OsgiManifestJarIdExtractor extends JarIdExtractor {
             setName(attributes.getValue(BUNDLE_NAME));
             final String version = attributes.getValue(BUNDLE_VERSION);
             if (version != null) {
-                setVersion(Version.valueOf(version));
+                setVersion(parser.parse(version));
             }
         }
     }

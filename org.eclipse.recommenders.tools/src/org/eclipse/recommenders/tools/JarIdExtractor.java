@@ -17,7 +17,7 @@ import org.eclipse.recommenders.commons.utils.Version;
 public abstract class JarIdExtractor implements IExtractor {
 
     private String name;
-    private Version version;
+    private Version version = Version.UNKNOWN;
 
     @Override
     public abstract void extract(JarFile jarFile) throws Exception;
