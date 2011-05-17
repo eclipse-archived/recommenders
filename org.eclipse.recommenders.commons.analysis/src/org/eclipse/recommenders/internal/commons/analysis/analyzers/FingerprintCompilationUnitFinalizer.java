@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.recommenders.commons.utils.Fingerprints;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
@@ -37,6 +38,7 @@ public class FingerprintCompilationUnitFinalizer implements ICompilationUnitFina
     public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass,
             final IProgressMonitor monitor) {
         setCompilationUnitFingerprint(compilationUnit, exampleClass);
+        setPrimaryTypeFingerprint(compilationUnit);
         //
         final IClassHierarchy cha = exampleClass.getClassHierarchy();
         for (final ITypeName recType : findAllUsedTypes(compilationUnit)) {
@@ -50,6 +52,11 @@ public class FingerprintCompilationUnitFinalizer implements ICompilationUnitFina
 
     private void setCompilationUnitFingerprint(final CompilationUnit compilationUnit, final IClass exampleClass) {
         compilationUnit.fingerprint = fingerprint(exampleClass);
+    }
+
+    private void setPrimaryTypeFingerprint(final CompilationUnit compilationUnit) {
+        compilationUnit.fingerprintOfPrimaryTypeName = Fingerprints.sha1(compilationUnit.primaryType.name
+                .getIdentifier());
     }
 
     private Set<ITypeName> findAllUsedTypes(final CompilationUnit compilationUnit) {

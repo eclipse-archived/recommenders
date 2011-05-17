@@ -69,6 +69,8 @@ public class CompilationUnit implements ICodeElement {
 
     public String fingerprint;
 
+    public String fingerprintOfPrimaryTypeName;
+
     public String name;
 
     public IName getName() {
@@ -106,6 +108,7 @@ public class CompilationUnit implements ICodeElement {
         return types;
     }
 
+    @Override
     public void accept(final CompilationUnitVisitor v) {
         if (v.visit(this)) {
             if (primaryType != null) {
