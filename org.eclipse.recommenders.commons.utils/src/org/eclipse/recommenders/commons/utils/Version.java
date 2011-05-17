@@ -12,11 +12,9 @@ package org.eclipse.recommenders.commons.utils;
 
 import static java.lang.String.format;
 
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.eclipse.recommenders.commons.utils.parser.OsgiVersionParser;
 
 public class Version implements Comparable<Version> {
 
@@ -37,44 +35,7 @@ public class Version implements Comparable<Version> {
     }
 
     public static Version valueOf(final String version) {
-        int major = 0;
-        int minor = 0;
-        int micro = 0;
-        String qualifier = "";
-        try {
-            final StringTokenizer tokenizer = new StringTokenizer(version, ".", true);
-            major = parseInt(tokenizer);
-            if (tokenizer.hasMoreTokens()) {
-                consumeDelimiter(tokenizer);
-                minor = parseInt(tokenizer);
-                if (tokenizer.hasMoreTokens()) {
-                    consumeDelimiter(tokenizer);
-                    micro = parseInt(tokenizer);
-                    if (tokenizer.hasMoreTokens()) {
-                        consumeDelimiter(tokenizer);
-                        qualifier = parseString(tokenizer);
-                        if (tokenizer.hasMoreTokens()) {
-                            Throws.throwIllegalArgumentException("couldn't convert string into version: '%s'", version);
-                        }
-                    }
-                }
-            }
-        } catch (final NoSuchElementException e) {
-            Throws.throwIllegalArgumentException("couldn't convert string into version: '%s'", version);
-        }
-        return create(major, minor, micro, qualifier);
-    }
-
-    private static String parseString(final StringTokenizer st) {
-        return st.nextToken();
-    }
-
-    private static int parseInt(final StringTokenizer st) {
-        return Integer.parseInt(st.nextToken());
-    }
-
-    private static void consumeDelimiter(final StringTokenizer st) {
-        st.nextToken();
+        return new OsgiVersionParser().parse(version);
     }
 
     protected Version() {
