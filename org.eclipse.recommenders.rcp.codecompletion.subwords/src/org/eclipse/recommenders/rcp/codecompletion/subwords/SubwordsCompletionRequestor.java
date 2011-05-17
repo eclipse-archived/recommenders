@@ -43,14 +43,24 @@ final class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private Pattern createRegexPatternFromPrefix(final String prefixToken) {
 
-        final String lowerCaseToken = prefixToken.toLowerCase();
         final StringBuilder sb = new StringBuilder();
         sb.append(".*");
-        for (final char c : lowerCaseToken.toCharArray()) {
-            sb.append(c);
+        for (final char c : prefixToken.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                // if upper case than match words containing this uppercase
+                // letter only - the developer might have a clue what she is
+                // looking for...
+                sb.append(c);
+            } else {
+                // if not just search for any proposal containing this letter in
+                // upper case OR lower case.
+                final char lowerCase = Character.toLowerCase(c);
+                sb.append("[").append(lowerCase).append(c).append("]");
+            }
             sb.append(".*");
         }
-        final Pattern p = Pattern.compile(sb.toString());
+        final String regex = sb.toString();
+        final Pattern p = Pattern.compile(regex);
         return p;
     }
 
@@ -61,8 +71,9 @@ final class SubwordsCompletionRequestor extends CompletionRequestor {
         case CompletionProposal.CONSTRUCTOR_INVOCATION:
         case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
         case CompletionProposal.METHOD_NAME_REFERENCE:
-            String completion = String.valueOf(proposal.getCompletion());
-            completion = getIdentifierInLowerCase(completion);
+        case CompletionProposal.JAVADOC_METHOD_REF:
+
+            final String completion = String.valueOf(proposal.getCompletion());
             final Matcher m = subwordPattern.matcher(completion);
             if (m.matches()) {
                 final IJavaCompletionProposal javaProposal = createJavaCompletionProposal(proposal);
@@ -75,9 +86,8 @@ final class SubwordsCompletionRequestor extends CompletionRequestor {
         return new JavaMethodCompletionProposal(proposal, ctx) {
             @Override
             protected boolean isPrefix(final String prefix, final String completion) {
-                final String testee = getIdentifierInLowerCase(completion);
-                final String lowerCasePrefix = prefix.toLowerCase();
-                final Matcher m = createRegexPatternFromPrefix(lowerCasePrefix).matcher(testee);
+                final Pattern pattern = createRegexPatternFromPrefix(prefix);
+                final Matcher m = pattern.matcher(completion);
                 final boolean matches = m.matches();
                 return matches;
             };
