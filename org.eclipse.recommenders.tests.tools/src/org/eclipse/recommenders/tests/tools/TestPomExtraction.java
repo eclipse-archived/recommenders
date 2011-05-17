@@ -29,7 +29,7 @@ public class TestPomExtraction {
         extractor.extract(builder.build());
 
         Assert.assertNull(extractor.getName());
-        Assert.assertNull(extractor.getVersion());
+        Assert.assertTrue(extractor.getVersion().isUnknown());
     }
 
     @Test

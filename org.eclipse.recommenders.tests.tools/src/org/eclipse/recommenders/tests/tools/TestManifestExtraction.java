@@ -34,7 +34,7 @@ public class TestManifestExtraction {
         extractor.extract(jarFile);
 
         Assert.assertNull(extractor.getName());
-        Assert.assertNull(extractor.getVersion());
+        Assert.assertTrue(extractor.getVersion().isUnknown());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class TestManifestExtraction {
         extractor.extract(jarFile);
 
         Assert.assertNull(extractor.getName());
-        Assert.assertNull(extractor.getVersion());
+        Assert.assertTrue(extractor.getVersion().isUnknown());
     }
 
     @Test
