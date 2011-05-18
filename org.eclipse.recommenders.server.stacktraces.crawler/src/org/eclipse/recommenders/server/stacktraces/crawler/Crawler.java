@@ -10,6 +10,12 @@
  */
 package org.eclipse.recommenders.server.stacktraces.crawler;
 
-public enum CrawlerType {
-    Bugzilla
+import java.util.Date;
+
+public interface Crawler {
+
+    void configure(CrawlerConfiguration configuration);
+
+    void crawl(Date start, Date end);
+
 }

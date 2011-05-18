@@ -10,20 +10,18 @@
  */
 package org.eclipse.recommenders.server.stacktraces.crawler;
 
-import java.util.Date;
+public class CrawlerConfiguration {
 
-import com.google.gson.annotations.SerializedName;
-
-public class StacktraceOccurence {
-
-    @SerializedName("_id")
-    public String id;
-    @SerializedName("_rev")
-    public String rev;
-
-    public Stacktrace stacktrace;
-    public String type;
-    public String source;
+    public Class<? extends Crawler> type;
+    public String nameOfSource;
     public String url;
-    public Date lastModification;
+    public int maximumRetrievalOfDays;
+
+    public CrawlerConfiguration(final Class<? extends Crawler> type, final String nameOfSource, final String url,
+            final int maximumRetrievalOfDays) {
+        this.type = type;
+        this.nameOfSource = nameOfSource;
+        this.url = url;
+        this.maximumRetrievalOfDays = maximumRetrievalOfDays;
+    }
 }

@@ -18,10 +18,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,7 +30,8 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.recommenders.server.stacktraces.crawler.CrawlerType;
+import org.eclipse.recommenders.server.stacktraces.crawler.Crawler;
+import org.eclipse.recommenders.server.stacktraces.crawler.CrawlerConfiguration;
 import org.eclipse.recommenders.server.stacktraces.crawler.Stacktrace;
 import org.eclipse.recommenders.server.stacktraces.crawler.StacktraceOccurence;
 import org.eclipse.recommenders.server.stacktraces.crawler.StacktraceParser;
@@ -41,10 +40,11 @@ import org.eclipse.recommenders.server.stacktraces.crawler.bugzilla.generated.Bu
 import org.eclipse.recommenders.server.stacktraces.crawler.bugzilla.generated.Bugzilla;
 import org.eclipse.recommenders.server.stacktraces.crawler.bugzilla.generated.LongDesc;
 
+import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.representation.Form;
 
-public class BugzillaCrawler {
+public class BugzillaCrawler implements Crawler {
 
     private static final String CHARSET = "US-ASCII";
     private final Logger logger = Logger.getLogger(getClass());
@@ -52,7 +52,9 @@ public class BugzillaCrawler {
     private final StorageService storage;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
     private final SimpleDateFormat queryDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private CrawlerConfiguration configuration;
 
+    @Inject
     public BugzillaCrawler(final StorageService storage) throws JAXBException {
         this.storage = storage;
         final JAXBContext jaxbContext = JAXBContext
@@ -60,16 +62,14 @@ public class BugzillaCrawler {
         unmarshaller = jaxbContext.createUnmarshaller();
     }
 
-    public void loadAllBugs(final Date start, final Date end) {
-        final GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTime(end);
+    @Override
+    public void configure(final CrawlerConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
-        while (calendar.getTime().compareTo(start) >= 0) {
-            final Date currentEnd = calendar.getTime();
-            calendar.add(Calendar.DAY_OF_MONTH, -1);
-            final Date currentStart = calendar.getTime();
-            loadBugs(getBugIdsBetween(currentStart, currentEnd));
-        }
+    @Override
+    public void crawl(final Date start, final Date end) {
+        loadBugs(getBugIdsBetween(start, end));
     }
 
     private List<String> getBugIdsBetween(final Date start, final Date end) {
@@ -77,10 +77,9 @@ public class BugzillaCrawler {
         logger.info(String.format("Loading bugs between %s and %s", queryDateFormat.format(start),
                 queryDateFormat.format(end)));
         try {
-            final URL url = new URL(
-                    String.format(
-                            "https://bugs.eclipse.org/bugs/buglist.cgi?chfieldfrom=%s&chfieldto=%s&query_format=advanced&ctype=csv",
-                            queryDateFormat.format(start), queryDateFormat.format(end)));
+            final URL url = new URL(String.format(configuration.url
+                    + "buglist.cgi?chfieldfrom=%s&chfieldto=%s&query_format=advanced&ctype=csv",
+                    queryDateFormat.format(start), queryDateFormat.format(end)));
             final BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
             String line = reader.readLine();
             while ((line = reader.readLine()) != null) {
@@ -102,7 +101,7 @@ public class BugzillaCrawler {
             form.add("id", StringUtils.join(bugIds, ","));
 
             final Client client = new Client();
-            final String response = client.resource("https://bugs.eclipse.org/bugs/show_bug.cgi")
+            final String response = client.resource(configuration.url + "show_bug.cgi")
                     .type(MediaType.APPLICATION_FORM_URLENCODED).post(String.class, form);
             final Bugzilla bugzilla = parse(response);
             if (bugzilla.getBug().size() == bugIds.size()) {
@@ -119,7 +118,7 @@ public class BugzillaCrawler {
 
     private Bug loadBug(final int bugId) {
         try {
-            final URL url = new URL("https://bugs.eclipse.org/bugs/show_bug.cgi?ctype=xml&id=" + bugId);
+            final URL url = new URL(configuration.url + "show_bug.cgi?ctype=xml&id=" + bugId);
             final Bugzilla bugzilla = parse(url.openStream());
             final List<Bug> bugs = bugzilla.getBug();
             if (bugs.size() == 1) {
@@ -172,10 +171,10 @@ public class BugzillaCrawler {
     private void store(final Stacktrace stacktrace, final Bug bug, final int index) throws java.text.ParseException {
         logger.info("Found stacktrace in bug with bug id: " + bug.getBugId());
         final StacktraceOccurence occurence = new StacktraceOccurence();
-        occurence.source = "Eclipse";
+        occurence.source = configuration.nameOfSource;
         occurence.stacktrace = stacktrace;
-        occurence.type = CrawlerType.Bugzilla;
-        occurence.url = "https://bugs.eclipse.org/bugs/show_bug.cgi?id=" + bug.getBugId();
+        occurence.type = getClass().getSimpleName();
+        occurence.url = configuration.url + "show_bug.cgi?id=" + bug.getBugId();
         occurence.lastModification = dateFormat.parse(bug.getDeltaTs());
         occurence.id = occurence.url + "-" + index;
         storage.store(occurence);

@@ -11,6 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  com.google.gson;bundle-version="1.6.0",
  com.sun.jersey.core,
  com.sun.jersey.client,
- org.apache.commons.lang3;bundle-version="3.0.0"
+ org.apache.commons.lang3;bundle-version="3.0.0",
+ com.google.inject;bundle-version="3.0.0",
+ com.google.inject.multibindings;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
