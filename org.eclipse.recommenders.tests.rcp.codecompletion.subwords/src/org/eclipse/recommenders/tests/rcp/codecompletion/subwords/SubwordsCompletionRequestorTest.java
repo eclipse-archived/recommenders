@@ -14,7 +14,7 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsCompletionRequestor;
 import org.junit.Test;
 
-public class SubwordsCompletionProposalRequestorTest {;
+public class SubwordsCompletionRequestorTest {;
 
 
     @Test
