@@ -1,10 +1,18 @@
-package org.eclipse.recommenders.tests.rcp.codecompletion.subwords;
+/**
+ * Copyright (c) 2010 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */package org.eclipse.recommenders.tests.rcp.codecompletion.subwords;
 
 import static org.eclipse.jdt.core.CompletionProposal.JAVADOC_BLOCK_TAG;
 import static org.eclipse.jdt.core.CompletionProposal.METHOD_REF;
 import static org.eclipse.recommenders.tests.rcp.codecompletion.subwords.SubwordsMockUtils.mockCompletionProposal;
 import static org.eclipse.recommenders.tests.rcp.codecompletion.subwords.SubwordsMockUtils.mockInvocationContext;
-import static org.eclipse.recommenders.tests.rcp.codecompletion.subwords.SubwordsMockUtils.mockMethodRefCompletionProposal;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
@@ -20,7 +28,7 @@ public class SubwordsCompletionRequestorTest {;
     @Test
     public void testHappyPath() {
         // setup:
-        final CompletionProposal proposal = mockMethodRefCompletionProposal("completion(...)");
+        final CompletionProposal proposal = mockCompletionProposal(METHOD_REF,"completion(...)");
         final SubwordsCompletionRequestor sut = createSut("cmp");
         // exercise:
         sut.accept(proposal);
