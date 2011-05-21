@@ -33,7 +33,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private final JavaContentAssistInvocationContext ctx;
 
-    SubwordsCompletionRequestor(final String token, final JavaContentAssistInvocationContext ctx) {
+    public SubwordsCompletionRequestor(final String token, final JavaContentAssistInvocationContext ctx) {
         checkNotNull(token);
         checkNotNull(ctx);
         this.ctx = ctx;

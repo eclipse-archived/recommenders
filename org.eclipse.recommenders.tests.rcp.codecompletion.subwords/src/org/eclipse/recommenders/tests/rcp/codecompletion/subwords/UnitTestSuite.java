@@ -15,7 +15,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ RegexMatcherTest.class })
+@SuiteClasses({ RegexMatcherTest.class, SubwordsCompletionProposalRequestorTest.class })
 public class UnitTestSuite {
 
 }

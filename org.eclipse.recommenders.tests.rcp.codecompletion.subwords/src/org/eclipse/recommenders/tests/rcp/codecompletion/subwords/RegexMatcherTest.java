@@ -10,12 +10,11 @@
  */
 package org.eclipse.recommenders.tests.rcp.codecompletion.subwords;
 
+import static org.eclipse.recommenders.tests.rcp.codecompletion.subwords.SubwordsMockUtils.mockCompletionProposal;
+import static org.eclipse.recommenders.tests.rcp.codecompletion.subwords.SubwordsMockUtils.mockInvocationContext;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsJavaMethodCompletionProposal;
@@ -78,21 +77,11 @@ public class RegexMatcherTest {
     }
 
     private SubwordsJavaMethodCompletionProposal createJavaCompletionProposal() {
-        final CompletionProposal someProposal = createCompletionProposal();
-        final JavaContentAssistInvocationContext someInvocationContext = createInvocationContext();
+        final CompletionProposal someProposal = mockCompletionProposal();
+        final JavaContentAssistInvocationContext someInvocationContext = mockInvocationContext();
         final SubwordsJavaMethodCompletionProposal someJavaProposal = new SubwordsJavaMethodCompletionProposal(
                 someProposal, someInvocationContext);
         return someJavaProposal;
     }
 
-    private CompletionProposal createCompletionProposal() {
-        return mock(CompletionProposal.class);
-    }
-
-    private JavaContentAssistInvocationContext createInvocationContext() {
-        final JavaContentAssistInvocationContext javaContext = mock(JavaContentAssistInvocationContext.class);
-        final CompletionContext completionContext = mock(CompletionContext.class);
-        when(javaContext.getCoreContext()).thenReturn(completionContext);
-        return javaContext;
-    }
 }
