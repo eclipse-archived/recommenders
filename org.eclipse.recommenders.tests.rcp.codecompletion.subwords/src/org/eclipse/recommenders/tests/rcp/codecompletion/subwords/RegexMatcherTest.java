@@ -77,11 +77,11 @@ public class RegexMatcherTest {
     }
 
     private SubwordsJavaMethodCompletionProposal createJavaCompletionProposal() {
-        final CompletionProposal someProposal = mockCompletionProposal();
-        final JavaContentAssistInvocationContext someInvocationContext = mockInvocationContext();
-        final SubwordsJavaMethodCompletionProposal someJavaProposal = new SubwordsJavaMethodCompletionProposal(
-                someProposal, someInvocationContext);
-        return someJavaProposal;
+        final CompletionProposal dummyProposal = mockCompletionProposal();
+        final JavaContentAssistInvocationContext dummyInvocationContext = mockInvocationContext();
+        final SubwordsJavaMethodCompletionProposal someSubwordsProposal = new SubwordsJavaMethodCompletionProposal(
+                dummyProposal, dummyInvocationContext);
+        return someSubwordsProposal;
     }
 
 }

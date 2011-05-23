@@ -33,7 +33,6 @@ public final class SubwordsJavaMethodCompletionProposal extends JavaMethodComple
         completion = getTokensUntilFirstOpeningBracket(completion);
         final Matcher m = pattern.matcher(completion);
         final boolean matches = m.matches();
-        System.out.println(completion);
         return matches;
     }
 
