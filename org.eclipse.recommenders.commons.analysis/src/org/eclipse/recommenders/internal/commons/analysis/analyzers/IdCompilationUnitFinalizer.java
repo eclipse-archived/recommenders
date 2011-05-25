@@ -25,7 +25,7 @@ public class IdCompilationUnitFinalizer implements ICompilationUnitFinalizer {
     }
 
     private void setPrimaryTypeFingerprint(final CompilationUnit compilationUnit) {
-        compilationUnit.fingerprintOfPrimaryTypeName = Fingerprints.sha1(compilationUnit.primaryType.name
+        compilationUnit.id = Fingerprints.sha1(compilationUnit.primaryType.name
                 .getIdentifier());
     }
 
