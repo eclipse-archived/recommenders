@@ -67,6 +67,8 @@ public class CompilationUnit implements ICodeElement {
     @SerializedName("_rev")
     public String rev;
 
+    public Date creationTimestamp = new Date();
+
     public Set<TypeReference> imports = Sets.newTreeSet();
 
     public Kind kind = Kind.SNAPSHOT;
