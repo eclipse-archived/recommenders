@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.recommenders.rcp.extdoc.provider">
+      <provider
+            class="org.eclipse.recommenders.internal.rcp.extdoc.providers.JavadocProvider"
+            short_name="Javadoc"
+            long_name="Javadoc Provider">
+      </provider>
+      <provider
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider"
+            short_name="Wiki"
+            long_name="Wiki Provider">
+      </provider>
+      <provider
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.TemplatesProvider"
+            short_name="Templates"
+            long_name="Dynamic Templates Provider">
+      </provider>
+   </extension>
+</plugin>

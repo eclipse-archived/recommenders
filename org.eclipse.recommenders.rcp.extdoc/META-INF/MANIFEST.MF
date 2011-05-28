@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: RCP ExtDoc Client (Incubation) (Experimental)
+Bundle-SymbolicName: org.eclipse.recommenders.rcp.extdoc;singleton:=true
+Bundle-Version: 0.2.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.jdt.ui,
+ org.eclipse.jdt.core,
+ org.eclipse.core.runtime,
+ com.google.inject,
+ org.eclipse.recommenders.commons.injection,
+ org.eclipse.recommenders.commons.selection,
+ org.eclipse.core.databinding,
+ org.eclipse.core.databinding.beans,
+ org.eclipse.core.databinding.observable,
+ org.eclipse.core.databinding.property,
+ org.eclipse.jface.databinding,
+ com.ibm.icu
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
+ org.eclipse.recommenders.internal.rcp.extdoc.preferences;x-internal:=true,
+ org.eclipse.recommenders.internal.rcp.extdoc.views;x-internal:=true,
+ org.eclipse.recommenders.rcp.extdoc;uses:="org.eclipse.recommenders.commons.selection,org.eclipse.swt.widgets",
+ org.eclipse.recommenders.rcp.extdoc.listener,
+ org.eclipse.recommenders.rcp.extdoc.swt,
+ org.eclipse.recommenders.rcp.extdoc.utils
+Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin
+Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.jface.internal.text.html
