@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.commons.selection;
 
-import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IPartListener;
@@ -26,8 +26,8 @@ final class PartListener implements IPartListener {
     }
 
     private void addListeners(final IWorkbenchPart part) {
-        if (part instanceof CompilationUnitEditor) {
-            final CompilationUnitEditor editor = (CompilationUnitEditor) part;
+        if (part instanceof JavaEditor) {
+            final JavaEditor editor = (JavaEditor) part;
             final StyledText text = (StyledText) editor.getAdapter(Control.class);
             text.addKeyListener(cursorListener);
             text.addMouseListener(cursorListener);
