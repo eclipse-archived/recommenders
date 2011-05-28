@@ -27,10 +27,9 @@ public class AstNodeResolver {
         parser.setResolveBindings(true);
         parser.setSource(invocationContext.getCompilationUnit());
 
-        final ASTNode cachedAstNode = NodeFinder.perform(parser.createAST(null),
-                invocationContext.getInvocationOffset(), 0);
-
-        return cachedAstNode;
+        final ASTNode astRoot = parser.createAST(null);
+        final int invocationOffset = invocationContext.getInvocationOffset();
+        return NodeFinder.perform(astRoot, invocationOffset, 0);
     }
 
 }

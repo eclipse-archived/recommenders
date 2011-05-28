@@ -12,6 +12,6 @@ package org.eclipse.recommenders.commons.selection;
 
 public interface IExtendedSelectionListener {
 
-    void update(final JavaElementSelection context);
+    void update(IJavaElementSelection context);
 
 }

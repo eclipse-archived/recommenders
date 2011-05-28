@@ -10,15 +10,15 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
-import org.eclipse.recommenders.commons.selection.JavaElementSelection;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 public interface IProvider {
 
-    Control createControl(final Composite parent, final IWorkbenchPartSite partSite);
+    Control createControl(Composite parent, IWorkbenchPartSite partSite);
 
-    void selectionChanged(final JavaElementSelection context);
+    void selectionChanged(IJavaElementSelection context);
 
 }

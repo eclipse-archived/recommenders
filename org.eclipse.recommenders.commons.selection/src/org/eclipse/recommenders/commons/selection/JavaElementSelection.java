@@ -17,7 +17,6 @@ import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
@@ -63,7 +62,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
     @Override
     public ElementLocation getElementLocation() {
         if (cachedElementLocation == null) {
-            cachedElementLocation = ELEMENTLOCATIONRESOLVER.resolve(getAstNode());
+            cachedElementLocation = ELEMENTLOCATIONRESOLVER.resolve(getAstNode(), javaElement);
         }
         return cachedElementLocation;
     }
@@ -106,12 +105,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
 
         final JavaContentAssistInvocationContext context = getInvocationContext();
         if (context != null) {
-            try {
-                string.add("ExpectedType", context.getExpectedType()).add("\n\tIdentifierPrefix",
-                        context.computeIdentifierPrefix());
-            } catch (final BadLocationException e) {
-                throw new IllegalStateException(e);
-            }
+            string.add("ExpectedType", context.getExpectedType());
             final CompletionContext coreContext = context.getCoreContext();
             if (coreContext != null && coreContext.getToken() != null) {
                 string.add("\nCoreContextToken", String.valueOf(coreContext.getToken()) + "\n\n");

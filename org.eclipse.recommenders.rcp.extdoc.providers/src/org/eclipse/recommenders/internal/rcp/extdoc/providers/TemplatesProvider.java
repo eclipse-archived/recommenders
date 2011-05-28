@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import com.google.inject.Inject;
 
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
-import org.eclipse.recommenders.commons.selection.JavaElementSelection;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionProposalComputer;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
@@ -32,7 +32,7 @@ public final class TemplatesProvider extends AbstractBrowserProvider {
     }
 
     @Override
-    public String getHtmlContent(final JavaElementSelection context) {
+    public String getHtmlContent(final IJavaElementSelection context) {
         final StringBuilder builder = new StringBuilder();
         IIntelligentCompletionContext completionContext = null;
 

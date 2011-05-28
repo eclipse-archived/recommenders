@@ -1,25 +1,30 @@
-package commons.selection/* PackageFragment | PackageDeclaration */;
+package commons.selection/* PackageFragment | PACKAGE_DECLARATION | QualifiedName */;
 
-import org.eclipse.swt.widgets.Button/* ResolvedBinaryType | ImportDeclaration */;
+import org.eclipse.jface.viewers.ISelection/* ResolvedBinaryType | IMPORT_DECLARATION | QualifiedName */;
 
-public class GeneralTest/* SourceType | TypeDeclaration */ {
+public class GeneralTest/* SourceType | TYPE_DECLARATION | TypeDeclaration */ extends Button/* ResolvedBinaryType | TYPE_DECLARATION_EXTENDS | SimpleType */ implements ISelectionListener/* ResolvedBinaryType | TYPE_DECLARATION_IMPLEMENTS | SimpleType */ {
 
-    private static String/* ResolvedBinaryType | FieldDeclaration */ staticString/* SourceField | FieldDeclaration */;
+    private static String/* ResolvedBinaryType | FIELD_DECLARATION | SimpleType */ staticString/* SourceField | FIELD_DECLARATION | VariableDeclarationFragment */;
 
-    private String/* ResolvedBinaryType | FieldDeclaration */ objectString/* SourceField | FieldDeclaration */;
+    private String/* ResolvedBinaryType | FIELD_DECLARATION | SimpleType */ objectString/* SourceField | FIELD_DECLARATION | VariableDeclarationFragment */;
 
-    public static void staticMethod/* SourceMethod | MethodDeclaration */() {
-        final String/* ResolvedBinaryType | Block */ localFieldinStatic/* LocalVariable | Block */;
-        staticString/* ResolvedSourceField | Block */.isEmpty/* ResolvedBinaryMethod | Block */();
+    public GeneralTest(Composite parent, int style) {
+        super(parent, style);
     }
 
-    public void objectMethod() {
-        objectString/* ResolvedSourceField | Block */.isEmpty/* ResolvedBinaryMethod | Block */();
+    @Override
+    public void selectionChanged(IWorkbenchPart part, ISelection/* ResolvedBinaryType | METHOD_DECLARATION_PARAMETER | SimpleType */ selection/* ResolvedBinaryType | METHOD_DECLARATION_PARAMETER | SimpleType */) {
+        objectString/* ResolvedSourceField | BLOCK | MethodInvocation */.isEmpty/* ResolvedBinaryMethod | BLOCK | MethodInvocation */();
     }
 
-    public Button/* ResolvedBinaryType | MethodDeclaration */ objectMethodWithReturn/* SourceMethod | MethodDeclaration */() {
-        final Button/* ResolvedBinaryType | Block */ button/* LocalVariable | Block */ = new Button(null, 0);
-        button./* null | Block */
-        return button;
+    public Button/* ResolvedBinaryType | METHOD_DECLARATION | SimpleType */ objectMethodWithReturn/* SourceMethod | METHOD_DECLARATION | MethodDeclaration */() {
+        final Button/* ResolvedBinaryType | BLOCK | MethodDeclaration */ button/* LocalVariable | BLOCK | MethodDeclaration */ = new Button(null, 0);
+        button./* null | BLOCK | MethodDeclaration */
+        return button/* LocalVariable | BLOCK | MethodDeclaration */;
+    }
+    
+    public static void staticMethod/* SourceMethod | METHOD_DECLARATION | MethodDeclaration */() {
+        final String/* ResolvedBinaryType | BLOCK | SimpleType */ localFieldinStatic/* LocalVariable | BLOCK | VariableDeclarationFragment */;
+        staticString/* ResolvedSourceField | BLOCK | MethodInvocation */.isEmpty/* ResolvedBinaryMethod | BLOCK | MethodInvocation */();
     }
 }

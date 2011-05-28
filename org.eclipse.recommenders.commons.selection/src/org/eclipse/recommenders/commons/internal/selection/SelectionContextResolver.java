@@ -18,6 +18,7 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.ui.IEditorInput;
@@ -26,10 +27,10 @@ import org.eclipse.ui.IWorkbenchPart;
 @SuppressWarnings("restriction")
 final class SelectionContextResolver {
 
-    public JavaElementSelection resolve(final IWorkbenchPart part, final ISelection selection)
+    public IJavaElementSelection resolve(final IWorkbenchPart part, final ISelection selection)
             throws JavaModelException {
         Checks.ensureIsNotNull(part);
-        JavaElementSelection selectionContext = null;
+        IJavaElementSelection selectionContext = null;
         if (selection instanceof ITreeSelection) {
             selectionContext = resolveFromTreeSelection((ITreeSelection) selection);
         } else if (part instanceof JavaEditor && selection instanceof ITextSelection) {
@@ -38,7 +39,7 @@ final class SelectionContextResolver {
         return selectionContext;
     }
 
-    private JavaElementSelection resolveFromTreeSelection(final ITreeSelection selection) throws JavaModelException {
+    private IJavaElementSelection resolveFromTreeSelection(final ITreeSelection selection) throws JavaModelException {
         IJavaElement javaElement = null;
         final Object firstElement = selection.getFirstElement();
         if (firstElement instanceof IJavaElement) {
@@ -47,7 +48,7 @@ final class SelectionContextResolver {
         return new JavaElementSelection(selection, javaElement);
     }
 
-    private JavaElementSelection resolveFromEditor(final JavaEditor part, final ITextSelection selection)
+    private IJavaElementSelection resolveFromEditor(final JavaEditor part, final ITextSelection selection)
             throws JavaModelException {
         IJavaElement javaElement = null;
         final IEditorInput editorInput = part.getEditorInput();

@@ -41,18 +41,22 @@ final class PartListener implements IPartListener {
 
     @Override
     public void partBroughtToTop(final IWorkbenchPart part) {
+        // Not of interest for us.
     }
 
     @Override
     public void partClosed(final IWorkbenchPart part) {
+        // Not of interest for us.
     }
 
     @Override
     public void partDeactivated(final IWorkbenchPart part) {
+        // Not of interest for us.
     }
 
     @Override
     public void partOpened(final IWorkbenchPart part) {
+        // Not of interest for us.
     }
 
 }

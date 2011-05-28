@@ -43,14 +43,17 @@ final class CursorListener implements MouseListener, KeyListener {
 
     @Override
     public void keyReleased(final KeyEvent event) {
+        // Not of interest for us.
     }
 
     @Override
     public void mouseDoubleClick(final MouseEvent event) {
+        // Not of interest for us.
     }
 
     @Override
     public void mouseDown(final MouseEvent event) {
+        // Not of interest for us.
     }
 
     @Override

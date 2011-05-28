@@ -17,7 +17,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
-import org.eclipse.recommenders.commons.selection.JavaElementSelection;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -42,7 +42,7 @@ final class SelectionListener implements ISelectionListener {
             lastSelection = selection;
 
             try {
-                final JavaElementSelection context = contextResolver.resolve(part, selection);
+                final IJavaElementSelection context = contextResolver.resolve(part, selection);
                 if (!SelectionPlugin.isStarted()) {
                     SelectionPlugin.start(part.getSite().getPage());
                 }
@@ -53,7 +53,7 @@ final class SelectionListener implements ISelectionListener {
         }
     }
 
-    private void notifyListeners(final JavaElementSelection context) {
+    private void notifyListeners(final IJavaElementSelection context) {
         if (context != null) {
             for (final IExtendedSelectionListener listener : listeners) {
                 listener.update(context);

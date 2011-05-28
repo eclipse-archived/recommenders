@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import com.google.inject.Inject;
 
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
-import org.eclipse.recommenders.commons.selection.JavaElementSelection;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.views.ExtDocView;
 
 final class UIManager implements IExtendedSelectionListener {
@@ -26,7 +26,7 @@ final class UIManager implements IExtendedSelectionListener {
     }
 
     @Override
-    public void update(final JavaElementSelection context) {
+    public void update(final IJavaElementSelection context) {
         extDocView.update(context);
     }
 

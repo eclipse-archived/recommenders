@@ -23,7 +23,7 @@ import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.internal.text.html.HTMLPrinter;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.recommenders.commons.selection.JavaElementSelection;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.internal.rcp.extdoc.listener.BrowserLinkListener;
 import org.eclipse.recommenders.rcp.extdoc.listener.IBrowserListener;
@@ -48,7 +48,7 @@ public abstract class AbstractBrowserProvider implements IProvider {
     private Browser browser;
     private final BrowserLinkListener linkListener = new BrowserLinkListener();
 
-    private JavaElementSelection lastContext;
+    private IJavaElementSelection lastContext;
 
     @Override
     public final Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
@@ -59,7 +59,7 @@ public abstract class AbstractBrowserProvider implements IProvider {
     }
 
     @Override
-    public final void selectionChanged(final JavaElementSelection context) {
+    public final void selectionChanged(final IJavaElementSelection context) {
         lastContext = context;
         if (context.getJavaElement() != null) {
             final String txt = getHtmlContent(context);
@@ -85,7 +85,7 @@ public abstract class AbstractBrowserProvider implements IProvider {
         return listener.getHtml("#" + hash);
     }
 
-    protected abstract String getHtmlContent(final JavaElementSelection context);
+    protected abstract String getHtmlContent(IJavaElementSelection context);
 
     private String getInfoText(final IJavaElement element) {
         String imageName = null;
