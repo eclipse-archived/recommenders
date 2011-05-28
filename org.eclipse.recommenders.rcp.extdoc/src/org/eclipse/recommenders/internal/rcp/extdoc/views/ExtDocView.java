@@ -14,8 +14,8 @@ import java.util.Map.Entry;
 
 import com.google.inject.Inject;
 
-import org.eclipse.recommenders.commons.selection.ExtendedSelectionContext;
-import org.eclipse.recommenders.commons.selection.SelectionPlugin;
+import org.eclipse.recommenders.commons.internal.selection.SelectionPlugin;
+import org.eclipse.recommenders.commons.selection.JavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
@@ -31,14 +31,14 @@ public final class ExtDocView extends ViewPart {
 
     private final ProviderStore providerStore;
     private CTabFolder folder;
-    private ExtendedSelectionContext lastContext;
+    private JavaElementSelection lastContext;
 
     @Inject
     public ExtDocView(final ProviderStore providerStore) {
         this.providerStore = providerStore;
     }
 
-    public void update(final ExtendedSelectionContext context) {
+    public void update(final JavaElementSelection context) {
         if (context != null && folder != null) {
             final CTabItem tabItem = folder.getSelection();
             providerStore.getProvider(tabItem.getText()).selectionChanged(context);

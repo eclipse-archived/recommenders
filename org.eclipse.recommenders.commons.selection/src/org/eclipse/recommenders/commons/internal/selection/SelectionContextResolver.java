@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.selection;
+package org.eclipse.recommenders.commons.internal.selection;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ITypeRoot;
@@ -18,6 +18,7 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
@@ -25,29 +26,28 @@ import org.eclipse.ui.IWorkbenchPart;
 @SuppressWarnings("restriction")
 final class SelectionContextResolver {
 
-    public ExtendedSelectionContext resolve(final IWorkbenchPart part, final ISelection selection)
+    public JavaElementSelection resolve(final IWorkbenchPart part, final ISelection selection)
             throws JavaModelException {
         Checks.ensureIsNotNull(part);
-        ExtendedSelectionContext selectionContext = null;
+        JavaElementSelection selectionContext = null;
         if (selection instanceof ITreeSelection) {
-            selectionContext = resolveFromTreeSelection(part, (ITreeSelection) selection);
+            selectionContext = resolveFromTreeSelection((ITreeSelection) selection);
         } else if (part instanceof JavaEditor && selection instanceof ITextSelection) {
             selectionContext = resolveFromEditor((JavaEditor) part, (ITextSelection) selection);
         }
         return selectionContext;
     }
 
-    private ExtendedSelectionContext resolveFromTreeSelection(final IWorkbenchPart part, final ITreeSelection selection)
-            throws JavaModelException {
+    private JavaElementSelection resolveFromTreeSelection(final ITreeSelection selection) throws JavaModelException {
         IJavaElement javaElement = null;
         final Object firstElement = selection.getFirstElement();
         if (firstElement instanceof IJavaElement) {
             javaElement = (IJavaElement) firstElement;
         }
-        return new ExtendedSelectionContext(part, selection, javaElement);
+        return new JavaElementSelection(selection, javaElement);
     }
 
-    private ExtendedSelectionContext resolveFromEditor(final JavaEditor part, final ITextSelection selection)
+    private JavaElementSelection resolveFromEditor(final JavaEditor part, final ITextSelection selection)
             throws JavaModelException {
         IJavaElement javaElement = null;
         final IEditorInput editorInput = part.getEditorInput();
@@ -56,6 +56,6 @@ final class SelectionContextResolver {
         if (elements.length > 0) {
             javaElement = elements[0];
         }
-        return new ExtendedSelectionContext(part, selection, javaElement, part.getViewer(), part);
+        return new JavaElementSelection(selection, javaElement, part.getViewer(), part);
     }
 }

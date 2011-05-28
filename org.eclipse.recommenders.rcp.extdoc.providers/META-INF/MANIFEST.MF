@@ -17,9 +17,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.rcp.codecompletion.templates,
  org.eclipse.recommenders.server.extdoc,
  org.eclipse.mylyn.wikitext.core,
- org.eclipse.mylyn.wikitext.textile.core
+ org.eclipse.mylyn.wikitext.textile.core,
+ org.eclipse.recommenders.commons.selection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc.providers;x-internal:=true
-Import-Package: org.eclipse.recommenders.commons.selection
+Import-Package: org.eclipse.recommenders.commons.internal.selection
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin
 Bundle-ActivationPolicy: lazy

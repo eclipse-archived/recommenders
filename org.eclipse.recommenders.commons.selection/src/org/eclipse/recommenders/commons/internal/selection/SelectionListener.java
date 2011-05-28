@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.selection;
+package org.eclipse.recommenders.commons.internal.selection;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +16,8 @@ import java.util.Set;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
+import org.eclipse.recommenders.commons.selection.JavaElementSelection;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -40,7 +42,7 @@ final class SelectionListener implements ISelectionListener {
             lastSelection = selection;
 
             try {
-                final ExtendedSelectionContext context = contextResolver.resolve(part, selection);
+                final JavaElementSelection context = contextResolver.resolve(part, selection);
                 if (!SelectionPlugin.isStarted()) {
                     SelectionPlugin.start(part.getSite().getPage());
                 }
@@ -51,7 +53,7 @@ final class SelectionListener implements ISelectionListener {
         }
     }
 
-    private void notifyListeners(final ExtendedSelectionContext context) {
+    private void notifyListeners(final JavaElementSelection context) {
         if (context != null) {
             for (final IExtendedSelectionListener listener : listeners) {
                 listener.update(context);

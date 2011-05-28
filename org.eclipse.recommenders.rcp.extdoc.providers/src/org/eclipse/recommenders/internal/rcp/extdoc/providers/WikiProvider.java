@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.recommenders.commons.selection.ExtendedSelectionContext;
+import org.eclipse.recommenders.commons.selection.JavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
 import org.eclipse.recommenders.rcp.extdoc.listener.EditListener;
@@ -32,7 +32,7 @@ public final class WikiProvider extends AbstractBrowserProvider {
     }
 
     @Override
-    protected String getHtmlContent(final ExtendedSelectionContext context) {
+    protected String getHtmlContent(final JavaElementSelection context) {
         String markup = null;
         String txt = null;
         if (context.getJavaElement() != null) {
@@ -52,7 +52,7 @@ public final class WikiProvider extends AbstractBrowserProvider {
         reload();
     }
 
-    private String getCommunityFeatures(final ExtendedSelectionContext context, final String markup) {
+    private String getCommunityFeatures(final JavaElementSelection context, final String markup) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(addListenerAndGetHtml(getEditListener(context, markup)));
@@ -60,7 +60,7 @@ public final class WikiProvider extends AbstractBrowserProvider {
         return builder.toString();
     }
 
-    private EditListener getEditListener(final ExtendedSelectionContext context, final String markup) {
+    private EditListener getEditListener(final JavaElementSelection context, final String markup) {
         final WikiEditDialog editDialog = new WikiEditDialog(getShell(), this, context.getJavaElement(), markup);
         return new EditListener(editDialog);
     }

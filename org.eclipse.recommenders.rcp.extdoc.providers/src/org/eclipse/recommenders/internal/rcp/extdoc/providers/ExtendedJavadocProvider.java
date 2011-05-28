@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.eclipse.recommenders.commons.selection.ExtendedSelectionContext;
+import org.eclipse.recommenders.commons.selection.JavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -25,7 +25,7 @@ public final class ExtendedJavadocProvider implements IProvider {
     }
 
     @Override
-    public void selectionChanged(final ExtendedSelectionContext context) {
+    public void selectionChanged(final JavaElementSelection context) {
         // TODO Auto-generated method stub
 
     }
