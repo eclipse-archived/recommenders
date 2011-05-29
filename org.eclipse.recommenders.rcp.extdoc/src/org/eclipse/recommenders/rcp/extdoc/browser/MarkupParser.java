@@ -8,13 +8,13 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.utils;
+package org.eclipse.recommenders.rcp.extdoc.browser;
 
 public final class MarkupParser {
 
     public String parseTextile(final String markup) {
         String result = markup;
-        result = result.replaceAll("h([1-9])\\. (.+?)[\n]+", "<h$1>$2</h$1>");
+        result = result.replaceAll("h([1-9])\\. (.+)\r?\n", "<h$1>$2</h$1>");
         return result.replace("\n", "<br/>");
     }
 }

@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
-public final class ProviderStore {
+final class ProviderStore {
 
     private final Map<String, IProvider> providers = new HashMap<String, IProvider>();
 
@@ -32,11 +32,11 @@ public final class ProviderStore {
         }
     }
 
-    public Map<String, IProvider> getProviders() {
+    protected Map<String, IProvider> getProviders() {
         return providers;
     }
 
-    public IProvider getProvider(final String name) {
+    protected IProvider getProvider(final String name) {
         return providers.get(name);
     }
 

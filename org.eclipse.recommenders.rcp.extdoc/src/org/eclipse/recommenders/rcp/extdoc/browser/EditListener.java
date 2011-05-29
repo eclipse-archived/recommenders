@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.listener;
+package org.eclipse.recommenders.rcp.extdoc.browser;
 
 import java.io.IOException;
 import java.net.URL;
@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 
-public final class EditListener implements IBrowserListener {
+public final class EditListener implements IBrowserElementListener {
 
     private final URL imageUrl;
     private final Dialog dialog;
@@ -37,7 +37,7 @@ public final class EditListener implements IBrowserListener {
     }
 
     @Override
-    public void activated() {
+    public void selected() {
         dialog.open();
     }
 

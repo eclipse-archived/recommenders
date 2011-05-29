@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider;
 import org.eclipse.recommenders.rcp.extdoc.swt.AbstractDialog;
-import org.eclipse.recommenders.rcp.extdoc.utils.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.swt.SwtFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;

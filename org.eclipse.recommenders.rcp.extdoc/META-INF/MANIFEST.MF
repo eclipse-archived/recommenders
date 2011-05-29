@@ -9,22 +9,18 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core,
  org.eclipse.core.runtime,
  com.google.inject,
- org.eclipse.recommenders.commons.injection,
- org.eclipse.recommenders.commons.selection,
- org.eclipse.core.databinding,
- org.eclipse.core.databinding.beans,
- org.eclipse.core.databinding.observable,
- org.eclipse.core.databinding.property,
- org.eclipse.jface.databinding,
- com.ibm.icu
+ org.eclipse.recommenders.commons.selection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.preferences;x-internal:=true,
- org.eclipse.recommenders.internal.rcp.extdoc.views;x-internal:=true,
- org.eclipse.recommenders.rcp.extdoc;uses:="org.eclipse.recommenders.commons.selection,org.eclipse.swt.widgets",
- org.eclipse.recommenders.rcp.extdoc.listener,
- org.eclipse.recommenders.rcp.extdoc.swt,
- org.eclipse.recommenders.rcp.extdoc.utils
+ org.eclipse.recommenders.rcp.extdoc;
+  uses:="org.eclipse.ui,
+   org.eclipse.recommenders.commons.selection,
+   org.eclipse.swt.widgets,
+   org.eclipse.recommenders.rcp.extdoc.browser",
+ org.eclipse.recommenders.rcp.extdoc.browser;uses:="org.eclipse.jface.dialogs",
+ org.eclipse.recommenders.rcp.extdoc.swt;uses:="org.eclipse.swt.widgets,org.eclipse.jface.dialogs"
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin
 Bundle-ActivationPolicy: lazy
-Import-Package: org.eclipse.jface.internal.text.html
+Import-Package: org.eclipse.jface.internal.text.html,
+ org.eclipse.recommenders.commons.injection

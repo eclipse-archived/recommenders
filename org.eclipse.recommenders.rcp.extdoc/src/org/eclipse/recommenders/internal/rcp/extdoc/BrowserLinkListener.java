@@ -8,33 +8,34 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.listener;
+package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.recommenders.rcp.extdoc.listener.IBrowserListener;
+import org.eclipse.recommenders.rcp.extdoc.browser.IBrowserElementListener;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 
 public final class BrowserLinkListener implements LocationListener {
 
-    private final Map<Integer, IBrowserListener> listeners = new HashMap<Integer, IBrowserListener>();
+    private final Map<Integer, IBrowserElementListener> listeners = new HashMap<Integer, IBrowserElementListener>();
 
     @Override
     public void changing(final LocationEvent event) {
         if (event.location.startsWith("about:blank#")) {
             final Integer hash = Integer.valueOf(event.location.substring(12));
-            final IBrowserListener listener = listeners.get(hash);
-            listener.activated();
+            final IBrowserElementListener listener = listeners.get(hash);
+            listener.selected();
         }
     }
 
     @Override
     public void changed(final LocationEvent event) {
+        // Not of interest to us.
     }
 
-    public int addListener(final IBrowserListener listener) {
+    public int addListener(final IBrowserElementListener listener) {
         listeners.put(listener.hashCode(), listener);
         return listener.hashCode();
     }

@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.views;
+package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import java.util.Map.Entry;
 
@@ -16,7 +16,6 @@ import com.google.inject.Inject;
 
 import org.eclipse.recommenders.commons.internal.selection.SelectionPlugin;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -27,7 +26,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.part.ViewPart;
 
-public final class ExtDocView extends ViewPart {
+@SuppressWarnings("restriction")
+final class ExtDocView extends ViewPart {
 
     private final ProviderStore providerStore;
     private CTabFolder folder;
@@ -38,7 +38,7 @@ public final class ExtDocView extends ViewPart {
         this.providerStore = providerStore;
     }
 
-    public void update(final IJavaElementSelection context) {
+    protected void update(final IJavaElementSelection context) {
         if (context != null && folder != null) {
             final CTabItem tabItem = folder.getSelection();
             providerStore.getProvider(tabItem.getText()).selectionChanged(context);
@@ -50,18 +50,21 @@ public final class ExtDocView extends ViewPart {
     public void createPartControl(final Composite parent) {
         folder = new CTabFolder(parent, SWT.BOTTOM);
         folder.setSimple(false);
+        addProviderTabs();
+        folder.setSelection(0);
+        folder.addSelectionListener(new Listener());
 
+        final IWorkbenchPage page = getSite().getPage();
+        SelectionPlugin.triggerUpdate(page.getActivePart(), page.getSelection());
+    }
+
+    private void addProviderTabs() {
         for (final Entry<String, IProvider> provider : providerStore.getProviders().entrySet()) {
             final CTabItem item = new CTabItem(folder, SWT.NONE);
             item.setText(provider.getKey());
             final Control control = provider.getValue().createControl(folder, getViewSite());
             item.setControl(control);
         }
-        folder.setSelection(0);
-        folder.addSelectionListener(new Listener());
-
-        final IWorkbenchPage page = getSite().getPage();
-        SelectionPlugin.triggerUpdate(page.getActivePart(), page.getSelection());
     }
 
     @Override

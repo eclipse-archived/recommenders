@@ -13,7 +13,7 @@
 	   <view
 	         allowMultiple="false"
 	         category="org.eclipse.recommenders.rcp.category.views"
-	         class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.views.ExtDocView"
+	         class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.ExtDocView"
 	         icon="$nl$/icons/full/eview16/extdoc.png"
 	         id="org.eclipse.recommenders.internal.rcp.extdoc.views.ExtDocView"
 	         name="ExtDoc"

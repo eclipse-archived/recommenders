@@ -8,12 +8,12 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.listener;
+package org.eclipse.recommenders.rcp.extdoc.browser;
 
-public interface IBrowserListener {
+public interface IBrowserElementListener {
 
     String getHtml(String href);
 
-    void activated();
+    void selected();
 
 }

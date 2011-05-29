@@ -35,6 +35,9 @@ public final class JavadocProvider implements IProvider {
         }
     }
 
+    /**
+     * Extension to gain access to getControl().
+     */
     private static class ExtendedJavadocView extends JavadocView {
 
         public ExtendedJavadocView(final Composite parent, final IWorkbenchPartSite partSite) {

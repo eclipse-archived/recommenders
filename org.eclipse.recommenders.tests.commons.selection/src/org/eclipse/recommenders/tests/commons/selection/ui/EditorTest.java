@@ -87,7 +87,7 @@ public final class EditorTest extends AbstractUiTest {
             }
             offset += lineText.length() + 2;
         }
-        Assert.assertTrue(assertions + "", assertions > 10);
+        Assert.assertTrue(assertions + "", assertions > 8);
     }
 
     private void testAnnotation(final String annotation, final int offset, final String lineText)

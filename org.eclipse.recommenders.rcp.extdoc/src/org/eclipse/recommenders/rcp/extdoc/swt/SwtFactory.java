@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.utils;
+package org.eclipse.recommenders.rcp.extdoc.swt;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

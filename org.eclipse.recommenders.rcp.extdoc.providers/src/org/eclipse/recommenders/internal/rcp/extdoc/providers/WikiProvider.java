@@ -16,8 +16,8 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
-import org.eclipse.recommenders.rcp.extdoc.listener.EditListener;
-import org.eclipse.recommenders.rcp.extdoc.utils.MarkupParser;
+import org.eclipse.recommenders.rcp.extdoc.browser.EditListener;
+import org.eclipse.recommenders.rcp.extdoc.browser.MarkupParser;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 
 public final class WikiProvider extends AbstractBrowserProvider {

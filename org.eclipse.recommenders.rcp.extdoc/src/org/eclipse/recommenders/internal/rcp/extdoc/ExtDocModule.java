@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 
-import org.eclipse.recommenders.internal.rcp.extdoc.views.ExtDocView;
 
 public final class ExtDocModule extends AbstractModule {
 
