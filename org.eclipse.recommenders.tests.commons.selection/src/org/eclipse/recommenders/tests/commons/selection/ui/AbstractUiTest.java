@@ -25,7 +25,7 @@ abstract class AbstractUiTest extends DefaultUiTest {
 
     private static SWTBotTreeItem projectNode;
     private static SWTBotTreeItem srcNode;
-    private static SelectionObserver observer;
+    private static TestSelectionListener observer;
 
     static {
         try {
@@ -56,9 +56,9 @@ abstract class AbstractUiTest extends DefaultUiTest {
         return srcNode;
     }
 
-    static final SelectionObserver getObserver() {
+    static final TestSelectionListener getListener() {
         if (observer == null) {
-            observer = new SelectionObserver();
+            observer = new TestSelectionListener();
             SelectionPlugin.addListener(observer);
         }
         return observer;

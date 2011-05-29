@@ -29,11 +29,11 @@ import junit.framework.Assert;
 @RunWith(SWTBotJunit4ClassRunner.class)
 public final class PackageExplorerTest extends AbstractUiTest {
 
-    private static SelectionObserver observer;
+    private static TestSelectionListener observer;
 
     @BeforeClass
     public static void initialize() {
-        observer = getObserver();
+        observer = getListener();
     }
 
     private IJavaElementSelection testCommons(final SWTBotTreeItem item, final Class expectedElement) {

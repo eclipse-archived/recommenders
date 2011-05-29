@@ -23,12 +23,15 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+/**
+ * The selection framework plugin activator.
+ */
 public final class SelectionPlugin extends AbstractUIPlugin {
 
     private static IWorkbenchWindow workbenchWindow;
-    private static SelectionListener internalListener;
+    private static InternalSelectionListener internalListener;
+    private static PartListener partListener;
     private static IWorkbenchPage page;
-    private static boolean started;
 
     @Override
     public void start(final BundleContext context) throws Exception {
@@ -40,7 +43,8 @@ public final class SelectionPlugin extends AbstractUIPlugin {
             workbenchWindow = PlatformUI.getWorkbench().getWorkbenchWindows()[0];
         }
 
-        SelectionPlugin.internalListener = new SelectionListener(workbenchWindow, new SelectionContextResolver());
+        SelectionPlugin.internalListener = new InternalSelectionListener();
+        SelectionPlugin.partListener = new PartListener(new CursorListener(internalListener, workbenchWindow));
         workbenchWindow.getSelectionService().addSelectionListener(internalListener);
     }
 
@@ -48,22 +52,32 @@ public final class SelectionPlugin extends AbstractUIPlugin {
     public void stop(final BundleContext context) throws Exception {
         super.stop(context);
         workbenchWindow.getSelectionService().removeSelectionListener(internalListener);
-        page.removePartListener(internalListener.getPartListener());
+        page.removePartListener(partListener);
         internalListener = null;
     }
 
+    /**
+     * @return True, if the listeners are installed.
+     */
     protected static boolean isStarted() {
-        return started;
+        return SelectionPlugin.page != null;
     }
 
-    protected static void start(final IWorkbenchPage page) {
+    /**
+     * @param page
+     *            The active workbench page to which the internal listeners are
+     *            registered to.
+     */
+    protected static void addListeners(final IWorkbenchPage page) {
         SelectionPlugin.page = page;
-        page.addPartListener(internalListener.getPartListener());
-        loadListeners();
-        started = true;
+        page.addPartListener(partListener);
+        loadExternalListeners();
     }
 
-    private static void loadListeners() {
+    /**
+     * Loads external listeners which registered for the extension point.
+     */
+    private static void loadExternalListeners() {
         final IExtensionRegistry reg = Platform.getExtensionRegistry();
         for (final IConfigurationElement element : reg
                 .getConfigurationElementsFor("org.eclipse.recommenders.commons.selection.listener")) {
@@ -77,14 +91,29 @@ public final class SelectionPlugin extends AbstractUIPlugin {
         }
     }
 
+    /**
+     * @param part
+     *            The workbench part which shall "fake" a selection event.
+     * @param selection
+     *            The selection event which shall be "faked".
+     */
     public static void triggerUpdate(final IWorkbenchPart part, final ISelection selection) {
         internalListener.update(part, selection);
     }
 
+    /**
+     * @param listener
+     *            Manually add a selection listener to the framework.
+     */
     public static void addListener(final IExtendedSelectionListener listener) {
         internalListener.addListener(listener);
     }
 
+    /**
+     * @param selection
+     *            The selection event to be "faked" for the currently active
+     *            workbench part.
+     */
     public static void triggerUpdate(final ISelection selection) {
         internalListener.update(workbenchWindow.getActivePage().getActivePart(), selection);
     }

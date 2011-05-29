@@ -10,8 +10,15 @@
  */
 package org.eclipse.recommenders.commons.selection;
 
+/**
+ * Listener for Java element selections.
+ */
 public interface IExtendedSelectionListener {
 
-    void update(IJavaElementSelection context);
+    /**
+     * @param selection
+     *            The context information for a new Java element selection.
+     */
+    void update(IJavaElementSelection selection);
 
 }

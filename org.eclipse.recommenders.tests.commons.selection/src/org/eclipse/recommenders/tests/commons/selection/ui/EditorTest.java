@@ -54,11 +54,11 @@ public final class EditorTest extends AbstractUiTest {
         TYPES.put("SourceType", SourceType.class);
     }
 
-    private SelectionObserver observer;
+    private TestSelectionListener observer;
 
     @Test
     public void testEditor() throws BadLocationException {
-        observer = getObserver();
+        observer = getListener();
 
         for (final SWTBotTreeItem srcPackage : getSourceNode().getItems()) {
             srcPackage.expand();

@@ -16,41 +16,47 @@ import com.google.common.base.Objects.ToStringHelper;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.TextSelection;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.internal.selection.AstNodeResolver;
 import org.eclipse.recommenders.commons.internal.selection.ElementLocationResolver;
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.ui.IEditorPart;
 
+/**
+ * Contains all required information about the user's selection of a java
+ * element in the perspective (e.g. Editor, Package Explorer, Outline, ...).
+ */
+@SuppressWarnings("restriction")
 public final class JavaElementSelection implements IJavaElementSelection {
 
-    private static final AstNodeResolver ASTNODERESOLVER = new AstNodeResolver();
-    private static final ElementLocationResolver ELEMENTLOCATIONRESOLVER = new ElementLocationResolver();
-
-    private final ISelection selection;
     private final IJavaElement javaElement;
+    private final int invocationOffset;
+    private JavaEditor editor;
 
-    private ElementLocation cachedElementLocation;
+    private ElementLocation cachedLocation;
     private JavaContentAssistInvocationContext cachedContext;
     private ASTNode cachedAstNode;
 
-    private ITextViewer viewer;
-    private IEditorPart editor;
-
-    public JavaElementSelection(final ISelection selection, final IJavaElement javaElement) {
-        this.selection = Checks.ensureIsNotNull(selection);
+    /**
+     * @param javaElement
+     *            The selected Java element.
+     */
+    public JavaElementSelection(final IJavaElement javaElement) {
         this.javaElement = javaElement;
+        invocationOffset = -1;
     }
 
-    public JavaElementSelection(final ISelection selection, final IJavaElement javaElement, final ITextViewer viewer,
-            final IEditorPart editor) {
-        this.selection = Checks.ensureIsNotNull(selection);
+    /**
+     * @param javaElement
+     *            The selected Java element.
+     * @param invocationOffset
+     *            The offset of the selection in the code.
+     * @param editor
+     *            The Java editor in which the selection took place.
+     */
+    public JavaElementSelection(final IJavaElement javaElement, final int invocationOffset, final JavaEditor editor) {
         this.javaElement = javaElement;
-
-        this.viewer = Checks.ensureIsNotNull(viewer);
+        this.invocationOffset = invocationOffset;
         this.editor = Checks.ensureIsNotNull(editor);
     }
 
@@ -61,16 +67,16 @@ public final class JavaElementSelection implements IJavaElementSelection {
 
     @Override
     public ElementLocation getElementLocation() {
-        if (cachedElementLocation == null) {
-            cachedElementLocation = ELEMENTLOCATIONRESOLVER.resolve(getAstNode(), javaElement);
+        if (cachedLocation == null) {
+            cachedLocation = ElementLocationResolver.resolve(getAstNode(), javaElement);
         }
-        return cachedElementLocation;
+        return cachedLocation;
     }
 
     @Override
     public JavaContentAssistInvocationContext getInvocationContext() {
-        if (cachedContext == null && viewer != null) {
-            cachedContext = new JavaContentAssistInvocationContext(viewer, getInvocationOffset(), editor);
+        if (cachedContext == null && editor != null) {
+            cachedContext = new JavaContentAssistInvocationContext(editor.getViewer(), invocationOffset, editor);
         }
         return cachedContext;
     }
@@ -78,13 +84,9 @@ public final class JavaElementSelection implements IJavaElementSelection {
     @Override
     public ASTNode getAstNode() {
         if (cachedAstNode == null) {
-            cachedAstNode = ASTNODERESOLVER.resolve(getInvocationContext());
+            cachedAstNode = AstNodeResolver.resolve(getInvocationContext());
         }
         return cachedAstNode;
-    }
-
-    private int getInvocationOffset() {
-        return selection instanceof TextSelection ? ((TextSelection) selection).getOffset() : -1;
     }
 
     @Override
@@ -101,7 +103,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
                     astNode.getParent().getNodeType() + " ("
                             + ASTNode.nodeClassForType(astNode.getParent().getNodeType()).getSimpleName() + ")");
         }
-        string.add("\n\nInvocationOffset", getInvocationOffset() + "\n\n");
+        string.add("\n\nInvocationOffset", invocationOffset + "\n\n");
 
         final JavaContentAssistInvocationContext context = getInvocationContext();
         if (context != null) {

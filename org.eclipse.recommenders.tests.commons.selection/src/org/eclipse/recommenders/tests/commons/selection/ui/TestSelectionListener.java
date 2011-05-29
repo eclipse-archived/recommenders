@@ -13,7 +13,7 @@ package org.eclipse.recommenders.tests.commons.selection.ui;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 
-public final class SelectionObserver implements IExtendedSelectionListener {
+public final class TestSelectionListener implements IExtendedSelectionListener {
 
     private IJavaElementSelection lastContext;
 

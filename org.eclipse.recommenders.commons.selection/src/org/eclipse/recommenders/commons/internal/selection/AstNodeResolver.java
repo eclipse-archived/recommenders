@@ -10,26 +10,50 @@
  */
 package org.eclipse.recommenders.commons.internal.selection;
 
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
-public class AstNodeResolver {
+/**
+ * Resolves the active java element's AST node for an invocation context.
+ */
+public final class AstNodeResolver {
 
-    public ASTNode resolve(final JavaContentAssistInvocationContext invocationContext) {
+    private static final ASTParser PARSER = ASTParser.newParser(AST.JLS3);
+
+    /**
+     * Private constructor to avoid instantiation of helper class.
+     */
+    private AstNodeResolver() {
+    }
+
+    /**
+     * @param invocationContext
+     *            The invocation context holding the compilation unit and
+     *            location information.
+     * @return The AST node for the active java element.
+     */
+    public static ASTNode resolve(final JavaContentAssistInvocationContext invocationContext) {
         if (invocationContext == null) {
             return null;
         }
-
-        final ASTParser parser = ASTParser.newParser(AST.JLS3);
-        parser.setResolveBindings(true);
-        parser.setSource(invocationContext.getCompilationUnit());
-
-        final ASTNode astRoot = parser.createAST(null);
+        final ASTNode astRoot = resolveAst(invocationContext.getCompilationUnit());
         final int invocationOffset = invocationContext.getInvocationOffset();
         return NodeFinder.perform(astRoot, invocationOffset, 0);
+    }
+
+    /**
+     * @param compilationUnit
+     *            The compilation unit from which to extract the AST.
+     * @return The compilation unit's AST.
+     */
+    private static ASTNode resolveAst(final ICompilationUnit compilationUnit) {
+        PARSER.setResolveBindings(true);
+        PARSER.setSource(compilationUnit);
+        return PARSER.createAST(null);
     }
 
 }

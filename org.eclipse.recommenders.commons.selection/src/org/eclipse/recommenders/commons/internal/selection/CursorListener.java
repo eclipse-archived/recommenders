@@ -19,20 +19,36 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.ui.IWorkbenchWindow;
 
+/**
+ * Used to track the changes of the cursor in an editor.
+ */
 final class CursorListener implements MouseListener, KeyListener {
 
-    private final SelectionListener selectionListener;
+    private final InternalSelectionListener selectionListener;
     private final IWorkbenchWindow win;
 
-    CursorListener(final SelectionListener selectionListener, final IWorkbenchWindow win) {
+    /**
+     * @param selectionListener
+     *            The parent listener to inform on cursor change event.
+     * @param win
+     *            The workbench window to whose editor the listener is
+     *            registered to.
+     */
+    CursorListener(final InternalSelectionListener selectionListener, final IWorkbenchWindow win) {
         this.selectionListener = Checks.ensureIsNotNull(selectionListener);
         this.win = Checks.ensureIsNotNull(win);
     }
 
+    /**
+     * Called when a change of cursor position is observed. Notifies the parent
+     * selection listener.
+     */
     private void positionChanged() {
         final ISelection selection = win.getActivePage().getSelection();
         if (selection instanceof ITextSelection) {
             selectionListener.update(win.getActivePage().getActivePart(), selection);
+        } else {
+            throw new IllegalStateException("bla: " + selection);
         }
     }
 

@@ -23,7 +23,7 @@ import junit.framework.Assert;
 @RunWith(SWTBotJunit4ClassRunner.class)
 public final class OutlineTest extends AbstractUiTest {
 
-    private static SelectionObserver observer;
+    private static TestSelectionListener observer;
 
     private void testCommons(final SWTBotTreeItem item) {
         item.expand();
@@ -35,7 +35,7 @@ public final class OutlineTest extends AbstractUiTest {
 
     @Test
     public void testEditor() throws InterruptedException {
-        observer = getObserver();
+        observer = getListener();
 
         for (final SWTBotTreeItem srcPackage : getSourceNode().getItems()) {
             for (final SWTBotTreeItem javaFile : srcPackage.getItems()) {

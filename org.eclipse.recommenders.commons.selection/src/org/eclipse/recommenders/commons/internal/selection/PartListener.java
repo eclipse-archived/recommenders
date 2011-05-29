@@ -16,18 +16,31 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 
+/**
+ * Listens for newly created workbench parts and append a cursor listener if it
+ * is a Java editor.
+ */
 @SuppressWarnings("restriction")
 final class PartListener implements IPartListener {
 
     private final CursorListener cursorListener;
 
-    public PartListener(final CursorListener listener) {
-        cursorListener = listener;
+    /**
+     * @param cursorListener
+     *            The {@link CursorListener} to register with Java editors.
+     */
+    public PartListener(final CursorListener cursorListener) {
+        this.cursorListener = cursorListener;
     }
 
-    private void addListeners(final IWorkbenchPart part) {
-        if (part instanceof JavaEditor) {
-            final JavaEditor editor = (JavaEditor) part;
+    /**
+     * @param workbenchPart
+     *            Workbench part to append the cursor listener to in case it is
+     *            a Java editor.
+     */
+    private void addListeners(final IWorkbenchPart workbenchPart) {
+        if (workbenchPart instanceof JavaEditor) {
+            final JavaEditor editor = (JavaEditor) workbenchPart;
             final StyledText text = (StyledText) editor.getAdapter(Control.class);
             text.addKeyListener(cursorListener);
             text.addMouseListener(cursorListener);
