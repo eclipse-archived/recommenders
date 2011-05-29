@@ -55,7 +55,7 @@ final class InternalSelectionListener implements ISelectionListener {
     private void notifyListeners(final IJavaElementSelection selection, final IWorkbenchPart part) {
         if (selection != null) {
             if (!SelectionPlugin.isStarted()) {
-                SelectionPlugin.addListeners(part.getSite().getPage());
+                SelectionPlugin.loadListeners(part.getSite().getPage());
             }
             for (final IExtendedSelectionListener listener : externalListeners) {
                 listener.update(selection);

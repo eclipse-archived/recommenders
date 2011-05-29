@@ -36,7 +36,7 @@ public final class AstNodeResolver {
      *            location information.
      * @return The AST node for the active java element.
      */
-    public static ASTNode resolve(final JavaContentAssistInvocationContext invocationContext) {
+    public static ASTNode resolveNode(final JavaContentAssistInvocationContext invocationContext) {
         if (invocationContext == null) {
             return null;
         }

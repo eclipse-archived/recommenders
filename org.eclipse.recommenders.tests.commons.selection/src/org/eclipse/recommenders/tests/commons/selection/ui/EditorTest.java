@@ -54,12 +54,8 @@ public final class EditorTest extends AbstractUiTest {
         TYPES.put("SourceType", SourceType.class);
     }
 
-    private TestSelectionListener observer;
-
     @Test
     public void testEditor() throws BadLocationException {
-        observer = getListener();
-
         for (final SWTBotTreeItem srcPackage : getSourceNode().getItems()) {
             srcPackage.expand();
             for (final SWTBotTreeItem javaFile : srcPackage.getItems()) {
@@ -96,7 +92,7 @@ public final class EditorTest extends AbstractUiTest {
         final String[] parts = annotation.substring(3, annotation.length() - 3).split(" \\| ");
 
         SelectionPlugin.triggerUpdate(new TextSelection(offset + index, 0));
-        final IJavaElementSelection context = observer.getLastContext();
+        final IJavaElementSelection context = getLastSelection();
         final IJavaElement javaElement = context.getJavaElement();
 
         final Class expectedType = TYPES.get(parts[0]);

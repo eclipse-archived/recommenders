@@ -23,20 +23,16 @@ import junit.framework.Assert;
 @RunWith(SWTBotJunit4ClassRunner.class)
 public final class OutlineTest extends AbstractUiTest {
 
-    private static TestSelectionListener observer;
-
     private void testCommons(final SWTBotTreeItem item) {
         item.expand();
         item.select();
-        final IJavaElementSelection context = observer.getLastContext();
+        final IJavaElementSelection context = getLastSelection();
 
         Assert.assertNull(context.getInvocationContext());
     }
 
     @Test
     public void testEditor() throws InterruptedException {
-        observer = getListener();
-
         for (final SWTBotTreeItem srcPackage : getSourceNode().getItems()) {
             for (final SWTBotTreeItem javaFile : srcPackage.getItems()) {
                 javaFile.doubleClick();

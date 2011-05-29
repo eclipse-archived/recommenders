@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
- com.google.guava
+ com.google.guava,
+ org.eclipse.recommenders.commons.utils
 Export-Package: org.eclipse.recommenders.commons.internal.selection;x-internal:=true,
  org.eclipse.recommenders.commons.selection;
   uses:="org.eclipse.jface.text,
@@ -20,9 +21,7 @@ Export-Package: org.eclipse.recommenders.commons.internal.selection;x-internal:=
    org.eclipse.ui,
    org.eclipse.jface.viewers"
 Import-Package: org.eclipse.jdt.internal.ui.javaeditor,
- org.eclipse.jface.text,
  org.eclipse.jface.viewers,
- org.eclipse.recommenders.commons.utils,
  org.eclipse.ui.texteditor
 Bundle-Activator: org.eclipse.recommenders.commons.internal.selection.SelectionPlugin
 Bundle-ActivationPolicy: lazy

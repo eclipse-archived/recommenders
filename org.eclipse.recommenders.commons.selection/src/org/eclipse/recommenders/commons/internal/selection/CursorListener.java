@@ -10,13 +10,12 @@
  */
 package org.eclipse.recommenders.commons.internal.selection;
 
-import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 
 /**
@@ -44,12 +43,8 @@ final class CursorListener implements MouseListener, KeyListener {
      * selection listener.
      */
     private void positionChanged() {
-        final ISelection selection = win.getActivePage().getSelection();
-        if (selection instanceof ITextSelection) {
-            selectionListener.update(win.getActivePage().getActivePart(), selection);
-        } else {
-            throw new IllegalStateException("bla: " + selection);
-        }
+        final IWorkbenchPage activePage = win.getActivePage();
+        selectionListener.update(activePage.getActivePart(), activePage.getSelection());
     }
 
     @Override

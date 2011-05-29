@@ -19,7 +19,6 @@ import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -29,33 +28,25 @@ import junit.framework.Assert;
 @RunWith(SWTBotJunit4ClassRunner.class)
 public final class PackageExplorerTest extends AbstractUiTest {
 
-    private static TestSelectionListener observer;
-
-    @BeforeClass
-    public static void initialize() {
-        observer = getListener();
-    }
-
     private IJavaElementSelection testCommons(final SWTBotTreeItem item, final Class expectedElement) {
-        item.expand();
-        item.select();
-        final IJavaElementSelection context = observer.getLastContext();
+        item.expand().select();
+        final IJavaElementSelection selection = getLastSelection();
 
-        Assert.assertNull(context.getInvocationContext());
+        Assert.assertNull(selection.getInvocationContext());
 
         if (expectedElement != null) {
-            Assert.assertTrue(expectedElement.isInstance(context.getJavaElement()));
+            Assert.assertTrue(expectedElement.isInstance(selection.getJavaElement()));
         }
 
-        return context;
+        return selection;
     }
 
     @Test
     public void testPackageExplorer() {
         final SWTBotTreeItem node = getProjectNode();
-        final IJavaElementSelection context = testCommons(node, JavaProject.class);
+        final IJavaElementSelection selection = testCommons(node, JavaProject.class);
 
-        Assert.assertEquals(getProjectName(), ((JavaProject) context.getJavaElement()).getProject().getName());
+        Assert.assertEquals(getProjectName(), ((JavaProject) selection.getJavaElement()).getProject().getName());
 
         for (final SWTBotTreeItem item : node.getItems()) {
             testFolder(item);
@@ -64,10 +55,10 @@ public final class PackageExplorerTest extends AbstractUiTest {
 
     private void testFolder(final SWTBotTreeItem folder) {
         final Class expectedJavaElement = "src".equals(folder.getText()) ? PackageFragmentRoot.class : null;
-        final IJavaElementSelection context = testCommons(folder, expectedJavaElement);
+        final IJavaElementSelection selection = testCommons(folder, expectedJavaElement);
 
-        if (context.getJavaElement() != null) {
-            Assert.assertEquals("src", context.getJavaElement().getElementName());
+        if (selection.getJavaElement() != null) {
+            Assert.assertEquals("src", selection.getJavaElement().getElementName());
 
             for (final SWTBotTreeItem srcPackage : folder.getItems()) {
                 testPackage(srcPackage);
@@ -76,7 +67,7 @@ public final class PackageExplorerTest extends AbstractUiTest {
     }
 
     private void testPackage(final SWTBotTreeItem srcPackage) {
-        final IJavaElementSelection context = testCommons(srcPackage, PackageFragment.class);
+        final IJavaElementSelection selection = testCommons(srcPackage, PackageFragment.class);
         // TODO ...
 
         for (final SWTBotTreeItem file : srcPackage.getItems()) {
@@ -85,7 +76,7 @@ public final class PackageExplorerTest extends AbstractUiTest {
     }
 
     private void testFile(final SWTBotTreeItem file) {
-        final IJavaElementSelection context = testCommons(file, CompilationUnit.class);
+        final IJavaElementSelection selection = testCommons(file, CompilationUnit.class);
         // TODO ...
 
         for (final SWTBotTreeItem javaClass : file.getItems()) {
@@ -94,7 +85,7 @@ public final class PackageExplorerTest extends AbstractUiTest {
     }
 
     private void testClass(final SWTBotTreeItem javaClass) {
-        final IJavaElementSelection context = testCommons(javaClass, SourceType.class);
+        final IJavaElementSelection selection = testCommons(javaClass, SourceType.class);
         // TODO ...
 
         for (final SWTBotTreeItem classElement : javaClass.getItems()) {
@@ -103,7 +94,7 @@ public final class PackageExplorerTest extends AbstractUiTest {
     }
 
     private void testClassElement(final SWTBotTreeItem javaClass) {
-        final IJavaElementSelection context = testCommons(javaClass, NamedMember.class);
+        final IJavaElementSelection selection = testCommons(javaClass, NamedMember.class);
         // TODO ...
     }
 

@@ -13,19 +13,19 @@ package org.eclipse.recommenders.tests.commons.selection.ui;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.recommenders.commons.internal.selection.SelectionPlugin;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.tests.commons.selection.TestSelectionListener;
 import org.eclipse.recommenders.tests.commons.ui.utils.DefaultUiTest;
 import org.eclipse.recommenders.tests.commons.ui.utils.FixtureUtil;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 
-abstract class AbstractUiTest extends DefaultUiTest {
+public abstract class AbstractUiTest extends DefaultUiTest {
 
     private static final String FIXTUREPROJECT = "org.eclipse.recommenders.tests.fixtures.commons.selection";
 
     private static SWTBotTreeItem projectNode;
     private static SWTBotTreeItem srcNode;
-    private static TestSelectionListener observer;
 
     static {
         try {
@@ -56,12 +56,8 @@ abstract class AbstractUiTest extends DefaultUiTest {
         return srcNode;
     }
 
-    static final TestSelectionListener getListener() {
-        if (observer == null) {
-            observer = new TestSelectionListener();
-            SelectionPlugin.addListener(observer);
-        }
-        return observer;
+    static final IJavaElementSelection getLastSelection() {
+        return TestSelectionListener.getLastSelection();
     }
 
 }

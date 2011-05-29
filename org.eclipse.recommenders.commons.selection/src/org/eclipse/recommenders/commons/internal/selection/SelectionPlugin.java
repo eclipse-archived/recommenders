@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
+import org.eclipse.recommenders.commons.utils.annotations.Testing;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -52,15 +53,22 @@ public final class SelectionPlugin extends AbstractUIPlugin {
     public void stop(final BundleContext context) throws Exception {
         super.stop(context);
         workbenchWindow.getSelectionService().removeSelectionListener(internalListener);
-        page.removePartListener(partListener);
+        workbenchWindow = null;
         internalListener = null;
+
+        if (page != null) {
+            page.removePartListener(partListener);
+            page = null;
+        }
+
+        partListener = null;
     }
 
     /**
      * @return True, if the listeners are installed.
      */
     protected static boolean isStarted() {
-        return SelectionPlugin.page != null;
+        return page != null;
     }
 
     /**
@@ -68,7 +76,7 @@ public final class SelectionPlugin extends AbstractUIPlugin {
      *            The active workbench page to which the internal listeners are
      *            registered to.
      */
-    protected static void addListeners(final IWorkbenchPage page) {
+    protected static void loadListeners(final IWorkbenchPage page) {
         SelectionPlugin.page = page;
         page.addPartListener(partListener);
         loadExternalListeners();
@@ -78,8 +86,8 @@ public final class SelectionPlugin extends AbstractUIPlugin {
      * Loads external listeners which registered for the extension point.
      */
     private static void loadExternalListeners() {
-        final IExtensionRegistry reg = Platform.getExtensionRegistry();
-        for (final IConfigurationElement element : reg
+        final IExtensionRegistry registry = Platform.getExtensionRegistry();
+        for (final IConfigurationElement element : registry
                 .getConfigurationElementsFor("org.eclipse.recommenders.commons.selection.listener")) {
             try {
                 final IExtendedSelectionListener listener = (IExtendedSelectionListener) element
@@ -102,18 +110,11 @@ public final class SelectionPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * @param listener
-     *            Manually add a selection listener to the framework.
-     */
-    public static void addListener(final IExtendedSelectionListener listener) {
-        internalListener.addListener(listener);
-    }
-
-    /**
      * @param selection
      *            The selection event to be "faked" for the currently active
      *            workbench part.
      */
+    @Testing
     public static void triggerUpdate(final ISelection selection) {
         internalListener.update(workbenchWindow.getActivePage().getActivePart(), selection);
     }

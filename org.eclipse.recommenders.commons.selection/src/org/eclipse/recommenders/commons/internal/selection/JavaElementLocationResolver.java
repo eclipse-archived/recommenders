@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.commons.internal.selection;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -21,22 +24,36 @@ import org.eclipse.recommenders.commons.selection.ElementLocation;
  * Resolves a Java element's code location type from an AST.
  */
 @SuppressWarnings("restriction")
-public final class ElementLocationResolver {
+public final class JavaElementLocationResolver {
+
+    private static Set<Integer> ignoredNodeTypes = new HashSet<Integer>();
+    static {
+        ignoredNodeTypes.add(ASTNode.SIMPLE_NAME);
+        ignoredNodeTypes.add(ASTNode.SIMPLE_TYPE);
+        ignoredNodeTypes.add(ASTNode.FIELD_ACCESS);
+        ignoredNodeTypes.add(ASTNode.QUALIFIED_NAME);
+        ignoredNodeTypes.add(ASTNode.METHOD_INVOCATION);
+        ignoredNodeTypes.add(ASTNode.EXPRESSION_STATEMENT);
+        ignoredNodeTypes.add(ASTNode.VARIABLE_DECLARATION_FRAGMENT);
+        ignoredNodeTypes.add(ASTNode.VARIABLE_DECLARATION_STATEMENT);
+        ignoredNodeTypes.add(ASTNode.CLASS_INSTANCE_CREATION);
+        ignoredNodeTypes.add(ASTNode.RETURN_STATEMENT);
+    }
 
     /**
      * Private constructor to avoid instantiation of helper class.
      */
-    private ElementLocationResolver() {
+    private JavaElementLocationResolver() {
     }
 
     /**
-     * @param astNode
-     *            AST node representing the selected java element.
      * @param javaElement
      *            The Java element to identify the location for.
+     * @param astNode
+     *            AST node representing the selected java element.
      * @return The code location of the element represented by the AST node.
      */
-    public static ElementLocation resolve(final ASTNode astNode, final IJavaElement javaElement) {
+    public static ElementLocation resolveLocation(final IJavaElement javaElement, final ASTNode astNode) {
         if (astNode == null) {
             return null;
         }
@@ -52,12 +69,8 @@ public final class ElementLocationResolver {
      */
     private static int getLocationNodeType(final ASTNode astNode) {
         ASTNode node = astNode;
-        int nodeType = node.getNodeType();
-        while (nodeType == ASTNode.SIMPLE_NAME || nodeType == ASTNode.SIMPLE_TYPE || nodeType == ASTNode.FIELD_ACCESS
-                || nodeType == ASTNode.QUALIFIED_NAME || nodeType == ASTNode.METHOD_INVOCATION
-                || nodeType == ASTNode.EXPRESSION_STATEMENT || nodeType == ASTNode.VARIABLE_DECLARATION_FRAGMENT
-                || nodeType == ASTNode.VARIABLE_DECLARATION_STATEMENT || nodeType == ASTNode.CLASS_INSTANCE_CREATION
-                || nodeType == ASTNode.RETURN_STATEMENT) {
+        Integer nodeType = node.getNodeType();
+        while (ignoredNodeTypes.contains(nodeType)) {
             node = node.getParent();
             nodeType = node.getNodeType();
         }
@@ -89,7 +102,7 @@ public final class ElementLocationResolver {
         case ASTNode.PACKAGE_DECLARATION:
             return ElementLocation.PACKAGE_DECLARATION;
         default:
-            throw new IllegalStateException("Could not find location for " + locationNodeType);
+            throw new IllegalArgumentException("Could not find location for " + locationNodeType);
         }
     }
 

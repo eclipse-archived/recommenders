@@ -8,24 +8,24 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.commons.selection.ui;
+package org.eclipse.recommenders.tests.commons.selection;
 
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 
 public final class TestSelectionListener implements IExtendedSelectionListener {
 
-    private IJavaElementSelection lastContext;
+    private static IJavaElementSelection lastSelection;
 
     @Override
-    public void update(final IJavaElementSelection context) {
-        lastContext = context;
+    public void update(final IJavaElementSelection selection) {
+        lastSelection = selection;
         // Always call toString to ensure no NPE will occur.
-        context.toString();
+        selection.toString();
     }
 
-    protected IJavaElementSelection getLastContext() {
-        return lastContext;
+    public static IJavaElementSelection getLastSelection() {
+        return lastSelection;
     }
 
 }

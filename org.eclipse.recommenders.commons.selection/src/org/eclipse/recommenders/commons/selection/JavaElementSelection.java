@@ -19,8 +19,9 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.commons.internal.selection.AstNodeResolver;
-import org.eclipse.recommenders.commons.internal.selection.ElementLocationResolver;
+import org.eclipse.recommenders.commons.internal.selection.JavaElementLocationResolver;
 import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.annotations.Testing;
 
 /**
  * Contains all required information about the user's selection of a java
@@ -68,7 +69,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
     @Override
     public ElementLocation getElementLocation() {
         if (cachedLocation == null) {
-            cachedLocation = ElementLocationResolver.resolve(getAstNode(), javaElement);
+            cachedLocation = JavaElementLocationResolver.resolveLocation(javaElement, getAstNode());
         }
         return cachedLocation;
     }
@@ -84,11 +85,12 @@ public final class JavaElementSelection implements IJavaElementSelection {
     @Override
     public ASTNode getAstNode() {
         if (cachedAstNode == null) {
-            cachedAstNode = AstNodeResolver.resolve(getInvocationContext());
+            cachedAstNode = AstNodeResolver.resolveNode(getInvocationContext());
         }
         return cachedAstNode;
     }
 
+    @Testing
     @Override
     public String toString() {
         final ToStringHelper string = Objects.toStringHelper(this).add("\n\nJavaElementClass",
