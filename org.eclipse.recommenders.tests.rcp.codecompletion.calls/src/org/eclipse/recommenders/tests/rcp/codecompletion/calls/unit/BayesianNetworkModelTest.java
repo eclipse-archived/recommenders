@@ -22,6 +22,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelLoader;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -35,7 +36,7 @@ public class BayesianNetworkModelTest {
     @Ignore
     public void testObservations() {
         final Injector injector = InjectionService.getInstance().getInjector();
-        final CallsModelStore modelStore = injector.getInstance(CallsModelStore.class);
+        final ICallsModelStore modelStore = injector.getInstance(CallsModelStore.class);
         final ICallsModelLoader loader = injector.getInstance(ICallsModelLoader.class);
 
         final Set<ITypeName> availableTypes = loader.readAvailableTypes();

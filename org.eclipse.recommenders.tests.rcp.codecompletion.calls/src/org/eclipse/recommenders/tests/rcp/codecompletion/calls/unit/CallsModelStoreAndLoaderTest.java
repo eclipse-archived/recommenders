@@ -19,6 +19,7 @@ import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelLoader;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelLoader;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,7 +43,7 @@ public class CallsModelStoreAndLoaderTest {
                 bind(URL.class).annotatedWith(Names.named("calls.model.fileUrl")).toInstance(getCallsModelFileUrl());
             }
         });
-        final CallsModelStore store = injector.getInstance(CallsModelStore.class);
+        final ICallsModelStore store = injector.getInstance(CallsModelStore.class);
 
         // exercise:
         final IObjectMethodCallsNet model = store.getModel(VmTypeName.get("Lorg/eclipse/compare/BufferedContent"));

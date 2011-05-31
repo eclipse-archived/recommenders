@@ -25,6 +25,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelLoader;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -39,7 +40,7 @@ import com.google.inject.Injector;
 public class NetworksRandomLoadTests {
 
     private static Set<ITypeName> availableTypes;
-    private static CallsModelStore modelStore;
+    private static ICallsModelStore modelStore;
 
     @BeforeClass
     public static void init() {

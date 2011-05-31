@@ -32,6 +32,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
@@ -48,7 +49,7 @@ public final class PatternRecommender {
     private static final double PATTERN_PROBABILITY_THRESHOLD = 0.02d;
     private static final double METHOD_PROBABILITY_THRESHOLD = 0.1d;
 
-    private final CallsModelStore callsModelStore;
+    private final ICallsModelStore callsModelStore;
     private final Provider<Set<IVariableUsageResolver>> usageResolvers;
 
     private IIntelligentCompletionContext context;
@@ -64,7 +65,7 @@ public final class PatternRecommender {
      *            and preceding method invocations from a given context.
      */
     @Inject
-    public PatternRecommender(final CallsModelStore callsModelStore,
+    public PatternRecommender(final ICallsModelStore callsModelStore,
             final Provider<Set<IVariableUsageResolver>> usageResolvers) {
         this.callsModelStore = callsModelStore;
         this.usageResolvers = usageResolvers;

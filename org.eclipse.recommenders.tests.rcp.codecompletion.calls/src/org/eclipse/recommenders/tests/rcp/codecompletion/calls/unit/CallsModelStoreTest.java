@@ -24,6 +24,7 @@ import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelLoader;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.InstanceUsage;
 import org.junit.Assert;
@@ -37,7 +38,7 @@ import com.google.inject.Injector;
 public class CallsModelStoreTest {
 
     private MockCallsModelLoader loader;
-    private CallsModelStore store;
+    private ICallsModelStore store;
 
     @Before
     public void setup() {

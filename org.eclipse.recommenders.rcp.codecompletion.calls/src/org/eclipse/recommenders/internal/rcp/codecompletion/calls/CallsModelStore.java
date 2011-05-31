@@ -36,7 +36,7 @@ import com.google.inject.Inject;
 import com.google.inject.internal.util.Sets;
 
 @Clumsy
-public class CallsModelStore {
+public class CallsModelStore implements ICallsModelStore {
 
     @Inject
     protected ICallsModelLoader loader;
@@ -51,11 +51,13 @@ public class CallsModelStore {
         }
     }
 
+    @Override
     public boolean hasModel(@Nullable final ITypeName name) {
         init();
         return name == null ? false : supportedTypes.contains(name);
     }
 
+    @Override
     public IObjectMethodCallsNet getModel(final ITypeName name) {
         ensureIsTrue(hasModel(name));
         //
@@ -67,6 +69,7 @@ public class CallsModelStore {
         return network;
     }
 
+    @Override
     public Set<IObjectMethodCallsNet> getModelsForSimpleName(final ITypeName simpleName) {
         Preconditions.checkArgument("".equals(simpleName.getPackage().getIdentifier()));
         init();

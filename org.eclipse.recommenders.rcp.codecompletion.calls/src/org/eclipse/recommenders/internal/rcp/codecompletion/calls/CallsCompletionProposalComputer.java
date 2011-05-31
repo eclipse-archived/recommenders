@@ -49,7 +49,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private static final double MIN_PROBABILITY_THRESHOLD = 0.1d;
     private Set<Class<?>> supportedCompletionRequests;
 
-    private final CallsModelStore modelsStore;
+    private final ICallsModelStore modelsStore;
 
     private IIntelligentCompletionContext ctx;
 
@@ -72,7 +72,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private final IntelligentCompletionContextResolver contextResolver;
 
     @Inject
-    public CallsCompletionProposalComputer(final CallsModelStore modelsStore,
+    public CallsCompletionProposalComputer(final ICallsModelStore modelsStore,
             final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
             final IntelligentCompletionContextResolver contextResolver) {
         this.modelsStore = modelsStore;

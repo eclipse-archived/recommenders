@@ -22,6 +22,7 @@ import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.PatternNode;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.PatternRecommender;
@@ -58,7 +59,7 @@ public final class PatternRecommenderTest {
     }
 
     protected static PatternRecommender getPatternRecommenderMock(final ITypeName receiverType) {
-        final CallsModelStore store = Mockito.mock(CallsModelStore.class);
+        final ICallsModelStore store = Mockito.mock(CallsModelStore.class);
         final ObjectMethodCallsNet net = getCallsNetMock(receiverType);
         Mockito.when(Boolean.valueOf(store.hasModel(receiverType))).thenReturn(Boolean.TRUE);
         Mockito.when(store.getModel(receiverType)).thenReturn(net);

@@ -30,7 +30,7 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
 
     private static final double MIN_PROBABILITY_THRESHOLD = 0.30d;
 
-    private final CallsModelStore modelsStore;
+    private final ICallsModelStore modelsStore;
 
     private Multimap<Object, IRecommendation> recommendations;
 
@@ -43,7 +43,7 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
     private IObjectMethodCallsNet model;
 
     @Inject
-    public RecommendationsViewPublisherForCalls(final CallsModelStore modelsStore) {
+    public RecommendationsViewPublisherForCalls(final ICallsModelStore modelsStore) {
 
         this.modelsStore = modelsStore;
     }
