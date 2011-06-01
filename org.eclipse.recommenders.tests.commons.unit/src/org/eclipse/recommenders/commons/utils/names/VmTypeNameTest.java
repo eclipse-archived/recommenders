@@ -88,6 +88,12 @@ public class VmTypeNameTest {
     }
 
     @Test
+    public void testGetClassName_DefaultPackage() {
+        final String className = NamesTest.CLASS_IN_DEFAULT_PACAKGE.getClassName();
+        assertEquals("Default", className);
+    }
+
+    @Test
     public void testGetPackage_Primitive() {
         final IPackageName actual = NamesTest.LONG.getPackage();
         final IPackageName expected = VmPackageName.get("");
