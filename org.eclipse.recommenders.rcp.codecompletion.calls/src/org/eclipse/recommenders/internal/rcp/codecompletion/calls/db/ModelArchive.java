@@ -28,7 +28,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMet
 public class ModelArchive {
 
     private static final String MANIFEST_FILENAME = "manifest.json";
-    private static final String MODEL_POSTFIX = ".json";
+    private static final String MODEL_POSTFIX = ".data";
 
     private final BinaryModelLoader loader;
     private ZipFile zipFile;
@@ -74,11 +74,11 @@ public class ModelArchive {
     }
 
     private ITypeName getTypeNameFromFilename(final String filename) {
-        return VmTypeName.get(filename.substring(filename.length() - MODEL_POSTFIX.length(), filename.length()));
+        return VmTypeName.get(filename.substring(0, filename.length() - MODEL_POSTFIX.length()).replaceAll("\\.", "/"));
     }
 
     private String getFilenameFromType(final ITypeName type) {
-        return type.getIdentifier() + MODEL_POSTFIX;
+        return type.getIdentifier().replaceAll("/", ".") + MODEL_POSTFIX;
     }
 
     private boolean isTypeModel(final ZipEntry entry) {

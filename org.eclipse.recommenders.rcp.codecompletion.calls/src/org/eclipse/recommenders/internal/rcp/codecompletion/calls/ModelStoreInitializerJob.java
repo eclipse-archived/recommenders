@@ -39,7 +39,7 @@ public class ModelStoreInitializerJob extends WorkspaceJob {
     }
 
     private void prefetch() {
-        final ICallsModelStore s = InjectionService.getInstance().requestInstance(CallsModelStore.class);
+        final ICallsModelStore s = InjectionService.getInstance().requestInstance(ICallsModelStore.class);
         s.hasModel(VmTypeName.BOOLEAN);
     }
 }

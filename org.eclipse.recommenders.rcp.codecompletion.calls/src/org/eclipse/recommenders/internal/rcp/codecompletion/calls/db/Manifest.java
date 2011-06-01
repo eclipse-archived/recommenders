@@ -16,9 +16,12 @@ import org.eclipse.recommenders.commons.utils.Version;
 
 public class Manifest {
 
-    private final String name;
-    private final Version version;
-    private final Date timestamp;
+    private String name;
+    private Version version;
+    private Date timestamp;
+
+    protected Manifest() {
+    }
 
     public Manifest(final String name, final Version version, final Date timestamp) {
         this.name = name;

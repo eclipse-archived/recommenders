@@ -30,14 +30,17 @@ import com.google.inject.name.Named;
 
 public class CallsModelArchiveStore implements ICallsModelStore, IModelArchiveStore {
 
-    @Inject
-    @Named("calls.store.location")
-    private File storeLocation;
+    private final File storeLocation;
     private StoreIndex index = new StoreIndex();
     private final ReentrantReadWriteLock indexReplacementLock = new ReentrantReadWriteLock();
     private final ReentrantLock indexUpdatingLock = new ReentrantLock();
 
-    // TODO: Who calls this method?
+    @Inject
+    public CallsModelArchiveStore(@Named("calls.store.location") final File storeLocation) {
+        this.storeLocation = storeLocation;
+        initializeFromStoreLocation(); // TODO: Move call to asynchronous job?
+    }
+
     private void initializeFromStoreLocation() {
         final List<ModelArchive> archives = new LinkedList<ModelArchive>();
         final File[] files = storeLocation.listFiles();
