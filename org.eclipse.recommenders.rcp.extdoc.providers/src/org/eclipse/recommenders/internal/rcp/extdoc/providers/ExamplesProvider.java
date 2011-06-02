@@ -29,4 +29,9 @@ public final class ExamplesProvider implements IProvider {
         // TODO Auto-generated method stub
     }
 
+    @Override
+    public void redraw() {
+        // TODO Auto-generated method stub
+    }
+
 }

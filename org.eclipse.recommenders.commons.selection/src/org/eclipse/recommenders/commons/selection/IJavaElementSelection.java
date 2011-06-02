@@ -30,7 +30,7 @@ public interface IJavaElementSelection {
      *         "method declaration" or "block") if the selection occurs in the
      *         editor.
      */
-    ElementLocation getElementLocation();
+    JavaElementLocation getElementLocation();
 
     /**
      * @return The invocation as if the selection in the editor was followed by

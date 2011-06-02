@@ -18,7 +18,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.internal.core.BinaryType;
 import org.eclipse.jdt.internal.core.SourceType;
-import org.eclipse.recommenders.commons.selection.ElementLocation;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 
 /**
  * Resolves a Java element's code location type from an AST.
@@ -53,7 +53,7 @@ public final class JavaElementLocationResolver {
      *            AST node representing the selected java element.
      * @return The code location of the element represented by the AST node.
      */
-    public static ElementLocation resolveLocation(final IJavaElement javaElement, final ASTNode astNode) {
+    public static JavaElementLocation resolveLocation(final IJavaElement javaElement, final ASTNode astNode) {
         if (astNode == null) {
             return null;
         }
@@ -82,25 +82,25 @@ public final class JavaElementLocationResolver {
      *            The type of the AST node indicating the element's location.
      * @param javaElement
      *            The Java element to identify the location for.
-     * @return The {@link ElementLocation} for the given Java element and its
+     * @return The {@link JavaElementLocation} for the given Java element and its
      *         location node type.
      */
-    private static ElementLocation getLocationForNodeType(final int locationNodeType, final IJavaElement javaElement) {
+    private static JavaElementLocation getLocationForNodeType(final int locationNodeType, final IJavaElement javaElement) {
         switch (locationNodeType) {
         case ASTNode.BLOCK:
-            return ElementLocation.BLOCK;
+            return JavaElementLocation.BLOCK;
         case ASTNode.METHOD_DECLARATION:
-            return ElementLocation.METHOD_DECLARATION;
+            return JavaElementLocation.METHOD_DECLARATION;
         case ASTNode.SINGLE_VARIABLE_DECLARATION:
-            return ElementLocation.METHOD_DECLARATION_PARAMETER;
+            return JavaElementLocation.METHOD_DECLARATION_PARAMETER;
         case ASTNode.FIELD_DECLARATION:
-            return ElementLocation.FIELD_DECLARATION;
+            return JavaElementLocation.FIELD_DECLARATION;
         case ASTNode.TYPE_DECLARATION:
             return getTypeDeclarationLocation(javaElement);
         case ASTNode.IMPORT_DECLARATION:
-            return ElementLocation.IMPORT_DECLARATION;
+            return JavaElementLocation.IMPORT_DECLARATION;
         case ASTNode.PACKAGE_DECLARATION:
-            return ElementLocation.PACKAGE_DECLARATION;
+            return JavaElementLocation.PACKAGE_DECLARATION;
         default:
             throw new IllegalArgumentException("Could not find location for " + locationNodeType);
         }
@@ -109,22 +109,22 @@ public final class JavaElementLocationResolver {
     /**
      * @param javaElement
      *            The Java element occurring in the type declaration.
-     * @return The {@link ElementLocation} - the "new" type, part of "extends"
+     * @return The {@link JavaElementLocation} - the "new" type, part of "extends"
      *         or part of "implements" - as identified from the Java element
      *         type.
      */
-    private static ElementLocation getTypeDeclarationLocation(final IJavaElement javaElement) {
+    private static JavaElementLocation getTypeDeclarationLocation(final IJavaElement javaElement) {
         if (javaElement instanceof SourceType) {
-            return ElementLocation.TYPE_DECLARATION;
+            return JavaElementLocation.TYPE_DECLARATION;
         } else {
             try {
                 if (!((BinaryType) javaElement).isInterface()) {
-                    return ElementLocation.TYPE_DECLARATION_EXTENDS;
+                    return JavaElementLocation.TYPE_DECLARATION_EXTENDS;
                 }
             } catch (final JavaModelException e) {
                 throw new IllegalStateException(e);
             }
         }
-        return ElementLocation.TYPE_DECLARATION_IMPLEMENTS;
+        return JavaElementLocation.TYPE_DECLARATION_IMPLEMENTS;
     }
 }

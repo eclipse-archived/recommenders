@@ -8,36 +8,35 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.browser;
+package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 
-public final class EditListener implements IBrowserElementListener {
+public abstract class AbstractSelectableBrowserElement implements ISelectableBrowserElement {
 
-    private final URL imageUrl;
-    private final Dialog dialog;
+    private Dialog dialog;
 
-    public EditListener(final Dialog dialog) {
+    protected AbstractSelectableBrowserElement() {
+    }
+
+    protected AbstractSelectableBrowserElement(final Dialog dialog) {
         this.dialog = dialog;
+    }
+
+    protected final URL getImageUrl(final String filename) {
         try {
-            imageUrl = FileLocator.toFileURL(ExtDocPlugin.getBundleEntry("/icons/full/eview16/edit.png"));
+            return FileLocator.toFileURL(ExtDocPlugin.getBundleEntry("/icons/full/eview16/" + filename));
         } catch (final IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
     @Override
-    public String getHtml(final String href) {
-        return "<a href=\"" + href + "\"><img src=\"" + imageUrl + "\" /></a>";
-    }
-
-    @Override
-    public void selected() {
+    public void selected(final String linkAppendix) {
         dialog.open();
     }
 

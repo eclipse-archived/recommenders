@@ -11,22 +11,14 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
 
-public final class SubclassingProvider implements IProvider {
+public final class SubclassingProvider extends AbstractBrowserProvider {
 
     @Override
-    public Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
+    protected String getHtmlContent(final IJavaElementSelection context) {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public void selectionChanged(final IJavaElementSelection context) {
-        // TODO Auto-generated method stub
     }
 
 }

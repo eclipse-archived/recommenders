@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.browser;
+package org.eclipse.recommenders.rcp.extdoc;
 
 public final class MarkupParser {
 

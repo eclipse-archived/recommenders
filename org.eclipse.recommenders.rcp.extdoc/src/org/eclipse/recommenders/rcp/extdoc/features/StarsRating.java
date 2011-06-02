@@ -1,0 +1,55 @@
+/**
+ * Copyright (c) 2011 Stefan Henss.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Stefan Henss - initial API and implementation.
+ */
+package org.eclipse.recommenders.rcp.extdoc.features;
+
+import java.net.URL;
+
+import org.eclipse.recommenders.internal.rcp.extdoc.AbstractSelectableBrowserElement;
+
+public final class StarsRating extends AbstractSelectableBrowserElement {
+
+    private final StarsRatingsFeature listener;
+    private final URL star;
+    private final URL starEmpty;
+    private final URL starActive;
+
+    public StarsRating(final StarsRatingsFeature listener) {
+        this.listener = listener;
+        star = getImageUrl("star.png");
+        starEmpty = getImageUrl("star_empty.png");
+        starActive = getImageUrl("star_active.png");
+    }
+
+    @Override
+    public String getHtml(final String href) {
+        final int averageRating = listener.getAverageRating();
+        final int userRating = listener.getUserRating();
+
+        final StringBuilder html = new StringBuilder();
+        for (int i = 1; i <= 5; ++i) {
+            if (userRating < 1) {
+                html.append("<a href=\"" + href + i + "\">");
+            }
+            html.append("<img src=\"" + (averageRating < i ? starEmpty : star) + "\" />");
+            if (userRating < 1) {
+                html.append("</a>");
+            }
+        }
+        return html.toString();
+    }
+
+    @Override
+    public void selected(final String linkAppendix) {
+        final int stars = Integer.parseInt(linkAppendix);
+        listener.addRating(stars);
+    }
+
+}

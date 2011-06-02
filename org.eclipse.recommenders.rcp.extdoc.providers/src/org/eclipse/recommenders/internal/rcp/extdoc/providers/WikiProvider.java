@@ -14,10 +14,14 @@ import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.CommentsDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
-import org.eclipse.recommenders.rcp.extdoc.browser.EditListener;
-import org.eclipse.recommenders.rcp.extdoc.browser.MarkupParser;
+import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
+import org.eclipse.recommenders.rcp.extdoc.features.CommentsIcon;
+import org.eclipse.recommenders.rcp.extdoc.features.EditIcon;
+import org.eclipse.recommenders.rcp.extdoc.features.StarsRating;
+import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingsFeature;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 
 public final class WikiProvider extends AbstractBrowserProvider {
@@ -32,36 +36,46 @@ public final class WikiProvider extends AbstractBrowserProvider {
     }
 
     @Override
-    protected String getHtmlContent(final IJavaElementSelection context) {
+    protected String getHtmlContent(final IJavaElementSelection selection) {
+        final IJavaElement element = selection.getJavaElement();
         String markup = null;
         String txt = null;
-        if (context.getJavaElement() != null) {
-            markup = server.read(context.getJavaElement());
+        if (element != null) {
+            markup = server.getText(element);
             if (markup != null) {
                 txt = parser.parseTextile(markup);
             }
         }
         if (txt == null) {
-            txt = "No Wiki available for " + context.getJavaElement();
+            txt = "No Wiki available for " + element;
         }
-        return String.format("%s<br/><br/>%s", getCommunityFeatures(context, markup), txt);
+        return String.format("%s<br/><br/>%s", getCommunityFeatures(element, markup), txt);
     }
 
     public void update(final IJavaElement javaElement, final String text) {
-        server.write(javaElement, text);
-        reload();
+        server.setText(javaElement, text);
+        redraw();
     }
 
-    private String getCommunityFeatures(final IJavaElementSelection context, final String markup) {
+    private String getCommunityFeatures(final IJavaElement element, final String markup) {
         final StringBuilder builder = new StringBuilder();
-
-        builder.append(addListenerAndGetHtml(getEditListener(context, markup)));
-
+        builder.append(addListenerAndGetHtml(getEditIcon(element, markup)));
+        builder.append(addListenerAndGetHtml(getCommentsIcon(element)));
+        builder.append(addListenerAndGetHtml(getStarsRating(element)));
         return builder.toString();
     }
 
-    private EditListener getEditListener(final IJavaElementSelection context, final String markup) {
-        final WikiEditDialog editDialog = new WikiEditDialog(getShell(), this, context.getJavaElement(), markup);
-        return new EditListener(editDialog);
+    private EditIcon getEditIcon(final IJavaElement element, final String markup) {
+        final WikiEditDialog editDialog = new WikiEditDialog(getShell(), this, element, markup);
+        return new EditIcon(editDialog);
+    }
+
+    private CommentsIcon getCommentsIcon(final IJavaElement element) {
+        final CommentsDialog commentsDialog = new CommentsDialog(getShell(), this, element);
+        return new CommentsIcon(commentsDialog);
+    }
+
+    private StarsRating getStarsRating(final IJavaElement element) {
+        return new StarsRating(new StarsRatingsFeature(element, server, this));
     }
 }

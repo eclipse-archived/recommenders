@@ -35,6 +35,11 @@ public final class JavadocProvider implements IProvider {
         }
     }
 
+    @Override
+    public void redraw() {
+        // TODO Auto-generated method stub
+    }
+
     /**
      * Extension to gain access to getControl().
      */
@@ -51,5 +56,4 @@ public final class JavadocProvider implements IProvider {
         }
 
     }
-
 }

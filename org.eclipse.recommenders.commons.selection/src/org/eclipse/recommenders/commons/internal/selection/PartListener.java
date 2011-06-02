@@ -49,7 +49,7 @@ final class PartListener implements IPartListener {
 
     @Override
     public void partActivated(final IWorkbenchPart part) {
-        addListeners(part);
+        // Not of interest for us.
     }
 
     @Override
@@ -69,7 +69,7 @@ final class PartListener implements IPartListener {
 
     @Override
     public void partOpened(final IWorkbenchPart part) {
-        // Not of interest for us.
+        addListeners(part);
     }
 
 }

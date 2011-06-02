@@ -13,7 +13,7 @@ package org.eclipse.recommenders.commons.internal.selection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
@@ -65,7 +65,7 @@ final class InternalSelectionListener implements ISelectionListener {
 
     @Override
     public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
-        if (!(part instanceof CompilationUnitEditor)) {
+        if (!(part instanceof JavaEditor)) {
             update(part, selection);
         }
     }

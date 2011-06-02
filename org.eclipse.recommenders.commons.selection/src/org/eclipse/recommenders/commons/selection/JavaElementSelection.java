@@ -34,7 +34,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
     private final int invocationOffset;
     private JavaEditor editor;
 
-    private ElementLocation cachedLocation;
+    private JavaElementLocation cachedLocation;
     private JavaContentAssistInvocationContext cachedContext;
     private ASTNode cachedAstNode;
 
@@ -67,7 +67,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
     }
 
     @Override
-    public ElementLocation getElementLocation() {
+    public JavaElementLocation getElementLocation() {
         if (cachedLocation == null) {
             cachedLocation = JavaElementLocationResolver.resolveLocation(javaElement, getAstNode());
         }

@@ -20,16 +20,16 @@ public final class WikiServerTest {
 
     @Test
     public void testWikiServer() {
-        final String oldDocument = server.read(element);
+        final String oldDocument = server.getText(element);
         final String write = TESTINPUT.substring(0, (int) (Math.random() * TESTINPUT.length())) + "...";
-        server.write(element, write);
-        final String document = server.read(element);
+        server.setText(element, write);
+        final String document = server.getText(element);
 
         Assert.assertEquals(write, document);
         Assert.assertNotSame(oldDocument, document);
 
         Server.setDatabase(new CouchDB(null, null));
-        final String offlineDoc = server.read(element);
+        final String offlineDoc = server.getText(element);
         Assert.assertNotNull(offlineDoc);
     }
 }

@@ -13,7 +13,7 @@ package org.eclipse.recommenders.commons.selection;
 /**
  * A Java element's location in the code.
  */
-public enum ElementLocation {
+public enum JavaElementLocation {
 
     PACKAGE_DECLARATION, IMPORT_DECLARATION, TYPE_DECLARATION, TYPE_DECLARATION_EXTENDS, TYPE_DECLARATION_IMPLEMENTS, FIELD_DECLARATION, METHOD_DECLARATION, METHOD_DECLARATION_PARAMETER, BLOCK;
 

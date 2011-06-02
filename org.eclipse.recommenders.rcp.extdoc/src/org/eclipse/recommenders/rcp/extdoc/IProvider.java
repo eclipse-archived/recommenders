@@ -21,4 +21,6 @@ public interface IProvider {
 
     void selectionChanged(IJavaElementSelection context);
 
+    void redraw();
+
 }

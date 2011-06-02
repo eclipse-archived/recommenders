@@ -13,20 +13,21 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.recommenders.rcp.extdoc.browser.IBrowserElementListener;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 
 public final class BrowserLinkListener implements LocationListener {
 
-    private final Map<Integer, IBrowserElementListener> listeners = new HashMap<Integer, IBrowserElementListener>();
+    private final Map<Integer, ISelectableBrowserElement> listeners = new HashMap<Integer, ISelectableBrowserElement>();
 
     @Override
     public void changing(final LocationEvent event) {
         if (event.location.startsWith("about:blank#")) {
-            final Integer hash = Integer.valueOf(event.location.substring(12));
-            final IBrowserElementListener listener = listeners.get(hash);
-            listener.selected();
+            final String link = event.location.substring(12);
+            final int length = link.indexOf('?');
+            final Integer hash = Integer.valueOf(link.substring(0, length));
+            final ISelectableBrowserElement listener = listeners.get(hash);
+            listener.selected(link.substring(length + 1));
         }
     }
 
@@ -35,7 +36,7 @@ public final class BrowserLinkListener implements LocationListener {
         // Not of interest to us.
     }
 
-    public int addListener(final IBrowserElementListener listener) {
+    public int addListener(final ISelectableBrowserElement listener) {
         listeners.put(listener.hashCode(), listener);
         return listener.hashCode();
     }

@@ -26,7 +26,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.BrowserLinkListener;
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
-import org.eclipse.recommenders.rcp.extdoc.browser.IBrowserElementListener;
+import org.eclipse.recommenders.internal.rcp.extdoc.ISelectableBrowserElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.FontData;
@@ -72,7 +72,8 @@ public abstract class AbstractBrowserProvider implements IProvider {
         }
     }
 
-    protected final void reload() {
+    @Override
+    public final void redraw() {
         selectionChanged(lastContext);
     }
 
@@ -80,9 +81,9 @@ public abstract class AbstractBrowserProvider implements IProvider {
         return browser.getShell();
     }
 
-    protected final String addListenerAndGetHtml(final IBrowserElementListener listener) {
+    protected final String addListenerAndGetHtml(final ISelectableBrowserElement listener) {
         final int hash = linkListener.addListener(listener);
-        return listener.getHtml("#" + hash);
+        return listener.getHtml("#" + hash + "?") + " ";
     }
 
     protected abstract String getHtmlContent(IJavaElementSelection context);
