@@ -8,15 +8,8 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.features;
+package org.eclipse.recommenders.server.extdoc;
 
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.recommenders.internal.rcp.extdoc.AbstractSelectableBrowserElement;
-
-public final class EditIcon extends AbstractSelectableBrowserElement {
-
-    public EditIcon(final Dialog dialog) {
-        super(dialog, "edit.png");
-    }
+public final class CommentsServer {
 
 }

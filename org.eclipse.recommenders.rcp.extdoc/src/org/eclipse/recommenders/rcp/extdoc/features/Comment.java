@@ -8,16 +8,26 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc;
+package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.jdt.core.IJavaElement;
+import java.util.Date;
 
-public interface IRatingsServer {
+public final class Comment {
 
-    int getAverageRating(IJavaElement javaElement);
+    private final String text;
+    private final Date date;
 
-    int getUserRating(IJavaElement javaElement);
+    public Comment(final String text) {
+        this.text = text;
+        date = new Date();
+    }
 
-    void addRating(IJavaElement javaElement, int stars);
+    String getText() {
+        return text;
+    }
+
+    Date getDate() {
+        return date;
+    }
 
 }

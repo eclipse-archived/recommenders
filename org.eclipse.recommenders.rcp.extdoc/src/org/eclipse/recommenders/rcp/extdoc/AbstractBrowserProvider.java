@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import com.google.common.base.Preconditions;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.text.java.hover.JavadocHover;
@@ -63,12 +65,12 @@ public abstract class AbstractBrowserProvider implements IProvider {
         lastContext = context;
         if (context.getJavaElement() != null) {
             final String txt = getHtmlContent(context);
-            final StringBuffer buffer = new StringBuffer();
+            final StringBuffer buffer = new StringBuffer(256);
             HTMLPrinter.addSmallHeader(buffer, getInfoText(context.getJavaElement()));
             HTMLPrinter.addParagraph(buffer, txt);
             HTMLPrinter.insertPageProlog(buffer, 0, getStyleSheet());
             HTMLPrinter.addPageEpilog(buffer);
-            browser.setText(buffer.toString());
+            Preconditions.checkArgument(browser.setText(buffer.toString()));
         }
     }
 
@@ -96,25 +98,21 @@ public abstract class AbstractBrowserProvider implements IProvider {
         }
 
         final String label = JavaElementLinks.getElementLabel(element, LABEL_FLAGS);
-        final StringBuffer buf = new StringBuffer();
-        JavadocHover.addImageAndLabel(buf, imageName, 16, 16, label.toString(), 20, 2);
+        final StringBuffer buf = new StringBuffer(32);
+        JavadocHover.addImageAndLabel(buf, imageName, 16, 16, label, 20, 2);
         return buf.toString();
     }
 
     private static String getStyleSheet() {
         synchronized (LOCK) {
             if (styleSheet == null) {
-                try {
-                    styleSheet = loadStyleSheet();
-                } catch (final IOException e) {
-                    throw new IllegalArgumentException(e);
-                }
+                styleSheet = loadStyleSheet();
             }
         }
         return styleSheet;
     }
 
-    private static String loadStyleSheet() throws IOException {
+    private static String loadStyleSheet() {
         final URL styleSheetURL = ExtDocPlugin.getBundleEntry("/stylesheet.css");
 
         BufferedReader reader = null;
@@ -128,9 +126,15 @@ public abstract class AbstractBrowserProvider implements IProvider {
             final FontData fontData = JFaceResources.getFontRegistry().getFontData(
                     PreferenceConstants.APPEARANCE_JAVADOC_FONT)[0];
             return HTMLPrinter.convertTopLevelFont(buffer.toString(), fontData);
+        } catch (final IOException e) {
+            throw new IllegalArgumentException(e);
         } finally {
             if (reader != null) {
-                reader.close();
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    throw new IllegalStateException(e);
+                }
             }
         }
     }

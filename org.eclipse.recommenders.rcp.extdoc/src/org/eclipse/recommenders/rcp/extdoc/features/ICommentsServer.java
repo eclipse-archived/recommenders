@@ -10,13 +10,14 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.recommenders.internal.rcp.extdoc.AbstractSelectableBrowserElement;
+import java.util.List;
 
-public final class EditIcon extends AbstractSelectableBrowserElement {
+import org.eclipse.jdt.core.IJavaElement;
 
-    public EditIcon(final Dialog dialog) {
-        super(dialog, "edit.png");
-    }
+public interface ICommentsServer {
+
+    List<Comment> getComments(IJavaElement javaElement);
+
+    void addComment(IJavaElement javaElement, Comment comment);
 
 }

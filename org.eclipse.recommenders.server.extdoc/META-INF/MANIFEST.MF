@@ -8,22 +8,13 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core,
- org.eclipse.jdt.ui,
- org.eclipse.jface.text,
- org.eclipse.ui.workbench.texteditor,
- com.google.guava,
- org.eclipse.recommenders.commons.utils,
  com.google.gson
 Import-Package: com.google.gson,
- org.apache.commons.logging,
- org.eclipse.jdt.internal.ui.javaeditor,
- org.eclipse.jface.text,
- org.eclipse.jface.viewers,
- org.eclipse.recommenders.commons.utils,
- org.eclipse.ui.texteditor
+ org.apache.commons.logging;version="1.0.4",
+ org.eclipse.recommenders.rcp.extdoc.features
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.recommenders.server.extdoc
-Bundle-Activator: org.eclipse.recommenders.server.extdoc.ExtDocServerPlugin
+Eclipse-LazyStart: true
+Bundle-Activator: org.eclipse.recommenders.internal.server.extdoc.ExtDocServerPlugin
 Bundle-ClassPath: lib/commons-beanutils-1.8.3.jar,
  lib/httpclient-4.1.1.jar,
  lib/httpcore-4.1.jar,
@@ -32,3 +23,4 @@ Bundle-ClassPath: lib/commons-beanutils-1.8.3.jar,
  lib/slf4j-simple-1.6.1.jar,
  lib/svenson-1.4.0.jar,
  .
+Export-Package: org.eclipse.recommenders.server.extdoc

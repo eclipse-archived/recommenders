@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc;
+package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

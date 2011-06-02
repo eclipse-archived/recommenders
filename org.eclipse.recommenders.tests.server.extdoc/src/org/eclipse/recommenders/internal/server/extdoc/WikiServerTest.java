@@ -1,6 +1,7 @@
-package org.eclipse.recommenders.server.extdoc;
+package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

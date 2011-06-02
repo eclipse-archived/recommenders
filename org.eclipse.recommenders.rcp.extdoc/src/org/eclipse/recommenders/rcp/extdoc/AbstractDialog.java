@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.widgets.Composite;
@@ -18,13 +19,14 @@ import org.eclipse.swt.widgets.Shell;
 
 public abstract class AbstractDialog extends TitleAreaDialog {
 
-    public AbstractDialog(final Shell parentShell) {
+    protected AbstractDialog(final Shell parentShell) {
         super(parentShell);
     }
 
     @Override
     protected final Control createContents(final Composite parent) {
         final Control control = super.createContents(parent);
+        Dialog.applyDialogFont(control);
         contentsCreated();
         return control;
     }

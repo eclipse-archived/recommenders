@@ -8,12 +8,14 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;
+package org.eclipse.recommenders.rcp.extdoc.features;
+
+import com.google.common.base.Preconditions;
 
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider;
+import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.AbstractDialog;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -25,13 +27,16 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public final class CommentsDialog extends AbstractDialog {
 
-    private final WikiProvider provider;
+    private final IProvider provider;
     private final IJavaElement javaElement;
+    private final ICommentsServer server;
 
-    public CommentsDialog(final Shell parentShell, final WikiProvider provider, final IJavaElement javaElement) {
+    public CommentsDialog(final Shell parentShell, final ICommentsServer server, final IProvider provider,
+            final IJavaElement javaElement) {
         super(parentShell);
         setBlockOnOpen(false);
 
+        this.server = server;
         this.provider = provider;
         this.javaElement = javaElement;
     }
@@ -43,11 +48,11 @@ public final class CommentsDialog extends AbstractDialog {
 
     @Override
     protected Control createDialogArea(final Composite parent) {
-        setTitle("Comments for " + javaElement.getElementName());
-        setMessage("Bla Bla");
         final Image image = AbstractUIPlugin.imageDescriptorFromPlugin(
-                ExtDocProvidersPlugin.getDefault().getBundle().getSymbolicName(), "icons/full/wizban/edit.png")
-                .createImage();
+                ExtDocPlugin.getDefault().getBundle().getSymbolicName(), "icons/full/wizban/edit.png").createImage();
+
+        setTitle(String.format("Comments for %s", javaElement.getElementName()));
+        setMessage("Bla Bla");
         setTitleImage(image);
 
         final Composite composite = (Composite) super.createDialogArea(parent);
@@ -55,6 +60,16 @@ public final class CommentsDialog extends AbstractDialog {
         new Label(area, SWT.NONE).setText("Under construction");
         SwtFactory.createSeparator(composite);
         return composite;
+    }
+
+    @Override
+    protected void okPressed() {
+        try {
+            // TODO: ...
+            provider.redraw();
+        } finally {
+            Preconditions.checkArgument(close());
+        }
     }
 
 }

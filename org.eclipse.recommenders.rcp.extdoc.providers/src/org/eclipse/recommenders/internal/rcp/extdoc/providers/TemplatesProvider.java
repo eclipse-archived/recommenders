@@ -21,6 +21,8 @@ import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
 
 public final class TemplatesProvider extends AbstractBrowserProvider {
 
+    private static final String SEPARATOR = System.getProperty("line.separator");
+
     private final TemplatesCompletionProposalComputer proposalComputer;
     private final IntelligentCompletionContextResolver contextResolver;
 
@@ -33,19 +35,21 @@ public final class TemplatesProvider extends AbstractBrowserProvider {
 
     @Override
     public String getHtmlContent(final IJavaElementSelection context) {
-        final StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder(64);
         IIntelligentCompletionContext completionContext = null;
 
         if (context.getInvocationContext() != null) {
             completionContext = contextResolver.resolveContext(context.getInvocationContext());
             for (final IJavaCompletionProposal proposal : proposalComputer
                     .computeCompletionProposals(completionContext)) {
-                builder.append(proposal.getDisplayString() + "\n");
+                builder.append(proposal.getDisplayString());
+                builder.append(SEPARATOR);
             }
         }
 
-        builder.append("\n" + context + "\n\n" + completionContext);
+        builder.append(String.format("%s%s%s%s", SEPARATOR, context, SEPARATOR, SEPARATOR));
+        builder.append(completionContext);
 
-        return builder.toString().replace("\n", "<br/>");
+        return builder.toString().replaceAll("\r?\n", "<br/>");
     }
 }

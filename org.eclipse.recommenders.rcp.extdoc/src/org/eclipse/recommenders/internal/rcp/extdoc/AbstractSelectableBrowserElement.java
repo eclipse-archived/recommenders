@@ -19,12 +19,14 @@ import org.eclipse.jface.dialogs.Dialog;
 public abstract class AbstractSelectableBrowserElement implements ISelectableBrowserElement {
 
     private Dialog dialog;
+    private URL imageUrl;
 
     protected AbstractSelectableBrowserElement() {
     }
 
-    protected AbstractSelectableBrowserElement(final Dialog dialog) {
+    protected AbstractSelectableBrowserElement(final Dialog dialog, final String image) {
         this.dialog = dialog;
+        imageUrl = getImageUrl(image);
     }
 
     protected final URL getImageUrl(final String filename) {
@@ -33,6 +35,11 @@ public abstract class AbstractSelectableBrowserElement implements ISelectableBro
         } catch (final IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    @Override
+    public String getHtml(final String href) {
+        return "<a href=\"" + href + "\"><img src=\"" + imageUrl + "\" /></a>";
     }
 
     @Override

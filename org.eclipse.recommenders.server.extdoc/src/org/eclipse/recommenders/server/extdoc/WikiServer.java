@@ -11,14 +11,21 @@
 package org.eclipse.recommenders.server.extdoc;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.internal.server.extdoc.Server;
+import org.eclipse.recommenders.rcp.extdoc.features.Comment;
+import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
+import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 
-public final class WikiServer implements IRatingsServer {
+public final class WikiServer implements IStarsRatingsServer, ICommentsServer {
 
     private static final String STARSSUM = "starsSum";
     private static final String STARSCOUNT = "starsCount";
+
+    private final Map<IJavaElement, Integer> userRatings = new HashMap<IJavaElement, Integer>();
 
     public String getText(final IJavaElement javaElement) {
         final Map<String, Object> document = Server.getDocument(getId(javaElement));
@@ -40,8 +47,7 @@ public final class WikiServer implements IRatingsServer {
 
     @Override
     public int getUserRating(final IJavaElement javaElement) {
-        final Map<String, Object> document = Server.getDocument(getId(javaElement));
-        return document == null ? 0 : 0;
+        return userRatings.containsKey(javaElement) ? userRatings.get(javaElement) : -1;
     }
 
     @Override
@@ -56,6 +62,18 @@ public final class WikiServer implements IRatingsServer {
         document.put(STARSSUM, getStarsSum(document) + stars);
 
         Server.storeOrUpdateDocument(documentId, document);
+        userRatings.put(javaElement, stars);
+    }
+
+    @Override
+    public List<Comment> getComments(final IJavaElement javaElement) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void addComment(final IJavaElement javaElement, final Comment comment) {
+        // TODO Auto-generated method stub
     }
 
     private String getId(final IJavaElement javaElement) {

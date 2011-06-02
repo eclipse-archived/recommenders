@@ -8,8 +8,9 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc;
+package org.eclipse.recommenders.internal.server.extdoc;
 
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,14 +46,14 @@ final class CouchDBCache {
         }
     }
 
-    public Map<String, Object> getDocument(final String docId) {
+    Map<String, Object> getDocument(final String docId) {
         if (!cache.containsKey(docId)) {
             cache.put(docId, loadFromDisk(docId));
         }
         return cache.get(docId);
     }
 
-    public void storeOrUpdateDocument(final String docId, final Map<String, Object> attributes) {
+    void storeOrUpdateDocument(final String docId, final Map<String, Object> attributes) {
         if (cache.get(docId) == null) {
             cache.put(docId, attributes);
         } else {
@@ -70,7 +71,7 @@ final class CouchDBCache {
         final ZipEntry entry = file.getEntry(docId + ".json");
         if (entry != null) {
             try {
-                final Reader reader = new InputStreamReader(file.getInputStream(entry));
+                final Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream(entry)));
                 result = gson.fromJson(reader, new TypeToken<Map<String, String>>() {
                 }.getType());
             } catch (final IOException e) {
@@ -79,14 +80,14 @@ final class CouchDBCache {
         return result;
     }
 
-    public void synchronize(final CouchDB database) {
+    void synchronize(final CouchDB database) {
         storeToCouchDB(database);
         cache.clear();
         loadFromCouchDB(database);
         changes.clear();
     }
 
-    public void clear() {
+    void clear() {
         cache.clear();
         changes.clear();
     }

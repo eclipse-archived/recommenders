@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc;
+package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -25,11 +25,11 @@ final class CouchDB {
 
     private final Database dbase;
 
-    CouchDB(final String host, final String database) {
+    public CouchDB(final String host, final String database) {
         dbase = new Database(host, database);
     }
 
-    public Set<Map<String, Object>> getDocuments() {
+    Set<Map<String, Object>> getDocuments() {
         final Set<Map<String, Object>> results = new HashSet<Map<String, Object>>();
         for (final ValueRow<Map> row : dbase.listDocuments(new Options(), new JSONParser()).getRows()) {
             results.add(getDocument(row.getId()));
@@ -41,16 +41,16 @@ final class CouchDB {
         return dbase.getDocument(Map.class, docId);
     }
 
-    public void updateDocument(final String docId, final Map<String, Object> attributes) {
-        Map<String, Object> object;
+    void updateDocument(final String docId, final Map<String, Object> attributes) {
+        Map<String, Object> fields;
         try {
-            object = getDocument(docId);
-            object.putAll(attributes);
+            fields = getDocument(docId);
+            fields.putAll(attributes);
         } catch (final NotFoundException e) {
-            object = attributes;
-            object.put("_id", docId);
+            fields = attributes;
+            fields.put("_id", docId);
         }
-        storeDocument(docId, object);
+        storeDocument(docId, fields);
     }
 
     private void storeDocument(final String docId, final Map<String, Object> attributes) {

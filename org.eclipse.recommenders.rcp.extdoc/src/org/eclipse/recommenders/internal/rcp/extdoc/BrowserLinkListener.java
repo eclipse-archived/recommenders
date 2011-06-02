@@ -37,7 +37,7 @@ public final class BrowserLinkListener implements LocationListener {
     }
 
     public int addListener(final ISelectableBrowserElement listener) {
-        listeners.put(listener.hashCode(), listener);
+        listeners.put(Integer.valueOf(listener.hashCode()), listener);
         return listener.hashCode();
     }
 

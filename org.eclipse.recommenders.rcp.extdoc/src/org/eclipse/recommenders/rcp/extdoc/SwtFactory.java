@@ -36,10 +36,9 @@ public final class SwtFactory {
         return composite;
     }
 
-    public static Label createSeparator(final Composite parent) {
+    public static void createSeparator(final Composite parent) {
         final Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        return separator;
     }
 
     public static Text createText(final Composite parent, final String text, final int height, final int width) {

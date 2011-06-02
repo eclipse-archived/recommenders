@@ -11,8 +11,9 @@
 package org.eclipse.recommenders.server.extdoc;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 
-public final class RatingsServer implements IRatingsServer {
+public final class RatingsServer implements IStarsRatingsServer {
 
     @Override
     public int getAverageRating(final IJavaElement javaElement) {

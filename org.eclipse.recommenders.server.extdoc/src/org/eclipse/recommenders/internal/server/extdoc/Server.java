@@ -8,11 +8,11 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc;
+package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.util.Map;
 
-final class Server {
+public final class Server {
 
     private static CouchDB database = new CouchDB("localhost", "extdoc");
     private static final CouchDBCache CACHE = new CouchDBCache();
@@ -20,21 +20,21 @@ final class Server {
     private Server() {
     }
 
-    protected static Map<String, Object> getDocument(final String docId) {
+    public static Map<String, Object> getDocument(final String docId) {
         return CACHE.getDocument(docId);
     }
 
-    protected static void storeOrUpdateDocument(final String docId, final Map<String, Object> attributes) {
+    public static void storeOrUpdateDocument(final String docId, final Map<String, Object> attributes) {
         CACHE.storeOrUpdateDocument(docId, attributes);
         // TODO: Put in a better spot later.
         synchronize();
     }
 
-    protected static void synchronize() {
+    private static void synchronize() {
         CACHE.synchronize(database);
     }
 
-    protected static void setDatabase(final CouchDB database) {
+    public static void setDatabase(final CouchDB database) {
         Server.database = database;
         CACHE.clear();
     }

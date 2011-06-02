@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import java.util.Map.Entry;
 
+import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
 import org.eclipse.recommenders.commons.internal.selection.SelectionPlugin;
@@ -38,7 +39,7 @@ final class ExtDocView extends ViewPart {
         this.providerStore = providerStore;
     }
 
-    protected void update(final IJavaElementSelection context) {
+    void update(final IJavaElementSelection context) {
         if (context != null && folder != null) {
             final CTabItem tabItem = folder.getSelection();
             providerStore.getProvider(tabItem.getText()).selectionChanged(context);
@@ -61,18 +62,18 @@ final class ExtDocView extends ViewPart {
     private void addProviderTabs() {
         for (final Entry<String, IProvider> provider : providerStore.getProviders().entrySet()) {
             final CTabItem item = new CTabItem(folder, SWT.NONE);
-            item.setText(provider.getKey());
             final Control control = provider.getValue().createControl(folder, getViewSite());
+            item.setText(provider.getKey());
             item.setControl(control);
         }
     }
 
     @Override
     public void setFocus() {
-        folder.setFocus();
+        Preconditions.checkArgument(folder.setFocus());
     }
 
-    private class Listener implements org.eclipse.swt.events.SelectionListener {
+    private final class Listener implements org.eclipse.swt.events.SelectionListener {
 
         @Override
         public void widgetSelected(final SelectionEvent event) {
@@ -81,6 +82,7 @@ final class ExtDocView extends ViewPart {
 
         @Override
         public void widgetDefaultSelected(final SelectionEvent e) {
+            // Not of interest to us.
         }
 
     }

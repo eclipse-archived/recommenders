@@ -244,10 +244,6 @@
             <ruleset>Controversial Rules</ruleset>
         </rule>
         <rule>
-            <name>DefaultPackage</name>
-            <ruleset>Controversial Rules</ruleset>
-        </rule>
-        <rule>
             <name>DoNotCallGarbageCollectionExplicitly</name>
             <ruleset>Controversial Rules</ruleset>
         </rule>

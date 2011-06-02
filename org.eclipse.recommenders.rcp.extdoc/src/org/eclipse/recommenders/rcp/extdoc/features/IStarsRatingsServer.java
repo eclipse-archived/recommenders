@@ -8,8 +8,16 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc;
+package org.eclipse.recommenders.rcp.extdoc.features;
 
-public class CommentsFeature {
+import org.eclipse.jdt.core.IJavaElement;
+
+public interface IStarsRatingsServer {
+
+    int getAverageRating(IJavaElement javaElement);
+
+    int getUserRating(IJavaElement javaElement);
+
+    void addRating(IJavaElement javaElement, int stars);
 
 }

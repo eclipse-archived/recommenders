@@ -37,15 +37,15 @@ public final class JavadocProvider implements IProvider {
 
     @Override
     public void redraw() {
-        // TODO Auto-generated method stub
+        throw new IllegalAccessError("No need to redraw a JavadocView.");
     }
 
     /**
      * Extension to gain access to getControl().
      */
-    private static class ExtendedJavadocView extends JavadocView {
+    private static final class ExtendedJavadocView extends JavadocView {
 
-        public ExtendedJavadocView(final Composite parent, final IWorkbenchPartSite partSite) {
+        private ExtendedJavadocView(final Composite parent, final IWorkbenchPartSite partSite) {
             setSite(partSite);
             createPartControl(parent);
         }

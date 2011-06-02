@@ -12,17 +12,24 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 
 import java.net.URL;
 
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.internal.rcp.extdoc.AbstractSelectableBrowserElement;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
 public final class StarsRating extends AbstractSelectableBrowserElement {
 
-    private final StarsRatingsFeature listener;
     private final URL star;
     private final URL starEmpty;
     private final URL starActive;
 
-    public StarsRating(final StarsRatingsFeature listener) {
-        this.listener = listener;
+    private final IJavaElement element;
+    private final IStarsRatingsServer server;
+    private final IProvider provider;
+
+    public StarsRating(final IJavaElement element, final IStarsRatingsServer server, final IProvider provider) {
+        this.element = element;
+        this.server = server;
+        this.provider = provider;
         star = getImageUrl("star.png");
         starEmpty = getImageUrl("star_empty.png");
         starActive = getImageUrl("star_active.png");
@@ -30,10 +37,10 @@ public final class StarsRating extends AbstractSelectableBrowserElement {
 
     @Override
     public String getHtml(final String href) {
-        final int averageRating = listener.getAverageRating();
-        final int userRating = listener.getUserRating();
+        final int averageRating = server.getAverageRating(element);
+        final int userRating = server.getUserRating(element);
 
-        final StringBuilder html = new StringBuilder();
+        final StringBuilder html = new StringBuilder(64);
         for (int i = 1; i <= 5; ++i) {
             if (userRating < 1) {
                 html.append("<a href=\"" + href + i + "\">");
@@ -49,7 +56,8 @@ public final class StarsRating extends AbstractSelectableBrowserElement {
     @Override
     public void selected(final String linkAppendix) {
         final int stars = Integer.parseInt(linkAppendix);
-        listener.addRating(stars);
+        server.addRating(element, stars);
+        provider.redraw();
     }
 
 }

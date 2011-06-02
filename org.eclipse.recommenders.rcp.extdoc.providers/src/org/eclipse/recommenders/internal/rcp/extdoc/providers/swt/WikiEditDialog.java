@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;
 
+import com.google.common.base.Preconditions;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider;
@@ -39,7 +41,12 @@ public final class WikiEditDialog extends AbstractDialog {
 
         this.provider = provider;
         this.javaElement = javaElement;
-        this.editContent = editContent == null ? "Please enter text ..." : editContent;
+
+        if (editContent == null) {
+            this.editContent = "Please enter text ...";
+        } else {
+            this.editContent = editContent;
+        }
     }
 
     @Override
@@ -49,7 +56,7 @@ public final class WikiEditDialog extends AbstractDialog {
 
     @Override
     protected Control createDialogArea(final Composite parent) {
-        setTitle("Edit Wiki for " + javaElement.getElementName());
+        setTitle(String.format("Edit Wiki for %s", javaElement.getElementName()));
         setMessage("Bla Bla");
         final Image image = AbstractUIPlugin.imageDescriptorFromPlugin(
                 ExtDocProvidersPlugin.getDefault().getBundle().getSymbolicName(), "icons/full/wizban/edit.png")
@@ -67,10 +74,13 @@ public final class WikiEditDialog extends AbstractDialog {
 
     @Override
     protected void okPressed() {
-        if (!text.getText().equals(editContent)) {
-            provider.update(javaElement, text.getText());
+        try {
+            if (!text.getText().equals(editContent)) {
+                provider.update(javaElement, text.getText());
+            }
+        } finally {
+            Preconditions.checkArgument(close());
         }
-        close();
     }
 
 }

@@ -14,14 +14,13 @@ import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.CommentsDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
 import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
+import org.eclipse.recommenders.rcp.extdoc.features.CommentsDialog;
 import org.eclipse.recommenders.rcp.extdoc.features.CommentsIcon;
 import org.eclipse.recommenders.rcp.extdoc.features.EditIcon;
 import org.eclipse.recommenders.rcp.extdoc.features.StarsRating;
-import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingsFeature;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 
 public final class WikiProvider extends AbstractBrowserProvider {
@@ -47,7 +46,7 @@ public final class WikiProvider extends AbstractBrowserProvider {
             }
         }
         if (txt == null) {
-            txt = "No Wiki available for " + element;
+            txt = String.format("No Wiki available for %s", element);
         }
         return String.format("%s<br/><br/>%s", getCommunityFeatures(element, markup), txt);
     }
@@ -58,7 +57,7 @@ public final class WikiProvider extends AbstractBrowserProvider {
     }
 
     private String getCommunityFeatures(final IJavaElement element, final String markup) {
-        final StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder(128);
         builder.append(addListenerAndGetHtml(getEditIcon(element, markup)));
         builder.append(addListenerAndGetHtml(getCommentsIcon(element)));
         builder.append(addListenerAndGetHtml(getStarsRating(element)));
@@ -71,11 +70,11 @@ public final class WikiProvider extends AbstractBrowserProvider {
     }
 
     private CommentsIcon getCommentsIcon(final IJavaElement element) {
-        final CommentsDialog commentsDialog = new CommentsDialog(getShell(), this, element);
+        final CommentsDialog commentsDialog = new CommentsDialog(getShell(), server, this, element);
         return new CommentsIcon(commentsDialog);
     }
 
     private StarsRating getStarsRating(final IJavaElement element) {
-        return new StarsRating(new StarsRatingsFeature(element, server, this));
+        return new StarsRating(element, server, this);
     }
 }
