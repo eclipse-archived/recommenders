@@ -10,13 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
-import java.util.Map.Entry;
-
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
 import org.eclipse.recommenders.commons.internal.selection.SelectionPlugin;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -60,10 +59,10 @@ final class ExtDocView extends ViewPart {
     }
 
     private void addProviderTabs() {
-        for (final Entry<String, IProvider> provider : providerStore.getProviders().entrySet()) {
+        for (final Tuple<String, IProvider> provider : providerStore.getProviders()) {
             final CTabItem item = new CTabItem(folder, SWT.NONE);
-            final Control control = provider.getValue().createControl(folder, getViewSite());
-            item.setText(provider.getKey());
+            final Control control = provider.getSecond().createControl(folder, getViewSite());
+            item.setText(provider.getFirst());
             item.setControl(control);
         }
     }

@@ -67,7 +67,7 @@ public final class TemplatesProvider extends AbstractBrowserProvider {
             builder.append("<li><p>" + proposal.getDisplayString() + "<span>");
             builder.append(getCommunityFeatures(element) + "</span></p><ol>");
             for (final String line : proposal.getAdditionalProposalInfo().split(";\r?\n")) {
-                builder.append("<li>" + line + ";</li>");
+                builder.append("<li><i>" + line + ";</i></li>");
             }
             builder.append("</ol></li>");
         }
