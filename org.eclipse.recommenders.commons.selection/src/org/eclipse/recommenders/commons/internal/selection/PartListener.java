@@ -38,7 +38,7 @@ final class PartListener implements IPartListener {
      *            Workbench part to append the cursor listener to in case it is
      *            a Java editor.
      */
-    private void addListeners(final IWorkbenchPart workbenchPart) {
+    protected void addListeners(final IWorkbenchPart workbenchPart) {
         if (workbenchPart instanceof JavaEditor) {
             final JavaEditor editor = (JavaEditor) workbenchPart;
             final StyledText text = (StyledText) editor.getAdapter(Control.class);

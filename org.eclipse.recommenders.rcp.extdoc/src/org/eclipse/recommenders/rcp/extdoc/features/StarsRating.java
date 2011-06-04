@@ -12,6 +12,8 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 
 import java.net.URL;
 
+import com.google.common.base.Preconditions;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.internal.rcp.extdoc.AbstractSelectableBrowserElement;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -27,9 +29,9 @@ public final class StarsRating extends AbstractSelectableBrowserElement {
     private final IProvider provider;
 
     public StarsRating(final IJavaElement element, final IStarsRatingsServer server, final IProvider provider) {
-        this.element = element;
-        this.server = server;
-        this.provider = provider;
+        this.element = Preconditions.checkNotNull(element);
+        this.server = Preconditions.checkNotNull(server);
+        this.provider = Preconditions.checkNotNull(provider);
         star = getImageUrl("star.png");
         starEmpty = getImageUrl("star_empty.png");
         starActive = getImageUrl("star_active.png");

@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -78,8 +79,24 @@ public final class SelectionPlugin extends AbstractUIPlugin {
      */
     protected static void loadListeners(final IWorkbenchPage page) {
         SelectionPlugin.page = page;
+        addListenersForExistentEditors(page);
         page.addPartListener(partListener);
         loadExternalListeners();
+    }
+
+    /**
+     * @param page
+     *            The {@link IWorkbenchPage} for which all already opened
+     *            editors should have the internal mouse/keyboard listeners
+     *            assigned to.
+     */
+    private static void addListenersForExistentEditors(final IWorkbenchPage page) {
+        for (final IEditorReference editor : page.getEditorReferences()) {
+            final IWorkbenchPart part = editor.getPart(false);
+            if (part != null) {
+                partListener.addListeners(part);
+            }
+        }
     }
 
     /**

@@ -9,6 +9,11 @@
             long_name="Javadoc Provider">
       </provider>
       <provider
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtendedJavadocProvider"
+            short_name="ExtendedJavadoc"
+            long_name="Extended Javadoc Provider">
+      </provider>
+      <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider"
             short_name="Wiki"
             long_name="Wiki Provider">

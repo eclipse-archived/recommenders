@@ -10,15 +10,35 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import com.google.inject.Inject;
+
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
+import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
 
 public final class ExtendedJavadocProvider extends AbstractBrowserProvider {
 
-    @Override
-    protected String getHtmlContent(final IJavaElementSelection context) {
-        // TODO Auto-generated method stub
-        return null;
+    private static final String SEPARATOR = System.getProperty("line.separator");
+    private final IntelligentCompletionContextResolver contextResolver;
+
+    @Inject
+    public ExtendedJavadocProvider(final IntelligentCompletionContextResolver contextResolver) {
+        this.contextResolver = contextResolver;
     }
 
+    @Override
+    public String getHtmlContent(final IJavaElementSelection context) {
+        final StringBuilder builder = new StringBuilder(64);
+        IIntelligentCompletionContext completionContext = null;
+
+        if (context.getInvocationContext() != null) {
+            completionContext = contextResolver.resolveContext(context.getInvocationContext());
+        }
+
+        builder.append(String.format("%s%s%s%s", SEPARATOR, context, SEPARATOR, SEPARATOR));
+        builder.append(completionContext);
+
+        return builder.toString().replaceAll("\r?\n", "<br/>");
+    }
 }

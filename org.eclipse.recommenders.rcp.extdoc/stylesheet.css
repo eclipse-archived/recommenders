@@ -36,4 +36,11 @@ em	         { font-style: italic; }
 var	         { font-style: italic; }
 th	         { font-weight: bold; }
 
-img	         { border: 0; }
+/* Own CSS */
+img	         { border: 0; vertical-align: top; }
+
+ol li        { margin: 1.5em 0 }
+ol li p      { font-weight:bold }
+ol li p span { padding-left: 1.5em }
+ol ol        { margin: 1em 0; list-style-type: none; padding:0 }
+ol ol li     { margin:0 }
