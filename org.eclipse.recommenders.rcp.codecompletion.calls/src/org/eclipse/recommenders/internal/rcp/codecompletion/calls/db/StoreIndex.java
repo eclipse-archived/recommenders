@@ -65,6 +65,7 @@ public class StoreIndex {
 
         if (index.containsKey(id)) {
             removeTypesFromIndex(modelArchive);
+            // TODO: Need to delete old archive
         }
         index.put(id, modelArchive);
         addTypesToIndex(modelArchive);

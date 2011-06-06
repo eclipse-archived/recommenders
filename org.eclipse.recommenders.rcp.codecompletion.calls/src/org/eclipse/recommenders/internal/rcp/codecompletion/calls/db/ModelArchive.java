@@ -10,20 +10,24 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.db;
 
+import static org.eclipse.recommenders.commons.utils.GenericEnumerationUtils.iterable;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
+
+import com.google.common.collect.Lists;
 
 public class ModelArchive {
 
@@ -39,15 +43,21 @@ public class ModelArchive {
         this.file = file;
         loader = new BinaryModelLoader();
         try {
-            initializeZipFile(file);
+            initializeZipFile();
             readManifest();
         } catch (final Exception e) {
-            throw new RuntimeException(e);
+            Throws.throwUnhandledException(e); // TODO: Error Message &
+                                               // String.format for
+                                               // thowUnhandledE...
         }
     }
 
-    private void initializeZipFile(final File file) throws ZipException, IOException {
-        zipFile = new ZipFile(file);
+    private void initializeZipFile() {
+        try {
+            zipFile = new ZipFile(file);
+        } catch (final Exception e) {
+            // TODO Throws...
+        }
     }
 
     private void readManifest() throws IOException {
@@ -61,18 +71,16 @@ public class ModelArchive {
     }
 
     public List<ITypeName> getTypes() {
-        final LinkedList<ITypeName> result = new LinkedList<ITypeName>();
-        final Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-            final ZipEntry entry = entries.nextElement();
-            if (isTypeModel(entry)) {
+        final LinkedList<ITypeName> result = Lists.newLinkedList();
+        for (final ZipEntry entry : iterable(zipFile.entries())) {
+            if (!isManifestFile(entry)) {
                 result.add(getTypeNameFromFilename(entry.getName()));
             }
         }
-
         return result;
     }
 
+    // TODO Split in multiple locals
     private ITypeName getTypeNameFromFilename(final String filename) {
         return VmTypeName.get(filename.substring(0, filename.length() - MODEL_POSTFIX.length()).replaceAll("\\.", "/"));
     }
@@ -81,8 +89,8 @@ public class ModelArchive {
         return type.getIdentifier().replaceAll("/", ".") + MODEL_POSTFIX;
     }
 
-    private boolean isTypeModel(final ZipEntry entry) {
-        return !entry.getName().equals(MANIFEST_FILENAME);
+    private boolean isManifestFile(final ZipEntry entry) {
+        return entry.getName().equals(MANIFEST_FILENAME);
     }
 
     public IObjectMethodCallsNet load(final ITypeName name) {
@@ -90,33 +98,36 @@ public class ModelArchive {
         try {
             return loader.load(name, zipFile.getInputStream(entry));
         } catch (final IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // TODO Throws.unhandled + message
         }
     }
 
     public void move(final File newFile) {
-        closeZipFile();
-        final boolean moveSuccessful = file.renameTo(newFile);
-        if (!moveSuccessful) {
-            throw new RuntimeException(String.format("Unable to move file %s to %s.", file.getAbsolutePath(),
-                    newFile.getAbsolutePath()));
-        }
-        file = newFile;
         try {
-            initializeZipFile(file);
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+            closeZipFile();
+            renameFile(newFile);
+        } finally {
+            initializeZipFile();
         }
+    }
+
+    private void renameFile(final File newFile) {
+        final boolean moveSuccessful = file.renameTo(newFile);
+        Checks.ensureIsTrue(moveSuccessful, "Unable to move file %s to %s.", file.getAbsolutePath(),
+                newFile.getAbsolutePath());
+        file = newFile;
     }
 
     public void delete() {
         closeZipFile();
+        file.delete();
     }
 
     private void closeZipFile() {
         try {
             zipFile.close();
         } catch (final IOException e) {
+            // TODO: Log exception
         }
     }
 }

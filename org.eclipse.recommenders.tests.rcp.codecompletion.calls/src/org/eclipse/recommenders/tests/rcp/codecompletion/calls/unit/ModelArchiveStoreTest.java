@@ -42,7 +42,7 @@ public class ModelArchiveStoreTest {
     public void testIndexing() {
         final CallsModelArchiveStore store = new CallsModelArchiveStore();
         final ModelArchive archive = mockArchive();
-        store.store(archive);
+        store.offer(archive);
 
         Assert.assertTrue(store.hasModel(types.get(0)));
         final IObjectMethodCallsNet model = store.getModel(types.get(0));
@@ -54,7 +54,7 @@ public class ModelArchiveStoreTest {
     public void testTypeUnknown() {
         final CallsModelArchiveStore store = new CallsModelArchiveStore();
         final ModelArchive archive = mockArchive();
-        store.store(archive);
+        store.offer(archive);
 
         Assert.assertFalse(store.hasModel(VmTypeName.get("Lorg/eclipse/swt/widgets/Text")));
     }
@@ -63,7 +63,7 @@ public class ModelArchiveStoreTest {
     public void testSimpleTypeIndexing() {
         final CallsModelArchiveStore store = new CallsModelArchiveStore();
         final ModelArchive archive = mockArchive();
-        store.store(archive);
+        store.offer(archive);
 
         final VmTypeName simpleNameButton = VmTypeName.get("LButton");
         final Set<IObjectMethodCallsNet> models = store.getModelsForSimpleName(simpleNameButton);
@@ -75,7 +75,7 @@ public class ModelArchiveStoreTest {
     public void testSimpleTypeUnknown() {
         final CallsModelArchiveStore store = new CallsModelArchiveStore();
         final ModelArchive archive = mockArchive();
-        store.store(archive);
+        store.offer(archive);
 
         final VmTypeName simpleNameText = VmTypeName.get("LText");
         final Set<IObjectMethodCallsNet> models = store.getModelsForSimpleName(simpleNameText);

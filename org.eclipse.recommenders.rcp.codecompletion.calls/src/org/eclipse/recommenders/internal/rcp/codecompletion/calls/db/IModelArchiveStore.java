@@ -20,5 +20,5 @@ public interface IModelArchiveStore {
 
     List<Manifest> getAllManifests();
 
-    void store(ModelArchive archvie);
+    boolean offer(ModelArchive archive);
 }

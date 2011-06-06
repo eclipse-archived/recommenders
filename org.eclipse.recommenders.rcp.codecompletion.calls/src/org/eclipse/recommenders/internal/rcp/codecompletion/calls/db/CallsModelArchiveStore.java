@@ -33,15 +33,17 @@ public class CallsModelArchiveStore implements ICallsModelStore, IModelArchiveSt
     private final File storeLocation;
     private StoreIndex index = new StoreIndex();
     private final ReentrantReadWriteLock indexReplacementLock = new ReentrantReadWriteLock();
+    // TODO: This may can be replaced by eclipse jobs
     private final ReentrantLock indexUpdatingLock = new ReentrantLock();
 
     @Inject
     public CallsModelArchiveStore(@Named("calls.store.location") final File storeLocation) {
         this.storeLocation = storeLocation;
-        initializeFromStoreLocation(); // TODO: Move call to asynchronous job?
+        createIndexFromStoreLocation(); // TODO: Move call to asynchronous job?
     }
 
-    private void initializeFromStoreLocation() {
+    // TODO Move this somewhere else ;-)
+    private void createIndexFromStoreLocation() {
         final List<ModelArchive> archives = new LinkedList<ModelArchive>();
         final File[] files = storeLocation.listFiles();
         for (final File file : files) {
@@ -64,15 +66,16 @@ public class CallsModelArchiveStore implements ICallsModelStore, IModelArchiveSt
     }
 
     @Override
-    public void store(final ModelArchive archive) {
+    public boolean offer(final ModelArchive archive) {
         indexUpdatingLock.lock();
+        boolean result = false;
         if (index.willAccept(archive)) {
             archive.move(new File(storeLocation, createFilename(archive)));
             updateIndex(Lists.newArrayList(archive));
-        } else {
-            archive.delete();
+            result = true;
         }
         indexUpdatingLock.unlock();
+        return result;
     }
 
     private String createFilename(final ModelArchive archive) {
