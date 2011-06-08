@@ -13,6 +13,7 @@ package org.eclipse.recommenders.commons.selection;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.ui.IEditorPart;
 
 /**
  * Contains all required information about the user's selection of a java
@@ -42,5 +43,7 @@ public interface IJavaElementSelection {
      * @return The selected java element's AST node.
      */
     ASTNode getAstNode();
+
+    IEditorPart getEditor();
 
 }

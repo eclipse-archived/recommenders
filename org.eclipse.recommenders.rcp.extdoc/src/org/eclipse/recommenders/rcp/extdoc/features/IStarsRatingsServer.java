@@ -10,14 +10,13 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.jdt.core.IJavaElement;
 
 public interface IStarsRatingsServer {
 
-    int getAverageRating(IJavaElement javaElement);
+    int getAverageRating(Object object);
 
-    int getUserRating(IJavaElement javaElement);
+    int getUserRating(Object object);
 
-    void addRating(IJavaElement javaElement, int stars);
+    void addRating(Object object, int stars);
 
 }

@@ -12,7 +12,6 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 
 import com.google.common.base.Preconditions;
 
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.AbstractDialog;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -28,17 +27,19 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 public final class CommentsDialog extends AbstractDialog {
 
     private final IProvider provider;
-    private final IJavaElement javaElement;
     private final ICommentsServer server;
+    private final Object object;
+    private final String objectName;
 
     public CommentsDialog(final Shell parentShell, final ICommentsServer server, final IProvider provider,
-            final IJavaElement javaElement) {
+            final Object object, final String objectName) {
         super(parentShell);
         setBlockOnOpen(false);
 
         this.server = server;
         this.provider = provider;
-        this.javaElement = javaElement;
+        this.object = object;
+        this.objectName = objectName;
     }
 
     @Override
@@ -49,9 +50,10 @@ public final class CommentsDialog extends AbstractDialog {
     @Override
     protected Control createDialogArea(final Composite parent) {
         final Image image = AbstractUIPlugin.imageDescriptorFromPlugin(
-                ExtDocPlugin.getDefault().getBundle().getSymbolicName(), "icons/full/wizban/edit.png").createImage();
+                ExtDocPlugin.getDefault().getBundle().getSymbolicName(), "icons/full/wizban/comments.png")
+                .createImage();
 
-        setTitle(String.format("Comments for %s", javaElement.getElementName()));
+        setTitle(String.format("Comments for %s", objectName));
         setMessage("Bla Bla");
         setTitleImage(image);
 

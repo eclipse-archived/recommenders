@@ -54,7 +54,7 @@ public final class JavaElementLocationResolver {
      * @return The code location of the element represented by the AST node.
      */
     public static JavaElementLocation resolveLocation(final IJavaElement javaElement, final ASTNode astNode) {
-        if (astNode == null) {
+        if (astNode == null || javaElement == null) {
             return null;
         }
         final int locationNodeType = getLocationNodeType(astNode);
@@ -82,8 +82,8 @@ public final class JavaElementLocationResolver {
      *            The type of the AST node indicating the element's location.
      * @param javaElement
      *            The Java element to identify the location for.
-     * @return The {@link JavaElementLocation} for the given Java element and its
-     *         location node type.
+     * @return The {@link JavaElementLocation} for the given Java element and
+     *         its location node type.
      */
     private static JavaElementLocation getLocationForNodeType(final int locationNodeType, final IJavaElement javaElement) {
         switch (locationNodeType) {
@@ -109,9 +109,9 @@ public final class JavaElementLocationResolver {
     /**
      * @param javaElement
      *            The Java element occurring in the type declaration.
-     * @return The {@link JavaElementLocation} - the "new" type, part of "extends"
-     *         or part of "implements" - as identified from the Java element
-     *         type.
+     * @return The {@link JavaElementLocation} - the "new" type, part of
+     *         "extends" or part of "implements" - as identified from the Java
+     *         element type.
      */
     private static JavaElementLocation getTypeDeclarationLocation(final IJavaElement javaElement) {
         if (javaElement instanceof SourceType) {

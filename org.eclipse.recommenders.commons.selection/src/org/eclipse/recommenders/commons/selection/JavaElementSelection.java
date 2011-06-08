@@ -90,6 +90,11 @@ public final class JavaElementSelection implements IJavaElementSelection {
         return cachedAstNode;
     }
 
+    @Override
+    public JavaEditor getEditor() {
+        return editor;
+    }
+
     @Testing
     @Override
     public String toString() {

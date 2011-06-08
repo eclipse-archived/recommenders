@@ -22,7 +22,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.commons.selection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc.providers;x-internal:=true
-Import-Package: org.eclipse.recommenders.commons.internal.selection
+Import-Package: org.eclipse.recommenders.commons.internal.selection,
+ org.eclipse.recommenders.internal.rcp.codecompletion.calls
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true

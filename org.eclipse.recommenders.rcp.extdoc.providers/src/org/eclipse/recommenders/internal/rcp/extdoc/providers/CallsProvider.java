@@ -10,15 +10,56 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import java.util.List;
+
+import com.google.inject.Inject;
+
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionProposalComputer;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
+import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
 
 public final class CallsProvider extends AbstractBrowserProvider {
 
+    private final CallsCompletionProposalComputer proposalComputer;
+
+    @Inject
+    public CallsProvider(final CallsCompletionProposalComputer proposalComputer,
+            final IntelligentCompletionContextResolver contextResolver) {
+        this.proposalComputer = proposalComputer;
+    }
+
     @Override
     protected String getHtmlContent(final IJavaElementSelection context) {
-        // TODO Auto-generated method stub
-        return null;
+        if (context.getInvocationContext() != null) {
+            @SuppressWarnings("unchecked")
+            final List<IJavaCompletionProposal> proposals = proposalComputer.computeCompletionProposals(
+                    context.getInvocationContext(), null);
+            if (!proposals.isEmpty()) {
+                return getHtmlForProposals(context.getJavaElement(), proposals);
+            }
+            return "There are not method calls available for " + context.getJavaElement().getElementName() + ".";
+        }
+        return "Method calls are not available for this element type.";
+    }
+
+    private String getHtmlForProposals(final IJavaElement element, final List<IJavaCompletionProposal> proposals) {
+        final StringBuilder builder = new StringBuilder(64);
+        builder.append("<p>By analyzing XXX occasions of " + element.getElementName()
+                + ", the following patterns have been identified:</p>");
+        builder.append("<ol>");
+
+        for (final IJavaCompletionProposal proposal : proposals) {
+            builder.append("<li><b>" + proposal.getDisplayString() + "</b> - <u>" + proposal.getRelevance()
+                    + "</u></li>");
+        }
+
+        builder.append("</ol>");
+        builder.append(CommunityUtil.getAllFeaturesButDelete(element, this, null, null));
+        return builder.toString();
     }
 
 }

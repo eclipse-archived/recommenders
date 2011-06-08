@@ -79,11 +79,11 @@ public abstract class AbstractBrowserProvider implements IProvider {
         selectionChanged(lastContext);
     }
 
-    protected final Shell getShell() {
+    public final Shell getShell() {
         return browser.getShell();
     }
 
-    protected final String addListenerAndGetHtml(final ISelectableBrowserElement listener) {
+    public final String addListenerAndGetHtml(final ISelectableBrowserElement listener) {
         final int hash = linkListener.addListener(listener);
         return listener.getHtml("#" + hash + "?") + " ";
     }

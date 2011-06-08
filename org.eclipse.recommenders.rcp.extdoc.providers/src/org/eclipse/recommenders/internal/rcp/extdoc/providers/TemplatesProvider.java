@@ -19,40 +19,41 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionProposalComputer;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CompletionInvocationContext;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsDialog;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsIcon;
-import org.eclipse.recommenders.rcp.extdoc.features.DeleteIcon;
-import org.eclipse.recommenders.rcp.extdoc.features.EditIcon;
-import org.eclipse.recommenders.rcp.extdoc.features.StarsRating;
+import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.server.extdoc.TemplatesServer;
 
-public final class TemplatesProvider extends AbstractBrowserProvider {
+public final class TemplatesProvider extends AbstractBrowserProvider implements IDeletionProvider {
 
     private final TemplatesCompletionProposalComputer proposalComputer;
     private final IntelligentCompletionContextResolver contextResolver;
+    private final TemplatesServer server;
 
     @Inject
     public TemplatesProvider(final TemplatesCompletionProposalComputer proposalComputer,
             final IntelligentCompletionContextResolver contextResolver) {
         this.proposalComputer = proposalComputer;
         this.contextResolver = contextResolver;
+        server = new TemplatesServer();
     }
 
     @Override
-    public String getHtmlContent(final IJavaElementSelection context) {
-
-        if (context.getInvocationContext() != null) {
-            final IIntelligentCompletionContext completionContext = contextResolver.resolveContext(context
-                    .getInvocationContext());
+    public String getHtmlContent(final IJavaElementSelection selection) {
+        if (selection.getInvocationContext() != null) {
+            final CompletionInvocationContext context = new CompletionInvocationContext(
+                    selection.getInvocationContext(), selection.getEditor());
+            final IIntelligentCompletionContext completionContext = contextResolver.resolveContext(context);
             final List<IJavaCompletionProposal> proposals = proposalComputer
                     .computeCompletionProposals(completionContext);
             if (!proposals.isEmpty()) {
-                return getHtmlForProposals(context.getJavaElement(), proposals);
+                return getHtmlForProposals(selection.getJavaElement(), proposals);
             }
-            return "There are not templates available for " + context.getJavaElement().getElementName();
+            return "There are not templates available for " + selection.getJavaElement().getElementName()
+                    + ".<br/><br/>" + completionContext.toString().replace("\n", "<br/>");
         }
         return "Templates are not available for this element type.";
     }
@@ -65,7 +66,7 @@ public final class TemplatesProvider extends AbstractBrowserProvider {
 
         for (final IJavaCompletionProposal proposal : proposals) {
             builder.append("<li><p>" + proposal.getDisplayString() + "<span>");
-            builder.append(getCommunityFeatures(element) + "</span></p><ol>");
+            builder.append(getCommunityFeatures(proposal) + "</span></p><ol>");
             for (final String line : proposal.getAdditionalProposalInfo().split(";\r?\n")) {
                 builder.append("<li><i>" + line + ";</i></li>");
             }
@@ -76,31 +77,19 @@ public final class TemplatesProvider extends AbstractBrowserProvider {
         return builder.toString();
     }
 
-    private String getCommunityFeatures(final IJavaElement element) {
+    private String getCommunityFeatures(final IJavaCompletionProposal proposal) {
+        final TemplateEditDialog editDialog = new TemplateEditDialog(getShell());
+
         final StringBuilder builder = new StringBuilder(128);
-        builder.append(addListenerAndGetHtml(getCommentsIcon(element)));
-        builder.append(addListenerAndGetHtml(getEditIcon(element)));
-        builder.append(addListenerAndGetHtml(getDeleteIcon(element)));
-        builder.append(addListenerAndGetHtml(getStarsRating(element)));
+        builder.append(addListenerAndGetHtml(CommunityUtil.getCommentsIcon(proposal, proposal.getDisplayString(), this)));
+        builder.append(addListenerAndGetHtml(CommunityUtil.getEditIcon(editDialog)));
+        builder.append(addListenerAndGetHtml(CommunityUtil.getDeleteIcon(proposal, proposal.getDisplayString(), this)));
+        builder.append(addListenerAndGetHtml(CommunityUtil.getStarsRating(proposal, this, server)));
         return builder.toString();
     }
 
-    private EditIcon getEditIcon(final IJavaElement element) {
-        final TemplateEditDialog editDialog = new TemplateEditDialog(getShell());
-        return new EditIcon(editDialog);
-    }
-
-    private DeleteIcon getDeleteIcon(final IJavaElement element) {
-        final TemplateEditDialog editDialog = new TemplateEditDialog(getShell());
-        return new DeleteIcon(editDialog);
-    }
-
-    private CommentsIcon getCommentsIcon(final IJavaElement element) {
-        final CommentsDialog commentsDialog = new CommentsDialog(getShell(), null, this, element);
-        return new CommentsIcon(commentsDialog);
-    }
-
-    private StarsRating getStarsRating(final IJavaElement element) {
-        return new StarsRating(element, new TemplatesServer(), this);
+    @Override
+    public void requestDeletion(final Object object) {
+        // TODO Auto-generated method stub
     }
 }

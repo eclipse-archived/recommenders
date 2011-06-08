@@ -10,13 +10,13 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.AbstractSelectableBrowserElement;
+import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 
 public final class DeleteIcon extends AbstractSelectableBrowserElement {
 
-    public DeleteIcon(final Dialog dialog) {
-        super(dialog, "delete.png");
+    public DeleteIcon(final IDeletionProvider provider, final Object object, final String objectName) {
+        super(new DeleteDialog(provider, object, objectName), "delete.png");
     }
 
 }

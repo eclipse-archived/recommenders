@@ -15,6 +15,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 @SuppressWarnings("restriction")
@@ -38,6 +39,11 @@ public final class JavadocProvider implements IProvider {
     @Override
     public void redraw() {
         throw new IllegalAccessError("No need to redraw a JavadocView.");
+    }
+
+    @Override
+    public Shell getShell() {
+        throw new IllegalAccessError("No need to access the shell.");
     }
 
     /**

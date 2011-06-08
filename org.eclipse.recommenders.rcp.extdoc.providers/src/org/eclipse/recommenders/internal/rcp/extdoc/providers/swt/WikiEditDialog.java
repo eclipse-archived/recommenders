@@ -22,7 +22,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -34,9 +33,8 @@ public final class WikiEditDialog extends AbstractDialog {
 
     private final String editContent;
 
-    public WikiEditDialog(final Shell parentShell, final WikiProvider provider, final IJavaElement javaElement,
-            final String editContent) {
-        super(parentShell);
+    public WikiEditDialog(final WikiProvider provider, final IJavaElement javaElement, final String editContent) {
+        super(provider.getShell());
         setBlockOnOpen(false);
 
         this.provider = provider;

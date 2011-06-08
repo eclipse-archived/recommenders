@@ -25,7 +25,7 @@ public final class WikiServer implements IStarsRatingsServer, ICommentsServer {
     private static final String STARSSUM = "starsSum";
     private static final String STARSCOUNT = "starsCount";
 
-    private final Map<IJavaElement, Integer> userRatings = new HashMap<IJavaElement, Integer>();
+    private final Map<Object, Integer> userRatings = new HashMap<Object, Integer>();
 
     public String getText(final IJavaElement javaElement) {
         final Map<String, Object> document = Server.getDocument(getId(javaElement));
@@ -39,20 +39,20 @@ public final class WikiServer implements IStarsRatingsServer, ICommentsServer {
     }
 
     @Override
-    public int getAverageRating(final IJavaElement javaElement) {
-        final Map<String, Object> document = Server.getDocument(getId(javaElement));
+    public int getAverageRating(final Object object) {
+        final Map<String, Object> document = Server.getDocument(getId((IJavaElement) object));
         final int starsCount = document == null ? 0 : getStarsCount(document);
         return starsCount == 0 ? 0 : getStarsSum(document) / starsCount;
     }
 
     @Override
-    public int getUserRating(final IJavaElement javaElement) {
-        return userRatings.containsKey(javaElement) ? userRatings.get(javaElement) : -1;
+    public int getUserRating(final Object object) {
+        return userRatings.containsKey(object) ? userRatings.get(object) : -1;
     }
 
     @Override
-    public void addRating(final IJavaElement javaElement, final int stars) {
-        final String documentId = getId(javaElement);
+    public void addRating(final Object object, final int stars) {
+        final String documentId = getId((IJavaElement) object);
         Map<String, Object> document = Server.getDocument(documentId);
 
         if (document == null) {
@@ -62,7 +62,7 @@ public final class WikiServer implements IStarsRatingsServer, ICommentsServer {
         document.put(STARSSUM, getStarsSum(document) + stars);
 
         Server.storeOrUpdateDocument(documentId, document);
-        userRatings.put(javaElement, stars);
+        userRatings.put(object, stars);
     }
 
     @Override

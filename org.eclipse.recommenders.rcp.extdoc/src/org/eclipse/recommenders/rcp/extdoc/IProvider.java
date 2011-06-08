@@ -13,6 +13,7 @@ package org.eclipse.recommenders.rcp.extdoc;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 public interface IProvider {
@@ -22,5 +23,7 @@ public interface IProvider {
     void selectionChanged(IJavaElementSelection context);
 
     void redraw();
+
+    Shell getShell();
 
 }

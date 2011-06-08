@@ -15,11 +15,8 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsDialog;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsIcon;
-import org.eclipse.recommenders.rcp.extdoc.features.EditIcon;
-import org.eclipse.recommenders.rcp.extdoc.features.StarsRating;
 import org.eclipse.recommenders.server.extdoc.TemplatesServer;
 
 public final class SubclassingProvider extends AbstractBrowserProvider {
@@ -89,25 +86,8 @@ public final class SubclassingProvider extends AbstractBrowserProvider {
     }
 
     private String getCommunityFeatures(final IJavaElement element) {
-        final StringBuilder builder = new StringBuilder(128);
-        builder.append(addListenerAndGetHtml(getCommentsIcon(element)));
-        builder.append(addListenerAndGetHtml(getEditIcon(element)));
-        builder.append(addListenerAndGetHtml(getStarsRating(element)));
-        return builder.toString();
-    }
-
-    private EditIcon getEditIcon(final IJavaElement element) {
         final TemplateEditDialog editDialog = new TemplateEditDialog(getShell());
-        return new EditIcon(editDialog);
-    }
-
-    private CommentsIcon getCommentsIcon(final IJavaElement element) {
-        final CommentsDialog commentsDialog = new CommentsDialog(getShell(), null, this, element);
-        return new CommentsIcon(commentsDialog);
-    }
-
-    private StarsRating getStarsRating(final IJavaElement element) {
-        return new StarsRating(element, new TemplatesServer(), this);
+        return CommunityUtil.getAllFeatures(element, this, editDialog, new TemplatesServer());
     }
 
 }

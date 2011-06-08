@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +48,7 @@ final class CouchDB {
             fields = getDocument(docId);
             fields.putAll(attributes);
         } catch (final NotFoundException e) {
-            fields = attributes;
+            fields = new HashMap<String, Object>(attributes);
             fields.put("_id", docId);
         }
         storeDocument(docId, fields);

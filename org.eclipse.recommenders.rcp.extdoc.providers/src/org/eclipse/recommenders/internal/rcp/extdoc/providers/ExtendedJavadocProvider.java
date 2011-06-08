@@ -29,7 +29,7 @@ public final class ExtendedJavadocProvider extends AbstractBrowserProvider {
 
     @Override
     public String getHtmlContent(final IJavaElementSelection context) {
-        final StringBuilder builder = new StringBuilder(64);
+        final StringBuilder builder = new StringBuilder(128);
         IIntelligentCompletionContext completionContext = null;
 
         if (context.getInvocationContext() != null) {

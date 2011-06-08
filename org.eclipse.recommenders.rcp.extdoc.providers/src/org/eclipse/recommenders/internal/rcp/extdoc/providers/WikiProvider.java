@@ -15,12 +15,9 @@ import com.google.inject.Inject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
 import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsDialog;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsIcon;
-import org.eclipse.recommenders.rcp.extdoc.features.EditIcon;
-import org.eclipse.recommenders.rcp.extdoc.features.StarsRating;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 
 public final class WikiProvider extends AbstractBrowserProvider {
@@ -57,24 +54,7 @@ public final class WikiProvider extends AbstractBrowserProvider {
     }
 
     private String getCommunityFeatures(final IJavaElement element, final String markup) {
-        final StringBuilder builder = new StringBuilder(128);
-        builder.append(addListenerAndGetHtml(getEditIcon(element, markup)));
-        builder.append(addListenerAndGetHtml(getCommentsIcon(element)));
-        builder.append(addListenerAndGetHtml(getStarsRating(element)));
-        return builder.toString();
-    }
-
-    private EditIcon getEditIcon(final IJavaElement element, final String markup) {
-        final WikiEditDialog editDialog = new WikiEditDialog(getShell(), this, element, markup);
-        return new EditIcon(editDialog);
-    }
-
-    private CommentsIcon getCommentsIcon(final IJavaElement element) {
-        final CommentsDialog commentsDialog = new CommentsDialog(getShell(), server, this, element);
-        return new CommentsIcon(commentsDialog);
-    }
-
-    private StarsRating getStarsRating(final IJavaElement element) {
-        return new StarsRating(element, server, this);
+        final WikiEditDialog editDialog = new WikiEditDialog(this, element, markup);
+        return CommunityUtil.getAllFeatures(element, this, editDialog, server);
     }
 }

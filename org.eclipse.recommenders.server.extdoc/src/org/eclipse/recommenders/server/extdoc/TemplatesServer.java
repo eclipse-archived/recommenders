@@ -10,25 +10,24 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 
 public final class TemplatesServer implements IStarsRatingsServer {
 
     @Override
-    public int getAverageRating(final IJavaElement javaElement) {
+    public int getAverageRating(final Object object) {
         // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
-    public int getUserRating(final IJavaElement javaElement) {
+    public int getUserRating(final Object object) {
         // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
-    public void addRating(final IJavaElement javaElement, final int stars) {
+    public void addRating(final Object object, final int stars) {
         // TODO Auto-generated method stub
     }
 
