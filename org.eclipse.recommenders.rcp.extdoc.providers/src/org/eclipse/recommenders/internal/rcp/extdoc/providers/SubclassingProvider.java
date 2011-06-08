@@ -17,9 +17,11 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
-import org.eclipse.recommenders.server.extdoc.TemplatesServer;
+import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 
 public final class SubclassingProvider extends AbstractBrowserProvider {
+
+    private final SubclassingServer server = new SubclassingServer();
 
     @Override
     public String getHtmlContent(final IJavaElementSelection context) {
@@ -28,18 +30,17 @@ public final class SubclassingProvider extends AbstractBrowserProvider {
             return getHtmlContentForType(element);
         } else if (element instanceof IMethod) {
             return getHtmlContentForMethod(element);
-        } else {
-            return "Subclassing directives are not available for this element type.";
         }
+        return "Subclassing directives are only available for Java types and methods.";
     }
 
     private String getHtmlContentForType(final IJavaElement element) {
         final StringBuilder builder = new StringBuilder(64);
         builder.append("<p>Based on XXX direct subclasses of <i>" + element.getElementName());
-        builder.append("</i> we created the following statistics. Subclassers may consider to override the following methods. ");
+        builder.append("</i> we created the following statistics. Subclassers may consider to override the following methods.<span>");
         builder.append(getCommunityFeatures(element));
 
-        builder.append("</p><table>");
+        builder.append("</span></p><table>");
         for (int i = 0; i < 3; ++i) {
             builder.append("<tr><td><b>&middot;</b></td>");
             builder.append("<td><b>should not</b></td>");
@@ -48,10 +49,10 @@ public final class SubclassingProvider extends AbstractBrowserProvider {
         }
         builder.append("</table>");
 
-        builder.append("<p>Subclassers may consider to call the following methods to configure instances of this class via self calls. ");
+        builder.append("<p>Subclassers may consider to call the following methods to configure instances of this class via self calls.<span>");
         builder.append(getCommunityFeatures(element));
 
-        builder.append("</p><table>");
+        builder.append("</span></p><table>");
         for (int i = 0; i < 3; ++i) {
             builder.append("<tr><td><b>&middot;</b></td>");
             builder.append("<td><b>should</b></td>");
@@ -80,14 +81,14 @@ public final class SubclassingProvider extends AbstractBrowserProvider {
             builder.append("<td>call <i>performFinish<i></td>");
             builder.append("<td>(249 times - <u>100%</u>)</td></tr>");
         }
-        builder.append("</table><br />" + getCommunityFeatures(element));
+        builder.append("</table><p style=\"margin-top:1.5em\">" + getCommunityFeatures(element) + "</p>");
 
         return builder.toString();
     }
 
     private String getCommunityFeatures(final IJavaElement element) {
         final TemplateEditDialog editDialog = new TemplateEditDialog(getShell());
-        return CommunityUtil.getAllFeatures(element, this, editDialog, new TemplatesServer());
+        return CommunityUtil.getAllFeatures(element, this, editDialog, server);
     }
 
 }

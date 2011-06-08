@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import java.io.IOException;
 import java.net.URL;
 
+import com.google.common.base.Preconditions;
+
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jface.dialogs.Dialog;
 
@@ -25,7 +27,7 @@ public abstract class AbstractSelectableBrowserElement implements ISelectableBro
     }
 
     protected AbstractSelectableBrowserElement(final Dialog dialog, final String image) {
-        this.dialog = dialog;
+        this.dialog = Preconditions.checkNotNull(dialog);
         imageUrl = getImageUrl(image);
     }
 

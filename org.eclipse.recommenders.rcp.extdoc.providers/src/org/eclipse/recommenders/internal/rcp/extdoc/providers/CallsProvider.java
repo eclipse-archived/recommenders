@@ -14,17 +14,24 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionProposalComputer;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
+import org.eclipse.recommenders.server.extdoc.CallsServer;
 
 public final class CallsProvider extends AbstractBrowserProvider {
 
     private final CallsCompletionProposalComputer proposalComputer;
+    private final CallsServer server = new CallsServer();
 
     @Inject
     public CallsProvider(final CallsCompletionProposalComputer proposalComputer,
@@ -34,16 +41,19 @@ public final class CallsProvider extends AbstractBrowserProvider {
 
     @Override
     protected String getHtmlContent(final IJavaElementSelection context) {
-        if (context.getInvocationContext() != null) {
+        final IJavaElement element = context.getJavaElement();
+        // TODO: IMethod is just for testing.
+        if ((element instanceof IType || element instanceof IField || element instanceof ILocalVariable || element instanceof IMethod)
+                && context.getInvocationContext() != null) {
             @SuppressWarnings("unchecked")
             final List<IJavaCompletionProposal> proposals = proposalComputer.computeCompletionProposals(
                     context.getInvocationContext(), null);
             if (!proposals.isEmpty()) {
                 return getHtmlForProposals(context.getJavaElement(), proposals);
             }
-            return "There are not method calls available for " + context.getJavaElement().getElementName() + ".";
+            return "There are not method calls available for <i>" + context.getJavaElement().getElementName() + "</i>.";
         }
-        return "Method calls are not available for this element type.";
+        return "Method calls are only available for Java types and variables.";
     }
 
     private String getHtmlForProposals(final IJavaElement element, final List<IJavaCompletionProposal> proposals) {
@@ -58,7 +68,10 @@ public final class CallsProvider extends AbstractBrowserProvider {
         }
 
         builder.append("</ol>");
-        builder.append(CommunityUtil.getAllFeaturesButDelete(element, this, null, null));
+
+        final TemplateEditDialog editDialog = new TemplateEditDialog(getShell());
+        builder.append(CommunityUtil.getAllFeatures(element, this, editDialog, server));
+
         return builder.toString();
     }
 

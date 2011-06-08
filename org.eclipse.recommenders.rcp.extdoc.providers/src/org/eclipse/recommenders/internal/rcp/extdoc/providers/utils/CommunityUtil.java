@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) 2011 Stefan Henss.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Stefan Henss - initial API and implementation.
+ */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
 import org.eclipse.jdt.core.IJavaElement;
@@ -26,15 +36,6 @@ public final class CommunityUtil {
             builder.append(provider.addListenerAndGetHtml(getDeleteIcon(element, element.getElementName(),
                     (IDeletionProvider) provider)));
         }
-        builder.append(provider.addListenerAndGetHtml(getStarsRating(element, provider, server)));
-        return builder.toString();
-    }
-
-    public static String getAllFeaturesButDelete(final IJavaElement element, final AbstractBrowserProvider provider,
-            final Dialog editDialog, final IStarsRatingsServer server) {
-        final StringBuilder builder = new StringBuilder(128);
-        builder.append(provider.addListenerAndGetHtml(getCommentsIcon(element, element.getElementName(), provider)));
-        builder.append(provider.addListenerAndGetHtml(getEditIcon(editDialog)));
         builder.append(provider.addListenerAndGetHtml(getStarsRating(element, provider, server)));
         return builder.toString();
     }

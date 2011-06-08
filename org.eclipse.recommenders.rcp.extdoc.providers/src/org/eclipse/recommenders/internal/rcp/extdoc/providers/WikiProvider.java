@@ -42,19 +42,19 @@ public final class WikiProvider extends AbstractBrowserProvider {
                 txt = parser.parseTextile(markup);
             }
         }
+
+        final WikiEditDialog editDialog = new WikiEditDialog(this, element, markup);
+
         if (txt == null) {
-            txt = String.format("No Wiki available for %s", element);
+            txt = String.format("Currently there is no Wiki available for <i>%s</i>.", element.getElementName());
+            return txt + "<br /><br />You can start one by clicking on the pen icon: "
+                    + addListenerAndGetHtml(CommunityUtil.getEditIcon(editDialog));
         }
-        return String.format("%s<br/><br/>%s", getCommunityFeatures(element, markup), txt);
+        return String.format("%s<br/><br/>%s", CommunityUtil.getAllFeatures(element, this, editDialog, server), txt);
     }
 
     public void update(final IJavaElement javaElement, final String text) {
         server.setText(javaElement, text);
         redraw();
-    }
-
-    private String getCommunityFeatures(final IJavaElement element, final String markup) {
-        final WikiEditDialog editDialog = new WikiEditDialog(this, element, markup);
-        return CommunityUtil.getAllFeatures(element, this, editDialog, server);
     }
 }

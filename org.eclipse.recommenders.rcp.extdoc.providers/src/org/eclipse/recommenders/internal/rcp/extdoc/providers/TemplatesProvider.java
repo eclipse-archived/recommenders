@@ -14,7 +14,11 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionProposalComputer;
@@ -43,19 +47,21 @@ public final class TemplatesProvider extends AbstractBrowserProvider implements 
 
     @Override
     public String getHtmlContent(final IJavaElementSelection selection) {
-        if (selection.getInvocationContext() != null) {
+        final IJavaElement element = selection.getJavaElement();
+        // TODO: IMethod is just for testing.
+        if ((element instanceof IType || element instanceof IField || element instanceof ILocalVariable || element instanceof IMethod)
+                && selection.getInvocationContext() != null) {
             final CompletionInvocationContext context = new CompletionInvocationContext(
                     selection.getInvocationContext(), selection.getEditor());
             final IIntelligentCompletionContext completionContext = contextResolver.resolveContext(context);
             final List<IJavaCompletionProposal> proposals = proposalComputer
                     .computeCompletionProposals(completionContext);
             if (!proposals.isEmpty()) {
-                return getHtmlForProposals(selection.getJavaElement(), proposals);
+                return getHtmlForProposals(element, proposals);
             }
-            return "There are not templates available for " + selection.getJavaElement().getElementName()
-                    + ".<br/><br/>" + completionContext.toString().replace("\n", "<br/>");
+            return "There are not templates available for <i>" + element.getElementName() + "</i>.";
         }
-        return "Templates are not available for this element type.";
+        return "Templates are only available for Java types and variables.";
     }
 
     private String getHtmlForProposals(final IJavaElement element, final List<IJavaCompletionProposal> proposals) {
