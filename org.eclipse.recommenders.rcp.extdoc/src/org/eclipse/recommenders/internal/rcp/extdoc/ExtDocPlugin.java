@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import java.net.URL;
 
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -37,6 +38,11 @@ public final class ExtDocPlugin extends AbstractUIPlugin {
 
     public static URL getBundleEntry(final String uri) {
         return plugin.getBundle().getEntry(uri);
+    }
+
+    public static Image getImage(final String path) {
+        return AbstractUIPlugin.imageDescriptorFromPlugin(plugin.getBundle().getSymbolicName(), "icons/full/" + path)
+                .createImage();
     }
 
 }

@@ -79,6 +79,7 @@ public abstract class AbstractBrowserProvider implements IProvider {
         selectionChanged(lastContext);
     }
 
+    @Override
     public final Shell getShell() {
         return browser.getShell();
     }

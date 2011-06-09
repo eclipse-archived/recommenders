@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
-final class ProviderStore {
+public final class ProviderStore {
 
     private final Map<String, IProvider> providers = new HashMap<String, IProvider>();
     private final Map<IProvider, Integer> priorities = new HashMap<IProvider, Integer>();
@@ -39,7 +39,7 @@ final class ProviderStore {
         }
     }
 
-    protected Set<Tuple<String, IProvider>> getProviders() {
+    public Set<Tuple<String, IProvider>> getProviders() {
         final Set<Tuple<String, IProvider>> set = new TreeSet<Tuple<String, IProvider>>(
                 new Comparator<Tuple<String, IProvider>>() {
                     @Override
