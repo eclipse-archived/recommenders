@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.commons.utils;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 public class VersionRange {
 
     public static VersionRange ALL = new VersionRangeBuilder().minInclusive(Version.UNKNOWN)
@@ -124,6 +122,8 @@ public class VersionRange {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        final String lowerBoundCharacter = isMinVersionInclusive() ? "[" : "(";
+        final String upperBoundCharacter = isMaxVersionInclusive() ? "]" : ")";
+        return String.format("%s%s,%s%s", lowerBoundCharacter, getMinVersion(), getMaxVersion(), upperBoundCharacter);
     }
 }

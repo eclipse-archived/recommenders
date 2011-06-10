@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.commons.utils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -95,5 +96,17 @@ public class VersionRangeTest {
         assertFalse(sut.isIncluded(v36));
         assertFalse(sut.isIncluded(v37));
         assertFalse(sut.isIncluded(v38));
+    }
+
+    @Test
+    public void testStringRepresentationInclusiveBounds() {
+        final VersionRange sut = new VersionRangeBuilder().minInclusive(v36).maxInclusive(v38).build();
+        assertEquals("[3.6.0,3.8.0]", sut.toString());
+    }
+
+    @Test
+    public void testStringRepresentationExclusiveBounds() {
+        final VersionRange sut = new VersionRangeBuilder().minExclusive(v36).maxExclusive(v38).build();
+        assertEquals("(3.6.0,3.8.0)", sut.toString());
     }
 }
