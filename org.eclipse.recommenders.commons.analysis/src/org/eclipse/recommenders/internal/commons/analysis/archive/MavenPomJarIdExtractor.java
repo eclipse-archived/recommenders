@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.tools;
+package org.eclipse.recommenders.internal.commons.analysis.archive;
 
 import java.io.InputStream;
 import java.util.Properties;

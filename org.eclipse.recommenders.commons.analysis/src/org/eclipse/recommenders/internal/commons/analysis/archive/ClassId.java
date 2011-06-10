@@ -8,12 +8,12 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.tools;
+package org.eclipse.recommenders.internal.commons.analysis.archive;
 
-import java.util.jar.JarFile;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 
-public interface IExtractor {
+public class ClassId {
 
-    public abstract void extract(JarFile jarFile) throws Exception;
-
+    public ITypeName typeName;
+    public String fingerprint;
 }

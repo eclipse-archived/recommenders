@@ -13,6 +13,7 @@ package org.eclipse.recommenders.tools;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
+import org.eclipse.recommenders.internal.commons.analysis.archive.ArchiveMetaData;
 
 public class StorageService {
 

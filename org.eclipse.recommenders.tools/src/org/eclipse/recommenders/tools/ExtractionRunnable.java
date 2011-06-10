@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.eclipse.recommenders.internal.commons.analysis.archive.ArchiveDetailsExtractor;
 
 public class ExtractionRunnable implements Runnable {
 
@@ -40,7 +41,7 @@ public class ExtractionRunnable implements Runnable {
         try {
             final ArchiveDetailsExtractor extractor = new ArchiveDetailsExtractor(file);
             logger.info(String.format("Extraction from file %s\nName: %s\nVersion: %s\n", file.getName(),
-                    extractor.getName(), extractor.getVersion()));
+                    extractor.extractName(), extractor.extractVersion()));
             storage.store(extractor.getArchiveMetaData());
         } catch (final IOException e) {
             logger.warn("Extraction for file " + file.getName() + " failed.", e);

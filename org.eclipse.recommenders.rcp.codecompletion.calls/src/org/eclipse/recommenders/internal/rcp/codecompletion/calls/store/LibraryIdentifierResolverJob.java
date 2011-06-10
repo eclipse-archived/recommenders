@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import java.io.IOException;
 import java.util.Set;
 
 import org.eclipse.core.resources.WorkspaceJob;
@@ -19,7 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
-import org.eclipse.recommenders.commons.utils.Version;
+import org.eclipse.recommenders.internal.commons.analysis.archive.ArchiveDetailsExtractor;
 
 import com.google.common.collect.Sets;
 
@@ -59,16 +60,17 @@ public class LibraryIdentifierResolverJob extends WorkspaceJob {
     }
 
     private void resolve(final IPackageFragmentRoot packageRoot) {
-        // TODO: This is not a real implementation we want to work with
         if (packageRoot instanceof JarPackageFragmentRoot) {
-            final String name = packageRoot.getPath().lastSegment();
-            if (name.matches("org\\.eclipse\\..+")) {
-                callsModelIndex.setResolved(packageRoot, new LibraryIdentifier("org.eclipse", Version.create(3, 6)));
-                return;
+
+            try {
+                final ArchiveDetailsExtractor extractor = new ArchiveDetailsExtractor(packageRoot.getPath().toFile());
+                final LibraryIdentifier libraryIdentifier = new LibraryIdentifier(extractor.extractName(),
+                        extractor.extractVersion());
+                callsModelIndex.setResolved(packageRoot, libraryIdentifier);
+            } catch (final IOException e) {
+                e.printStackTrace();
             }
         }
-
-        callsModelIndex.setResolved(packageRoot, LibraryIdentifier.UNKNOWN);
     }
 
 }

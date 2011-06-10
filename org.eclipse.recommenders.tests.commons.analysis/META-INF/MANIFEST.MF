@@ -16,4 +16,5 @@ Require-Bundle: org.junit4,
  org.eclipse.recommenders.tests.commons,
  org.apache.commons.collections,
  org.eclipse.swt,
- javax.inject;bundle-version="1.0.0"
+ javax.inject;bundle-version="1.0.0",
+ org.objenesis;bundle-version="1.0.0"
