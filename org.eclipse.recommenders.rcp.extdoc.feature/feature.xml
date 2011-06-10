@@ -28,9 +28,30 @@
    <license url="%licenseURL">
       %license
    </license>
+         
+   <plugin
+         id="org.eclipse.recommenders.commons.selection"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.recommenders.rcp.extdoc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.extdoc.providers"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.server.extdoc"
          download-size="0"
          install-size="0"
          version="0.0.0"
