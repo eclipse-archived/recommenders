@@ -16,7 +16,6 @@ import com.google.inject.Inject;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.recommenders.commons.internal.selection.SelectionPlugin;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
@@ -27,7 +26,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.part.ViewPart;
 
 @SuppressWarnings("restriction")
@@ -45,7 +43,7 @@ public final class ExtDocView extends ViewPart {
     }
 
     public void update(final IJavaElementSelection context) {
-        if (context != null) {
+        if (context != null && table != null) {
             for (final TableItem item : table.getItems()) {
                 if (item.getChecked()) {
                     final Control providerControl = (Control) item.getData();
@@ -65,9 +63,6 @@ public final class ExtDocView extends ViewPart {
 
         addProviders();
         fillActionBars();
-
-        final IWorkbenchPage page = getSite().getPage();
-        SelectionPlugin.triggerUpdate(page.getActivePart(), page.getSelection());
     }
 
     private void addProviders() {
@@ -84,7 +79,7 @@ public final class ExtDocView extends ViewPart {
         Preconditions.checkArgument(providersComposite.setFocus());
     }
 
-    protected void fillActionBars() {
+    private void fillActionBars() {
         final IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
         toolbar.removeAll();
         toolbar.add(new FeedbackAction());

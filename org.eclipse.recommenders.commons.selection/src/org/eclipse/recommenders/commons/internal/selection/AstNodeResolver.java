@@ -20,7 +20,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 /**
  * Resolves the active java element's AST node for an invocation context.
  */
-public final class AstNodeResolver {
+final class AstNodeResolver {
 
     private static final ASTParser PARSER = ASTParser.newParser(AST.JLS3);
 
@@ -36,7 +36,7 @@ public final class AstNodeResolver {
      *            location information.
      * @return The AST node for the active java element.
      */
-    public static ASTNode resolveNode(final JavaContentAssistInvocationContext invocationContext) {
+    protected static ASTNode resolveNode(final JavaContentAssistInvocationContext invocationContext) {
         if (invocationContext == null) {
             return null;
         }

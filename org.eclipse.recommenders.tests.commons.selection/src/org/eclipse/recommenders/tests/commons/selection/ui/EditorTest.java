@@ -92,16 +92,16 @@ public final class EditorTest extends AbstractUiTest {
         final String[] parts = annotation.substring(3, annotation.length() - 3).split(" \\| ");
 
         SelectionPlugin.triggerUpdate(new TextSelection(offset + index, 0));
-        final IJavaElementSelection context = getLastSelection();
-        final IJavaElement javaElement = context.getJavaElement();
+        final IJavaElementSelection selection = getLastSelection();
+        final IJavaElement javaElement = selection.getJavaElement();
 
         final Class expectedType = TYPES.get(parts[0]);
         Assert.assertEquals(annotation, expectedType, javaElement == null ? null : javaElement.getClass());
-        Assert.assertEquals(annotation, parts[1], context.getElementLocation().name());
+        Assert.assertEquals(annotation, parts[1], selection.getElementLocation().name());
         Assert.assertEquals(annotation, parts[2],
-                ASTNode.nodeClassForType(context.getAstNode().getParent().getNodeType()).getSimpleName());
+                ASTNode.nodeClassForType(selection.getAstNode().getParent().getNodeType()).getSimpleName());
 
-        final JavaContentAssistInvocationContext invocationContext = context.getInvocationContext();
+        final JavaContentAssistInvocationContext invocationContext = selection.getInvocationContext();
         Assert.assertNotNull(invocationContext.getCompilationUnit());
 
         if (javaElement != null && !expectedType.equals(SourceType.class) && !expectedType.equals(LocalVariable.class)) {

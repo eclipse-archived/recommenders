@@ -20,7 +20,7 @@ public final class WikiServerTest {
     }
 
     @Test
-    public void testWikiServer() {
+    public void testWikiServer() throws InterruptedException {
         final String oldDocument = server.getText(element);
         final String write = TESTINPUT.substring(0, (int) (Math.random() * TESTINPUT.length())) + "...";
         server.setText(element, write);
@@ -28,9 +28,5 @@ public final class WikiServerTest {
 
         Assert.assertEquals(write, document);
         Assert.assertNotSame(oldDocument, document);
-
-        Server.setDatabase(new CouchDB(null, null));
-        final String offlineDoc = server.getText(element);
-        Assert.assertNotNull(offlineDoc);
     }
 }

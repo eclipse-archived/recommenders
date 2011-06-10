@@ -10,33 +10,24 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public final class Server {
 
-    private static CouchDB database = new CouchDB("localhost", "extdoc");
-    private static final CouchDBCache CACHE = new CouchDBCache();
+    // TODO: Temporary fix for demo and tests. Will be replaced with CouchDB
+    // client.
+    private static final Map<String, Map<String, Object>> CACHE = new HashMap<String, Map<String, Object>>();
 
     private Server() {
     }
 
     public static Map<String, Object> getDocument(final String docId) {
-        return CACHE.getDocument(docId);
+        return CACHE.get(docId);
     }
 
     public static void storeOrUpdateDocument(final String docId, final Map<String, Object> attributes) {
-        CACHE.storeOrUpdateDocument(docId, attributes);
-        // TODO: Put in a better spot later.
-        synchronize();
-    }
-
-    private static void synchronize() {
-        CACHE.synchronize(database);
-    }
-
-    public static void setDatabase(final CouchDB database) {
-        Server.database = database;
-        CACHE.clear();
+        CACHE.put(docId, attributes);
     }
 
 }

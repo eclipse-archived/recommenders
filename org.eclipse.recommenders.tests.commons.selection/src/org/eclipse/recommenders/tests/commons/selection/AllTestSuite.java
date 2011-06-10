@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.tests.commons.selection;
 
+import org.eclipse.recommenders.commons.internal.selection.UnitTestSuite;
 import org.eclipse.recommenders.tests.commons.selection.ui.UiTestSuite;
-import org.eclipse.recommenders.tests.commons.selection.unit.UnitTestSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

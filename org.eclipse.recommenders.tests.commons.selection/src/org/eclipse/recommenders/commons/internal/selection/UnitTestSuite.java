@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.commons.selection.unit;
+package org.eclipse.recommenders.commons.internal.selection;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

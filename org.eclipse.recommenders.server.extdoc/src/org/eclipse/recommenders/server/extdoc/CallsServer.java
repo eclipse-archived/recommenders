@@ -12,7 +12,7 @@ package org.eclipse.recommenders.server.extdoc;
 
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 
-public class CallsServer implements IStarsRatingsServer {
+public final class CallsServer implements IStarsRatingsServer {
 
     @Override
     public int getAverageRating(final Object object) {

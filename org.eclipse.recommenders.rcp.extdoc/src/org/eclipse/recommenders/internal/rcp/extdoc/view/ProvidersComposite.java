@@ -19,9 +19,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-public class ProvidersComposite extends Composite {
+class ProvidersComposite extends Composite {
 
-    public ProvidersComposite(final Composite parent, final int style) {
+    protected ProvidersComposite(final Composite parent, final int style) {
         super(parent, style);
         setLayout();
         setBackground(parent.getShell().getDisplay());

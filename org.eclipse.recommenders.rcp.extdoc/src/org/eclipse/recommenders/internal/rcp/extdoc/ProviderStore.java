@@ -54,8 +54,4 @@ public final class ProviderStore {
         return set;
     }
 
-    protected IProvider getProvider(final String name) {
-        return providers.get(name);
-    }
-
 }

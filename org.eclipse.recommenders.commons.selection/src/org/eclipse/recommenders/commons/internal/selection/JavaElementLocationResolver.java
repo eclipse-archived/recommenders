@@ -24,7 +24,7 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
  * Resolves a Java element's code location type from an AST.
  */
 @SuppressWarnings("restriction")
-public final class JavaElementLocationResolver {
+final class JavaElementLocationResolver {
 
     private static Set<Integer> ignoredNodeTypes = new HashSet<Integer>();
     static {
@@ -53,8 +53,8 @@ public final class JavaElementLocationResolver {
      *            AST node representing the selected java element.
      * @return The code location of the element represented by the AST node.
      */
-    public static JavaElementLocation resolveLocation(final IJavaElement javaElement, final ASTNode astNode) {
-        if (astNode == null || javaElement == null) {
+    protected static JavaElementLocation resolveLocation(final IJavaElement javaElement, final ASTNode astNode) {
+        if (astNode == null) {
             return null;
         }
         final int locationNodeType = getLocationNodeType(astNode);

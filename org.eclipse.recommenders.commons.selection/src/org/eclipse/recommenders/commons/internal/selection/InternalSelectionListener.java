@@ -42,21 +42,16 @@ final class InternalSelectionListener implements ISelectionListener {
             lastSelection = selection;
 
             final IJavaElementSelection elementSelection = JavaElementSelectionResolver.resolve(part, selection);
-            notifyListeners(elementSelection, part);
+            notifyListeners(elementSelection);
         }
     }
 
     /**
      * @param selection
      *            Information about the selection Java element.
-     * @param part
-     *            The workbench part in which the selection took place.
      */
-    private void notifyListeners(final IJavaElementSelection selection, final IWorkbenchPart part) {
+    private void notifyListeners(final IJavaElementSelection selection) {
         if (selection != null) {
-            if (!SelectionPlugin.isStarted()) {
-                SelectionPlugin.loadListeners(part.getSite().getPage());
-            }
             for (final IExtendedSelectionListener listener : externalListeners) {
                 listener.update(selection);
             }

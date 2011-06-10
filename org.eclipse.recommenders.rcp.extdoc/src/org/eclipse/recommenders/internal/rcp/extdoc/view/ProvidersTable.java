@@ -31,12 +31,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-public final class ProvidersTable {
+final class ProvidersTable {
 
     private static Table table;
     private static TableItem dragSourceItem;
 
-    public ProvidersTable(final Composite parent, final int style) {
+    protected ProvidersTable(final Composite parent, final int style) {
         table = new Table(parent, style);
         table.addListener(SWT.Selection, new Listener() {
             @Override

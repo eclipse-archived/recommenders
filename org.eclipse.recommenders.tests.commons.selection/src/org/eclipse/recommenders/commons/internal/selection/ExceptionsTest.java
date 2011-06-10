@@ -8,11 +8,11 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.commons.selection.unit;
+package org.eclipse.recommenders.commons.internal.selection;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.recommenders.commons.internal.selection.JavaElementLocationResolver;
+import org.junit.Assert;
 import org.junit.Test;
 
 public final class ExceptionsTest {
@@ -21,6 +21,7 @@ public final class ExceptionsTest {
     public void testJavaElementLocationResolver() {
         final ASTNode node = AST.newAST(AST.JLS3).createInstance(ASTNode.ANNOTATION_TYPE_DECLARATION);
         JavaElementLocationResolver.resolveLocation(null, node);
+        Assert.assertTrue(false);
     }
 
 }

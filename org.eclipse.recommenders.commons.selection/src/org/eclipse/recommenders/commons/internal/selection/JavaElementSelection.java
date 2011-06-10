@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.selection;
+package org.eclipse.recommenders.commons.internal.selection;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
@@ -18,8 +18,8 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.commons.internal.selection.AstNodeResolver;
-import org.eclipse.recommenders.commons.internal.selection.JavaElementLocationResolver;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
 
@@ -28,7 +28,7 @@ import org.eclipse.recommenders.commons.utils.annotations.Testing;
  * element in the perspective (e.g. Editor, Package Explorer, Outline, ...).
  */
 @SuppressWarnings("restriction")
-public final class JavaElementSelection implements IJavaElementSelection {
+final class JavaElementSelection implements IJavaElementSelection {
 
     private final IJavaElement javaElement;
     private final int invocationOffset;
@@ -42,7 +42,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
      * @param javaElement
      *            The selected Java element.
      */
-    public JavaElementSelection(final IJavaElement javaElement) {
+    protected JavaElementSelection(final IJavaElement javaElement) {
         this.javaElement = javaElement;
         invocationOffset = -1;
     }
@@ -55,7 +55,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
      * @param editor
      *            The Java editor in which the selection took place.
      */
-    public JavaElementSelection(final IJavaElement javaElement, final int invocationOffset, final JavaEditor editor) {
+    protected JavaElementSelection(final IJavaElement javaElement, final int invocationOffset, final JavaEditor editor) {
         this.javaElement = javaElement;
         this.invocationOffset = invocationOffset;
         this.editor = Checks.ensureIsNotNull(editor);

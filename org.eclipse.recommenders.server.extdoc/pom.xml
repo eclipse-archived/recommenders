@@ -4,8 +4,9 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
-		<artifactId>org.eclipse.recommenders.parent</artifactId>
+		<artifactId>org.eclipse.recommenders.extdoc.parent</artifactId>
 		<version>0.2.0-SNAPSHOT</version>
+		<relativePath>../org.eclipse.recommenders.rcp.extdoc.parent</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>

@@ -13,7 +13,10 @@ package org.eclipse.recommenders.commons.internal.selection;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
@@ -23,6 +26,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.progress.WorkbenchJob;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -39,15 +43,13 @@ public final class SelectionPlugin extends AbstractUIPlugin {
     public void start(final BundleContext context) throws Exception {
         super.start(context);
 
-        workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        if (workbenchWindow == null) {
-            // Workaround for SWTBot. Should be fixed later.
-            workbenchWindow = PlatformUI.getWorkbench().getWorkbenchWindows()[0];
-        }
-
-        SelectionPlugin.internalListener = new InternalSelectionListener();
-        SelectionPlugin.partListener = new PartListener(new CursorListener(internalListener, workbenchWindow));
-        workbenchWindow.getSelectionService().addSelectionListener(internalListener);
+        new WorkbenchJob("Register Selection Listeners") {
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                start();
+                return Status.OK_STATUS;
+            }
+        }.schedule();
     }
 
     @Override
@@ -65,23 +67,21 @@ public final class SelectionPlugin extends AbstractUIPlugin {
         partListener = null;
     }
 
-    /**
-     * @return True, if the listeners are installed.
-     */
-    protected static boolean isStarted() {
-        return page != null;
-    }
+    private static void start() {
+        workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 
-    /**
-     * @param page
-     *            The active workbench page to which the internal listeners are
-     *            registered to.
-     */
-    protected static void loadListeners(final IWorkbenchPage page) {
-        SelectionPlugin.page = page;
+        SelectionPlugin.internalListener = new InternalSelectionListener();
+        SelectionPlugin.partListener = new PartListener(new CursorListener(internalListener, workbenchWindow));
+        workbenchWindow.getSelectionService().addSelectionListener(internalListener);
+
+        SelectionPlugin.page = workbenchWindow.getActivePage();
         addListenersForExistentEditors(page);
         page.addPartListener(partListener);
         loadExternalListeners();
+
+        if (page.getSelection() != null) {
+            internalListener.update(page.getActivePart(), page.getSelection());
+        }
     }
 
     /**
@@ -114,16 +114,6 @@ public final class SelectionPlugin extends AbstractUIPlugin {
                 throw new IllegalStateException(e);
             }
         }
-    }
-
-    /**
-     * @param part
-     *            The workbench part which shall "fake" a selection event.
-     * @param selection
-     *            The selection event which shall be "faked".
-     */
-    public static void triggerUpdate(final IWorkbenchPart part, final ISelection selection) {
-        internalListener.update(part, selection);
     }
 
     /**
