@@ -55,15 +55,15 @@ public final class SelectionPlugin extends AbstractUIPlugin {
     @Override
     public void stop(final BundleContext context) throws Exception {
         super.stop(context);
-        workbenchWindow.getSelectionService().removeSelectionListener(internalListener);
-        workbenchWindow = null;
-        internalListener = null;
-
+        if (workbenchWindow != null && workbenchWindow.getSelectionService() != null) {
+            workbenchWindow.getSelectionService().removeSelectionListener(internalListener);
+            workbenchWindow = null;
+        }
         if (page != null) {
             page.removePartListener(partListener);
             page = null;
         }
-
+        internalListener = null;
         partListener = null;
     }
 
