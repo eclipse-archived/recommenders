@@ -33,5 +33,4 @@ Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
    org.eclipse.recommenders.rcp.extdoc,
    org.eclipse.swt.widgets,
    org.eclipse.jface.dialogs"
-Bundle-ClassPath: .,
- swing2swt.jar
+Bundle-ClassPath: .
