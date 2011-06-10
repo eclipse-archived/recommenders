@@ -7,4 +7,6 @@ Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.rcp.analysis
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4;bundle-version="4.8.1",
- org.apache.commons.io;bundle-version="1.4.0"
+ org.apache.commons.io;bundle-version="1.4.0",
+ org.mockito;bundle-version="1.8.5",
+ org.objenesis;bundle-version="1.0.0"

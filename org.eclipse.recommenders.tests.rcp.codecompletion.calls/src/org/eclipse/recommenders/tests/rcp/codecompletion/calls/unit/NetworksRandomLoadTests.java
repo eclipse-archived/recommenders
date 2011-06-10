@@ -62,7 +62,7 @@ public class NetworksRandomLoadTests {
                 model.updateBeliefs();
                 model.getRecommendedMethodCalls(0.0);
             } catch (final Exception e) {
-                throwUnhandledException("error during setting null values tests in model " + type, e);
+                throwUnhandledException(e, "error during setting null values tests in model " + type);
             }
         }
 
@@ -82,7 +82,7 @@ public class NetworksRandomLoadTests {
                 testRandomlyObserveContextsAndPatterns(model);
                 testObserveAllMethodCallsOneByOne(model);
             } catch (final Exception e) {
-                throwUnhandledException("error during RANDOM tests in model " + type, e);
+                throwUnhandledException(e, "error during RANDOM tests in model " + type);
             }
         }
     }

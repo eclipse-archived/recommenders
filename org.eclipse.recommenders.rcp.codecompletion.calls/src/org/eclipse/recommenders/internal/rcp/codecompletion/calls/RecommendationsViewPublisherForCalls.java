@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 
 import org.apache.commons.math.util.MathUtils;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -20,6 +21,8 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Compilati
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacade;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.eclipse.recommenders.rcp.IRecommendation;
 
@@ -29,8 +32,6 @@ import com.google.inject.Inject;
 public class RecommendationsViewPublisherForCalls implements IRecommendationsViewContentProvider {
 
     private static final double MIN_PROBABILITY_THRESHOLD = 0.30d;
-
-    private final ICallsModelStore modelsStore;
 
     private Multimap<Object, IRecommendation> recommendations;
 
@@ -42,15 +43,19 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
 
     private IObjectMethodCallsNet model;
 
-    @Inject
-    public RecommendationsViewPublisherForCalls(final ICallsModelStore modelsStore) {
+    private final ProjectServices projectServices;
 
-        this.modelsStore = modelsStore;
+    private ICompilationUnit jdtCompilationUnit;
+
+    @Inject
+    public RecommendationsViewPublisherForCalls(final ProjectServices projectServices) {
+        this.projectServices = projectServices;
     }
 
     @Override
     public synchronized void attachRecommendations(final ICompilationUnit jdtCompilationUnit,
             final CompilationUnit recCompilationUnit, final Multimap<Object, IRecommendation> recommendations) {
+        this.jdtCompilationUnit = jdtCompilationUnit;
         this.compilationUnit = recCompilationUnit;
         this.recommendations = recommendations;
         computeRecommendations();
@@ -79,8 +84,10 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
     }
 
     private boolean findModel(final ITypeName type) {
-        if (modelsStore.hasModel(type)) {
-            model = modelsStore.getModel(type);
+        final IJavaProject javaProject = jdtCompilationUnit.getJavaProject();
+        final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+        if (modelFacade.hasModel(type)) {
+            model = modelFacade.getModel(type);
         }
         return model != null;
     }

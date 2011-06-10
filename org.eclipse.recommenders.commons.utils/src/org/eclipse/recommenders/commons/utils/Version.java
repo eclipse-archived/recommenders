@@ -18,7 +18,8 @@ import org.eclipse.recommenders.commons.utils.parser.OsgiVersionParser;
 
 public class Version implements Comparable<Version> {
 
-    public static final Version UNKNOWN = create(0, 0, 0);
+    public static final Version ZERO = create(0, 0, 0);
+    public static final Version UNKNOWN = create(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
     public static final Version LATEST = create(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     public static Version create(final int major, final int minor, final int micro, final String qualifier) {
@@ -54,16 +55,16 @@ public class Version implements Comparable<Version> {
 
     public int micro;
 
-    public String qualifier;
+    public String qualifier = "";
 
     @Override
     public int compareTo(final Version v) {
         if (major != v.major) {
-            return major - v.major;
+            return new Integer(major).compareTo(v.major);
         } else if (minor != v.minor) {
-            return minor - v.minor;
+            return new Integer(minor).compareTo(v.minor);
         } else if (micro != v.micro) {
-            return micro - v.micro;
+            return new Integer(micro).compareTo(v.micro);
         } else {
             return qualifier.compareTo(v.qualifier);
         }

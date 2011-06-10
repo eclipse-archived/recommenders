@@ -20,6 +20,7 @@ import java.util.SortedSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
@@ -34,6 +35,8 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacade;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.rcp.codecompletion.CompletionProposalDecorator;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
@@ -48,8 +51,6 @@ import com.google.inject.Provider;
 public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
     private static final double MIN_PROBABILITY_THRESHOLD = 0.1d;
     private Set<Class<?>> supportedCompletionRequests;
-
-    private final ICallsModelStore modelsStore;
 
     private IIntelligentCompletionContext ctx;
 
@@ -70,12 +71,13 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private IMethodName firstMethodDeclaration;
 
     private final IntelligentCompletionContextResolver contextResolver;
+    private final ProjectServices projectServices;
 
     @Inject
-    public CallsCompletionProposalComputer(final ICallsModelStore modelsStore,
+    public CallsCompletionProposalComputer(final ProjectServices projectServices,
             final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
             final IntelligentCompletionContextResolver contextResolver) {
-        this.modelsStore = modelsStore;
+        this.projectServices = projectServices;
         this.usageResolversProvider = usageResolversProvider;
         this.contextResolver = contextResolver;
         initializeSuportedCompletionRequests();
@@ -148,8 +150,11 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean findModel() {
-        if (modelsStore.hasModel(receiverType)) {
-            model = modelsStore.getModel(receiverType);
+        final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
+        final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+
+        if (modelFacade.hasModel(receiverType)) {
+            model = modelFacade.getModel(receiverType);
         }
         return model != null;
     }

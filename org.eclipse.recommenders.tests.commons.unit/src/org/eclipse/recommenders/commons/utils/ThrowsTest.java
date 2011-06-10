@@ -45,7 +45,7 @@ public class ThrowsTest {
     @Test
     public void testThrowUnhandledExceptionStringException() {
         try {
-            Throws.throwUnhandledException(expectedMessage, expectedException);
+            Throws.throwUnhandledException(expectedException, expectedMessage);
             fail();
         } catch (Exception e) {
             Throwable cause = e.getCause();

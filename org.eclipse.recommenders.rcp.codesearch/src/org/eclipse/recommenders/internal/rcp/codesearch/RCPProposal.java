@@ -120,7 +120,7 @@ public class RCPProposal {
             return uri.toURL();
         } catch (final MalformedURLException e) {
             throw throwUnhandledException(
-                    "Source URL mapping failed for some internal reasons. Please report this error", e);
+                    e, "Source URL mapping failed for some internal reasons. Please report this error");
         }
     }
 

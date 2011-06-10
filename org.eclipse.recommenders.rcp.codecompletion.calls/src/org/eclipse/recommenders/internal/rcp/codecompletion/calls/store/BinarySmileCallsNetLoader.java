@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.calls.db;
+package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -18,7 +18,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayes.SmileNetWrapper;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 
-public class BinaryModelLoader {
+public class BinarySmileCallsNetLoader {
 
     public IObjectMethodCallsNet load(final ITypeName name, final InputStream inputStream) {
         try {

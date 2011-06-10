@@ -78,6 +78,7 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
         bindClasspathStore();
         bindClasspathAnalyzers();
         bindCompilationUnitAnalyzers();
+        bindProjectLifeCycleService();
     }
 
     private void bindCompilationUnitAnalyzers() {
@@ -180,6 +181,11 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
         // name finder
         final Multibinder<INameFinder> nameFinderBinder = Multibinder.newSetBinder(binder(), INameFinder.class);
         nameFinderBinder.addBinding().to(BundleManifestSymbolicNameFinder.class).in(Scopes.SINGLETON);
+    }
+
+    private void bindProjectLifeCycleService() {
+        bind(RecommendersProjectLifeCycleService.class).asEagerSingleton();
+        Multibinder.newSetBinder(binder(), IRecommendersProjectLifeCycleListener.class);
     }
 
     @Provides

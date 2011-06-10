@@ -14,7 +14,9 @@ import java.io.File;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.db.CallsModelArchiveStore;
+import org.eclipse.recommenders.internal.rcp.analysis.IRecommendersProjectLifeCycleListener;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelIndex;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.osgi.framework.FrameworkUtil;
 
@@ -24,14 +26,23 @@ import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 
 public class CallsCompletionModule extends AbstractModule {
+
     @Override
     protected void configure() {
+        configureProjectServices();
         configureArchiveModelStore();
         configureRecommendationsViewPublisher();
     }
 
+    private void configureProjectServices() {
+        bind(ProjectServices.class).in(Scopes.SINGLETON);
+        final Multibinder<IRecommendersProjectLifeCycleListener> multibinder = Multibinder.newSetBinder(binder(),
+                IRecommendersProjectLifeCycleListener.class);
+        multibinder.addBinding().to(ProjectServices.class);
+    }
+
     private void configureArchiveModelStore() {
-        bind(ICallsModelStore.class).to(CallsModelArchiveStore.class).in(Scopes.SINGLETON);
+        bind(CallsModelIndex.class).in(Scopes.SINGLETON);
 
         final IPath stateLocation = Platform.getStateLocation(FrameworkUtil.getBundle(getClass()));
         bind(File.class).annotatedWith(Names.named("calls.store.location")).toInstance(stateLocation.toFile());

@@ -22,6 +22,8 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
@@ -330,6 +332,14 @@ public class JdtUtils {
 
     public static <T> T unsafeFirstElement(final ISelection s) {
         return (T) asStructuredSelection(s).getFirstElement();
+    }
+
+    public static IPackageFragmentRoot getPackageFragmentRoot(final IPackageFragment packageFragment) {
+        IJavaElement currentElement = packageFragment;
+        while (!(currentElement instanceof IPackageFragmentRoot)) {
+            currentElement = currentElement.getParent();
+        }
+        return (IPackageFragmentRoot) currentElement;
     }
 
 }

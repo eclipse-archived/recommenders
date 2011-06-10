@@ -89,4 +89,10 @@ public class VersionTest {
         assertTrue(v1.compareTo(v2) < 0);
         assertTrue(v2.compareTo(v1) > 0);
     }
+
+    @Test
+    public void testCompareUnknownLatest() {
+        assertTrue(Version.UNKNOWN.compareTo(Version.LATEST) < 0);
+        assertTrue(Version.LATEST.compareTo(Version.UNKNOWN) > 0);
+    }
 }

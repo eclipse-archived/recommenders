@@ -47,8 +47,10 @@ public class Throws {
         throw new IllegalStateException(e);
     }
 
-    public static IllegalStateException throwUnhandledException(final String msg, final Exception cause) {
-        throw new IllegalStateException(msg, cause);
+    public static IllegalStateException throwUnhandledException(final Exception cause, final String msg,
+            final Object... args) {
+        final String formattedMessage = format(msg, args);
+        throw new IllegalStateException(formattedMessage, cause);
     }
 
     public static IllegalStateException throwUnreachable() {

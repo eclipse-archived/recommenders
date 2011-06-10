@@ -8,17 +8,13 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.calls.db;
+package org.eclipse.recommenders.internal.rcp.analysis;
 
-import java.util.List;
+import org.eclipse.jdt.core.IJavaProject;
 
-import org.eclipse.recommenders.commons.utils.Version;
+public interface IRecommendersProjectLifeCycleListener {
 
-public interface IModelArchiveStore {
+    void projectOpened(IJavaProject project);
 
-    Manifest getManifest(String name, Version version);
-
-    List<Manifest> getAllManifests();
-
-    boolean offer(ModelArchive archive);
+    void projectClosed(IJavaProject project);
 }

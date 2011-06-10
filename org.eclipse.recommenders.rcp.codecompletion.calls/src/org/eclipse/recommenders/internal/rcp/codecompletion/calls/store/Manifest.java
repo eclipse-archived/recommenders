@@ -8,24 +8,27 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.calls.db;
+package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
 import java.util.Date;
 
-import org.eclipse.recommenders.commons.utils.Version;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.eclipse.recommenders.commons.utils.VersionRange;
 
 public class Manifest {
 
+    public static Manifest NULL = new Manifest("", VersionRange.ALL, new Date(0));
+
     private String name;
-    private Version version;
+    private VersionRange versionRange;
     private Date timestamp;
 
     protected Manifest() {
     }
 
-    public Manifest(final String name, final Version version, final Date timestamp) {
+    public Manifest(final String name, final VersionRange version, final Date timestamp) {
         this.name = name;
-        this.version = version;
+        this.versionRange = version;
         this.timestamp = timestamp;
     }
 
@@ -37,7 +40,12 @@ public class Manifest {
         return timestamp;
     }
 
-    public Version getVersion() {
-        return version;
+    public VersionRange getVersionRange() {
+        return versionRange;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }
