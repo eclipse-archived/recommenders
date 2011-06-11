@@ -99,7 +99,7 @@ final class JavaElementSelection implements IJavaElementSelection {
     @Override
     public String toString() {
         final ToStringHelper string = Objects.toStringHelper(this).add("\n\nJavaElementClass",
-                javaElement == null ? null : javaElement.getClass());
+                javaElement == null ? null : (javaElement.getClass()+" / "+javaElement.getHandleIdentifier()));
         string.add("\nElementLocation", getElementLocation());
         if (getAstNode() != null) {
             final ASTNode astNode = getAstNode();

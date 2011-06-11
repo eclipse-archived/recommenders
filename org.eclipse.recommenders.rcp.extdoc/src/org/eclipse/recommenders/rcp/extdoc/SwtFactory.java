@@ -10,10 +10,11 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
@@ -26,7 +27,15 @@ import org.eclipse.swt.widgets.Text;
 
 public final class SwtFactory {
 
-    private static final Map<String, Font> FONTS = new HashMap<String, Font>();
+    private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
+    private static final Font CODEFONT;
+    private static final Color BLUECOLOR = new Color(Display.getCurrent(), 0, 0, 255);
+
+    static {
+        final FontData fontData = JFaceResources.getFontRegistry().get(JFaceResources.TEXT_FONT).getFontData()[0];
+        fontData.setHeight(BOLDFONT.getFontData()[0].getHeight());
+        CODEFONT = new Font(Display.getCurrent(), fontData);
+    }
 
     private SwtFactory() {
     }
@@ -49,11 +58,17 @@ public final class SwtFactory {
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     }
 
-    public static Label createLabel(final Composite parent, final String text, final boolean bold) {
+    public static Label createLabel(final Composite parent, final String text, final boolean bold, final boolean blue,
+            final boolean code) {
         final Label label = new Label(parent, SWT.NONE);
         label.setText(text);
-        if (bold) {
-            label.setFont(getFont("Segoe UI", 9, SWT.BOLD, false, false));
+        if (code) {
+            label.setFont(CODEFONT);
+        } else if (bold) {
+            label.setFont(BOLDFONT);
+        }
+        if (blue) {
+            label.setForeground(BLUECOLOR);
         }
         return label;
     }
@@ -75,19 +90,23 @@ public final class SwtFactory {
         return button;
     }
 
-    /**
-     * Borrowed from WindowBuilder.
-     */
-    private static Font getFont(final String name, final int size, final int style, final boolean strikeout,
-            final boolean underline) {
-        final String fontName = name + '|' + size + '|' + style + '|' + strikeout + '|' + underline;
-        Font font = FONTS.get(fontName);
-        if (font == null) {
-            final FontData fontData = new FontData(name, size, style);
-            font = new Font(Display.getCurrent(), fontData);
-            FONTS.put(fontName, font);
+    public static void createStyleRange(final StyledText styledText, final int start, final int length,
+            final int fontStyle, final boolean makeBlue, final boolean makeCodeFont) {
+        final StyleRange styleRange = new StyleRange();
+        styleRange.start = start;
+        styleRange.length = length;
+        styleRange.fontStyle = fontStyle;
+        if (makeBlue) {
+            styleRange.foreground = BLUECOLOR;
         }
-        return font;
+        if (makeCodeFont) {
+            styleRange.font = CODEFONT;
+        }
+        styledText.setStyleRange(styleRange);
+    }
+
+    public static Label createSquare(final Composite parent) {
+        return createLabel(parent, "▪", true, false, false);
     }
 
 }

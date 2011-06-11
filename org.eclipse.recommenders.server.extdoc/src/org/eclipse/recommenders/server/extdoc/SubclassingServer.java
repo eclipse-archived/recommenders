@@ -10,25 +10,14 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 
-public final class SubclassingServer implements IStarsRatingsServer {
-
-    @Override
-    public int getAverageRating(final Object object) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+public final class SubclassingServer extends AbstractRatingsServer {
 
     @Override
-    public int getUserRating(final Object object) {
+    protected String getDocumentId(final Object object) {
         // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public void addRating(final Object object, final int stars) {
-        // TODO Auto-generated method stub
+        return null;
     }
 
 }

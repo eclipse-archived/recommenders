@@ -15,54 +15,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
 import org.eclipse.recommenders.rcp.extdoc.features.Comment;
 import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
-import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 
-public final class WikiServer implements IStarsRatingsServer, ICommentsServer {
-
-    private static final String STARSSUM = "starsSum";
-    private static final String STARSCOUNT = "starsCount";
-
-    private final Map<Object, Integer> userRatings = new HashMap<Object, Integer>();
+public final class WikiServer extends AbstractRatingsServer implements ICommentsServer {
 
     public String getText(final IJavaElement javaElement) {
-        final Map<String, Object> document = Server.getDocument(getId(javaElement));
+        final Map<String, Object> document = Server.getDocument(getDocumentId(javaElement));
         return document == null ? null : (String) document.get("text");
     }
 
     public void setText(final IJavaElement javaElement, final String text) {
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put("text", text);
-        Server.storeOrUpdateDocument(getId(javaElement), map);
-    }
-
-    @Override
-    public int getAverageRating(final Object object) {
-        final Map<String, Object> document = Server.getDocument(getId((IJavaElement) object));
-        final int starsCount = document == null ? 0 : getStarsCount(document);
-        return starsCount == 0 ? 0 : getStarsSum(document) / starsCount;
-    }
-
-    @Override
-    public int getUserRating(final Object object) {
-        return userRatings.containsKey(object) ? userRatings.get(object) : -1;
-    }
-
-    @Override
-    public void addRating(final Object object, final int stars) {
-        final String documentId = getId((IJavaElement) object);
-        Map<String, Object> document = Server.getDocument(documentId);
-
-        if (document == null) {
-            document = new HashMap<String, Object>();
-        }
-        document.put(STARSCOUNT, getStarsCount(document) + 1);
-        document.put(STARSSUM, getStarsSum(document) + stars);
-
-        Server.storeOrUpdateDocument(documentId, document);
-        userRatings.put(object, stars);
+        Server.storeOrUpdateDocument(getDocumentId(javaElement), map);
     }
 
     @Override
@@ -76,20 +44,11 @@ public final class WikiServer implements IStarsRatingsServer, ICommentsServer {
         // TODO Auto-generated method stub
     }
 
-    private String getId(final IJavaElement javaElement) {
+    @Override
+    protected String getDocumentId(final Object object) {
         return "wiki_"
-                + javaElement.getHandleIdentifier().replace("/", "").replace("\\", "").replace("<", "_")
+                + ((IJavaElement) object).getHandleIdentifier().replace("/", "").replace("\\", "").replace("<", "_")
                         .replace("~", "-");
-    }
-
-    private int getStarsCount(final Map<String, Object> document) {
-        final Object object = document.get(STARSCOUNT);
-        return object == null ? 0 : Integer.parseInt(String.valueOf(object));
-    }
-
-    private int getStarsSum(final Map<String, Object> document) {
-        final Object object = document.get(STARSSUM);
-        return object == null ? 0 : Integer.parseInt(String.valueOf(object));
     }
 
 }

@@ -40,9 +40,8 @@ public final class ExtDocPlugin extends AbstractUIPlugin {
         return plugin.getBundle().getEntry(uri);
     }
 
-    public static Image getImage(final String path) {
-        return AbstractUIPlugin.imageDescriptorFromPlugin(plugin.getBundle().getSymbolicName(), "icons/full/" + path)
-                .createImage();
+    public static Image getIcon(final String uri) {
+        return imageDescriptorFromPlugin(plugin.getBundle().getSymbolicName(), "icons/full/" + uri).createImage();
     }
 
 }

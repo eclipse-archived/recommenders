@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.view;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,8 +22,11 @@ import org.eclipse.swt.widgets.Display;
 
 class ProvidersComposite extends Composite {
 
-    protected ProvidersComposite(final Composite parent, final int style) {
+    private final ScrolledComposite scrolledParent;
+
+    protected ProvidersComposite(final ScrolledComposite parent, final int style) {
         super(parent, style);
+        scrolledParent = parent;
         setLayout();
         setBackground(parent.getShell().getDisplay());
     }
@@ -47,6 +51,12 @@ class ProvidersComposite extends Composite {
         }
         setBackground(fBackgroundColor);
         setBackgroundMode(SWT.INHERIT_FORCE);
+    }
+
+    @Override
+    public void layout(final boolean changed) {
+        super.layout(changed);
+        scrolledParent.setMinHeight(computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
     }
 
 }

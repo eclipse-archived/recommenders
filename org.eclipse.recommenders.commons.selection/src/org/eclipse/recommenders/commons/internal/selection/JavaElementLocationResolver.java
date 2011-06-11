@@ -114,7 +114,7 @@ final class JavaElementLocationResolver {
      *         element type.
      */
     private static JavaElementLocation getTypeDeclarationLocation(final IJavaElement javaElement) {
-        if (javaElement instanceof SourceType) {
+        if (javaElement == null || javaElement instanceof SourceType) {
             return JavaElementLocation.TYPE_DECLARATION;
         } else {
             try {

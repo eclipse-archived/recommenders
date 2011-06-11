@@ -12,20 +12,21 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.recommenders.rcp.extdoc.AbstractProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 @SuppressWarnings("restriction")
-public final class JavadocProvider implements IProvider {
+public final class JavadocProvider extends AbstractProvider {
 
     private ExtendedJavadocView javadoc;
 
     @Override
     public Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
         javadoc = new ExtendedJavadocView(parent, partSite);
+        javadoc.getControl().setSize(700, 50);
         return javadoc.getControl();
     }
 

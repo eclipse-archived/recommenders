@@ -11,14 +11,22 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
+import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
-public final class ExamplesProvider extends AbstractBrowserProvider {
+public final class ExamplesProvider extends AbstractProviderComposite {
 
     @Override
-    protected String getHtmlContent(final IJavaElementSelection context) {
+    protected Control createContentControl(final Composite parent) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    protected void updateContent(final IJavaElementSelection selection) {
+        // TODO Auto-generated method stub
+
     }
 
 }

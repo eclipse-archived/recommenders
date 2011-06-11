@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -21,6 +20,7 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -47,19 +47,19 @@ final class ProvidersTable {
                     final GridData gridData = (GridData) control.getLayoutData();
                     gridData.exclude = !tableItem.getChecked();
                     control.setVisible(tableItem.getChecked());
-                    control.getParent().layout(false);
+                    control.getParent().layout(true);
                 }
             }
         });
         enableDragAndDrop();
     }
 
-    protected void addProvider(final Control providerControl, final String text, final String image,
+    protected void addProvider(final Control providerControl, final String text, final Image image,
             final boolean checked) {
         final TableItem tableItem = new TableItem(table, SWT.NONE);
         tableItem.setText(text);
         tableItem.setData(providerControl);
-        tableItem.setImage(ExtDocPlugin.getImage(image));
+        tableItem.setImage(image);
         tableItem.setChecked(true);
     }
 

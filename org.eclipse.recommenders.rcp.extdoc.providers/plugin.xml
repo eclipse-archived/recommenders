@@ -7,49 +7,57 @@
             class="org.eclipse.recommenders.internal.rcp.extdoc.providers.JavadocProvider"
             long_name="Javadoc Provider"
             priority="100"
-            short_name="Javadoc">
+            short_name="Javadoc"
+            icon="icons/full/obj16/javadoc.gif">
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtendedJavadocProvider"
             long_name="Extended Javadoc Provider"
-            priority="50"
-            short_name="ExtendedJavadoc">
+            priority="-50"
+            short_name="ExtendedJavadoc"
+            icon="icons/full/obj16/extended-javadoc.gif">
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider"
             long_name="Wiki Provider"
             priority="20"
-            short_name="WikiDoc">
+            short_name="WikiDoc"
+            icon="icons/full/obj16/wiki.gif">
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.CallsProvider"
             long_name="Method Calls Provider"
             priority="15"
-            short_name="Method Calls">
+            short_name="Method Calls"
+            icon="icons/full/obj16/calls.png">
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.TemplatesProvider"
             long_name="Dynamic Templates Provider"
             priority="10"
-            short_name="Call Templates">
+            short_name="Call Templates"
+            icon="icons/full/obj16/call-templates.gif">
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.SubclassingProvider"
             long_name="Subclassing Directives Provider"
             priority="5"
-            short_name="Subclassing Directives">
+            short_name="Subclassing Directives"
+            icon="icons/full/obj16/subclassing.gif">
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.SubclassingTemplatesProvider"
             long_name="Subclassing Templates Provider"
             priority="2"
-            short_name="Subclassing Templates">
+            short_name="Subclassing Templates"
+            icon="icons/full/obj16/subclassing-patterns.gif">
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.ExamplesProvider"
             long_name="Code Examples Provider"
             priority="1"
-            short_name="Code Examples">
+            short_name="Code Examples"
+            icon="icons/full/obj16/examples.gif">
       </provider>
    </extension>
 </plugin>

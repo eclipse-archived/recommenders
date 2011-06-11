@@ -51,8 +51,8 @@ public final class DeleteDialog extends AbstractDialog {
         final Composite composite = (Composite) super.createDialogArea(parent);
         final Composite area = SwtFactory.createGridComposite(composite, 1, 0, 10, 15, 20);
 
-        SwtFactory.createLabel(area, "Are you sure to delete " + objectName + "?", true);
-        SwtFactory.createLabel(area, "", false);
+        SwtFactory.createLabel(area, "Are you sure to delete " + objectName + "?", true, false, false);
+        SwtFactory.createLabel(area, "", false, false, false);
 
         SwtFactory.createCheck(area, "Do not display this item anymore.", true);
         SwtFactory.createCheck(area, "Send anonymous information about this deletion to provider as feedback.", false);

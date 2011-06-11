@@ -27,3 +27,4 @@ Import-Package: org.eclipse.core.resources,
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
+Bundle-ClassPath: .

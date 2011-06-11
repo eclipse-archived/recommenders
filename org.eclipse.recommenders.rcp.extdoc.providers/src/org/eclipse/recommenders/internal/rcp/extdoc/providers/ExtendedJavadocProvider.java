@@ -15,11 +15,17 @@ import com.google.inject.Inject;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
+import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 
-public final class ExtendedJavadocProvider extends AbstractBrowserProvider {
+public final class ExtendedJavadocProvider extends AbstractProviderComposite {
 
     private static final String SEPARATOR = System.getProperty("line.separator");
+
+    private Label label;
     private final IntelligentCompletionContextResolver contextResolver;
 
     @Inject
@@ -28,7 +34,13 @@ public final class ExtendedJavadocProvider extends AbstractBrowserProvider {
     }
 
     @Override
-    public String getHtmlContent(final IJavaElementSelection context) {
+    protected Control createContentControl(final Composite parent) {
+        label = new Label(parent, SWT.NONE);
+        return label;
+    }
+
+    @Override
+    public void updateContent(final IJavaElementSelection context) {
         final StringBuilder builder = new StringBuilder(128);
         IIntelligentCompletionContext completionContext = null;
 
@@ -39,6 +51,6 @@ public final class ExtendedJavadocProvider extends AbstractBrowserProvider {
         builder.append(String.format("%s%s%s%s", SEPARATOR, context, SEPARATOR, SEPARATOR));
         builder.append(completionContext);
 
-        return builder.toString().replaceAll("\r?\n", "<br/>");
+        label.setText(builder.toString());
     }
 }
