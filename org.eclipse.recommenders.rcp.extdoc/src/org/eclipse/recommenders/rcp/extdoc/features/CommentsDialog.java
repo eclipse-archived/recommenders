@@ -24,14 +24,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-public final class CommentsDialog extends AbstractDialog {
+final class CommentsDialog extends AbstractDialog {
 
     private final IProvider provider;
     private final ICommentsServer server;
     private final Object object;
     private final String objectName;
 
-    public CommentsDialog(final Shell parentShell, final ICommentsServer server, final IProvider provider,
+    protected CommentsDialog(final Shell parentShell, final ICommentsServer server, final IProvider provider,
             final Object object, final String objectName) {
         super(parentShell);
         setBlockOnOpen(false);

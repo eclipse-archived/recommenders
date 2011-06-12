@@ -33,7 +33,7 @@ class ProvidersComposite extends Composite {
 
     private void setLayout() {
         final GridLayout grid = new GridLayout(1, false);
-        grid.verticalSpacing = 10;
+        grid.verticalSpacing = 5;
         grid.marginWidth = 0;
         grid.marginHeight = 0;
         grid.horizontalSpacing = 0;
@@ -42,14 +42,14 @@ class ProvidersComposite extends Composite {
 
     private void setBackground(final Display display) {
         final ColorRegistry registry = JFaceResources.getColorRegistry();
-        final RGB fBackgroundColorRGB = registry.getRGB("org.eclipse.jdt.ui.JavadocView.backgroundColor");
-        final Color fBackgroundColor;
-        if (fBackgroundColorRGB == null) {
-            fBackgroundColor = display.getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+        final RGB backgroundColorRGB = registry.getRGB("org.eclipse.jdt.ui.JavadocView.backgroundColor");
+        final Color backgroundColor;
+        if (backgroundColorRGB == null) {
+            backgroundColor = display.getSystemColor(SWT.COLOR_INFO_BACKGROUND);
         } else {
-            fBackgroundColor = new Color(display, fBackgroundColorRGB);
+            backgroundColor = new Color(display, backgroundColorRGB);
         }
-        setBackground(fBackgroundColor);
+        setBackground(backgroundColor);
         setBackgroundMode(SWT.INHERIT_FORCE);
     }
 

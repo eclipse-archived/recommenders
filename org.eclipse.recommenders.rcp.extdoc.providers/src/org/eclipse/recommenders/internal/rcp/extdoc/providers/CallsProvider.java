@@ -30,8 +30,6 @@ import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
 import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -51,25 +49,10 @@ public final class CallsProvider extends AbstractProviderComposite {
         this.proposalComputer = proposalComputer;
     }
 
-    /**
-     * @wbp.parser.entryPoint
-     */
     @Override
     protected Control createContentControl(final Composite parent) {
-        composite = new Composite(parent, SWT.NONE);
-        final GridLayout layout = new GridLayout(1, false);
-        layout.horizontalSpacing = 0;
-        layout.verticalSpacing = 11;
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        composite.setLayout(layout);
-
-        styledText = new StyledText(composite, SWT.WRAP);
-        styledText.setEnabled(false);
-        styledText.setDoubleClickEnabled(false);
-        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        styledText.setEditable(false);
-
+        composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
+        styledText = SwtFactory.createStyledText(composite, "");
         return composite;
     }
 
@@ -83,16 +66,16 @@ public final class CallsProvider extends AbstractProviderComposite {
             final List<IJavaCompletionProposal> proposals = proposalComputer.computeCompletionProposals(
                     selection.getInvocationContext(), null);
             if (!proposals.isEmpty()) {
-                printProposals(element, proposals);
+                displayProposals(element, proposals);
             } else {
-                printNoneAvailable(element.getElementName());
+                displayNoneAvailable(element.getElementName());
             }
         } else {
-            printUnavailable();
+            displayUnavailable();
         }
     }
 
-    private void printProposals(final IJavaElement element, final List<IJavaCompletionProposal> proposals) {
+    private void displayProposals(final IJavaElement element, final List<IJavaCompletionProposal> proposals) {
         styledText.setText("By analyzing XXX occasions of " + element.getElementName()
                 + ", the following patterns have been identified:");
         SwtFactory.createStyleRange(styledText, 30, element.getElementName().length(), SWT.NORMAL, false, true);
@@ -106,21 +89,18 @@ public final class CallsProvider extends AbstractProviderComposite {
             SwtFactory.createLabel(patterns, (proposal.getRelevance() - 1075) + "%", false, true, false);
         }
 
-        features = new FeaturesComposite(composite);
-        features.addCommentsIcon(element, element.getElementName(), this);
-        features.addEditIcon(new TemplateEditDialog(getShell()));
-        features.addStarsRating(element, server);
-
+        features = FeaturesComposite.create(composite, element, element.getElementName(), this, server,
+                new TemplateEditDialog(getShell()));
         composite.layout(true);
     }
 
-    private void printNoneAvailable(final String elementName) {
+    private void displayNoneAvailable(final String elementName) {
         styledText.setText("There are no method calls available for " + elementName + ".");
         SwtFactory.createStyleRange(styledText, 40, elementName.length(), SWT.NORMAL, false, true);
         disposePatterns();
     }
 
-    private void printUnavailable() {
+    private void displayUnavailable() {
         styledText.setText("Method calls are only available for Java types and variables.");
         disposePatterns();
     }

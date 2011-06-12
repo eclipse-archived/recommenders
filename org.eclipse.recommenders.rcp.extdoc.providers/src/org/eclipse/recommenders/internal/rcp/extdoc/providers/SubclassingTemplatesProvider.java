@@ -14,52 +14,81 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
-import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
+import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
+import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
-public final class SubclassingTemplatesProvider extends AbstractBrowserProvider implements IDeletionProvider {
+public final class SubclassingTemplatesProvider extends AbstractProviderComposite implements IDeletionProvider {
 
     private final SubclassingServer server = new SubclassingServer();
 
+    private Composite composite;
+    private StyledText styledText;
+    private Composite templates;
+
     @Override
-    protected String getHtmlContent(final IJavaElementSelection selection) {
+    protected Control createContentControl(final Composite parent) {
+        composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
+        styledText = SwtFactory.createStyledText(composite, "");
+        return composite;
+    }
+
+    @Override
+    protected void updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
-            return getHtmlForType((IType) element);
+            printProposals(element);
         } else {
-            return "Subclassing templates are only available for Java types, not methods or variables.";
+            printUnavailable();
         }
     }
 
-    private String getHtmlForType(final IType element) {
-        final StringBuilder builder = new StringBuilder(64);
+    private void printProposals(final IJavaElement element) {
+        final int subclasses = 123;
+        styledText
+                .setText("By analysing "
+                        + subclasses
+                        + " subclasses that override at least one method, the following subclassing patterns have been identified.");
 
-        builder.append("<p>By analysing XXX subclasses that override at least one method, the following subclassing patterns have been identified.");
+        disposeTemplates();
+        templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
 
-        builder.append("<ol>");
         for (int i = 0; i < 2; ++i) {
-            builder.append("<li><p><b>'pattern 403158'</b> - covers approximately <u>29%</u> of the examined subclasses (24 subclasses).");
-            builder.append("<span>" + getCommunityFeatures(element) + "</span></p>");
-            builder.append("<table>");
-            for (int j = 0; j < 3; ++j) {
-                builder.append("<tr><td><b>&middot;</b></td>");
-                builder.append("<td><b>should not</b></td>");
-                builder.append("<td>override <i>performFinish</i></td>");
-                builder.append("<td>-</td>");
-                builder.append("<td>~ <u>90%</u></td></tr>");
-            }
-            builder.append("</table></li>");
-        }
-        builder.append("</ol>");
+            final Composite editLine = SwtFactory.createGridComposite(templates, 2, 10, 0, 0, 0);
+            final StyledText text = SwtFactory.createStyledText(editLine,
+                    "'pattern 403158' - covers approximately 29% of the examined subclasses (24 subclasses).");
+            SwtFactory.createStyleRange(text, 0, 16, SWT.BOLD, false, false);
+            SwtFactory.createStyleRange(text, 40, 3, SWT.NORMAL, true, false);
+            FeaturesComposite.create(editLine, element, element.getElementName(), this, server, new TemplateEditDialog(
+                    getShell()));
 
-        return builder.toString();
+            final Composite template = SwtFactory.createGridComposite(templates, 5, 12, 3, 12, 0);
+            for (int j = 0; j < 3; ++j) {
+                SwtFactory.createSquare(template);
+                SwtFactory.createLabel(template, "should not", true, false, false);
+                SwtFactory.createLabel(template, "override performFinish", false, false, true);
+                SwtFactory.createLabel(template, "-", false, false, false);
+                SwtFactory.createLabel(template, "~ 90%", false, true, false);
+            }
+        }
+        composite.layout(true);
     }
 
-    private String getCommunityFeatures(final IJavaElement element) {
-        final TemplateEditDialog editDialog = new TemplateEditDialog(getShell());
-        return CommunityUtil.getAllFeatures(element, this, editDialog, server);
+    private void printUnavailable() {
+        styledText.setText("Subclassing templates are only available for Java types, not methods or variables.");
+        disposeTemplates();
+    }
+
+    private void disposeTemplates() {
+        if (templates != null) {
+            templates.dispose();
+        }
     }
 
     @Override

@@ -15,15 +15,15 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
-import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
+import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
-public final class SubclassingProvider extends AbstractBrowserProvider {
+public final class SubclassingProvider extends AbstractProviderComposite {
 
     private final SubclassingServer server = new SubclassingServer();
 
-    @Override
     public String getHtmlContent(final IJavaElementSelection context) {
         final IJavaElement element = context.getJavaElement();
         if (element instanceof IType) {
@@ -88,7 +88,21 @@ public final class SubclassingProvider extends AbstractBrowserProvider {
 
     private String getCommunityFeatures(final IJavaElement element) {
         final TemplateEditDialog editDialog = new TemplateEditDialog(getShell());
-        return CommunityUtil.getAllFeatures(element, this, editDialog, server);
+        // return CommunityUtil.getAllFeatures(element, this, editDialog,
+        // server);
+        return null;
+    }
+
+    @Override
+    protected Control createContentControl(final Composite parent) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected void updateContent(final IJavaElementSelection selection) {
+        // TODO Auto-generated method stub
+
     }
 
 }

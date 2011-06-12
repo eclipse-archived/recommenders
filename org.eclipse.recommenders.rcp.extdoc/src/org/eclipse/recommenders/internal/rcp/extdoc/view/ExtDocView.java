@@ -32,7 +32,6 @@ import org.eclipse.ui.part.ViewPart;
 public final class ExtDocView extends ViewPart {
 
     private final ProviderStore providerStore;
-    private IJavaElementSelection lastContext;
 
     private ScrolledComposite scrolled;
     private ProvidersComposite providersComposite;
@@ -53,7 +52,6 @@ public final class ExtDocView extends ViewPart {
             }
             providersComposite.layout(true);
             scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
-            lastContext = context;
         }
     }
 

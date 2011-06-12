@@ -23,7 +23,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-public class StarsRatingComposite {
+class StarsRatingComposite {
 
     private static Image star = ExtDocPlugin.getIcon("eview16/star.png");
     private static Image starActive = ExtDocPlugin.getIcon("eview16/star_active.png");
@@ -35,7 +35,7 @@ public class StarsRatingComposite {
     private final Composite parentComposite;
     private Composite composite;
 
-    public StarsRatingComposite(final Composite parent, final Object element, final IStarsRatingsServer server) {
+    protected StarsRatingComposite(final Composite parent, final Object element, final IStarsRatingsServer server) {
         this.element = element;
         this.server = server;
         parentComposite = new Composite(parent, SWT.NONE);

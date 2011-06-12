@@ -23,15 +23,16 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionProposalComputer;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CompletionInvocationContext;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
+import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.server.extdoc.TemplatesServer;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
-public final class TemplatesProvider extends AbstractBrowserProvider implements IDeletionProvider {
+public final class TemplatesProvider extends AbstractProviderComposite implements IDeletionProvider {
 
     private final TemplatesCompletionProposalComputer proposalComputer;
     private final IntelligentCompletionContextResolver contextResolver;
@@ -45,7 +46,6 @@ public final class TemplatesProvider extends AbstractBrowserProvider implements 
         server = new TemplatesServer();
     }
 
-    @Override
     public String getHtmlContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         // TODO: IMethod is just for testing.
@@ -87,15 +87,30 @@ public final class TemplatesProvider extends AbstractBrowserProvider implements 
         final TemplateEditDialog editDialog = new TemplateEditDialog(getShell());
 
         final StringBuilder builder = new StringBuilder(128);
-        builder.append(addListenerAndGetHtml(CommunityUtil.getCommentsIcon(proposal, proposal.getDisplayString(), this)));
-        builder.append(addListenerAndGetHtml(CommunityUtil.getEditIcon(editDialog)));
-        builder.append(addListenerAndGetHtml(CommunityUtil.getDeleteIcon(proposal, proposal.getDisplayString(), this)));
-        builder.append(addListenerAndGetHtml(CommunityUtil.getStarsRating(proposal, this, server)));
+        // builder.append(addListenerAndGetHtml(CommunityUtil.getCommentsIcon(proposal,
+        // proposal.getDisplayString(), this)));
+        // builder.append(addListenerAndGetHtml(CommunityUtil.getEditIcon(editDialog)));
+        // builder.append(addListenerAndGetHtml(CommunityUtil.getDeleteIcon(proposal,
+        // proposal.getDisplayString(), this)));
+        // builder.append(addListenerAndGetHtml(CommunityUtil.getStarsRating(proposal,
+        // this, server)));
         return builder.toString();
     }
 
     @Override
     public void requestDeletion(final Object object) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    protected Control createContentControl(final Composite parent) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected void updateContent(final IJavaElementSelection selection) {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-public final class DeleteDialog extends AbstractDialog {
+final class DeleteDialog extends AbstractDialog {
 
     private final IDeletionProvider provider;
     private final String objectName;

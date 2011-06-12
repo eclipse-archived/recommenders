@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -53,6 +54,20 @@ public final class SwtFactory {
         return composite;
     }
 
+    public static Composite createRowComposite(final Composite parent, final int spacing, final int hMargin,
+            final int vMargin) {
+        final Composite composite = new Composite(parent, SWT.NONE);
+        final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
+        layout.fill = true;
+        layout.marginBottom = vMargin;
+        layout.marginTop = vMargin;
+        layout.marginRight = hMargin;
+        layout.marginLeft = hMargin;
+        layout.spacing = spacing;
+        composite.setLayout(layout);
+        return composite;
+    }
+
     public static void createSeparator(final Composite parent) {
         final Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -83,11 +98,14 @@ public final class SwtFactory {
         return textComponent;
     }
 
-    public static Button createCheck(final Composite area, final String text, final boolean selected) {
-        final Button button = new Button(area, SWT.CHECK);
-        button.setText(text);
-        button.setSelection(selected);
-        return button;
+    public static StyledText createStyledText(final Composite parent, final String text) {
+        final StyledText styledText = new StyledText(parent, SWT.WRAP);
+        styledText.setEnabled(false);
+        styledText.setDoubleClickEnabled(false);
+        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        styledText.setEditable(false);
+        styledText.setText(text);
+        return styledText;
     }
 
     public static void createStyleRange(final StyledText styledText, final int start, final int length,
@@ -103,6 +121,13 @@ public final class SwtFactory {
             styleRange.font = CODEFONT;
         }
         styledText.setStyleRange(styleRange);
+    }
+
+    public static Button createCheck(final Composite area, final String text, final boolean selected) {
+        final Button button = new Button(area, SWT.CHECK);
+        button.setText(text);
+        button.setSelection(selected);
+        return button;
     }
 
     public static Label createSquare(final Composite parent) {

@@ -15,15 +15,23 @@ import com.google.inject.Inject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CommunityUtil;
-import org.eclipse.recommenders.rcp.extdoc.AbstractBrowserProvider;
+import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
+import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
-public final class WikiProvider extends AbstractBrowserProvider {
+public final class WikiProvider extends AbstractProviderComposite {
 
     private final WikiServer server;
     private final MarkupParser parser;
+
+    private Composite parentComposite;
+    private Composite composite;
 
     @Inject
     WikiProvider(final WikiServer server, final MarkupParser parser) {
@@ -32,29 +40,51 @@ public final class WikiProvider extends AbstractBrowserProvider {
     }
 
     @Override
-    protected String getHtmlContent(final IJavaElementSelection selection) {
+    protected Control createContentControl(final Composite parent) {
+        parentComposite = SwtFactory.createGridComposite(parent, 1, 0, 0, 0, 0);
+        return parentComposite;
+    }
+
+    @Override
+    protected void updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         String markup = null;
-        String txt = null;
         if (element != null) {
             markup = server.getText(element);
-            if (markup != null) {
-                txt = parser.parseTextile(markup);
-            }
         }
+        if (composite != null) {
+            composite.dispose();
+        }
+        composite = SwtFactory.createGridComposite(parentComposite, 1, 0, 11, 0, 0);
+        if (markup == null) {
+            displayNoText(element);
+        } else {
+            displayText(element, markup);
+        }
+        parentComposite.layout(true);
+    }
 
+    private void displayText(final IJavaElement element, final String markup) {
         final WikiEditDialog editDialog = new WikiEditDialog(this, element, markup);
+        FeaturesComposite.create(composite, element, element.getElementName(), this, server, editDialog);
 
-        if (txt == null) {
-            txt = String.format("Currently there is no Wiki available for <i>%s</i>.", element.getElementName());
-            return txt + "<br /><br />You can start one by clicking on the pen icon: "
-                    + addListenerAndGetHtml(CommunityUtil.getEditIcon(editDialog));
-        }
-        return String.format("%s<br/><br/>%s", CommunityUtil.getAllFeatures(element, this, editDialog, server), txt);
+        final StyledText text = new StyledText(composite, SWT.NONE);
+        text.setText(parser.parseTextile(markup));
+    }
+
+    private void displayNoText(final IJavaElement element) {
+        final StyledText text = new StyledText(composite, SWT.NONE);
+        text.setText(String.format("Currently there is no Wiki available for %s.", element.getElementName()));
+
+        final WikiEditDialog editDialog = new WikiEditDialog(this, element, null);
+        final Composite editLine = SwtFactory.createRowComposite(composite, 0, 0, 0);
+        SwtFactory.createLabel(editLine, "You can start one by clicking on the pen icon: ", false, false, false);
+        new FeaturesComposite(editLine).addEditIcon(editDialog);
     }
 
     public void update(final IJavaElement javaElement, final String text) {
         server.setText(javaElement, text);
         redraw();
     }
+
 }
