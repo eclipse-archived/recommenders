@@ -48,6 +48,10 @@ final class ProvidersTable {
                     gridData.exclude = !tableItem.getChecked();
                     control.setVisible(tableItem.getChecked());
                     control.getParent().layout(true);
+                } else {
+                    final TableItem tableItem = (TableItem) event.item;
+                    final Control control = (Control) tableItem.getData();
+                    control.setFocus();
                 }
             }
         });

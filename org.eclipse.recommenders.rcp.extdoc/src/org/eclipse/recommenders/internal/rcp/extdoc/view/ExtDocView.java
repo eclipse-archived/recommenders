@@ -63,7 +63,7 @@ public final class ExtDocView extends ViewPart {
         scrolled = new ScrolledComposite(sashForm, SWT.V_SCROLL);
         scrolled.setExpandVertical(true);
         scrolled.setExpandHorizontal(true);
-        scrolled.setAlwaysShowScrollBars(true);
+        scrolled.setShowFocusedControl(true);
         providersComposite = new ProvidersComposite(scrolled, SWT.NONE);
         scrolled.setContent(providersComposite);
         sashForm.setWeights(new int[] { 15, 85 });

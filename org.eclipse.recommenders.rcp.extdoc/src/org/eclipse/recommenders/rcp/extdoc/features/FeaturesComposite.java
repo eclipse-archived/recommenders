@@ -35,7 +35,7 @@ public final class FeaturesComposite {
     private final Composite composite;
 
     public FeaturesComposite(final Composite parent) {
-        composite = SwtFactory.createRowComposite(parent, 3, 0, 0);
+        composite = SwtFactory.createGridComposite(parent, 4, 3, 0, 0, 0);
     }
 
     public static FeaturesComposite create(final Composite parent, final Object object, final String objectName,

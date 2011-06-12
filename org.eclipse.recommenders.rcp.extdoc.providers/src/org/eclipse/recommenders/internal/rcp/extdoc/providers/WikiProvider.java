@@ -77,7 +77,7 @@ public final class WikiProvider extends AbstractProviderComposite {
         text.setText(String.format("Currently there is no Wiki available for %s.", element.getElementName()));
 
         final WikiEditDialog editDialog = new WikiEditDialog(this, element, null);
-        final Composite editLine = SwtFactory.createRowComposite(composite, 0, 0, 0);
+        final Composite editLine = SwtFactory.createGridComposite(composite, 2, 0, 0, 0, 0);
         SwtFactory.createLabel(editLine, "You can start one by clicking on the pen icon: ", false, false, false);
         new FeaturesComposite(editLine).addEditIcon(editDialog);
     }

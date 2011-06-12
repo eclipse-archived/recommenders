@@ -19,7 +19,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -51,20 +50,6 @@ public final class SwtFactory {
         grid.marginWidth = hMargin;
         composite.setLayout(grid);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-        return composite;
-    }
-
-    public static Composite createRowComposite(final Composite parent, final int spacing, final int hMargin,
-            final int vMargin) {
-        final Composite composite = new Composite(parent, SWT.NONE);
-        final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
-        layout.fill = true;
-        layout.marginBottom = vMargin;
-        layout.marginTop = vMargin;
-        layout.marginRight = hMargin;
-        layout.marginLeft = hMargin;
-        layout.spacing = spacing;
-        composite.setLayout(layout);
         return composite;
     }
 
