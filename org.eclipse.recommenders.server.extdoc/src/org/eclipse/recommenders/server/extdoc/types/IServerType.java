@@ -8,13 +8,10 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.server.extdoc;
+package org.eclipse.recommenders.server.extdoc.types;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+public interface IServerType {
 
-@RunWith(Suite.class)
-@SuiteClasses({ SubclassingServerTest.class, WikiServerTest.class })
-final class UnitTestSuite {
+    void validate();
+
 }

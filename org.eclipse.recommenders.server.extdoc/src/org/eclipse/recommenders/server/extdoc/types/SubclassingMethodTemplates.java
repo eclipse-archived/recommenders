@@ -17,17 +17,17 @@ import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
-public class SubclassingMethodTemplates {
+class SubclassingMethodTemplates {
 
     @SerializedName("_id")
-    public String id;
+    private String id;
     @SerializedName("_rev")
-    public String rev;
+    private String rev;
 
-    public IProvider provider;
-    public IType type;
+    private IProvider provider;
+    private IType type;
 
-    public int subclasses;
-    public Set<SubclassingPattern> patterns;
+    private int subclasses;
+    private Set<SubclassingPattern> patterns;
 
 }

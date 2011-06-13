@@ -10,6 +10,6 @@
  */
 package org.eclipse.recommenders.server.extdoc.types;
 
-public class SubclassingExamples extends CodeExamples {
+class SubclassingExamples extends CodeExamples {
 
 }

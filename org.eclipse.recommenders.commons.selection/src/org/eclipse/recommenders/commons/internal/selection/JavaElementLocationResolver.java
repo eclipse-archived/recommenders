@@ -88,6 +88,7 @@ final class JavaElementLocationResolver {
     private static JavaElementLocation getLocationForNodeType(final int locationNodeType, final IJavaElement javaElement) {
         switch (locationNodeType) {
         case ASTNode.BLOCK:
+        case ASTNode.SUPER_CONSTRUCTOR_INVOCATION:
             return JavaElementLocation.BLOCK;
         case ASTNode.METHOD_DECLARATION:
             return JavaElementLocation.METHOD_DECLARATION;

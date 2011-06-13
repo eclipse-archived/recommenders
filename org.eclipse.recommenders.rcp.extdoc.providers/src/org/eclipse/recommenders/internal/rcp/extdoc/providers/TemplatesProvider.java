@@ -104,8 +104,8 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
     }
 
     private void displayNoneAvailable(final String elementName) {
-        styledText.setText("There are not templates available for " + elementName + ".");
-        SwtFactory.createStyleRange(styledText, 38, elementName.length(), SWT.NORMAL, false, true);
+        styledText.setText("There are no templates available for " + elementName + ".");
+        SwtFactory.createStyleRange(styledText, 37, elementName.length(), SWT.NORMAL, false, true);
         disposeTemplates();
     }
 

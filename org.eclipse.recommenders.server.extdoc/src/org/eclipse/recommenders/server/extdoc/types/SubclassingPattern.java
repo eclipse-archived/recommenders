@@ -14,9 +14,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.core.IMethod;
 
-public class SubclassingPattern {
+class SubclassingPattern {
 
-    public int subclasses;
-    public Map<IMethod, Integer> calls;
+    private int subclasses;
+    private Map<IMethod, Integer> calls;
 
 }
