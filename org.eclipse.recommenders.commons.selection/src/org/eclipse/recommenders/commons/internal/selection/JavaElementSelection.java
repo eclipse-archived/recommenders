@@ -43,7 +43,7 @@ final class JavaElementSelection implements IJavaElementSelection {
      *            The selected Java element.
      */
     protected JavaElementSelection(final IJavaElement javaElement) {
-        this.javaElement = javaElement;
+        this.javaElement = Checks.ensureIsNotNull(javaElement);
         invocationOffset = -1;
     }
 
@@ -56,7 +56,7 @@ final class JavaElementSelection implements IJavaElementSelection {
      *            The Java editor in which the selection took place.
      */
     protected JavaElementSelection(final IJavaElement javaElement, final int invocationOffset, final JavaEditor editor) {
-        this.javaElement = javaElement;
+        this.javaElement = Checks.ensureIsNotNull(javaElement);
         this.invocationOffset = invocationOffset;
         this.editor = Checks.ensureIsNotNull(editor);
     }
@@ -99,7 +99,7 @@ final class JavaElementSelection implements IJavaElementSelection {
     @Override
     public String toString() {
         final ToStringHelper string = Objects.toStringHelper(this).add("\n\nJavaElementClass",
-                javaElement == null ? null : (javaElement.getClass()+" / "+javaElement.getHandleIdentifier()));
+                javaElement == null ? null : (javaElement.getClass() + " / " + javaElement.getHandleIdentifier()));
         string.add("\nElementLocation", getElementLocation());
         if (getAstNode() != null) {
             final ASTNode astNode = getAstNode();

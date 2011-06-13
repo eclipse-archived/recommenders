@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import com.google.inject.Inject;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
@@ -37,6 +38,11 @@ public final class ExtendedJavadocProvider extends AbstractProviderComposite {
     protected Control createContentControl(final Composite parent) {
         label = new Label(parent, SWT.NONE);
         return label;
+    }
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
     }
 
     @Override

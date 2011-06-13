@@ -26,4 +26,4 @@ Export-Package: org.eclipse.recommenders.internal.server.extdoc;x-internal:=true
    org.eclipse.recommenders.server.extdoc.types,
    org.eclipse.jdt.core,
    org.eclipse.recommenders.internal.server.extdoc",
- org.eclipse.recommenders.server.extdoc.types;uses:="org.eclipse.jdt.core,org.eclipse.recommenders.rcp.extdoc"
+ org.eclipse.recommenders.server.extdoc.types;uses:="org.eclipse.recommenders.commons.utils.names"

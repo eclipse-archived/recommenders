@@ -13,10 +13,13 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.inject.Inject;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
@@ -34,15 +37,26 @@ import org.eclipse.swt.widgets.Control;
 
 public final class SubclassingProvider extends AbstractProviderComposite {
 
-    private final SubclassingServer server = new SubclassingServer();
+    private final SubclassingServer server;
 
     private Composite parentComposite;
     private Composite composite;
+
+    @Inject
+    public SubclassingProvider(final SubclassingServer server) {
+        this.server = server;
+    }
 
     @Override
     protected Control createContentControl(final Composite parent) {
         parentComposite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
         return parentComposite;
+    }
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return location == JavaElementLocation.BLOCK || location == JavaElementLocation.METHOD_DECLARATION
+                || JavaElementLocation.isInTypeDeclaration(location);
     }
 
     @Override

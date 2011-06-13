@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
@@ -37,6 +38,11 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
         composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
         styledText = SwtFactory.createStyledText(composite, "");
         return composite;
+    }
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
     }
 
     @Override

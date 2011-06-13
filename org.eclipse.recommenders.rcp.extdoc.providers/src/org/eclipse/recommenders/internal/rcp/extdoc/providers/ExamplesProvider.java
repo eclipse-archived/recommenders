@@ -11,11 +11,17 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public final class ExamplesProvider extends AbstractProviderComposite {
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
+    }
 
     @Override
     protected Control createContentControl(final Composite parent) {

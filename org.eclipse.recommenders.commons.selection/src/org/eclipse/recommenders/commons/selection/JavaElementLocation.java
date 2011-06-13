@@ -17,4 +17,8 @@ public enum JavaElementLocation {
 
     PACKAGE_DECLARATION, IMPORT_DECLARATION, TYPE_DECLARATION, TYPE_DECLARATION_EXTENDS, TYPE_DECLARATION_IMPLEMENTS, FIELD_DECLARATION, METHOD_DECLARATION, METHOD_DECLARATION_PARAMETER, BLOCK;
 
+    public static boolean isInTypeDeclaration(final JavaElementLocation location) {
+        return location == TYPE_DECLARATION || location == TYPE_DECLARATION_EXTENDS
+                || location == TYPE_DECLARATION_IMPLEMENTS;
+    }
 }

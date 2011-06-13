@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionProposalComputer;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CompletionInvocationContext;
@@ -58,6 +59,11 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
         composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
         styledText = SwtFactory.createStyledText(composite, "");
         return composite;
+    }
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
     }
 
     @Override

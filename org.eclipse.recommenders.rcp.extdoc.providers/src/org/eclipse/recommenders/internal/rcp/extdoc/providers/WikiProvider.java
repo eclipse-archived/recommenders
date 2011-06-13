@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
@@ -39,13 +40,15 @@ public final class WikiProvider extends AbstractProviderComposite {
         this.parser = parser;
     }
 
-    /**
-     * @wbp.parser.entryPoint
-     */
     @Override
     protected Control createContentControl(final Composite parent) {
         parentComposite = SwtFactory.createGridComposite(parent, 1, 0, 0, 0, 0);
         return parentComposite;
+    }
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
     }
 
     @Override

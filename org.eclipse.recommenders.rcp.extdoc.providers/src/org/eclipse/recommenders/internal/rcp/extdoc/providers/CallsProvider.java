@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionProposalComputer;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
@@ -39,7 +40,7 @@ public final class CallsProvider extends AbstractProviderComposite {
     private final CallsServer server = new CallsServer();
 
     private StyledText styledText;
-    private Composite patterns;
+    private Composite calls;
     private Composite composite;
     private FeaturesComposite features;
 
@@ -47,6 +48,11 @@ public final class CallsProvider extends AbstractProviderComposite {
     public CallsProvider(final CallsCompletionProposalComputer proposalComputer,
             final IntelligentCompletionContextResolver contextResolver) {
         this.proposalComputer = proposalComputer;
+    }
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
     }
 
     @Override
@@ -79,12 +85,12 @@ public final class CallsProvider extends AbstractProviderComposite {
         SwtFactory.createStyleRange(styledText, 30, element.getElementName().length(), SWT.NORMAL, false, true);
 
         disposePatterns();
-        patterns = SwtFactory.createGridComposite(composite, 3, 12, 3, 12, 0);
+        calls = SwtFactory.createGridComposite(composite, 3, 12, 3, 12, 0);
 
         for (final IJavaCompletionProposal proposal : proposals) {
-            SwtFactory.createSquare(patterns);
-            SwtFactory.createLabel(patterns, proposal.getDisplayString(), false, false, false);
-            SwtFactory.createLabel(patterns, (proposal.getRelevance() - 1075) + "%", false, true, false);
+            SwtFactory.createSquare(calls);
+            SwtFactory.createLabel(calls, proposal.getDisplayString(), false, false, false);
+            SwtFactory.createLabel(calls, (proposal.getRelevance() - 1075) + "%", false, true, false);
         }
 
         features = FeaturesComposite.create(composite, element, element.getElementName(), this, server,
@@ -93,8 +99,8 @@ public final class CallsProvider extends AbstractProviderComposite {
     }
 
     private void disposePatterns() {
-        if (patterns != null) {
-            patterns.dispose();
+        if (calls != null) {
+            calls.dispose();
             features.dispose();
         }
     }
