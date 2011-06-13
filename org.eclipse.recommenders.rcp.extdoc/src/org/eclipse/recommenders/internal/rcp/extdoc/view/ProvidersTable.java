@@ -41,17 +41,17 @@ final class ProvidersTable {
         table.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(final Event event) {
-                if (event.detail == SWT.CHECK) {
-                    final TableItem tableItem = (TableItem) event.item;
-                    final Control control = (Control) tableItem.getData();
-                    final GridData gridData = (GridData) control.getLayoutData();
-                    gridData.exclude = !tableItem.getChecked();
-                    control.setVisible(tableItem.getChecked());
-                    control.getParent().layout(true);
-                } else {
-                    final TableItem tableItem = (TableItem) event.item;
-                    final Control control = (Control) tableItem.getData();
-                    control.setFocus();
+                final TableItem tableItem = (TableItem) event.item;
+                if (!tableItem.getGrayed()) {
+                    if (event.detail == SWT.CHECK) {
+                        final Control control = (Control) tableItem.getData();
+                        ((GridData) control.getLayoutData()).exclude = !tableItem.getChecked();
+                        control.setVisible(tableItem.getChecked());
+                        control.getParent().layout(true);
+                    } else {
+                        final Control control = (Control) tableItem.getData();
+                        control.setFocus();
+                    }
                 }
             }
         });
@@ -69,6 +69,10 @@ final class ProvidersTable {
 
     public TableItem[] getItems() {
         return table.getItems();
+    }
+
+    public void setGrayed(final TableItem item, final boolean grayed) {
+        item.setGrayed(grayed);
     }
 
     private void enableDragAndDrop() {

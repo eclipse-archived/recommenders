@@ -31,7 +31,6 @@ import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
 import org.eclipse.recommenders.server.extdoc.TemplatesServer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -62,7 +61,7 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
+    protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         // TODO: IMethod is just for testing.
         if ((element instanceof IType || element instanceof IField || element instanceof ILocalVariable || element instanceof IMethod)
@@ -72,14 +71,12 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
             final IIntelligentCompletionContext completionContext = contextResolver.resolveContext(context);
             final List<IJavaCompletionProposal> proposals = proposalComputer
                     .computeCompletionProposals(completionContext);
-            if (proposals.isEmpty()) {
-                displayNoneAvailable(element.getElementName());
-            } else {
+            if (!proposals.isEmpty()) {
                 displayProposals(element, proposals);
+                return true;
             }
-        } else {
-            printUnavailable();
         }
+        return false;
     }
 
     private void displayProposals(final IJavaElement element, final List<IJavaCompletionProposal> proposals) {
@@ -101,17 +98,6 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
             }
         }
         composite.layout(true);
-    }
-
-    private void displayNoneAvailable(final String elementName) {
-        styledText.setText("There are no templates available for " + elementName + ".");
-        SwtFactory.createStyleRange(styledText, 37, elementName.length(), SWT.NORMAL, false, true);
-        disposeTemplates();
-    }
-
-    private void printUnavailable() {
-        styledText.setText("Templates are only available for Java types and variables.");
-        disposeTemplates();
     }
 
     private void disposeTemplates() {

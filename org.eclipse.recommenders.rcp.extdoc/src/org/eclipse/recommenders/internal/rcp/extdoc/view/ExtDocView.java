@@ -47,10 +47,11 @@ public final class ExtDocView extends ViewPart {
             for (final TableItem item : table.getItems()) {
                 if (item.getChecked()) {
                     final Control providerControl = (Control) item.getData();
-                    ((IProvider) providerControl.getData()).selectionChanged(context);
+                    final boolean hasContent = ((IProvider) providerControl.getData()).selectionChanged(context);
+                    table.setGrayed(item, !hasContent);
                 }
             }
-            providersComposite.layout(true);
+            scrolled.layout(true);
             scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
         }
     }

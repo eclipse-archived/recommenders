@@ -49,7 +49,7 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
+    protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         String markup = null;
         if (element != null) {
@@ -65,6 +65,7 @@ public final class WikiProvider extends AbstractProviderComposite {
             displayText(element, markup);
         }
         parentComposite.layout(true);
+        return true;
     }
 
     private void displayText(final IJavaElement element, final String markup) {

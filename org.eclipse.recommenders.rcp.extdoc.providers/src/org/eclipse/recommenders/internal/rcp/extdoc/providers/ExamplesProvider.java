@@ -24,9 +24,9 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
+    protected boolean updateContent(final IJavaElementSelection selection) {
         // TODO Auto-generated method stub
-
+        return false;
     }
 
 }

@@ -40,7 +40,7 @@ public final class ExtendedJavadocProvider extends AbstractProviderComposite {
     }
 
     @Override
-    public void updateContent(final IJavaElementSelection context) {
+    public boolean updateContent(final IJavaElementSelection context) {
         final StringBuilder builder = new StringBuilder(128);
         IIntelligentCompletionContext completionContext = null;
 
@@ -52,5 +52,6 @@ public final class ExtendedJavadocProvider extends AbstractProviderComposite {
         builder.append(completionContext);
 
         label.setText(builder.toString());
+        return true;
     }
 }

@@ -40,13 +40,13 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
+    protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             printProposals(element);
-        } else {
-            printUnavailable();
+            return true;
         }
+        return false;
     }
 
     private void printProposals(final IJavaElement element) {
@@ -56,7 +56,9 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
                         + subclasses
                         + " subclasses that override at least one method, the following subclassing patterns have been identified.");
 
-        disposeTemplates();
+        if (templates != null) {
+            templates.dispose();
+        }
         templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
 
         for (int i = 0; i < 2; ++i) {
@@ -78,17 +80,6 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
             }
         }
         composite.layout(true);
-    }
-
-    private void printUnavailable() {
-        styledText.setText("Subclassing templates are only available for Java types, not methods or variables.");
-        disposeTemplates();
-    }
-
-    private void disposeTemplates() {
-        if (templates != null) {
-            templates.dispose();
-        }
     }
 
     @Override

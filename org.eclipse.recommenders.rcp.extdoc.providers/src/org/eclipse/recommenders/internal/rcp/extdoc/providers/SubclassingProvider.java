@@ -46,79 +46,76 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
+    protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
-            displayContentForType((IType) element);
+            return displayContentForType((IType) element);
         } else if (element instanceof IMethod) {
-            displayContentForMethod((IMethod) element);
-        } else {
-            printUnavailable();
+            return displayContentForMethod((IMethod) element);
         }
-        parentComposite.layout(true);
+        return false;
     }
 
-    private void displayContentForType(final IType type) {
+    private boolean displayContentForType(final IType type) {
         final ClassOverrideDirectives overrides = server.getClassOverrideDirective(type);
         initComposite();
         if (overrides == null) {
-            displayNoneAvailable(type.getElementName());
-        } else {
-            final String elementName = type.getElementName();
-            final int subclasses = overrides.getNumberOfSubclasses();
-            Composite line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
-            String lineText = "Based on "
-                    + subclasses
-                    + " direct subclasses of "
-                    + type.getElementName()
-                    + " we created the following statistics. Subclassers may consider to override the following methods.";
-            final StyledText styledText = SwtFactory.createStyledText(line, lineText);
-            SwtFactory.createStyleRange(styledText, 31 + getLength(subclasses), elementName.length(), SWT.NORMAL,
-                    false, true);
-            FeaturesComposite.create(line, type, elementName, this, server, new TemplateEditDialog(getShell()));
-
-            displayDirectives(overrides.getOverrides(), "override", subclasses);
-
-            final ClassSelfcallDirectives calls = server.getClassSelfcallDirective(type);
-            if (calls != null) {
-                line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
-                lineText = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
-                SwtFactory.createLabel(line, lineText, false, false, false);
-                FeaturesComposite.create(line, type, elementName, this, server, new TemplateEditDialog(getShell()));
-                displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
-            }
+            return false;
         }
+        final String elementName = type.getElementName();
+        final int subclasses = overrides.getNumberOfSubclasses();
+        Composite line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
+        String lineText = "Based on " + subclasses + " direct subclasses of " + type.getElementName()
+                + " we created the following statistics. Subclassers may consider to override the following methods.";
+        final StyledText styledText = SwtFactory.createStyledText(line, lineText);
+        SwtFactory.createStyleRange(styledText, 31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false,
+                true);
+        FeaturesComposite.create(line, type, elementName, this, server, new TemplateEditDialog(getShell()));
+
+        displayDirectives(overrides.getOverrides(), "override", subclasses);
+
+        final ClassSelfcallDirectives calls = server.getClassSelfcallDirective(type);
+        if (calls != null) {
+            line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
+            lineText = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
+            SwtFactory.createStyledText(line, lineText);
+            FeaturesComposite.create(line, type, elementName, this, server, new TemplateEditDialog(getShell()));
+            displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
+        }
+        parentComposite.layout(true);
+        return true;
     }
 
-    private void displayContentForMethod(final IMethod method) {
+    private boolean displayContentForMethod(final IMethod method) {
         final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(method);
         initComposite();
         if (selfcalls == null) {
-            displayNoneAvailable(method.getElementName());
-        } else {
-            String text = "Subclasses of "
-                    + method.getParent().getElementName()
-                    + " typically should overrride this method (92%). When overriding subclasses may call the super implementation (25%).";
-            StyledText styledText = SwtFactory.createStyledText(composite, text);
-            final int length = method.getParent().getElementName().length();
-            SwtFactory.createStyleRange(styledText, 14, length, SWT.NORMAL, false, true);
-            SwtFactory.createStyleRange(styledText, length + 25, 6, SWT.BOLD, false, false);
-            SwtFactory.createStyleRange(styledText, length + 55, 3, SWT.NORMAL, true, false);
-            SwtFactory.createStyleRange(styledText, length + 88, 3, SWT.BOLD, false, false);
-            SwtFactory.createStyleRange(styledText, length + 101, 5, SWT.NORMAL, false, true);
-            SwtFactory.createStyleRange(styledText, length + 123, 3, SWT.NORMAL, true, false);
-
-            final int definitions = selfcalls.getNumberOfDefinitions();
-            text = "Based on " + definitions + " implementations of " + method.getElementName()
-                    + " we created the following statistics. Implementors may consider to call the following methods.";
-            styledText = SwtFactory.createStyledText(composite, text);
-            SwtFactory.createStyleRange(styledText, 29 + getLength(definitions), method.getElementName().length(),
-                    SWT.NORMAL, false, true);
-
-            displayDirectives(selfcalls.getCalls(), "call", definitions);
-            FeaturesComposite.create(composite, method, method.getElementName(), this, server, new TemplateEditDialog(
-                    getShell()));
+            return false;
         }
+        String text = "Subclasses of "
+                + method.getParent().getElementName()
+                + " typically should overrride this method (92%). When overriding subclasses may call the super implementation (25%).";
+        StyledText styledText = SwtFactory.createStyledText(composite, text);
+        final int length = method.getParent().getElementName().length();
+        SwtFactory.createStyleRange(styledText, 14, length, SWT.NORMAL, false, true);
+        SwtFactory.createStyleRange(styledText, length + 25, 6, SWT.BOLD, false, false);
+        SwtFactory.createStyleRange(styledText, length + 55, 3, SWT.NORMAL, true, false);
+        SwtFactory.createStyleRange(styledText, length + 88, 3, SWT.BOLD, false, false);
+        SwtFactory.createStyleRange(styledText, length + 101, 5, SWT.NORMAL, false, true);
+        SwtFactory.createStyleRange(styledText, length + 123, 3, SWT.NORMAL, true, false);
+
+        final int definitions = selfcalls.getNumberOfDefinitions();
+        text = "Based on " + definitions + " implementations of " + method.getElementName()
+                + " we created the following statistics. Implementors may consider to call the following methods.";
+        styledText = SwtFactory.createStyledText(composite, text);
+        SwtFactory.createStyleRange(styledText, 29 + getLength(definitions), method.getElementName().length(),
+                SWT.NORMAL, false, true);
+
+        displayDirectives(selfcalls.getCalls(), "call", definitions);
+        FeaturesComposite.create(composite, method, method.getElementName(), this, server, new TemplateEditDialog(
+                getShell()));
+        parentComposite.layout(true);
+        return true;
     }
 
     private void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
@@ -148,17 +145,6 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             SwtFactory.createStyleRange(txt, 10 + getLength(directive.getValue()), getLength(percent) + 1, SWT.NORMAL,
                     true, false);
         }
-    }
-
-    private void displayNoneAvailable(final String elementName) {
-        final StyledText styledText = SwtFactory.createStyledText(composite, "There are no directives available for "
-                + elementName + ".");
-        SwtFactory.createStyleRange(styledText, 38, elementName.length(), SWT.NORMAL, false, true);
-    }
-
-    private void printUnavailable() {
-        initComposite();
-        SwtFactory.createStyledText(composite, "Subclassing directives are only available for Java types and methods.");
     }
 
     private int getLength(final int number) {

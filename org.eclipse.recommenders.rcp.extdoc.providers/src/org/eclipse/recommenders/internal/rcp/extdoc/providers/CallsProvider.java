@@ -57,7 +57,7 @@ public final class CallsProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
+    protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         // TODO: IMethod is just for testing.
         if ((element instanceof IType || element instanceof IField || element instanceof ILocalVariable || element instanceof IMethod)
@@ -67,12 +67,10 @@ public final class CallsProvider extends AbstractProviderComposite {
                     selection.getInvocationContext(), null);
             if (!proposals.isEmpty()) {
                 displayProposals(element, proposals);
-            } else {
-                displayNoneAvailable(element.getElementName());
+                return true;
             }
-        } else {
-            displayUnavailable();
         }
+        return false;
     }
 
     private void displayProposals(final IJavaElement element, final List<IJavaCompletionProposal> proposals) {
@@ -92,17 +90,6 @@ public final class CallsProvider extends AbstractProviderComposite {
         features = FeaturesComposite.create(composite, element, element.getElementName(), this, server,
                 new TemplateEditDialog(getShell()));
         composite.layout(true);
-    }
-
-    private void displayNoneAvailable(final String elementName) {
-        styledText.setText("There are no method calls available for " + elementName + ".");
-        SwtFactory.createStyleRange(styledText, 40, elementName.length(), SWT.NORMAL, false, true);
-        disposePatterns();
-    }
-
-    private void displayUnavailable() {
-        styledText.setText("Method calls are only available for Java types and variables.");
-        disposePatterns();
     }
 
     private void disposePatterns() {

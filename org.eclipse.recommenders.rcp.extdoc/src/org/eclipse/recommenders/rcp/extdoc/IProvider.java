@@ -28,7 +28,7 @@ public interface IProvider extends IExecutableExtension {
 
     Control createControl(Composite parent, IWorkbenchPartSite partSite);
 
-    void selectionChanged(IJavaElementSelection context);
+    boolean selectionChanged(IJavaElementSelection context);
 
     void redraw();
 

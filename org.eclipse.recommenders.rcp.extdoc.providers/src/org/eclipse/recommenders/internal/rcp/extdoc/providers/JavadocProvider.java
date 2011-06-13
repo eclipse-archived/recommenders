@@ -33,10 +33,11 @@ public final class JavadocProvider extends AbstractProvider {
     }
 
     @Override
-    public void selectionChanged(final IJavaElementSelection context) {
+    public boolean selectionChanged(final IJavaElementSelection context) {
         if (context.getJavaElement() != null) {
             javadoc.setInput(context.getJavaElement());
         }
+        return context.getJavaElement() != null;
     }
 
     @Override
