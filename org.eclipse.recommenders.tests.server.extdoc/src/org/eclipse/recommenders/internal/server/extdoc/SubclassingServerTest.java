@@ -11,9 +11,9 @@
 package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
-import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirective;
-import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirective;
-import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirective;
+import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
+import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
+import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,21 +25,21 @@ public final class SubclassingServerTest {
     @Test
     @Ignore
     public void testGetClassOverrideDirective() {
-        final ClassOverrideDirective directive = server.getClassOverrideDirective(null);
+        final ClassOverrideDirectives directive = server.getClassOverrideDirective(null);
         Assert.assertNotNull(directive);
     }
 
     @Test
     @Ignore
     public void testGetClassSelfcallDirective() {
-        final ClassSelfcallDirective directive = server.getClassSelfcallDirective(null);
+        final ClassSelfcallDirectives directive = server.getClassSelfcallDirective(null);
         Assert.assertNotNull(directive);
     }
 
     @Test
     @Ignore
     public void testGetMethodSelfcallDirective() {
-        final MethodSelfcallDirective directive = server.getMethodSelfcallDirective(null);
+        final MethodSelfcallDirectives directive = server.getMethodSelfcallDirective(null);
         Assert.assertNotNull(directive);
     }
 

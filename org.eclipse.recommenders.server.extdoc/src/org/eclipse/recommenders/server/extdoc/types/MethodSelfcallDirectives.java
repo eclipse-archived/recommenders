@@ -12,33 +12,43 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Map;
 
+import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+
 import com.google.gson.annotations.SerializedName;
 
-import org.eclipse.recommenders.commons.utils.Checks;
+public final class MethodSelfcallDirectives implements IServerType {
 
-public final class MethodSelfcallDirective implements IServerType {
+    public static MethodSelfcallDirectives create(final IMethodName method, final int numberOfDefinitions,
+            final Map<IMethodName, Integer> selfcalls) {
+        final MethodSelfcallDirectives res = new MethodSelfcallDirectives();
+        res.method = method;
+        res.numberOfDefinitions = numberOfDefinitions;
+        res.calls = selfcalls;
+        return res;
+    }
 
     @SerializedName("_id")
     private String id;
     @SerializedName("_rev")
     private String rev;
 
-    private String providerId;
-    private String method;
+    private final String providerId = getClass().getSimpleName();
+    private IMethodName method;
 
     private int numberOfDefinitions;
-    private Map<String, Integer> calls;
+    private Map<IMethodName, Integer> calls;
 
-    public Map<String, Integer> getCalls() {
+    public Map<IMethodName, Integer> getCalls() {
         return calls;
     }
 
     @Override
     public void validate() {
         Checks.ensureIsTrue("MethodSelfcallDirectives".equals(providerId));
-        Checks.ensureIsTrue(method.length() > 15);
+        Checks.ensureIsNotNull(method);
         Checks.ensureIsGreaterOrEqualTo(numberOfDefinitions, 1, null);
-        Checks.ensureIsNotNull(calls);
+        Checks.ensureIsFalse(calls.isEmpty(), "empty self-calls not allowed.");
     }
 
     @Override

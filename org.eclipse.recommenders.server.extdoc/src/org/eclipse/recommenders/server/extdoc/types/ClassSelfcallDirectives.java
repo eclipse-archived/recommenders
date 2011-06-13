@@ -12,33 +12,44 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Map;
 
+import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+
 import com.google.gson.annotations.SerializedName;
 
-import org.eclipse.recommenders.commons.utils.Checks;
+public final class ClassSelfcallDirectives implements IServerType {
 
-public final class ClassSelfcallDirective implements IServerType {
+    public static ClassSelfcallDirectives create(final ITypeName type, final int numberOfSubclasses,
+            final Map<IMethodName, Integer> selfcalls) {
+        final ClassSelfcallDirectives res = new ClassSelfcallDirectives();
+        res.type = type;
+        res.numberOfSubclasses = numberOfSubclasses;
+        res.calls = selfcalls;
+        return res;
+    }
 
     @SerializedName("_id")
     private String id;
     @SerializedName("_rev")
     private String rev;
 
-    private String providerId;
-    private String type;
+    private final String providerId = getClass().getSimpleName();
+    private ITypeName type;
 
     private int numberOfSubclasses;
-    private Map<String, Integer> calls;
+    private Map<IMethodName, Integer> calls;
 
-    public Map<String, Integer> getCalls() {
+    public Map<IMethodName, Integer> getCalls() {
         return calls;
     }
 
     @Override
     public void validate() {
         Checks.ensureIsTrue("ClassSelfcallDirectives".equals(providerId));
-        Checks.ensureIsTrue(type.length() > 6);
+        Checks.ensureIsNotNull(type);
         Checks.ensureIsGreaterOrEqualTo(numberOfSubclasses, 1, null);
-        Checks.ensureIsTrue(!calls.isEmpty());
+        Checks.ensureIsFalse(calls.isEmpty(), "empty self-calls not allowed");
     }
 
     @Override

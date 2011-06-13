@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.server.extdoc,
  org.eclipse.recommenders.commons.selection,
  org.eclipse.jface.text,
- org.eclipse.recommenders.commons.injection
+ org.eclipse.recommenders.commons.injection,
+ org.eclipse.recommenders.commons.utils;bundle-version="0.2.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc.providers;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;x-internal:=true,

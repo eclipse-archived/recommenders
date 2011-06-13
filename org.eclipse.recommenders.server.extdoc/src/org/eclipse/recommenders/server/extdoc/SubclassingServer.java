@@ -17,27 +17,27 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
-import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirective;
-import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirective;
-import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirective;
+import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
+import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
+import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 
 public final class SubclassingServer extends AbstractRatingsServer {
 
-    public ClassOverrideDirective getClassOverrideDirective(final IType type) {
+    public ClassOverrideDirectives getClassOverrideDirective(final IType type) {
         return Server.getType("ClassOverrideDirectives", type.getKey().substring(0, type.getKey().length() - 1),
-                new GenericType<GenericResultObjectView<ClassOverrideDirective>>() {
+                new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
                 });
     }
 
-    public ClassSelfcallDirective getClassSelfcallDirective(final IType type) {
+    public ClassSelfcallDirectives getClassSelfcallDirective(final IType type) {
         return Server.getType("ClassSelfcallDirectives", type.getKey().substring(0, type.getKey().length() - 1),
-                new GenericType<GenericResultObjectView<ClassSelfcallDirective>>() {
+                new GenericType<GenericResultObjectView<ClassSelfcallDirectives>>() {
                 });
     }
 
-    public MethodSelfcallDirective getMethodSelfcallDirective(final IMethod method) {
+    public MethodSelfcallDirectives getMethodSelfcallDirective(final IMethod method) {
         return Server.getMethod("MethodSelfcallDirectives", method.getKey().replace(";.", "."),
-                new GenericType<GenericResultObjectView<MethodSelfcallDirective>>() {
+                new GenericType<GenericResultObjectView<MethodSelfcallDirectives>>() {
                 });
     }
 

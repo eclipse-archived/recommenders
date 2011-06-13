@@ -16,14 +16,15 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
-import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirective;
-import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirective;
-import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirective;
+import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
+import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
+import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
@@ -55,7 +56,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     private void displayContentForType(final IType type) {
-        final ClassOverrideDirective overrides = server.getClassOverrideDirective(type);
+        final ClassOverrideDirectives overrides = server.getClassOverrideDirective(type);
         initComposite();
         if (overrides == null) {
             displayNoneAvailable(type.getElementName());
@@ -71,7 +72,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                     new TemplateEditDialog(getShell()));
 
             Composite directive = SwtFactory.createGridComposite(composite, 4, 12, 3, 15, 0);
-            for (final Entry<String, Integer> override : overrides.getOverrides().entrySet()) {
+            for (final Entry<IMethodName, Integer> override : overrides.getOverrides().entrySet()) {
                 SwtFactory.createSquare(directive);
                 SwtFactory.createLabel(directive, "should not", true, false, false);
                 SwtFactory.createLabel(directive, "override " + override.getKey(), false, false, true);
@@ -81,7 +82,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                         true, false);
             }
 
-            final ClassSelfcallDirective calls = server.getClassSelfcallDirective(type);
+            final ClassSelfcallDirectives calls = server.getClassSelfcallDirective(type);
             if (calls != null) {
                 line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
                 lineText = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
@@ -90,7 +91,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                         getShell()));
 
                 directive = SwtFactory.createGridComposite(composite, 4, 12, 3, 15, 0);
-                for (final Entry<String, Integer> call : calls.getCalls().entrySet()) {
+                for (final Entry<IMethodName, Integer> call : calls.getCalls().entrySet()) {
                     SwtFactory.createSquare(directive);
                     SwtFactory.createLabel(directive, "should", true, false, false);
                     SwtFactory.createLabel(directive, "call " + call.getKey(), false, false, true);
@@ -105,7 +106,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     private void displayContentForMethod(final IMethod method) {
-        final MethodSelfcallDirective selfcalls = server.getMethodSelfcallDirective(method);
+        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(method);
         initComposite();
         if (selfcalls == null) {
             displayNoneAvailable(method.getElementName());
@@ -113,7 +114,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             displayTextForMethod(method);
 
             final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 3, 15, 0);
-            for (final Entry<String, Integer> call : selfcalls.getCalls().entrySet()) {
+            for (final Entry<IMethodName, Integer> call : selfcalls.getCalls().entrySet()) {
                 SwtFactory.createSquare(directiveComposite);
                 SwtFactory.createLabel(directiveComposite, "should", true, false, false);
                 SwtFactory.createLabel(directiveComposite, "call " + call.getKey(), false, false, true);

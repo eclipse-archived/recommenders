@@ -12,33 +12,44 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Map;
 
+import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+
 import com.google.gson.annotations.SerializedName;
 
-import org.eclipse.recommenders.commons.utils.Checks;
+public final class ClassOverrideDirectives implements IServerType {
 
-public final class ClassOverrideDirective implements IServerType {
+    public static ClassOverrideDirectives create(final ITypeName type, final int numberOfSubclasses,
+            final Map<IMethodName, Integer> overriddenMethods) {
+        final ClassOverrideDirectives res = new ClassOverrideDirectives();
+        res.type = type;
+        res.numberOfSubclasses = numberOfSubclasses;
+        res.overrides = overriddenMethods;
+        return res;
+    }
 
     @SerializedName("_id")
     private String id;
     @SerializedName("_rev")
     private String rev;
 
-    private String providerId;
-    private String type;
+    private final String providerId = getClass().getSimpleName();
+    private ITypeName type;
 
     private int numberOfSubclasses;
-    private Map<String, Integer> overrides;
+    private Map<IMethodName, Integer> overrides;
 
-    public Map<String, Integer> getOverrides() {
+    public Map<IMethodName, Integer> getOverrides() {
         return overrides;
     }
 
     @Override
     public void validate() {
         Checks.ensureIsTrue("ClassOverrideDirectives".equals(providerId));
-        Checks.ensureIsTrue(type.length() > 6);
+        Checks.ensureIsNotNull(type);
         Checks.ensureIsGreaterOrEqualTo(numberOfSubclasses, 1, null);
-        Checks.ensureIsTrue(!overrides.isEmpty());
+        Checks.ensureIsFalse(overrides.isEmpty(), "empty overrides not allowed.");
     }
 
     @Override
