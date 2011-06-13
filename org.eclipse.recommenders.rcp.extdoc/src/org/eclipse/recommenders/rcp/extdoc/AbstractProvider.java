@@ -14,6 +14,7 @@ import com.google.common.base.Preconditions;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -29,8 +30,10 @@ public abstract class AbstractProvider implements IProvider {
         providerName = Preconditions.checkNotNull(config.getAttribute("short_name"));
         providerFullName = Preconditions.checkNotNull(config.getAttribute("long_name"));
 
-        providerIcon = AbstractUIPlugin.imageDescriptorFromPlugin(config.getNamespaceIdentifier(),
-                config.getAttribute("icon")).createImage();
+        final String pluginId = config.getNamespaceIdentifier();
+        final String icon = config.getAttribute("icon");
+        final ImageDescriptor imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, icon);
+        providerIcon = Preconditions.checkNotNull(imageDescriptor, pluginId + " / " + icon).createImage();
     }
 
     @Override

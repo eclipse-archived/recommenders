@@ -12,10 +12,10 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Map;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
-
-import com.google.gson.annotations.SerializedName;
 
 public final class MethodSelfcallDirectives implements IServerType {
 
@@ -38,6 +38,10 @@ public final class MethodSelfcallDirectives implements IServerType {
 
     private int numberOfDefinitions;
     private Map<IMethodName, Integer> calls;
+
+    public int getNumberOfDefinitions() {
+        return numberOfDefinitions;
+    }
 
     public Map<IMethodName, Integer> getCalls() {
         return calls;

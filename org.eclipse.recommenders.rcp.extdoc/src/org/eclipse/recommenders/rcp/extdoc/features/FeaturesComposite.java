@@ -23,6 +23,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
@@ -36,6 +37,7 @@ public final class FeaturesComposite {
 
     public FeaturesComposite(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 4, 3, 0, 0, 0);
+        composite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
     }
 
     public static FeaturesComposite create(final Composite parent, final Object object, final String objectName,
@@ -50,7 +52,7 @@ public final class FeaturesComposite {
         return features;
     }
 
-    public void addCommentsIcon(final Object object, final String objectName, final IProvider provider) {
+    private void addCommentsIcon(final Object object, final String objectName, final IProvider provider) {
         final CommentsDialog commentsDialog = new CommentsDialog(provider.getShell(), null, provider, object,
                 objectName);
         createIcon(commentsIcon, commentsDialog);
@@ -60,11 +62,11 @@ public final class FeaturesComposite {
         createIcon(editIcon, editDialog);
     }
 
-    public void addDeleteIcon(final Object object, final String objectName, final IDeletionProvider provider) {
+    private void addDeleteIcon(final Object object, final String objectName, final IDeletionProvider provider) {
         createIcon(deleteIcon, new DeleteDialog(provider, object, objectName));
     }
 
-    public void addStarsRating(final Object object, final IStarsRatingsServer server) {
+    private void addStarsRating(final Object object, final IStarsRatingsServer server) {
         new StarsRatingComposite(composite, object, server);
     }
 

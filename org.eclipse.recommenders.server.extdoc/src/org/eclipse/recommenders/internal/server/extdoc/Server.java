@@ -58,25 +58,11 @@ public final class Server {
         CACHE.put(docId, attributes);
     }
 
-    public static <T> T getType(final String providerId, final String type,
+    public static <T> T getProviderContent(final String providerId, final String key, final String value,
             final GenericType<GenericResultObjectView<T>> resultType) {
         final String path = String.format(
-                "_design/providers/_view/providers?key=%s%sproviderId%s:%s%s%s,%stype%s:%s%s%s%s", BRACEOPEN, QUOTE,
-                QUOTE, QUOTE, providerId, QUOTE, QUOTE, QUOTE, QUOTE, type, QUOTE, BRACECLOSE);
-        try {
-            final List<ResultObject<T>> rows = CLIENT.doGetRequest(path, resultType).rows;
-            return rows.isEmpty() ? null : rows.get(0).value;
-        } catch (final ServerErrorException e) {
-            return null;
-        }
-    }
-
-    public static <T> T getMethod(final String providerId, final String method,
-            final GenericType<GenericResultObjectView<T>> resultType) {
-        final String encodedMethod = method.replace("<", LESSTHAN).replace(">", GREATERTHAN);
-        final String path = String.format(
-                "_design/providers/_view/providers?key=%s%sproviderId%s:%s%s%s,%smethod%s:%s%s%s%s", BRACEOPEN, QUOTE,
-                QUOTE, QUOTE, providerId, QUOTE, QUOTE, QUOTE, QUOTE, encodedMethod, QUOTE, BRACECLOSE);
+                "_design/providers/_view/providers?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s&stale=ok", BRACEOPEN,
+                QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, value, QUOTE, BRACECLOSE);
         try {
             final List<ResultObject<T>> rows = CLIENT.doGetRequest(path, resultType).rows;
             return rows.isEmpty() ? null : rows.get(0).value;

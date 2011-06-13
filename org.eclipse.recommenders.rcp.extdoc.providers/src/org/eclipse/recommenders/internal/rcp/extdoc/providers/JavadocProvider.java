@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -26,7 +28,7 @@ public final class JavadocProvider extends AbstractProvider {
     @Override
     public Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
         javadoc = new ExtendedJavadocView(parent, partSite);
-        javadoc.getControl().setSize(700, 50);
+        javadoc.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         return javadoc.getControl();
     }
 

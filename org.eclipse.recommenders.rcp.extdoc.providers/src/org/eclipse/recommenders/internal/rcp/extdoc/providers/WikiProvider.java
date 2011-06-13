@@ -39,6 +39,9 @@ public final class WikiProvider extends AbstractProviderComposite {
         this.parser = parser;
     }
 
+    /**
+     * @wbp.parser.entryPoint
+     */
     @Override
     protected Control createContentControl(final Composite parent) {
         parentComposite = SwtFactory.createGridComposite(parent, 1, 0, 0, 0, 0);

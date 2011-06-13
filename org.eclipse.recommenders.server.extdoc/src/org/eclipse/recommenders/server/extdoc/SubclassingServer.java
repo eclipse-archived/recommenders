@@ -24,19 +24,21 @@ import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 public final class SubclassingServer extends AbstractRatingsServer {
 
     public ClassOverrideDirectives getClassOverrideDirective(final IType type) {
-        return Server.getType("ClassOverrideDirectives", type.getKey().substring(0, type.getKey().length() - 1),
+        return Server.getProviderContent("ClassOverrideDirectives", "type",
+                type.getKey().substring(0, type.getKey().length() - 1),
                 new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
                 });
     }
 
     public ClassSelfcallDirectives getClassSelfcallDirective(final IType type) {
-        return Server.getType("ClassSelfcallDirectives", type.getKey().substring(0, type.getKey().length() - 1),
+        return Server.getProviderContent("ClassSelfcallDirectives", "type",
+                type.getKey().substring(0, type.getKey().length() - 1),
                 new GenericType<GenericResultObjectView<ClassSelfcallDirectives>>() {
                 });
     }
 
     public MethodSelfcallDirectives getMethodSelfcallDirective(final IMethod method) {
-        return Server.getMethod("MethodSelfcallDirectives", method.getKey().replace(";.", "."),
+        return Server.getProviderContent("MethodSelfcallDirectives", "method", method.getKey().replace(";.", "."),
                 new GenericType<GenericResultObjectView<MethodSelfcallDirectives>>() {
                 });
     }
