@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
@@ -40,13 +41,18 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
+    }
+
+    @Override
+    protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             printProposals(element);
-        } else {
-            printUnavailable();
+            return true;
         }
+        return false;
     }
 
     private void printProposals(final IJavaElement element) {
@@ -56,7 +62,9 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
                         + subclasses
                         + " subclasses that override at least one method, the following subclassing patterns have been identified.");
 
-        disposeTemplates();
+        if (templates != null) {
+            templates.dispose();
+        }
         templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
 
         for (int i = 0; i < 2; ++i) {
@@ -78,17 +86,6 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
             }
         }
         composite.layout(true);
-    }
-
-    private void printUnavailable() {
-        styledText.setText("Subclassing templates are only available for Java types, not methods or variables.");
-        disposeTemplates();
-    }
-
-    private void disposeTemplates() {
-        if (templates != null) {
-            templates.dispose();
-        }
     }
 
     @Override

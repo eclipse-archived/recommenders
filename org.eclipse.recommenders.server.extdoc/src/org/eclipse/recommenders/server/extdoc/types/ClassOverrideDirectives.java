@@ -12,11 +12,11 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Map;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-
-import com.google.gson.annotations.SerializedName;
 
 public final class ClassOverrideDirectives implements IServerType {
 
@@ -39,6 +39,10 @@ public final class ClassOverrideDirectives implements IServerType {
 
     private int numberOfSubclasses;
     private Map<IMethodName, Integer> overrides;
+
+    public int getNumberOfSubclasses() {
+        return numberOfSubclasses;
+    }
 
     public Map<IMethodName, Integer> getOverrides() {
         return overrides;

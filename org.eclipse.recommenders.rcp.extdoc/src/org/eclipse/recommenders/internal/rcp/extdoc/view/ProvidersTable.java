@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -41,34 +43,19 @@ final class ProvidersTable {
         table.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(final Event event) {
-                if (event.detail == SWT.CHECK) {
-                    final TableItem tableItem = (TableItem) event.item;
-                    final Control control = (Control) tableItem.getData();
-                    final GridData gridData = (GridData) control.getLayoutData();
-                    gridData.exclude = !tableItem.getChecked();
-                    control.setVisible(tableItem.getChecked());
-                    control.getParent().layout(true);
-                } else {
-                    final TableItem tableItem = (TableItem) event.item;
-                    final Control control = (Control) tableItem.getData();
-                    control.setFocus();
+                final TableItem tableItem = (TableItem) event.item;
+                if (!tableItem.getGrayed()) {
+                    if (event.detail == SWT.CHECK) {
+                        setChecked(tableItem, tableItem.getChecked());
+                        ((Control) tableItem.getData()).getParent().layout(true);
+                    } else {
+                        final Control control = (Control) tableItem.getData();
+                        control.setFocus();
+                    }
                 }
             }
         });
         enableDragAndDrop();
-    }
-
-    protected void addProvider(final Control providerControl, final String text, final Image image,
-            final boolean checked) {
-        final TableItem tableItem = new TableItem(table, SWT.NONE);
-        tableItem.setText(text);
-        tableItem.setData(providerControl);
-        tableItem.setImage(image);
-        tableItem.setChecked(true);
-    }
-
-    public TableItem[] getItems() {
-        return table.getItems();
     }
 
     private void enableDragAndDrop() {
@@ -82,6 +69,39 @@ final class ProvidersTable {
         final DropTarget target = new DropTarget(table, operations);
         target.setTransfer(types);
         target.addDropListener(new DropAdapter());
+    }
+
+    protected void addProvider(final Control providerControl, final String text, final Image image,
+            final boolean checked) {
+        final TableItem tableItem = new TableItem(table, SWT.NONE);
+        tableItem.setText(text);
+        tableItem.setData(providerControl);
+        tableItem.setImage(image);
+        setGrayed(tableItem, true);
+    }
+
+    public TableItem[] getItems() {
+        return table.getItems();
+    }
+
+    public void setContext(final JavaElementLocation location) {
+        for (final TableItem item : table.getItems()) {
+            final IProvider provider = (IProvider) ((Control) item.getData()).getData();
+            final boolean availableForLocation = provider.isAvailableForLocation(location);
+            setChecked(item, availableForLocation);
+            setGrayed(item, !availableForLocation);
+        }
+    }
+
+    public void setChecked(final TableItem tableItem, final boolean checked) {
+        tableItem.setChecked(checked);
+        final Control control = (Control) tableItem.getData();
+        ((GridData) control.getLayoutData()).exclude = !checked;
+        control.setVisible(checked);
+    }
+
+    public void setGrayed(final TableItem item, final boolean grayed) {
+        item.setGrayed(grayed);
     }
 
     private static final class DragListener implements DragSourceListener {

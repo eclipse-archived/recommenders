@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
@@ -46,7 +47,12 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
+    }
+
+    @Override
+    protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         String markup = null;
         if (element != null) {
@@ -62,6 +68,7 @@ public final class WikiProvider extends AbstractProviderComposite {
             displayText(element, markup);
         }
         parentComposite.layout(true);
+        return true;
     }
 
     private void displayText(final IJavaElement element, final String markup) {

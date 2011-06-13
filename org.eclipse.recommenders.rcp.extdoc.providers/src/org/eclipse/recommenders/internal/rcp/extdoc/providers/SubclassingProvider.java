@@ -10,12 +10,17 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import java.util.Map;
 import java.util.Map.Entry;
+
+import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
@@ -32,10 +37,15 @@ import org.eclipse.swt.widgets.Control;
 
 public final class SubclassingProvider extends AbstractProviderComposite {
 
-    private final SubclassingServer server = new SubclassingServer();
+    private final SubclassingServer server;
 
     private Composite parentComposite;
     private Composite composite;
+
+    @Inject
+    public SubclassingProvider(final SubclassingServer server) {
+        this.server = server;
+    }
 
     @Override
     protected Control createContentControl(final Composite parent) {
@@ -44,98 +54,62 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
-        final IJavaElement element = selection.getJavaElement();
-        if (element instanceof IType) {
-            displayContentForType((IType) element);
-        } else if (element instanceof IMethod) {
-            displayContentForMethod((IMethod) element);
-        } else {
-            printUnavailable();
-        }
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return location == JavaElementLocation.BLOCK || location == JavaElementLocation.METHOD_DECLARATION
+                || JavaElementLocation.isInTypeDeclaration(location);
     }
 
-    private void displayContentForType(final IType type) {
+    @Override
+    protected boolean updateContent(final IJavaElementSelection selection) {
+        final IJavaElement element = selection.getJavaElement();
+        if (element instanceof IType) {
+            return displayContentForType((IType) element);
+        } else if (element instanceof IMethod) {
+            return displayContentForMethod((IMethod) element);
+        }
+        return false;
+    }
+
+    private boolean displayContentForType(final IType type) {
         final ClassOverrideDirectives overrides = server.getClassOverrideDirective(type);
         initComposite();
         if (overrides == null) {
-            displayNoneAvailable(type.getElementName());
-        } else {
-
-            Composite line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
-            String lineText = "Based on XXX direct subclasses of "
-                    + type.getElementName()
-                    + " we created the following statistics. Subclassers may consider to override the following methods.";
-            final StyledText styledText = SwtFactory.createStyledText(line, lineText);
-            SwtFactory.createStyleRange(styledText, 34, type.getElementName().length(), SWT.NORMAL, false, true);
-            FeaturesComposite.create(line, type, type.getElementName(), this, server,
-                    new TemplateEditDialog(getShell()));
-
-            Composite directive = SwtFactory.createGridComposite(composite, 4, 12, 3, 15, 0);
-            for (final Entry<IMethodName, Integer> override : overrides.getOverrides().entrySet()) {
-                SwtFactory.createSquare(directive);
-                SwtFactory.createLabel(directive, "should not", true, false, false);
-                SwtFactory.createLabel(directive, "override " + override.getKey(), false, false, true);
-                final StyledText txt = SwtFactory.createStyledText(directive, "(" + override.getValue()
-                        + " times - 62%)");
-                SwtFactory.createStyleRange(txt, 10 + String.valueOf(override.getValue()).length(), 3, SWT.NORMAL,
-                        true, false);
-            }
-
-            final ClassSelfcallDirectives calls = server.getClassSelfcallDirective(type);
-            if (calls != null) {
-                line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
-                lineText = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
-                SwtFactory.createLabel(line, lineText, false, false, false);
-                FeaturesComposite.create(line, type, type.getElementName(), this, server, new TemplateEditDialog(
-                        getShell()));
-
-                directive = SwtFactory.createGridComposite(composite, 4, 12, 3, 15, 0);
-                for (final Entry<IMethodName, Integer> call : calls.getCalls().entrySet()) {
-                    SwtFactory.createSquare(directive);
-                    SwtFactory.createLabel(directive, "should", true, false, false);
-                    SwtFactory.createLabel(directive, "call " + call.getKey(), false, false, true);
-                    final StyledText txt = SwtFactory.createStyledText(directive, "(" + call.getValue()
-                            + " times - 62%)");
-                    SwtFactory.createStyleRange(txt, 10 + String.valueOf(call.getValue()).length(), 3, SWT.NORMAL,
-                            true, false);
-                }
-            }
-            parentComposite.layout(true);
+            return false;
         }
+        final String elementName = type.getElementName();
+        final int subclasses = overrides.getNumberOfSubclasses();
+        Composite line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
+        String lineText = "Based on " + subclasses + " direct subclasses of " + type.getElementName()
+                + " we created the following statistics. Subclassers may consider to override the following methods.";
+        final StyledText styledText = SwtFactory.createStyledText(line, lineText);
+        SwtFactory.createStyleRange(styledText, 31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false,
+                true);
+        FeaturesComposite.create(line, type, elementName, this, server, new TemplateEditDialog(getShell()));
+
+        displayDirectives(overrides.getOverrides(), "override", subclasses);
+
+        final ClassSelfcallDirectives calls = server.getClassSelfcallDirective(type);
+        if (calls != null) {
+            line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
+            lineText = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
+            SwtFactory.createStyledText(line, lineText);
+            FeaturesComposite.create(line, type, elementName, this, server, new TemplateEditDialog(getShell()));
+            displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
+        }
+        parentComposite.layout(true);
+        return true;
     }
 
-    private void displayContentForMethod(final IMethod method) {
+    private boolean displayContentForMethod(final IMethod method) {
         final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(method);
         initComposite();
         if (selfcalls == null) {
-            displayNoneAvailable(method.getElementName());
-        } else {
-            displayTextForMethod(method);
-
-            final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 3, 15, 0);
-            for (final Entry<IMethodName, Integer> call : selfcalls.getCalls().entrySet()) {
-                SwtFactory.createSquare(directiveComposite);
-                SwtFactory.createLabel(directiveComposite, "should", true, false, false);
-                SwtFactory.createLabel(directiveComposite, "call " + call.getKey(), false, false, true);
-                final StyledText txt = SwtFactory.createStyledText(directiveComposite, "(" + call.getValue()
-                        + " times - 62%)");
-                SwtFactory.createStyleRange(txt, 10 + String.valueOf(call.getValue()).length(), 3, SWT.NORMAL, true,
-                        false);
-            }
-
-            FeaturesComposite.create(composite, method, method.getElementName(), this, server, new TemplateEditDialog(
-                    getShell()));
-            parentComposite.layout(true);
+            return false;
         }
-    }
-
-    private void displayTextForMethod(final IMethod method) {
-        final StyledText styledText = SwtFactory.createStyledText(composite, "");
-        styledText
-                .setText("Subclasses of "
-                        + method.getParent().getElementName()
-                        + " typically should overrride this method (92%). When overriding subclasses may call the super implementation (25%).");
+        String text = "Subclasses of "
+                + method.getParent().getElementName()
+                + " typically should overrride this method (92%). When overriding subclasses may call the super implementation (25%).";
+        StyledText styledText = SwtFactory.createStyledText(composite, text);
         final int length = method.getParent().getElementName().length();
         SwtFactory.createStyleRange(styledText, 14, length, SWT.NORMAL, false, true);
         SwtFactory.createStyleRange(styledText, length + 25, 6, SWT.BOLD, false, false);
@@ -144,21 +118,51 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         SwtFactory.createStyleRange(styledText, length + 101, 5, SWT.NORMAL, false, true);
         SwtFactory.createStyleRange(styledText, length + 123, 3, SWT.NORMAL, true, false);
 
-        final String line = "Based on XXX implementations of " + method.getElementName()
+        final int definitions = selfcalls.getNumberOfDefinitions();
+        text = "Based on " + definitions + " implementations of " + method.getElementName()
                 + " we created the following statistics. Implementors may consider to call the following methods.";
-        final StyledText text = SwtFactory.createStyledText(composite, line);
-        SwtFactory.createStyleRange(text, 32, method.getElementName().length(), SWT.NORMAL, false, true);
+        styledText = SwtFactory.createStyledText(composite, text);
+        SwtFactory.createStyleRange(styledText, 29 + getLength(definitions), method.getElementName().length(),
+                SWT.NORMAL, false, true);
+
+        displayDirectives(selfcalls.getCalls(), "call", definitions);
+        FeaturesComposite.create(composite, method, method.getElementName(), this, server, new TemplateEditDialog(
+                getShell()));
+        parentComposite.layout(true);
+        return true;
     }
 
-    private void displayNoneAvailable(final String elementName) {
-        final StyledText styledText = SwtFactory.createStyledText(composite, "There are no directives available for "
-                + elementName + ".");
-        SwtFactory.createStyleRange(styledText, 38, elementName.length(), SWT.NORMAL, false, true);
+    private void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
+            final int definitions) {
+        final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 3, 15, 0);
+        for (final Entry<IMethodName, Integer> directive : directives.entrySet()) {
+            final int percent = (int) Math.round(directive.getValue() * 100.0 / definitions);
+            final String label;
+            if (percent >= 95) {
+                label = "must";
+            } else if (percent >= 65) {
+                label = "should";
+            } else if (percent >= 25) {
+                label = "may";
+            } else if (percent >= 10) {
+                label = "rarely";
+            } else {
+                label = "should not";
+            }
+
+            SwtFactory.createSquare(directiveComposite);
+            SwtFactory.createLabel(directiveComposite, label, true, false, false);
+            SwtFactory.createLabel(directiveComposite,
+                    actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, false, true);
+            final StyledText txt = SwtFactory.createStyledText(directiveComposite, "(" + directive.getValue()
+                    + " times - " + percent + "%)");
+            SwtFactory.createStyleRange(txt, 10 + getLength(directive.getValue()), getLength(percent) + 1, SWT.NORMAL,
+                    true, false);
+        }
     }
 
-    private void printUnavailable() {
-        initComposite();
-        SwtFactory.createStyledText(composite, "Subclassing directives are only available for Java types and methods.");
+    private int getLength(final int number) {
+        return String.valueOf(number).length();
     }
 
     private void initComposite() {

@@ -49,7 +49,7 @@ public final class SwtFactory {
         grid.marginHeight = vMargin;
         grid.marginWidth = hMargin;
         composite.setLayout(grid);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         return composite;
     }
 
@@ -75,7 +75,7 @@ public final class SwtFactory {
 
     public static Text createText(final Composite parent, final String text, final int height, final int width) {
         final Text textComponent = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
-        final GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+        final GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
         gridData.heightHint = height;
         gridData.widthHint = width;
         textComponent.setLayoutData(gridData);
@@ -87,7 +87,7 @@ public final class SwtFactory {
         final StyledText styledText = new StyledText(parent, SWT.WRAP);
         styledText.setEnabled(false);
         styledText.setDoubleClickEnabled(false);
-        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         styledText.setEditable(false);
         styledText.setText(text);
         return styledText;

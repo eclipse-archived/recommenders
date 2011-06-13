@@ -14,7 +14,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -25,23 +25,15 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
     private IJavaElementSelection lastSelection;
     private Composite composite;
 
-    /**
-     * @wbp.parser.entryPoint
-     */
     @Override
     public final Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
-        composite = new Composite(parent, SWT.None);
-        final GridLayout layout = new GridLayout();
-        layout.horizontalSpacing = 0;
-        layout.marginHeight = 10;
-        layout.marginWidth = 8;
-        layout.verticalSpacing = 8;
-        composite.setLayout(layout);
+        composite = SwtFactory.createGridComposite(parent, 1, 0, 6, 8, 10);
 
         final CLabel label = new CLabel(composite, SWT.NONE);
         label.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
         label.setImage(getIcon());
         label.setText(getProviderFullName());
+        SwtFactory.createSeparator(composite);
 
         createContentControl(composite);
 
@@ -51,16 +43,19 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
     protected abstract Control createContentControl(Composite parent);
 
     @Override
-    public final void selectionChanged(final IJavaElementSelection selection) {
+    public final boolean selectionChanged(final IJavaElementSelection selection) {
         lastSelection = selection;
-        updateContent(selection);
+        final boolean hasContent = updateContent(selection);
+        ((GridData) composite.getLayoutData()).exclude = !hasContent;
+        composite.setVisible(hasContent);
+        return hasContent;
     }
 
-    protected abstract void updateContent(IJavaElementSelection selection);
+    protected abstract boolean updateContent(IJavaElementSelection selection);
 
     @Override
     public final void redraw() {
-        selectionChanged(lastSelection);
+        updateContent(lastSelection);
     }
 
     @Override

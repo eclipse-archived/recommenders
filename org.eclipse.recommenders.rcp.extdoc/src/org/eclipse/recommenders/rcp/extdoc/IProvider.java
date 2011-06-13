@@ -12,6 +12,7 @@ package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -26,9 +27,11 @@ public interface IProvider extends IExecutableExtension {
 
     Image getIcon();
 
+    boolean isAvailableForLocation(JavaElementLocation location);
+
     Control createControl(Composite parent, IWorkbenchPartSite partSite);
 
-    void selectionChanged(IJavaElementSelection context);
+    boolean selectionChanged(IJavaElementSelection context);
 
     void redraw();
 

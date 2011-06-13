@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionProposalComputer;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
@@ -39,7 +40,7 @@ public final class CallsProvider extends AbstractProviderComposite {
     private final CallsServer server = new CallsServer();
 
     private StyledText styledText;
-    private Composite patterns;
+    private Composite calls;
     private Composite composite;
     private FeaturesComposite features;
 
@@ -50,6 +51,11 @@ public final class CallsProvider extends AbstractProviderComposite {
     }
 
     @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
+    }
+
+    @Override
     protected Control createContentControl(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
         styledText = SwtFactory.createStyledText(composite, "");
@@ -57,7 +63,7 @@ public final class CallsProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected void updateContent(final IJavaElementSelection selection) {
+    protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         // TODO: IMethod is just for testing.
         if ((element instanceof IType || element instanceof IField || element instanceof ILocalVariable || element instanceof IMethod)
@@ -67,12 +73,10 @@ public final class CallsProvider extends AbstractProviderComposite {
                     selection.getInvocationContext(), null);
             if (!proposals.isEmpty()) {
                 displayProposals(element, proposals);
-            } else {
-                displayNoneAvailable(element.getElementName());
+                return true;
             }
-        } else {
-            displayUnavailable();
         }
+        return false;
     }
 
     private void displayProposals(final IJavaElement element, final List<IJavaCompletionProposal> proposals) {
@@ -81,12 +85,12 @@ public final class CallsProvider extends AbstractProviderComposite {
         SwtFactory.createStyleRange(styledText, 30, element.getElementName().length(), SWT.NORMAL, false, true);
 
         disposePatterns();
-        patterns = SwtFactory.createGridComposite(composite, 3, 12, 3, 12, 0);
+        calls = SwtFactory.createGridComposite(composite, 3, 12, 3, 12, 0);
 
         for (final IJavaCompletionProposal proposal : proposals) {
-            SwtFactory.createSquare(patterns);
-            SwtFactory.createLabel(patterns, proposal.getDisplayString(), false, false, false);
-            SwtFactory.createLabel(patterns, (proposal.getRelevance() - 1075) + "%", false, true, false);
+            SwtFactory.createSquare(calls);
+            SwtFactory.createLabel(calls, proposal.getDisplayString(), false, false, false);
+            SwtFactory.createLabel(calls, (proposal.getRelevance() - 1075) + "%", false, true, false);
         }
 
         features = FeaturesComposite.create(composite, element, element.getElementName(), this, server,
@@ -94,20 +98,9 @@ public final class CallsProvider extends AbstractProviderComposite {
         composite.layout(true);
     }
 
-    private void displayNoneAvailable(final String elementName) {
-        styledText.setText("There are no method calls available for " + elementName + ".");
-        SwtFactory.createStyleRange(styledText, 40, elementName.length(), SWT.NORMAL, false, true);
-        disposePatterns();
-    }
-
-    private void displayUnavailable() {
-        styledText.setText("Method calls are only available for Java types and variables.");
-        disposePatterns();
-    }
-
     private void disposePatterns() {
-        if (patterns != null) {
-            patterns.dispose();
+        if (calls != null) {
+            calls.dispose();
             features.dispose();
         }
     }

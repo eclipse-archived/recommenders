@@ -64,7 +64,7 @@ final class JavaElementSelectionResolver {
         if (firstElement instanceof IJavaElement) {
             javaElement = (IJavaElement) firstElement;
         }
-        return new JavaElementSelection(javaElement);
+        return javaElement == null ? null : new JavaElementSelection(javaElement);
     }
 
     /**
@@ -86,6 +86,6 @@ final class JavaElementSelectionResolver {
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
-        return new JavaElementSelection(javaElement, selection.getOffset(), editor);
+        return javaElement == null ? null : new JavaElementSelection(javaElement, selection.getOffset(), editor);
     }
 }

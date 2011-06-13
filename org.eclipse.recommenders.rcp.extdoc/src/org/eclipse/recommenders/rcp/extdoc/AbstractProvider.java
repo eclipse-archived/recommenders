@@ -14,10 +14,16 @@ import com.google.common.base.Preconditions;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.spi.RegistryContributor;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 public abstract class AbstractProvider implements IProvider {
+
+    private static final BundleContext BUNDLECONTEXT = ExtDocPlugin.getDefault().getBundle().getBundleContext();
 
     private String providerName;
     private String providerFullName;
@@ -28,9 +34,7 @@ public abstract class AbstractProvider implements IProvider {
             final Object data) throws CoreException {
         providerName = Preconditions.checkNotNull(config.getAttribute("short_name"));
         providerFullName = Preconditions.checkNotNull(config.getAttribute("long_name"));
-
-        providerIcon = AbstractUIPlugin.imageDescriptorFromPlugin(config.getNamespaceIdentifier(),
-                config.getAttribute("icon")).createImage();
+        setProviderIcon(config);
     }
 
     @Override
@@ -46,6 +50,13 @@ public abstract class AbstractProvider implements IProvider {
     @Override
     public final Image getIcon() {
         return providerIcon;
+    }
+
+    private void setProviderIcon(final IConfigurationElement config) {
+        final long bundleId = Long.parseLong(((RegistryContributor) config.getContributor()).getActualId());
+        final Bundle bundle = BUNDLECONTEXT.getBundle(bundleId);
+        final String icon = config.getAttribute("icon");
+        providerIcon = ImageDescriptor.createFromURL(bundle.getEntry(icon)).createImage();
     }
 
 }

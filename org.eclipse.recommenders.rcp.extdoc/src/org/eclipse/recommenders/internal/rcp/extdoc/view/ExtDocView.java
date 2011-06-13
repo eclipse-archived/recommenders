@@ -42,19 +42,6 @@ public final class ExtDocView extends ViewPart {
         this.providerStore = providerStore;
     }
 
-    public void update(final IJavaElementSelection context) {
-        if (context != null && table != null) {
-            for (final TableItem item : table.getItems()) {
-                if (item.getChecked()) {
-                    final Control providerControl = (Control) item.getData();
-                    ((IProvider) providerControl.getData()).selectionChanged(context);
-                }
-            }
-            providersComposite.layout(true);
-            scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
-        }
-    }
-
     @Override
     public void createPartControl(final Composite parent) {
         final SashForm sashForm = new SashForm(parent, SWT.SMOOTH);
@@ -70,6 +57,8 @@ public final class ExtDocView extends ViewPart {
 
         addProviders();
         fillActionBars();
+
+        providersComposite.layout(true);
     }
 
     private void addProviders() {
@@ -80,15 +69,30 @@ public final class ExtDocView extends ViewPart {
         }
     }
 
-    @Override
-    public void setFocus() {
-        Preconditions.checkArgument(scrolled.setFocus());
-    }
-
     private void fillActionBars() {
         final IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
         toolbar.removeAll();
         toolbar.add(new FeedbackAction());
+    }
+
+    public void update(final IJavaElementSelection selection) {
+        if (selection != null && table != null) {
+            table.setContext(selection.getElementLocation());
+            for (final TableItem item : table.getItems()) {
+                if (item.getChecked()) {
+                    final IProvider provider = (IProvider) ((Control) item.getData()).getData();
+                    final boolean hasContent = provider.selectionChanged(selection);
+                    table.setGrayed(item, !hasContent);
+                }
+            }
+            scrolled.layout(true);
+            scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
+        }
+    }
+
+    @Override
+    public void setFocus() {
+        Preconditions.checkArgument(scrolled.setFocus());
     }
 
     private final class FeedbackAction extends Action {
