@@ -16,7 +16,6 @@ import com.google.gson.annotations.SerializedName;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.recommenders.commons.codesearch.SnippetSummary;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
 class CodeExamples {
 
@@ -25,7 +24,7 @@ class CodeExamples {
     @SerializedName("_rev")
     private String rev;
 
-    private IProvider provider;
+    private final String providerId = getClass().getSimpleName();
     private IMethod method;
 
     private Set<SnippetSummary> examples;

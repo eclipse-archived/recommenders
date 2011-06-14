@@ -15,10 +15,10 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -68,13 +68,11 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
         templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
 
         for (int i = 0; i < 2; ++i) {
-            final Composite editLine = SwtFactory.createGridComposite(templates, 2, 10, 0, 0, 0);
-            final StyledText text = SwtFactory.createStyledText(editLine,
-                    "'pattern 403158' - covers approximately 29% of the examined subclasses (24 subclasses).");
-            SwtFactory.createStyleRange(text, 0, 16, SWT.BOLD, false, false);
-            SwtFactory.createStyleRange(text, 40, 3, SWT.NORMAL, true, false);
-            FeaturesComposite.create(editLine, element, element.getElementName(), this, server, new TemplateEditDialog(
-                    getShell()));
+            final String text = "'pattern 403158' - covers approximately 29% of the examined subclasses (24 subclasses).";
+            final TextAndFeaturesLine line = new TextAndFeaturesLine(templates, text, element,
+                    element.getElementName(), this, server, new TemplateEditDialog(getShell()));
+            line.createStyleRange(0, 16, SWT.BOLD, false, false);
+            line.createStyleRange(40, 3, SWT.NORMAL, true, false);
 
             final Composite template = SwtFactory.createGridComposite(templates, 5, 12, 3, 12, 0);
             for (int j = 0; j < 3; ++j) {

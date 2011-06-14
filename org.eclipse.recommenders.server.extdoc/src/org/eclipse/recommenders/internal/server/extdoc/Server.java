@@ -36,15 +36,11 @@ public final class Server {
     private static final String QUOTE;
     private static final String BRACEOPEN;
     private static final String BRACECLOSE;
-    private static final String LESSTHAN;
-    private static final String GREATERTHAN;
 
     static {
         QUOTE = encode("\"");
         BRACEOPEN = encode("{");
         BRACECLOSE = encode("}");
-        LESSTHAN = encode("<");
-        GREATERTHAN = encode(">");
     }
 
     private Server() {

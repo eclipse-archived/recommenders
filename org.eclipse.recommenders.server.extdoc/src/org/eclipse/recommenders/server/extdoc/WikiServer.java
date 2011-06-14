@@ -17,8 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
-import org.eclipse.recommenders.rcp.extdoc.features.Comment;
-import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
+import org.eclipse.recommenders.server.extdoc.types.Comment;
 
 public final class WikiServer extends AbstractRatingsServer implements ICommentsServer {
 
@@ -34,13 +33,13 @@ public final class WikiServer extends AbstractRatingsServer implements IComments
     }
 
     @Override
-    public List<Comment> getComments(final IJavaElement javaElement) {
+    public List<Comment> getComments(final Object object) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void addComment(final IJavaElement javaElement, final Comment comment) {
+    public void addComment(final Comment comment) {
         // TODO Auto-generated method stub
     }
 

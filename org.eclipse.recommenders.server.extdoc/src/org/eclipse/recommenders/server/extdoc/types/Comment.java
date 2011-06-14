@@ -8,18 +8,20 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.features;
+package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Date;
 
 public final class Comment {
 
-    private final String text;
-    private final Date date;
+    private String text;
+    private Date date;
 
-    public Comment(final String text) {
-        this.text = text;
-        date = new Date();
+    public static Comment create(final Object object, final String text) {
+        final Comment comment = new Comment();
+        comment.text = text;
+        comment.date = new Date();
+        return comment;
     }
 
     String getText() {

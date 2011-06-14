@@ -28,14 +28,15 @@ import org.eclipse.swt.widgets.Control;
 
 public final class WikiProvider extends AbstractProviderComposite {
 
-    private final WikiServer server = new WikiServer();
+    private final WikiServer server;
     private final MarkupParser parser;
 
     private Composite parentComposite;
     private Composite composite;
 
     @Inject
-    WikiProvider(final MarkupParser parser) {
+    WikiProvider(final WikiServer server, final MarkupParser parser) {
+        this.server = server;
         this.parser = parser;
     }
 

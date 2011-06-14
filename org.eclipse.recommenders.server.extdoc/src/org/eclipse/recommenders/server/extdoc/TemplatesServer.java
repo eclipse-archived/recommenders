@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
-
 public final class TemplatesServer implements IStarsRatingsServer {
 
     @Override

@@ -15,7 +15,6 @@ import java.util.Set;
 import com.google.gson.annotations.SerializedName;
 
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
 class SubclassingTemplates {
 
@@ -24,7 +23,7 @@ class SubclassingTemplates {
     @SerializedName("_rev")
     private String rev;
 
-    private IProvider provider;
+    private final String providerId = getClass().getSimpleName();
     private IMethod method;
 
     private int subclasses;

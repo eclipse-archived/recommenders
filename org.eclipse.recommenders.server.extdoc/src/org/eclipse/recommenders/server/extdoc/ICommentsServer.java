@@ -8,16 +8,16 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.features;
+package org.eclipse.recommenders.server.extdoc;
 
 import java.util.List;
 
-import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.server.extdoc.types.Comment;
 
 public interface ICommentsServer {
 
-    List<Comment> getComments(IJavaElement javaElement);
+    List<Comment> getComments(Object object);
 
-    void addComment(IJavaElement javaElement, Comment comment);
+    void addComment(Comment comment);
 
 }

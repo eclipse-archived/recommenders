@@ -10,6 +10,13 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-public final class CommentsServer {
+
+public interface IStarsRatingsServer {
+
+    int getAverageRating(Object object);
+
+    int getUserRating(Object object);
+
+    void addRating(Object object, int stars);
 
 }

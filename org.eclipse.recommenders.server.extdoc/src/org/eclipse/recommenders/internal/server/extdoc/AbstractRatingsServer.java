@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.server.extdoc;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
+import org.eclipse.recommenders.server.extdoc.IStarsRatingsServer;
 
 public abstract class AbstractRatingsServer implements IStarsRatingsServer {
 

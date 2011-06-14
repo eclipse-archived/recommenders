@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
 import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
@@ -24,21 +25,22 @@ import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 public final class SubclassingServer extends AbstractRatingsServer {
 
     public ClassOverrideDirectives getClassOverrideDirective(final IType type) {
-        return Server.getProviderContent("ClassOverrideDirectives", "type",
-                type.getKey().substring(0, type.getKey().length() - 1),
+        final String key = JavaElementResolver.INSTANCE.toRecType(type).getIdentifier();
+        return Server.getProviderContent("ClassOverrideDirectives", "type", key,
                 new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
                 });
     }
 
     public ClassSelfcallDirectives getClassSelfcallDirective(final IType type) {
-        return Server.getProviderContent("ClassSelfcallDirectives", "type",
-                type.getKey().substring(0, type.getKey().length() - 1),
+        final String key = JavaElementResolver.INSTANCE.toRecType(type).getIdentifier();
+        return Server.getProviderContent("ClassSelfcallDirectives", "type", key,
                 new GenericType<GenericResultObjectView<ClassSelfcallDirectives>>() {
                 });
     }
 
     public MethodSelfcallDirectives getMethodSelfcallDirective(final IMethod method) {
-        return Server.getProviderContent("MethodSelfcallDirectives", "method", method.getKey().replace(";.", "."),
+        final String key = JavaElementResolver.INSTANCE.toRecMethod(method).getIdentifier();
+        return Server.getProviderContent("MethodSelfcallDirectives", "method", key,
                 new GenericType<GenericResultObjectView<MethodSelfcallDirectives>>() {
                 });
     }

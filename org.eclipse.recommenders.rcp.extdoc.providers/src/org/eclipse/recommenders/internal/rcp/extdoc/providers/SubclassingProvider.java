@@ -25,9 +25,9 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
@@ -80,22 +80,20 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         }
         final String elementName = type.getElementName();
         final int subclasses = overrides.getNumberOfSubclasses();
-        Composite line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
-        String lineText = "Based on " + subclasses + " direct subclasses of " + type.getElementName()
+
+        String text = "Based on " + subclasses + " direct subclasses of " + elementName
                 + " we created the following statistics. Subclassers may consider to override the following methods.";
-        final StyledText styledText = SwtFactory.createStyledText(line, lineText);
-        SwtFactory.createStyleRange(styledText, 31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false,
-                true);
-        FeaturesComposite.create(line, type, elementName, this, server, new TemplateEditDialog(getShell()));
+        final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, elementName, this, server,
+                new TemplateEditDialog(getShell()));
+        line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
 
         displayDirectives(overrides.getOverrides(), "override", subclasses);
 
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirective(type);
         if (calls != null) {
-            line = SwtFactory.createGridComposite(composite, 2, 10, 0, 0, 0);
-            lineText = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
-            SwtFactory.createStyledText(line, lineText);
-            FeaturesComposite.create(line, type, elementName, this, server, new TemplateEditDialog(getShell()));
+            text = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
+            new TextAndFeaturesLine(composite, text, type, elementName, this, server,
+                    new TemplateEditDialog(getShell()));
             displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
         }
         parentComposite.layout(true);
@@ -111,7 +109,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         String text = "Subclasses of "
                 + method.getParent().getElementName()
                 + " typically should overrride this method (92%). When overriding subclasses may call the super implementation (25%).";
-        StyledText styledText = SwtFactory.createStyledText(composite, text);
+        final StyledText styledText = SwtFactory.createStyledText(composite, text);
         final int length = method.getParent().getElementName().length();
         SwtFactory.createStyleRange(styledText, 14, length, SWT.NORMAL, false, true);
         SwtFactory.createStyleRange(styledText, length + 25, 6, SWT.BOLD, false, false);
@@ -123,13 +121,12 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         final int definitions = selfcalls.getNumberOfDefinitions();
         text = "Based on " + definitions + " implementations of " + method.getElementName()
                 + " we created the following statistics. Implementors may consider to call the following methods.";
-        styledText = SwtFactory.createStyledText(composite, text);
-        SwtFactory.createStyleRange(styledText, 29 + getLength(definitions), method.getElementName().length(),
-                SWT.NORMAL, false, true);
+        final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method, method.getElementName(),
+                this, server, new TemplateEditDialog(getShell()));
+        line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL, false, true);
 
         displayDirectives(selfcalls.getCalls(), "call", definitions);
-        FeaturesComposite.create(composite, method, method.getElementName(), this, server, new TemplateEditDialog(
-                getShell()));
+
         parentComposite.layout(true);
         return true;
     }
@@ -146,21 +143,9 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         orderedMap.putAll(directives);
         for (final Entry<IMethodName, Integer> directive : orderedMap.entrySet()) {
             final int percent = (int) Math.round(directive.getValue() * 100.0 / definitions);
-            final String label;
-            if (percent >= 95) {
-                label = "must";
-            } else if (percent >= 65) {
-                label = "should";
-            } else if (percent >= 25) {
-                label = "may";
-            } else if (percent >= 10) {
-                label = "rarely";
-            } else {
-                label = "should not";
-            }
 
             SwtFactory.createSquare(directiveComposite);
-            SwtFactory.createLabel(directiveComposite, label, true, false, false);
+            SwtFactory.createLabel(directiveComposite, getLabel(percent), true, false, false);
             SwtFactory.createLabel(directiveComposite,
                     actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, false, true);
             final StyledText txt = SwtFactory.createStyledText(directiveComposite, "(" + directive.getValue()
@@ -168,6 +153,19 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             SwtFactory.createStyleRange(txt, 10 + getLength(directive.getValue()), getLength(percent) + 1, SWT.NORMAL,
                     true, false);
         }
+    }
+
+    private String getLabel(final int percent) {
+        if (percent >= 95) {
+            return "must";
+        } else if (percent >= 65) {
+            return "should";
+        } else if (percent >= 25) {
+            return "may";
+        } else if (percent >= 10) {
+            return "rarely";
+        }
+        return "should not";
     }
 
     private int getLength(final int number) {

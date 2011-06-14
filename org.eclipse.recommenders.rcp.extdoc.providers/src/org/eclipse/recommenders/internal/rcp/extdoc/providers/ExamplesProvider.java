@@ -33,7 +33,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     @Override
     protected Control createContentControl(final Composite parent) {
         final Composite container = SwtFactory.createGridComposite(parent, 1, 0, 0, 0, 0);
-        text = SwtFactory.createText(parent, "", 10, 100);
+        text = SwtFactory.createText(container, "", 10, 100);
         return container;
     }
 

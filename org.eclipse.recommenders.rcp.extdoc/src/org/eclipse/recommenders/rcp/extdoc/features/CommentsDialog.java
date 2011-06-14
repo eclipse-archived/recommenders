@@ -16,6 +16,8 @@ import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.AbstractDialog;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.server.extdoc.ICommentsServer;
+import org.eclipse.recommenders.server.extdoc.types.Comment;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -60,6 +62,11 @@ final class CommentsDialog extends AbstractDialog {
         final Composite composite = (Composite) super.createDialogArea(parent);
         final Composite area = SwtFactory.createGridComposite(composite, 1, 0, 10, 15, 20);
         new Label(area, SWT.NONE).setText("Under construction");
+
+        for (final Comment comment : server.getComments(object)) {
+
+        }
+
         SwtFactory.createSeparator(composite);
         return composite;
     }
@@ -68,10 +75,12 @@ final class CommentsDialog extends AbstractDialog {
     protected void okPressed() {
         try {
             // TODO: ...
-            provider.redraw();
+            final String text = null;
+            final Comment comment = Comment.create(object, text);
+            server.addComment(comment);
+            // TODO: ...
         } finally {
             Preconditions.checkArgument(close());
         }
     }
-
 }

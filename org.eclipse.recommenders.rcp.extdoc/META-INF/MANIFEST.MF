@@ -7,15 +7,16 @@ Implementation-Version: 0.2.0
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui,
- org.eclipse.jdt.core,
  org.eclipse.core.runtime,
  com.google.inject,
- org.eclipse.recommenders.commons.selection
+ org.eclipse.recommenders.commons.selection,
+ org.eclipse.recommenders.server.extdoc
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin
 Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.base,
- org.eclipse.recommenders.commons.injection
+ org.eclipse.recommenders.commons.injection,
+ org.eclipse.recommenders.server.extdoc
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.preferences;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.view;x-internal:=true,
@@ -28,7 +29,7 @@ Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
    org.eclipse.swt.widgets,
    org.eclipse.jface.dialogs",
  org.eclipse.recommenders.rcp.extdoc.features;
-  uses:="org.eclipse.jdt.core,
+  uses:="org.eclipse.recommenders.server.extdoc,
    org.eclipse.recommenders.rcp.extdoc,
    org.eclipse.swt.widgets,
    org.eclipse.jface.dialogs"

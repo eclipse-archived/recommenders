@@ -24,13 +24,13 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionProposalComputer;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CompletionInvocationContext;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
 import org.eclipse.recommenders.server.extdoc.TemplatesServer;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
@@ -93,12 +93,10 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
         templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
 
         for (final IJavaCompletionProposal proposal : proposals) {
-            final Composite editLine = SwtFactory.createGridComposite(templates, 2, 10, 0, 0, 0);
-            SwtFactory.createLabel(editLine, proposal.getDisplayString(), false, false, false);
-            FeaturesComposite.create(editLine, element, element.getElementName(), this, server, new TemplateEditDialog(
-                    getShell()));
+            new TextAndFeaturesLine(templates, proposal.getDisplayString(), element, element.getElementName(), this,
+                    server, new TemplateEditDialog(getShell()));
 
-            final Composite template = SwtFactory.createGridComposite(templates, 1, 12, 3, 12, 0);
+            final Composite template = SwtFactory.createGridComposite(templates, 1, 12, 0, 12, 0);
             for (final String line : proposal.getAdditionalProposalInfo().split(";\r?\n")) {
                 SwtFactory.createLabel(template, line, false, false, true);
             }
