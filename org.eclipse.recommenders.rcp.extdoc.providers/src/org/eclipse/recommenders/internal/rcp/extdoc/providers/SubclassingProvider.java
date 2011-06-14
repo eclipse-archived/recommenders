@@ -10,8 +10,10 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.google.inject.Inject;
 
@@ -135,7 +137,14 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     private void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
             final int definitions) {
         final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 3, 15, 0);
-        for (final Entry<IMethodName, Integer> directive : directives.entrySet()) {
+        final Map<IMethodName, Integer> orderedMap = new TreeMap<IMethodName, Integer>(new Comparator<IMethodName>() {
+            @Override
+            public int compare(final IMethodName o1, final IMethodName o2) {
+                return directives.get(o2).compareTo(directives.get(o1));
+            }
+        });
+        orderedMap.putAll(directives);
+        for (final Entry<IMethodName, Integer> directive : orderedMap.entrySet()) {
             final int percent = (int) Math.round(directive.getValue() * 100.0 / definitions);
             final String label;
             if (percent >= 95) {

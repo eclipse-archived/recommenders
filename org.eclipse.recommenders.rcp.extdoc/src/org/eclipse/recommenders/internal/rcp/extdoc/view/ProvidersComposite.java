@@ -33,7 +33,7 @@ class ProvidersComposite extends Composite {
 
     private void setLayout() {
         final GridLayout grid = new GridLayout(1, false);
-        grid.verticalSpacing = 5;
+        grid.verticalSpacing = 4;
         grid.marginWidth = 0;
         grid.marginHeight = 0;
         grid.horizontalSpacing = 0;
