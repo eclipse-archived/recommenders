@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core,
  org.eclipse.recommenders.commons.utils,
  org.eclipse.recommenders.rcp.extdoc,
- com.sun.jersey.client
+ com.sun.jersey.client,
+ org.eclipse.recommenders.rcp.utils
 Import-Package: com.google.gson.annotations;version="1.6.0",
  com.sun.jersey.api.client,
  org.eclipse.recommenders.commons.client,
