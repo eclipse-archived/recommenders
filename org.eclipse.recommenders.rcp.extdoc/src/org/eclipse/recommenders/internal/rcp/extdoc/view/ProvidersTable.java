@@ -22,6 +22,7 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -37,6 +38,9 @@ final class ProvidersTable {
 
     private static Table table;
     private static TableItem dragSourceItem;
+
+    private static Color blackColor;
+    private static Color grayColor;
 
     protected ProvidersTable(final Composite parent, final int style) {
         table = new Table(parent, style);
@@ -56,6 +60,9 @@ final class ProvidersTable {
             }
         });
         enableDragAndDrop();
+
+        blackColor = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+        grayColor = parent.getDisplay().getSystemColor(SWT.COLOR_GRAY);
     }
 
     private void enableDragAndDrop() {
@@ -102,6 +109,7 @@ final class ProvidersTable {
 
     public void setGrayed(final TableItem item, final boolean grayed) {
         item.setGrayed(grayed);
+        item.setForeground(grayed ? grayColor : blackColor);
     }
 
     private static final class DragListener implements DragSourceListener {
