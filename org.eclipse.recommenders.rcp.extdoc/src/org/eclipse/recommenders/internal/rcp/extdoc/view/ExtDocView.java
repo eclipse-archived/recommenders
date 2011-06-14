@@ -13,6 +13,9 @@ package org.eclipse.recommenders.internal.rcp.extdoc.view;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -27,6 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.UIJob;
 
 @SuppressWarnings("restriction")
 public final class ExtDocView extends ViewPart {
@@ -80,13 +84,19 @@ public final class ExtDocView extends ViewPart {
             table.setContext(selection.getElementLocation());
             for (final TableItem item : table.getItems()) {
                 if (item.getChecked()) {
-                    final IProvider provider = (IProvider) ((Control) item.getData()).getData();
-                    final boolean hasContent = provider.selectionChanged(selection);
-                    table.setGrayed(item, !hasContent);
+                    new UIJob("Provider Update") {
+                        @Override
+                        public IStatus runInUIThread(final IProgressMonitor monitor) {
+                            final IProvider provider = (IProvider) ((Control) item.getData()).getData();
+                            final boolean hasContent = provider.selectionChanged(selection);
+                            table.setGrayed(item, !hasContent);
+                            scrolled.layout(true);
+                            scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
+                            return Status.OK_STATUS;
+                        }
+                    }.schedule();
                 }
             }
-            scrolled.layout(true);
-            scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
         }
     }
 
