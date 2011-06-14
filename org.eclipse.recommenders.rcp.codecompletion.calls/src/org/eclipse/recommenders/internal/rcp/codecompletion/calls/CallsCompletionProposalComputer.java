@@ -116,6 +116,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         }
         findRecommendations();
         findMatchingProposals();
+        releaseModel();
         return this.proposals;
     }
 
@@ -149,7 +150,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private boolean findModel() {
         if (modelsStore.hasModel(receiverType)) {
-            model = modelsStore.getModel(receiverType);
+            model = modelsStore.acquireModel(receiverType);
         }
         return model != null;
     }
@@ -201,6 +202,13 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
                         call);
                 proposals.add(decoratedProposal);
             }
+        }
+    }
+
+    private void releaseModel() {
+        if (model != null) {
+            modelsStore.releaseModel(model);
+            model = null;
         }
     }
 
