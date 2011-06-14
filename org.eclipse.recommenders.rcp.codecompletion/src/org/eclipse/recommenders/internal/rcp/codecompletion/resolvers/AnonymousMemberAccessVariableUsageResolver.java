@@ -32,7 +32,8 @@ public class AnonymousMemberAccessVariableUsageResolver implements IVariableUsag
     public boolean canResolve(final IIntelligentCompletionContext ctx) {
         this.ctx = ensureIsNotNull(ctx);
         final ASTNode completionNode = ctx.getCompletionNode();
-        return completionNode instanceof CompletionOnMemberAccess;
+        final boolean isThis = "this".equals(ctx.getReceiverName());
+        return !isThis && completionNode instanceof CompletionOnMemberAccess;
     }
 
     @Override

@@ -340,9 +340,10 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
 
     @Override
     public Variable getVariable() {
-        if (isReceiverImplicitThis()) {
+        if (isReceiverImplicitThis() || isReceiverExplicitThis()) {
             return Variable.create("this", getSuperclassOfEnclosingType(), getEnclosingMethod());
         }
+
         if (getReceiverName() != null && getReceiverType() != null) {
             return Variable.create(getReceiverName(), getReceiverType(), getEnclosingMethod());
         }
@@ -353,6 +354,10 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         final String name = String.valueOf(match.name);
         final ITypeName type = CompilerBindings.toTypeName(match.type);
         return Variable.create(name, type, getEnclosingMethod());
+    }
+
+    private boolean isReceiverExplicitThis() {
+        return "this".equals(getReceiverName());
     }
 
     @Override
