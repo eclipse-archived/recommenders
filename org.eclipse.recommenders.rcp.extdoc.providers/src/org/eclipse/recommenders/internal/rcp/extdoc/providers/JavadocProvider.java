@@ -30,6 +30,7 @@ public final class JavadocProvider extends AbstractProvider {
     public Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
         javadoc = new ExtendedJavadocView(parent, partSite);
         javadoc.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        javadoc.getControl().setSize(-1, 100);
         return javadoc.getControl();
     }
 
