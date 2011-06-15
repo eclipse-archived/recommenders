@@ -19,14 +19,16 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.commons.utils,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- org.apache.commons.lang3;bundle-version="3.0.0"
+ org.apache.commons.lang3;bundle-version="3.0.0",
+ org.eclipse.recommenders.rcp.codecompletion.calls
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc.providers;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;x-internal:=true
 Import-Package: org.eclipse.jface.text,
  org.eclipse.recommenders.commons.injection,
- org.eclipse.recommenders.internal.rcp.codecompletion.calls
+ org.eclipse.recommenders.internal.rcp.codecompletion.calls,
+ org.eclipse.recommenders.rcp.utils
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

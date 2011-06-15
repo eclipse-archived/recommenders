@@ -63,7 +63,7 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return true;
+        return false;
     }
 
     @Override
@@ -89,7 +89,9 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
         styledText.setText("By analyzing XXX occasions of " + element.getElementName()
                 + ", the following patterns have been identified:");
 
-        disposeTemplates();
+        if (templates != null) {
+            templates.dispose();
+        }
         templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
 
         for (final IJavaCompletionProposal proposal : proposals) {
@@ -102,12 +104,6 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
             }
         }
         composite.layout(true);
-    }
-
-    private void disposeTemplates() {
-        if (templates != null) {
-            templates.dispose();
-        }
     }
 
     @Override

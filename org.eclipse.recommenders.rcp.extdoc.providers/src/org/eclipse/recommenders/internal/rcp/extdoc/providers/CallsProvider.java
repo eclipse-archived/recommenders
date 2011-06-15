@@ -10,19 +10,25 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import java.util.List;
+import java.util.SortedSet;
 
 import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionProposalComputer;
+import org.eclipse.recommenders.commons.utils.Tuple;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -30,16 +36,16 @@ import org.eclipse.swt.widgets.Control;
 
 public final class CallsProvider extends AbstractProviderComposite {
 
-    private final CallsCompletionProposalComputer proposalComputer;
-    private final CallsServer server = new CallsServer();
+    private final CallsModelStore modelStore;
+    private final CallsServer server;
 
     private Composite composite;
-    private Composite calls;
-    private TextAndFeaturesLine line;
+    private Composite container;
 
     @Inject
-    public CallsProvider(final CallsCompletionProposalComputer proposalComputer) {
-        this.proposalComputer = proposalComputer;
+    public CallsProvider(final CallsModelStore modelStore, final CallsServer server) {
+        this.modelStore = modelStore;
+        this.server = server;
     }
 
     @Override
@@ -53,40 +59,65 @@ public final class CallsProvider extends AbstractProviderComposite {
         return composite;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
-        if (selection.getInvocationContext() != null) {
-            final List<IJavaCompletionProposal> proposals = proposalComputer.computeCompletionProposals(
-                    selection.getInvocationContext(), null);
-            if (!proposals.isEmpty()) {
-                displayProposals(element, proposals);
-                return true;
-            }
+        if (element instanceof IType) {
+            return displayProposalsForType((IType) element);
+        } else if (element instanceof IMethod) {
+            return displayProposalsForMethod((IMethod) element);
+        }
+        return displayProposalsForVariable(element);
+    }
+
+    private boolean displayProposalsForType(final IType type) {
+        final ITypeName typeName = JavaElementResolver.INSTANCE.toRecType(type);
+        if (modelStore.hasModel(typeName)) {
+            final IObjectMethodCallsNet model = modelStore.getModel(typeName);
+            return displayProposals(type, model.getRecommendedMethodCalls(0.05, 5));
         }
         return false;
     }
 
-    private void displayProposals(final IJavaElement element, final List<IJavaCompletionProposal> proposals) {
-        if (calls != null) {
-            line.dispose();
-            calls.dispose();
+    private boolean displayProposalsForMethod(final IMethod method) {
+        final ITypeName typeName = JavaElementResolver.INSTANCE.toRecType((IType) method.getParent());
+        if (modelStore.hasModel(typeName)) {
+            final IObjectMethodCallsNet model = modelStore.getModel(typeName);
+            return displayProposals(method, model.getRecommendedMethodCalls(0.05, 5));
         }
+        return false;
+    }
+
+    private boolean displayProposalsForVariable(final IJavaElement element) {
+        final ITypeName typeName = JavaElementResolver.INSTANCE.toRecType((IType) element.getParent());
+        if (modelStore.hasModel(typeName)) {
+            final IObjectMethodCallsNet model = modelStore.getModel(typeName);
+            return displayProposals(element, model.getRecommendedMethodCalls(0.05, 5));
+        }
+        return false;
+    }
+
+    private boolean displayProposals(final IJavaElement element, final SortedSet<Tuple<IMethodName, Double>> proposals) {
+        if (container != null) {
+            container.dispose();
+        }
+        container = new Composite(composite, SWT.NONE);
 
         final String text = "By analyzing XXX occasions of " + element.getElementName()
                 + ", the following patterns have been identified:";
-        line = new TextAndFeaturesLine(composite, text, element, element.getElementName(), this, server,
-                new TemplateEditDialog(getShell()));
+        final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, element, element.getElementName(),
+                this, server, new TemplateEditDialog(getShell()));
         line.createStyleRange(30, element.getElementName().length(), SWT.NORMAL, false, true);
 
-        calls = SwtFactory.createGridComposite(composite, 3, 12, 3, 12, 0);
-        for (final IJavaCompletionProposal proposal : proposals) {
+        final Composite calls = SwtFactory.createGridComposite(container, 3, 12, 3, 12, 0);
+        for (final Tuple<IMethodName, Double> proposal : proposals) {
             SwtFactory.createSquare(calls);
-            SwtFactory.createLabel(calls, proposal.getDisplayString(), false, false, false);
-            SwtFactory.createLabel(calls, (proposal.getRelevance() - 1075) + "%", false, true, false);
+            SwtFactory.createLabel(calls, proposal.getFirst().getIdentifier(), false, false, false);
+            SwtFactory.createLabel(calls, proposal.getSecond() * 100 + "%", false, true, false);
         }
 
+        container.layout(true);
         composite.layout(true);
+        return true;
     }
 }

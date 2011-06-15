@@ -12,17 +12,12 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Date;
 
-public final class Comment {
+import org.eclipse.recommenders.rcp.extdoc.features.IComment;
+
+public final class Comment implements IComment {
 
     private String text;
     private Date date;
-
-    public static Comment create(final Object object, final String text) {
-        final Comment comment = new Comment();
-        comment.text = text;
-        comment.date = new Date();
-        return comment;
-    }
 
     String getText() {
         return text;

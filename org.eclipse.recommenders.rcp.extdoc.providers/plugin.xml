@@ -2,6 +2,12 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         point="org.eclipse.recommenders.commons.injection.modules">
+      <module
+            class="org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersModule">
+      </module>
+   </extension>
+   <extension
          point="org.eclipse.recommenders.rcp.extdoc.provider">
       <provider
             class="org.eclipse.recommenders.internal.rcp.extdoc.providers.JavadocProvider"

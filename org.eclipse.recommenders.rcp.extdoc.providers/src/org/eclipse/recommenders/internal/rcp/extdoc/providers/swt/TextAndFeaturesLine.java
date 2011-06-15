@@ -14,7 +14,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
-import org.eclipse.recommenders.server.extdoc.IStarsRatingsServer;
+import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 

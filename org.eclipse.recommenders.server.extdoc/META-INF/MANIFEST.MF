@@ -14,6 +14,7 @@ Import-Package: com.google.gson.annotations;version="1.6.0",
  com.sun.jersey.api.client,
  org.eclipse.recommenders.commons.client,
  org.eclipse.recommenders.commons.utils.gson,
+ org.eclipse.recommenders.rcp.extdoc.features,
  org.eclipse.recommenders.rcp.utils
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.recommenders.internal.server.extdoc.ExtDocServerPlugin

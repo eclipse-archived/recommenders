@@ -14,10 +14,7 @@ import com.google.common.base.Preconditions;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.AbstractDialog;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.server.extdoc.ICommentsServer;
-import org.eclipse.recommenders.server.extdoc.types.Comment;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -28,18 +25,16 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 final class CommentsDialog extends AbstractDialog {
 
-    private final IProvider provider;
     private final ICommentsServer server;
     private final Object object;
     private final String objectName;
 
-    protected CommentsDialog(final Shell parentShell, final ICommentsServer server, final IProvider provider,
-            final Object object, final String objectName) {
+    protected CommentsDialog(final Shell parentShell, final ICommentsServer server, final Object object,
+            final String objectName) {
         super(parentShell);
         setBlockOnOpen(false);
 
         this.server = server;
-        this.provider = provider;
         this.object = object;
         this.objectName = objectName;
     }
@@ -63,7 +58,7 @@ final class CommentsDialog extends AbstractDialog {
         final Composite area = SwtFactory.createGridComposite(composite, 1, 0, 10, 15, 20);
         new Label(area, SWT.NONE).setText("Under construction");
 
-        for (final Comment comment : server.getComments(object)) {
+        for (final IComment comment : server.getComments(object)) {
 
         }
 
@@ -76,8 +71,7 @@ final class CommentsDialog extends AbstractDialog {
         try {
             // TODO: ...
             final String text = null;
-            final Comment comment = Comment.create(object, text);
-            server.addComment(comment);
+            final IComment comment = server.addComment(object, text);
             // TODO: ...
         } finally {
             Preconditions.checkArgument(close());

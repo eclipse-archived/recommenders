@@ -17,7 +17,6 @@ import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.server.extdoc.IStarsRatingsServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -27,6 +26,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
 public final class FeaturesComposite {
 
@@ -44,7 +44,7 @@ public final class FeaturesComposite {
     public static FeaturesComposite create(final Composite parent, final Object object, final String objectName,
             final IProvider provider, final IStarsRatingsServer server, final Dialog editDialog) {
         final FeaturesComposite features = new FeaturesComposite(parent);
-        features.addCommentsIcon(object, objectName, provider);
+        features.addCommentsIcon(object, objectName, provider.getShell());
         features.addEditIcon(editDialog);
         if (provider instanceof IDeletionProvider) {
             features.addDeleteIcon(object, objectName, (IDeletionProvider) provider);
@@ -53,9 +53,8 @@ public final class FeaturesComposite {
         return features;
     }
 
-    private void addCommentsIcon(final Object object, final String objectName, final IProvider provider) {
-        final CommentsDialog commentsDialog = new CommentsDialog(provider.getShell(), null, provider, object,
-                objectName);
+    private void addCommentsIcon(final Object object, final String objectName, final Shell shell) {
+        final CommentsDialog commentsDialog = new CommentsDialog(shell, null, object, objectName);
         createIcon(commentsIcon, commentsDialog);
     }
 
