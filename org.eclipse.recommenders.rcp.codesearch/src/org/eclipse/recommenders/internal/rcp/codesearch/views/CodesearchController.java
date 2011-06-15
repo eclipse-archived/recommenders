@@ -28,7 +28,7 @@ import org.eclipse.recommenders.commons.codesearch.client.CodeSearchClient;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPResponse;
-import org.eclipse.recommenders.rcp.utils.SummaryCodeFormatter;
+import org.eclipse.recommenders.internal.rcp.codesearch.utils.SummaryCodeFormatter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;

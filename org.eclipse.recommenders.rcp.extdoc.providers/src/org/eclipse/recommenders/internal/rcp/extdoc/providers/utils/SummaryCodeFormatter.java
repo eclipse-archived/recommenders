@@ -7,7 +7,7 @@
  *
  * Contributors:
  */
-package org.eclipse.recommenders.rcp.utils;
+package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
 import java.util.Map;
 

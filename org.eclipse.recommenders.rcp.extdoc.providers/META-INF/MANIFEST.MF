@@ -19,8 +19,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.commons.utils,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- org.eclipse.recommenders.rcp.utils,
- org.eclipse.recommenders.commons.utils.gson
+ org.apache.commons.lang3;bundle-version="3.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc.providers;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;x-internal:=true,
