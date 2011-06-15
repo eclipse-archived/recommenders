@@ -16,13 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.jersey.api.client.GenericType;
-
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.client.ResultObject;
 import org.eclipse.recommenders.commons.client.ServerErrorException;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
+
+import com.sun.jersey.api.client.GenericType;
 
 public final class Server {
 
@@ -58,7 +58,7 @@ public final class Server {
             final GenericType<GenericResultObjectView<T>> resultType) {
         final String path = String.format(
                 "_design/providers/_view/providers?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s&stale=ok", BRACEOPEN,
-                QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, value, QUOTE, BRACECLOSE);
+                QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, encode(value), QUOTE, BRACECLOSE);
         try {
             final List<ResultObject<T>> rows = CLIENT.doGetRequest(path, resultType).rows;
             return rows.isEmpty() ? null : rows.get(0).value;

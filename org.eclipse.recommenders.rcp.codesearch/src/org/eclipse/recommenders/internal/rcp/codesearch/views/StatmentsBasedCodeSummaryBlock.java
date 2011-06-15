@@ -39,6 +39,7 @@ import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPProposal;
 import org.eclipse.recommenders.internal.rcp.codesearch.RCPResponse;
+import org.eclipse.recommenders.rcp.utils.SummaryCodeFormatter;
 import org.eclipse.recommenders.rcp.utils.ast.ASTStringUtils;
 import org.eclipse.recommenders.rcp.utils.ast.HeuristicUsedTypesAndMethodsLocationFinder;
 import org.eclipse.recommenders.rcp.utils.ast.UsedTypesAndMethodsLocationFinder;

@@ -16,8 +16,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.rcp.codecompletion.templates,
  org.eclipse.recommenders.server.extdoc,
  org.eclipse.recommenders.commons.selection,
- org.eclipse.recommenders.commons.utils;bundle-version="0.2.0",
- org.eclipse.jface.text
+ org.eclipse.recommenders.commons.utils,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.recommenders.rcp.utils,
+ org.eclipse.recommenders.commons.utils.gson
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc.providers;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;x-internal:=true,
