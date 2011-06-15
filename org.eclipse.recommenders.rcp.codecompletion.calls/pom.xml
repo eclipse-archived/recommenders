@@ -14,7 +14,7 @@
 	<version>0.2.0-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 	<properties>
-     <models.version>0.2.1</models.version>
+     <models.version>0.2.2</models.version>
   </properties>
 	<build>
 		<plugins>
@@ -31,7 +31,7 @@
 							<version>${models.version}</version>
 							<packaging>zip</packaging>
 							<downloadUrl>
-								http://vandyk.st.informatik.tu-darmstadt.de/updates/models/binary-calls-models.{packaging}
+								http://vandyk.st.informatik.tu-darmstadt.de/updates/models/binary-calls-models-with-android.{packaging}
                         </downloadUrl>
 							<!-- checksum>671a3d4431df7e9ce29c08f7fcd7533d</checksum -->
 						</artifactItem>
