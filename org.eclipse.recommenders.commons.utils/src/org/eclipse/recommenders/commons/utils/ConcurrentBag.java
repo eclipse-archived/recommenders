@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
 public class ConcurrentBag<T> implements Bag<T> {
@@ -217,5 +218,21 @@ public class ConcurrentBag<T> implements Bag<T> {
     @Override
     public boolean contains(final T element) {
         return index.containsKey(element);
+    }
+
+    @Override
+    public Map<T, Integer> asMap() {
+        return Maps.transformValues(index, new Function<AtomicInteger, Integer>() {
+
+            @Override
+            public Integer apply(final AtomicInteger input) {
+                return input.get();
+            }
+        });
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return index.isEmpty();
     }
 }

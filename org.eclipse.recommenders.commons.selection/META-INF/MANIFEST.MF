@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Common Selection Classes (Incubation) (Experimental)
+Bundle-SymbolicName: org.eclipse.recommenders.commons.selection;singleton:=true
+Bundle-Version: 0.2.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.jface.text,
+ com.google.guava,
+ org.eclipse.recommenders.commons.utils
+Export-Package: org.eclipse.recommenders.commons.internal.selection;x-internal:=true,
+ org.eclipse.recommenders.commons.selection;
+  uses:="org.eclipse.jdt.ui.text.java,
+   org.eclipse.jdt.core.dom,
+   org.eclipse.jdt.core,
+   org.eclipse.ui"
+Import-Package: org.eclipse.jdt.internal.ui.javaeditor,
+ org.eclipse.jface.viewers,
+ org.eclipse.ui.texteditor
+Bundle-Activator: org.eclipse.recommenders.commons.internal.selection.SelectionPlugin
+Bundle-ActivationPolicy: lazy
