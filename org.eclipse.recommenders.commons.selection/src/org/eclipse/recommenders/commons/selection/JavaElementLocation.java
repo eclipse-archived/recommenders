@@ -22,7 +22,7 @@ public enum JavaElementLocation {
     private String displayName;
 
     JavaElementLocation() {
-        displayName = WordUtils.capitalizeFully(name().replace("_", " "));
+        displayName = WordUtils.capitalizeFully(name().replace("_", " ").replace("DECLARATION", ""));
     }
 
     public String getDisplayName() {
@@ -30,7 +30,6 @@ public enum JavaElementLocation {
     }
 
     public static boolean isInTypeDeclaration(final JavaElementLocation location) {
-        return location == TYPE_DECLARATION || location == EXTENDS_DECLARATION
-                || location == IMPLEMENTS_DECLARATION;
+        return location == TYPE_DECLARATION || location == EXTENDS_DECLARATION || location == IMPLEMENTS_DECLARATION;
     }
 }

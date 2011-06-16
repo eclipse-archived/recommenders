@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
@@ -47,11 +48,14 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
 
     @Override
     public boolean selectionChanged(final IJavaElementSelection context) {
-        if (context.getJavaElement() != null) {
+        try {
+            context.getJavaElement().getAttachedJavadoc(null);
             javadoc.setInput(context.getJavaElement());
             setBrowserSizeLayoutDataAndTriggerLayout(20);
+            return true;
+        } catch (final JavaModelException e) {
+            return false;
         }
-        return context.getJavaElement() != null;
     }
 
     @Override

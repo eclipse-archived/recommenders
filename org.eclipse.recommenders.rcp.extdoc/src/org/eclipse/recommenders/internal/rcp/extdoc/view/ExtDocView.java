@@ -80,7 +80,7 @@ public final class ExtDocView extends ViewPart {
 
     public void update(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
-            table.setContext(selection.getElementLocation());
+            table.setContext(selection);
             for (final TableItem item : table.getItems()) {
                 if (item.getChecked()) {
                     new UIJob("Provider Update") {

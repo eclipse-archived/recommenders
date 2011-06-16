@@ -55,7 +55,7 @@ public final class WikiProvider extends AbstractProviderComposite {
     @Override
     protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
-        if (element == null || element instanceof ILocalVariable) {
+        if (element == null || element instanceof ILocalVariable || element.getElementName().isEmpty()) {
             return false;
         }
         disposeChildren(parentComposite);

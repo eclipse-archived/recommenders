@@ -11,11 +11,14 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -34,7 +37,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -50,20 +52,23 @@ final class ProvidersTable {
     private static IEclipsePreferences preferences;
     private static String preferencePrefix = "";
 
-    private final Label locationLabel;
+    private final CLabel locationLabel;
     private JavaElementLocation lastLocation;
 
     protected ProvidersTable(final Composite parent, final int style) {
-        final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 10, 0, 0);
+        final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 6, 0, 0);
+
+        locationLabel = new CLabel(composite, SWT.NONE);
+        final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gridData.heightHint = 20;
+        locationLabel.setLayoutData(gridData);
+        locationLabel.setImage(ExtDocPlugin.getIcon("eview16/context.gif"));
+        locationLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
 
         table = new Table(composite, style);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        locationLabel = new Label(composite, SWT.NONE);
-        locationLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
         composite.setBackground(table.getBackground());
-        locationLabel.setBackground(table.getBackground());
 
         table.addListener(SWT.Selection, new Listener() {
             @Override
@@ -117,7 +122,8 @@ final class ProvidersTable {
         return table.getItems();
     }
 
-    public void setContext(final JavaElementLocation location) {
+    public void setContext(final IJavaElementSelection selection) {
+        final JavaElementLocation location = selection.getElementLocation();
         if (lastLocation != location) {
             preferencePrefix = location == null ? "" : location.name();
             for (final TableItem item : table.getItems()) {
@@ -130,8 +136,9 @@ final class ProvidersTable {
                 setGrayed(item, !selectProvider);
             }
             lastLocation = location;
-            locationLabel.setText("Context: " + location.getDisplayName());
         }
+        locationLabel.setText((location == null ? "" : location.getDisplayName() + ": ")
+                + selection.getJavaElement().getElementName());
     }
 
     public void setChecked(final TableItem tableItem, final boolean checked) {
