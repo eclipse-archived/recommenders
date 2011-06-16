@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -17,15 +19,20 @@ import org.osgi.framework.BundleContext;
 public final class ExtDocPlugin extends AbstractUIPlugin {
 
     private static ExtDocPlugin plugin;
+    private static IEclipsePreferences preferences;
 
     @Override
     public void start(final BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        preferences = new InstanceScope().getNode(getBundle().getSymbolicName());
+        preferences.sync();
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception {
+        preferences.flush();
+        preferences = null;
         plugin = null;
         super.stop(context);
     }
@@ -36,6 +43,10 @@ public final class ExtDocPlugin extends AbstractUIPlugin {
 
     public static Image getIcon(final String uri) {
         return imageDescriptorFromPlugin(plugin.getBundle().getSymbolicName(), "icons/full/" + uri).createImage();
+    }
+
+    public static IEclipsePreferences getPreferences() {
+        return preferences;
     }
 
 }

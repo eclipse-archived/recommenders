@@ -53,7 +53,6 @@ public final class ExtDocView extends ViewPart {
         scrolled = new ScrolledComposite(sashForm, SWT.V_SCROLL);
         scrolled.setExpandVertical(true);
         scrolled.setExpandHorizontal(true);
-        scrolled.setShowFocusedControl(true);
         scrolled.getVerticalBar().setIncrement(20);
         providersComposite = new ProvidersComposite(scrolled, SWT.NONE);
         scrolled.setContent(providersComposite);
@@ -90,13 +89,20 @@ public final class ExtDocView extends ViewPart {
                             final IProvider provider = (IProvider) ((Control) item.getData()).getData();
                             final boolean hasContent = provider.selectionChanged(selection);
                             table.setGrayed(item, !hasContent);
-                            scrolled.layout(true);
-                            scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
                             return Status.OK_STATUS;
                         }
                     }.schedule();
                 }
             }
+            new UIJob("Rebuild ExtDoc view") {
+                @Override
+                public IStatus runInUIThread(final IProgressMonitor monitor) {
+                    providersComposite.layout(true);
+                    scrolled.layout(true);
+                    scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
+                    return Status.OK_STATUS;
+                }
+            }.schedule();
         }
     }
 
