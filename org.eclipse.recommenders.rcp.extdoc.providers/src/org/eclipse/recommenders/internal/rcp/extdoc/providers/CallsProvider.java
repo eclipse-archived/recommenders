@@ -17,6 +17,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.internal.util.Sets;
+
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -45,13 +49,8 @@ import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.internal.util.Sets;
 
 @SuppressWarnings("restriction")
 public final class CallsProvider extends AbstractProviderComposite2 {
@@ -62,10 +61,6 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     private final CallsServer server;
 
     private Composite composite;
-    private TextAndFeaturesLine line;
-    private Composite calls;
-    private StyledText line2;
-    private Composite templates;
     private IIntelligentCompletionContext context;
 
     @Inject
@@ -86,7 +81,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
 
     @Override
     protected void hookInitalize(final IJavaElementSelection selection) {
-        this.context = contextResolver.resolveContext(selection.getInvocationContext());
+        context = contextResolver.resolveContext(selection.getInvocationContext());
     }
 
     @Override
@@ -158,18 +153,8 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         }
     }
 
-    private IType resolveTypeSignature(final ILocalVariable var, final IType declaringType, final String typeSignature)
-            throws JavaModelException {
-        final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
-        final IJavaProject javaProject = var.getJavaProject();
-        final IType variableType = javaProject.findType(resolvedTypeName);
-        return variableType;
-    }
-
     private void setMockedContext(final String varName, final IType variableType, final boolean isArgument) {
-
         context = new DelegatingIntelligentCompletionContext(context) {
-
             @Override
             public Variable getVariable() {
                 return Variable.create(varName, JavaElementResolver.INSTANCE.toRecType(variableType),
@@ -190,17 +175,12 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         }
     }
 
-    private boolean displayProposalsForVariable(final IJavaElement element) {
-        final Variable variable = context.getVariable();
-        System.err.println("displayProposalsForVariable: " + variable);
-        if (modelStore.hasModel(variable.type)) {
-            Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
-            final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
-                    resolveCalledMethods);
-            final boolean success = displayProposals(element, recommendedMethodCalls);
-            return success;
-        }
-        return false;
+    private IType resolveTypeSignature(final ILocalVariable var, final IType declaringType, final String typeSignature)
+            throws JavaModelException {
+        final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
+        final IJavaProject javaProject = var.getJavaProject();
+        final IType variableType = javaProject.findType(resolvedTypeName);
+        return variableType;
     }
 
     private Set<IMethodName> resolveCalledMethods() {
@@ -213,12 +193,25 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         return Sets.newHashSet();
     }
 
+    private boolean displayProposalsForVariable(final IJavaElement element) {
+        final Variable variable = context.getVariable();
+        System.err.println("displayProposalsForVariable: " + variable);
+        if (modelStore.hasModel(variable.type)) {
+            final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
+            final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
+                    resolveCalledMethods);
+            final boolean success = displayProposals(element, recommendedMethodCalls, resolveCalledMethods);
+            return success;
+        }
+        return false;
+    }
+
     private boolean displayProposalsForType(final IType type) {
         final ITypeName typeName = JavaElementResolver.INSTANCE.toRecType(type);
         if (modelStore.hasModel(typeName)) {
             final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName,
                     new HashSet<IMethodName>());
-            return displayProposals(type, calls);
+            return displayProposals(type, calls, new HashSet<IMethodName>());
         }
         return false;
     }
@@ -228,7 +221,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         if (modelStore.hasModel(typeName)) {
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
             final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, resolveCalledMethods);
-            final boolean success = displayProposals(method, calls);
+            final boolean success = displayProposals(method, calls, resolveCalledMethods);
             return success;
         } else {
             IMethod findOverriddenMethod;
@@ -260,25 +253,25 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         return recommendedMethodCalls;
     }
 
-    private boolean displayProposals(final IJavaElement element, final SortedSet<Tuple<IMethodName, Double>> proposals) {
+    private boolean displayProposals(final IJavaElement element, final SortedSet<Tuple<IMethodName, Double>> proposals,
+            final Set<IMethodName> calledMethods) {
         if (proposals.isEmpty()) {
             return false;
         }
-        if (calls != null) {
-            calls.dispose();
-            line.dispose();
-            if (templates != null) {
-                templates.dispose();
-                line2.dispose();
-            }
-        }
+        disposeChildren(composite);
 
         final String text = "People who use " + element.getElementName() + " usually also call the following methods:";
-        line = new TextAndFeaturesLine(composite, text, element, element.getElementName(), this, server,
-                new TemplateEditDialog(getShell()));
+        final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element, element.getElementName(),
+                this, server, new TemplateEditDialog(getShell()));
         line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
 
-        calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
+        final Composite calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
+        for (final IMethodName method : calledMethods) {
+            SwtFactory.createSquare(calls);
+            final String prefix = method.isInit() ? "new " : method.getDeclaringType().getClassName() + ".";
+            SwtFactory.createLabel(calls, prefix + Names.vm2srcSimpleMethod(method), false, false, true);
+            SwtFactory.createLabel(calls, "(called)", false, false, false);
+        }
         for (final Tuple<IMethodName, Double> proposal : proposals) {
             SwtFactory.createSquare(calls);
             final IMethodName method = proposal.getFirst();
