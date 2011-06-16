@@ -29,7 +29,7 @@ import com.google.inject.Singleton;
 public class CachingAstProvider implements IAstProvider, IElementChangedListener {
 
     private final Map<ICompilationUnit, CompilationUnit> cache = new MapMaker().weakValues().weakKeys()
-            .expiration(5, TimeUnit.MINUTES).makeMap();
+            .expiration(15, TimeUnit.MINUTES).makeMap();
 
     @Override
     public CompilationUnit get(final ICompilationUnit compilationUnit) {

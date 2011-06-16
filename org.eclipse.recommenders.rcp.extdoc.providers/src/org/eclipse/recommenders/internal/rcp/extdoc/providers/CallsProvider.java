@@ -10,23 +10,23 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.internal.util.Sets;
-
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.SourceField;
+import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
+import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
@@ -50,6 +50,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.internal.util.Sets;
 
 @SuppressWarnings("restriction")
 public final class CallsProvider extends AbstractProviderComposite {
@@ -90,11 +96,28 @@ public final class CallsProvider extends AbstractProviderComposite {
 
     @Override
     protected boolean updateContent(final IJavaElementSelection selection) {
-        context = selection.getInvocationContext() == null ? null : contextResolver.resolveContext(selection
-                .getInvocationContext());
+        if (selection.getInvocationContext() == null) {
+            return false;
+        }
+        context = contextResolver.resolveContext(selection.getInvocationContext());
         final IJavaElement element = selection.getJavaElement();
+        if (element instanceof ILocalVariable) {
+            createFakeContextForLocalVariableSelection(element);
+        } else if (element instanceof IField) {
+            createFakeContextForFieldSelection(element);
+        } else if (element instanceof IType) {
+            context = new DelegatingIntelligentCompletionContext(context) {
+                @Override
+                public Variable getVariable() {
+                    return null;
+                };
+            };
+        }
 
-        if (context != null && context.getVariable() != null) {
+        //
+        //
+
+        if (context.getVariable() != null) {
             return displayProposalsForVariable(element, context.getVariable());
         } else if (element instanceof IType) {
             return displayProposalsForType((IType) element);
@@ -108,6 +131,54 @@ public final class CallsProvider extends AbstractProviderComposite {
             }
         }
         return false;
+    }
+
+    private void createFakeContextForFieldSelection(final IJavaElement element) {
+        final IField f = (IField) element;
+        final String name = f.getElementName();
+        final IType declaringType = f.getDeclaringType();
+        try {
+            final String typeSignature = f.getTypeSignature();
+            final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
+            final IJavaProject javaProject = f.getJavaProject();
+            final IType fieldType = javaProject.findType(resolvedTypeName);
+            createFakeContext(name, fieldType, false);
+        } catch (final JavaModelException e) {
+            throwUnhandledException(e);
+        }
+    }
+
+    private void createFakeContextForLocalVariableSelection(final IJavaElement element) {
+        final ILocalVariable var = (ILocalVariable) element;
+        final String name = element.getElementName();
+        final IType declaringType = (IType) var.getAncestor(IJavaElement.TYPE);
+        final String typeSignature = var.getTypeSignature();
+        try {
+            final IType variableType = resolveTypeSignature(var, declaringType, typeSignature);
+            createFakeContext(name, variableType, false);
+        } catch (final JavaModelException e) {
+            throwUnhandledException(e);
+        }
+    }
+
+    private IType resolveTypeSignature(final ILocalVariable var, final IType declaringType, final String typeSignature)
+            throws JavaModelException {
+        final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
+        final IJavaProject javaProject = var.getJavaProject();
+        final IType variableType = javaProject.findType(resolvedTypeName);
+        return variableType;
+    }
+
+    private void createFakeContext(final String varName, final IType variableType, final boolean isArgument) {
+
+        context = new DelegatingIntelligentCompletionContext(context) {
+
+            @Override
+            public Variable getVariable() {
+                return Variable.create(varName, JavaElementResolver.INSTANCE.toRecType(variableType),
+                        getEnclosingMethod());
+            };
+        };
     }
 
     private boolean displayProposalsForVariable(final IJavaElement element, final Variable variable) {
@@ -124,7 +195,8 @@ public final class CallsProvider extends AbstractProviderComposite {
     private Set<IMethodName> resolveCalledMethods() {
         for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
             if (resolver.canResolve(context)) {
-                return resolver.getReceiverMethodInvocations();
+                final Set<IMethodName> receiverMethodInvocations = resolver.getReceiverMethodInvocations();
+                return receiverMethodInvocations;
             }
         }
         return Sets.newHashSet();
@@ -144,12 +216,25 @@ public final class CallsProvider extends AbstractProviderComposite {
 
     private boolean displayProposalsForMethod(final IMethod method) {
         System.err.println("displayProposalsForMethod");
+
         final ITypeName typeName = JavaElementResolver.INSTANCE.toRecMethod(method).getDeclaringType();
         if (modelStore.hasModel(typeName)) {
             final IObjectMethodCallsNet model = getModel(typeName, new HashSet<IMethodName>());
             final boolean success = displayProposals(method, model.getRecommendedMethodCalls(0.01, 5));
             modelStore.releaseModel(model);
             return success;
+        } else {
+            IMethod findOverriddenMethod;
+            try {
+                findOverriddenMethod = SuperTypeHierarchyCache.getMethodOverrideTester(method.getDeclaringType())
+                        .findOverriddenMethod(method, true);
+                if (findOverriddenMethod != null) {
+                    return displayProposalsForMethod(findOverriddenMethod);
+                }
+            } catch (final JavaModelException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         return false;
     }
@@ -215,7 +300,9 @@ public final class CallsProvider extends AbstractProviderComposite {
         calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
         for (final Tuple<IMethodName, Double> proposal : proposals) {
             SwtFactory.createSquare(calls);
-            SwtFactory.createLabel(calls, Names.vm2srcSimpleMethod(proposal.getFirst()), false, false, true);
+            final IMethodName method = proposal.getFirst();
+            final String prefix = method.isInit() ? "new " : method.getDeclaringType().getClassName() + ".";
+            SwtFactory.createLabel(calls, prefix + Names.vm2srcSimpleMethod(method), false, false, true);
             SwtFactory.createLabel(calls, Math.round(proposal.getSecond() * 100) + "%", false, true, false);
         }
 

@@ -371,6 +371,10 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         AbstractVariableDeclaration match = findMatchingLocalVariable(getReceiverName());
         if (match == null) {
             match = findMatchingFieldDeclaration(variableName);
+            if (match == null) {
+                match = findMatchingLocalVariable(variableName);
+            }
+
         }
         if (match == null) {
             return null;
