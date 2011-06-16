@@ -187,6 +187,10 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
+    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType returnType) {
+        return false;
+    }
+
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return false;
     }
@@ -199,6 +203,8 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
             return updateMethodBlockSelection(selection, (IField) javaElement);
         } else if (javaElement instanceof IType) {
             return updateMethodBlockSelection(selection, (IType) javaElement);
+        } else if (javaElement instanceof IMethod) {
+            return updateMethodBlockSelection(selection, (IMethod) javaElement);
         }
         return logUnexpectedJavaElementInSelection(selection);
     }
@@ -208,6 +214,10 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
     }
 
     protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final IField field) {
+        return false;
+    }
+
+    protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final IMethod method) {
         return false;
     }
 
