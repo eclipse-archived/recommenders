@@ -16,8 +16,11 @@ Import-Package: com.google.gson.annotations;version="1.6.0",
  org.eclipse.recommenders.commons.utils.gson,
  org.eclipse.recommenders.rcp.extdoc.features,
  org.eclipse.recommenders.rcp.utils
-Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.recommenders.internal.server.extdoc.ExtDocServerPlugin
 Export-Package: org.eclipse.recommenders.internal.server.extdoc;x-internal:=true,
- org.eclipse.recommenders.server.extdoc;uses:="org.eclipse.recommenders.server.extdoc.types,org.eclipse.jdt.core,org.eclipse.recommenders.internal.server.extdoc",
- org.eclipse.recommenders.server.extdoc.types;uses:="org.eclipse.recommenders.commons.utils.names"
+ org.eclipse.recommenders.server.extdoc;
+  uses:="org.eclipse.recommenders.rcp.extdoc.features,
+   org.eclipse.recommenders.server.extdoc.types,
+   org.eclipse.jdt.core,
+   org.eclipse.recommenders.internal.server.extdoc",
+ org.eclipse.recommenders.server.extdoc.types;uses:="org.eclipse.recommenders.rcp.extdoc.features,org.eclipse.recommenders.commons.utils.names"
