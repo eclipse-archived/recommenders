@@ -89,6 +89,7 @@ final class JavaElementLocationResolver {
         switch (locationNodeType) {
         case ASTNode.BLOCK:
         case ASTNode.SUPER_CONSTRUCTOR_INVOCATION:
+        case ASTNode.CAST_EXPRESSION:
             return JavaElementLocation.BLOCK;
         case ASTNode.METHOD_DECLARATION:
             return JavaElementLocation.METHOD_DECLARATION;

@@ -106,7 +106,7 @@ final class ProvidersTable {
 
     public void setContext(final JavaElementLocation location) {
         if (lastLocation != location) {
-            preferencePrefix = location.name();
+            preferencePrefix = location == null ? "" : location.name();
             for (final TableItem item : table.getItems()) {
                 final IProvider provider = (IProvider) ((Control) item.getData()).getData();
                 boolean selectProvider = false;

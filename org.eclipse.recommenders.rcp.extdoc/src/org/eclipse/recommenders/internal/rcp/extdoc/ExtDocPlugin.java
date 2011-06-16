@@ -26,12 +26,10 @@ public final class ExtDocPlugin extends AbstractUIPlugin {
         super.start(context);
         plugin = this;
         preferences = new InstanceScope().getNode(getBundle().getSymbolicName());
-        preferences.sync();
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception {
-        preferences.flush();
         preferences = null;
         plugin = null;
         super.stop(context);

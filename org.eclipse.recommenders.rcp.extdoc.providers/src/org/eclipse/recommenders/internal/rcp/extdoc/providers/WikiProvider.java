@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
@@ -54,14 +55,14 @@ public final class WikiProvider extends AbstractProviderComposite {
     @Override
     protected boolean updateContent(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
-        String markup = null;
-        if (element != null) {
-            markup = server.getText(element);
+        if (element == null || element instanceof ILocalVariable) {
+            return false;
         }
         if (composite != null) {
             composite.dispose();
         }
         composite = SwtFactory.createGridComposite(parentComposite, 1, 0, 11, 0, 0);
+        final String markup = server.getText(element);
         if (markup == null) {
             displayNoText(element);
         } else {

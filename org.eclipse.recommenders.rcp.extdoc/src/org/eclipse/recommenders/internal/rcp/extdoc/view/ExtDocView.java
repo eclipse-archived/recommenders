@@ -102,7 +102,7 @@ public final class ExtDocView extends ViewPart {
                     scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
                     return Status.OK_STATUS;
                 }
-            }.schedule();
+            }.schedule(500);
         }
     }
 

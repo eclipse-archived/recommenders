@@ -74,7 +74,7 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
             line.createStyleRange(0, 16, SWT.BOLD, false, false);
             line.createStyleRange(40, 3, SWT.NORMAL, true, false);
 
-            final Composite template = SwtFactory.createGridComposite(templates, 5, 12, 3, 12, 0);
+            final Composite template = SwtFactory.createGridComposite(templates, 5, 12, 2, 12, 0);
             for (int j = 0; j < 3; ++j) {
                 SwtFactory.createSquare(template);
                 SwtFactory.createLabel(template, "should not", true, false, false);
