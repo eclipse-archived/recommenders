@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProvider;
@@ -18,7 +19,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -33,9 +33,7 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
     @Override
     public Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
         javadoc = new ExtendedJavadocView(parent, partSite);
-        javadoc.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        javadoc.getControl().setSize(-1, 250);
-
+        setBrowserSizeLayoutDataAndTriggerLayout(20);
         final Browser browser = (Browser) javadoc.getControl();
         browser.addProgressListener(this);
         browser.setJavascriptEnabled(true);
@@ -51,8 +49,7 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
     public boolean selectionChanged(final IJavaElementSelection context) {
         if (context.getJavaElement() != null) {
             javadoc.setInput(context.getJavaElement());
-            final Browser browser = (Browser) javadoc.getControl();
-            browser.setSize(browser.getSize().x, 5);
+            setBrowserSizeLayoutDataAndTriggerLayout(20);
         }
         return context.getJavaElement() != null;
     }
@@ -79,10 +76,19 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
                 final Browser browser = (Browser) javadoc.getControl();
                 final Object result = browser
                         .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
-                browser.setSize(browser.getSize().x, (int) Math.ceil((Double) result));
-                browser.getParent().layout(true);
+                final int height = (int) Math.ceil((Double) result);
+
+                setBrowserSizeLayoutDataAndTriggerLayout(height);
             }
+
         });
+    }
+
+    private void setBrowserSizeLayoutDataAndTriggerLayout(final int height) {
+        final Control control = javadoc.getControl();
+        control.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, height)
+                .minSize(SWT.DEFAULT, height).create());
+        control.getParent().layout();
     }
 
     /**
