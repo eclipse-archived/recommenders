@@ -54,8 +54,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
 
     @Override
     protected Control createContentControl(final Composite parent) {
-        final Composite container = SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
-        this.container = container;
+        container = SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
         return container;
     }
 
@@ -72,7 +71,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
 
     private boolean displayContentForMethod(final IMethod element) {
         try {
-            disposeContainerChildren();
+            disposeChildren(container);
 
             final IMethod overriddenMethod = SuperTypeHierarchyCache
                     .getMethodOverrideTester(element.getDeclaringType()).findOverriddenMethod(element, true);
@@ -84,33 +83,37 @@ public final class ExamplesProvider extends AbstractProviderComposite {
             if (codeExamples == null) {
                 return false;
             }
-            final CodeSnippet[] snippets = codeExamples.getExamples();
-            for (int i = 0; i < snippets.length; i++) {
-                createSnippetVisualization(i, element, snippets[i]);
-            }
-            container.layout(true);
+            displayCodeSnippets(element, codeExamples.getExamples());
         } catch (final JavaModelException e) {
             e.printStackTrace();
         }
         return true;
     }
 
-    private void disposeContainerChildren() {
-        for (final Control children : container.getChildren()) {
-            children.dispose();
+    private boolean displayContentForType(final IType type) {
+        disposeChildren(container);
+        final CodeExamples codeExamples = server.getTypeCodeExamples(type);
+        if (codeExamples == null) {
+            return false;
         }
+        displayCodeSnippets(type, codeExamples.getExamples());
+        return true;
     }
 
-    private boolean displayContentForType(final IType element) {
-        return false;
+    private void displayCodeSnippets(final IJavaElement element, final CodeSnippet[] snippets) {
+        for (int i = 0; i < snippets.length; i++) {
+            createSnippetVisualization(i, element, snippets[i]);
+        }
+        container.layout(true);
     }
 
-    private void createSnippetVisualization(final int snippetIndex, final IMethod element, final CodeSnippet snippet) {
+    private void createSnippetVisualization(final int snippetIndex, final IJavaElement element,
+            final CodeSnippet snippet) {
         createEditAndRatingHeader(snippetIndex, element);
         createSourceCodeArea(snippet);
     }
 
-    private void createEditAndRatingHeader(final int snippetIndex, final IMethod element) {
+    private void createEditAndRatingHeader(final int snippetIndex, final IJavaElement element) {
         final String text = "Example #" + (snippetIndex + 1) + ":";
         final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, element, element.getElementName(),
                 this, server, new TemplateEditDialog(getShell()));

@@ -38,11 +38,11 @@
             icon="icons/full/obj16/calls.png">
       </provider>
       <provider
-            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.TemplatesProvider"
-            long_name="Dynamic Templates Provider"
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.ExamplesProvider"
+            long_name="Code Examples Provider"
             priority="10"
-            short_name="Call Templates"
-            icon="icons/full/obj16/call-templates.gif">
+            short_name="Code Examples"
+            icon="icons/full/obj16/examples.gif">
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.SubclassingProvider"
@@ -53,17 +53,10 @@
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.SubclassingTemplatesProvider"
-            long_name="Subclassing Templates Provider"
+            long_name="Subclassing Patterns Provider"
             priority="2"
-            short_name="Subclassing Templates"
+            short_name="Subclassing Patterns"
             icon="icons/full/obj16/subclassing-patterns.gif">
-      </provider>
-      <provider
-            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.ExamplesProvider"
-            long_name="Code Examples Provider"
-            priority="1"
-            short_name="Code Examples"
-            icon="icons/full/obj16/examples.gif">
       </provider>
    </extension>
 </plugin>

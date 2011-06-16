@@ -21,7 +21,6 @@ import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -30,13 +29,10 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
     private final SubclassingServer server = new SubclassingServer();
 
     private Composite composite;
-    private StyledText styledText;
-    private Composite templates;
 
     @Override
     protected Control createContentControl(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
-        styledText = SwtFactory.createStyledText(composite, "");
         return composite;
     }
 
@@ -47,6 +43,7 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
 
     @Override
     protected boolean updateContent(final IJavaElementSelection selection) {
+        disposeChildren(composite);
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             printProposals(element);
@@ -57,18 +54,15 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
 
     private void printProposals(final IJavaElement element) {
         final int subclasses = 123;
-        styledText
-                .setText("By analysing "
-                        + subclasses
-                        + " subclasses that override at least one method, the following subclassing patterns have been identified.");
+        String text = "By analysing "
+                + subclasses
+                + " subclasses that override at least one method, the following subclassing patterns have been identified.";
+        SwtFactory.createStyledText(composite, text);
 
-        if (templates != null) {
-            templates.dispose();
-        }
-        templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
+        final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
 
         for (int i = 0; i < 2; ++i) {
-            final String text = "'pattern 403158' - covers approximately 29% of the examined subclasses (24 subclasses).";
+            text = "'pattern 403158' - covers approximately 29% of the examined subclasses (24 subclasses).";
             final TextAndFeaturesLine line = new TextAndFeaturesLine(templates, text, element,
                     element.getElementName(), this, server, new TemplateEditDialog(getShell()));
             line.createStyleRange(0, 16, SWT.BOLD, false, false);

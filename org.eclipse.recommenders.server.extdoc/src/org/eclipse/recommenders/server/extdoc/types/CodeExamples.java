@@ -10,11 +10,12 @@
  */
 package org.eclipse.recommenders.server.extdoc.types;
 
-import org.eclipse.recommenders.commons.utils.names.IMethodName;
-
 import com.google.gson.annotations.SerializedName;
 
-public class CodeExamples {
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+
+public final class CodeExamples {
 
     @SerializedName("_id")
     private String id;
@@ -22,11 +23,13 @@ public class CodeExamples {
     private String rev;
 
     private final String providerId = getClass().getSimpleName();
+    private ITypeName type;
     private IMethodName method;
     private CodeSnippet[] examples;
 
-    public static CodeExamples create(final IMethodName method, final CodeSnippet... examples) {
+    public static CodeExamples create(final ITypeName type, final IMethodName method, final CodeSnippet... examples) {
         final CodeExamples result = new CodeExamples();
+        result.type = type;
         result.method = method;
         result.examples = examples;
         return result;

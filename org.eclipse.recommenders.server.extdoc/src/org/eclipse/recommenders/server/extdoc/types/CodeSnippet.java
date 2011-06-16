@@ -14,7 +14,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotEmpty;
 
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 
-public class CodeSnippet {
+public final class CodeSnippet {
 
     public static CodeSnippet create(final IMethodName origin, final String code) {
         ensureIsNotEmpty(code, "empty code fragments not allowed.");

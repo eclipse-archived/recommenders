@@ -63,4 +63,10 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         return composite.getShell();
     }
 
+    protected final void disposeChildren(final Composite composite) {
+        for (final Control child : composite.getChildren()) {
+            child.dispose();
+        }
+    }
+
 }

@@ -58,9 +58,7 @@ public final class WikiProvider extends AbstractProviderComposite {
         if (element == null || element instanceof ILocalVariable) {
             return false;
         }
-        if (composite != null) {
-            composite.dispose();
-        }
+        disposeChildren(parentComposite);
         composite = SwtFactory.createGridComposite(parentComposite, 1, 0, 11, 0, 0);
         final String markup = server.getText(element);
         if (markup == null) {
