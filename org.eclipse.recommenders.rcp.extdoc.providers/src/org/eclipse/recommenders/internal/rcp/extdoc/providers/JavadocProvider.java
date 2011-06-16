@@ -20,6 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -38,7 +39,7 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
         final Browser browser = (Browser) javadoc.getControl();
         browser.addProgressListener(this);
         browser.setJavascriptEnabled(true);
-        return javadoc.getControl();
+        return browser;
     }
 
     @Override
@@ -49,7 +50,9 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
     @Override
     public boolean selectionChanged(final IJavaElementSelection context) {
         try {
-            context.getJavaElement().getAttachedJavadoc(null);
+            if (context.getJavaElement().getAttachedJavadoc(null) == null) {
+                return false;
+            }
             javadoc.setInput(context.getJavaElement());
             setBrowserSizeLayoutDataAndTriggerLayout(20);
             return true;
@@ -81,17 +84,21 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
                 final Object result = browser
                         .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
                 final int height = (int) Math.ceil((Double) result);
-
                 setBrowserSizeLayoutDataAndTriggerLayout(height);
             }
-
         });
     }
 
     private void setBrowserSizeLayoutDataAndTriggerLayout(final int height) {
         final Control control = javadoc.getControl();
-        control.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, height)
-                .minSize(SWT.DEFAULT, height).create());
+        GridData data = (GridData) control.getLayoutData();
+        if (data == null) {
+            data = GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, height)
+                    .minSize(SWT.DEFAULT, height).create();
+            control.setLayoutData(data);
+        }
+        data.heightHint = height;
+        data.minimumHeight = height;
         control.getParent().layout();
     }
 

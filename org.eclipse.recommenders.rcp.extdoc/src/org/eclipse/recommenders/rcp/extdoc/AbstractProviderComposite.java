@@ -14,7 +14,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -45,10 +44,7 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
     @Override
     public final boolean selectionChanged(final IJavaElementSelection selection) {
         lastSelection = selection;
-        final boolean hasContent = updateContent(selection);
-        ((GridData) composite.getLayoutData()).exclude = !hasContent;
-        composite.setVisible(hasContent);
-        return hasContent;
+        return updateContent(selection);
     }
 
     protected abstract boolean updateContent(IJavaElementSelection selection);

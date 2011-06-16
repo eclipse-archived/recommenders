@@ -104,7 +104,9 @@ final class JavaElementLocationResolver {
         case ASTNode.PACKAGE_DECLARATION:
             return JavaElementLocation.PACKAGE_DECLARATION;
         default:
-            throw new IllegalArgumentException("Could not find location for " + locationNodeType);
+            return JavaElementLocation.METHOD_BLOCK;
+            // throw new IllegalArgumentException("Could not find location for "
+            // + locationNodeType);
         }
     }
 

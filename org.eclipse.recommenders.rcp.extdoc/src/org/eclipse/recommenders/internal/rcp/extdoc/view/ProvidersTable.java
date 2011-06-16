@@ -77,7 +77,7 @@ final class ProvidersTable {
                 final Control control = (Control) tableItem.getData();
                 if (event.detail == SWT.CHECK) {
                     if (!tableItem.getGrayed()) {
-                        setChecked(tableItem, tableItem.getChecked());
+                        setContentVisible(tableItem, tableItem.getChecked());
                         control.getParent().layout(true);
                     }
                     preferences.putBoolean(preferencePrefix + ((IProvider) control.getData()).getProviderName(),
@@ -114,8 +114,9 @@ final class ProvidersTable {
         tableItem.setText(text);
         tableItem.setData(providerControl);
         tableItem.setImage(image);
-        setChecked(tableItem, false);
+        tableItem.setChecked(false);
         setGrayed(tableItem, true);
+        setContentVisible(tableItem, false);
     }
 
     public TableItem[] getItems() {
@@ -132,8 +133,9 @@ final class ProvidersTable {
                 if (preferences.getBoolean(preferencePrefix + provider.getProviderName(), true)) {
                     selectProvider = provider.isAvailableForLocation(location);
                 }
-                setChecked(item, selectProvider);
+                item.setChecked(selectProvider);
                 setGrayed(item, !selectProvider);
+                setContentVisible(item, selectProvider);
             }
             lastLocation = location;
         }
@@ -141,16 +143,15 @@ final class ProvidersTable {
                 + selection.getJavaElement().getElementName());
     }
 
-    public void setChecked(final TableItem tableItem, final boolean checked) {
-        tableItem.setChecked(checked);
-        final Control control = (Control) tableItem.getData();
-        ((GridData) control.getLayoutData()).exclude = !checked;
-        control.setVisible(checked);
-    }
-
-    public void setGrayed(final TableItem item, final boolean grayed) {
+    void setGrayed(final TableItem item, final boolean grayed) {
         item.setGrayed(grayed);
         item.setForeground(grayed ? grayColor : blackColor);
+    }
+
+    void setContentVisible(final TableItem tableItem, final boolean visible) {
+        final Control control = (Control) tableItem.getData();
+        ((GridData) control.getLayoutData()).exclude = !visible;
+        control.setVisible(visible);
     }
 
     private static final class DragListener implements DragSourceListener {

@@ -50,10 +50,7 @@ public final class ExtDocView extends ViewPart {
         final SashForm sashForm = new SashForm(parent, SWT.SMOOTH);
         sashForm.setLayout(new FillLayout());
         table = new ProvidersTable(sashForm, SWT.CHECK | SWT.FULL_SELECTION);
-        scrolled = new ScrolledComposite(sashForm, SWT.V_SCROLL);
-        scrolled.setExpandVertical(true);
-        scrolled.setExpandHorizontal(true);
-        scrolled.getVerticalBar().setIncrement(20);
+        scrolled = createScrolledComposite(sashForm);
         providersComposite = new ProvidersComposite(scrolled, SWT.NONE);
         scrolled.setContent(providersComposite);
         sashForm.setWeights(new int[] { 15, 85 });
@@ -62,6 +59,14 @@ public final class ExtDocView extends ViewPart {
         fillActionBars();
 
         providersComposite.layout(true);
+    }
+
+    private ScrolledComposite createScrolledComposite(final Composite parent) {
+        final ScrolledComposite composite = new ScrolledComposite(parent, SWT.V_SCROLL);
+        composite.setExpandVertical(true);
+        composite.setExpandHorizontal(true);
+        composite.getVerticalBar().setIncrement(20);
+        return composite;
     }
 
     private void addProviders() {
@@ -83,32 +88,39 @@ public final class ExtDocView extends ViewPart {
             table.setContext(selection);
             for (final TableItem item : table.getItems()) {
                 if (item.getChecked()) {
-                    new UIJob("Provider Update") {
-                        @Override
-                        public IStatus runInUIThread(final IProgressMonitor monitor) {
-                            final IProvider provider = (IProvider) ((Control) item.getData()).getData();
-                            final boolean hasContent = provider.selectionChanged(selection);
-                            table.setGrayed(item, !hasContent);
-                            return Status.OK_STATUS;
-                        }
-                    }.schedule();
+                    final IProvider provider = (IProvider) ((Control) item.getData()).getData();
+                    new ProviderUpdateJob(item, provider, selection).schedule();
                 }
             }
-            new UIJob("Rebuild ExtDoc view") {
-                @Override
-                public IStatus runInUIThread(final IProgressMonitor monitor) {
-                    providersComposite.layout(true);
-                    scrolled.layout(true);
-                    scrolled.setMinHeight(providersComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y);
-                    return Status.OK_STATUS;
-                }
-            }.schedule(500);
         }
     }
 
     @Override
     public void setFocus() {
         scrolled.forceFocus();
+    }
+
+    private final class ProviderUpdateJob extends UIJob {
+
+        private final TableItem item;
+        private final IProvider provider;
+        private final IJavaElementSelection selection;
+
+        public ProviderUpdateJob(final TableItem item, final IProvider provider, final IJavaElementSelection selection) {
+            super("Updating " + provider.getProviderFullName());
+            super.setPriority(UIJob.SHORT);
+            this.item = item;
+            this.provider = provider;
+            this.selection = selection;
+        }
+
+        @Override
+        public IStatus runInUIThread(final IProgressMonitor monitor) {
+            final boolean hasContent = provider.selectionChanged(selection);
+            table.setContentVisible(item, hasContent);
+            table.setGrayed(item, !hasContent);
+            return Status.OK_STATUS;
+        }
     }
 
     private final class FeedbackAction extends Action {
