@@ -82,6 +82,8 @@ final class JavaElementSelectionResolver {
             final IJavaElement[] elements = root.codeSelect(selection.getOffset(), 0);
             if (elements.length > 0) {
                 javaElement = elements[0];
+            } else {
+                javaElement = root.getElementAt(selection.getOffset());
             }
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
