@@ -17,10 +17,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.internal.util.Sets;
-
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -51,6 +47,10 @@ import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.internal.util.Sets;
 
 @SuppressWarnings("restriction")
 public final class CallsProvider extends AbstractProviderComposite2 {
@@ -269,8 +269,8 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         for (final IMethodName method : calledMethods) {
             SwtFactory.createSquare(calls);
             final String prefix = method.isInit() ? "new " : method.getDeclaringType().getClassName() + ".";
-            SwtFactory.createLabel(calls, prefix + Names.vm2srcSimpleMethod(method), false, true, SWT.COLOR_GRAY);
-            SwtFactory.createLabel(calls, "(called)", false, false, SWT.COLOR_GRAY);
+            SwtFactory.createLabel(calls, prefix + Names.vm2srcSimpleMethod(method), false, true, SWT.COLOR_DARK_GRAY);
+            SwtFactory.createLabel(calls, "(called)", false, false, SWT.COLOR_DARK_GRAY);
         }
         for (final Tuple<IMethodName, Double> proposal : proposals) {
             SwtFactory.createSquare(calls);

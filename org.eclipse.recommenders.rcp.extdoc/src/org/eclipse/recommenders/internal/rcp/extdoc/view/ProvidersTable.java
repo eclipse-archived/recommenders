@@ -47,7 +47,7 @@ final class ProvidersTable {
     private static TableItem dragSourceItem;
 
     private static Color blackColor = SwtFactory.createColor(SWT.COLOR_BLACK);
-    private static Color grayColor = SwtFactory.createColor(SWT.COLOR_GRAY);
+    private static Color grayColor = SwtFactory.createColor(SWT.COLOR_DARK_GRAY);
 
     private static IEclipsePreferences preferences;
     private static String preferencePrefix = "";
