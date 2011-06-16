@@ -10,10 +10,13 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.internal.util.Sets;
@@ -44,6 +47,7 @@ import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -60,6 +64,8 @@ public final class CallsProvider extends AbstractProviderComposite {
     private Composite composite;
     private TextAndFeaturesLine line;
     private Composite calls;
+    private StyledText line2;
+    private Composite templates;
 
     @Inject
     public CallsProvider(final CallsModelStore modelStore,
@@ -84,10 +90,11 @@ public final class CallsProvider extends AbstractProviderComposite {
 
     @Override
     protected boolean updateContent(final IJavaElementSelection selection) {
-        context = contextResolver.resolveContext(selection.getInvocationContext());
+        context = selection.getInvocationContext() == null ? null : contextResolver.resolveContext(selection
+                .getInvocationContext());
         final IJavaElement element = selection.getJavaElement();
 
-        if (context.getVariable() != null) {
+        if (context != null && context.getVariable() != null) {
             return displayProposalsForVariable(element, context.getVariable());
         } else if (element instanceof IType) {
             return displayProposalsForType((IType) element);
@@ -154,6 +161,9 @@ public final class CallsProvider extends AbstractProviderComposite {
             for (final ITypeName typeName : modelStore.findTypesBySimpleName(simpleTypeName)) {
                 final IObjectMethodCallsNet model = getModel(typeName, new HashSet<IMethodName>());
                 final boolean success = displayProposals(element, model.getRecommendedMethodCalls(0.01, 5));
+                if (success) {
+                    displayTemplates(element, model);
+                }
                 modelStore.releaseModel(model);
                 return success;
             }
@@ -177,7 +187,7 @@ public final class CallsProvider extends AbstractProviderComposite {
     private IObjectMethodCallsNet getModel(final ITypeName typeName, final Set<IMethodName> invokedMethods) {
         final IObjectMethodCallsNet model = modelStore.acquireModel(typeName);
         model.clearEvidence();
-        model.setMethodContext(context.getEnclosingMethodsFirstDeclaration());
+        model.setMethodContext(context == null ? null : context.getEnclosingMethodsFirstDeclaration());
         System.err.println("invoked: " + invokedMethods);
         model.setObservedMethodCalls(typeName, invokedMethods);
         model.updateBeliefs();
@@ -191,6 +201,10 @@ public final class CallsProvider extends AbstractProviderComposite {
         if (calls != null) {
             calls.dispose();
             line.dispose();
+            if (templates != null) {
+                templates.dispose();
+                line2.dispose();
+            }
         }
 
         final String text = "People who use " + element.getElementName() + " usually also call the following methods:";
@@ -198,7 +212,7 @@ public final class CallsProvider extends AbstractProviderComposite {
                 new TemplateEditDialog(getShell()));
         line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
 
-        calls = SwtFactory.createGridComposite(composite, 3, 12, 3, 12, 0);
+        calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
         for (final Tuple<IMethodName, Double> proposal : proposals) {
             SwtFactory.createSquare(calls);
             SwtFactory.createLabel(calls, Names.vm2srcSimpleMethod(proposal.getFirst()), false, false, true);
@@ -207,5 +221,48 @@ public final class CallsProvider extends AbstractProviderComposite {
 
         composite.layout(true);
         return true;
+    }
+
+    private void displayTemplates(final IJavaElement element, final IObjectMethodCallsNet model) {
+        line2 = SwtFactory.createStyledText(composite, "Also the following patterns use to occur for this argument:");
+
+        templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
+        for (final Tuple<String, Double> proposal : getTemplateProposals(model)) {
+            model.setPattern(proposal.getFirst());
+            model.updateBeliefs();
+            final SortedSet<Tuple<IMethodName, Double>> methods = model.getRecommendedMethodCalls(0.01);
+            if (methods.size() < 2) {
+                continue;
+            }
+
+            final int probability = (int) Math.round(proposal.getSecond() * 100.0);
+            final TextAndFeaturesLine text = new TextAndFeaturesLine(templates, proposal.getFirst() + " - "
+                    + probability + "%", element, element.getElementName(), this, server, new TemplateEditDialog(
+                    getShell()));
+            text.createStyleRange(proposal.getFirst().length() + 3, String.valueOf(probability).length() + 1,
+                    SWT.NORMAL, true, false);
+
+            final Composite template = SwtFactory.createGridComposite(templates, 1, 12, 0, 12, 0);
+            for (final Tuple<IMethodName, Double> method : methods) {
+                SwtFactory.createLabel(template, Names.vm2srcSimpleMethod(method.getFirst()), false, false, true);
+            }
+        }
+
+        composite.layout(true);
+    }
+
+    private Collection<Tuple<String, Double>> getTemplateProposals(final IObjectMethodCallsNet model) {
+        model.clearEvidence();
+        model.setMethodContext(null);
+        model.negateConstructors();
+        model.updateBeliefs();
+        final Collection<Tuple<String, Double>> filtered = Collections2.filter(model.getPatternsWithProbability(),
+                new Predicate<Tuple<String, Double>>() {
+                    @Override
+                    public boolean apply(final Tuple<String, Double> input) {
+                        return input.getSecond() > 0.05;
+                    }
+                });
+        return filtered;
     }
 }

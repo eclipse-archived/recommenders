@@ -32,3 +32,4 @@ Import-Package: org.eclipse.jface.text,
  org.eclipse.recommenders.rcp.utils
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin
 Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
