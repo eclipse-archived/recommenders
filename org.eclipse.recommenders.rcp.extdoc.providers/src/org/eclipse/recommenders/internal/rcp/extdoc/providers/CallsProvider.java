@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Stefan Henss, and others.
+ * Copyright (c) 2011 Stefan Henss.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -194,7 +194,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         final Variable variable = context.getVariable();
         System.err.println("displayProposalsForVariable: " + variable);
         if (modelStore.hasModel(variable.type)) {
-            Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
+            final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
             final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
                     resolveCalledMethods);
             final boolean success = displayProposals(element, recommendedMethodCalls);
