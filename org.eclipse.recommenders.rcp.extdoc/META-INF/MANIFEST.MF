@@ -9,7 +9,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui,
  org.eclipse.core.runtime,
  com.google.inject,
- org.eclipse.recommenders.commons.selection
+ org.eclipse.recommenders.commons.selection,
+ org.eclipse.jdt.core,
+ org.eclipse.recommenders.commons.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin
 Bundle-ActivationPolicy: lazy
