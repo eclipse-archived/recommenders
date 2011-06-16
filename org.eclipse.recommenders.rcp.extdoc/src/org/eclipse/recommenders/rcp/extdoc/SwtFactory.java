@@ -16,7 +16,6 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -28,14 +27,8 @@ import org.eclipse.swt.widgets.Text;
 public final class SwtFactory {
 
     private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
-    private static final Font CODEFONT;
+    private static final Font CODEFONT = JFaceResources.getTextFont();
     private static final Color BLUECOLOR = new Color(Display.getCurrent(), 0, 0, 255);
-
-    static {
-        final FontData fontData = JFaceResources.getFontRegistry().get(JFaceResources.TEXT_FONT).getFontData()[0];
-        fontData.setHeight(BOLDFONT.getFontData()[0].getHeight());
-        CODEFONT = new Font(Display.getCurrent(), fontData);
-    }
 
     private SwtFactory() {
     }
