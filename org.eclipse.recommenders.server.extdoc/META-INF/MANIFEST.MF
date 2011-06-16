@@ -25,4 +25,3 @@ Export-Package: org.eclipse.recommenders.internal.server.extdoc;x-internal:=true
    org.eclipse.jdt.core,
    org.eclipse.recommenders.internal.server.extdoc",
  org.eclipse.recommenders.server.extdoc.types;uses:="org.eclipse.recommenders.rcp.extdoc.features,org.eclipse.recommenders.commons.utils.names"
-Bundle-ActivationPolicy: lazy

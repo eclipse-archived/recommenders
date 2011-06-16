@@ -27,7 +27,7 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
 
     @Override
     public final Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
-        composite = SwtFactory.createGridComposite(parent, 1, 0, 6, 8, 10);
+        composite = SwtFactory.createGridComposite(parent, 1, 0, 4, 8, 10);
 
         final CLabel label = new CLabel(composite, SWT.NONE);
         label.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));

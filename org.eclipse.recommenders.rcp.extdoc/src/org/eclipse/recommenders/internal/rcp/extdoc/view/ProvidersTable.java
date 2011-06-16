@@ -10,9 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
@@ -42,20 +45,27 @@ final class ProvidersTable {
     private static Color blackColor;
     private static Color grayColor;
 
+    private static IEclipsePreferences preferences;
+    private static String preferencePrefix = "";
+
+    private JavaElementLocation lastLocation;
+
     protected ProvidersTable(final Composite parent, final int style) {
         table = new Table(parent, style);
         table.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(final Event event) {
                 final TableItem tableItem = (TableItem) event.item;
-                if (!tableItem.getGrayed()) {
-                    if (event.detail == SWT.CHECK) {
+                final Control control = (Control) tableItem.getData();
+                if (event.detail == SWT.CHECK) {
+                    if (!tableItem.getGrayed()) {
                         setChecked(tableItem, tableItem.getChecked());
-                        ((Control) tableItem.getData()).getParent().layout(true);
-                    } else {
-                        final Control control = (Control) tableItem.getData();
-                        control.setFocus();
+                        control.getParent().layout(true);
                     }
+                    preferences.putBoolean(preferencePrefix + ((IProvider) control.getData()).getProviderName(),
+                            tableItem.getChecked());
+                } else if (!tableItem.getGrayed()) {
+                    ((ScrolledComposite) control.getParent().getParent()).setOrigin(control.getLocation());
                 }
             }
         });
@@ -63,6 +73,8 @@ final class ProvidersTable {
 
         blackColor = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
         grayColor = parent.getDisplay().getSystemColor(SWT.COLOR_GRAY);
+
+        preferences = ExtDocPlugin.getPreferences();
     }
 
     private void enableDragAndDrop() {
@@ -84,6 +96,7 @@ final class ProvidersTable {
         tableItem.setText(text);
         tableItem.setData(providerControl);
         tableItem.setImage(image);
+        setChecked(tableItem, false);
         setGrayed(tableItem, true);
     }
 
@@ -92,11 +105,18 @@ final class ProvidersTable {
     }
 
     public void setContext(final JavaElementLocation location) {
-        for (final TableItem item : table.getItems()) {
-            final IProvider provider = (IProvider) ((Control) item.getData()).getData();
-            final boolean availableForLocation = provider.isAvailableForLocation(location);
-            setChecked(item, availableForLocation);
-            setGrayed(item, !availableForLocation);
+        if (lastLocation != location) {
+            preferencePrefix = location == null ? "" : location.name();
+            for (final TableItem item : table.getItems()) {
+                final IProvider provider = (IProvider) ((Control) item.getData()).getData();
+                boolean selectProvider = false;
+                if (preferences.getBoolean(preferencePrefix + provider.getProviderName(), true)) {
+                    selectProvider = provider.isAvailableForLocation(location);
+                }
+                setChecked(item, selectProvider);
+                setGrayed(item, !selectProvider);
+            }
+            lastLocation = location;
         }
     }
 

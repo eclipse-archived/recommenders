@@ -63,7 +63,7 @@ public final class TemplatesProvider extends AbstractProviderComposite implement
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return false;
+        return true;
     }
 
     @Override

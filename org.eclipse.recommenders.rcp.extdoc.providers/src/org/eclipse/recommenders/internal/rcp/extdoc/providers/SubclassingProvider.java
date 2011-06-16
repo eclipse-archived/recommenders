@@ -133,7 +133,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
     private void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
             final int definitions) {
-        final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 3, 15, 0);
+        final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 2, 15, 0);
         final Map<IMethodName, Integer> orderedMap = new TreeMap<IMethodName, Integer>(new Comparator<IMethodName>() {
             @Override
             public int compare(final IMethodName o1, final IMethodName o2) {

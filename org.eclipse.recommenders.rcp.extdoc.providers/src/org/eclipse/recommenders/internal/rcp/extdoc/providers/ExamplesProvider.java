@@ -81,6 +81,9 @@ public final class ExamplesProvider extends AbstractProviderComposite {
             }
 
             final CodeExamples codeExamples = server.getOverridenMethodCodeExamples(overriddenMethod);
+            if (codeExamples == null) {
+                return false;
+            }
             final CodeSnippet[] snippets = codeExamples.getExamples();
             for (int i = 0; i < snippets.length; i++) {
                 createSnippetVisualization(i, element, snippets[i]);
