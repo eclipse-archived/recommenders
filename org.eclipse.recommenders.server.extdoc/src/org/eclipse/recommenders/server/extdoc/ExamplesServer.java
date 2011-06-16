@@ -10,13 +10,13 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
+import com.sun.jersey.api.client.GenericType;
+
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
 import org.eclipse.recommenders.server.extdoc.types.MethodOverrideExamples;
-
-import com.sun.jersey.api.client.GenericType;
 
 public final class ExamplesServer extends AbstractRatingsServer {
 
@@ -24,12 +24,6 @@ public final class ExamplesServer extends AbstractRatingsServer {
         return Server.getProviderContent(MethodOverrideExamples.class.getSimpleName(), "method",
                 method.getIdentifier(), new GenericType<GenericResultObjectView<MethodOverrideExamples>>() {
                 });
-    }
-
-    @Override
-    protected String getDocumentId(final Object object) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

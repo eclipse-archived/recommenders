@@ -40,10 +40,4 @@ public final class CodeExamplesServer extends AbstractRatingsServer {
         return result;
     }
 
-    @Override
-    protected String getDocumentId(final Object object) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

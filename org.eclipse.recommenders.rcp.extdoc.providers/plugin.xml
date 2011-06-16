@@ -17,13 +17,6 @@
             icon="icons/full/obj16/javadoc.gif">
       </provider>
       <provider
-            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtendedJavadocProvider"
-            long_name="Extended Javadoc Provider"
-            priority="-50"
-            short_name="ExtendedJavadoc"
-            icon="icons/full/obj16/extended-javadoc.gif">
-      </provider>
-      <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider"
             long_name="Wiki Provider"
             priority="20"

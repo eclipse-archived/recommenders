@@ -10,27 +10,35 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import com.sun.jersey.api.client.GenericType;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
+import org.eclipse.recommenders.server.extdoc.types.WikiEntry;
 
 public final class WikiServer extends AbstractRatingsServer implements ICommentsServer {
 
+    private static final String PROVIDERID = WikiEntry.class.getSimpleName();
+
     public String getText(final IJavaElement javaElement) {
-        final Map<String, Object> document = Server.getDocument(getDocumentId(javaElement));
-        return document == null ? null : (String) document.get("text");
+        final WikiEntry entry = getEntry(javaElement);
+        return entry == null ? null : entry.getText();
     }
 
     public void setText(final IJavaElement javaElement, final String text) {
-        final Map<String, Object> map = new HashMap<String, Object>();
-        map.put("text", text);
-        Server.storeOrUpdateDocument(getDocumentId(javaElement), map);
+        WikiEntry entry = getEntry(javaElement);
+        if (entry == null) {
+            entry = WikiEntry.create(javaElement, text);
+        } else {
+            entry.setText(text);
+        }
+        Server.post(entry);
     }
 
     @Override
@@ -45,11 +53,12 @@ public final class WikiServer extends AbstractRatingsServer implements IComments
         return null;
     }
 
-    @Override
-    protected String getDocumentId(final Object object) {
-        return "wiki_"
-                + ((IJavaElement) object).getHandleIdentifier().replace("/", "").replace("\\", "").replace("<", "_")
-                        .replace("~", "-");
+    private WikiEntry getEntry(final IJavaElement javaElement) {
+        final String key = javaElement.getHandleIdentifier();
+        final WikiEntry result = Server.getProviderContent(PROVIDERID, "method", key,
+                new GenericType<GenericResultObjectView<WikiEntry>>() {
+                });
+        return result;
     }
 
 }

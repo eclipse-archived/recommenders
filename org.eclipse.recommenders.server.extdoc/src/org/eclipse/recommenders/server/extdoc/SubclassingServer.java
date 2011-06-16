@@ -45,10 +45,4 @@ public final class SubclassingServer extends AbstractRatingsServer {
                 });
     }
 
-    @Override
-    protected String getDocumentId(final Object object) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

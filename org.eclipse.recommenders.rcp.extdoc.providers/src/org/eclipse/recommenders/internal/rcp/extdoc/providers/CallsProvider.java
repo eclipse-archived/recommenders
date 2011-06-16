@@ -41,6 +41,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStor
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
@@ -87,13 +88,13 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     @Override
     protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final ILocalVariable local) {
         setLocalVariableContext(local);
-        return displayProposalsForVariable(local);
+        return displayProposalsForVariable(local, false);
     }
 
     @Override
     protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final IField field) {
         setFieldVariableContext(field);
-        return displayProposalsForVariable(field);
+        return displayProposalsForVariable(field, false);
     }
 
     @Override
@@ -105,7 +106,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
         setFieldVariableContext(field);
-        return displayProposalsForVariable(field);
+        return displayProposalsForVariable(field, false);
     }
 
     @Override
@@ -118,6 +119,23 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
         setThisVariableContext();
         return displayProposalsForMethod(method);
+    }
+
+    @Override
+    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return displayProposalsForType(type);
+    }
+
+    @Override
+    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return displayProposalsForType(type);
+    }
+
+    @Override
+    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
+            final ILocalVariable local) {
+        setLocalVariableContext(local);
+        return displayProposalsForVariable(local, true);
     }
 
     private void setNullVariableContext() {
@@ -165,22 +183,8 @@ public final class CallsProvider extends AbstractProviderComposite2 {
 
     private void setLocalVariableContext(final ILocalVariable var) {
         final String name = var.getElementName();
-        final IType declaringType = (IType) var.getAncestor(IJavaElement.TYPE);
-        final String typeSignature = var.getTypeSignature();
-        try {
-            final IType variableType = resolveTypeSignature(var, declaringType, typeSignature);
-            setMockedContext(name, variableType, false);
-        } catch (final JavaModelException e) {
-            throwUnhandledException(e);
-        }
-    }
-
-    private IType resolveTypeSignature(final ILocalVariable var, final IType declaringType, final String typeSignature)
-            throws JavaModelException {
-        final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
-        final IJavaProject javaProject = var.getJavaProject();
-        final IType variableType = javaProject.findType(resolvedTypeName);
-        return variableType;
+        final IType variableType = VariableResolver.resolveTypeSignature(var);
+        setMockedContext(name, variableType, false);
     }
 
     private Set<IMethodName> resolveCalledMethods() {
@@ -193,13 +197,13 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         return Sets.newHashSet();
     }
 
-    private boolean displayProposalsForVariable(final IJavaElement element) {
+    private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors) {
         final Variable variable = context.getVariable();
         System.err.println("displayProposalsForVariable: " + variable);
         if (modelStore.hasModel(variable.type)) {
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
             final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
-                    resolveCalledMethods);
+                    resolveCalledMethods, negateConstructors);
             final boolean success = displayProposals(element, recommendedMethodCalls, resolveCalledMethods);
             return success;
         }
@@ -210,7 +214,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         final ITypeName typeName = JavaElementResolver.INSTANCE.toRecType(type);
         if (modelStore.hasModel(typeName)) {
             final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName,
-                    new HashSet<IMethodName>());
+                    new HashSet<IMethodName>(), false);
             return displayProposals(type, calls, new HashSet<IMethodName>());
         }
         return false;
@@ -220,7 +224,8 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         final ITypeName typeName = JavaElementResolver.INSTANCE.toRecMethod(method).getDeclaringType();
         if (modelStore.hasModel(typeName)) {
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
-            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, resolveCalledMethods);
+            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, resolveCalledMethods,
+                    false);
             final boolean success = displayProposals(method, calls, resolveCalledMethods);
             return success;
         } else {
@@ -241,12 +246,15 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     }
 
     private SortedSet<Tuple<IMethodName, Double>> computeRecommendations(final ITypeName typeName,
-            final Set<IMethodName> invokedMethods) {
+            final Set<IMethodName> invokedMethods, final boolean negateConstructors) {
         final IObjectMethodCallsNet model = modelStore.acquireModel(typeName);
         model.clearEvidence();
         model.setMethodContext(context == null ? null : context.getEnclosingMethodsFirstDeclaration());
         System.err.println("invoked: " + invokedMethods);
         model.setObservedMethodCalls(typeName, invokedMethods);
+        if (negateConstructors) {
+            model.negateConstructors();
+        }
         model.updateBeliefs();
         final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model.getRecommendedMethodCalls(0.01, 5);
         modelStore.releaseModel(model);

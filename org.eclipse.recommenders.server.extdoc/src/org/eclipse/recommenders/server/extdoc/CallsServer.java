@@ -14,9 +14,4 @@ import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 
 public final class CallsServer extends AbstractRatingsServer {
 
-    @Override
-    protected String getDocumentId(final Object object) {
-        return String.valueOf(object.hashCode());
-    }
-
 }

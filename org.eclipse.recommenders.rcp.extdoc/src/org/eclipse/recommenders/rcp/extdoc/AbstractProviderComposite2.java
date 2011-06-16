@@ -27,7 +27,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
      * REVIEW: I think this method is not actually required, right?
      */
     @Override
-    public boolean isAvailableForLocation(final JavaElementLocation location) {
+    public final boolean isAvailableForLocation(final JavaElementLocation location) {
         return true;
     }
 
@@ -67,7 +67,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
     protected void hookInitalize(final IJavaElementSelection selection) {
     }
 
-    protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection) {
+    private boolean updateImportDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IPackageFragment) {
             return updateImportDeclarationSelection(selection, (IPackageFragment) javaElement);
@@ -86,7 +86,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
-    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection) {
+    private boolean updateParameterDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateParameterDeclarationSelection(selection, (ILocalVariable) javaElement);
@@ -105,7 +105,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
-    protected boolean updateImplementsDeclarationSelection(final IJavaElementSelection selection) {
+    private boolean updateImplementsDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateImplementsDeclarationSelection(selection, (ILocalVariable) javaElement);
@@ -124,7 +124,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
-    protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection) {
+    private boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IType) {
             return updateExtendsDeclarationSelection(selection, (IType) javaElement);
@@ -136,7 +136,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
-    protected boolean updateTypeDeclarationSelection(final IJavaElementSelection selection) {
+    private boolean updateTypeDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateTypeDeclarationSelection(selection, (ILocalVariable) javaElement);
@@ -154,7 +154,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
-    protected boolean updatePackageDeclarationSelection(final IJavaElementSelection selection) {
+    private boolean updatePackageDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updatePackageDeclarationSelection(selection, (IPackageFragment) javaElement);
@@ -173,10 +173,12 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
-    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection) {
+    private boolean updateMethodDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IMethod) {
             return updateMethodDeclarationSelection(selection, (IMethod) javaElement);
+        } else if (javaElement instanceof IType) {
+            return updateMethodDeclarationSelection(selection, (IType) javaElement);
         }
         return logUnexpectedJavaElementInSelection(selection);
     }
@@ -185,7 +187,11 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
-    protected boolean updateMethodBlockSelection(final IJavaElementSelection selection) {
+    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return false;
+    }
+
+    private boolean updateMethodBlockSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateMethodBlockSelection(selection, (ILocalVariable) javaElement);
@@ -209,7 +215,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection) {
+    private boolean updateFieldDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IField) {
             return updateFieldDeclarationSelection(selection, (IField) javaElement);

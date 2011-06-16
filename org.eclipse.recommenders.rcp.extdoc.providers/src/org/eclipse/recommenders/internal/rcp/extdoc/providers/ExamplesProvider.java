@@ -11,19 +11,19 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.SourceField;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaSourceViewer;
-import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.IColorManager;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
 import org.eclipse.jdt.ui.text.JavaTextTools;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
@@ -31,6 +31,7 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.SummaryCodeFormatter;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
@@ -65,6 +66,10 @@ public final class ExamplesProvider extends AbstractProviderComposite {
             return displayContentForType((IType) element);
         } else if (element instanceof IMethod) {
             return displayContentForMethod((IMethod) element);
+        } else if (element instanceof ILocalVariable) {
+            return displayContentForType(VariableResolver.resolveTypeSignature((ILocalVariable) element));
+        } else if (element instanceof SourceField) {
+            return displayContentForType(VariableResolver.resolveTypeSignature((SourceField) element));
         }
         return false;
     }
@@ -132,7 +137,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
 
         sourceCodeViewer.configure(configuration);
 
-        final Font font = JFaceResources.getFont(PreferenceConstants.EDITOR_TEXT_FONT);
+        final Font font = SwtFactory.CODEFONT;
         // final FontData[] fD = font.getFontData();
         // fD[0].setHeight(10);
         // font = new Font(rootControl.getDisplay(), fD[0]);
