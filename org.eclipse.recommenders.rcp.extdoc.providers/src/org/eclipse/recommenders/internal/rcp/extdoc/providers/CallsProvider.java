@@ -15,13 +15,18 @@ import java.util.SortedSet;
 import com.google.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.SourceField;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
@@ -40,7 +45,8 @@ public final class CallsProvider extends AbstractProviderComposite {
     private final CallsServer server;
 
     private Composite composite;
-    private Composite container;
+    private TextAndFeaturesLine line;
+    private Composite calls;
 
     @Inject
     public CallsProvider(final CallsModelStore modelStore, final CallsServer server) {
@@ -66,60 +72,91 @@ public final class CallsProvider extends AbstractProviderComposite {
             return displayProposalsForType((IType) element);
         } else if (element instanceof IMethod) {
             return displayProposalsForMethod((IMethod) element);
+        } else if (element instanceof ILocalVariable || element instanceof SourceField) {
+            try {
+                return displayProposalsForVariable(element);
+            } catch (final JavaModelException e) {
+                throw new IllegalStateException(e);
+            }
         }
-        return displayProposalsForVariable(element);
+        return false;
     }
 
     private boolean displayProposalsForType(final IType type) {
         final ITypeName typeName = JavaElementResolver.INSTANCE.toRecType(type);
         if (modelStore.hasModel(typeName)) {
-            final IObjectMethodCallsNet model = modelStore.acquireModel(typeName);
-            displayProposals(type, model.getRecommendedMethodCalls(0.05, 5));
+            final IObjectMethodCallsNet model = getModel(typeName);
+            final boolean success = displayProposals(type, model.getRecommendedMethodCalls(0.01, 5));
             modelStore.releaseModel(model);
-            return true;
+            return success;
         }
         return false;
     }
 
     private boolean displayProposalsForMethod(final IMethod method) {
-        final ITypeName typeName = JavaElementResolver.INSTANCE.toRecType((IType) method.getParent());
+        final ITypeName typeName = JavaElementResolver.INSTANCE.toRecMethod(method).getDeclaringType();
         if (modelStore.hasModel(typeName)) {
-            final IObjectMethodCallsNet model = modelStore.acquireModel(typeName);
-            displayProposals(method, model.getRecommendedMethodCalls(0.01));
+            final IObjectMethodCallsNet model = getModel(typeName);
+            final boolean success = displayProposals(method, model.getRecommendedMethodCalls(0.01, 5));
             modelStore.releaseModel(model);
-            return true;
+            return success;
         }
         return false;
     }
 
-    private boolean displayProposalsForVariable(final IJavaElement element) {
-        final ITypeName typeName = JavaElementResolver.INSTANCE.toRecType((IType) element.getParent());
-        if (modelStore.hasModel(typeName)) {
-            final IObjectMethodCallsNet model = modelStore.acquireModel(typeName);
-            displayProposals(element, model.getRecommendedMethodCalls(0.01));
-            modelStore.releaseModel(model);
-            return true;
+    private boolean displayProposalsForVariable(final IJavaElement element) throws JavaModelException {
+        final ITypeName simpleTypeName = findVariableType(element);
+        if (simpleTypeName != null) {
+            for (final ITypeName typeName : modelStore.findTypesBySimpleName(simpleTypeName)) {
+                final IObjectMethodCallsNet model = getModel(typeName);
+                final boolean success = displayProposals(element, model.getRecommendedMethodCalls(0.01, 5));
+                modelStore.releaseModel(model);
+                return success;
+            }
         }
         return false;
+    }
+
+    private ITypeName findVariableType(final IJavaElement element) throws JavaModelException {
+        final String signature;
+        if (element instanceof SourceField) {
+            signature = ((SourceField) element).getTypeSignature();
+        } else {
+            signature = ((ILocalVariable) element).getTypeSignature();
+        }
+        if (signature.length() < 4) {
+            return null;
+        }
+        return VmTypeName.get(signature.substring(0, signature.length() - 1));
+    }
+
+    private IObjectMethodCallsNet getModel(final ITypeName typeName) {
+        final IObjectMethodCallsNet model = modelStore.acquireModel(typeName);
+        model.clearEvidence();
+        model.setMethodContext(null);
+        model.updateBeliefs();
+        return model;
     }
 
     private boolean displayProposals(final IJavaElement element, final SortedSet<Tuple<IMethodName, Double>> proposals) {
-        if (container != null) {
-            container.dispose();
+        if (proposals.isEmpty()) {
+            return false;
         }
-        container = new Composite(composite, SWT.NONE);
+        if (calls != null) {
+            calls.dispose();
+            line.dispose();
+        }
 
-        final String text = "By analyzing XXX occasions of " + element.getElementName()
-                + ", the following patterns have been identified:";
-        final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, element, element.getElementName(),
-                this, server, new TemplateEditDialog(getShell()));
-        line.createStyleRange(30, element.getElementName().length(), SWT.NORMAL, false, true);
+        final String text = "People who use " + element.getElementName() + " usually also call the following methods:";
+        line = new TextAndFeaturesLine(composite, text, element, element.getElementName(), this, server,
+                new TemplateEditDialog(getShell()));
+        line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
 
-        final Composite calls = SwtFactory.createGridComposite(container, 3, 12, 3, 12, 0);
+        calls = SwtFactory.createGridComposite(composite, 3, 12, 3, 12, 0);
         for (final Tuple<IMethodName, Double> proposal : proposals) {
             SwtFactory.createSquare(calls);
-            SwtFactory.createLabel(calls, proposal.getFirst().getIdentifier(), false, false, false);
-            SwtFactory.createLabel(calls, proposal.getSecond() * 100 + "%", false, true, false);
+            SwtFactory.createLabel(calls, Names.vm2srcSimpleMethod(proposal.getFirst()), false, false, true);
+            SwtFactory.createLabel(calls, Math.round(proposal.getSecond() * 100) + "%", false, true, false);
         }
 
         composite.layout(true);
