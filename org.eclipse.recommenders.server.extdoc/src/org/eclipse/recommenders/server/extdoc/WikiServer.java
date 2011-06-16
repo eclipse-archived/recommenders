@@ -34,7 +34,7 @@ public final class WikiServer extends AbstractRatingsServer implements IComments
     public void setText(final IJavaElement javaElement, final String text) {
         WikiEntry entry = getEntry(javaElement);
         if (entry == null) {
-            entry = WikiEntry.create(javaElement, text);
+            entry = WikiEntry.create(getIdentifier(javaElement), text);
         } else {
             entry.setText(text);
         }
@@ -54,11 +54,15 @@ public final class WikiServer extends AbstractRatingsServer implements IComments
     }
 
     private WikiEntry getEntry(final IJavaElement javaElement) {
-        final String key = javaElement.getHandleIdentifier();
-        final WikiEntry result = Server.getProviderContent(PROVIDERID, "method", key,
+        final String key = getIdentifier(javaElement);
+        final WikiEntry result = Server.getProviderContent(PROVIDERID, "type", key,
                 new GenericType<GenericResultObjectView<WikiEntry>>() {
                 });
         return result;
+    }
+
+    private String getIdentifier(final IJavaElement javaElement) {
+        return javaElement.getHandleIdentifier().replaceAll(".*<", "").replaceAll("[{\\[]", ".");
     }
 
 }

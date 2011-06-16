@@ -60,11 +60,6 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
     }
 
     @Override
-    public void redraw() {
-        throw new IllegalAccessError("No need to redraw a JavadocView.");
-    }
-
-    @Override
     public Shell getShell() {
         throw new IllegalAccessError("No need to access the shell.");
     }

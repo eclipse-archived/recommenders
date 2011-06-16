@@ -33,8 +33,6 @@ public interface IProvider extends IExecutableExtension {
 
     boolean selectionChanged(IJavaElementSelection context);
 
-    void redraw();
-
     Shell getShell();
 
 }

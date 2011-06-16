@@ -58,8 +58,7 @@ public final class WikiProvider extends AbstractProviderComposite {
         if (element == null || element instanceof ILocalVariable || element.getElementName().isEmpty()) {
             return false;
         }
-        disposeChildren(parentComposite);
-        composite = SwtFactory.createGridComposite(parentComposite, 1, 0, 11, 0, 0);
+        initComposite();
         final String markup = server.getText(element);
         if (markup == null) {
             displayNoText(element);
@@ -68,6 +67,11 @@ public final class WikiProvider extends AbstractProviderComposite {
         }
         parentComposite.layout(true);
         return true;
+    }
+
+    private void initComposite() {
+        disposeChildren(parentComposite);
+        composite = SwtFactory.createGridComposite(parentComposite, 1, 0, 11, 0, 0);
     }
 
     private void displayText(final IJavaElement element, final String markup) {
@@ -90,7 +94,9 @@ public final class WikiProvider extends AbstractProviderComposite {
 
     public void update(final IJavaElement javaElement, final String text) {
         server.setText(javaElement, text);
-        redraw();
+        initComposite();
+        displayText(javaElement, text);
+        parentComposite.layout(true);
     }
 
 }

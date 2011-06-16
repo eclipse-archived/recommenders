@@ -50,7 +50,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return true;
+        return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
     @Override

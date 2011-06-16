@@ -12,8 +12,6 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.eclipse.jdt.core.IJavaElement;
-
 public final class WikiEntry {
 
     @SerializedName("_id")
@@ -22,12 +20,12 @@ public final class WikiEntry {
     private String rev;
 
     private final String providerId = getClass().getSimpleName();
-    private String elementId;
+    private String type;
     private String text;
 
-    public static WikiEntry create(final IJavaElement element, final String text) {
+    public static WikiEntry create(final String elementId, final String text) {
         final WikiEntry result = new WikiEntry();
-        result.elementId = element.getHandleIdentifier();
+        result.type = elementId;
         result.text = text;
         return result;
     }

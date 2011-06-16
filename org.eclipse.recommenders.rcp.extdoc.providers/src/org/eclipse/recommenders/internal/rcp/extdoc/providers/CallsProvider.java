@@ -189,7 +189,6 @@ public final class CallsProvider extends AbstractProviderComposite2 {
 
     private boolean setLocalVariableContext(final ILocalVariable var) {
         final String name = var.getElementName();
-        System.err.println("vaer:" + var);
         final IType variableType = VariableResolver.resolveTypeSignature(var);
         return setMockedContext(name, variableType, false);
     }

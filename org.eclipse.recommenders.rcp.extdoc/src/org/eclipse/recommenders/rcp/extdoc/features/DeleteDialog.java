@@ -65,7 +65,6 @@ final class DeleteDialog extends AbstractDialog {
     protected void okPressed() {
         try {
             provider.requestDeletion(object);
-            provider.redraw();
         } finally {
             Preconditions.checkArgument(close());
         }

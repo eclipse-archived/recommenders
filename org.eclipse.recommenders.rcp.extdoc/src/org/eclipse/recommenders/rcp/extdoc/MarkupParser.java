@@ -15,6 +15,6 @@ public final class MarkupParser {
     public String parseTextile(final String markup) {
         String result = markup;
         result = result.replaceAll("h([1-9])\\. (.+)\r?\n", "<h$1>$2</h$1>");
-        return result.replaceAll("\r?\n", "<br/>");
+        return result;
     }
 }

@@ -50,11 +50,6 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
     protected abstract boolean updateContent(IJavaElementSelection selection);
 
     @Override
-    public final void redraw() {
-        updateContent(lastSelection);
-    }
-
-    @Override
     public final Shell getShell() {
         return composite.getShell();
     }
