@@ -92,6 +92,15 @@ public final class ExtDocView extends ViewPart {
                     new ProviderUpdateJob(item, provider, selection).schedule();
                 }
             }
+            scrolled.setOrigin(0, 0);
+            new UIJob("Layout ExtDoc View") {
+                @Override
+                public IStatus runInUIThread(final IProgressMonitor monitor) {
+                    providersComposite.layout(true);
+                    scrolled.layout(true);
+                    return Status.OK_STATUS;
+                }
+            }.schedule(1000);
         }
     }
 

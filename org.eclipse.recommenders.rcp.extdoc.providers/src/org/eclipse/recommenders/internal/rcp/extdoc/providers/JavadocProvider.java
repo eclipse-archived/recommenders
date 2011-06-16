@@ -50,9 +50,7 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
     @Override
     public boolean selectionChanged(final IJavaElementSelection context) {
         try {
-            if (context.getJavaElement().getAttachedJavadoc(null) == null) {
-                return false;
-            }
+            context.getJavaElement().getAttachedJavadoc(null);
             javadoc.setInput(context.getJavaElement());
             setBrowserSizeLayoutDataAndTriggerLayout(20);
             return true;
