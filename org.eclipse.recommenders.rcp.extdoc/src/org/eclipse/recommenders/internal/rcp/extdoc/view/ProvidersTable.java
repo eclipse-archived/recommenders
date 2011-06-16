@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -33,6 +34,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -48,10 +50,21 @@ final class ProvidersTable {
     private static IEclipsePreferences preferences;
     private static String preferencePrefix = "";
 
+    private final Label locationLabel;
     private JavaElementLocation lastLocation;
 
     protected ProvidersTable(final Composite parent, final int style) {
-        table = new Table(parent, style);
+        final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 10, 0, 0);
+
+        table = new Table(composite, style);
+        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        locationLabel = new Label(composite, SWT.NONE);
+        locationLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+        composite.setBackground(table.getBackground());
+        locationLabel.setBackground(table.getBackground());
+
         table.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(final Event event) {
@@ -117,6 +130,7 @@ final class ProvidersTable {
                 setGrayed(item, !selectProvider);
             }
             lastLocation = location;
+            locationLabel.setText("Context: " + location.getDisplayName());
         }
     }
 

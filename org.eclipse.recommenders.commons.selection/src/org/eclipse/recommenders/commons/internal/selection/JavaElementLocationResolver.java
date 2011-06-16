@@ -90,11 +90,11 @@ final class JavaElementLocationResolver {
         case ASTNode.BLOCK:
         case ASTNode.SUPER_CONSTRUCTOR_INVOCATION:
         case ASTNode.CAST_EXPRESSION:
-            return JavaElementLocation.BLOCK;
+            return JavaElementLocation.METHOD_BLOCK;
         case ASTNode.METHOD_DECLARATION:
             return JavaElementLocation.METHOD_DECLARATION;
         case ASTNode.SINGLE_VARIABLE_DECLARATION:
-            return JavaElementLocation.METHOD_DECLARATION_PARAMETER;
+            return JavaElementLocation.PARAMETER_DECLARATION;
         case ASTNode.FIELD_DECLARATION:
             return JavaElementLocation.FIELD_DECLARATION;
         case ASTNode.TYPE_DECLARATION:
@@ -121,12 +121,12 @@ final class JavaElementLocationResolver {
         } else {
             try {
                 if (!((BinaryType) javaElement).isInterface()) {
-                    return JavaElementLocation.TYPE_DECLARATION_EXTENDS;
+                    return JavaElementLocation.EXTENDS_DECLARATION;
                 }
             } catch (final JavaModelException e) {
                 throw new IllegalStateException(e);
             }
         }
-        return JavaElementLocation.TYPE_DECLARATION_IMPLEMENTS;
+        return JavaElementLocation.IMPLEMENTS_DECLARATION;
     }
 }

@@ -57,7 +57,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location == JavaElementLocation.BLOCK || location == JavaElementLocation.METHOD_DECLARATION
+        return location == JavaElementLocation.METHOD_BLOCK || location == JavaElementLocation.METHOD_DECLARATION
                 || JavaElementLocation.isInTypeDeclaration(location);
     }
 
