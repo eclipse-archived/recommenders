@@ -145,9 +145,9 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             final int percent = (int) Math.round(directive.getValue() * 100.0 / definitions);
 
             SwtFactory.createSquare(directiveComposite);
-            SwtFactory.createLabel(directiveComposite, getLabel(percent), true, false, false);
+            SwtFactory.createLabel(directiveComposite, getLabel(percent), true, false, SWT.COLOR_BLACK);
             SwtFactory.createLabel(directiveComposite,
-                    actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, false, true);
+                    actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, true, SWT.COLOR_BLACK);
             final StyledText txt = SwtFactory.createStyledText(directiveComposite, "(" + directive.getValue()
                     + " times - " + percent + "%)");
             SwtFactory.createStyleRange(txt, 10 + getLength(directive.getValue()), getLength(percent) + 1, SWT.NORMAL,

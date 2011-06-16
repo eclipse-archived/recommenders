@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Stefan Henss, and others.
+ * Copyright (c) 2011 Stefan Henss.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -269,15 +269,15 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         for (final IMethodName method : calledMethods) {
             SwtFactory.createSquare(calls);
             final String prefix = method.isInit() ? "new " : method.getDeclaringType().getClassName() + ".";
-            SwtFactory.createLabel(calls, prefix + Names.vm2srcSimpleMethod(method), false, false, true);
-            SwtFactory.createLabel(calls, "(called)", false, false, false);
+            SwtFactory.createLabel(calls, prefix + Names.vm2srcSimpleMethod(method), false, true, SWT.COLOR_GRAY);
+            SwtFactory.createLabel(calls, "(called)", false, false, SWT.COLOR_GRAY);
         }
         for (final Tuple<IMethodName, Double> proposal : proposals) {
             SwtFactory.createSquare(calls);
             final IMethodName method = proposal.getFirst();
             final String prefix = method.isInit() ? "new " : method.getDeclaringType().getClassName() + ".";
-            SwtFactory.createLabel(calls, prefix + Names.vm2srcSimpleMethod(method), false, false, true);
-            SwtFactory.createLabel(calls, Math.round(proposal.getSecond() * 100) + "%", false, true, false);
+            SwtFactory.createLabel(calls, prefix + Names.vm2srcSimpleMethod(method), false, true, SWT.COLOR_BLACK);
+            SwtFactory.createLabel(calls, Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
         }
 
         composite.layout(true);

@@ -71,10 +71,10 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
             final Composite template = SwtFactory.createGridComposite(templates, 5, 12, 2, 12, 0);
             for (int j = 0; j < 3; ++j) {
                 SwtFactory.createSquare(template);
-                SwtFactory.createLabel(template, "should not", true, false, false);
-                SwtFactory.createLabel(template, "override performFinish", false, false, true);
-                SwtFactory.createLabel(template, "-", false, false, false);
-                SwtFactory.createLabel(template, "~ 90%", false, true, false);
+                SwtFactory.createLabel(template, "should not", true, false, SWT.COLOR_BLACK);
+                SwtFactory.createLabel(template, "override performFinish", false, true, SWT.COLOR_BLACK);
+                SwtFactory.createLabel(template, "-");
+                SwtFactory.createLabel(template, "~ 90%", false, false, SWT.COLOR_BLUE);
             }
         }
         composite.layout(true);

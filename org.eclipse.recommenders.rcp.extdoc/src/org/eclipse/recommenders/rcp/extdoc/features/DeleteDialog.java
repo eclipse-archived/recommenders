@@ -16,6 +16,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.AbstractDialog;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -51,8 +52,8 @@ final class DeleteDialog extends AbstractDialog {
         final Composite composite = (Composite) super.createDialogArea(parent);
         final Composite area = SwtFactory.createGridComposite(composite, 1, 0, 10, 15, 20);
 
-        SwtFactory.createLabel(area, "Are you sure to delete " + objectName + "?", true, false, false);
-        SwtFactory.createLabel(area, "", false, false, false);
+        SwtFactory.createLabel(area, "Are you sure to delete " + objectName + "?", true, false, SWT.COLOR_BLACK);
+        SwtFactory.createLabel(area, "");
 
         SwtFactory.createCheck(area, "Do not display this item anymore.", true);
         SwtFactory.createCheck(area, "Send anonymous information about this deletion to provider as feedback.", false);

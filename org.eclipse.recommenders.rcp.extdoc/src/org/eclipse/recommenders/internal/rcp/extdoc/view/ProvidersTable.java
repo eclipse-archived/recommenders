@@ -46,8 +46,8 @@ final class ProvidersTable {
     private static Table table;
     private static TableItem dragSourceItem;
 
-    private static Color blackColor;
-    private static Color grayColor;
+    private static Color blackColor = SwtFactory.createColor(SWT.COLOR_BLACK);
+    private static Color grayColor = SwtFactory.createColor(SWT.COLOR_GRAY);
 
     private static IEclipsePreferences preferences;
     private static String preferencePrefix = "";
@@ -88,9 +88,6 @@ final class ProvidersTable {
             }
         });
         enableDragAndDrop();
-
-        blackColor = parent.getDisplay().getSystemColor(SWT.COLOR_BLACK);
-        grayColor = parent.getDisplay().getSystemColor(SWT.COLOR_GRAY);
 
         preferences = ExtDocPlugin.getPreferences();
     }
