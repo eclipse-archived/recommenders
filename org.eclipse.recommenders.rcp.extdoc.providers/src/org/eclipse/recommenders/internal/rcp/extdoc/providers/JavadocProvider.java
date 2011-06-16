@@ -15,14 +15,18 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 @SuppressWarnings("restriction")
-public final class JavadocProvider extends AbstractProvider {
+public final class JavadocProvider extends AbstractProvider implements ProgressListener {
 
     private ExtendedJavadocView javadoc;
 
@@ -30,7 +34,11 @@ public final class JavadocProvider extends AbstractProvider {
     public Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
         javadoc = new ExtendedJavadocView(parent, partSite);
         javadoc.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        javadoc.getControl().setSize(-1, 120);
+        javadoc.getControl().setSize(-1, 250);
+
+        final Browser browser = (Browser) javadoc.getControl();
+        browser.addProgressListener(this);
+        browser.setJavascriptEnabled(true);
         return javadoc.getControl();
     }
 
@@ -43,6 +51,8 @@ public final class JavadocProvider extends AbstractProvider {
     public boolean selectionChanged(final IJavaElementSelection context) {
         if (context.getJavaElement() != null) {
             javadoc.setInput(context.getJavaElement());
+            final Browser browser = (Browser) javadoc.getControl();
+            browser.setSize(browser.getSize().x, 5);
         }
         return context.getJavaElement() != null;
     }
@@ -55,6 +65,24 @@ public final class JavadocProvider extends AbstractProvider {
     @Override
     public Shell getShell() {
         throw new IllegalAccessError("No need to access the shell.");
+    }
+
+    @Override
+    public void changed(final ProgressEvent event) {
+    }
+
+    @Override
+    public void completed(final ProgressEvent event) {
+        Display.getCurrent().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                final Browser browser = (Browser) javadoc.getControl();
+                final Object result = browser
+                        .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
+                browser.setSize(browser.getSize().x, (int) Math.ceil((Double) result));
+                browser.getParent().layout(true);
+            }
+        });
     }
 
     /**
@@ -73,4 +101,5 @@ public final class JavadocProvider extends AbstractProvider {
         }
 
     }
+
 }
