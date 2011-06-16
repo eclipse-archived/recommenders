@@ -11,11 +11,13 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.internal.util.Sets;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -48,10 +50,6 @@ import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.internal.util.Sets;
 
 @SuppressWarnings("restriction")
 public final class CallsProvider extends AbstractProviderComposite2 {
@@ -87,7 +85,9 @@ public final class CallsProvider extends AbstractProviderComposite2 {
 
     @Override
     protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final ILocalVariable local) {
-        setLocalVariableContext(local);
+        if (!setLocalVariableContext(local)) {
+            return false;
+        }
         return displayProposalsForVariable(local, false);
     }
 
@@ -134,7 +134,9 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     @Override
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local) {
-        setLocalVariableContext(local);
+        if (!setLocalVariableContext(local)) {
+            return false;
+        }
         return displayProposalsForVariable(local, true);
     }
 
@@ -156,7 +158,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         };
     }
 
-    private void setFieldVariableContext(final IField element) {
+    private boolean setFieldVariableContext(final IField element) {
         final IField f = element;
         final String name = f.getElementName();
         final IType declaringType = f.getDeclaringType();
@@ -165,13 +167,16 @@ public final class CallsProvider extends AbstractProviderComposite2 {
             final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
             final IJavaProject javaProject = f.getJavaProject();
             final IType fieldType = javaProject.findType(resolvedTypeName);
-            setMockedContext(name, fieldType, false);
+            return setMockedContext(name, fieldType, false);
         } catch (final JavaModelException e) {
-            throwUnhandledException(e);
+            throw new IllegalStateException(e);
         }
     }
 
-    private void setMockedContext(final String varName, final IType variableType, final boolean isArgument) {
+    private boolean setMockedContext(final String varName, final IType variableType, final boolean isArgument) {
+        if (variableType == null) {
+            return false;
+        }
         context = new DelegatingIntelligentCompletionContext(context) {
             @Override
             public Variable getVariable() {
@@ -179,12 +184,14 @@ public final class CallsProvider extends AbstractProviderComposite2 {
                         getEnclosingMethod());
             };
         };
+        return true;
     }
 
-    private void setLocalVariableContext(final ILocalVariable var) {
+    private boolean setLocalVariableContext(final ILocalVariable var) {
         final String name = var.getElementName();
+        System.err.println("vaer:" + var);
         final IType variableType = VariableResolver.resolveTypeSignature(var);
-        setMockedContext(name, variableType, false);
+        return setMockedContext(name, variableType, false);
     }
 
     private Set<IMethodName> resolveCalledMethods() {
@@ -200,7 +207,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors) {
         final Variable variable = context.getVariable();
         System.err.println("displayProposalsForVariable: " + variable);
-        if (modelStore.hasModel(variable.type)) {
+        if (variable != null && modelStore.hasModel(variable.type)) {
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
             final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
                     resolveCalledMethods, negateConstructors);
