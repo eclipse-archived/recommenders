@@ -59,6 +59,15 @@
 		
 		<module>org.eclipse.recommenders.doc.user</module>
 
+		<!-- ExtDoc -->
+		<module>org.eclipse.recommenders.commons.selection</module>
+		<module>org.eclipse.recommenders.rcp.extdoc</module>
+		<module>org.eclipse.recommenders.rcp.extdoc.providers</module>
+		<module>org.eclipse.recommenders.rcp.extdoc.feature</module>
+		<module>org.eclipse.recommenders.server.extdoc</module>
+		<module>org.eclipse.recommenders.tests.commons.selection</module>
+		<module>org.eclipse.recommenders.tests.rcp.extdoc</module>
+
 
 		<!-- features 'n update sites -->
 
