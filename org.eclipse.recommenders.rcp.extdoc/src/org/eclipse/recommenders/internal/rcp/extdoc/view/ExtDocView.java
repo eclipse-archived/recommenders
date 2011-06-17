@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
-import com.google.inject.Inject;
-
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -26,6 +24,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.UIJob;
+
+import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public final class ExtDocView extends ViewPart {
@@ -84,7 +85,10 @@ public final class ExtDocView extends ViewPart {
             table.setContext(selection);
             for (final TableItem item : table.getItems()) {
                 if (item.getChecked()) {
-                    new ProviderUpdateJob(table, item, selection).schedule();
+                    final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
+                    job.setSystem(true);
+                    job.setPriority(UIJob.INTERACTIVE);
+                    job.schedule();
                 }
             }
             scrolled.setOrigin(0, 0);

@@ -14,6 +14,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -23,15 +24,18 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
 
     private IJavaElementSelection lastSelection;
     private Composite composite;
+    private IWorkbenchPartSite partSite;
+    private CLabel titleLabel;
 
     @Override
     public final Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
+        this.partSite = partSite;
         composite = SwtFactory.createGridComposite(parent, 1, 0, 4, 8, 10);
 
-        final CLabel label = new CLabel(composite, SWT.NONE);
-        label.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
-        label.setImage(getIcon());
-        label.setText(getProviderFullName());
+        titleLabel = new CLabel(composite, SWT.NONE);
+        titleLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
+        titleLabel.setImage(getIcon());
+        titleLabel.setText(getProviderFullName());
         SwtFactory.createSeparator(composite);
 
         createContentControl(composite);
@@ -54,10 +58,24 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         return composite.getShell();
     }
 
+    public IWorkbenchPartSite getSite() {
+        return partSite;
+    }
+
     protected final void disposeChildren(final Composite composite) {
         for (final Control child : composite.getChildren()) {
             child.dispose();
         }
+    }
+
+    public void setTitle(final String title) {
+        titleLabel.setText(title);
+        titleLabel.getParent().layout();
+    }
+
+    public void setTitleIcon(final Image image) {
+        titleLabel.setImage(image);
+        titleLabel.getParent().layout();
     }
 
 }
