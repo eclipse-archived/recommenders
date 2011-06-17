@@ -37,8 +37,13 @@ class ProviderUpdateJob extends UIJob {
 
     @Override
     public IStatus runInUIThread(final IProgressMonitor monitor) {
-        final boolean hasContent = provider.selectionChanged(selection);
-        table.setContentVisible(item, hasContent);
-        return Status.OK_STATUS;
+        try {
+            monitor.beginTask("Updating Extended Javadocs", 1);
+            final boolean hasContent = provider.selectionChanged(selection);
+            table.setContentVisible(item, hasContent);
+            return Status.OK_STATUS;
+        } finally {
+            monitor.done();
+        }
     }
 }

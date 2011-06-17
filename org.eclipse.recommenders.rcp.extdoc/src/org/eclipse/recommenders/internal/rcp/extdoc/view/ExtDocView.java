@@ -12,20 +12,27 @@ package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import com.google.inject.Inject;
 
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.UIJob;
 
 @SuppressWarnings("restriction")
 public final class ExtDocView extends ViewPart {
@@ -35,26 +42,57 @@ public final class ExtDocView extends ViewPart {
     private ScrolledComposite scrolled;
     private ProvidersComposite providersComposite;
     private ProvidersTable table;
+    private CLabel selectionLabel;
+    private JavaElementLabelProvider labelProvider;
 
     @Inject
     public ExtDocView(final ProviderStore providerStore) {
         this.providerStore = providerStore;
+        initializeLabelProvider();
+    }
+
+    private void initializeLabelProvider() {
+        labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_QUALIFIED
+                | JavaElementLabelProvider.SHOW_OVERLAY_ICONS | JavaElementLabelProvider.SHOW_RETURN_TYPE
+                | JavaElementLabelProvider.SHOW_PARAMETERS);
     }
 
     @Override
     public void createPartControl(final Composite parent) {
-        final SashForm sashForm = new SashForm(parent, SWT.SMOOTH);
-        sashForm.setLayout(new FillLayout());
-        table = new ProvidersTable(sashForm, SWT.CHECK | SWT.FULL_SELECTION);
-        scrolled = createScrolledComposite(sashForm);
-        providersComposite = new ProvidersComposite(scrolled, SWT.NONE);
-        scrolled.setContent(providersComposite);
-        sashForm.setWeights(new int[] { 15, 85 });
-
+        createSash(parent);
         addProviders();
         fillActionBars();
+    }
 
-        providersComposite.layout(true);
+    private void createSash(final Composite parent) {
+        final SashForm sashForm = new SashForm(parent, SWT.SMOOTH);
+        sashForm.setLayout(new FillLayout());
+        createLeftSashSide(sashForm);
+        createRightSashSide(sashForm);
+        sashForm.setWeights(new int[] { 15, 85 });
+    }
+
+    private void createLeftSashSide(final SashForm sashForm) {
+        table = new ProvidersTable(sashForm, SWT.CHECK | SWT.FULL_SELECTION);
+    }
+
+    private void createRightSashSide(final SashForm sashForm) {
+        final Composite container = SwtFactory.createGridComposite(sashForm, 1, 0, 0, 0, 0);
+        createSelectionLabel(container);
+
+        scrolled = createScrolledComposite(container);
+        scrolled.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        providersComposite = new ProvidersComposite(scrolled, SWT.NONE);
+        scrolled.setContent(providersComposite);
+        providersComposite.layout();
+    }
+
+    private void createSelectionLabel(final Composite container) {
+        selectionLabel = new CLabel(container, SWT.NONE);
+        final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gridData.heightHint = 20;
+        selectionLabel.setLayoutData(gridData);
+        selectionLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
     }
 
     private ScrolledComposite createScrolledComposite(final Composite parent) {
@@ -84,11 +122,22 @@ public final class ExtDocView extends ViewPart {
             table.setContext(selection);
             for (final TableItem item : table.getItems()) {
                 if (item.getChecked()) {
-                    new ProviderUpdateJob(table, item, selection).schedule();
+                    final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
+                    job.setSystem(true);
+                    job.setPriority(UIJob.INTERACTIVE);
+                    job.schedule();
                 }
             }
             scrolled.setOrigin(0, 0);
+            updateSelectionLabel(selection);
         }
+    }
+
+    private void updateSelectionLabel(final IJavaElementSelection selection) {
+        final IJavaElement javaElement = selection.getJavaElement();
+        selectionLabel.setText(labelProvider.getText(javaElement));
+        selectionLabel.setImage(labelProvider.getImage(javaElement));
+        selectionLabel.getParent().layout();
     }
 
     @Override

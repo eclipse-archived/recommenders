@@ -90,7 +90,7 @@ final class JavaElementLocationResolver {
         case ASTNode.BLOCK:
         case ASTNode.SUPER_CONSTRUCTOR_INVOCATION:
         case ASTNode.CAST_EXPRESSION:
-            return JavaElementLocation.METHOD_BLOCK;
+            return JavaElementLocation.METHOD_BODY;
         case ASTNode.METHOD_DECLARATION:
             return JavaElementLocation.METHOD_DECLARATION;
         case ASTNode.SINGLE_VARIABLE_DECLARATION:
@@ -104,7 +104,7 @@ final class JavaElementLocationResolver {
         case ASTNode.PACKAGE_DECLARATION:
             return JavaElementLocation.PACKAGE_DECLARATION;
         default:
-            return JavaElementLocation.METHOD_BLOCK;
+            return JavaElementLocation.METHOD_BODY;
             // throw new IllegalArgumentException("Could not find location for "
             // + locationNodeType);
         }

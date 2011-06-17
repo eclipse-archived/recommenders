@@ -105,8 +105,7 @@ final class ProvidersTable {
             }
         }
         lastSelection = selection;
-        locationLabel.setText((location == null ? "" : location.getDisplayName() + ": ")
-                + selection.getJavaElement().getElementName());
+        locationLabel.setText(location == null ? "" : location.getDisplayName());
     }
 
     void setContentVisible(final TableItem tableItem, final boolean visible) {
@@ -204,7 +203,7 @@ final class ProvidersTable {
             final TableItem item = (TableItem) event.item;
             int index;
             if (item == null) {
-                index = table.getItemCount() - 1;
+                index = table.getItemCount();
             } else {
                 final Point pt = table.getShell().getDisplay().map(null, table, event.x, event.y);
                 final Rectangle bounds = item.getBounds();
