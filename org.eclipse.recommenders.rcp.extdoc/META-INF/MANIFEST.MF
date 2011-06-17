@@ -11,14 +11,11 @@ Require-Bundle: org.eclipse.ui,
  com.google.inject,
  org.eclipse.recommenders.commons.selection,
  org.eclipse.jdt.core,
- org.eclipse.recommenders.commons.utils
+ org.eclipse.recommenders.commons.utils,
+ com.google.guava
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin
 Bundle-ActivationPolicy: lazy
-Import-Package: com.google.common.base,
- org.eclipse.jdt.core,
- org.eclipse.recommenders.commons.injection,
- smile
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.preferences;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.view;x-internal:=true,

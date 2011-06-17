@@ -37,7 +37,7 @@ public final class SwtFactory {
 
     static {
         final FontData fontData = JFaceResources.getTextFont().getFontData()[0];
-        fontData.height -= 1;
+        // fontData.height -= 1;
         CODEFONT = new Font(Display.getCurrent(), fontData);
     }
 
