@@ -203,7 +203,7 @@ final class ProvidersTable {
             final TableItem item = (TableItem) event.item;
             int index;
             if (item == null) {
-                index = table.getItemCount() - 1;
+                index = table.getItemCount();
             } else {
                 final Point pt = table.getShell().getDisplay().map(null, table, event.x, event.y);
                 final Rectangle bounds = item.getBounds();

@@ -49,7 +49,7 @@ public final class SelectionPlugin extends AbstractUIPlugin {
                 start();
                 return Status.OK_STATUS;
             }
-        }.schedule();
+        }.schedule(1000);
     }
 
     @Override
