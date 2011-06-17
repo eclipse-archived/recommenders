@@ -10,13 +10,13 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-
 import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 
 public final class ExtDocServerModule extends AbstractModule {
 
@@ -26,5 +26,7 @@ public final class ExtDocServerModule extends AbstractModule {
         bind(CodeExamplesServer.class).in(Scopes.SINGLETON);
         bind(SubclassingServer.class).in(Scopes.SINGLETON);
         bind(WikiServer.class).in(Scopes.SINGLETON);
+
+        bind(ClientConfigurationPreferenceListener.class).asEagerSingleton();
     }
 }

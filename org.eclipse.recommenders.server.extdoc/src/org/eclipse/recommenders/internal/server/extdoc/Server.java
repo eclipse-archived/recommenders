@@ -14,19 +14,19 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
-import com.sun.jersey.api.client.GenericType;
-
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.client.ResultObject;
 import org.eclipse.recommenders.commons.client.ServerErrorException;
 import org.eclipse.recommenders.commons.client.ServerUnreachableException;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
+import org.eclipse.recommenders.commons.injection.InjectionService;
+
+import com.sun.jersey.api.client.GenericType;
 
 public final class Server {
 
-    private static final WebServiceClient CLIENT = new WebServiceClient(
-            ClientConfiguration.create("http://localhost:5984/extdoc/"));
+    private static WebServiceClient lazyClient;
 
     private static final String QUOTE;
     private static final String BRACEOPEN;
@@ -47,7 +47,7 @@ public final class Server {
                 "_design/providers/_view/providers?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s&stale=ok", BRACEOPEN,
                 QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, encode(value), QUOTE, BRACECLOSE);
         try {
-            final List<ResultObject<T>> rows = CLIENT.doGetRequest(path, resultType).rows;
+            final List<ResultObject<T>> rows = getClient().doGetRequest(path, resultType).rows;
             return rows.isEmpty() ? null : rows.get(0).value;
         } catch (final ServerErrorException e) {
             return null;
@@ -57,7 +57,7 @@ public final class Server {
     }
 
     public static void post(final Object object) {
-        CLIENT.doPostRequest("", object);
+        getClient().doPostRequest("", object);
     }
 
     private static String encode(final String text) {
@@ -66,5 +66,15 @@ public final class Server {
         } catch (final UnsupportedEncodingException e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    private static WebServiceClient getClient() {
+        if (lazyClient == null) {
+            final ClientConfiguration config = InjectionService.getInstance().getInjector()
+                    .getInstance(ClientConfiguration.class);
+            lazyClient = new WebServiceClient(config);
+        }
+        System.out.println("Client access. BaseUrl is: " + lazyClient.getBaseUrl());
+        return lazyClient;
     }
 }

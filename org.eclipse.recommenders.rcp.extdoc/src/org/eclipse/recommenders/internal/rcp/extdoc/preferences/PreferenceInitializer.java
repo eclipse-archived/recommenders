@@ -11,10 +11,16 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 
 public final class PreferenceInitializer extends AbstractPreferenceInitializer {
 
+    private static final String SERVER_URL = "http://137.248.121.220:5984/extdoc/";
+
     @Override
     public void initializeDefaultPreferences() {
+        final IPreferenceStore preferenceStore = ExtDocPlugin.getDefault().getPreferenceStore();
+        preferenceStore.setDefault(PreferenceConstants.WEBSERVICE_HOST, SERVER_URL);
     }
 }
