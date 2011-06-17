@@ -10,18 +10,18 @@
    <extension
          point="org.eclipse.recommenders.rcp.extdoc.provider">
       <provider
-            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider"
-            long_name="Wiki Provider"
-            priority="20"
-            short_name="WikiDoc"
-            icon="icons/full/obj16/wiki.gif">
-      </provider>
-      <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.CallsProvider"
             long_name="Method Calls Provider"
             priority="15"
             short_name="Method Calls"
             icon="icons/full/obj16/calls.png">
+      </provider>
+      <provider
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider"
+            long_name="Wiki Provider"
+            priority="20"
+            short_name="WikiDoc"
+            icon="icons/full/obj16/wiki.gif">
       </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.ExamplesProvider"
