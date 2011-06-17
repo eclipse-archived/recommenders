@@ -44,18 +44,28 @@ public final class ExtDocView extends ViewPart {
 
     @Override
     public void createPartControl(final Composite parent) {
+        createSash(parent);
+        addProviders();
+        fillActionBars();
+    }
+
+    private void createSash(final Composite parent) {
         final SashForm sashForm = new SashForm(parent, SWT.SMOOTH);
         sashForm.setLayout(new FillLayout());
+        createLeftSashSide(sashForm);
+        createRightSashSide(sashForm);
+        sashForm.setWeights(new int[] { 15, 85 });
+    }
+
+    private void createLeftSashSide(final SashForm sashForm) {
         table = new ProvidersTable(sashForm, SWT.CHECK | SWT.FULL_SELECTION);
+    }
+
+    private void createRightSashSide(final SashForm sashForm) {
         scrolled = createScrolledComposite(sashForm);
         providersComposite = new ProvidersComposite(scrolled, SWT.NONE);
         scrolled.setContent(providersComposite);
-        sashForm.setWeights(new int[] { 15, 85 });
-
-        addProviders();
-        fillActionBars();
-
-        providersComposite.layout(true);
+        providersComposite.layout();
     }
 
     private ScrolledComposite createScrolledComposite(final Composite parent) {
