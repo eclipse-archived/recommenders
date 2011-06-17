@@ -12,9 +12,6 @@ package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import com.google.inject.Inject;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -29,7 +26,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.progress.UIJob;
 
 @SuppressWarnings("restriction")
 public final class ExtDocView extends ViewPart {
@@ -88,48 +84,16 @@ public final class ExtDocView extends ViewPart {
             table.setContext(selection);
             for (final TableItem item : table.getItems()) {
                 if (item.getChecked()) {
-                    final IProvider provider = (IProvider) ((Control) item.getData()).getData();
-                    new ProviderUpdateJob(item, provider, selection).schedule();
+                    new ProviderUpdateJob(table, item, selection).schedule();
                 }
             }
             scrolled.setOrigin(0, 0);
-            new UIJob("Layout ExtDoc View") {
-                @Override
-                public IStatus runInUIThread(final IProgressMonitor monitor) {
-                    providersComposite.layout(true);
-                    scrolled.layout(true);
-                    return Status.OK_STATUS;
-                }
-            }.schedule(1000);
         }
     }
 
     @Override
     public void setFocus() {
         scrolled.forceFocus();
-    }
-
-    private final class ProviderUpdateJob extends UIJob {
-
-        private final TableItem item;
-        private final IProvider provider;
-        private final IJavaElementSelection selection;
-
-        public ProviderUpdateJob(final TableItem item, final IProvider provider, final IJavaElementSelection selection) {
-            super("Updating " + provider.getProviderFullName());
-            super.setPriority(UIJob.SHORT);
-            this.item = item;
-            this.provider = provider;
-            this.selection = selection;
-        }
-
-        @Override
-        public IStatus runInUIThread(final IProgressMonitor monitor) {
-            final boolean hasContent = provider.selectionChanged(selection);
-            table.setContentVisible(item, hasContent);
-            table.setGrayed(item, !hasContent);
-            return Status.OK_STATUS;
-        }
     }
 
     private final class FeedbackAction extends Action {

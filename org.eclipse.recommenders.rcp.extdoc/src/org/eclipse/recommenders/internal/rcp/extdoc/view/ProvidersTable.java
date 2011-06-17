@@ -49,11 +49,11 @@ final class ProvidersTable {
     private static Color blackColor = SwtFactory.createColor(SWT.COLOR_BLACK);
     private static Color grayColor = SwtFactory.createColor(SWT.COLOR_DARK_GRAY);
 
-    private static IEclipsePreferences preferences;
-    private static String preferencePrefix = "";
+    private final IEclipsePreferences preferences;
+    private String preferencePrefix = "";
 
     private final CLabel locationLabel;
-    private JavaElementLocation lastLocation;
+    private IJavaElementSelection lastSelection;
 
     protected ProvidersTable(final Composite parent, final int style) {
         final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 6, 0, 0);
@@ -70,26 +70,53 @@ final class ProvidersTable {
 
         composite.setBackground(table.getBackground());
 
-        table.addListener(SWT.Selection, new Listener() {
-            @Override
-            public void handleEvent(final Event event) {
-                final TableItem tableItem = (TableItem) event.item;
-                final Control control = (Control) tableItem.getData();
-                if (event.detail == SWT.CHECK) {
-                    if (!tableItem.getGrayed()) {
-                        setContentVisible(tableItem, tableItem.getChecked());
-                        control.getParent().layout(true);
-                    }
-                    preferences.putBoolean(preferencePrefix + ((IProvider) control.getData()).getProviderName(),
-                            tableItem.getChecked());
-                } else if (!tableItem.getGrayed()) {
-                    ((ScrolledComposite) control.getParent().getParent()).setOrigin(control.getLocation());
-                }
-            }
-        });
+        table.addListener(SWT.Selection, new SelectionListener(this));
         enableDragAndDrop();
 
         preferences = ExtDocPlugin.getPreferences();
+    }
+
+    protected void addProvider(final Control providerControl, final String text, final Image image,
+            final boolean checked) {
+        final TableItem tableItem = new TableItem(table, SWT.NONE);
+        tableItem.setText(text);
+        tableItem.setData(providerControl);
+        tableItem.setImage(image);
+        tableItem.setChecked(false);
+        setContentVisible(tableItem, false);
+    }
+
+    public TableItem[] getItems() {
+        return table.getItems();
+    }
+
+    public void setContext(final IJavaElementSelection selection) {
+        final JavaElementLocation location = selection.getElementLocation();
+        if (lastSelection == null || lastSelection.getElementLocation() != location) {
+            preferencePrefix = location == null ? "" : location.name();
+            for (final TableItem item : table.getItems()) {
+                final IProvider provider = (IProvider) ((Control) item.getData()).getData();
+                boolean selectProvider = false;
+                if (preferences.getBoolean(preferencePrefix + provider.getProviderName(), true)) {
+                    selectProvider = provider.isAvailableForLocation(location);
+                }
+                item.setChecked(selectProvider);
+                setContentVisible(item, selectProvider);
+            }
+        }
+        lastSelection = selection;
+        locationLabel.setText((location == null ? "" : location.getDisplayName() + ": ")
+                + selection.getJavaElement().getElementName());
+    }
+
+    void setContentVisible(final TableItem tableItem, final boolean visible) {
+        final Control control = (Control) tableItem.getData();
+        ((GridData) control.getLayoutData()).exclude = !visible;
+        control.setVisible(visible);
+        control.getParent().layout(true);
+
+        tableItem.setGrayed(!visible);
+        tableItem.setForeground(visible ? blackColor : grayColor);
     }
 
     private void enableDragAndDrop() {
@@ -105,50 +132,34 @@ final class ProvidersTable {
         target.addDropListener(new DropAdapter());
     }
 
-    protected void addProvider(final Control providerControl, final String text, final Image image,
-            final boolean checked) {
-        final TableItem tableItem = new TableItem(table, SWT.NONE);
-        tableItem.setText(text);
-        tableItem.setData(providerControl);
-        tableItem.setImage(image);
-        tableItem.setChecked(false);
-        setGrayed(tableItem, true);
-        setContentVisible(tableItem, false);
-    }
+    private static final class SelectionListener implements Listener {
 
-    public TableItem[] getItems() {
-        return table.getItems();
-    }
+        private final ProvidersTable table;
 
-    public void setContext(final IJavaElementSelection selection) {
-        final JavaElementLocation location = selection.getElementLocation();
-        if (lastLocation != location) {
-            preferencePrefix = location == null ? "" : location.name();
-            for (final TableItem item : table.getItems()) {
-                final IProvider provider = (IProvider) ((Control) item.getData()).getData();
-                boolean selectProvider = false;
-                if (preferences.getBoolean(preferencePrefix + provider.getProviderName(), true)) {
-                    selectProvider = provider.isAvailableForLocation(location);
-                }
-                item.setChecked(selectProvider);
-                setGrayed(item, !selectProvider);
-                setContentVisible(item, selectProvider);
-            }
-            lastLocation = location;
+        public SelectionListener(final ProvidersTable table) {
+            this.table = table;
         }
-        locationLabel.setText((location == null ? "" : location.getDisplayName() + ": ")
-                + selection.getJavaElement().getElementName());
-    }
 
-    void setGrayed(final TableItem item, final boolean grayed) {
-        item.setGrayed(grayed);
-        item.setForeground(grayed ? grayColor : blackColor);
-    }
+        @Override
+        public void handleEvent(final Event event) {
+            final TableItem tableItem = (TableItem) event.item;
+            final Control control = (Control) tableItem.getData();
+            if (event.detail == SWT.CHECK) {
+                table.preferences.putBoolean(
+                        table.preferencePrefix + ((IProvider) control.getData()).getProviderName(),
+                        tableItem.getChecked());
+                if (tableItem.getGrayed()) {
+                    if (tableItem.getChecked()) {
+                        new ProviderUpdateJob(table, tableItem, table.lastSelection).schedule();
+                    }
+                } else {
+                    table.setContentVisible(tableItem, tableItem.getChecked());
+                }
+            } else if (!tableItem.getGrayed()) {
+                ((ScrolledComposite) control.getParent().getParent()).setOrigin(control.getLocation());
+            }
+        }
 
-    void setContentVisible(final TableItem tableItem, final boolean visible) {
-        final Control control = (Control) tableItem.getData();
-        ((GridData) control.getLayoutData()).exclude = !visible;
-        control.setVisible(visible);
     }
 
     private static final class DragListener implements DragSourceListener {
