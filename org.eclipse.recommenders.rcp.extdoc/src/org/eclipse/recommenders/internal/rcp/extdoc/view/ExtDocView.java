@@ -20,6 +20,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.utils.RCPUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
@@ -28,7 +29,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
@@ -120,6 +123,10 @@ public final class ExtDocView extends ViewPart {
     }
 
     public void update(final IJavaElementSelection selection) {
+        if (isUiThread() && !isViewVisible()) {
+            return;
+        }
+
         if (selection != null && table != null) {
             if (!isEqualToLastSelection(selection)) {
                 table.setContext(selection);
@@ -136,6 +143,16 @@ public final class ExtDocView extends ViewPart {
                 lastSelection = selection;
             }
         }
+    }
+
+    private boolean isUiThread() {
+        return Display.getCurrent() != null;
+    }
+
+    private boolean isViewVisible() {
+        final IWorkbenchPage page = RCPUtils.getActiveWorkbenchPage();
+        return page.isPartVisible(this);
+
     }
 
     private boolean isEqualToLastSelection(final IJavaElementSelection selection) {
