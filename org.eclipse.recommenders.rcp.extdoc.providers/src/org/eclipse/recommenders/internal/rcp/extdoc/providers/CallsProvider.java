@@ -57,6 +57,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     private final CallsModelStore modelStore;
     private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;
     private final IntelligentCompletionContextResolver contextResolver;
+    private final JavaElementResolver elementResolver;
     private final CallsServer server;
 
     private Composite composite;
@@ -65,10 +66,12 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     @Inject
     public CallsProvider(final CallsModelStore modelStore,
             final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
-            final IntelligentCompletionContextResolver contextResolver, final CallsServer server) {
+            final IntelligentCompletionContextResolver contextResolver, final JavaElementResolver elementResolver,
+            final CallsServer server) {
         this.modelStore = modelStore;
         this.usageResolversProvider = usageResolversProvider;
         this.contextResolver = contextResolver;
+        this.elementResolver = elementResolver;
         this.server = server;
     }
 
@@ -162,8 +165,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         context = new DelegatingIntelligentCompletionContext(context) {
             @Override
             public Variable getVariable() {
-
-                return Variable.create("this", null, JavaElementResolver.INSTANCE.toRecMethod(enclosingMethod));
+                return Variable.create("this", null, elementResolver.toRecMethod(enclosingMethod));
             };
         };
     }
@@ -190,8 +192,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         context = new DelegatingIntelligentCompletionContext(context) {
             @Override
             public Variable getVariable() {
-                return Variable.create(varName, JavaElementResolver.INSTANCE.toRecType(variableType),
-                        getEnclosingMethod());
+                return Variable.create(varName, elementResolver.toRecType(variableType), getEnclosingMethod());
             };
         };
         return true;
@@ -215,7 +216,6 @@ public final class CallsProvider extends AbstractProviderComposite2 {
 
     private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors) {
         final Variable variable = context.getVariable();
-        System.err.println("displayProposalsForVariable: " + variable);
         if (variable != null && modelStore.hasModel(variable.type)) {
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
             final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
@@ -227,7 +227,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     }
 
     private boolean displayProposalsForType(final IType type) {
-        final ITypeName typeName = JavaElementResolver.INSTANCE.toRecType(type);
+        final ITypeName typeName = elementResolver.toRecType(type);
         if (modelStore.hasModel(typeName)) {
             final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName,
                     new HashSet<IMethodName>(), false);
@@ -237,25 +237,24 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     }
 
     private boolean displayProposalsForMethod(final IMethod method) {
-        final ITypeName typeName = JavaElementResolver.INSTANCE.toRecMethod(method).getDeclaringType();
-        if (modelStore.hasModel(typeName)) {
+        final IMethodName methodName = elementResolver.toRecMethod(method);
+        if (methodName == null) {
+            return false;
+        } else if (modelStore.hasModel(methodName.getDeclaringType())) {
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
-            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, resolveCalledMethods,
-                    false);
-            final boolean success = displayProposals(method, calls, resolveCalledMethods);
-            return success;
+            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(methodName.getDeclaringType(),
+                    resolveCalledMethods, false);
+            return displayProposals(method, calls, resolveCalledMethods);
         } else {
-            IMethod findOverriddenMethod;
             try {
                 final IType declaringType = method.getDeclaringType();
                 final MethodOverrideTester tester = SuperTypeHierarchyCache.getMethodOverrideTester(declaringType);
-                findOverriddenMethod = tester.findOverriddenMethod(method, true);
+                final IMethod findOverriddenMethod = tester.findOverriddenMethod(method, true);
                 if (findOverriddenMethod != null) {
                     return displayProposalsForMethod(findOverriddenMethod);
                 }
             } catch (final JavaModelException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new IllegalStateException(e);
             }
         }
         return false;
@@ -266,7 +265,6 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         final IObjectMethodCallsNet model = modelStore.acquireModel(typeName);
         model.clearEvidence();
         model.setMethodContext(context == null ? null : context.getEnclosingMethodsFirstDeclaration());
-        System.err.println("invoked: " + invokedMethods);
         model.setObservedMethodCalls(typeName, invokedMethods);
         if (negateConstructors) {
             model.negateConstructors();

@@ -18,7 +18,8 @@ import org.eclipse.recommenders.internal.rcp.extdoc.preferences.PreferenceConsta
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-public class ClientConfigurationPreferenceListener implements IPropertyChangeListener {
+@SuppressWarnings("restriction")
+class ClientConfigurationPreferenceListener implements IPropertyChangeListener {
 
     private final ClientConfiguration config;
 

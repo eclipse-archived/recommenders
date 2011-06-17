@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import com.google.inject.Inject;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
@@ -26,6 +24,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import com.google.inject.Inject;
 
 public final class WikiProvider extends AbstractProviderComposite {
 
@@ -53,7 +53,7 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected boolean updateContent(final IJavaElementSelection selection) {
+    public boolean selectionChanged(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element == null || element instanceof ILocalVariable || element.getElementName().isEmpty()) {
             return false;

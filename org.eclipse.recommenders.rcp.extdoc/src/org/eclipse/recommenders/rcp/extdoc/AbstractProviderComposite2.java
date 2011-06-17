@@ -32,7 +32,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
     }
 
     @Override
-    protected final boolean updateContent(final IJavaElementSelection selection) {
+    public final boolean selectionChanged(final IJavaElementSelection selection) {
         if (selection.getInvocationContext() == null) {
             return false;
         }

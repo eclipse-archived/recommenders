@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;
 
-import com.google.common.base.Preconditions;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider;
@@ -24,6 +22,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import com.google.common.base.Preconditions;
 
 public final class WikiEditDialog extends AbstractDialog {
 

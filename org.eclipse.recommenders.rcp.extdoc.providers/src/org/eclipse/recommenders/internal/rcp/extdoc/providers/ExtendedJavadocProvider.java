@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import com.google.inject.Inject;
-
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -21,6 +19,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+
+import com.google.inject.Inject;
 
 public final class ExtendedJavadocProvider extends AbstractProviderComposite {
 
@@ -46,7 +46,7 @@ public final class ExtendedJavadocProvider extends AbstractProviderComposite {
     }
 
     @Override
-    public boolean updateContent(final IJavaElementSelection context) {
+    public boolean selectionChanged(final IJavaElementSelection context) {
         final StringBuilder builder = new StringBuilder(128);
         IIntelligentCompletionContext completionContext = null;
 

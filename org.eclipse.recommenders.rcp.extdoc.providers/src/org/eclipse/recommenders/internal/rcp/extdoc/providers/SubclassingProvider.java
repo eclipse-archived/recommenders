@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import com.google.inject.Inject;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -36,6 +34,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import com.google.inject.Inject;
 
 public final class SubclassingProvider extends AbstractProviderComposite {
 
@@ -62,7 +62,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected boolean updateContent(final IJavaElementSelection selection) {
+    public boolean selectionChanged(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             return displayContentForType((IType) element);

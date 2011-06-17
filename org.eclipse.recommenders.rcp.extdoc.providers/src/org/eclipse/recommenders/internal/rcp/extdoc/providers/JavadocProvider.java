@@ -10,20 +10,23 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
+
+import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends AbstractProviderComposite {
@@ -42,11 +45,12 @@ public final class JavadocProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected boolean updateContent(final IJavaElementSelection context) {
+    public boolean selectionChanged(final IJavaElementSelection selection) {
         try {
-            context.getJavaElement().getAttachedJavadoc(null);
-            javadoc.setInput(context.getJavaElement());
-            browserSizeWorkaround.switchToMinimumSize();
+            selection.getJavaElement().getAttachedJavadoc(null);
+            javadoc.setInput(getJavaElement(selection.getJavaElement()));
+            // TODO: Do we need this?
+            // browserSizeWorkaround.switchToMinimumSize();
             return true;
         } catch (final JavaModelException e) {
             return false;
@@ -56,6 +60,13 @@ public final class JavadocProvider extends AbstractProviderComposite {
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
         return true;
+    }
+
+    private IJavaElement getJavaElement(final IJavaElement javaElement) {
+        if (javaElement instanceof ILocalVariable) {
+            return VariableResolver.resolveTypeSignature((ILocalVariable) javaElement);
+        }
+        return javaElement;
     }
 
     /**
@@ -74,6 +85,11 @@ public final class JavadocProvider extends AbstractProviderComposite {
         }
 
         @Override
+        public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
+            // Ignore, we set the selection.
+        }
+
+        @Override
         protected Object computeInput(final IWorkbenchPart part, final ISelection selection, final IJavaElement input,
                 final IProgressMonitor monitor) {
             final Object defaultInput = super.computeInput(part, selection, input, monitor);
@@ -83,7 +99,6 @@ public final class JavadocProvider extends AbstractProviderComposite {
                 final String htmlAfterTitle = StringUtils.substringAfter(javaDocHtml, "</h5>");
                 return htmlBeforeTitle + htmlAfterTitle;
             }
-
             return defaultInput;
         }
 

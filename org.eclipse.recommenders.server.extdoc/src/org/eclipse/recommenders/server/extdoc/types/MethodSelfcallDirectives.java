@@ -12,10 +12,10 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Map;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+
+import com.google.gson.annotations.SerializedName;
 
 public final class MethodSelfcallDirectives implements IServerType {
 

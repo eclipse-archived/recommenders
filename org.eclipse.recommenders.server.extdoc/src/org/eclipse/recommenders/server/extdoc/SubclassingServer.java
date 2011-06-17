@@ -15,7 +15,6 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
@@ -41,8 +40,9 @@ public final class SubclassingServer extends AbstractRatingsServer {
     }
 
     public MethodSelfcallDirectives getMethodSelfcallDirective(final IMethod method) {
-        return Server.getProviderContent(MethodSelfcallDirectives.class.getSimpleName(), S_METHOD, createKey(method),
-                new GenericType<GenericResultObjectView<MethodSelfcallDirectives>>() {
+        final String key = createKey(method);
+        return key == null ? null : Server.getProviderContent(MethodSelfcallDirectives.class.getSimpleName(), S_METHOD,
+                key, new GenericType<GenericResultObjectView<MethodSelfcallDirectives>>() {
                 });
     }
 
@@ -50,13 +50,5 @@ public final class SubclassingServer extends AbstractRatingsServer {
         return Server.getProviderContent(ClassOverridePatterns.class.getSimpleName(), S_TYPE, createKey(type),
                 new GenericType<GenericResultObjectView<ClassOverridePatterns>>() {
                 });
-    }
-
-    private String createKey(final IMethod method) {
-        return JavaElementResolver.INSTANCE.toRecMethod(method).getIdentifier();
-    }
-
-    private String createKey(final IType type) {
-        return JavaElementResolver.INSTANCE.toRecType(type).getIdentifier();
     }
 }

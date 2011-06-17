@@ -10,12 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionProposalComputer;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 
 public final class ExtDocProvidersModule extends AbstractModule {
 

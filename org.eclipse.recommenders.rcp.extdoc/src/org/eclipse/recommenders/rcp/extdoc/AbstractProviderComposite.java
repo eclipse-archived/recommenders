@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
@@ -22,7 +21,6 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 public abstract class AbstractProviderComposite extends AbstractProvider {
 
-    private IJavaElementSelection lastSelection;
     private Composite composite;
     private IWorkbenchPartSite partSite;
     private CLabel titleLabel;
@@ -46,19 +44,11 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
     protected abstract Control createContentControl(Composite parent);
 
     @Override
-    public final boolean selectionChanged(final IJavaElementSelection selection) {
-        lastSelection = selection;
-        return updateContent(selection);
-    }
-
-    protected abstract boolean updateContent(IJavaElementSelection selection);
-
-    @Override
     public final Shell getShell() {
         return composite.getShell();
     }
 
-    public IWorkbenchPartSite getSite() {
+    public final IWorkbenchPartSite getSite() {
         return partSite;
     }
 
@@ -68,12 +58,12 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         }
     }
 
-    public void setTitle(final String title) {
+    public final void setTitle(final String title) {
         titleLabel.setText(title);
         titleLabel.getParent().layout();
     }
 
-    public void setTitleIcon(final Image image) {
+    public final void setTitleIcon(final Image image) {
         titleLabel.setImage(image);
         titleLabel.getParent().layout();
     }

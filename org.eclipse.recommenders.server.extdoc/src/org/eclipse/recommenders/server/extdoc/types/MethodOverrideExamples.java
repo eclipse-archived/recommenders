@@ -44,7 +44,6 @@ public final class MethodOverrideExamples implements IServerType {
     public void validate() {
         ensureIsNotNull(method);
         ensureIsNotEmpty(snippets, "empty snippets are not that useful... not allowed.");
-
     }
 
     public List<CodeSnippet> getSnippets() {

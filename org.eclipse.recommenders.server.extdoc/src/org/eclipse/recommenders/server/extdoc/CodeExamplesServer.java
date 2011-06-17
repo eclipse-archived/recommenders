@@ -10,22 +10,21 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import com.sun.jersey.api.client.GenericType;
-
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
+
+import com.sun.jersey.api.client.GenericType;
 
 public final class CodeExamplesServer extends AbstractRatingsServer {
 
     private static final String PROVIDERID = CodeExamples.class.getSimpleName();
 
     public CodeExamples getOverridenMethodCodeExamples(final IMethod method) {
-        final String key = JavaElementResolver.INSTANCE.toRecMethod(method).getIdentifier();
+        final String key = createKey(method);
         final CodeExamples result = Server.getProviderContent(PROVIDERID, "method", key,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });
@@ -33,7 +32,7 @@ public final class CodeExamplesServer extends AbstractRatingsServer {
     }
 
     public CodeExamples getTypeCodeExamples(final IType type) {
-        final String key = JavaElementResolver.INSTANCE.toRecType(type).getIdentifier();
+        final String key = createKey(type);
         final CodeExamples result = Server.getProviderContent(PROVIDERID, "type", key,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });

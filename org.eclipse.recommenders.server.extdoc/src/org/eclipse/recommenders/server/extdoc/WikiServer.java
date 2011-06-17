@@ -12,8 +12,6 @@ package org.eclipse.recommenders.server.extdoc;
 
 import java.util.List;
 
-import com.sun.jersey.api.client.GenericType;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
@@ -21,6 +19,8 @@ import org.eclipse.recommenders.internal.server.extdoc.Server;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
 import org.eclipse.recommenders.server.extdoc.types.WikiEntry;
+
+import com.sun.jersey.api.client.GenericType;
 
 public final class WikiServer extends AbstractRatingsServer implements ICommentsServer {
 

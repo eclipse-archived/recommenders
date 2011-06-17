@@ -12,10 +12,10 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import static java.lang.String.format;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.core.IType;
@@ -87,7 +87,7 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
             // line.createStyleRange(40, 3, SWT.NORMAL, true, false);
 
             final Composite template = SwtFactory.createGridComposite(templates, 4, 12, 2, 12, 0);
-            final ArrayList<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
+            final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
             for (final Entry<IMethodName, Double> entry : entries) {
                 SwtFactory.createSquare(template);
                 final IMethodName method = entry.getKey();
@@ -105,11 +105,9 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
         return true;
     }
 
-    private ArrayList<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(
-            final MethodPattern pattern) {
-        final ArrayList<Entry<IMethodName, Double>> entries = Lists.newArrayList(pattern.getMethods().entrySet());
+    private List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(final MethodPattern pattern) {
+        final List<Entry<IMethodName, Double>> entries = Lists.newArrayList(pattern.getMethods().entrySet());
         Collections.sort(entries, new Comparator<Entry<IMethodName, Double>>() {
-
             @Override
             public int compare(final Entry<IMethodName, Double> o1, final Entry<IMethodName, Double> o2) {
                 return Double.compare(o2.getValue(), o1.getValue());

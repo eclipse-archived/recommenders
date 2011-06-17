@@ -25,7 +25,9 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 
+@SuppressWarnings("restriction")
 public class DelegatingIntelligentCompletionContext implements IIntelligentCompletionContext {
+
     public IIntelligentCompletionContext delegate;
 
     public DelegatingIntelligentCompletionContext(final IIntelligentCompletionContext delegate) {
@@ -33,77 +35,77 @@ public class DelegatingIntelligentCompletionContext implements IIntelligentCompl
     }
 
     @Override
-    public String getPrefixToken() {
+    public final String getPrefixToken() {
         return delegate.getPrefixToken();
     }
 
     @Override
-    public Statement getCompletionNode() {
+    public final Statement getCompletionNode() {
         return delegate.getCompletionNode();
     }
 
     @Override
-    public Statement getCompletionNodeParent() {
+    public final Statement getCompletionNodeParent() {
         return delegate.getCompletionNodeParent();
     }
 
     @Override
-    public Set<LocalDeclaration> getLocalDeclarations() {
+    public final Set<LocalDeclaration> getLocalDeclarations() {
         return delegate.getLocalDeclarations();
     }
 
     @Override
-    public Set<FieldDeclaration> getFieldDeclarations() {
+    public final Set<FieldDeclaration> getFieldDeclarations() {
         return delegate.getFieldDeclarations();
     }
 
     @Override
-    public Set<CompletionProposal> getJdtProposals() {
+    public final Set<CompletionProposal> getJdtProposals() {
         return delegate.getJdtProposals();
     }
 
     @Override
-    public ICompilationUnit getCompilationUnit() {
+    public final ICompilationUnit getCompilationUnit() {
         return delegate.getCompilationUnit();
     }
 
     @Override
-    public IMethodName getEnclosingMethod() {
+    public final IMethodName getEnclosingMethod() {
         return delegate.getEnclosingMethod();
     }
 
     @Override
-    public ITypeName getEnclosingType() {
+    public final ITypeName getEnclosingType() {
         return delegate.getEnclosingType();
     }
 
     @Override
-    public ITypeName getReceiverType() {
+    public final ITypeName getReceiverType() {
         return delegate.getReceiverType();
     }
 
     @Override
-    public String getReceiverName() {
+    public final String getReceiverName() {
         return delegate.getReceiverName();
     }
 
     @Override
-    public boolean expectsReturnValue() {
+    public final boolean expectsReturnValue() {
         return delegate.expectsReturnValue();
     }
 
     @Override
-    public ITypeName getExpectedType() {
+    public final ITypeName getExpectedType() {
         return delegate.getExpectedType();
     }
 
     @Override
-    public Region getReplacementRegion() {
+    public final Region getReplacementRegion() {
         return delegate.getReplacementRegion();
     }
 
     @Override
-    public JavaContentAssistInvocationContext getOriginalContext() {
+    public final JavaContentAssistInvocationContext getOriginalContext() {
         return delegate.getOriginalContext();
     }
 
@@ -113,27 +115,27 @@ public class DelegatingIntelligentCompletionContext implements IIntelligentCompl
     }
 
     @Override
-    public IJavaCompletionProposal toJavaCompletionProposal(final CompletionProposal proposal) {
+    public final IJavaCompletionProposal toJavaCompletionProposal(final CompletionProposal proposal) {
         return delegate.toJavaCompletionProposal(proposal);
     }
 
     @Override
-    public int getInvocationOffset() {
+    public final int getInvocationOffset() {
         return delegate.getInvocationOffset();
     }
 
     @Override
-    public IMethodName getEnclosingMethodsFirstDeclaration() {
+    public final IMethodName getEnclosingMethodsFirstDeclaration() {
         return delegate.getEnclosingMethodsFirstDeclaration();
     }
 
     @Override
-    public boolean isReceiverImplicitThis() {
+    public final boolean isReceiverImplicitThis() {
         return delegate.isReceiverImplicitThis();
     }
 
     @Override
-    public Variable findMatchingVariable(final String variableName) {
+    public final Variable findMatchingVariable(final String variableName) {
         return delegate.findMatchingVariable(variableName);
     }
 

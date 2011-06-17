@@ -12,14 +12,15 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
-public class SummaryCodeFormatter {
+import org.apache.commons.lang3.SystemUtils;
+
+public final class SummaryCodeFormatter {
 
     private CodeFormatter formatter;
     private Map<String, Object> options;

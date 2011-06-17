@@ -42,14 +42,12 @@ class ProvidersComposite extends Composite {
 
     private void setBackground(final Display display) {
         final ColorRegistry registry = JFaceResources.getColorRegistry();
-        final RGB backgroundColorRGB = registry.getRGB("org.eclipse.jdt.ui.JavadocView.backgroundColor");
-        final Color backgroundColor;
-        if (backgroundColorRGB == null) {
-            backgroundColor = display.getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+        final RGB backgroundColor = registry.getRGB("org.eclipse.jdt.ui.JavadocView.backgroundColor");
+        if (backgroundColor == null) {
+            setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
         } else {
-            backgroundColor = new Color(display, backgroundColorRGB);
+            setBackground(new Color(display, backgroundColor));
         }
-        setBackground(backgroundColor);
         setBackgroundMode(SWT.INHERIT_FORCE);
     }
 

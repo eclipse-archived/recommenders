@@ -22,9 +22,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 
-public class BrowserSizeWorkaround {
+public final class BrowserSizeWorkaround {
 
-    private final int minimumHeight = 0;
+    private static final int MINIMUM_HEIGHT = 0;
+
     private final Browser browser;
     private GridData gridData;
 
@@ -43,8 +44,8 @@ public class BrowserSizeWorkaround {
     }
 
     private void initializeGridData() {
-        gridData = GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, minimumHeight)
-                .minSize(SWT.DEFAULT, minimumHeight).create();
+        gridData = GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, MINIMUM_HEIGHT)
+                .minSize(SWT.DEFAULT, MINIMUM_HEIGHT).create();
         browser.setLayoutData(gridData);
     }
 
@@ -76,7 +77,7 @@ public class BrowserSizeWorkaround {
     }
 
     public void switchToMinimumSize() {
-        setHeightAndTriggerLayout(minimumHeight);
+        setHeightAndTriggerLayout(MINIMUM_HEIGHT);
     }
 
     private void registerListener() {

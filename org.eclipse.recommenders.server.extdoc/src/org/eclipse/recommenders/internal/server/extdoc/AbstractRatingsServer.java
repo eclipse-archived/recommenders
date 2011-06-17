@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 
-public abstract class AbstractRatingsServer implements IStarsRatingsServer {
+public abstract class AbstractRatingsServer extends AbstractServer implements IStarsRatingsServer {
 
     private final Map<Object, Integer> userRatings = new HashMap<Object, Integer>();
 

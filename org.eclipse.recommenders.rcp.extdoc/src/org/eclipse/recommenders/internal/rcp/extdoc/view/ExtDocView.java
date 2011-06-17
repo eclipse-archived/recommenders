@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 
@@ -44,8 +43,6 @@ public final class ExtDocView extends ViewPart {
     private ProvidersTable table;
     private CLabel selectionLabel;
     private JavaElementLabelProvider labelProvider;
-
-    private IJavaElementSelection lastSelection;
 
     @Inject
     public ExtDocView(final ProviderStore providerStore) {
@@ -121,42 +118,20 @@ public final class ExtDocView extends ViewPart {
 
     public void update(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
-            if (!isEqualToLastSelection(selection)) {
-                table.setContext(selection);
-                for (final TableItem item : table.getItems()) {
-                    if (item.getChecked()) {
-                        final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
-                        job.setSystem(true);
-                        job.setPriority(UIJob.INTERACTIVE);
-                        job.schedule();
-                    }
+            table.setContext(selection);
+            for (final TableItem item : table.getItems()) {
+                if (item.getChecked()) {
+                    final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
+                    job.setSystem(true);
+                    job.schedule();
                 }
-                scrolled.setOrigin(0, 0);
-                updateSelectionLabel(selection);
-                lastSelection = selection;
             }
+            scrolled.setOrigin(0, 0);
+            updateSelectionLabel(selection.getJavaElement());
         }
     }
 
-    private boolean isEqualToLastSelection(final IJavaElementSelection selection) {
-        if (lastSelection == null) {
-            return false;
-        }
-        if (lastSelection.getElementLocation() != selection.getElementLocation()) {
-            return false;
-        }
-        if (!lastSelection.getJavaElement().equals(selection.getJavaElement())) {
-            return false;
-        }
-        if (!lastSelection.getEditor().equals(selection.getEditor())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private void updateSelectionLabel(final IJavaElementSelection selection) {
-        final IJavaElement javaElement = selection.getJavaElement();
+    private void updateSelectionLabel(final IJavaElement javaElement) {
         selectionLabel.setText(labelProvider.getText(javaElement));
         selectionLabel.setImage(labelProvider.getImage(javaElement));
         selectionLabel.getParent().layout();

@@ -60,7 +60,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected boolean updateContent(final IJavaElementSelection selection) {
+    public boolean selectionChanged(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             return displayContentForType((IType) element);
@@ -106,7 +106,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     }
 
     private void displayCodeSnippets(final IJavaElement element, final CodeSnippet[] snippets) {
-        for (int i = 0; i < snippets.length; i++) {
+        for (int i = 0; i < snippets.length; ++i) {
             createSnippetVisualization(i, element, snippets[i]);
         }
         container.layout(true);

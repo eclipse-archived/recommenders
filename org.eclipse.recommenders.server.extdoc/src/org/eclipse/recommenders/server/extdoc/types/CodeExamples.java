@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.server.extdoc.types;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+
+import com.google.gson.annotations.SerializedName;
 
 public final class CodeExamples {
 

@@ -22,8 +22,10 @@ import org.eclipse.recommenders.commons.client.ServerUnreachableException;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.injection.InjectionService;
 
+import com.google.inject.internal.util.Preconditions;
 import com.sun.jersey.api.client.GenericType;
 
+@SuppressWarnings("restriction")
 public final class Server {
 
     private static WebServiceClient lazyClient;
@@ -43,6 +45,7 @@ public final class Server {
 
     public static <T> T getProviderContent(final String providerId, final String key, final String value,
             final GenericType<GenericResultObjectView<T>> resultType) {
+        Preconditions.checkNotNull(value);
         final String path = String.format(
                 "_design/providers/_view/providers?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s&stale=ok", BRACEOPEN,
                 QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, encode(value), QUOTE, BRACECLOSE);
