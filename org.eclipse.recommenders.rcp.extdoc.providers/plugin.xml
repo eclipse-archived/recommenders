@@ -10,13 +10,6 @@
    <extension
          point="org.eclipse.recommenders.rcp.extdoc.provider">
       <provider
-            class="org.eclipse.recommenders.internal.rcp.extdoc.providers.JavadocProvider"
-            long_name="Javadoc Provider"
-            priority="100"
-            short_name="Javadoc"
-            icon="icons/full/obj16/javadoc.gif">
-      </provider>
-      <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider"
             long_name="Wiki Provider"
             priority="20"
@@ -50,6 +43,13 @@
             priority="2"
             short_name="Subclassing Patterns"
             icon="icons/full/obj16/subclassing-patterns.gif">
+      </provider>
+      <provider
+            class="org.eclipse.recommenders.internal.rcp.extdoc.providers.JavadocProvider"
+            long_name="Javadoc Provider"
+            priority="100"
+            short_name="Javadoc"
+            icon="icons/full/obj16/javadoc.gif">
       </provider>
    </extension>
 </plugin>

@@ -22,7 +22,8 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang3,
  org.eclipse.recommenders.rcp.codecompletion.calls,
  org.eclipse.recommenders.commons.analysis,
- org.eclipse.recommenders.rcp.utils
+ org.eclipse.recommenders.rcp.utils,
+ org.eclipse.recommenders.commons.injection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc.providers;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;x-internal:=true,
