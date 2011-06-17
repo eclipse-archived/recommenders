@@ -24,7 +24,8 @@ class ClientConfigurationPreferenceListener implements IPropertyChangeListener {
     private final ClientConfiguration config;
 
     @Inject
-    public ClientConfigurationPreferenceListener(final ClientConfiguration config,
+    public ClientConfigurationPreferenceListener(
+            final @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION) ClientConfiguration config,
             @Named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE) final IPreferenceStore store) {
         this.config = config;
 

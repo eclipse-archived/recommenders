@@ -20,14 +20,20 @@ import org.eclipse.recommenders.commons.client.ResultObject;
 import org.eclipse.recommenders.commons.client.ServerErrorException;
 import org.eclipse.recommenders.commons.client.ServerUnreachableException;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
-import org.eclipse.recommenders.commons.injection.InjectionService;
+import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.internal.rcp.extdoc.preferences.PreferenceConstants;
 
+import com.google.inject.Inject;
 import com.google.inject.internal.util.Preconditions;
+import com.google.inject.name.Named;
 import com.sun.jersey.api.client.GenericType;
 
 @SuppressWarnings("restriction")
 public final class Server {
 
+    @Inject
+    @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION)
+    private static ClientConfiguration clientConfig;
     private static WebServiceClient lazyClient;
 
     private static final String QUOTE;
@@ -73,9 +79,9 @@ public final class Server {
 
     private static WebServiceClient getClient() {
         if (lazyClient == null) {
-            final ClientConfiguration config = InjectionService.getInstance().getInjector()
-                    .getInstance(ClientConfiguration.class);
-            lazyClient = new WebServiceClient(config);
+            Checks.ensureIsNotNull(clientConfig,
+                    "ClientConfiguration was not injected. Check your guice configuration.");
+            lazyClient = new WebServiceClient(clientConfig);
         }
         return lazyClient;
     }

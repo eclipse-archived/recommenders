@@ -10,6 +10,7 @@
 package org.eclipse.recommenders.internal.rcp.codesearch;
 
 import static org.eclipse.recommenders.internal.rcp.codesearch.CodesearchModule.NAME_CODESEARCH_PREFERENCE_STORE;
+import static org.eclipse.recommenders.internal.rcp.codesearch.CodesearchModule.NAME_CODESEARCH_WEBSERVICE_CONFIGURATION;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,10 +27,11 @@ import com.google.inject.name.Named;
 public class ClientConfigurationPreferenceListener implements IPropertyChangeListener {
 
     private final ClientConfiguration config;
-    private IPreferenceStore store;
+    private final IPreferenceStore store;
 
     @Inject
-    public ClientConfigurationPreferenceListener(final ClientConfiguration config,
+    public ClientConfigurationPreferenceListener(
+            final @Named(NAME_CODESEARCH_WEBSERVICE_CONFIGURATION) ClientConfiguration config,
             @Named(NAME_CODESEARCH_PREFERENCE_STORE) final IPreferenceStore store) {
         this.config = config;
         this.store = store;

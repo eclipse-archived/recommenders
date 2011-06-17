@@ -26,5 +26,7 @@ public final class ExtDocModule extends AbstractModule {
         bind(ExtDocView.class).in(Scopes.SINGLETON);
         bind(IPreferenceStore.class).annotatedWith(Names.named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE))
                 .toInstance(ExtDocPlugin.getDefault().getPreferenceStore());
+
     }
+
 }

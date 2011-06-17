@@ -60,7 +60,7 @@ public final class BrowserSizeWorkaround {
     }
 
     private void recalculateAndSetHeight() {
-        Display.getCurrent().asyncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -70,8 +70,15 @@ public final class BrowserSizeWorkaround {
                 }
                 final Object result = browser
                         .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
+
+                if (result == null) {
+                    // terminate re-layout operation if browser widget fails to
+                    // compute its size
+                    return;
+                }
                 final int height = (int) Math.ceil((Double) result);
                 setHeightAndTriggerLayout(height);
+
             }
         });
     }

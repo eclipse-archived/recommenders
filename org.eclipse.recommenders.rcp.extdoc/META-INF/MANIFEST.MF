@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core,
  org.eclipse.recommenders.commons.utils,
  com.google.guava,
- org.eclipse.recommenders.commons.injection
+ org.eclipse.recommenders.commons.injection,
+ org.eclipse.recommenders.rcp.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin
 Bundle-ActivationPolicy: lazy

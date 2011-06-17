@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
 
@@ -32,10 +33,14 @@ final class UIManager implements IExtendedSelectionListener {
 
     @Override
     public void update(final IJavaElementSelection selection) {
-        if (isViewVisible && !isEqualToLastSelection(selection)) {
+        if (isViewVisible && isUiThread() && !isEqualToLastSelection(selection)) {
             extDocView.update(selection);
         }
         lastSelection = selection;
+    }
+
+    private boolean isUiThread() {
+        return Display.getCurrent() != null;
     }
 
     private boolean isEqualToLastSelection(final IJavaElementSelection selection) {

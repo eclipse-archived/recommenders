@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.ui,
  com.google.guava,
  org.apache.commons.lang3,
  org.eclipse.recommenders.commons.utils,
- org.eclipse.ui.editors
+ org.eclipse.ui.editors,
+ org.eclipse.recommenders.commons.injection
 Export-Package: org.eclipse.recommenders.commons.internal.selection;x-internal:=true,
  org.eclipse.recommenders.commons.selection;
   uses:="org.eclipse.jdt.ui.text.java,
