@@ -40,8 +40,8 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         hookInitalize(selection);
 
         switch (selection.getElementLocation()) {
-        case METHOD_BLOCK:
-            return updateMethodBlockSelection(selection);
+        case METHOD_BODY:
+            return updateMethodBodySelection(selection);
         case FIELD_DECLARATION:
             return updateFieldDeclarationSelection(selection);
         case IMPORT_DECLARATION:
@@ -191,33 +191,33 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         return false;
     }
 
-    private boolean updateMethodBlockSelection(final IJavaElementSelection selection) {
+    private boolean updateMethodBodySelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
-            return updateMethodBlockSelection(selection, (ILocalVariable) javaElement);
+            return updateMethodBodySelection(selection, (ILocalVariable) javaElement);
         } else if (javaElement instanceof IField) {
-            return updateMethodBlockSelection(selection, (IField) javaElement);
+            return updateMethodBodySelection(selection, (IField) javaElement);
         } else if (javaElement instanceof IType) {
-            return updateMethodBlockSelection(selection, (IType) javaElement);
+            return updateMethodBodySelection(selection, (IType) javaElement);
         } else if (javaElement instanceof IMethod) {
-            return updateMethodBlockSelection(selection, (IMethod) javaElement);
+            return updateMethodBodySelection(selection, (IMethod) javaElement);
         }
         return logUnexpectedJavaElementInSelection(selection);
     }
 
-    protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final ILocalVariable local) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
         return false;
     }
 
-    protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final IField field) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
         return false;
     }
 
-    protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final IMethod method) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
         return false;
     }
 
-    protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final IType type) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
         return false;
     }
 

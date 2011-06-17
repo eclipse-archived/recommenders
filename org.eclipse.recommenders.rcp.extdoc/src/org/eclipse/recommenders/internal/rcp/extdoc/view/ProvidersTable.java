@@ -105,8 +105,7 @@ final class ProvidersTable {
             }
         }
         lastSelection = selection;
-        locationLabel.setText((location == null ? "" : location.getDisplayName() + ": ")
-                + selection.getJavaElement().getElementName());
+        locationLabel.setText(location == null ? "" : location.getDisplayName());
     }
 
     void setContentVisible(final TableItem tableItem, final boolean visible) {

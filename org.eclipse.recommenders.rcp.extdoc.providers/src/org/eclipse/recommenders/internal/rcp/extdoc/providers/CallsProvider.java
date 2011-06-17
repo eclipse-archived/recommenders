@@ -90,7 +90,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     }
 
     @Override
-    protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final ILocalVariable local) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
         if (!setLocalVariableContext(local)) {
             return false;
         }
@@ -98,13 +98,13 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     }
 
     @Override
-    protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final IField field) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
         setFieldVariableContext(field);
         return displayProposalsForVariable(field, false);
     }
 
     @Override
-    protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final IType type) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
         setNullVariableContext();
         return displayProposalsForType(type);
     }
