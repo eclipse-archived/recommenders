@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
+import com.google.inject.Inject;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
@@ -31,8 +33,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
-
-import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public final class ExtDocView extends ViewPart {
