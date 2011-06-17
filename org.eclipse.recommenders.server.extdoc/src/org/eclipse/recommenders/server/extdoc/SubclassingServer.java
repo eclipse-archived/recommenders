@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import com.sun.jersey.api.client.GenericType;
-
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
@@ -19,30 +17,46 @@ import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
+import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
 import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 
+import com.sun.jersey.api.client.GenericType;
+
 public final class SubclassingServer extends AbstractRatingsServer {
 
+    private static final String S_METHOD = "method";
+    private static final String S_TYPE = "type";
+
     public ClassOverrideDirectives getClassOverrideDirective(final IType type) {
-        final String key = JavaElementResolver.INSTANCE.toRecType(type).getIdentifier();
-        return Server.getProviderContent("ClassOverrideDirectives", "type", key,
+        return Server.getProviderContent(ClassOverrideDirectives.class.getSimpleName(), S_TYPE, createKey(type),
                 new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
                 });
     }
 
     public ClassSelfcallDirectives getClassSelfcallDirective(final IType type) {
-        final String key = JavaElementResolver.INSTANCE.toRecType(type).getIdentifier();
-        return Server.getProviderContent("ClassSelfcallDirectives", "type", key,
+        return Server.getProviderContent(ClassSelfcallDirectives.class.getSimpleName(), S_TYPE, createKey(type),
                 new GenericType<GenericResultObjectView<ClassSelfcallDirectives>>() {
                 });
     }
 
     public MethodSelfcallDirectives getMethodSelfcallDirective(final IMethod method) {
-        final String key = JavaElementResolver.INSTANCE.toRecMethod(method).getIdentifier();
-        return Server.getProviderContent("MethodSelfcallDirectives", "method", key,
+        return Server.getProviderContent(MethodSelfcallDirectives.class.getSimpleName(), S_METHOD, createKey(method),
                 new GenericType<GenericResultObjectView<MethodSelfcallDirectives>>() {
                 });
     }
 
+    public ClassOverridePatterns getClassOverridePatterns(final IType type) {
+        return Server.getProviderContent(ClassOverridePatterns.class.getSimpleName(), S_TYPE, createKey(type),
+                new GenericType<GenericResultObjectView<ClassOverridePatterns>>() {
+                });
+    }
+
+    private String createKey(final IMethod method) {
+        return JavaElementResolver.INSTANCE.toRecMethod(method).getIdentifier();
+    }
+
+    private String createKey(final IType type) {
+        return JavaElementResolver.INSTANCE.toRecType(type).getIdentifier();
+    }
 }
