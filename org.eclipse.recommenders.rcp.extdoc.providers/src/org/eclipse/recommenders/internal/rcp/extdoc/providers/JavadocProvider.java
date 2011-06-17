@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
-import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
@@ -31,7 +30,6 @@ public final class JavadocProvider extends AbstractProviderComposite {
 
     private ExtendedJavadocView javadoc;
     private BrowserSizeWorkaround browserSizeWorkaround;
-    private JavaElementLabelProvider labelProvider;
 
     @Override
     protected Control createContentControl(final Composite parent) {
@@ -40,9 +38,6 @@ public final class JavadocProvider extends AbstractProviderComposite {
         if (javadoc.getControl() instanceof Browser) {
             browserSizeWorkaround = new BrowserSizeWorkaround((Browser) javadoc.getControl());
         }
-        labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_QUALIFIED
-                | JavaElementLabelProvider.SHOW_OVERLAY_ICONS | JavaElementLabelProvider.SHOW_RETURN_TYPE
-                | JavaElementLabelProvider.SHOW_PARAMETERS);
         return javadoc.getControl();
     }
 
@@ -52,16 +47,10 @@ public final class JavadocProvider extends AbstractProviderComposite {
             context.getJavaElement().getAttachedJavadoc(null);
             javadoc.setInput(context.getJavaElement());
             browserSizeWorkaround.switchToMinimumSize();
-            setTitleByJavaElement(context.getJavaElement());
             return true;
         } catch (final JavaModelException e) {
             return false;
         }
-    }
-
-    private void setTitleByJavaElement(final IJavaElement javaElement) {
-        setTitle(labelProvider.getText(javaElement));
-        setTitleIcon(labelProvider.getImage(javaElement));
     }
 
     @Override
