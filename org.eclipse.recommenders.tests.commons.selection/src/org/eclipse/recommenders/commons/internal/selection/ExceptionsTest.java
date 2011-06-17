@@ -13,10 +13,12 @@ package org.eclipse.recommenders.commons.internal.selection;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.junit.Assert;
+import org.junit.Test;
 
 public final class ExceptionsTest {
 
-    // @Test(expected = IllegalArgumentException.class)
+    @Test
+    // (expected = IllegalArgumentException.class)
     public void testJavaElementLocationResolver() {
         final ASTNode node = AST.newAST(AST.JLS3).createInstance(ASTNode.ANNOTATION_TYPE_DECLARATION);
         JavaElementLocationResolver.resolveLocation(null, node);

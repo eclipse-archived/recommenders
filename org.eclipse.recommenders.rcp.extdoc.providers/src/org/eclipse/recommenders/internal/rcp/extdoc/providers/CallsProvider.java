@@ -84,6 +84,12 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     }
 
     @Override
+    protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        setNullVariableContext();
+        return displayProposalsForType(type);
+    }
+
+    @Override
     protected boolean updateMethodBlockSelection(final IJavaElementSelection selection, final ILocalVariable local) {
         if (!setLocalVariableContext(local)) {
             return false;

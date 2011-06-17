@@ -20,6 +20,7 @@ import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.client.ResultObject;
 import org.eclipse.recommenders.commons.client.ServerErrorException;
+import org.eclipse.recommenders.commons.client.ServerUnreachableException;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 
 public final class Server {
@@ -49,6 +50,8 @@ public final class Server {
             final List<ResultObject<T>> rows = CLIENT.doGetRequest(path, resultType).rows;
             return rows.isEmpty() ? null : rows.get(0).value;
         } catch (final ServerErrorException e) {
+            return null;
+        } catch (final ServerUnreachableException e) {
             return null;
         }
     }
