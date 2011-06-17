@@ -74,7 +74,6 @@ public final class Server {
                     .getInstance(ClientConfiguration.class);
             lazyClient = new WebServiceClient(config);
         }
-        System.out.println("Client access. BaseUrl is: " + lazyClient.getBaseUrl());
         return lazyClient;
     }
 }

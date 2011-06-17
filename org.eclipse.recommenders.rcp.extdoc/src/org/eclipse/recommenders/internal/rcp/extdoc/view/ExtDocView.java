@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
-import com.google.inject.Inject;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
@@ -34,6 +32,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
+import com.google.inject.Inject;
+
 @SuppressWarnings("restriction")
 public final class ExtDocView extends ViewPart {
 
@@ -44,6 +44,8 @@ public final class ExtDocView extends ViewPart {
     private ProvidersTable table;
     private CLabel selectionLabel;
     private JavaElementLabelProvider labelProvider;
+
+    private IJavaElementSelection lastSelection;
 
     @Inject
     public ExtDocView(final ProviderStore providerStore) {
@@ -119,18 +121,38 @@ public final class ExtDocView extends ViewPart {
 
     public void update(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
-            table.setContext(selection);
-            for (final TableItem item : table.getItems()) {
-                if (item.getChecked()) {
-                    final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
-                    job.setSystem(true);
-                    job.setPriority(UIJob.INTERACTIVE);
-                    job.schedule();
+            if (!isEqualToLastSelection(selection)) {
+                table.setContext(selection);
+                for (final TableItem item : table.getItems()) {
+                    if (item.getChecked()) {
+                        final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
+                        job.setSystem(true);
+                        job.setPriority(UIJob.INTERACTIVE);
+                        job.schedule();
+                    }
                 }
+                scrolled.setOrigin(0, 0);
+                updateSelectionLabel(selection);
+                lastSelection = selection;
             }
-            scrolled.setOrigin(0, 0);
-            updateSelectionLabel(selection);
         }
+    }
+
+    private boolean isEqualToLastSelection(final IJavaElementSelection selection) {
+        if (lastSelection == null) {
+            return false;
+        }
+        if (lastSelection.getElementLocation() != selection.getElementLocation()) {
+            return false;
+        }
+        if (!lastSelection.getJavaElement().equals(selection.getJavaElement())) {
+            return false;
+        }
+        if (!lastSelection.getEditor().equals(selection.getEditor())) {
+            return false;
+        }
+
+        return true;
     }
 
     private void updateSelectionLabel(final IJavaElementSelection selection) {
