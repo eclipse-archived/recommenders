@@ -59,7 +59,7 @@ public class BrowserSizeWorkaround {
     }
 
     private void recalculateAndSetHeight() {
-        Display.getCurrent().asyncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
                 try {
