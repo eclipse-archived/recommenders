@@ -238,9 +238,15 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
     }
 
     private IJavaElement findEnclosingElement() {
-        final CompletionContext coreContext = completionRequestor.getCompletionContext();
-        final IJavaElement element = coreContext.getEnclosingElement();
-        return element;
+        try {
+            final CompletionContext coreContext = completionRequestor.getCompletionContext();
+            final IJavaElement element = coreContext.getEnclosingElement();
+            return element;
+        } catch (final RuntimeException e) {
+            RecommendersPlugin.logError(e, "error in jdt resolving enclosing element.",
+                    completionRequestor.getCompletionContext());
+        }
+        return null;
     }
 
     @Override

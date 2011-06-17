@@ -134,7 +134,10 @@ public final class CallsProvider extends AbstractProviderComposite2 {
 
     @Override
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return displayProposalsForType(type);
+        // TODO: this doesn't work yet because JDT fails to resolve the
+        // enclosing method and throws an exception (for whatever reason)
+        return false;
+        // return displayProposalsForType(type);
     }
 
     @Override
