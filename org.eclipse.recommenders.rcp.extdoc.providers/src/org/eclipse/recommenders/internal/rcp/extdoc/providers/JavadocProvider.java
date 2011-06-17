@@ -91,7 +91,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
             if (defaultInput instanceof String) {
                 final String javaDocHtml = (String) defaultInput;
                 final String htmlBeforeTitle = StringUtils.substringBefore(javaDocHtml, "<h5>");
-                final String htmlAfterTitle = StringUtils.substringAfter(javaDocHtml, "</h5><br>");
+                final String htmlAfterTitle = StringUtils.substringAfter(javaDocHtml, "</h5>");
                 return htmlBeforeTitle + htmlAfterTitle;
             }
 
