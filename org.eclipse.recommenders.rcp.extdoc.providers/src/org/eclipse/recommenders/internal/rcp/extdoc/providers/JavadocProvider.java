@@ -76,7 +76,7 @@ public final class JavadocProvider extends AbstractProvider implements ProgressL
                 final Browser browser = (Browser) javadoc.getControl();
                 final Object result = browser
                         .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
-                final int height = (int) Math.ceil((Double) result);
+                final int height = result == null ? 200 : (int) Math.ceil((Double) result);
                 setBrowserSizeLayoutDataAndTriggerLayout(height);
             }
         });
