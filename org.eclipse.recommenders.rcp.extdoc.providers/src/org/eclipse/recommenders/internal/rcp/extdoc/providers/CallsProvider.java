@@ -15,10 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.internal.util.Sets;
-
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -50,6 +46,10 @@ import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.internal.util.Sets;
 
 @SuppressWarnings("restriction")
 public final class CallsProvider extends AbstractProviderComposite2 {
@@ -123,7 +123,7 @@ public final class CallsProvider extends AbstractProviderComposite2 {
 
     @Override
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
-        setThisVariableContext();
+        setThisVariableContext(method);
         return displayProposalsForMethod(method);
     }
 
@@ -155,11 +155,12 @@ public final class CallsProvider extends AbstractProviderComposite2 {
         };
     }
 
-    private void setThisVariableContext() {
+    private void setThisVariableContext(final IMethod enclosingMethod) {
         context = new DelegatingIntelligentCompletionContext(context) {
             @Override
             public Variable getVariable() {
-                return Variable.create("this", null, context.getEnclosingMethod());
+
+                return Variable.create("this", null, JavaElementResolver.INSTANCE.toRecMethod(enclosingMethod));
             };
         };
     }

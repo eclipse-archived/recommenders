@@ -10,25 +10,43 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.eclipse.jdt.core.IJavaElement;
+import static java.lang.String.format;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map.Entry;
+
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.commons.utils.Names;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
-import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite2;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
+import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
+import org.eclipse.recommenders.server.extdoc.types.MethodPattern;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public final class SubclassingTemplatesProvider extends AbstractProviderComposite implements IDeletionProvider {
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 
-    private final SubclassingServer server = new SubclassingServer();
+public final class SubclassingTemplatesProvider extends AbstractProviderComposite2 implements IDeletionProvider {
+
+    private final SubclassingServer server;
 
     private Composite composite;
+
+    @Inject
+    public SubclassingTemplatesProvider(final SubclassingServer server) {
+        this.server = server;
+    }
 
     @Override
     protected Control createContentControl(final Composite parent) {
@@ -37,48 +55,87 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
     }
 
     @Override
-    public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location == JavaElementLocation.METHOD_BODY || location == JavaElementLocation.METHOD_DECLARATION
-                || JavaElementLocation.isInTypeDeclaration(location);
-    }
-
-    @Override
-    protected boolean updateContent(final IJavaElementSelection selection) {
+    protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         disposeChildren(composite);
-        final IJavaElement element = selection.getJavaElement();
-        if (element instanceof IType) {
-            printProposals(element);
-            return true;
-        }
-        return false;
+        return printProposals(type);
+
     }
 
-    private void printProposals(final IJavaElement element) {
-        final int subclasses = 123;
-        String text = "By analysing "
-                + subclasses
-                + " subclasses that override at least one method, the following subclassing patterns have been identified.";
+    private boolean printProposals(final IType type) {
+        final ClassOverridePatterns directive = server.getClassOverridePatterns(type);
+        if (directive == null) {
+            return false;
+        }
+        final MethodPattern[] patterns = getPatternsSortedByFrequency(directive);
+        final int numberOfSubclasses = computeTotalNumberOfSubclasses(patterns);
+
+        String text = format(
+                "By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
+                numberOfSubclasses);
         SwtFactory.createStyledText(composite, text);
 
         final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
 
-        for (int i = 0; i < 2; ++i) {
-            text = "'pattern 403158' - covers approximately 29% of the examined subclasses (24 subclasses).";
-            final TextAndFeaturesLine line = new TextAndFeaturesLine(templates, text, element,
-                    element.getElementName(), this, server, new TemplateEditDialog(getShell()));
-            line.createStyleRange(0, 16, SWT.BOLD, false, false);
-            line.createStyleRange(40, 3, SWT.NORMAL, true, false);
+        for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
+            final MethodPattern pattern = patterns[i];
+            final double patternProbability = pattern.getNumberOfObservations() / (double) numberOfSubclasses;
+            text = format("Pattern #%d - covers approximately %3.0f%% of the examined subclasses (%d subclasses).",
+                    i + 1, 100 * patternProbability, pattern.getNumberOfObservations());
+            final TextAndFeaturesLine line = new TextAndFeaturesLine(templates, text, type, type.getElementName(),
+                    this, server, new TemplateEditDialog(getShell()));
+            // line.createStyleRange(0, 16, SWT.BOLD, false, false);
+            // line.createStyleRange(40, 3, SWT.NORMAL, true, false);
 
-            final Composite template = SwtFactory.createGridComposite(templates, 5, 12, 2, 12, 0);
-            for (int j = 0; j < 3; ++j) {
+            final Composite template = SwtFactory.createGridComposite(templates, 4, 12, 2, 12, 0);
+            final ArrayList<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
+            for (final Entry<IMethodName, Double> entry : entries) {
                 SwtFactory.createSquare(template);
-                SwtFactory.createLabel(template, "should not", true, false, SWT.COLOR_BLACK);
-                SwtFactory.createLabel(template, "override performFinish", false, true, SWT.COLOR_BLACK);
+                final IMethodName method = entry.getKey();
+                SwtFactory
+                        .createLabel(
+                                template,
+                                "override " + method.getDeclaringType().getClassName() + "."
+                                        + Names.vm2srcSimpleMethod(method), false, true, SWT.COLOR_BLACK);
                 SwtFactory.createLabel(template, "-");
-                SwtFactory.createLabel(template, "~ 90%", false, false, SWT.COLOR_BLUE);
+                SwtFactory.createLabel(template, format("~ %3.0f%%", entry.getValue() * 100), false, false,
+                        SWT.COLOR_BLUE);
             }
         }
         composite.layout(true);
+        return true;
+    }
+
+    private ArrayList<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(
+            final MethodPattern pattern) {
+        final ArrayList<Entry<IMethodName, Double>> entries = Lists.newArrayList(pattern.getMethods().entrySet());
+        Collections.sort(entries, new Comparator<Entry<IMethodName, Double>>() {
+
+            @Override
+            public int compare(final Entry<IMethodName, Double> o1, final Entry<IMethodName, Double> o2) {
+                return Double.compare(o2.getValue(), o1.getValue());
+            }
+        });
+        return entries;
+    }
+
+    private MethodPattern[] getPatternsSortedByFrequency(final ClassOverridePatterns directive) {
+        final MethodPattern[] patterns = directive.getPatterns();
+        Arrays.sort(patterns, new Comparator<MethodPattern>() {
+
+            @Override
+            public int compare(final MethodPattern o1, final MethodPattern o2) {
+                return o2.getNumberOfObservations() - o1.getNumberOfObservations();
+            }
+        });
+        return patterns;
+    }
+
+    private int computeTotalNumberOfSubclasses(final MethodPattern[] patterns) {
+        int numberOfSubclasses = 0;
+        for (final MethodPattern p : patterns) {
+            numberOfSubclasses += p.getNumberOfObservations();
+        }
+        return numberOfSubclasses;
     }
 
     @Override
