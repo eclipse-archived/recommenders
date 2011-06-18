@@ -19,6 +19,6 @@ public interface IExtendedSelectionListener {
      * @param selection
      *            The context information for a new Java element selection.
      */
-    void update(IJavaElementSelection selection);
+    void selectionChanged(IJavaElementSelection selection);
 
 }

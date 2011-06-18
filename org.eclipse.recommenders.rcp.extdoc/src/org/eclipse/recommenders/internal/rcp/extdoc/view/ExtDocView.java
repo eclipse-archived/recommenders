@@ -116,7 +116,7 @@ public final class ExtDocView extends ViewPart {
         toolbar.add(new FeedbackAction());
     }
 
-    public void update(final IJavaElementSelection selection) {
+    public void selectionChanged(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
             table.setContext(selection);
             for (final TableItem item : table.getItems()) {

@@ -15,6 +15,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 
 import com.google.inject.Inject;
@@ -25,18 +26,20 @@ final class UIManager implements IExtendedSelectionListener {
     private static boolean isViewVisible = true;
     private static IJavaElementSelection lastSelection;
 
+    private boolean hasViewListener;
+
     @Inject
     public UIManager(final ExtDocView extDocView) {
         UIManager.extDocView = extDocView;
     }
 
     @Override
-    public void update(final IJavaElementSelection selection) {
-        if (lastSelection == null) {
-            extDocView.getSite().getPage().addPartListener(new ViewListener());
+    public void selectionChanged(final IJavaElementSelection selection) {
+        if (!hasViewListener) {
+            initViewListener();
         }
         if (isViewVisible && isUiThread() && !isEqualToLastSelection(selection)) {
-            extDocView.update(selection);
+            extDocView.selectionChanged(selection);
         }
         lastSelection = selection;
     }
@@ -59,6 +62,14 @@ final class UIManager implements IExtendedSelectionListener {
             return false;
         }
         return true;
+    }
+
+    private void initViewListener() {
+        final IWorkbenchPage page = extDocView.getSite().getPage();
+        if (page != null) {
+            page.addPartListener(new ViewListener());
+            hasViewListener = true;
+        }
     }
 
     private static final class ViewListener implements IPartListener2 {
@@ -94,7 +105,7 @@ final class UIManager implements IExtendedSelectionListener {
         public void partVisible(final IWorkbenchPartReference partRef) {
             if (partRef.getPart(false).equals(extDocView)) {
                 isViewVisible = true;
-                extDocView.update(lastSelection);
+                extDocView.selectionChanged(lastSelection);
             }
         }
 

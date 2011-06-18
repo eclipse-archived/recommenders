@@ -18,7 +18,7 @@ public final class TestSelectionListener implements IExtendedSelectionListener {
     private static IJavaElementSelection lastSelection;
 
     @Override
-    public void update(final IJavaElementSelection selection) {
+    public void selectionChanged(final IJavaElementSelection selection) {
         lastSelection = selection;
         // Always call toString to ensure no NPE will occur.
         selection.toString();

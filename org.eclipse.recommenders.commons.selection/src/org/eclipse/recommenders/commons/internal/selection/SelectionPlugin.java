@@ -109,7 +109,7 @@ public final class SelectionPlugin extends AbstractUIPlugin {
             try {
                 final IExtendedSelectionListener listener = (IExtendedSelectionListener) element
                         .createExecutableExtension("class");
-                internalListener.addListener(listener);
+                internalListener.addExternalListener(listener);
             } catch (final CoreException e) {
                 throw new IllegalStateException(e);
             }

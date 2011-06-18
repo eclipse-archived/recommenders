@@ -52,8 +52,8 @@ final class InternalSelectionListener implements ISelectionListener {
      */
     private void notifyListeners(final IJavaElementSelection selection) {
         if (selection != null) {
-            for (final IExtendedSelectionListener listener : externalListeners) {
-                listener.update(selection);
+            for (final IExtendedSelectionListener externalListener : externalListeners) {
+                externalListener.selectionChanged(selection);
             }
         }
     }
@@ -69,7 +69,7 @@ final class InternalSelectionListener implements ISelectionListener {
      * @param listener
      *            External listener to be notified about element selection.
      */
-    public void addListener(final IExtendedSelectionListener listener) {
+    public void addExternalListener(final IExtendedSelectionListener listener) {
         externalListeners.add(listener);
     }
 }

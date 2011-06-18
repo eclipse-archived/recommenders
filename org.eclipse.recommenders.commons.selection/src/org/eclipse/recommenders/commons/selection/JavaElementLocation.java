@@ -22,7 +22,7 @@ public enum JavaElementLocation {
     private String displayName;
 
     JavaElementLocation() {
-        displayName = WordUtils.capitalizeFully(name().replace("_", " ").replace("DECLARATION", ""));
+        displayName = WordUtils.capitalizeFully(name().replace("_", " "));
     }
 
     public String getDisplayName() {
