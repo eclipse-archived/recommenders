@@ -41,7 +41,6 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
     private final SubclassingServer server;
 
-    private Composite parentComposite;
     private Composite composite;
 
     @Inject
@@ -51,8 +50,8 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
     @Override
     protected Control createContentControl(final Composite parent) {
-        parentComposite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
-        return parentComposite;
+        composite = SwtFactory.createGridComposite(parent, 1, 0, 12, 0, 0);
+        return composite;
     }
 
     @Override
@@ -64,6 +63,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     @Override
     public boolean selectionChanged(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
+        disposeChildren(composite);
         if (element instanceof IType) {
             return displayContentForType((IType) element);
         } else if (element instanceof IMethod) {
@@ -74,7 +74,6 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
     private boolean displayContentForType(final IType type) {
         final ClassOverrideDirectives overrides = server.getClassOverrideDirective(type);
-        initComposite();
         if (overrides == null) {
             return false;
         }
@@ -96,13 +95,12 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                     new TemplateEditDialog(getShell()));
             displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
         }
-        parentComposite.layout(true);
+        composite.layout(true);
         return true;
     }
 
     private boolean displayContentForMethod(final IMethod method) {
         final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(method);
-        initComposite();
         if (selfcalls == null) {
             return false;
         }
@@ -127,7 +125,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
         displayDirectives(selfcalls.getCalls(), "call", definitions);
 
-        parentComposite.layout(true);
+        composite.layout(true);
         return true;
     }
 
@@ -170,13 +168,6 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
     private int getLength(final int number) {
         return String.valueOf(number).length();
-    }
-
-    private void initComposite() {
-        if (composite != null) {
-            composite.dispose();
-        }
-        composite = SwtFactory.createGridComposite(parentComposite, 1, 0, 12, 0, 0);
     }
 
 }

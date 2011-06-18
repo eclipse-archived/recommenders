@@ -101,7 +101,9 @@ final class ProvidersTable {
                     selectProvider = provider.isAvailableForLocation(location);
                 }
                 item.setChecked(selectProvider);
-                setContentVisible(item, selectProvider);
+                if (!selectProvider) {
+                    setContentVisible(item, selectProvider);
+                }
             }
         }
         lastSelection = selection;

@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
@@ -52,6 +53,12 @@ public final class SubclassingTemplatesProvider extends AbstractProviderComposit
     protected Control createContentControl(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
         return composite;
+    }
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return location == JavaElementLocation.METHOD_BODY || location == JavaElementLocation.METHOD_DECLARATION
+                || JavaElementLocation.isInTypeDeclaration(location);
     }
 
     @Override

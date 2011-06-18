@@ -27,7 +27,7 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
      * REVIEW: I think this method is not actually required, right?
      */
     @Override
-    public final boolean isAvailableForLocation(final JavaElementLocation location) {
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
         return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
