@@ -28,11 +28,13 @@ final class UIManager implements IExtendedSelectionListener {
     @Inject
     public UIManager(final ExtDocView extDocView) {
         UIManager.extDocView = extDocView;
-        extDocView.getSite().getPage().addPartListener(new ViewListener());
     }
 
     @Override
     public void update(final IJavaElementSelection selection) {
+        if (lastSelection == null) {
+            extDocView.getSite().getPage().addPartListener(new ViewListener());
+        }
         if (isViewVisible && isUiThread() && !isEqualToLastSelection(selection)) {
             extDocView.update(selection);
         }
