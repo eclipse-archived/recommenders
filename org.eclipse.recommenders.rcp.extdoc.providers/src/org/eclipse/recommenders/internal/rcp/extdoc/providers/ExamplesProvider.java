@@ -97,6 +97,9 @@ public final class ExamplesProvider extends AbstractProviderComposite {
 
     private boolean displayContentForType(final IType type) {
         disposeChildren(container);
+        if (type == null) {
+            return false;
+        }
         final CodeExamples codeExamples = server.getTypeCodeExamples(type);
         if (codeExamples == null) {
             return false;

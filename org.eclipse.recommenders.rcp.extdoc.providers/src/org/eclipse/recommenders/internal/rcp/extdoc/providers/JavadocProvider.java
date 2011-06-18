@@ -47,8 +47,12 @@ public final class JavadocProvider extends AbstractProviderComposite {
     @Override
     public boolean selectionChanged(final IJavaElementSelection selection) {
         try {
+            final IJavaElement javaElement = getJavaElement(selection.getJavaElement());
+            if (javaElement == null) {
+                return false;
+            }
             selection.getJavaElement().getAttachedJavadoc(null);
-            javadoc.setInput(getJavaElement(selection.getJavaElement()));
+            javadoc.setInput(javaElement);
             // TODO: Do we need this?
             // browserSizeWorkaround.switchToMinimumSize();
             return true;
