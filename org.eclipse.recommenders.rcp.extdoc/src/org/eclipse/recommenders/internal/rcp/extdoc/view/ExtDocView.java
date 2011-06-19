@@ -20,6 +20,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
@@ -117,6 +118,14 @@ public final class ExtDocView extends ViewPart {
     }
 
     public void selectionChanged(final IJavaElementSelection selection) {
+        try {
+            updateProviders(selection);
+        } catch (final Exception e) {
+            RecommendersUtilsPlugin.logError(e, "Exception while updating selection '%s'.", selection);
+        }
+    }
+
+    private void updateProviders(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
             table.setContext(selection);
             for (final TableItem item : table.getItems()) {

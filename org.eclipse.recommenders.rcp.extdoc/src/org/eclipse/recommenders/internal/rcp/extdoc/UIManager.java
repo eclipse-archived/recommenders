@@ -15,8 +15,8 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.google.inject.Inject;
 
@@ -65,9 +65,9 @@ final class UIManager implements IExtendedSelectionListener {
     }
 
     private void initViewListener() {
-        final IWorkbenchPage page = extDocView.getSite().getPage();
-        if (page != null) {
-            page.addPartListener(new ViewListener());
+        final IWorkbenchPartSite site = extDocView.getSite();
+        if (site != null) {
+            site.getPage().addPartListener(new ViewListener());
             hasViewListener = true;
         }
     }

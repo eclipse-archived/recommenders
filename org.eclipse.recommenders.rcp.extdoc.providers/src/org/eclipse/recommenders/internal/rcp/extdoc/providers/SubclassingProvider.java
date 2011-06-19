@@ -26,6 +26,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDi
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
@@ -100,7 +101,10 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     private boolean displayContentForMethod(final IMethod method) {
-        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(method);
+        final IMethod first = JdtUtils.findFirstDeclaration(method);
+        // TODO first is not correct in all cases. this needs to be fixed soon
+        // after the demo
+        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(first);
         if (selfcalls == null) {
             return false;
         }

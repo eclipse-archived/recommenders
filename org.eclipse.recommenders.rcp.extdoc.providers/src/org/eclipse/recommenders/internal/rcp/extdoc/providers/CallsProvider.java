@@ -23,8 +23,6 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
-import org.eclipse.jdt.internal.corext.util.MethodOverrideTester;
-import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Tuple;
@@ -42,6 +40,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextR
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite2;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -162,10 +161,26 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     }
 
     private void setThisVariableContext(final IMethod enclosingMethod) {
+        final JavaElementResolver resolver = JavaElementResolver.INSTANCE;
+        final IMethodName ctxEnclosingMethod = resolver.toRecMethod(enclosingMethod);
+        final IMethodName ctxSuperDeclaration = null;
+        final IMethodName ctxFirstDeclaration = resolver.toRecMethod(JdtUtils.findFirstDeclaration(enclosingMethod));
+
         context = new DelegatingIntelligentCompletionContext(context) {
             @Override
+            public IMethodName getEnclosingMethod() {
+                return ctxEnclosingMethod;
+            };
+
+            @Override
+            public IMethodName getEnclosingMethodsFirstDeclaration() {
+                return ctxFirstDeclaration;
+            };
+
+            @Override
             public Variable getVariable() {
-                return Variable.create("this", null, elementResolver.toRecMethod(enclosingMethod));
+                return Variable.create("this", resolver.toRecType(enclosingMethod.getDeclaringType()),
+                        resolver.toRecMethod(enclosingMethod));
             };
         };
     }
@@ -237,27 +252,31 @@ public final class CallsProvider extends AbstractProviderComposite2 {
     }
 
     private boolean displayProposalsForMethod(final IMethod method) {
-        final IMethodName methodName = elementResolver.toRecMethod(method);
-        if (methodName == null) {
-            return false;
-        } else if (modelStore.hasModel(methodName.getDeclaringType())) {
+        ITypeName type = null;
+        try {
+            String superclassTypeSignature;
+            superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
+            superclassTypeSignature = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
+                    method.getDeclaringType());
+            final IType supertype = method.getJavaProject().findType(superclassTypeSignature);
+            if (supertype != null) {
+                type = JavaElementResolver.INSTANCE.toRecType(supertype);
+            }
+        } catch (final JavaModelException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if (modelStore.hasModel(type)) {
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
-            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(methodName.getDeclaringType(),
-                    resolveCalledMethods, false);
+            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, resolveCalledMethods, true);
             return displayProposals(method, calls, resolveCalledMethods);
         } else {
-            try {
-                final IType declaringType = method.getDeclaringType();
-                final MethodOverrideTester tester = SuperTypeHierarchyCache.getMethodOverrideTester(declaringType);
-                final IMethod findOverriddenMethod = tester.findOverriddenMethod(method, true);
-                if (findOverriddenMethod != null) {
-                    return displayProposalsForMethod(findOverriddenMethod);
-                }
-            } catch (final JavaModelException e) {
-                throw new IllegalStateException(e);
-            }
+            return false;
+            // final IMethod first = JdtUtils.findFirstDeclaration(method);
+            // // TODO first is not correct in all cases. this needs to be fixed
+            // // soon after the demo
+            // return displayProposalsForMethod(first);
         }
-        return false;
     }
 
     private SortedSet<Tuple<IMethodName, Double>> computeRecommendations(final ITypeName typeName,

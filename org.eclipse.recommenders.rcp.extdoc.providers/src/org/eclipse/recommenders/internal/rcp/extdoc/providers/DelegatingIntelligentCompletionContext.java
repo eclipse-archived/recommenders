@@ -70,7 +70,7 @@ public class DelegatingIntelligentCompletionContext implements IIntelligentCompl
     }
 
     @Override
-    public final IMethodName getEnclosingMethod() {
+    public IMethodName getEnclosingMethod() {
         return delegate.getEnclosingMethod();
     }
 
@@ -125,7 +125,7 @@ public class DelegatingIntelligentCompletionContext implements IIntelligentCompl
     }
 
     @Override
-    public final IMethodName getEnclosingMethodsFirstDeclaration() {
+    public IMethodName getEnclosingMethodsFirstDeclaration() {
         return delegate.getEnclosingMethodsFirstDeclaration();
     }
 
