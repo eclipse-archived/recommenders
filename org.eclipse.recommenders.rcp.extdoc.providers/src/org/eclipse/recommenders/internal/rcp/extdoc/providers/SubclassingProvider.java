@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import com.google.inject.Inject;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -28,6 +26,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDi
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
@@ -36,6 +35,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import com.google.inject.Inject;
 
 public final class SubclassingProvider extends AbstractProviderComposite {
 
@@ -101,7 +102,11 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     private boolean displayContentForMethod(final IMethod method) {
-        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(method);
+
+        final IMethod first = JdtUtils.findFirstDeclaration(method);
+        // TODO first is not correct in all cases. this needs to be fixed soon
+        // after the demo
+        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(first);
         initComposite();
         if (selfcalls == null) {
             return false;
