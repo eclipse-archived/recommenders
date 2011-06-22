@@ -10,17 +10,14 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import com.google.common.base.Preconditions;
-
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.AbstractDialog;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import com.google.common.base.Preconditions;
 
 final class DeleteDialog extends AbstractDialog {
 
@@ -28,7 +25,7 @@ final class DeleteDialog extends AbstractDialog {
     private final String objectName;
     private final Object object;
 
-    protected DeleteDialog(final IDeletionProvider provider, final Object object, final String objectName) {
+    DeleteDialog(final IDeletionProvider provider, final Object object, final String objectName) {
         super(provider.getShell());
         this.provider = provider;
         this.object = object;
@@ -42,23 +39,23 @@ final class DeleteDialog extends AbstractDialog {
 
     @Override
     protected Control createDialogArea(final Composite parent) {
-        final Image image = AbstractUIPlugin.imageDescriptorFromPlugin(
-                ExtDocPlugin.getDefault().getBundle().getSymbolicName(), "icons/full/wizban/delete.png").createImage();
-
         setTitle(String.format("Delete %s", objectName));
         setMessage("Are you sure?");
-        setTitleImage(image);
+        setTitleImage("delete.png");
 
         final Composite composite = (Composite) super.createDialogArea(parent);
         final Composite area = SwtFactory.createGridComposite(composite, 1, 0, 10, 15, 20);
+        createDialogContent(area);
 
-        SwtFactory.createLabel(area, "Are you sure to delete " + objectName + "?", true, false, SWT.COLOR_BLACK);
-        SwtFactory.createLabel(area, "");
-
-        SwtFactory.createCheck(area, "Do not display this item anymore.", true);
-        SwtFactory.createCheck(area, "Send anonymous information about this deletion to provider as feedback.", false);
         SwtFactory.createSeparator(composite);
         return composite;
+    }
+
+    private void createDialogContent(final Composite area) {
+        SwtFactory.createLabel(area, "Are you sure to delete " + objectName + "?", true, false, SWT.COLOR_BLACK);
+        SwtFactory.createLabel(area, "");
+        SwtFactory.createCheck(area, "Do not display this item anymore.", true);
+        SwtFactory.createCheck(area, "Send anonymous information about this deletion to provider as feedback.", false);
     }
 
     @Override

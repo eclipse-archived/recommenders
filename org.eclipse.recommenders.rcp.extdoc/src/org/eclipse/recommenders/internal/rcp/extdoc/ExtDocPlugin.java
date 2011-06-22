@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
 import org.osgi.framework.BundleContext;
 
 public final class ExtDocPlugin extends AbstractUIPlugin {
@@ -39,12 +40,13 @@ public final class ExtDocPlugin extends AbstractUIPlugin {
         return plugin;
     }
 
-    public static Image getIcon(final String uri) {
-        return imageDescriptorFromPlugin(plugin.getBundle().getSymbolicName(), "icons/full/" + uri).createImage();
-    }
-
     public static IEclipsePreferences getPreferences() {
         return preferences;
+    }
+
+    public static Image getIcon(final String filename) {
+        final String uri = String.format("icons/full/%s", filename);
+        return imageDescriptorFromPlugin(plugin.getBundle().getSymbolicName(), uri).createImage();
     }
 
 }

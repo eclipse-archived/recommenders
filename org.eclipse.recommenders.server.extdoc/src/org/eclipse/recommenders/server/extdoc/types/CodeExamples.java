@@ -36,6 +36,6 @@ public final class CodeExamples {
     }
 
     public CodeSnippet[] getExamples() {
-        return examples;
+        return examples.clone();
     }
 }

@@ -14,6 +14,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.client.ResultObject;
@@ -21,20 +23,24 @@ import org.eclipse.recommenders.commons.client.ServerErrorException;
 import org.eclipse.recommenders.commons.client.ServerUnreachableException;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.recommenders.internal.rcp.extdoc.preferences.PreferenceConstants;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 import com.google.inject.Inject;
-import com.google.inject.internal.util.Preconditions;
 import com.google.inject.name.Named;
 import com.sun.jersey.api.client.GenericType;
 
-@SuppressWarnings("restriction")
 public final class Server {
 
     @Inject
     @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION)
     private static ClientConfiguration clientConfig;
     private static WebServiceClient lazyClient;
+
+    @Inject
+    private static JavaElementResolver resolver;
 
     private static final String QUOTE;
     private static final String BRACEOPEN;
@@ -51,7 +57,7 @@ public final class Server {
 
     public static <T> T getProviderContent(final String providerId, final String key, final String value,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        Preconditions.checkNotNull(value);
+        Checks.ensureIsNotNull(value);
         final String path = String.format(
                 "_design/providers/_view/providers?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s&stale=ok", BRACEOPEN,
                 QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, encode(value), QUOTE, BRACECLOSE);
@@ -63,6 +69,16 @@ public final class Server {
         } catch (final ServerUnreachableException e) {
             return null;
         }
+    }
+
+    public static String createKey(final IMethod method) {
+        final IMethodName methodName = resolver.toRecMethod(method);
+        return methodName == null ? null : methodName.getIdentifier();
+    }
+
+    public static String createKey(final IType type) {
+        final ITypeName typeName = resolver.toRecType(type);
+        return typeName == null ? null : typeName.getIdentifier();
     }
 
     public static void post(final Object object) {

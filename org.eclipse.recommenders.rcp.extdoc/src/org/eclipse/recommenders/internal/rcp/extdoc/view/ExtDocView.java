@@ -10,13 +10,16 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
+import java.net.URL;
+
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -34,8 +37,9 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Inject;
 
-@SuppressWarnings("restriction")
 public final class ExtDocView extends ViewPart {
+
+    static final int HEAD_LABEL_HEIGHT = 20;
 
     private final ProviderStore providerStore;
 
@@ -90,12 +94,12 @@ public final class ExtDocView extends ViewPart {
     private void createSelectionLabel(final Composite container) {
         selectionLabel = new CLabel(container, SWT.NONE);
         final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gridData.heightHint = 20;
+        gridData.heightHint = HEAD_LABEL_HEIGHT;
         selectionLabel.setLayoutData(gridData);
         selectionLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
     }
 
-    private ScrolledComposite createScrolledComposite(final Composite parent) {
+    private static ScrolledComposite createScrolledComposite(final Composite parent) {
         final ScrolledComposite composite = new ScrolledComposite(parent, SWT.V_SCROLL);
         composite.setExpandVertical(true);
         composite.setExpandHorizontal(true);
@@ -151,10 +155,12 @@ public final class ExtDocView extends ViewPart {
         scrolled.forceFocus();
     }
 
-    private final class FeedbackAction extends Action {
+    private static final class FeedbackAction extends Action {
 
         FeedbackAction() {
-            JavaPluginImages.setLocalImageDescriptors(this, "feedback.png");
+            final URL entry = ExtDocPlugin.getDefault().getBundle().getEntry("icons/full/lcl16/feedback.png");
+            final ImageDescriptor descriptor = ImageDescriptor.createFromURL(entry);
+            setImageDescriptor(descriptor);
         }
 
         @Override

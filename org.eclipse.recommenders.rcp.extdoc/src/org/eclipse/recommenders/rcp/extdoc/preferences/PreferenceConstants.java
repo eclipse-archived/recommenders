@@ -8,11 +8,12 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.preferences;
+package org.eclipse.recommenders.rcp.extdoc.preferences;
 
-public class PreferenceConstants {
+public interface PreferenceConstants {
 
-    public static final String NAME_EXTDOC_WEBSERVICE_CONFIGURATION = "extdoc.webservice.client";
-    public static final String NAME_EXTDOC_PREFERENCE_STORE = "extdoc.preferences.store";
-    public static final String WEBSERVICE_HOST = "org.eclipse.recommenders.extdoc.webservice.host";
+    String NAME_EXTDOC_WEBSERVICE_CONFIGURATION = "extdoc.webservice.client";
+    String NAME_EXTDOC_PREFERENCE_STORE = "extdoc.preferences.store";
+    String WEBSERVICE_HOST = "org.eclipse.recommenders.extdoc.webservice.host";
+
 }

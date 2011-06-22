@@ -1,0 +1,48 @@
+{
+  "imports": [
+    {
+      "kind": "TYPE_REFERENCE",
+      "name": "Ljava/lang/String",
+      "fingerprint": "78302337e9daa1f38fec9205422a4a27a47d3008"
+    },
+    {
+      "kind": "TYPE_REFERENCE",
+      "name": "Lorg/eclipse/swt/widgets/Button",
+      "fingerprint": "0dcf9453171b8be03f18c762793d3ca8440de115"
+    }
+  ],
+  "kind": "SNAPSHOT",
+  "analysedOn": "2011-06-22T18:09:13.776+02:00",
+  "fingerprint": "c0730b37ed1e77739ebda6488193f8a82e7156ce",
+  "name": "Lcommons/selection/Types",
+  "primaryType": {
+    "name": "Lcommons/selection/Types",
+    "superclass": "Lorg/eclipse/swt/widgets/Button",
+    "interfaces": [],
+    "fields": [
+      "Ljava/lang/String"
+    ],
+    "methods": [
+      {
+        "name": "Lcommons/selection/Types.\u003cinit\u003e(LComposite;I)V",
+        "superDeclaration": "Lorg/eclipse/swt/widgets/Button.\u003cinit\u003e()V",
+        "firstDeclaration": "Lorg/eclipse/swt/widgets/Button.\u003cinit\u003e()V",
+        "line": 5,
+        "nestedTypes": [],
+        "modifiers": 1,
+        "objects": [
+          {
+            "type": "Lorg/eclipse/swt/widgets/Button",
+            "names": [],
+            "kind": "PARAMETER",
+            "parameterCallSites": [],
+            "receiverCallSites": []
+          }
+        ]
+      }
+    ],
+    "line": 0,
+    "memberTypes": [],
+    "modifiers": 33
+  }
+}

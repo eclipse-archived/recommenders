@@ -15,21 +15,21 @@ import java.util.Map;
 
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 
-public abstract class AbstractRatingsServer extends AbstractServer implements IStarsRatingsServer {
+public abstract class AbstractRatingsServer implements IStarsRatingsServer {
 
     private final Map<Object, Integer> userRatings = new HashMap<Object, Integer>();
 
-    private final Map<Object, Integer> starsCount = new HashMap<Object, Integer>();
-    private final Map<Object, Integer> starsSum = new HashMap<Object, Integer>();
+    private final Map<Object, Integer> starsCounts = new HashMap<Object, Integer>();
+    private final Map<Object, Integer> starsSums = new HashMap<Object, Integer>();
 
     @Override
     public final int getAverageRating(final Object object) {
-        if (!starsCount.containsKey(object)) {
+        if (!starsCounts.containsKey(object)) {
             final Integer count = (int) Math.ceil(Math.random() * 3.0);
-            starsCount.put(object, count);
-            starsSum.put(object, (int) (Math.ceil(Math.random() * 5.0) * count));
+            starsCounts.put(object, count);
+            starsSums.put(object, (int) (Math.ceil(Math.random() * 5.0) * count));
         }
-        return starsSum.get(object) / starsCount.get(object);
+        return starsSums.get(object) / starsCounts.get(object);
     }
 
     @Override
@@ -40,8 +40,8 @@ public abstract class AbstractRatingsServer extends AbstractServer implements IS
     @Override
     public final void addRating(final Object object, final int stars) {
         userRatings.put(object, stars);
-        starsCount.put(object, starsCount.get(object) + 1);
-        starsSum.put(object, starsSum.get(object) + stars);
+        starsCounts.put(object, starsCounts.get(object) + 1);
+        starsSums.put(object, starsSums.get(object) + stars);
     }
 
 }

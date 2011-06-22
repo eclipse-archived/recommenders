@@ -24,13 +24,14 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
 public final class ProviderStore {
 
+    private static final String EXTENSION_ID = "org.eclipse.recommenders.rcp.extdoc.provider";
+
     private final Set<IProvider> providers = new TreeSet<IProvider>(new ProviderComparator());
     private final Map<IProvider, Integer> priorities = new HashMap<IProvider, Integer>();
 
     public ProviderStore() throws CoreException {
         final IExtensionRegistry reg = Platform.getExtensionRegistry();
-        for (final IConfigurationElement element : reg
-                .getConfigurationElementsFor("org.eclipse.recommenders.rcp.extdoc.provider")) {
+        for (final IConfigurationElement element : reg.getConfigurationElementsFor(EXTENSION_ID)) {
             final IProvider provider = (IProvider) element.createExecutableExtension("class");
             priorities.put(provider, Integer.parseInt(element.getAttribute("priority")));
             providers.add(provider);
@@ -47,7 +48,6 @@ public final class ProviderStore {
         public int compare(final IProvider provider1, final IProvider provider2) {
             return priorities.get(provider2).compareTo(priorities.get(provider1));
         }
-
     }
 
 }

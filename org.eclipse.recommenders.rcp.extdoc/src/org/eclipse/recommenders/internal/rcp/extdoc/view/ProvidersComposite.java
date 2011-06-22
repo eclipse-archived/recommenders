@@ -20,11 +20,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-class ProvidersComposite extends Composite {
+final class ProvidersComposite extends Composite {
 
     private final ScrolledComposite scrolledParent;
 
-    protected ProvidersComposite(final ScrolledComposite parent, final int style) {
+    ProvidersComposite(final ScrolledComposite parent, final int style) {
         super(parent, style);
         scrolledParent = parent;
         setLayout();

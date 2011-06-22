@@ -46,8 +46,8 @@ final class ProvidersTable {
     private static Table table;
     private static TableItem dragSourceItem;
 
-    private static Color blackColor = SwtFactory.createColor(SWT.COLOR_BLACK);
-    private static Color grayColor = SwtFactory.createColor(SWT.COLOR_DARK_GRAY);
+    private static final Color COLOR_BLACK = SwtFactory.createColor(SWT.COLOR_BLACK);
+    private static final Color COLOR_GRAY = SwtFactory.createColor(SWT.COLOR_DARK_GRAY);
 
     private final IEclipsePreferences preferences;
     private String preferencePrefix = "";
@@ -55,12 +55,12 @@ final class ProvidersTable {
     private final CLabel locationLabel;
     private IJavaElementSelection lastSelection;
 
-    protected ProvidersTable(final Composite parent, final int style) {
+    ProvidersTable(final Composite parent, final int style) {
         final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 6, 0, 0);
 
         locationLabel = new CLabel(composite, SWT.NONE);
         final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gridData.heightHint = 20;
+        gridData.heightHint = ExtDocView.HEAD_LABEL_HEIGHT;
         locationLabel.setLayoutData(gridData);
         locationLabel.setImage(ExtDocPlugin.getIcon("eview16/context.gif"));
         locationLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
@@ -76,8 +76,7 @@ final class ProvidersTable {
         preferences = ExtDocPlugin.getPreferences();
     }
 
-    protected void addProvider(final Control providerControl, final String text, final Image image,
-            final boolean checked) {
+    void addProvider(final Control providerControl, final String text, final Image image, final boolean checked) {
         final TableItem tableItem = new TableItem(table, SWT.NONE);
         tableItem.setText(text);
         tableItem.setData(providerControl);
@@ -117,10 +116,10 @@ final class ProvidersTable {
         control.getParent().layout(true);
 
         tableItem.setGrayed(!visible);
-        tableItem.setForeground(visible ? blackColor : grayColor);
+        tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
     }
 
-    private void enableDragAndDrop() {
+    private static void enableDragAndDrop() {
         final Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
         final int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
 
@@ -137,7 +136,7 @@ final class ProvidersTable {
 
         private final ProvidersTable table;
 
-        public SelectionListener(final ProvidersTable table) {
+        SelectionListener(final ProvidersTable table) {
             this.table = table;
         }
 
@@ -195,7 +194,7 @@ final class ProvidersTable {
             } else {
                 final Rectangle bounds = ((TableItem) event.item).getBounds();
                 final Point pt = table.getShell().getDisplay().map(null, table, event.x, event.y);
-                event.feedback |= pt.y < bounds.y + bounds.height / 2 ? DND.FEEDBACK_INSERT_BEFORE
+                event.feedback |= pt.y < bounds.y + bounds.height >> 1 ? DND.FEEDBACK_INSERT_BEFORE
                         : DND.FEEDBACK_INSERT_AFTER;
             }
         }
@@ -210,9 +209,9 @@ final class ProvidersTable {
                 final Point pt = table.getShell().getDisplay().map(null, table, event.x, event.y);
                 final Rectangle bounds = item.getBounds();
                 final TableItem[] items = table.getItems();
-                index = pt.y < bounds.y + bounds.height / 2 ? 0 : 1;
+                index = pt.y < bounds.y + bounds.height >> 1 ? 0 : 1;
                 for (int i = 0; i < items.length; ++i) {
-                    if (items[i] == item) {
+                    if (items[i].equals(item)) {
                         index += i;
                         break;
                     }

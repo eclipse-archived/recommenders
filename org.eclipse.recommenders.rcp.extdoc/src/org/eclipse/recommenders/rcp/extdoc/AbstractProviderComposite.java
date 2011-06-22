@@ -21,34 +21,34 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 public abstract class AbstractProviderComposite extends AbstractProvider {
 
-    private Composite composite;
+    private Composite container;
     private IWorkbenchPartSite partSite;
     private CLabel titleLabel;
 
     @Override
-    public final Control createControl(final Composite parent, final IWorkbenchPartSite partSite) {
-        this.partSite = partSite;
-        composite = SwtFactory.createGridComposite(parent, 1, 0, 4, 8, 10);
+    public final Control createControl(final Composite parent, final IWorkbenchPartSite site) {
+        partSite = site;
+        container = SwtFactory.createGridComposite(parent, 1, 0, 4, 8, 10);
 
-        titleLabel = new CLabel(composite, SWT.NONE);
+        titleLabel = new CLabel(container, SWT.NONE);
         titleLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
         titleLabel.setImage(getIcon());
         titleLabel.setText(getProviderFullName());
-        SwtFactory.createSeparator(composite);
+        SwtFactory.createSeparator(container);
 
-        createContentControl(composite);
+        createContentControl(container);
 
-        return composite;
+        return container;
     }
 
     protected abstract Control createContentControl(Composite parent);
 
     @Override
     public final Shell getShell() {
-        return composite.getShell();
+        return container.getShell();
     }
 
-    public final IWorkbenchPartSite getSite() {
+    public final IWorkbenchPartSite getPartSite() {
         return partSite;
     }
 

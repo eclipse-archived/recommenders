@@ -37,7 +37,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableReso
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite2;
+import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -51,7 +51,7 @@ import com.google.inject.Provider;
 import com.google.inject.internal.util.Sets;
 
 @SuppressWarnings("restriction")
-public final class CallsProvider extends AbstractProviderComposite2 {
+public final class CallsProvider extends AbstractLocationSensitiveProviderComposite {
 
     private final CallsModelStore modelStore;
     private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;

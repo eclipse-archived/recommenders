@@ -20,15 +20,6 @@ import com.google.gson.annotations.SerializedName;
 
 public final class ClassOverrideDirectives implements IServerType {
 
-    public static ClassOverrideDirectives create(final ITypeName type, final int numberOfSubclasses,
-            final Map<IMethodName, Integer> overriddenMethods) {
-        final ClassOverrideDirectives res = new ClassOverrideDirectives();
-        res.type = type;
-        res.numberOfSubclasses = numberOfSubclasses;
-        res.overrides = overriddenMethods;
-        return res;
-    }
-
     @SerializedName("_id")
     private String id;
     @SerializedName("_rev")
@@ -39,6 +30,15 @@ public final class ClassOverrideDirectives implements IServerType {
 
     private int numberOfSubclasses;
     private Map<IMethodName, Integer> overrides;
+
+    public static ClassOverrideDirectives create(final ITypeName type, final int numberOfSubclasses,
+            final Map<IMethodName, Integer> overriddenMethods) {
+        final ClassOverrideDirectives res = new ClassOverrideDirectives();
+        res.type = type;
+        res.numberOfSubclasses = numberOfSubclasses;
+        res.overrides = overriddenMethods;
+        return res;
+    }
 
     public int getNumberOfSubclasses() {
         return numberOfSubclasses;
@@ -54,11 +54,6 @@ public final class ClassOverrideDirectives implements IServerType {
         Checks.ensureIsNotNull(type);
         Checks.ensureIsGreaterOrEqualTo(numberOfSubclasses, 1, null);
         Checks.ensureIsFalse(overrides.isEmpty(), "empty overrides not allowed.");
-    }
-
-    @Override
-    public String toString() {
-        return id + " / " + rev + " / " + providerId + " / " + type + " / " + numberOfSubclasses;
     }
 
 }

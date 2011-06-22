@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.internal.rcp.extdoc.preferences.PreferenceConstants;
+import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
@@ -28,6 +28,7 @@ public final class ExtDocServerModule extends AbstractModule {
         bind(ClientConfiguration.class).annotatedWith(
                 Names.named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION)).toInstance(
                 new ClientConfiguration());
+
         bind(CallsServer.class).in(Scopes.SINGLETON);
         bind(CodeExamplesServer.class).in(Scopes.SINGLETON);
         bind(SubclassingServer.class).in(Scopes.SINGLETON);

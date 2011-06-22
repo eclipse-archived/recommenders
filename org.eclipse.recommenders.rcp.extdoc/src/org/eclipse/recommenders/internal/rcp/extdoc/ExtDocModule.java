@@ -11,11 +11,12 @@
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.internal.rcp.extdoc.preferences.PreferenceConstants;
 import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
+import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
 public final class ExtDocModule extends AbstractModule {
@@ -24,9 +25,10 @@ public final class ExtDocModule extends AbstractModule {
     protected void configure() {
         bind(ProviderStore.class).in(Scopes.SINGLETON);
         bind(ExtDocView.class).in(Scopes.SINGLETON);
-        bind(IPreferenceStore.class).annotatedWith(Names.named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE))
-                .toInstance(ExtDocPlugin.getDefault().getPreferenceStore());
 
+        final IPreferenceStore preferenceStore = ExtDocPlugin.getDefault().getPreferenceStore();
+        final Named name = Names.named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE);
+        bind(IPreferenceStore.class).annotatedWith(name).toInstance(preferenceStore);
     }
 
 }

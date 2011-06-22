@@ -1,0 +1,87 @@
+{
+  "imports": [
+    {
+      "kind": "TYPE_REFERENCE",
+      "name": "Ljava/io/File",
+      "fingerprint": "15aa43249ae7996dfb5b23793074ef04cb55e413"
+    },
+    {
+      "kind": "TYPE_REFERENCE",
+      "name": "Ljava/lang/Object",
+      "fingerprint": "461e37adec8b28e74247c7473d930235838ea91e"
+    }
+  ],
+  "kind": "SNAPSHOT",
+  "analysedOn": "2011-06-22T18:09:14.537+02:00",
+  "fingerprint": "972e20760e042e5fc59411b7cef7b1bfbdd97384",
+  "name": "Lhelper/FileFindHelper",
+  "primaryType": {
+    "name": "Lhelper/FileFindHelper",
+    "superclass": "Ljava/lang/Object",
+    "interfaces": [],
+    "fields": [
+      "Ljava/io/File"
+    ],
+    "methods": [
+      {
+        "name": "Lhelper/FileFindHelper.\u003cinit\u003e()V",
+        "superDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+        "firstDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+        "line": 15,
+        "nestedTypes": [],
+        "modifiers": 1,
+        "objects": [
+          {
+            "type": "Ljava/io/File",
+            "names": [
+              "findMe"
+            ],
+            "kind": "LOCAL",
+            "parameterCallSites": [],
+            "receiverCallSites": [
+              {
+                "receiver": "findMe",
+                "targetMethod": "Ljava/io/File.\u003cinit\u003e(Ljava/lang/String;)V",
+                "sourceMethod": "Lhelper/FileFindHelper.\u003cinit\u003e()V",
+                "line": 17
+              }
+            ]
+          },
+          {
+            "type": "Ljava/lang/Object",
+            "names": [
+              "this"
+            ],
+            "kind": "PARAMETER",
+            "parameterCallSites": [],
+            "receiverCallSites": [
+              {
+                "receiver": "this",
+                "targetMethod": "Ljava/lang/Object.\u003cinit\u003e()V",
+                "sourceMethod": "Lhelper/FileFindHelper.\u003cinit\u003e()V",
+                "line": 15
+              }
+            ]
+          },
+          {
+            "type": "Ljava/io/File",
+            "names": [
+              "findMe"
+            ],
+            "kind": "FIELD",
+            "definitionSite": {
+              "kind": "FIELD",
+              "definedByField": "Lhelper/FileFindHelper.findMe;Ljava/io/File",
+              "lineNumber": 0
+            },
+            "parameterCallSites": [],
+            "receiverCallSites": []
+          }
+        ]
+      }
+    ],
+    "line": 0,
+    "memberTypes": [],
+    "modifiers": 33
+  }
+}

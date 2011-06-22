@@ -19,15 +19,16 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
- org.eclipse.recommenders.internal.rcp.extdoc.preferences;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.view;x-internal:=true,
  org.eclipse.recommenders.rcp.extdoc;
   uses:="org.eclipse.core.runtime,
+   org.eclipse.jdt.core,
    org.eclipse.ui,
    org.eclipse.swt.custom,
-   org.eclipse.swt.graphics,
    org.eclipse.recommenders.commons.selection,
+   org.eclipse.swt.graphics,
    org.eclipse.swt.widgets,
    org.eclipse.jface.dialogs",
- org.eclipse.recommenders.rcp.extdoc.features;uses:="org.eclipse.recommenders.rcp.extdoc,org.eclipse.swt.widgets,org.eclipse.jface.dialogs"
+ org.eclipse.recommenders.rcp.extdoc.features;uses:="org.eclipse.recommenders.rcp.extdoc,org.eclipse.swt.widgets,org.eclipse.jface.dialogs",
+ org.eclipse.recommenders.rcp.extdoc.preferences
 Bundle-ClassPath: .

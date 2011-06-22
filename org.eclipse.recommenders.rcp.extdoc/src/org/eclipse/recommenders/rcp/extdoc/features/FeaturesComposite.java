@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import com.google.common.base.Preconditions;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
@@ -28,11 +26,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import com.google.common.base.Preconditions;
+
 public final class FeaturesComposite {
 
-    private static Image commentsIcon = ExtDocPlugin.getIcon("eview16/comments.png");
-    private static Image editIcon = ExtDocPlugin.getIcon("eview16/edit.png");
-    private static Image deleteIcon = ExtDocPlugin.getIcon("eview16/delete.png");
+    private static final Image ICON_COMMENTS = ExtDocPlugin.getIcon("eview16/comments.png");
+    private static final Image ICON_EDIT = ExtDocPlugin.getIcon("eview16/edit.png");
+    private static final Image ICON_DELETE = ExtDocPlugin.getIcon("eview16/delete.png");
 
     private final Composite composite;
 
@@ -44,7 +44,9 @@ public final class FeaturesComposite {
     public static FeaturesComposite create(final Composite parent, final Object object, final String objectName,
             final IProvider provider, final IStarsRatingsServer server, final Dialog editDialog) {
         final FeaturesComposite features = new FeaturesComposite(parent);
-        features.addCommentsIcon(object, objectName, provider.getShell());
+        if (server instanceof ICommentsServer) {
+            features.addCommentsIcon(object, objectName, (ICommentsServer) server, provider.getShell());
+        }
         features.addEditIcon(editDialog);
         if (provider instanceof IDeletionProvider) {
             features.addDeleteIcon(object, objectName, (IDeletionProvider) provider);
@@ -53,24 +55,25 @@ public final class FeaturesComposite {
         return features;
     }
 
-    private void addCommentsIcon(final Object object, final String objectName, final Shell shell) {
-        final CommentsDialog commentsDialog = new CommentsDialog(shell, null, object, objectName);
-        createIcon(commentsIcon, commentsDialog);
+    private void addCommentsIcon(final Object object, final String objectName, final ICommentsServer server,
+            final Shell shell) {
+        final CommentsDialog commentsDialog = new CommentsDialog(shell, server, object, objectName);
+        addIcon(ICON_COMMENTS, commentsDialog);
     }
 
     public void addEditIcon(final Dialog editDialog) {
-        createIcon(editIcon, editDialog);
+        addIcon(ICON_EDIT, editDialog);
     }
 
     private void addDeleteIcon(final Object object, final String objectName, final IDeletionProvider provider) {
-        createIcon(deleteIcon, new DeleteDialog(provider, object, objectName));
+        addIcon(ICON_DELETE, new DeleteDialog(provider, object, objectName));
     }
 
     private void addStarsRating(final Object object, final IStarsRatingsServer server) {
         new StarsRatingComposite(composite, object, server);
     }
 
-    private void createIcon(final Image icon, final Dialog dialog) {
+    private void addIcon(final Image icon, final Dialog dialog) {
         final Label label = new Label(composite, SWT.NONE);
         label.setImage(icon);
         final DialogListener listener = new DialogListener(dialog);
@@ -78,15 +81,11 @@ public final class FeaturesComposite {
         label.addKeyListener(listener);
     }
 
-    public void dispose() {
-        composite.dispose();
-    }
-
     private static final class DialogListener implements MouseListener, KeyListener {
 
         private final Dialog dialog;
 
-        public DialogListener(final Dialog dialog) {
+        private DialogListener(final Dialog dialog) {
             this.dialog = Preconditions.checkNotNull(dialog);
         }
 

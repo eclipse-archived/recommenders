@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
-import static org.eclipse.recommenders.commons.utils.Throws.throwUnreachable;
-
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
@@ -20,8 +18,9 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.commons.utils.Throws;
 
-public abstract class AbstractProviderComposite2 extends AbstractProviderComposite {
+public abstract class AbstractLocationSensitiveProviderComposite extends AbstractProviderComposite {
 
     /**
      * REVIEW: I think this method is not actually required, right?
@@ -59,8 +58,8 @@ public abstract class AbstractProviderComposite2 extends AbstractProviderComposi
         case IMPLEMENTS_DECLARATION:
             return updateImplementsDeclarationSelection(selection);
         default:
-            throw throwUnreachable("invalid element location observed: '%s'. %s", selection.getElementLocation(),
-                    selection);
+            throw Throws.throwUnreachable("invalid element location observed: '%s'. %s",
+                    selection.getElementLocation(), selection);
         }
     }
 

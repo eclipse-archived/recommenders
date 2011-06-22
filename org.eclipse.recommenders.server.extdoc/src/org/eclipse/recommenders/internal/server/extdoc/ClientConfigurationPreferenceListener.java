@@ -13,19 +13,18 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.internal.rcp.extdoc.preferences.PreferenceConstants;
+import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-@SuppressWarnings("restriction")
-class ClientConfigurationPreferenceListener implements IPropertyChangeListener {
+final class ClientConfigurationPreferenceListener implements IPropertyChangeListener {
 
     private final ClientConfiguration config;
 
     @Inject
-    public ClientConfigurationPreferenceListener(
-            final @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION) ClientConfiguration config,
+    ClientConfigurationPreferenceListener(
+            @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION) final ClientConfiguration config,
             @Named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE) final IPreferenceStore store) {
         this.config = config;
 

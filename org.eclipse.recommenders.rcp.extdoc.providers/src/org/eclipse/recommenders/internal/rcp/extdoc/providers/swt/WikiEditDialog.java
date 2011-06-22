@@ -11,17 +11,14 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;
 
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider;
 import org.eclipse.recommenders.rcp.extdoc.AbstractDialog;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.google.common.base.Preconditions;
 
@@ -56,10 +53,7 @@ public final class WikiEditDialog extends AbstractDialog {
     protected Control createDialogArea(final Composite parent) {
         setTitle(String.format("Edit Wiki for %s", javaElement.getElementName()));
         setMessage("Bla Bla");
-        final Image image = AbstractUIPlugin.imageDescriptorFromPlugin(
-                ExtDocProvidersPlugin.getDefault().getBundle().getSymbolicName(), "icons/full/wizban/edit.png")
-                .createImage();
-        setTitleImage(image);
+        setTitleImage("edit.png");
 
         final Composite composite = (Composite) super.createDialogArea(parent);
         final Composite area = SwtFactory.createGridComposite(composite, 1, 0, 10, 15, 20);

@@ -10,8 +10,25 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
+import java.util.Collections;
+import java.util.List;
 
-public final class CallsServer extends AbstractRatingsServer {
+import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
+import org.eclipse.recommenders.rcp.extdoc.features.IComment;
+import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
+
+public final class CallsServer extends AbstractRatingsServer implements ICommentsServer {
+
+    @Override
+    public List<IComment> getComments(final Object object) {
+        // TODO Auto-generated method stub
+        return Collections.emptyList();
+    }
+
+    @Override
+    public IComment addComment(final Object object, final String text) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

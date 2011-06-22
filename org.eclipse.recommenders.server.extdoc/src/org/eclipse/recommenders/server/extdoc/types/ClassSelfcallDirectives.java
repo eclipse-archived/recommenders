@@ -20,15 +20,6 @@ import com.google.gson.annotations.SerializedName;
 
 public final class ClassSelfcallDirectives implements IServerType {
 
-    public static ClassSelfcallDirectives create(final ITypeName type, final int numberOfSubclasses,
-            final Map<IMethodName, Integer> selfcalls) {
-        final ClassSelfcallDirectives res = new ClassSelfcallDirectives();
-        res.type = type;
-        res.numberOfSubclasses = numberOfSubclasses;
-        res.calls = selfcalls;
-        return res;
-    }
-
     @SerializedName("_id")
     private String id;
     @SerializedName("_rev")
@@ -39,6 +30,15 @@ public final class ClassSelfcallDirectives implements IServerType {
 
     private int numberOfSubclasses;
     private Map<IMethodName, Integer> calls;
+
+    public static ClassSelfcallDirectives create(final ITypeName type, final int numberOfSubclasses,
+            final Map<IMethodName, Integer> selfcalls) {
+        final ClassSelfcallDirectives res = new ClassSelfcallDirectives();
+        res.type = type;
+        res.numberOfSubclasses = numberOfSubclasses;
+        res.calls = selfcalls;
+        return res;
+    }
 
     public int getNumberOfSubclasse() {
         return numberOfSubclasses;
@@ -56,8 +56,4 @@ public final class ClassSelfcallDirectives implements IServerType {
         Checks.ensureIsFalse(calls.isEmpty(), "empty self-calls not allowed");
     }
 
-    @Override
-    public String toString() {
-        return id + " / " + rev + " / " + providerId + " / " + type + " / " + numberOfSubclasses;
-    }
 }

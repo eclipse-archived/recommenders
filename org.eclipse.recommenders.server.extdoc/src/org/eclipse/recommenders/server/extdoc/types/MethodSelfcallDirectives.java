@@ -19,15 +19,6 @@ import com.google.gson.annotations.SerializedName;
 
 public final class MethodSelfcallDirectives implements IServerType {
 
-    public static MethodSelfcallDirectives create(final IMethodName method, final int numberOfDefinitions,
-            final Map<IMethodName, Integer> selfcalls) {
-        final MethodSelfcallDirectives res = new MethodSelfcallDirectives();
-        res.method = method;
-        res.numberOfDefinitions = numberOfDefinitions;
-        res.calls = selfcalls;
-        return res;
-    }
-
     @SerializedName("_id")
     private String id;
     @SerializedName("_rev")
@@ -38,6 +29,15 @@ public final class MethodSelfcallDirectives implements IServerType {
 
     private int numberOfDefinitions;
     private Map<IMethodName, Integer> calls;
+
+    public static MethodSelfcallDirectives create(final IMethodName method, final int numberOfDefinitions,
+            final Map<IMethodName, Integer> selfcalls) {
+        final MethodSelfcallDirectives res = new MethodSelfcallDirectives();
+        res.method = method;
+        res.numberOfDefinitions = numberOfDefinitions;
+        res.calls = selfcalls;
+        return res;
+    }
 
     public int getNumberOfDefinitions() {
         return numberOfDefinitions;
@@ -53,11 +53,6 @@ public final class MethodSelfcallDirectives implements IServerType {
         Checks.ensureIsNotNull(method);
         Checks.ensureIsGreaterOrEqualTo(numberOfDefinitions, 1, null);
         Checks.ensureIsFalse(calls.isEmpty(), "empty self-calls not allowed.");
-    }
-
-    @Override
-    public String toString() {
-        return id + " / " + rev + " / " + providerId + " / " + method + " / " + numberOfDefinitions;
     }
 
 }

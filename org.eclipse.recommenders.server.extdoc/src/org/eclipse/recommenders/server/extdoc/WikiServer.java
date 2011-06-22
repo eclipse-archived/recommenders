@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.core.IJavaElement;
@@ -44,7 +45,7 @@ public final class WikiServer extends AbstractRatingsServer implements IComments
     @Override
     public List<IComment> getComments(final Object object) {
         // TODO Auto-generated method stub
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -53,7 +54,7 @@ public final class WikiServer extends AbstractRatingsServer implements IComments
         return null;
     }
 
-    private WikiEntry getEntry(final IJavaElement javaElement) {
+    private static WikiEntry getEntry(final IJavaElement javaElement) {
         final String key = getIdentifier(javaElement);
         final WikiEntry result = Server.getProviderContent(PROVIDERID, "type", key,
                 new GenericType<GenericResultObjectView<WikiEntry>>() {
@@ -61,7 +62,7 @@ public final class WikiServer extends AbstractRatingsServer implements IComments
         return result;
     }
 
-    private String getIdentifier(final IJavaElement javaElement) {
+    private static String getIdentifier(final IJavaElement javaElement) {
         return javaElement.getHandleIdentifier().replaceAll(".*<", "").replaceAll("[{\\[]", ".");
     }
 

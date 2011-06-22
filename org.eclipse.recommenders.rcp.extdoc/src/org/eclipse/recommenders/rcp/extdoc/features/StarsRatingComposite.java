@@ -25,9 +25,9 @@ import org.eclipse.swt.widgets.Label;
 
 class StarsRatingComposite {
 
-    private static Image star = ExtDocPlugin.getIcon("eview16/star.png");
-    private static Image starActive = ExtDocPlugin.getIcon("eview16/star_active.png");
-    private static Image starEmpty = ExtDocPlugin.getIcon("eview16/star_empty.png");
+    private static final Image ICON_STAR = ExtDocPlugin.getIcon("eview16/star.png");
+    private static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
+    private static final Image ICON_STAR_EMPTY = ExtDocPlugin.getIcon("eview16/star_empty.png");
 
     private final Object element;
     private final IStarsRatingsServer server;
@@ -58,7 +58,7 @@ class StarsRatingComposite {
 
         for (int i = 1; i <= 5; ++i) {
             final Label label = new Label(composite, SWT.NONE);
-            label.setImage(userRating == i ? starActive : (averageRating < i ? starEmpty : star));
+            label.setImage(userRating == i ? ICON_STAR_ACTIVE : (averageRating < i ? ICON_STAR_EMPTY : ICON_STAR));
             if (userRating < 1) {
                 final StarListener listener = new StarListener(i);
                 label.addMouseListener(listener);
@@ -79,7 +79,7 @@ class StarsRatingComposite {
 
         private final int stars;
 
-        public StarListener(final int stars) {
+        private StarListener(final int stars) {
             this.stars = stars;
         }
 
@@ -107,14 +107,14 @@ class StarsRatingComposite {
 
     }
 
-    private final class HoverListener implements MouseTrackListener {
+    private static final class HoverListener implements MouseTrackListener {
 
         private Image oldImage;
 
         @Override
         public void mouseEnter(final MouseEvent e) {
             oldImage = ((Label) e.widget).getImage();
-            ((Label) e.widget).setImage(starActive);
+            ((Label) e.widget).setImage(ICON_STAR_ACTIVE);
         }
 
         @Override

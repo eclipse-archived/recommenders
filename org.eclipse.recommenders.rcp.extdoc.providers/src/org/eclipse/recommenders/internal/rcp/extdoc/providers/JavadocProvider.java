@@ -36,7 +36,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
 
     @Override
     protected Control createContentControl(final Composite parent) {
-        javadoc = new ExtendedJavadocView(parent, getSite());
+        javadoc = new ExtendedJavadocView(parent, getPartSite());
 
         if (javadoc.getControl() instanceof Browser) {
             browserSizeWorkaround = new BrowserSizeWorkaround((Browser) javadoc.getControl());

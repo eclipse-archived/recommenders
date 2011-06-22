@@ -10,21 +10,26 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
 import org.eclipse.recommenders.internal.server.extdoc.Server;
+import org.eclipse.recommenders.rcp.extdoc.features.IComment;
+import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 
 import com.sun.jersey.api.client.GenericType;
 
-public final class CodeExamplesServer extends AbstractRatingsServer {
+public final class CodeExamplesServer extends AbstractRatingsServer implements ICommentsServer {
 
     private static final String PROVIDERID = CodeExamples.class.getSimpleName();
 
     public CodeExamples getOverridenMethodCodeExamples(final IMethod method) {
-        final String key = createKey(method);
+        final String key = Server.createKey(method);
         final CodeExamples result = Server.getProviderContent(PROVIDERID, "method", key,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });
@@ -32,11 +37,23 @@ public final class CodeExamplesServer extends AbstractRatingsServer {
     }
 
     public CodeExamples getTypeCodeExamples(final IType type) {
-        final String key = createKey(type);
+        final String key = Server.createKey(type);
         final CodeExamples result = Server.getProviderContent(PROVIDERID, "type", key,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });
         return result;
+    }
+
+    @Override
+    public List<IComment> getComments(final Object object) {
+        // TODO Auto-generated method stub
+        return Collections.emptyList();
+    }
+
+    @Override
+    public IComment addComment(final Object object, final String text) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

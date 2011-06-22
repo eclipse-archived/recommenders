@@ -29,7 +29,7 @@ final class UIManager implements IExtendedSelectionListener {
     private boolean hasViewListener;
 
     @Inject
-    public UIManager(final ExtDocView extDocView) {
+    UIManager(final ExtDocView extDocView) {
         UIManager.extDocView = extDocView;
     }
 
@@ -44,11 +44,11 @@ final class UIManager implements IExtendedSelectionListener {
         lastSelection = selection;
     }
 
-    private boolean isUiThread() {
+    private static boolean isUiThread() {
         return Display.getCurrent() != null;
     }
 
-    private boolean isEqualToLastSelection(final IJavaElementSelection selection) {
+    private static boolean isEqualToLastSelection(final IJavaElementSelection selection) {
         if (lastSelection == null) {
             return false;
         }

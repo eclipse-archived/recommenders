@@ -14,7 +14,7 @@
 	         allowMultiple="false"
 	         category="org.eclipse.recommenders.rcp.category.views"
 	         class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView"
-	         icon="$nl$/icons/full/eview16/extdoc.png"
+	         icon="icons/full/eview16/extdoc.png"
 	         id="org.eclipse.recommenders.internal.rcp.extdoc.views.ExtDocView"
 	         name="ExtDoc"
 	         restorable="true">
@@ -23,7 +23,7 @@
 	<extension
            point="org.eclipse.ui.preferencePages">
         <page
-              class="org.eclipse.recommenders.internal.rcp.extdoc.preferences.ExtDocPreferencePage"
+              class="org.eclipse.recommenders.rcp.extdoc.preferences.ExtDocPreferencePage"
               id="org.eclipse.recommenders.rcp.category.extdoc.preferences"
               name="ExtDoc"
               category="org.eclipse.recommenders.rcp.category.preferences" >
@@ -32,7 +32,7 @@
      <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.eclipse.recommenders.internal.rcp.extdoc.preferences.PreferenceInitializer">
+            class="org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceInitializer">
       </initializer>
    </extension>
      <extension

@@ -25,7 +25,7 @@ import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
-import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite2;
+import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Control;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public final class SubclassingTemplatesProvider extends AbstractProviderComposite2 implements IDeletionProvider {
+public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveProviderComposite implements IDeletionProvider {
 
     private final SubclassingServer server;
 
