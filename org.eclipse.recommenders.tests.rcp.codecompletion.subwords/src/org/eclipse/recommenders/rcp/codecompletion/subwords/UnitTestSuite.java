@@ -6,16 +6,17 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Marcel Bruch - initial API and implementation.
+ *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.rcp.codecompletion.subwords;
+package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ UnitTestSuite.class })
-public class AllTestSuite {
+@SuiteClasses({ RegexMatcherTest.class, SubwordsCompletionRequestorTest.class,
+        SubwordsCompletionProposalComputerTest.class })
+public class UnitTestSuite {
 
 }

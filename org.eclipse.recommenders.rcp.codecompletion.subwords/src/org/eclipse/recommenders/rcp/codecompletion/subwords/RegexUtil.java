@@ -7,14 +7,24 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Paul-Emmanuel Faidherbe - Completion generalization
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class RegexUtil {
+	
+	public static boolean checkStringMatchesPrefixPattern(final String prefix, String toTest) {
+		final Pattern pattern = createRegexPatternFromPrefix(prefix);
+		toTest = getTokensUntilFirstOpeningBracket(toTest);
+		final Matcher m = pattern.matcher(toTest);
+		final boolean matches = m.matches();
+		return matches;
+	}
 
     public static Pattern createRegexPatternFromPrefix(final String prefixToken) {
 
