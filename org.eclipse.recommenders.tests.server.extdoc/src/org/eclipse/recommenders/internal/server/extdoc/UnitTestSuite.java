@@ -16,5 +16,5 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ SubclassingServerTest.class, WikiServerTest.class })
-final class UnitTestSuite {
+public final class UnitTestSuite {
 }

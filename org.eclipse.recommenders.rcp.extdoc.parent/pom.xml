@@ -273,7 +273,7 @@
 		<module>../org.eclipse.recommenders.server.extdoc</module>
 		<module>../org.eclipse.recommenders.tests.commons.selection</module>
 		<module>../org.eclipse.recommenders.tests.rcp.extdoc</module>
-		<module>../org.eclipse.recommenders.tests.server.extdoc</module>
+		<!-- <module>../org.eclipse.recommenders.tests.server.extdoc</module> -->
 	</modules>
 
 </project>
