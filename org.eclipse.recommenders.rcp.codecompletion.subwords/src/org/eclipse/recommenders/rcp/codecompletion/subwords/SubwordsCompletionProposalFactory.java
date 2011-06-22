@@ -20,7 +20,6 @@ import org.eclipse.jdt.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.commons.utils.Throws;
 
 @SuppressWarnings("restriction")
 public class SubwordsCompletionProposalFactory {
@@ -43,13 +42,13 @@ public class SubwordsCompletionProposalFactory {
             try {
                 return new SubwordsAnonymousCompletionProposal((AnonymousTypeCompletionProposal) jdtProposal,
                         initialProposal, ctx);
-            } catch (CoreException e) {
+            } catch (final CoreException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            Throws.throwUnreachable();
+            // XXX should we throw an exception here?
+            return null;
         }
-        return null;
     }
 
 }

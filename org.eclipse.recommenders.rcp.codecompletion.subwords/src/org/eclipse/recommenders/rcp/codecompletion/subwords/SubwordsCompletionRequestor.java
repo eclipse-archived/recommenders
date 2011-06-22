@@ -47,17 +47,19 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     @Override
     public void accept(final CompletionProposal proposal) {
-        int previousProposalsCount = collector.getJavaCompletionProposals().length;
+        final int previousProposalsCount = collector.getJavaCompletionProposals().length;
         collector.accept(proposal);
-        boolean isAccepted = collector.getJavaCompletionProposals().length > previousProposalsCount;
+        final boolean isAccepted = collector.getJavaCompletionProposals().length > previousProposalsCount;
         if (isAccepted) {
-            IJavaCompletionProposal collectorProposal = collector.getJavaCompletionProposals()[previousProposalsCount];
-            String completion = getTokensUntilFirstOpeningBracket(proposal.getCompletion());
-            Matcher m = pattern.matcher(completion);
+            final IJavaCompletionProposal collectorProposal = collector.getJavaCompletionProposals()[previousProposalsCount];
+            final String completion = getTokensUntilFirstOpeningBracket(proposal.getCompletion());
+            final Matcher m = pattern.matcher(completion);
             if (m.matches()) {
                 final IJavaCompletionProposal subWordProposal = SubwordsCompletionProposalFactory
                         .createFromJDTProposal(collectorProposal, proposal, ctx);
-                proposals.add(subWordProposal);
+                if (subWordProposal != null) {
+                    proposals.add(subWordProposal);
+                }
             }
         }
     }
