@@ -26,7 +26,7 @@
 						<artifactId>maven-osgi-test-plugin</artifactId>
 						<version>${tycho-version}</version>
 						<configuration>
-							<testSuite>org.eclipse.recommenders.rcp.codecompletion.subwords</testSuite>
+							<testSuite>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</testSuite>
 							<testClass>org.eclipse.recommenders.rcp.codecompletion.subwords.AllTestSuite</testClass>
 							<useUIHarness>true</useUIHarness>
 							<useUIThread>false</useUIThread>
@@ -58,7 +58,7 @@
 						<artifactId>maven-osgi-test-plugin</artifactId>
 						<version>${tycho-version}</version>
 						<configuration>
-							<testSuite>org.eclipse.recommenders.rcp.codecompletion.subwords</testSuite>
+							<testSuite>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</testSuite>
 							<testClass>org.eclipse.recommenders.rcp.codecompletion.subwords.UnitTestSuite</testClass>
 							<useUIHarness>true</useUIHarness>
 							<useUIThread>false</useUIThread>
@@ -87,7 +87,7 @@
 						<artifactId>maven-osgi-test-plugin</artifactId>
 						<version>${tycho-version}</version>
 						<configuration>
-							<testSuite>org.eclipse.recommenders.rcp.codecompletion.subwords</testSuite>
+							<testSuite>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</testSuite>
 							<testClass>org.eclipse.recommenders.rcp.codecompletion.subwords.UnitTestSuite</testClass>
 							<argLine>${ui.test.vmargs}</argLine>
 						</configuration>
