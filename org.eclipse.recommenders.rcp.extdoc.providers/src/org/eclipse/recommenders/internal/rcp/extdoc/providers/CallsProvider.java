@@ -126,7 +126,11 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
         setThisVariableContext(method);
-        return displayProposalsForMethod(method);
+        try {
+            return displayProposalsForMethod(method);
+        } catch (final JavaModelException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override
@@ -251,30 +255,24 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         return false;
     }
 
-    private boolean displayProposalsForMethod(final IMethod method) {
-        ITypeName type = null;
-        try {
-            String superclassTypeSignature;
-            superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
-            superclassTypeSignature = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
-                    method.getDeclaringType());
-            final IType supertype = method.getJavaProject().findType(superclassTypeSignature);
-            if (supertype != null) {
-                type = JavaElementResolver.INSTANCE.toRecType(supertype);
-            }
-        } catch (final JavaModelException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    private boolean displayProposalsForMethod(final IMethod method) throws JavaModelException {
+        final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
+        final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
+                method.getDeclaringType());
+        final IType supertype = method.getJavaProject().findType(superclassTypeName);
+        if (supertype == null) {
+            return false;
         }
-        if (modelStore.hasModel(type)) {
-            final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
-            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, resolveCalledMethods, true);
-            return displayProposals(method, calls, resolveCalledMethods);
+        final ITypeName type = JavaElementResolver.INSTANCE.toRecType(supertype);
+        if (type != null && modelStore.hasModel(type)) {
+            final Set<IMethodName> calledMethods = resolveCalledMethods();
+            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
+            return displayProposals(method, calls, calledMethods);
         } else {
             return false;
             // final IMethod first = JdtUtils.findFirstDeclaration(method);
-            // // TODO first is not correct in all cases. this needs to be fixed
-            // // soon after the demo
+            // // TODO: first is not correct in all cases. this needs to be
+            // fixed soon after the demo
             // return displayProposalsForMethod(first);
         }
     }

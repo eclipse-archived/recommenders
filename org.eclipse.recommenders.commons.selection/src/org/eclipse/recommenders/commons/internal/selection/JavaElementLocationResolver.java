@@ -57,8 +57,8 @@ final class JavaElementLocationResolver {
         if (astNode == null) {
             return null;
         }
-        final int locationNodeType = getLocationNodeType(astNode);
-        return getLocationForNodeType(locationNodeType, javaElement);
+        final ASTNode locationNode = getLocationNode(astNode);
+        return getLocationForNodeType(locationNode, javaElement);
     }
 
     /**
@@ -67,14 +67,14 @@ final class JavaElementLocationResolver {
      * @return The type of the AST node indicating the Java element's location,
      *         e.g. "method declaration".
      */
-    private static int getLocationNodeType(final ASTNode astNode) {
+    private static ASTNode getLocationNode(final ASTNode astNode) {
         ASTNode node = astNode;
         Integer nodeType = node.getNodeType();
         while (ignoredNodeTypes.contains(nodeType)) {
             node = node.getParent();
             nodeType = node.getNodeType();
         }
-        return nodeType;
+        return node;
     }
 
     /**
@@ -85,8 +85,8 @@ final class JavaElementLocationResolver {
      * @return The {@link JavaElementLocation} for the given Java element and
      *         its location node type.
      */
-    private static JavaElementLocation getLocationForNodeType(final int locationNodeType, final IJavaElement javaElement) {
-        switch (locationNodeType) {
+    private static JavaElementLocation getLocationForNodeType(final ASTNode locationNode, final IJavaElement javaElement) {
+        switch (locationNode.getNodeType()) {
         case ASTNode.BLOCK:
         case ASTNode.SUPER_CONSTRUCTOR_INVOCATION:
         case ASTNode.CAST_EXPRESSION:
@@ -94,7 +94,7 @@ final class JavaElementLocationResolver {
         case ASTNode.METHOD_DECLARATION:
             return JavaElementLocation.METHOD_DECLARATION;
         case ASTNode.SINGLE_VARIABLE_DECLARATION:
-            return JavaElementLocation.PARAMETER_DECLARATION;
+            return getLocationForSingleVariable(locationNode);
         case ASTNode.FIELD_DECLARATION:
             return JavaElementLocation.FIELD_DECLARATION;
         case ASTNode.TYPE_DECLARATION:
@@ -108,6 +108,12 @@ final class JavaElementLocationResolver {
             // throw new IllegalArgumentException("Could not find location for "
             // + locationNodeType);
         }
+    }
+
+    private static JavaElementLocation getLocationForSingleVariable(final ASTNode locationNode) {
+        final int parentType = locationNode.getParent().getNodeType();
+        return parentType == ASTNode.CATCH_CLAUSE ? JavaElementLocation.METHOD_BODY
+                : JavaElementLocation.PARAMETER_DECLARATION;
     }
 
     /**
