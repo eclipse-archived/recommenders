@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.view;
+package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
 import java.net.URL;
 
@@ -23,11 +23,12 @@ import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -40,6 +41,7 @@ import com.google.inject.Inject;
 public final class ExtDocView extends ViewPart {
 
     static final int HEAD_LABEL_HEIGHT = 20;
+    private static final String SASH_POSITION_KEY = "extDocSashPosition";
 
     private final ProviderStore providerStore;
 
@@ -73,7 +75,7 @@ public final class ExtDocView extends ViewPart {
         sashForm.setLayout(new FillLayout());
         createLeftSashSide(sashForm);
         createRightSashSide(sashForm);
-        sashForm.setWeights(new int[] { 15, 85 });
+        handleSashWeights(sashForm);
     }
 
     private void createLeftSashSide(final SashForm sashForm) {
@@ -89,6 +91,17 @@ public final class ExtDocView extends ViewPart {
         providersComposite = new ProvidersComposite(scrolled, SWT.NONE);
         scrolled.setContent(providersComposite);
         providersComposite.layout();
+    }
+
+    private void handleSashWeights(final SashForm sashForm) {
+        final int sashWeight = ExtDocPlugin.getPreferences().getInt(SASH_POSITION_KEY, 150);
+        sashForm.setWeights(new int[] { sashWeight, 1000 - sashWeight });
+        sashForm.addDisposeListener(new DisposeListener() {
+            @Override
+            public void widgetDisposed(final DisposeEvent event) {
+                ExtDocPlugin.getPreferences().putInt(SASH_POSITION_KEY, sashForm.getWeights()[0]);
+            }
+        });
     }
 
     private void createSelectionLabel(final Composite container) {
@@ -118,18 +131,10 @@ public final class ExtDocView extends ViewPart {
     private void fillActionBars() {
         final IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
         toolbar.removeAll();
-        toolbar.add(new FeedbackAction());
+        toolbar.add(new FeedbackAction(new FeedbackDialog(getSite().getShell())));
     }
 
     public void selectionChanged(final IJavaElementSelection selection) {
-        try {
-            updateProviders(selection);
-        } catch (final Exception e) {
-            RecommendersUtilsPlugin.logError(e, "Exception while updating selection '%s'.", selection);
-        }
-    }
-
-    private void updateProviders(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
             table.setContext(selection);
             for (final TableItem item : table.getItems()) {
@@ -157,7 +162,10 @@ public final class ExtDocView extends ViewPart {
 
     private static final class FeedbackAction extends Action {
 
-        FeedbackAction() {
+        private final FeedbackDialog dialog;
+
+        private FeedbackAction(final FeedbackDialog dialog) {
+            this.dialog = dialog;
             final URL entry = ExtDocPlugin.getDefault().getBundle().getEntry("icons/full/lcl16/feedback.png");
             final ImageDescriptor descriptor = ImageDescriptor.createFromURL(entry);
             setImageDescriptor(descriptor);
@@ -165,6 +173,7 @@ public final class ExtDocView extends ViewPart {
 
         @Override
         public void run() {
+            dialog.open();
         }
     }
 }

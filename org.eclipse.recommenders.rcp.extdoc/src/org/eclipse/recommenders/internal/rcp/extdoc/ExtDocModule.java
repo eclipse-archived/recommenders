@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
+import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 
 import com.google.inject.AbstractModule;

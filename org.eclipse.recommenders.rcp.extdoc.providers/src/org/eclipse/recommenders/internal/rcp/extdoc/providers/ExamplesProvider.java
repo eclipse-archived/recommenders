@@ -38,7 +38,6 @@ import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 import org.eclipse.recommenders.server.extdoc.types.CodeSnippet;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -83,7 +82,6 @@ public final class ExamplesProvider extends AbstractProviderComposite {
             if (overriddenMethod == null) {
                 return false;
             }
-
             final CodeExamples codeExamples = server.getOverridenMethodCodeExamples(overriddenMethod);
             if (codeExamples == null) {
                 return false;
@@ -140,12 +138,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
 
         sourceCodeViewer.configure(configuration);
 
-        final Font font = SwtFactory.CODEFONT;
-        // final FontData[] fD = font.getFontData();
-        // fD[0].setHeight(10);
-        // font = new Font(rootControl.getDisplay(), fD[0]);
-
-        sourceCodeViewer.getTextWidget().setFont(font);
+        sourceCodeViewer.getTextWidget().setFont(SwtFactory.CODEFONT);
         sourceCodeViewer.setEditable(false);
         sourceCodeViewer.getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 0).create());
 

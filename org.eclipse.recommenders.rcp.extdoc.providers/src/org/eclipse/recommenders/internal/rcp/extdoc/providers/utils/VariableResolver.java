@@ -26,10 +26,7 @@ public final class VariableResolver {
 
     public static IType resolveTypeSignature(final ILocalVariable var) {
         try {
-            final IType declaringType = (IType) var.getAncestor(IJavaElement.TYPE);
-            final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(var.getTypeSignature(), declaringType);
-            final IJavaProject javaProject = var.getJavaProject();
-            return javaProject.findType(resolvedTypeName);
+            return resolveTypeSignature(var, var.getTypeSignature());
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
@@ -37,13 +34,21 @@ public final class VariableResolver {
 
     public static IType resolveTypeSignature(final SourceField var) {
         try {
-            final IType declaringType = (IType) var.getAncestor(IJavaElement.TYPE);
-            final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(var.getTypeSignature(), declaringType);
-            final IJavaProject javaProject = var.getJavaProject();
-            return javaProject.findType(resolvedTypeName);
+            return resolveTypeSignature(var, var.getTypeSignature());
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private static IType resolveTypeSignature(final IJavaElement element, final String typeSignature)
+            throws JavaModelException {
+        final IType declaringType = (IType) element.getAncestor(IJavaElement.TYPE);
+        final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
+        if (resolvedTypeName == null) {
+            return null;
+        }
+        final IJavaProject javaProject = element.getJavaProject();
+        return javaProject.findType(resolvedTypeName);
     }
 
 }

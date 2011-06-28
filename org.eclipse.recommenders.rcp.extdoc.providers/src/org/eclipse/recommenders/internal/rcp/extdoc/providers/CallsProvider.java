@@ -142,8 +142,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         // TODO: this doesn't work yet because JDT fails to resolve the
         // enclosing method and throws an exception (for whatever reason)
-        return false;
-        // return displayProposalsForType(type);
+        return displayProposalsForType(type);
     }
 
     @Override
@@ -165,10 +164,9 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     }
 
     private void setThisVariableContext(final IMethod enclosingMethod) {
-        final JavaElementResolver resolver = JavaElementResolver.INSTANCE;
-        final IMethodName ctxEnclosingMethod = resolver.toRecMethod(enclosingMethod);
-        final IMethodName ctxSuperDeclaration = null;
-        final IMethodName ctxFirstDeclaration = resolver.toRecMethod(JdtUtils.findFirstDeclaration(enclosingMethod));
+        final IMethodName ctxEnclosingMethod = elementResolver.toRecMethod(enclosingMethod);
+        final IMethodName ctxFirstDeclaration = elementResolver.toRecMethod(JdtUtils
+                .findFirstDeclaration(enclosingMethod));
 
         context = new DelegatingIntelligentCompletionContext(context) {
             @Override
@@ -183,20 +181,20 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
             @Override
             public Variable getVariable() {
-                return Variable.create("this", resolver.toRecType(enclosingMethod.getDeclaringType()),
-                        resolver.toRecMethod(enclosingMethod));
+                return Variable.create("this", elementResolver.toRecType(enclosingMethod.getDeclaringType()),
+                        elementResolver.toRecMethod(enclosingMethod));
             };
         };
     }
 
     private boolean setFieldVariableContext(final IField element) {
-        final IField f = element;
-        final String name = f.getElementName();
-        final IType declaringType = f.getDeclaringType();
+        final IField field = element;
+        final String name = field.getElementName();
+        final IType declaringType = field.getDeclaringType();
         try {
-            final String typeSignature = f.getTypeSignature();
+            final String typeSignature = field.getTypeSignature();
             final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
-            final IJavaProject javaProject = f.getJavaProject();
+            final IJavaProject javaProject = field.getJavaProject();
             final IType fieldType = javaProject.findType(resolvedTypeName);
             return setMockedContext(name, fieldType, false);
         } catch (final JavaModelException e) {
@@ -226,8 +224,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     private Set<IMethodName> resolveCalledMethods() {
         for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
             if (resolver.canResolve(context)) {
-                final Set<IMethodName> receiverMethodInvocations = resolver.getReceiverMethodInvocations();
-                return receiverMethodInvocations;
+                return resolver.getReceiverMethodInvocations();
             }
         }
         return Sets.newHashSet();
@@ -239,8 +236,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
             final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
                     resolveCalledMethods, negateConstructors);
-            final boolean success = displayProposals(element, recommendedMethodCalls, resolveCalledMethods);
-            return success;
+            return displayProposals(element, recommendedMethodCalls, resolveCalledMethods);
         }
         return false;
     }
@@ -257,23 +253,21 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     private boolean displayProposalsForMethod(final IMethod method) throws JavaModelException {
         final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
+        if (superclassTypeSignature == null) {
+            return false;
+        }
         final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
                 method.getDeclaringType());
         final IType supertype = method.getJavaProject().findType(superclassTypeName);
-        if (supertype == null) {
-            return false;
-        }
         final ITypeName type = JavaElementResolver.INSTANCE.toRecType(supertype);
         if (type != null && modelStore.hasModel(type)) {
             final Set<IMethodName> calledMethods = resolveCalledMethods();
             final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
             return displayProposals(method, calls, calledMethods);
         } else {
-            return false;
-            // final IMethod first = JdtUtils.findFirstDeclaration(method);
-            // // TODO: first is not correct in all cases. this needs to be
-            // fixed soon after the demo
-            // return displayProposalsForMethod(first);
+            // TODO: first is not correct in all cases. this needs to be fixed
+            final IMethod first = JdtUtils.findFirstDeclaration(method);
+            return displayProposalsForMethod(first);
         }
     }
 

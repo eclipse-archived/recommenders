@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.view;
+package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.resource.JFaceResources;
@@ -22,17 +22,11 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetAdapter;
-import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -43,11 +37,10 @@ import org.eclipse.swt.widgets.TableItem;
 
 final class ProvidersTable {
 
-    private static Table table;
-    private static TableItem dragSourceItem;
-
     private static final Color COLOR_BLACK = SwtFactory.createColor(SWT.COLOR_BLACK);
     private static final Color COLOR_GRAY = SwtFactory.createColor(SWT.COLOR_DARK_GRAY);
+
+    private final Table table;
 
     private final IEclipsePreferences preferences;
     private String preferencePrefix = "";
@@ -119,17 +112,18 @@ final class ProvidersTable {
         tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
     }
 
-    private static void enableDragAndDrop() {
+    private void enableDragAndDrop() {
         final Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
         final int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
 
         final DragSource source = new DragSource(table, operations);
         source.setTransfer(types);
-        source.addDragListener(new DragListener());
+        final DragListener dragListener = new DragListener(table);
+        source.addDragListener(dragListener);
 
         final DropTarget target = new DropTarget(table, operations);
         target.setTransfer(types);
-        target.addDropListener(new DropAdapter());
+        target.addDropListener(new DropAdapter(table, dragListener));
     }
 
     private static final class SelectionListener implements Listener {
@@ -160,78 +154,5 @@ final class ProvidersTable {
             }
         }
 
-    }
-
-    private static final class DragListener implements DragSourceListener {
-
-        @Override
-        public void dragStart(final DragSourceEvent event) {
-            event.doit = true;
-            dragSourceItem = table.getSelection()[0];
-        };
-
-        @Override
-        public void dragSetData(final DragSourceEvent event) {
-            event.data = dragSourceItem.getText();
-        }
-
-        @Override
-        public void dragFinished(final DragSourceEvent event) {
-            if (event.detail == DND.DROP_MOVE) {
-                dragSourceItem.dispose();
-            }
-            dragSourceItem = null;
-        }
-    }
-
-    private static final class DropAdapter extends DropTargetAdapter {
-
-        @Override
-        public void dragOver(final DropTargetEvent event) {
-            event.feedback = DND.FEEDBACK_SCROLL;
-            if (event.item == null) {
-                event.feedback |= DND.FEEDBACK_INSERT_AFTER;
-            } else {
-                final Rectangle bounds = ((TableItem) event.item).getBounds();
-                final Point pt = table.getShell().getDisplay().map(null, table, event.x, event.y);
-                event.feedback |= pt.y < bounds.y + bounds.height >> 1 ? DND.FEEDBACK_INSERT_BEFORE
-                        : DND.FEEDBACK_INSERT_AFTER;
-            }
-        }
-
-        @Override
-        public void drop(final DropTargetEvent event) {
-            final TableItem item = (TableItem) event.item;
-            int index;
-            if (item == null) {
-                index = table.getItemCount();
-            } else {
-                final Point pt = table.getShell().getDisplay().map(null, table, event.x, event.y);
-                final Rectangle bounds = item.getBounds();
-                final TableItem[] items = table.getItems();
-                index = pt.y < bounds.y + bounds.height >> 1 ? 0 : 1;
-                for (int i = 0; i < items.length; ++i) {
-                    if (items[i].equals(item)) {
-                        index += i;
-                        break;
-                    }
-                }
-            }
-
-            final Control newItemControl = (Control) dragSourceItem.getData();
-            if (index >= table.getItemCount()) {
-                newItemControl.moveBelow((Control) table.getItem(index - 1).getData());
-            } else {
-                newItemControl.moveAbove((Control) table.getItem(index).getData());
-            }
-            newItemControl.getParent().layout();
-
-            final TableItem newItem = new TableItem(table, SWT.NONE, index);
-            newItem.setText(dragSourceItem.getText());
-            newItem.setData(newItemControl);
-            newItem.setImage(dragSourceItem.getImage());
-            newItem.setChecked(dragSourceItem.getChecked());
-            newItem.setGrayed(dragSourceItem.getGrayed());
-        }
     }
 }

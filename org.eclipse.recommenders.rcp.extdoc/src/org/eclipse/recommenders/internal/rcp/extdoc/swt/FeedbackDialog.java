@@ -8,12 +8,19 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.preferences;
+package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
-public interface PreferenceConstants {
+import org.eclipse.recommenders.rcp.extdoc.AbstractDialog;
+import org.eclipse.swt.widgets.Shell;
 
-    String NAME_EXTDOC_WEBSERVICE_CONFIGURATION = "extdoc.webservice.client";
-    String NAME_EXTDOC_PREFERENCE_STORE = "extdoc.preferences.store";
-    String WEBSERVICE_HOST = "org.eclipse.recommenders.extdoc.webservice.host";
+final class FeedbackDialog extends AbstractDialog {
+
+    protected FeedbackDialog(final Shell parentShell) {
+        super(parentShell);
+    }
+
+    @Override
+    protected void contentsCreated() {
+    }
 
 }
