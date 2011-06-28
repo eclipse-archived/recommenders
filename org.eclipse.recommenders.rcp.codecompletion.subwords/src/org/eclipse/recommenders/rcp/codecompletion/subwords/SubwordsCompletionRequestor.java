@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
+import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
@@ -33,26 +34,32 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private final JavaContentAssistInvocationContext ctx;
 
+    private final CompletionProposalCollector collector;
+
     public SubwordsCompletionRequestor(final String token, final JavaContentAssistInvocationContext ctx) {
         checkNotNull(token);
         checkNotNull(ctx);
         this.ctx = ctx;
-        pattern = createRegexPatternFromPrefix(token);
+        this.pattern = createRegexPatternFromPrefix(token);
+        this.collector = new CompletionProposalCollector(ctx.getCompilationUnit());
+        this.collector.acceptContext(ctx.getCoreContext());
     }
 
     @Override
     public void accept(final CompletionProposal proposal) {
-        switch (proposal.getKind()) {
-        case CompletionProposal.METHOD_REF:
-        case CompletionProposal.CONSTRUCTOR_INVOCATION:
-        case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
-        case CompletionProposal.METHOD_NAME_REFERENCE:
-        case CompletionProposal.JAVADOC_METHOD_REF:
+        final int previousProposalsCount = collector.getJavaCompletionProposals().length;
+        collector.accept(proposal);
+        final boolean isAccepted = collector.getJavaCompletionProposals().length > previousProposalsCount;
+        if (isAccepted) {
+            final IJavaCompletionProposal collectorProposal = collector.getJavaCompletionProposals()[previousProposalsCount];
             final String completion = getTokensUntilFirstOpeningBracket(proposal.getCompletion());
             final Matcher m = pattern.matcher(completion);
             if (m.matches()) {
-                final IJavaCompletionProposal javaProposal = new SubwordsJavaMethodCompletionProposal(proposal, ctx);
-                proposals.add(javaProposal);
+                final IJavaCompletionProposal subWordProposal = SubwordsCompletionProposalFactory
+                        .createFromJDTProposal(collectorProposal, proposal, ctx);
+                if (subWordProposal != null) {
+                    proposals.add(subWordProposal);
+                }
             }
         }
     }

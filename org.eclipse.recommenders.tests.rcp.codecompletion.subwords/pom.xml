@@ -27,7 +27,7 @@
 						<version>${tycho-version}</version>
 						<configuration>
 							<testSuite>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</testSuite>
-							<testClass>org.eclipse.recommenders.tests.rcp.codecompletion.subwords.AllTestSuite</testClass>
+							<testClass>org.eclipse.recommenders.rcp.codecompletion.subwords.AllTestSuite</testClass>
 							<useUIHarness>true</useUIHarness>
 							<useUIThread>false</useUIThread>
 							<product>org.eclipse.sdk.ide</product>
@@ -59,7 +59,7 @@
 						<version>${tycho-version}</version>
 						<configuration>
 							<testSuite>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</testSuite>
-							<testClass>org.eclipse.recommenders.tests.rcp.codecompletion.subwords.UnitTestSuite</testClass>
+							<testClass>org.eclipse.recommenders.rcp.codecompletion.subwords.UnitTestSuite</testClass>
 							<useUIHarness>true</useUIHarness>
 							<useUIThread>false</useUIThread>
 							<product>org.eclipse.sdk.ide</product>
@@ -88,7 +88,7 @@
 						<version>${tycho-version}</version>
 						<configuration>
 							<testSuite>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</testSuite>
-							<testClass>org.eclipse.recommenders.tests.rcp.codecompletion.subwords.UnitTestSuite</testClass>
+							<testClass>org.eclipse.recommenders.rcp.codecompletion.subwords.UnitTestSuite</testClass>
 							<argLine>${ui.test.vmargs}</argLine>
 						</configuration>
 					</plugin>
