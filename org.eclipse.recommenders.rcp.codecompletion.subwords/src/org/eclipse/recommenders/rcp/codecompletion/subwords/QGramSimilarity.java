@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Johannes Lerch - initial API and implementation.
+ *    Paul-Emmanuel Faidherbe - Completion proposals relevance benchmark
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
