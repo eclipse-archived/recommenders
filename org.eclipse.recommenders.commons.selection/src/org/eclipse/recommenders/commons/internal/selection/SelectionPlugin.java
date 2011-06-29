@@ -72,7 +72,7 @@ public final class SelectionPlugin extends AbstractUIPlugin {
         workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 
         SelectionPlugin.internalListener = new InternalSelectionListener();
-        SelectionPlugin.partListener = new PartListener(new CursorListener(internalListener, workbenchWindow));
+        SelectionPlugin.partListener = new PartListener(internalListener);
         workbenchWindow.getSelectionService().addPostSelectionListener(internalListener);
 
         SelectionPlugin.page = workbenchWindow.getActivePage();
@@ -95,7 +95,7 @@ public final class SelectionPlugin extends AbstractUIPlugin {
         for (final IEditorReference editor : page.getEditorReferences()) {
             final IWorkbenchPart part = editor.getPart(false);
             if (part != null) {
-                partListener.addListeners(part);
+                partListener.addViewerListener(part);
             }
         }
     }
