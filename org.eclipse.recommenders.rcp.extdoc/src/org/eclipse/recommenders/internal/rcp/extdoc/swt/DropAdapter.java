@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
+import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -24,10 +26,12 @@ final class DropAdapter extends DropTargetAdapter {
 
     private final Table table;
     private final DragListener dragListener;
+    private final ProviderStore providerStore;
 
-    DropAdapter(final Table table, final DragListener dragListener) {
+    DropAdapter(final Table table, final DragListener dragListener, final ProviderStore providerStore) {
         this.table = table;
         this.dragListener = dragListener;
+        this.providerStore = providerStore;
     }
 
     @Override
@@ -47,6 +51,7 @@ final class DropAdapter extends DropTargetAdapter {
     public void drop(final DropTargetEvent event) {
         final int newIndex = getNewIndex(event);
         dropTableItem(dragListener.getDragSourceItem(), newIndex);
+        updateProviderStore(dragListener.getDragSourceItem());
     }
 
     private int getNewIndex(final DropTargetEvent event) {
@@ -83,5 +88,20 @@ final class DropAdapter extends DropTargetAdapter {
         newItem.setImage(dragSourceItem.getImage());
         newItem.setChecked(dragSourceItem.getChecked());
         newItem.setGrayed(dragSourceItem.getGrayed());
+    }
+
+    private void updateProviderStore(final TableItem dragSourceItem) {
+        for (int i = 0; i < table.getItemCount(); ++i) {
+            if (table.getItem(i).equals(dragSourceItem)) {
+                table.remove(i);
+                break;
+            }
+        }
+        final int itemCount = table.getItemCount();
+        for (int i = 0; i < itemCount; ++i) {
+            final TableItem item = table.getItem(i);
+            final IProvider provider = (IProvider) ((Control) item.getData()).getData();
+            providerStore.setProviderPriority(provider, itemCount - i);
+        }
     }
 }

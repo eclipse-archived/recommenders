@@ -56,6 +56,10 @@ class StarsRatingComposite {
         layout.marginTop = 0;
         composite.setLayout(layout);
 
+        createStars(averageRating, userRating);
+    }
+
+    private void createStars(final int averageRating, final int userRating) {
         for (int i = 1; i <= 5; ++i) {
             final Label label = new Label(composite, SWT.NONE);
             label.setImage(userRating == i ? ICON_STAR_ACTIVE : (averageRating < i ? ICON_STAR_EMPTY : ICON_STAR));
@@ -64,6 +68,9 @@ class StarsRatingComposite {
                 label.addMouseListener(listener);
                 label.addKeyListener(listener);
                 label.addMouseTrackListener(new HoverListener());
+                label.setToolTipText("Add " + i + " Stars");
+            } else {
+                label.setToolTipText("Average Rating: " + averageRating + " Stars");
             }
         }
     }

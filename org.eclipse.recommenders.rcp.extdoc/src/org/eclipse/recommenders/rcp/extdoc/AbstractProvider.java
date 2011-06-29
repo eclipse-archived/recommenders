@@ -60,4 +60,14 @@ abstract class AbstractProvider implements IProvider {
         providerIcon = ImageDescriptor.createFromURL(bundle.getEntry(icon)).createImage();
     }
 
+    @Override
+    public boolean equals(final Object object) {
+        return object instanceof IProvider && hashCode() == object.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
 }

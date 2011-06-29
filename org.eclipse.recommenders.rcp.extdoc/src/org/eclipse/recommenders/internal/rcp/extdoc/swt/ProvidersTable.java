@@ -15,6 +15,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
@@ -48,7 +49,7 @@ final class ProvidersTable {
     private final CLabel locationLabel;
     private IJavaElementSelection lastSelection;
 
-    ProvidersTable(final Composite parent, final int style) {
+    ProvidersTable(final Composite parent, final int style, final ProviderStore providerStore) {
         final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 6, 0, 0);
 
         locationLabel = new CLabel(composite, SWT.NONE);
@@ -64,7 +65,7 @@ final class ProvidersTable {
         composite.setBackground(table.getBackground());
 
         table.addListener(SWT.Selection, new SelectionListener(this));
-        enableDragAndDrop();
+        enableDragAndDrop(providerStore);
 
         preferences = ExtDocPlugin.getPreferences();
     }
@@ -94,7 +95,7 @@ final class ProvidersTable {
                 }
                 item.setChecked(selectProvider);
                 if (!selectProvider) {
-                    setContentVisible(item, selectProvider);
+                    setContentVisible(item, false);
                 }
             }
         }
@@ -112,7 +113,7 @@ final class ProvidersTable {
         tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
     }
 
-    private void enableDragAndDrop() {
+    private void enableDragAndDrop(final ProviderStore providerStore) {
         final Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
         final int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
 
@@ -123,7 +124,7 @@ final class ProvidersTable {
 
         final DropTarget target = new DropTarget(table, operations);
         target.setTransfer(types);
-        target.addDropListener(new DropAdapter(table, dragListener));
+        target.addDropListener(new DropAdapter(table, dragListener, providerStore));
     }
 
     private static final class SelectionListener implements Listener {

@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
@@ -83,8 +84,13 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     private void displayNoText(final IJavaElement element) {
-        final StyledText text = new StyledText(composite, SWT.NONE);
-        text.setText(String.format("Currently there is no Wiki available for %s.", element.getElementName()));
+        String elementName = element.getElementName();
+        if (element instanceof IMethod) {
+            elementName = String.format("%s.%s", ((IMethod) element).getDeclaringType().getElementName(), elementName);
+        }
+        final StyledText text = SwtFactory.createStyledText(composite,
+                String.format("Currently there is no Wiki available for %s.", elementName));
+        SwtFactory.createStyleRange(text, 41, elementName.length(), SWT.NORMAL, false, true);
 
         final WikiEditDialog editDialog = new WikiEditDialog(this, element, null);
         final Composite editLine = SwtFactory.createGridComposite(composite, 2, 0, 0, 0, 0);

@@ -58,24 +58,25 @@ public final class FeaturesComposite {
     private void addCommentsIcon(final Object object, final String objectName, final ICommentsServer server,
             final Shell shell) {
         final CommentsDialog commentsDialog = new CommentsDialog(shell, server, object, objectName);
-        addIcon(ICON_COMMENTS, commentsDialog);
+        addIcon(ICON_COMMENTS, commentsDialog, "Read Comments");
     }
 
     public void addEditIcon(final Dialog editDialog) {
-        addIcon(ICON_EDIT, editDialog);
+        addIcon(ICON_EDIT, editDialog, "Edit Content");
     }
 
     private void addDeleteIcon(final Object object, final String objectName, final IDeletionProvider provider) {
-        addIcon(ICON_DELETE, new DeleteDialog(provider, object, objectName));
+        addIcon(ICON_DELETE, new DeleteDialog(provider, object, objectName), "Delete Item");
     }
 
     private void addStarsRating(final Object object, final IStarsRatingsServer server) {
         new StarsRatingComposite(composite, object, server);
     }
 
-    private void addIcon(final Image icon, final Dialog dialog) {
+    private void addIcon(final Image icon, final Dialog dialog, final String tooltipText) {
         final Label label = new Label(composite, SWT.NONE);
         label.setImage(icon);
+        label.setToolTipText(tooltipText);
         final DialogListener listener = new DialogListener(dialog);
         label.addMouseListener(listener);
         label.addKeyListener(listener);

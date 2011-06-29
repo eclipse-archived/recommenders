@@ -79,7 +79,7 @@ public final class ExtDocView extends ViewPart {
     }
 
     private void createLeftSashSide(final SashForm sashForm) {
-        table = new ProvidersTable(sashForm, SWT.CHECK | SWT.FULL_SELECTION);
+        table = new ProvidersTable(sashForm, SWT.CHECK | SWT.FULL_SELECTION, providerStore);
     }
 
     private void createRightSashSide(final SashForm sashForm) {
@@ -169,6 +169,7 @@ public final class ExtDocView extends ViewPart {
             final URL entry = ExtDocPlugin.getDefault().getBundle().getEntry("icons/full/lcl16/feedback.png");
             final ImageDescriptor descriptor = ImageDescriptor.createFromURL(entry);
             setImageDescriptor(descriptor);
+            setToolTipText("Feedback for ExtDoc");
         }
 
         @Override

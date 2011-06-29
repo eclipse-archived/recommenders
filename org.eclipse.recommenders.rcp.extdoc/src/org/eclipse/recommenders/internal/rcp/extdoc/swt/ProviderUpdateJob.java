@@ -28,7 +28,7 @@ class ProviderUpdateJob extends UIJob {
 
     ProviderUpdateJob(final ProvidersTable table, final TableItem item, final IJavaElementSelection selection) {
         super(String.format("Updating %s", ((IProvider) ((Control) item.getData()).getData()).getProviderFullName()));
-        super.setPriority(INTERACTIVE);
+        super.setPriority(SHORT);
         this.table = table;
         this.item = item;
         provider = (IProvider) ((Control) item.getData()).getData();
