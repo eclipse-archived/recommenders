@@ -12,6 +12,7 @@ package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaFieldWithCastedReceiverCompletionProposal;
@@ -24,7 +25,7 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 @SuppressWarnings("restriction")
 public class SubwordsCompletionProposalFactory {
 
-    public static IJavaCompletionProposal createFromJDTProposal(final IJavaCompletionProposal jdtProposal,
+    public static AbstractJavaCompletionProposal createFromJDTProposal(final IJavaCompletionProposal jdtProposal,
             final CompletionProposal initialProposal, final JavaContentAssistInvocationContext ctx) {
         if (jdtProposal instanceof JavaMethodCompletionProposal) {
             return new SubwordsJavaMethodCompletionProposal(initialProposal, ctx);

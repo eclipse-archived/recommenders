@@ -17,7 +17,6 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -26,7 +25,6 @@ import org.eclipse.jdt.core.CompletionRequestor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsCompletionProposalComputer;
 import org.junit.Test;
 
 public class SubwordsCompletionProposalComputerTest {
@@ -47,30 +45,6 @@ public class SubwordsCompletionProposalComputerTest {
     private void verifyCodeCompleteIsCalled(final JavaContentAssistInvocationContext ctx) throws JavaModelException {
         final ICompilationUnit cu = ctx.getCompilationUnit();
         verify(cu, times(1)).codeComplete(anyInt(), (CompletionRequestor) any());
-    }
-
-    @Test
-    public void testComputeProposalsWithEmptyToken() {
-        // setup:
-        final SubwordsCompletionProposalComputer sut = new SubwordsCompletionProposalComputer();
-        final JavaContentAssistInvocationContext ctx = mockInvocationContext("");
-        // exercise:
-        sut.computeCompletionProposals(ctx, null);
-        // verify:
-        // ensure that no further computation is performed if token is empty!
-        verify(ctx, never()).getCompilationUnit();
-    }
-
-    @Test
-    public void testComputeProposalsWithNullToken() {
-        // setup:
-        final SubwordsCompletionProposalComputer sut = new SubwordsCompletionProposalComputer();
-        final JavaContentAssistInvocationContext ctx = mockInvocationContext();
-        // exercise:
-        sut.computeCompletionProposals(ctx, null);
-        // verify:
-        // ensure that no further computation is performed if token is null!
-        verify(ctx, never()).getCompilationUnit();
     }
 
     @Test

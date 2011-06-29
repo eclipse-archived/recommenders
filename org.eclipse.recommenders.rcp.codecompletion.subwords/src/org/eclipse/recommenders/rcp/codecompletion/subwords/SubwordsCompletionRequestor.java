@@ -20,12 +20,14 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 import com.google.common.collect.Lists;
 
+@SuppressWarnings("restriction")
 public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private final List<IJavaCompletionProposal> proposals = Lists.newLinkedList();
@@ -36,7 +38,10 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private final CompletionProposalCollector collector;
 
+    private final String token;
+
     public SubwordsCompletionRequestor(final String token, final JavaContentAssistInvocationContext ctx) {
+        this.token = token;
         checkNotNull(token);
         checkNotNull(ctx);
         this.ctx = ctx;
@@ -47,20 +52,44 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     @Override
     public void accept(final CompletionProposal proposal) {
+        final IJavaCompletionProposal jdtProposal = tryCreateJdtProposal(proposal);
+        if (jdtProposal == null) {
+            return;
+        }
+        final String completion = getTokensUntilFirstOpeningBracket(proposal.getCompletion());
+        final int distance = calculateDistance(completion);
+        if (matchesToken(completion)) {
+            createSubwordsProposal(proposal, jdtProposal, distance);
+        }
+    }
+
+    private void createSubwordsProposal(final CompletionProposal proposal, final IJavaCompletionProposal jdtProposal,
+            final int distance) {
+        final AbstractJavaCompletionProposal subWordProposal = SubwordsCompletionProposalFactory.createFromJDTProposal(
+                jdtProposal, proposal, ctx);
+        if (subWordProposal != null) {
+            subWordProposal.setRelevance(distance);
+            proposals.add(subWordProposal);
+        }
+    }
+
+    private boolean matchesToken(final String completion) {
+        final Matcher m = pattern.matcher(completion);
+        return m.matches();
+    }
+
+    private int calculateDistance(final String completion) {
+        return SubwordsNGramsDistance.calculateRelevanceDistance(token, completion, 2);
+    }
+
+    private IJavaCompletionProposal tryCreateJdtProposal(final CompletionProposal proposal) {
         final int previousProposalsCount = collector.getJavaCompletionProposals().length;
         collector.accept(proposal);
         final boolean isAccepted = collector.getJavaCompletionProposals().length > previousProposalsCount;
         if (isAccepted) {
-            final IJavaCompletionProposal collectorProposal = collector.getJavaCompletionProposals()[previousProposalsCount];
-            final String completion = getTokensUntilFirstOpeningBracket(proposal.getCompletion());
-            final Matcher m = pattern.matcher(completion);
-            if (m.matches()) {
-                final IJavaCompletionProposal subWordProposal = SubwordsCompletionProposalFactory
-                        .createFromJDTProposal(collectorProposal, proposal, ctx);
-                if (subWordProposal != null) {
-                    proposals.add(subWordProposal);
-                }
-            }
+            return collector.getJavaCompletionProposals()[previousProposalsCount];
+        } else {
+            return null;
         }
     }
 
