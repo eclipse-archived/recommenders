@@ -79,7 +79,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
     }
 
     private int calculateDistance(final String completion) {
-        return SubwordsNGramsDistance.calculateRelevanceDistance(token, completion, 2);
+        return SubwordsRelevanceCalculator.calculateRelevance(token, completion);
     }
 
     private IJavaCompletionProposal tryCreateJdtProposal(final CompletionProposal proposal) {
