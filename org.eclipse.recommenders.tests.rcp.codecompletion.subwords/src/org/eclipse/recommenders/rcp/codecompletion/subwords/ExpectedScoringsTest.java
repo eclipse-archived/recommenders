@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsRelevanceCalculator.calculateRelevance;
 import junit.framework.Assert;
 
 import org.junit.Ignore;
@@ -61,7 +60,7 @@ public class ExpectedScoringsTest {
         public void assertOrder(final String... candidates) {
             float previousScore = Float.MAX_VALUE;
             for (final String candidate : candidates) {
-                final float currentScore = calculateRelevance(token, candidate);
+                final float currentScore = calculateNGramMatches(token, candidate);
                 if (currentScore >= previousScore) {
                     Assert.fail("Order by calculated scores differ from expected order for token '" + token + "':"
                             + createDebugString(candidates));
@@ -73,7 +72,7 @@ public class ExpectedScoringsTest {
         private String createDebugString(final String[] candidates) {
             final StringBuilder builder = new StringBuilder();
             for (final String candidate : candidates) {
-                builder.append(String.format("%n%d %s", calculateRelevance(token, candidate), candidate));
+                builder.append(String.format("%n%d %s", calculateNGramMatches(token, candidate), candidate));
             }
             return builder.toString();
         }

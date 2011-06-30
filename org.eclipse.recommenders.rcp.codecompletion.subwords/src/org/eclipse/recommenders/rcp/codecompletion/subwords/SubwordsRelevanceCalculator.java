@@ -10,24 +10,58 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.createRegexPatternFromPrefix;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.eclipse.recommenders.commons.utils.Checks;
+
 public class SubwordsRelevanceCalculator {
 
-    public static int calculateRelevance(String s1, String s2) {
+    public static final int PREFIX_BONUS = 5000;
+
+    private final Pattern pattern;
+    private final String token;
+    private int jdtRelevance;
+    private int nGramMatches;
+    private String completion;
+
+    public SubwordsRelevanceCalculator(final String token) {
+        this.token = Checks.ensureIsNotNull(token);
+        this.pattern = createRegexPatternFromPrefix(token);
+    }
+
+    public void setCompletion(final String completion) {
+        this.completion = completion;
+        calculateNGramMatches(token, completion);
+    }
+
+    public void setJdtRelevance(final int jdtRelevance) {
+        this.jdtRelevance = jdtRelevance;
+    }
+
+    public int getRelevance() {
+        int relevance = jdtRelevance + nGramMatches;
+        if (isTokenPrefix()) {
+            relevance += PREFIX_BONUS;
+        }
+        return relevance;
+    }
+
+    public boolean isRelevant() {
+        final Matcher m = pattern.matcher(completion);
+        return m.matches();
+    }
+
+    private void calculateNGramMatches(String s1, String s2) {
         s1 = prepareString(s1);
         s2 = prepareString(s2);
 
-        final float qGram = QGramSimilarity.calculateQGramSimilarity(s1, s2, 2);
-        final int commonPrefixLength = commonPrefixLength(s1, s2);
-        final int weightedResult = Math.round((commonPrefixLength + qGram * 100f) * 20f - lengthDifference(s1, s2));
-
-        return Math.max(0, weightedResult);
+        nGramMatches = QGramSimilarity.calculateMatchingNGrams(s1, s2, 2);
     }
 
-    private static int lengthDifference(final String s1, final String s2) {
-        return Math.abs(s1.length() - s2.length());
-    }
-
-    private static String prepareString(final String s1) {
+    private String prepareString(final String s1) {
         if (s1 == null) {
             return "";
         } else {
@@ -35,13 +69,8 @@ public class SubwordsRelevanceCalculator {
         }
     }
 
-    public static int commonPrefixLength(final String s1, final String s2) {
-        final int minStr = Math.min(s1.length(), s2.length());
-        int commonPrefixLength = 0;
-        for (int i = 0; i < minStr && s1.charAt(i) == s2.charAt(i); i++) {
-            ++commonPrefixLength;
-        }
-        return commonPrefixLength;
+    private boolean isTokenPrefix() {
+        return completion.startsWith(token);
     }
 
 }

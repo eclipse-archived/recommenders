@@ -10,30 +10,46 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsRelevanceCalculator.calculateRelevance;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsRelevanceCalculator.commonPrefixLength;
-import junit.framework.Assert;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsRelevanceCalculator.PREFIX_BONUS;
 
 import org.junit.Test;
 
 public class SubwordsRelevanceCalculatorTest {
 
-    @Test
-    public void testNullInput() {
-        Assert.assertEquals(0, calculateRelevance(null, "xyz"));
-        Assert.assertEquals(0, calculateRelevance("xyz", null));
+    private static SubwordsRelevanceCalculator createSut(final String token, final String completion) {
+        final SubwordsRelevanceCalculator sut = new SubwordsRelevanceCalculator(token);
+        sut.setCompletion(completion);
+        sut.setJdtRelevance(0);
+        return sut;
     }
 
     @Test
-    public void testEmptyInput() {
-        Assert.assertEquals(0, calculateRelevance("", "xyz"));
-        Assert.assertEquals(0, calculateRelevance("xyz", ""));
+    public void testEmptyToken() {
+        final SubwordsRelevanceCalculator sut = createSut("", "someMethod");
+        assertTrue(sut.isRelevant());
+        assertEquals(PREFIX_BONUS, sut.getRelevance());
     }
 
     @Test
-    public void testCommonPrefixLength() {
-        Assert.assertEquals(0, commonPrefixLength("abcde", "xyz"));
-        Assert.assertEquals(3, commonPrefixLength("abcde", "abc"));
-        Assert.assertEquals(3, commonPrefixLength("abcde", "abcxy"));
+    public void testPrefixToken() {
+        final SubwordsRelevanceCalculator sut = createSut("set", "setText");
+        assertTrue(sut.isRelevant());
+        assertEquals(PREFIX_BONUS + 2, sut.getRelevance());
+    }
+
+    @Test
+    public void testSubword() {
+        final SubwordsRelevanceCalculator sut = createSut("text", "setText");
+        assertTrue(sut.isRelevant());
+        assertEquals(3, sut.getRelevance());
+    }
+
+    @Test
+    public void testIrrelevantCompletion() {
+        final SubwordsRelevanceCalculator sut = createSut("get", "setText");
+        assertFalse(sut.isRelevant());
     }
 }

@@ -41,6 +41,13 @@ public class QGramSimilarity {
         return differences;
     }
 
+    public static int calculateMatchingNGrams(final String s1, final String s2, final int n) {
+        final Set<String> nGrams1 = Sets.newHashSet(createNGrams(s1, n));
+        final Set<String> nGrams2 = Sets.newHashSet(createNGrams(s2, n));
+        nGrams1.retainAll(nGrams2);
+        return nGrams1.size();
+    }
+
     public static List<String> createNGrams(final String candidate, final int n) {
         final List<String> nGrams = Lists.newLinkedList();
         int start = 0;
