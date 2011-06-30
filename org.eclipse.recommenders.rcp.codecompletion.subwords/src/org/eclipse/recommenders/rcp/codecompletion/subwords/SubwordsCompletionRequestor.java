@@ -33,7 +33,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private final CompletionProposalCollector collector;
 
-    private final SubwordsRelevanceCalculator subwordsRelevance;
+    private final SubwordsRelevanceCalculator relevanceCalculator;
 
     public SubwordsCompletionRequestor(final String token, final JavaContentAssistInvocationContext ctx) {
         checkNotNull(token);
@@ -41,7 +41,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         this.ctx = ctx;
         this.collector = new CompletionProposalCollector(ctx.getCompilationUnit());
         this.collector.acceptContext(ctx.getCoreContext());
-        subwordsRelevance = new SubwordsRelevanceCalculator(token);
+        relevanceCalculator = new SubwordsRelevanceCalculator(token);
     }
 
     @Override
@@ -51,10 +51,10 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
             return;
         }
 
-        subwordsRelevance.setCompletion(getTokensUntilFirstOpeningBracket(proposal.getCompletion()));
-        subwordsRelevance.setJdtRelevance(jdtProposal.getRelevance());
-        if (subwordsRelevance.isRelevant()) {
-            createSubwordsProposal(proposal, jdtProposal, subwordsRelevance.getRelevance());
+        relevanceCalculator.setCompletion(getTokensUntilFirstOpeningBracket(proposal.getCompletion()));
+        relevanceCalculator.setJdtRelevance(jdtProposal.getRelevance());
+        if (relevanceCalculator.isRelevant()) {
+            createSubwordsProposal(proposal, jdtProposal);
         }
     }
 
@@ -69,12 +69,11 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         }
     }
 
-    private void createSubwordsProposal(final CompletionProposal proposal, final IJavaCompletionProposal jdtProposal,
-            final int relevance) {
+    private void createSubwordsProposal(final CompletionProposal proposal, final IJavaCompletionProposal jdtProposal) {
         final AbstractJavaCompletionProposal subWordProposal = SubwordsCompletionProposalFactory.createFromJDTProposal(
                 jdtProposal, proposal, ctx);
         if (subWordProposal != null) {
-            subWordProposal.setRelevance(relevance);
+            subWordProposal.setRelevance(relevanceCalculator.getRelevance());
             proposals.add(subWordProposal);
         }
     }

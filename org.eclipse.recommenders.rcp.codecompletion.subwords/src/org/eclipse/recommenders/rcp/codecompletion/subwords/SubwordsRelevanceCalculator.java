@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.createRegexPatternFromPrefix;
 
 import java.util.regex.Matcher;
@@ -33,7 +34,7 @@ public class SubwordsRelevanceCalculator {
     }
 
     public void setCompletion(final String completion) {
-        this.completion = completion;
+        this.completion = ensureIsNotNull(completion);
         calculateNGramMatches(token, completion);
     }
 
@@ -55,18 +56,9 @@ public class SubwordsRelevanceCalculator {
     }
 
     private void calculateNGramMatches(String s1, String s2) {
-        s1 = prepareString(s1);
-        s2 = prepareString(s2);
-
-        nGramMatches = QGramSimilarity.calculateMatchingNGrams(s1, s2, 2);
-    }
-
-    private String prepareString(final String s1) {
-        if (s1 == null) {
-            return "";
-        } else {
-            return s1.trim().toLowerCase();
-        }
+        s1 = s1.toLowerCase();
+        s2 = s2.toLowerCase();
+        nGramMatches = NGramsUtils.calculateMatchingNGrams(s1, s2, 2);
     }
 
     private boolean isTokenPrefix() {

@@ -15,9 +15,8 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ExpectedScoringsTest.class, QGramSimilarityTest.class, RegexMatcherTest.class,
-        SubwordsCompletionRequestorTest.class, SubwordsCompletionProposalComputerTest.class,
-        SubwordsRelevanceCalculatorTest.class })
+@SuiteClasses({ NGramUtilsTest.class, RegexMatcherTest.class, SubwordsCompletionRequestorTest.class,
+        SubwordsCompletionProposalComputerTest.class, SubwordsRelevanceCalculatorTest.class })
 public class UnitTestSuite {
 
 }
