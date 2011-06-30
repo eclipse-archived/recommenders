@@ -267,7 +267,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         } else {
             // TODO: first is not correct in all cases. this needs to be fixed
             final IMethod first = JdtUtils.findFirstDeclaration(method);
-            return displayProposalsForMethod(first);
+            return first.equals(method) ? false : displayProposalsForMethod(first);
         }
     }
 
