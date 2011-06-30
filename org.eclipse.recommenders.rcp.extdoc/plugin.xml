@@ -38,7 +38,7 @@
      <extension
            point="org.eclipse.recommenders.commons.selection.listener">
         <listener
-              class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.UIManager">
+              class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.UiManager">
         </listener>
      </extension>
 </plugin>

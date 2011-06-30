@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for Templates Completion
-Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp.extdoc
+Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp.extdoc;singleton:=true
 Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.rcp.extdoc;bundle-version="0.1.0"

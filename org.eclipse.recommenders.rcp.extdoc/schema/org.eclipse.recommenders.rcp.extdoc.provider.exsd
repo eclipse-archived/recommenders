@@ -76,7 +76,7 @@
                </appinfo>
             </annotation>
          </attribute>
-         <attribute name="priority" type="string">
+         <attribute name="priority" type="string" use="required">
             <annotation>
                <documentation>
                   
