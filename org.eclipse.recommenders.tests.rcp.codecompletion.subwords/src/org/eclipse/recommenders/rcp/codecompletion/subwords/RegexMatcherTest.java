@@ -17,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsJavaMethodCompletionProposal;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -80,7 +79,7 @@ public class RegexMatcherTest {
         final CompletionProposal dummyProposal = mockCompletionProposal();
         final JavaContentAssistInvocationContext dummyInvocationContext = mockInvocationContext();
         final SubwordsJavaMethodCompletionProposal someSubwordsProposal = new SubwordsJavaMethodCompletionProposal(
-                dummyProposal, dummyInvocationContext);
+                dummyProposal, dummyInvocationContext, "");
         return someSubwordsProposal;
     }
 

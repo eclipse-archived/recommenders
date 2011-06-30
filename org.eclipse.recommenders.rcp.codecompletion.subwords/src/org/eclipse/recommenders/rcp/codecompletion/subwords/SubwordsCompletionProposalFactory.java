@@ -26,9 +26,10 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 public class SubwordsCompletionProposalFactory {
 
     public static AbstractJavaCompletionProposal createFromJDTProposal(final IJavaCompletionProposal jdtProposal,
-            final CompletionProposal initialProposal, final JavaContentAssistInvocationContext ctx) {
+            final CompletionProposal initialProposal, final JavaContentAssistInvocationContext ctx,
+            final String completionToken) {
         if (jdtProposal instanceof JavaMethodCompletionProposal) {
-            return new SubwordsJavaMethodCompletionProposal(initialProposal, ctx);
+            return new SubwordsJavaMethodCompletionProposal(initialProposal, ctx, completionToken);
         } else if (jdtProposal instanceof JavaCompletionProposal) {
             return new SubwordsJavaCompletionProposal((JavaCompletionProposal) jdtProposal, initialProposal, ctx);
         } else if (jdtProposal instanceof LazyJavaTypeCompletionProposal) {

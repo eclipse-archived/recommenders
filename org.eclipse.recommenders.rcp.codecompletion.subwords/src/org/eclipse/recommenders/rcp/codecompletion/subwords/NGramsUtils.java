@@ -13,6 +13,8 @@ package org.eclipse.recommenders.rcp.codecompletion.subwords;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.viewers.StyledString;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -32,5 +34,17 @@ public class NGramsUtils {
             nGrams.add(nGram);
         }
         return nGrams;
+    }
+
+    public static StyledString style(final StyledString proposalLabel, final String token) {
+        final StyledString res = proposalLabel.append("");
+        final String string = RegexUtil.getTokensUntilFirstOpeningBracket(res.getString());
+        for (final String bigram : NGramsUtils.createNGrams(token, 2)) {
+            final int indexOf = string.indexOf(bigram);
+            if (indexOf != -1) {
+                res.setStyle(indexOf, bigram.length(), StyledString.COUNTER_STYLER);
+            }
+        }
+        return res;
     }
 }

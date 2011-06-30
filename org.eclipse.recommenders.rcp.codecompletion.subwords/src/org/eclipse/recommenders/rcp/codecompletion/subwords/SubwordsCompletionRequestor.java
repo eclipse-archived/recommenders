@@ -35,9 +35,12 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private final SubwordsRelevanceCalculator relevanceCalculator;
 
+    private final String token;
+
     public SubwordsCompletionRequestor(final String token, final JavaContentAssistInvocationContext ctx) {
         checkNotNull(token);
         checkNotNull(ctx);
+        this.token = token;
         this.ctx = ctx;
         this.collector = new CompletionProposalCollector(ctx.getCompilationUnit());
         this.collector.acceptContext(ctx.getCoreContext());
@@ -71,7 +74,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private void createSubwordsProposal(final CompletionProposal proposal, final IJavaCompletionProposal jdtProposal) {
         final AbstractJavaCompletionProposal subWordProposal = SubwordsCompletionProposalFactory.createFromJDTProposal(
-                jdtProposal, proposal, ctx);
+                jdtProposal, proposal, ctx, token);
         if (subWordProposal != null) {
             subWordProposal.setRelevance(relevanceCalculator.getRelevance());
             proposals.add(subWordProposal);

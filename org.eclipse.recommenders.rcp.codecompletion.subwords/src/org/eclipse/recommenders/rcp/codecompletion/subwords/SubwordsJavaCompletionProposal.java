@@ -15,19 +15,27 @@ import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.che
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.viewers.StyledString;
 
 @SuppressWarnings("restriction")
 public class SubwordsJavaCompletionProposal extends JavaCompletionProposal {
 
-	public SubwordsJavaCompletionProposal(final JavaCompletionProposal jdtProposal, final CompletionProposal proposal,
-			final JavaContentAssistInvocationContext invocationContext) {
-		super(jdtProposal.getReplacementString(), proposal.getReplaceStart(), jdtProposal.getReplacementLength(), jdtProposal.getImage(), jdtProposal
-				.getStyledDisplayString(), jdtProposal.getRelevance(), true, invocationContext);
-	}
+    public SubwordsJavaCompletionProposal(final JavaCompletionProposal jdtProposal, final CompletionProposal proposal,
+            final JavaContentAssistInvocationContext invocationContext) {
+        super(jdtProposal.getReplacementString(), proposal.getReplaceStart(), jdtProposal.getReplacementLength(),
+                jdtProposal.getImage(), jdtProposal.getStyledDisplayString(), jdtProposal.getRelevance(), true,
+                invocationContext);
+    }
 
     @Override
-	protected boolean isPrefix(final String prefix, String completion) {
+    protected boolean isPrefix(final String prefix, final String completion) {
         return checkStringMatchesPrefixPattern(prefix, completion);
-	}
+    }
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        System.out.println("called styled display string");
+        return super.getStyledDisplayString();
+    }
 
 }
