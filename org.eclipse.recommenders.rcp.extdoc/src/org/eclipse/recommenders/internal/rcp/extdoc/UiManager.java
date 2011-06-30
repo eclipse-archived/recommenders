@@ -20,7 +20,7 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.google.inject.Inject;
 
-final class UIManager implements IExtendedSelectionListener {
+final class UiManager implements IExtendedSelectionListener {
 
     private static ExtDocView extDocView;
     private static boolean isViewVisible = true;
@@ -29,8 +29,8 @@ final class UIManager implements IExtendedSelectionListener {
     private boolean hasViewListener;
 
     @Inject
-    UIManager(final ExtDocView extDocView) {
-        UIManager.extDocView = extDocView;
+    UiManager(final ExtDocView extDocView) {
+        UiManager.extDocView = extDocView;
     }
 
     @Override

@@ -10,12 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -29,22 +29,25 @@ public final class ProviderStore {
 
     private static final String EXTENSION_ID = "org.eclipse.recommenders.rcp.extdoc.provider";
 
-    private final Set<IProvider> providers = new HashSet<IProvider>();
+    private final List<IProvider> providers = new LinkedList<IProvider>();
     private final Map<IProvider, Integer> priorities = new HashMap<IProvider, Integer>();
 
-    public ProviderStore() throws CoreException {
+    public ProviderStore() {
         final IExtensionRegistry reg = Platform.getExtensionRegistry();
         for (final IConfigurationElement element : reg.getConfigurationElementsFor(EXTENSION_ID)) {
-            final IProvider provider = (IProvider) element.createExecutableExtension("class");
-            priorities.put(provider, Integer.parseInt(element.getAttribute("priority")));
-            providers.add(provider);
+            try {
+                final IProvider provider = (IProvider) element.createExecutableExtension("class");
+                priorities.put(provider, Integer.parseInt(element.getAttribute("priority")));
+                providers.add(provider);
+            } catch (final CoreException e) {
+                throw new IllegalStateException(e);
+            }
         }
     }
 
-    public Set<IProvider> getProviders() {
-        final Set<IProvider> orderedSet = new TreeSet<IProvider>(new ProviderComparator());
-        orderedSet.addAll(providers);
-        return orderedSet;
+    public List<IProvider> getProviders() {
+        Collections.sort(providers, new ProviderComparator());
+        return providers;
     }
 
     public void setProviderPriority(final IProvider provider, final int priority) {

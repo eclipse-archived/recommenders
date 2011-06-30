@@ -10,11 +10,15 @@
  */
 package org.eclipse.recommenders.tests.rcp.extdoc;
 
+import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStoreTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.UiManagerTest;
+import org.eclipse.recommenders.rcp.extdoc.features.FeaturesCompositeTest;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(DummyTest.class)
+@SuiteClasses({ ProviderStoreTest.class, UiManagerTest.class, FeaturesCompositeTest.class })
 final class UnitTestSuite {
 }

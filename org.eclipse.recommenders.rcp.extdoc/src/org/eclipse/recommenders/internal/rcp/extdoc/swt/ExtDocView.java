@@ -38,7 +38,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Inject;
 
-public final class ExtDocView extends ViewPart {
+public class ExtDocView extends ViewPart {
 
     static final int HEAD_LABEL_HEIGHT = 20;
     private static final String SASH_POSITION_KEY = "extDocSashPosition";
@@ -64,7 +64,7 @@ public final class ExtDocView extends ViewPart {
     }
 
     @Override
-    public void createPartControl(final Composite parent) {
+    public final void createPartControl(final Composite parent) {
         createSash(parent);
         addProviders();
         fillActionBars();
@@ -134,7 +134,7 @@ public final class ExtDocView extends ViewPart {
         toolbar.add(new FeedbackAction(new FeedbackDialog(getSite().getShell())));
     }
 
-    public void selectionChanged(final IJavaElementSelection selection) {
+    public final boolean selectionChanged(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
             table.setContext(selection);
             for (final TableItem item : table.getItems()) {
@@ -146,7 +146,9 @@ public final class ExtDocView extends ViewPart {
             }
             scrolled.setOrigin(0, 0);
             updateSelectionLabel(selection.getJavaElement());
+            return true;
         }
+        return false;
     }
 
     private void updateSelectionLabel(final IJavaElement javaElement) {
@@ -156,7 +158,7 @@ public final class ExtDocView extends ViewPart {
     }
 
     @Override
-    public void setFocus() {
+    public final void setFocus() {
         scrolled.forceFocus();
     }
 

@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-
 public interface IStarsRatingsServer {
 
     int getAverageRating(Object object);
