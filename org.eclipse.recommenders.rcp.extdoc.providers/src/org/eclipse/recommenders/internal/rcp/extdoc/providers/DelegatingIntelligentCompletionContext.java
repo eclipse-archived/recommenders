@@ -28,7 +28,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 @SuppressWarnings("restriction")
 public class DelegatingIntelligentCompletionContext implements IIntelligentCompletionContext {
 
-    public IIntelligentCompletionContext delegate;
+    private final IIntelligentCompletionContext delegate;
 
     public DelegatingIntelligentCompletionContext(final IIntelligentCompletionContext delegate) {
         this.delegate = delegate;

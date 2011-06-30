@@ -32,3 +32,8 @@ Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
  org.eclipse.recommenders.rcp.extdoc.features;uses:="org.eclipse.recommenders.rcp.extdoc,org.eclipse.swt.widgets,org.eclipse.jface.dialogs",
  org.eclipse.recommenders.rcp.extdoc.preferences
 Bundle-ClassPath: .
+Import-Package: org.apache.commons.lang3,
+ org.eclipse.jface.text,
+ org.eclipse.jface.text.source,
+ org.eclipse.text.edits,
+ org.eclipse.ui.texteditor

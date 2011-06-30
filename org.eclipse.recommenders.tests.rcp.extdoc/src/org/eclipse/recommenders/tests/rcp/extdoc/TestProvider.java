@@ -13,24 +13,30 @@ package org.eclipse.recommenders.tests.rcp.extdoc;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 
 public final class TestProvider extends AbstractProviderComposite {
 
+    private Label text;
+
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean selectionChanged(final IJavaElementSelection context) {
-        return false;
+        text.setText(context.toString());
+        return true;
     }
 
     @Override
     protected Control createContentControl(final Composite parent) {
-        return null;
+        text = SwtFactory.createLabel(parent, "");
+        return text;
     }
 
 }

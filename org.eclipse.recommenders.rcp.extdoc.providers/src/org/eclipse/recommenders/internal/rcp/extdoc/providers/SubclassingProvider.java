@@ -57,8 +57,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location == JavaElementLocation.METHOD_BODY || location == JavaElementLocation.METHOD_DECLARATION
-                || JavaElementLocation.isInTypeDeclaration(location);
+        return location == JavaElementLocation.METHOD_DECLARATION || JavaElementLocation.isInTypeDeclaration(location);
     }
 
     @Override
@@ -108,11 +107,12 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         if (selfcalls == null) {
             return false;
         }
+        final String subclassedTypeName = first.getParent().getElementName();
         String text = "Subclasses of "
-                + method.getParent().getElementName()
+                + subclassedTypeName
                 + " typically should overrride this method (92%). When overriding subclasses may call the super implementation (25%).";
         final StyledText styledText = SwtFactory.createStyledText(composite, text);
-        final int length = method.getParent().getElementName().length();
+        final int length = subclassedTypeName.length();
         SwtFactory.createStyleRange(styledText, 14, length, SWT.NORMAL, false, true);
         SwtFactory.createStyleRange(styledText, length + 25, 6, SWT.BOLD, false, false);
         SwtFactory.createStyleRange(styledText, length + 55, 3, SWT.NORMAL, true, false);

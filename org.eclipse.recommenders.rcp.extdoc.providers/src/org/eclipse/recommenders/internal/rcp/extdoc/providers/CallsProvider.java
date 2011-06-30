@@ -106,6 +106,18 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     }
 
     @Override
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
+        try {
+            if (method.isConstructor()) {
+                return updateMethodBodySelection(selection, method.getDeclaringType());
+            }
+        } catch (final JavaModelException e) {
+            throw new IllegalStateException(e);
+        }
+        return false;
+    }
+
+    @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
         setNullVariableContext();
         return displayProposalsForType(type);

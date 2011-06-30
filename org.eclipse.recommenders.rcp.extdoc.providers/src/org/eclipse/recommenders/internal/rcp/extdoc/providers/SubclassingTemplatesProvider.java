@@ -38,7 +38,8 @@ import org.eclipse.swt.widgets.Control;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveProviderComposite implements IDeletionProvider {
+public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveProviderComposite implements
+        IDeletionProvider {
 
     private final SubclassingServer server;
 
@@ -57,8 +58,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location == JavaElementLocation.METHOD_BODY || location == JavaElementLocation.METHOD_DECLARATION
-                || JavaElementLocation.isInTypeDeclaration(location);
+        return location == JavaElementLocation.METHOD_DECLARATION || JavaElementLocation.isInTypeDeclaration(location);
     }
 
     @Override

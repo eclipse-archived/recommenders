@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 
 public final class ProviderStore {
 
@@ -45,19 +46,23 @@ public final class ProviderStore {
         }
     }
 
-    public List<IProvider> getProviders() {
+    public ImmutableList<IProvider> getProviders() {
         Collections.sort(providers, new ProviderComparator());
-        return providers;
+        return ImmutableList.copyOf(providers);
     }
 
     public void setProviderPriority(final IProvider provider, final int priority) {
         Preconditions.checkArgument(providers.contains(provider));
         Preconditions.checkArgument(priority > 0);
-        ExtDocPlugin.getPreferences().putInt("priority-" + provider.hashCode(), priority);
+        ExtDocPlugin.getPreferences().putInt(getPreferenceId(provider), priority);
     }
 
     private static int getPriorityFromPreferences(final IProvider provider) {
-        return ExtDocPlugin.getPreferences().getInt("priority-" + provider.hashCode(), -1);
+        return ExtDocPlugin.getPreferences().getInt(getPreferenceId(provider), -1);
+    }
+
+    private static String getPreferenceId(final IProvider provider) {
+        return "priority" + provider.hashCode();
     }
 
     private final class ProviderComparator implements Comparator<IProvider> {

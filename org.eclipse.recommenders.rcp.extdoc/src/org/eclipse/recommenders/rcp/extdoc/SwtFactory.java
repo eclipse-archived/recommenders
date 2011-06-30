@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+@SuppressWarnings("restriction")
 public final class SwtFactory {
 
     public static final Font CODEFONT = JFaceResources.getTextFont();
@@ -105,6 +106,12 @@ public final class SwtFactory {
             styleRange.font = CODEFONT;
         }
         styledText.setStyleRange(styleRange);
+    }
+
+    public static SourceCodeArea createSourceCodeArea(final Composite parent, final String snippet) {
+        final SourceCodeArea codeArea = new SourceCodeArea(parent);
+        codeArea.setCode(snippet);
+        return codeArea;
     }
 
     public static Button createCheck(final Composite area, final String text, final boolean selected) {

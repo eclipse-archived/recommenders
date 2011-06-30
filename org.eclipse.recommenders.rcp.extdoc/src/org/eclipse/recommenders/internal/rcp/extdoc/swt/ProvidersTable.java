@@ -44,7 +44,6 @@ final class ProvidersTable {
     private final Table table;
 
     private final IEclipsePreferences preferences;
-    private String preferencePrefix = "";
 
     private final CLabel locationLabel;
     private IJavaElementSelection lastSelection;
@@ -86,11 +85,10 @@ final class ProvidersTable {
     public void setContext(final IJavaElementSelection selection) {
         final JavaElementLocation location = selection.getElementLocation();
         if (lastSelection == null || lastSelection.getElementLocation() != location) {
-            preferencePrefix = location == null ? "" : location.name();
             for (final TableItem item : table.getItems()) {
                 final IProvider provider = (IProvider) ((Control) item.getData()).getData();
                 boolean selectProvider = false;
-                if (preferences.getBoolean(preferencePrefix + provider.getProviderName(), true)) {
+                if (preferences.getBoolean(getPreferenceId(provider, location), true)) {
                     selectProvider = provider.isAvailableForLocation(location);
                 }
                 item.setChecked(selectProvider);
@@ -111,6 +109,10 @@ final class ProvidersTable {
 
         tableItem.setGrayed(!visible);
         tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
+    }
+
+    private static String getPreferenceId(final IProvider provider, final JavaElementLocation location) {
+        return "provider" + provider.hashCode() + location;
     }
 
     private void enableDragAndDrop(final ProviderStore providerStore) {
@@ -140,9 +142,9 @@ final class ProvidersTable {
             final TableItem tableItem = (TableItem) event.item;
             final Control control = (Control) tableItem.getData();
             if (event.detail == SWT.CHECK) {
-                table.preferences.putBoolean(
-                        table.preferencePrefix + ((IProvider) control.getData()).getProviderName(),
-                        tableItem.getChecked());
+                final String preferenceId = getPreferenceId((IProvider) control.getData(),
+                        table.lastSelection.getElementLocation());
+                table.preferences.putBoolean(preferenceId, tableItem.getChecked());
                 if (tableItem.getGrayed()) {
                     if (tableItem.getChecked()) {
                         new ProviderUpdateJob(table, tableItem, table.lastSelection).schedule();

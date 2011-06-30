@@ -67,7 +67,7 @@ abstract class AbstractProvider implements IProvider {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return getClass().getName().hashCode();
     }
 
 }

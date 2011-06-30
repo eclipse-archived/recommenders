@@ -16,21 +16,12 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.SourceField;
+import org.eclipse.jdt.internal.corext.util.MethodOverrideTester;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.internal.ui.javaeditor.JavaSourceViewer;
-import org.eclipse.jdt.ui.text.IColorManager;
-import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
-import org.eclipse.jdt.ui.text.JavaTextTools;
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.SummaryCodeFormatter;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -73,50 +64,46 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         return false;
     }
 
-    private boolean displayContentForMethod(final IMethod element) {
+    private boolean displayContentForMethod(final IMethod method) {
         try {
-            disposeChildren(container);
-
-            final IMethod overriddenMethod = SuperTypeHierarchyCache
-                    .getMethodOverrideTester(element.getDeclaringType()).findOverriddenMethod(element, true);
+            if (method.isConstructor()) {
+                return displayContentForType(method.getDeclaringType());
+            }
+            final MethodOverrideTester overrideTester = SuperTypeHierarchyCache.getMethodOverrideTester(method
+                    .getDeclaringType());
+            final IMethod overriddenMethod = overrideTester.findOverriddenMethod(method, true);
             if (overriddenMethod == null) {
                 return false;
             }
-            final CodeExamples codeExamples = server.getOverridenMethodCodeExamples(overriddenMethod);
-            if (codeExamples == null) {
-                return false;
-            }
-            displayCodeSnippets(element, codeExamples.getExamples());
+            return displayCodeSnippets(method, server.getOverridenMethodCodeExamples(overriddenMethod));
         } catch (final JavaModelException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
-        return true;
     }
 
     private boolean displayContentForType(final IType type) {
-        disposeChildren(container);
         if (type == null) {
             return false;
         }
-        final CodeExamples codeExamples = server.getTypeCodeExamples(type);
+        return displayCodeSnippets(type, server.getTypeCodeExamples(type));
+    }
+
+    private boolean displayCodeSnippets(final IJavaElement element, final CodeExamples codeExamples) {
         if (codeExamples == null) {
             return false;
         }
-        displayCodeSnippets(type, codeExamples.getExamples());
+        disposeChildren(container);
+        final CodeSnippet[] snippets = codeExamples.getExamples();
+        for (int i = 0; i < snippets.length; ++i) {
+            createSnippetVisualization(i, element, snippets[i].getCode());
+        }
+        container.layout(true);
         return true;
     }
 
-    private void displayCodeSnippets(final IJavaElement element, final CodeSnippet[] snippets) {
-        for (int i = 0; i < snippets.length; ++i) {
-            createSnippetVisualization(i, element, snippets[i]);
-        }
-        container.layout(true);
-    }
-
-    private void createSnippetVisualization(final int snippetIndex, final IJavaElement element,
-            final CodeSnippet snippet) {
+    private void createSnippetVisualization(final int snippetIndex, final IJavaElement element, final String snippet) {
         createEditAndRatingHeader(snippetIndex, element);
-        createSourceCodeArea(snippet);
+        SwtFactory.createSourceCodeArea(container, snippet);
     }
 
     private void createEditAndRatingHeader(final int snippetIndex, final IJavaElement element) {
@@ -125,27 +112,4 @@ public final class ExamplesProvider extends AbstractProviderComposite {
                 this, server, new TemplateEditDialog(getShell()));
         line.createStyleRange(0, text.length(), SWT.BOLD, false, false);
     }
-
-    private void createSourceCodeArea(final CodeSnippet snippet) {
-        final IPreferenceStore store = JavaPlugin.getDefault().getCombinedPreferenceStore();
-        final JavaTextTools javaTextTools = JavaPlugin.getDefault().getJavaTextTools();
-        final IColorManager colorManager = javaTextTools.getColorManager();
-
-        final JavaSourceViewer sourceCodeViewer = new JavaSourceViewer(container, null, null, false, SWT.READ_ONLY
-                | SWT.WRAP, store);
-        final JavaSourceViewerConfiguration configuration = new JavaSourceViewerConfiguration(colorManager, store,
-                null, null);
-
-        sourceCodeViewer.configure(configuration);
-
-        sourceCodeViewer.getTextWidget().setFont(SwtFactory.CODEFONT);
-        sourceCodeViewer.setEditable(false);
-        sourceCodeViewer.getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 0).create());
-
-        final IDocument document = new Document(snippet.getCode());
-        final SummaryCodeFormatter codeFormatter = new SummaryCodeFormatter();
-        codeFormatter.format(document);
-        sourceCodeViewer.setInput(document);
-    }
-
 }

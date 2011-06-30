@@ -8,30 +8,39 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
+package org.eclipse.recommenders.rcp.extdoc;
 
 import java.util.Map;
 
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
+import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaSourceViewer;
+import org.eclipse.jdt.ui.text.IColorManager;
+import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.text.edits.TextEdit;
 
 import org.apache.commons.lang3.SystemUtils;
 
-public final class SummaryCodeFormatter {
+@SuppressWarnings({ "restriction", "unchecked" })
+public final class SourceCodeArea extends JavaSourceViewer {
 
-    private CodeFormatter formatter;
-    private Map<String, Object> options;
+    private static final IPreferenceStore store = JavaPlugin.getDefault().getCombinedPreferenceStore();
+    private static final IColorManager colorManager = JavaPlugin.getDefault().getJavaTextTools().getColorManager();
+    private static final JavaSourceViewerConfiguration configuration = new JavaSourceViewerConfiguration(colorManager,
+            store, null, null);
 
-    public SummaryCodeFormatter() {
-        initializeCodeFormatterOptions();
-        initializeCodeFormatter();
-    }
+    private static final Map<String, Object> options;
+    private static final CodeFormatter formatter;
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> initializeCodeFormatterOptions() {
+    static {
         options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
         options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, "120");
         //
@@ -53,22 +62,32 @@ public final class SummaryCodeFormatter {
         // alignment);
         // options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_SELECTOR_IN_METHOD_INVOCATION,
         // alignment);
-        return options;
-    }
-
-    private void initializeCodeFormatter() {
         formatter = ToolFactory.createCodeFormatter(options);
     }
 
-    public boolean format(final IDocument document) {
+    public SourceCodeArea(final Composite parent) {
+        super(parent, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
+
+        configure(configuration);
+        getTextWidget().setFont(SwtFactory.CODEFONT);
+        setEditable(false);
+        getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 0).create());
+    }
+
+    public void setCode(final String code) {
+        final IDocument document = new Document(code);
+        format(document);
+        setInput(document);
+    }
+
+    private boolean format(final IDocument document) {
         final String sourceCode = document.get();
         final int startPosition = 0;
         final int length = document.getLength();
         final int indentationLevel = 0;
-        //
         final TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, sourceCode, startPosition, length,
                 indentationLevel, SystemUtils.LINE_SEPARATOR);
-        if (!couldComputeRequiredTextEdits(edit)) {
+        if (edit == null) {
             return false;
         }
         return applyTextFormattings(document, edit);
@@ -79,12 +98,8 @@ public final class SummaryCodeFormatter {
             edit.apply(document);
             return true;
         } catch (final Exception e) {
-            e.printStackTrace();
-            return false;
+            throw new IllegalStateException(e);
         }
     }
 
-    private boolean couldComputeRequiredTextEdits(final TextEdit edit) {
-        return edit != null;
-    }
 }
