@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.getTokensUntilFirstOpeningBracket;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
 
 import java.util.List;
 
@@ -49,16 +49,24 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     @Override
     public void accept(final CompletionProposal proposal) {
+        // REVIEW: Name mismatch: it's not just a score calculator. It also
+        // computes regex match etc. Pls rename.
+
+        // bug: proposal.getCompletion for method overrides does not play well
+        // with getTokensUntilFirstOpeningBracket!
+        final String completion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal.getCompletion());
+        relevanceCalculator.setCompletion(completion);
+        if (!relevanceCalculator.matchesRegex()) {
+            return;
+        }
+
         final IJavaCompletionProposal jdtProposal = tryCreateJdtProposal(proposal);
         if (jdtProposal == null) {
             return;
         }
-
-        relevanceCalculator.setCompletion(getTokensUntilFirstOpeningBracket(proposal.getCompletion()));
         relevanceCalculator.setJdtRelevance(jdtProposal.getRelevance());
-        if (relevanceCalculator.isRelevant()) {
-            createSubwordsProposal(proposal, jdtProposal);
-        }
+        createSubwordsProposal(proposal, jdtProposal);
+
     }
 
     private IJavaCompletionProposal tryCreateJdtProposal(final CompletionProposal proposal) {

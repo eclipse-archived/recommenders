@@ -10,22 +10,34 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.checkStringMatchesPrefixPattern;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.checkStringMatchesPrefixPattern;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.viewers.StyledString;
 
 @SuppressWarnings("restriction")
 public class SubwordsJavaTypeCompletionProposal extends LazyJavaTypeCompletionProposal {
 
-	public SubwordsJavaTypeCompletionProposal(CompletionProposal proposal, JavaContentAssistInvocationContext context) {
-		super(proposal, context);
-	}
+    private String token;
 
-	@Override
-	protected boolean isPrefix(final String prefix, String completion) {
-		return checkStringMatchesPrefixPattern(prefix, completion);
-	}
+    public SubwordsJavaTypeCompletionProposal(final CompletionProposal proposal,
+            final JavaContentAssistInvocationContext context, final String token) {
+        super(proposal, context);
+        this.token = ensureIsNotNull(token);
+    }
 
+    @Override
+    protected boolean isPrefix(final String prefix, final String completion) {
+        this.token = ensureIsNotNull(prefix);
+        return checkStringMatchesPrefixPattern(prefix, completion);
+    }
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        final StyledString origin = super.getStyledDisplayString();
+        return SubwordsUtils.createStyledProposalDisplayString(origin, token);
+    }
 }

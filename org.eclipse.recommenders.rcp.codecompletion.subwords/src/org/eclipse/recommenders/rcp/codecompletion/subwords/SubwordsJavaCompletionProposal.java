@@ -10,7 +10,8 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.checkStringMatchesPrefixPattern;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.checkStringMatchesPrefixPattern;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
@@ -20,22 +21,25 @@ import org.eclipse.jface.viewers.StyledString;
 @SuppressWarnings("restriction")
 public class SubwordsJavaCompletionProposal extends JavaCompletionProposal {
 
+    private String token;
+
     public SubwordsJavaCompletionProposal(final JavaCompletionProposal jdtProposal, final CompletionProposal proposal,
-            final JavaContentAssistInvocationContext invocationContext) {
+            final JavaContentAssistInvocationContext context, final String token) {
         super(jdtProposal.getReplacementString(), proposal.getReplaceStart(), jdtProposal.getReplacementLength(),
-                jdtProposal.getImage(), jdtProposal.getStyledDisplayString(), jdtProposal.getRelevance(), true,
-                invocationContext);
+                jdtProposal.getImage(), jdtProposal.getStyledDisplayString(), jdtProposal.getRelevance(), true, context);
+        this.token = ensureIsNotNull(token);
     }
 
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
+        this.token = ensureIsNotNull(prefix);
         return checkStringMatchesPrefixPattern(prefix, completion);
     }
 
     @Override
     public StyledString getStyledDisplayString() {
-        System.out.println("called styled display string");
-        return super.getStyledDisplayString();
+        final StyledString origin = super.getStyledDisplayString();
+        return SubwordsUtils.createStyledProposalDisplayString(origin, token);
     }
 
 }

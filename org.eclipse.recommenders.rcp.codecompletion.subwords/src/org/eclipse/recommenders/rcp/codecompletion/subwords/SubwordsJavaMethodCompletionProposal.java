@@ -10,7 +10,8 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.checkStringMatchesPrefixPattern;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.checkStringMatchesPrefixPattern;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
@@ -24,18 +25,18 @@ public final class SubwordsJavaMethodCompletionProposal extends JavaMethodComple
     public SubwordsJavaMethodCompletionProposal(final CompletionProposal proposal,
             final JavaContentAssistInvocationContext context, final String token) {
         super(proposal, context);
-        this.token = token;
+        this.token = ensureIsNotNull(token);
     }
 
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
-        this.token = prefix;
+        this.token = ensureIsNotNull(prefix);
         return checkStringMatchesPrefixPattern(prefix, completion);
     }
 
     @Override
     public StyledString getStyledDisplayString() {
         final StyledString origin = super.getStyledDisplayString();
-        return NGramsUtils.style(origin, token);
+        return SubwordsUtils.createStyledProposalDisplayString(origin, token);
     }
 }

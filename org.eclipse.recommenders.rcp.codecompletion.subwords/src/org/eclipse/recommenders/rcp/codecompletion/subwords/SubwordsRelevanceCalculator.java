@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.createRegexPatternFromPrefix;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.createRegexPatternFromPrefix;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +50,7 @@ public class SubwordsRelevanceCalculator {
         return relevance;
     }
 
-    public boolean isRelevant() {
+    public boolean matchesRegex() {
         final Matcher m = pattern.matcher(completion);
         return m.matches();
     }
@@ -58,7 +58,7 @@ public class SubwordsRelevanceCalculator {
     private void calculateNGramMatches(String s1, String s2) {
         s1 = s1.toLowerCase();
         s2 = s2.toLowerCase();
-        nGramMatches = NGramsUtils.calculateMatchingNGrams(s1, s2, 2);
+        nGramMatches = SubwordsUtils.calculateMatchingNGrams(s1, s2, 2);
     }
 
     private boolean isTokenPrefix() {

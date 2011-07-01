@@ -29,27 +29,27 @@ public class SubwordsRelevanceCalculatorTest {
     @Test
     public void testEmptyToken() {
         final SubwordsRelevanceCalculator sut = createSut("", "someMethod");
-        assertTrue(sut.isRelevant());
+        assertTrue(sut.matchesRegex());
         assertEquals(PREFIX_BONUS, sut.getRelevance());
     }
 
     @Test
     public void testPrefixToken() {
         final SubwordsRelevanceCalculator sut = createSut("set", "setText");
-        assertTrue(sut.isRelevant());
+        assertTrue(sut.matchesRegex());
         assertEquals(PREFIX_BONUS + 2, sut.getRelevance());
     }
 
     @Test
     public void testSubword() {
         final SubwordsRelevanceCalculator sut = createSut("text", "setText");
-        assertTrue(sut.isRelevant());
+        assertTrue(sut.matchesRegex());
         assertEquals(3, sut.getRelevance());
     }
 
     @Test
     public void testIrrelevantCompletion() {
         final SubwordsRelevanceCalculator sut = createSut("get", "setText");
-        assertFalse(sut.isRelevant());
+        assertFalse(sut.matchesRegex());
     }
 }

@@ -10,27 +10,41 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.checkStringMatchesPrefixPattern;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.checkStringMatchesPrefixPattern;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.viewers.StyledString;
 
 @SuppressWarnings("restriction")
 public class SubwordsAnonymousCompletionProposal extends AnonymousTypeCompletionProposal {
 
-	public SubwordsAnonymousCompletionProposal(AnonymousTypeCompletionProposal jdtProposal, final CompletionProposal proposal,
-			JavaContentAssistInvocationContext ctx) throws CoreException {
-		super(ctx.getProject(), ctx.getCompilationUnit(), ctx, proposal.getReplaceStart(), jdtProposal.getReplacementLength(), String
-				.valueOf(proposal.getCompletion()), jdtProposal.getStyledDisplayString(), String.valueOf(proposal.getDeclarationSignature()),
-				((IType) ctx.getProject().findElement(new String(proposal.getDeclarationKey()), null)), jdtProposal.getRelevance());
-	}
+    private String token;
 
-	@Override
-	protected boolean isPrefix(final String prefix, String completion) {
-		return checkStringMatchesPrefixPattern(prefix, completion);
-	}
+    public SubwordsAnonymousCompletionProposal(final AnonymousTypeCompletionProposal jdtProposal,
+            final CompletionProposal proposal, final JavaContentAssistInvocationContext context, final String token)
+            throws CoreException {
+        super(context.getProject(), context.getCompilationUnit(), context, proposal.getReplaceStart(), jdtProposal
+                .getReplacementLength(), String.valueOf(proposal.getCompletion()),
+                jdtProposal.getStyledDisplayString(), String.valueOf(proposal.getDeclarationSignature()),
+                (IType) context.getProject().findElement(new String(proposal.getDeclarationKey()), null), jdtProposal
+                        .getRelevance());
+        this.token = ensureIsNotNull(token);
+    }
 
+    @Override
+    protected boolean isPrefix(final String prefix, final String completion) {
+        this.token = ensureIsNotNull(prefix);
+        return checkStringMatchesPrefixPattern(prefix, completion);
+    }
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        final StyledString origin = super.getStyledDisplayString();
+        return SubwordsUtils.createStyledProposalDisplayString(origin, token);
+    }
 }

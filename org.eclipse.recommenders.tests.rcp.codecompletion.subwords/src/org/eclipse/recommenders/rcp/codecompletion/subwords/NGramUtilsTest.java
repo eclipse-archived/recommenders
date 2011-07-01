@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.NGramsUtils.calculateMatchingNGrams;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.NGramsUtils.createNGrams;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.calculateMatchingNGrams;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.createNGrams;
 
 import java.util.List;
 

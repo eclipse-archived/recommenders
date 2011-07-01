@@ -26,24 +26,32 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 public class SubwordsCompletionProposalFactory {
 
     public static AbstractJavaCompletionProposal createFromJDTProposal(final IJavaCompletionProposal jdtProposal,
-            final CompletionProposal initialProposal, final JavaContentAssistInvocationContext ctx,
+            final CompletionProposal initialProposal, final JavaContentAssistInvocationContext context,
             final String completionToken) {
+
         if (jdtProposal instanceof JavaMethodCompletionProposal) {
-            return new SubwordsJavaMethodCompletionProposal(initialProposal, ctx, completionToken);
+            return new SubwordsJavaMethodCompletionProposal(initialProposal, context, completionToken);
+
         } else if (jdtProposal instanceof JavaCompletionProposal) {
-            return new SubwordsJavaCompletionProposal((JavaCompletionProposal) jdtProposal, initialProposal, ctx);
+            return new SubwordsJavaCompletionProposal((JavaCompletionProposal) jdtProposal, initialProposal, context,
+                    completionToken);
+
         } else if (jdtProposal instanceof LazyJavaTypeCompletionProposal) {
-            return new SubwordsJavaTypeCompletionProposal(initialProposal, ctx);
+            return new SubwordsJavaTypeCompletionProposal(initialProposal, context, completionToken);
+
         } else if (jdtProposal instanceof JavaFieldWithCastedReceiverCompletionProposal) {
             return new SubwordsFieldCastedCompletionProposal(
-                    (JavaFieldWithCastedReceiverCompletionProposal) jdtProposal, initialProposal, ctx);
+                    (JavaFieldWithCastedReceiverCompletionProposal) jdtProposal, initialProposal, context,
+                    completionToken);
+
         } else if (jdtProposal instanceof OverrideCompletionProposal) {
             return new SubwordsOverrideCompletionProposal((OverrideCompletionProposal) jdtProposal, initialProposal,
-                    ctx);
+                    context, completionToken);
+
         } else if (jdtProposal instanceof AnonymousTypeCompletionProposal) {
             try {
                 return new SubwordsAnonymousCompletionProposal((AnonymousTypeCompletionProposal) jdtProposal,
-                        initialProposal, ctx);
+                        initialProposal, context, completionToken);
             } catch (final CoreException e) {
                 throw new RuntimeException(e);
             }
