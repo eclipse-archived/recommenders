@@ -36,7 +36,6 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeature
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
-import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
@@ -55,7 +54,6 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     private final CallsModelStore modelStore;
     private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;
-    private final IntelligentCompletionContextResolver contextResolver;
     private final JavaElementResolver elementResolver;
     private final CallsServer server;
 
@@ -65,11 +63,9 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Inject
     public CallsProvider(final CallsModelStore modelStore,
             final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
-            final IntelligentCompletionContextResolver contextResolver, final JavaElementResolver elementResolver,
-            final CallsServer server) {
+            final JavaElementResolver elementResolver, final CallsServer server) {
         this.modelStore = modelStore;
         this.usageResolversProvider = usageResolversProvider;
-        this.contextResolver = contextResolver;
         this.elementResolver = elementResolver;
         this.server = server;
     }
@@ -82,18 +78,18 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     @Override
     protected void hookInitalize(final IJavaElementSelection selection) {
-        context = contextResolver.resolveContext(selection.getInvocationContext());
+        context = new MockedIntelligentCompletionContext(selection, elementResolver);
     }
 
     @Override
     protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        setNullVariableContext();
+        setNullVariableContext(selection);
         return displayProposalsForType(type);
     }
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
-        if (!setLocalVariableContext(local)) {
+        if (!setLocalVariableContext(selection, local)) {
             return false;
         }
         return displayProposalsForVariable(local, false);
@@ -101,7 +97,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
-        setFieldVariableContext(field);
+        setFieldVariableContext(selection, field);
         return displayProposalsForVariable(field, false);
     }
 
@@ -119,25 +115,25 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
-        setNullVariableContext();
+        setNullVariableContext(selection);
         return displayProposalsForType(type);
     }
 
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
-        setFieldVariableContext(field);
+        setFieldVariableContext(selection, field);
         return displayProposalsForVariable(field, false);
     }
 
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        setNullVariableContext();
+        setNullVariableContext(selection);
         return displayProposalsForType(type);
     }
 
     @Override
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
-        setThisVariableContext(method);
+        setThisVariableContext(selection, method);
         try {
             return displayProposalsForMethod(method);
         } catch (final JavaModelException e) {
@@ -160,14 +156,14 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local) {
-        if (!setLocalVariableContext(local)) {
+        if (!setLocalVariableContext(selection, local)) {
             return false;
         }
         return displayProposalsForVariable(local, true);
     }
 
-    private void setNullVariableContext() {
-        context = new DelegatingIntelligentCompletionContext(context) {
+    private void setNullVariableContext(final IJavaElementSelection selection) {
+        context = new MockedIntelligentCompletionContext(selection, elementResolver) {
             @Override
             public Variable getVariable() {
                 return null;
@@ -175,12 +171,12 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         };
     }
 
-    private void setThisVariableContext(final IMethod enclosingMethod) {
+    private void setThisVariableContext(final IJavaElementSelection selection, final IMethod enclosingMethod) {
         final IMethodName ctxEnclosingMethod = elementResolver.toRecMethod(enclosingMethod);
         final IMethodName ctxFirstDeclaration = elementResolver.toRecMethod(JdtUtils
                 .findFirstDeclaration(enclosingMethod));
 
-        context = new DelegatingIntelligentCompletionContext(context) {
+        context = new MockedIntelligentCompletionContext(selection, elementResolver) {
             @Override
             public IMethodName getEnclosingMethod() {
                 return ctxEnclosingMethod;
@@ -199,7 +195,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         };
     }
 
-    private boolean setFieldVariableContext(final IField element) {
+    private boolean setFieldVariableContext(final IJavaElementSelection selection, final IField element) {
         final IField field = element;
         final String name = field.getElementName();
         final IType declaringType = field.getDeclaringType();
@@ -208,17 +204,18 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
             final IJavaProject javaProject = field.getJavaProject();
             final IType fieldType = javaProject.findType(resolvedTypeName);
-            return setMockedContext(name, fieldType, false);
+            return setMockedContext(selection, name, fieldType, false);
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private boolean setMockedContext(final String varName, final IType variableType, final boolean isArgument) {
+    private boolean setMockedContext(final IJavaElementSelection selection, final String varName,
+            final IType variableType, final boolean isArgument) {
         if (variableType == null) {
             return false;
         }
-        context = new DelegatingIntelligentCompletionContext(context) {
+        context = new MockedIntelligentCompletionContext(selection, elementResolver) {
             @Override
             public Variable getVariable() {
                 return Variable.create(varName, elementResolver.toRecType(variableType), getEnclosingMethod());
@@ -227,10 +224,10 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         return true;
     }
 
-    private boolean setLocalVariableContext(final ILocalVariable var) {
+    private boolean setLocalVariableContext(final IJavaElementSelection selection, final ILocalVariable var) {
         final String name = var.getElementName();
         final IType variableType = VariableResolver.resolveTypeSignature(var);
-        return setMockedContext(name, variableType, false);
+        return setMockedContext(selection, name, variableType, false);
     }
 
     private Set<IMethodName> resolveCalledMethods() {

@@ -48,11 +48,7 @@ public final class ExtendedJavadocProvider extends AbstractProviderComposite {
     @Override
     public boolean selectionChanged(final IJavaElementSelection context) {
         final StringBuilder builder = new StringBuilder(128);
-        IIntelligentCompletionContext completionContext = null;
-
-        if (context.getInvocationContext() != null) {
-            completionContext = contextResolver.resolveContext(context.getInvocationContext());
-        }
+        final IIntelligentCompletionContext completionContext = null;
 
         builder.append(String.format("%s%s%s%s", SEPARATOR, context, SEPARATOR, SEPARATOR));
         builder.append(completionContext);

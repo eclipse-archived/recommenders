@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.commons.selection;
 
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.ui.IEditorPart;
 
 /**
@@ -33,11 +33,9 @@ public interface IJavaElementSelection {
      */
     JavaElementLocation getElementLocation();
 
-    /**
-     * @return The invocation as if the selection in the editor was followed by
-     *         a content assist invocation.
-     */
-    JavaContentAssistInvocationContext getInvocationContext();
+    int getInvocationOffset();
+
+    ICompilationUnit getCompilationUnit();
 
     /**
      * @return The selected java element's AST node.

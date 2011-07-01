@@ -15,7 +15,6 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 /**
  * Resolves the active java element's AST node for an invocation context.
@@ -31,17 +30,10 @@ final class AstNodeResolver {
     }
 
     /**
-     * @param invocationContext
-     *            The invocation context holding the compilation unit and
-     *            location information.
      * @return The AST node for the active java element.
      */
-    protected static ASTNode resolveNode(final JavaContentAssistInvocationContext invocationContext) {
-        if (invocationContext == null) {
-            return null;
-        }
-        final ASTNode astRoot = resolveAst(invocationContext.getCompilationUnit());
-        final int invocationOffset = invocationContext.getInvocationOffset();
+    protected static ASTNode resolveNode(final ICompilationUnit compilationUnit, final int invocationOffset) {
+        final ASTNode astRoot = resolveAst(compilationUnit);
         return NodeFinder.perform(astRoot, invocationOffset, 0);
     }
 

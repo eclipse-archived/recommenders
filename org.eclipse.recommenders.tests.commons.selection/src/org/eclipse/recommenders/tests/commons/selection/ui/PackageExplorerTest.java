@@ -19,6 +19,7 @@ import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,8 +32,6 @@ public final class PackageExplorerTest extends AbstractUiTest {
     private IJavaElementSelection testCommons(final SWTBotTreeItem item, final Class expectedElement) {
         item.expand().select();
         final IJavaElementSelection selection = getLastSelection();
-
-        Assert.assertNull(selection.getInvocationContext());
 
         if (expectedElement != null) {
             Assert.assertTrue(expectedElement.isInstance(selection.getJavaElement()));

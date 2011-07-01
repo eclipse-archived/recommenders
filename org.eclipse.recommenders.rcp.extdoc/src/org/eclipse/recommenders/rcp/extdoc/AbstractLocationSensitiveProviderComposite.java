@@ -22,9 +22,6 @@ import org.eclipse.recommenders.commons.utils.Throws;
 
 public abstract class AbstractLocationSensitiveProviderComposite extends AbstractProviderComposite {
 
-    /**
-     * REVIEW: I think this method is not actually required, right?
-     */
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
         return location != JavaElementLocation.PACKAGE_DECLARATION;
@@ -32,10 +29,6 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
 
     @Override
     public final boolean selectionChanged(final IJavaElementSelection selection) {
-        if (selection.getInvocationContext() == null) {
-            return false;
-        }
-
         hookInitalize(selection);
 
         switch (selection.getElementLocation()) {

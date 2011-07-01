@@ -126,7 +126,6 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
     private MethodPattern[] getPatternsSortedByFrequency(final ClassOverridePatterns directive) {
         final MethodPattern[] patterns = directive.getPatterns();
         Arrays.sort(patterns, new Comparator<MethodPattern>() {
-
             @Override
             public int compare(final MethodPattern o1, final MethodPattern o2) {
                 return o2.getNumberOfObservations() - o1.getNumberOfObservations();

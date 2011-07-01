@@ -15,6 +15,7 @@ import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEclipseEditor;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -28,7 +29,9 @@ public final class OutlineTest extends AbstractUiTest {
         item.select();
         final IJavaElementSelection context = getLastSelection();
 
-        Assert.assertNull(context.getInvocationContext());
+        Assert.assertNull(context);
+
+        // TODO ...
     }
 
     @Test

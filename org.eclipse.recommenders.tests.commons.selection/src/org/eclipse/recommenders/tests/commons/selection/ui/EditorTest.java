@@ -25,7 +25,6 @@ import org.eclipse.jdt.internal.core.ResolvedSourceField;
 import org.eclipse.jdt.internal.core.SourceField;
 import org.eclipse.jdt.internal.core.SourceMethod;
 import org.eclipse.jdt.internal.core.SourceType;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.recommenders.commons.internal.selection.SelectionPlugin;
@@ -33,6 +32,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEclipseEditor;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -101,13 +101,7 @@ public final class EditorTest extends AbstractUiTest {
         Assert.assertEquals(annotation, parts[2],
                 ASTNode.nodeClassForType(selection.getAstNode().getParent().getNodeType()).getSimpleName());
 
-        final JavaContentAssistInvocationContext invocationContext = selection.getInvocationContext();
-        Assert.assertNotNull(invocationContext.getCompilationUnit());
-
-        if (javaElement != null && !expectedType.equals(SourceType.class) && !expectedType.equals(LocalVariable.class)) {
-            Assert.assertEquals(invocationContext.computeIdentifierPrefix(),
-                    String.valueOf(invocationContext.getCoreContext().getToken()));
-        }
+        Assert.assertNotNull(selection.getCompilationUnit());
 
         // TODO ...
     }

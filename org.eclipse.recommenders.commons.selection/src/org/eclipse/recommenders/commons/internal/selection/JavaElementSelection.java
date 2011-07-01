@@ -10,18 +10,18 @@
  */
 package org.eclipse.recommenders.commons.internal.selection;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Objects.ToStringHelper;
-
-import org.eclipse.jdt.core.CompletionContext;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
+
+import com.google.common.base.Objects;
+import com.google.common.base.Objects.ToStringHelper;
 
 /**
  * Contains all required information about the user's selection of a java
@@ -35,7 +35,7 @@ final class JavaElementSelection implements IJavaElementSelection {
     private JavaEditor editor;
 
     private JavaElementLocation cachedLocation;
-    private JavaContentAssistInvocationContext cachedContext;
+    private ICompilationUnit compilationUnit;
     private ASTNode cachedAstNode;
 
     /**
@@ -75,17 +75,22 @@ final class JavaElementSelection implements IJavaElementSelection {
     }
 
     @Override
-    public JavaContentAssistInvocationContext getInvocationContext() {
-        if (cachedContext == null && editor != null) {
-            cachedContext = new JavaContentAssistInvocationContext(editor.getViewer(), invocationOffset, editor);
+    public int getInvocationOffset() {
+        return invocationOffset;
+    }
+
+    @Override
+    public final ICompilationUnit getCompilationUnit() {
+        if (compilationUnit == null) {
+            compilationUnit = Checks.cast(EditorUtility.getEditorInputJavaElement(editor, false));
         }
-        return cachedContext;
+        return compilationUnit;
     }
 
     @Override
     public ASTNode getAstNode() {
         if (cachedAstNode == null) {
-            cachedAstNode = AstNodeResolver.resolveNode(getInvocationContext());
+            cachedAstNode = AstNodeResolver.resolveNode(getCompilationUnit(), invocationOffset);
         }
         return cachedAstNode;
     }
@@ -111,15 +116,6 @@ final class JavaElementSelection implements IJavaElementSelection {
                             + ASTNode.nodeClassForType(astNode.getParent().getNodeType()).getSimpleName() + ")");
         }
         string.add("\n\nInvocationOffset", invocationOffset + "\n\n");
-
-        final JavaContentAssistInvocationContext context = getInvocationContext();
-        if (context != null) {
-            string.add("ExpectedType", context.getExpectedType());
-            final CompletionContext coreContext = context.getCoreContext();
-            if (coreContext != null && coreContext.getToken() != null) {
-                string.add("\nCoreContextToken", String.valueOf(coreContext.getToken()) + "\n\n");
-            }
-        }
         return string.toString();
     }
 }
