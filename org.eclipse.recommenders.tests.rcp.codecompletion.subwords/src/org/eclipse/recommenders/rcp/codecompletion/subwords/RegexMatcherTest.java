@@ -81,7 +81,7 @@ public class RegexMatcherTest {
         final JavaContentAssistInvocationContext dummyInvocationContext = mockInvocationContext();
 
         final SubwordsProposalContext subwordsContext = new SubwordsProposalContext("", dummyProposal,
-                mockJdtCompletion(), dummyInvocationContext);
+                mockJdtCompletion(c1), dummyInvocationContext);
         final SubwordsJavaMethodCompletionProposal someSubwordsProposal = SubwordsJavaMethodCompletionProposal
                 .create(subwordsContext);
         return someSubwordsProposal;
