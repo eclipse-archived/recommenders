@@ -21,7 +21,7 @@ public final class CommentsDialogTest {
     @Test
     public void testCommentsDialog() {
         final CommentsDialog dialog = new CommentsDialog(new Shell(), new TestServer(), new Object(), "TestName");
-        dialog.open();
+        // dialog.open();
         dialog.okPressed();
         Assert.assertTrue(true);
     }
