@@ -118,6 +118,15 @@ public class SubwordsUtils {
     }
 
     public static String getTokensBetweenLastWhitespaceAndFirstOpeningBracket(String completion) {
+        if (completion.contains("(")) {
+            completion = getMethodIdentifierFromProposalText(completion);
+        } else {
+            completion = StringUtils.substringBefore(completion, " ");
+        }
+        return completion;
+    }
+
+    private static String getMethodIdentifierFromProposalText(String completion) {
         completion = StringUtils.substringBefore(completion, "(");
         if (completion.contains(" ")) {
             completion = StringUtils.substringAfterLast(completion, " ");
