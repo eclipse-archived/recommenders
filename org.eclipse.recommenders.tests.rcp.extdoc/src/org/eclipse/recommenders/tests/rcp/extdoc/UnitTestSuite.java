@@ -16,6 +16,8 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStoreTest;
 import org.eclipse.recommenders.internal.rcp.extdoc.UiManagerTest;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocViewTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersCompositeTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersTableTest;
 import org.eclipse.recommenders.rcp.extdoc.SourceCodeAreaTest;
 import org.eclipse.recommenders.rcp.extdoc.features.CommentsDialogTest;
 import org.eclipse.recommenders.rcp.extdoc.features.DeleteDialogTest;
@@ -28,8 +30,9 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.mockito.Mockito;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ProviderStoreTest.class, UiManagerTest.class, ExtDocViewTest.class, SourceCodeAreaTest.class,
-        CommentsDialogTest.class, DeleteDialogTest.class, FeaturesCompositeTest.class })
+@SuiteClasses({ ProviderStoreTest.class, UiManagerTest.class, ExtDocViewTest.class, ProvidersCompositeTest.class,
+        ProvidersTableTest.class, SourceCodeAreaTest.class, CommentsDialogTest.class, DeleteDialogTest.class,
+        FeaturesCompositeTest.class })
 public final class UnitTestSuite {
 
     private static IJavaElementSelection selection;

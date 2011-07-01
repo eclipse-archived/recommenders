@@ -10,13 +10,21 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
-import org.eclipse.recommenders.rcp.extdoc.AbstractDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.widgets.Shell;
 
-final class FeedbackDialog extends AbstractDialog {
+import org.junit.Assert;
+import org.junit.Test;
 
-    protected FeedbackDialog(final Shell parentShell) {
-        super(parentShell);
+public final class ProvidersCompositeTest {
+
+    @Test
+    public void testExtDocView() {
+        final ProvidersComposite composite = new ProvidersComposite(new ScrolledComposite(new Shell(), SWT.NONE),
+                SWT.NONE);
+
+        Assert.assertTrue(true);
     }
 
 }
