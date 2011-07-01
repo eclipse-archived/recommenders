@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
@@ -31,6 +34,7 @@ import org.eclipse.recommenders.server.extdoc.types.CodeSnippet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.progress.UIJob;
 
 @SuppressWarnings("restriction")
 public final class ExamplesProvider extends AbstractProviderComposite {
@@ -92,12 +96,18 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         if (codeExamples == null) {
             return false;
         }
-        disposeChildren(container);
-        final CodeSnippet[] snippets = codeExamples.getExamples();
-        for (int i = 0; i < snippets.length; ++i) {
-            createSnippetVisualization(i, element, snippets[i].getCode());
-        }
-        container.layout(true);
+        new UIJob("") {
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                disposeChildren(container);
+                final CodeSnippet[] snippets = codeExamples.getExamples();
+                for (int i = 0; i < snippets.length; ++i) {
+                    createSnippetVisualization(i, element, snippets[i].getCode());
+                }
+                container.layout(true);
+                return Status.OK_STATUS;
+            }
+        }.schedule();
         return true;
     }
 

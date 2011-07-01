@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
@@ -25,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 
@@ -59,15 +63,24 @@ public final class WikiProvider extends AbstractProviderComposite {
         if (element == null || element instanceof ILocalVariable || element.getElementName().isEmpty()) {
             return false;
         }
-        initComposite();
-        final String markup = server.getText(element);
-        if (markup == null) {
-            displayNoText(element);
-        } else {
-            displayText(element, markup);
-        }
-        parentComposite.layout(true);
+        updateDisplay(element, server.getText(element));
         return true;
+    }
+
+    private void updateDisplay(final IJavaElement element, final String markup) {
+        new UIJob("Updating Wiki provider") {
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                initComposite();
+                if (markup == null) {
+                    displayNoText(element);
+                } else {
+                    displayText(element, markup);
+                }
+                parentComposite.layout(true);
+                return Status.OK_STATUS;
+            }
+        }.schedule();
     }
 
     private void initComposite() {

@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -35,6 +38,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 
@@ -57,13 +61,12 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location == JavaElementLocation.METHOD_DECLARATION || JavaElementLocation.isInTypeDeclaration(location);
+        return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
     @Override
     public boolean selectionChanged(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
-        disposeChildren(composite);
         if (element instanceof IType) {
             return displayContentForType((IType) element);
         } else if (element instanceof IMethod) {
@@ -80,22 +83,30 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         final String elementName = type.getElementName();
         final int subclasses = overrides.getNumberOfSubclasses();
 
-        String text = "Based on " + subclasses + " direct subclasses of " + elementName
+        final String text = "Based on " + subclasses + " direct subclasses of " + elementName
                 + " we created the following statistics. Subclassers may consider to override the following methods.";
-        final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, elementName, this, server,
-                new TemplateEditDialog(getShell()));
-        line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
-
-        displayDirectives(overrides.getOverrides(), "override", subclasses);
-
+        final String text2 = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirective(type);
-        if (calls != null) {
-            text = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
-            new TextAndFeaturesLine(composite, text, type, elementName, this, server,
-                    new TemplateEditDialog(getShell()));
-            displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
-        }
-        composite.layout(true);
+        final SubclassingProvider provider = this;
+
+        new UIJob("Updating Subclassing Provider") {
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                disposeChildren(composite);
+                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, elementName, provider,
+                        server, new TemplateEditDialog(getShell()));
+                line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
+                displayDirectives(overrides.getOverrides(), "override", subclasses);
+                if (calls != null) {
+                    new TextAndFeaturesLine(composite, text2, type, elementName, provider, server,
+                            new TemplateEditDialog(getShell()));
+                    displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
+                }
+                composite.layout(true);
+                return Status.OK_STATUS;
+            }
+        }.schedule();
+
         return true;
     }
 
@@ -108,18 +119,18 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             return false;
         }
 
-        displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
-
         final int definitions = selfcalls.getNumberOfDefinitions();
         final String text = "Based on " + definitions + " implementations of " + method.getElementName()
                 + " we created the following statistics. Implementors may consider to call the following methods.";
+
+        disposeChildren(composite);
+        displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
         final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method, method.getElementName(),
                 this, server, new TemplateEditDialog(getShell()));
         line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL, false, true);
-
         displayDirectives(selfcalls.getCalls(), "call", definitions);
-
         composite.layout(true);
+
         return true;
     }
 

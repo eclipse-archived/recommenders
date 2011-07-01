@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.tests.rcp.extdoc;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
@@ -18,6 +21,7 @@ import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.progress.UIJob;
 
 public final class TestProvider extends AbstractProviderComposite implements IDeletionProvider {
 
@@ -35,7 +39,13 @@ public final class TestProvider extends AbstractProviderComposite implements IDe
 
     @Override
     public boolean selectionChanged(final IJavaElementSelection context) {
-        text.setText(context.toString());
+        new UIJob("") {
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                text.setText(context.toString());
+                return Status.OK_STATUS;
+            }
+        }.schedule();
         return true;
     }
 

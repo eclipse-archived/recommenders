@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -45,6 +48,7 @@ import org.eclipse.recommenders.server.extdoc.CallsServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -80,7 +84,6 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected void hookInitalize(final IJavaElementSelection selection) {
         context = new MockedIntelligentCompletionContext(selection, elementResolver);
-        disposeChildren(composite);
     }
 
     @Override
@@ -328,13 +331,20 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         }
 
         final String text = "People who use " + element.getElementName() + " usually also call the following methods:";
-        final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element, element.getElementName(),
-                this, server, new TemplateEditDialog(getShell()));
-        line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
+        final CallsProvider provider = this;
+        new UIJob("Updating Calls Provider") {
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                disposeChildren(composite);
+                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element,
+                        element.getElementName(), provider, server, new TemplateEditDialog(getShell()));
+                line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
+                displayProposals(proposals, calledMethods);
+                composite.layout(true);
+                return Status.OK_STATUS;
+            }
+        }.schedule();
 
-        displayProposals(proposals, calledMethods);
-
-        composite.layout(true);
         return true;
     }
 

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -19,7 +20,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.progress.UIJob;
 
-class ProviderUpdateJob extends UIJob {
+class ProviderUpdateJob extends WorkspaceJob {
 
     private final ProvidersTable table;
     private final TableItem item;
@@ -36,11 +37,17 @@ class ProviderUpdateJob extends UIJob {
     }
 
     @Override
-    public IStatus runInUIThread(final IProgressMonitor monitor) {
+    public IStatus runInWorkspace(final IProgressMonitor monitor) {
         try {
             monitor.beginTask("Updating Extended Javadocs", 1);
             final boolean hasContent = provider.selectionChanged(selection);
-            table.setContentVisible(item, hasContent);
+            new UIJob("Update provider table") {
+                @Override
+                public IStatus runInUIThread(final IProgressMonitor monitor) {
+                    table.setContentVisible(item, hasContent);
+                    return Status.OK_STATUS;
+                }
+            }.schedule();
             return Status.OK_STATUS;
         } finally {
             monitor.done();

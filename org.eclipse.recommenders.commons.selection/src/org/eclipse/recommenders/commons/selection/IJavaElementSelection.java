@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.commons.selection;
 
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.ui.IEditorPart;
 
@@ -35,7 +35,7 @@ public interface IJavaElementSelection {
 
     int getInvocationOffset();
 
-    ICompilationUnit getCompilationUnit();
+    ITypeRoot getCompilationUnit();
 
     /**
      * @return The selected java element's AST node.

@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.commons.internal.selection;
 
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
@@ -35,7 +35,7 @@ final class JavaElementSelection implements IJavaElementSelection {
     private JavaEditor editor;
 
     private JavaElementLocation cachedLocation;
-    private ICompilationUnit compilationUnit;
+    private ITypeRoot compilationUnit;
     private ASTNode cachedAstNode;
 
     /**
@@ -80,7 +80,7 @@ final class JavaElementSelection implements IJavaElementSelection {
     }
 
     @Override
-    public final ICompilationUnit getCompilationUnit() {
+    public final ITypeRoot getCompilationUnit() {
         if (compilationUnit == null) {
             compilationUnit = Checks.cast(EditorUtility.getEditorInputJavaElement(editor, false));
         }

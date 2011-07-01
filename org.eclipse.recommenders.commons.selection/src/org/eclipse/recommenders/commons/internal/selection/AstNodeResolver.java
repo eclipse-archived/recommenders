@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.commons.internal.selection;
 
-import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -32,7 +32,7 @@ final class AstNodeResolver {
     /**
      * @return The AST node for the active java element.
      */
-    protected static ASTNode resolveNode(final ICompilationUnit compilationUnit, final int invocationOffset) {
+    protected static ASTNode resolveNode(final ITypeRoot compilationUnit, final int invocationOffset) {
         final ASTNode astRoot = resolveAst(compilationUnit);
         return NodeFinder.perform(astRoot, invocationOffset, 0);
     }
@@ -42,7 +42,7 @@ final class AstNodeResolver {
      *            The compilation unit from which to extract the AST.
      * @return The compilation unit's AST.
      */
-    private static ASTNode resolveAst(final ICompilationUnit compilationUnit) {
+    private static ASTNode resolveAst(final ITypeRoot compilationUnit) {
         PARSER.setResolveBindings(true);
         PARSER.setSource(compilationUnit);
         return PARSER.createAST(null);
