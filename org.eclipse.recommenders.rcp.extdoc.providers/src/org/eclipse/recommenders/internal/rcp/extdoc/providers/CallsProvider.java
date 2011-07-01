@@ -80,6 +80,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected void hookInitalize(final IJavaElementSelection selection) {
         context = new MockedIntelligentCompletionContext(selection, elementResolver);
+        disposeChildren(composite);
     }
 
     @Override
@@ -123,7 +124,11 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
         setFieldVariableContext(selection, field);
-        return displayProposalsForVariable(field, false);
+        if (!displayProposalsForVariable(field, false)) {
+            return false;
+        }
+        displayProposalsForAllMethods(selection, field);
+        return true;
     }
 
     @Override
@@ -281,6 +286,26 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         }
     }
 
+    private void displayProposalsForAllMethods(final IJavaElementSelection selection, final IField field) {
+        try {
+            final ITypeName fieldType = context.getVariable().type;
+            for (final IMethod method : field.getDeclaringType().getMethods()) {
+                if (false) {
+                    context = new MockedIntelligentCompletionContext(selection, elementResolver) {
+                        @Override
+                        public Variable getVariable() {
+                            return Variable.create(field.getElementName(), fieldType,
+                                    elementResolver.toRecMethod(method));
+                        };
+                    };
+                    displayProposalsForMethod(method);
+                }
+            }
+        } catch (final JavaModelException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     private SortedSet<Tuple<IMethodName, Double>> computeRecommendations(final ITypeName typeName,
             final Set<IMethodName> invokedMethods, final boolean negateConstructors) {
         final IObjectMethodCallsNet model = modelStore.acquireModel(typeName);
@@ -301,13 +326,20 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         if (proposals.isEmpty()) {
             return false;
         }
-        disposeChildren(composite);
 
         final String text = "People who use " + element.getElementName() + " usually also call the following methods:";
         final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element, element.getElementName(),
                 this, server, new TemplateEditDialog(getShell()));
         line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
 
+        displayProposals(proposals, calledMethods);
+
+        composite.layout(true);
+        return true;
+    }
+
+    private void displayProposals(final SortedSet<Tuple<IMethodName, Double>> proposals,
+            final Set<IMethodName> calledMethods) {
         final Composite calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
         for (final IMethodName method : calledMethods) {
             SwtFactory.createSquare(calls);
@@ -322,8 +354,5 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             SwtFactory.createLabel(calls, prefix + Names.vm2srcSimpleMethod(method), false, true, SWT.COLOR_BLACK);
             SwtFactory.createLabel(calls, Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
         }
-
-        composite.layout(true);
-        return true;
     }
 }
