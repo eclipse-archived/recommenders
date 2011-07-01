@@ -294,7 +294,8 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
         try {
             final MethodOverrideTester methodOverrideTester = SuperTypeHierarchyCache.getMethodOverrideTester(method
                     .getDeclaringType());
-            return resolver.toRecMethod(methodOverrideTester.findDeclaringMethod(method, true));
+            final IMethod declaringMethod = methodOverrideTester.findDeclaringMethod(method, true);
+            return declaringMethod == null ? null : resolver.toRecMethod(declaringMethod);
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }

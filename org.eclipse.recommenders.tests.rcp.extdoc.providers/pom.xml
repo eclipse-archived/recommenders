@@ -8,13 +8,13 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
-	<artifactId>org.eclipse.recommenders.tests.server.extdoc</artifactId>
+	<artifactId>org.eclipse.recommenders.rcp.extdoc.providers</artifactId>
 	<version>0.2.0-SNAPSHOT</version>
 	<packaging>eclipse-test-plugin</packaging>
 	
 	<properties>
-		<emma.filter>+org.eclipse.recommenders.internal.server.extdoc.*,+org.eclipse.recommenders.server.extdoc.*</emma.filter>
-		<eclemma.instrument.bundles>org.eclipse.recommenders.server.extdoc</eclemma.instrument.bundles>
+		<emma.filter>+org.eclipse.recommenders.internal.rcp.extdoc.providers.*,+org.eclipse.recommenders.rcp.extdoc.providers.*</emma.filter>
+		<eclemma.instrument.bundles>org.eclipse.recommenders.rcp.extdoc.providers</eclemma.instrument.bundles>
 		<ui.test.vmargs>-Xmx512m -XX:MaxPermSize=256m</ui.test.vmargs>
 	</properties>
 	<profiles>
@@ -41,8 +41,8 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.internal.server.extdoc</testSuite>
-          					<testClass>org.eclipse.recommenders.internal.server.extdoc.UnitTestSuite</testClass>
+				       		<testSuite>org.eclipse.recommenders.internal.rcp.extdoc.providers</testSuite>
+          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.providers.UnitTestSuite</testClass>
 				        	<useUIHarness>true</useUIHarness>
 							<useUIThread>true</useUIThread>
 							<product>org.eclipse.sdk.ide</product>
@@ -73,8 +73,8 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.internal.server.extdoc</testSuite>
-          					<testClass>org.eclipse.recommenders.internal.server.extdoc.UnitTestSuite</testClass>
+				       		<testSuite>org.eclipse.recommenders.internal.rcp.extdoc.providers</testSuite>
+          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.providers.UnitTestSuite</testClass>
           						<useUIHarness>true</useUIHarness>
 							<useUIThread>true</useUIThread>
 							<product>org.eclipse.sdk.ide</product>
@@ -102,8 +102,8 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.internal.server.extdoc</testSuite>
-          					<testClass>org.eclipse.recommenders.internal.server.extdoc.UnitTestSuite</testClass>
+				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc</testSuite>
+          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.providers.UnitTestSuite</testClass>
           					<argLine>${ui.test.vmargs}</argLine>
 				       </configuration>
 				     </plugin>
