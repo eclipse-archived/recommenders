@@ -93,7 +93,7 @@ public class SubwordsUtils {
     public static Pattern createRegexPatternFromPrefix(final String prefixToken) {
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(".*");
+        sb.append(".*?");
         for (final char c : prefixToken.toCharArray()) {
             if (Character.isUpperCase(c)) {
                 // if upper case than match words containing this uppercase
@@ -106,7 +106,7 @@ public class SubwordsUtils {
                 final char lowerCase = Character.toUpperCase(c);
                 sb.append("([").append(lowerCase).append(c).append("])");
             }
-            sb.append(".*");
+            sb.append(".*?");
         }
         final String regex = sb.toString();
         final Pattern p = Pattern.compile(regex);

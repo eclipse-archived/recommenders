@@ -38,8 +38,8 @@ public class SubwordsProposalContext {
         this.proposal = ensureIsNotNull(proposal);
         this.ctx = ensureIsNotNull(ctx);
         setPrefix(prefix);
-        this.subwordsMatchingRegion = SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal
-                .getCompletion());
+        this.subwordsMatchingRegion = SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket(jdtProposal
+                .getDisplayString());
         this.jdtProposal = ensureIsNotNull(jdtProposal);
         calculateMatchingRegionBigrams();
     }
@@ -68,33 +68,56 @@ public class SubwordsProposalContext {
     }
 
     public boolean isRegexMatch() {
-        return createMatcher(subwordsMatchingRegion).matches();
+        return createMatcher().matches();
     }
 
-    private Matcher createMatcher(final String string) {
-        return pattern.matcher(string);
+    private Matcher createMatcher() {
+        return pattern.matcher(subwordsMatchingRegion);
     }
 
     public StyledString getStyledDisplayString(final StyledString origin) {
         final StyledString copy = SubwordsUtils.deepCopy(origin);
-        final String string = copy.getString();
+        highlighBigramMatches(copy);
+        highlightRegexMatches(copy);
+        // copy.append(" (partial)", StyledString.QUALIFIER_STYLER);
+        return copy;
+    }
+
+    private void highlighBigramMatches(final StyledString copy) {
         for (final String bigram : prefixBigrams) {
-            final int indexOf = StringUtils.indexOfIgnoreCase(string, bigram);
+            final int indexOf = StringUtils.indexOfIgnoreCase(subwordsMatchingRegion, bigram);
             if (indexOf != -1) {
                 copy.setStyle(indexOf, bigram.length(), StyledString.COUNTER_STYLER);
             }
-        }
 
-        final Matcher m = createMatcher(string);
-        m.find();
-        for (int i = 1; i < m.groupCount(); i++) {
+            // int indexOf = -1;
+            // while ((indexOf =
+            // StringUtils.indexOfIgnoreCase(subwordsMatchingRegion, bigram,
+            // indexOf + 1)) != -1) {
+            // copy.setStyle(indexOf, 2, StyledString.COUNTER_STYLER);
+            // }
+        }
+    }
+
+    private void highlightRegexMatches(final StyledString copy) {
+        final Matcher m = createMatcher();
+        if (m.find()) {
+            for (int i = 1; i <= m.groupCount(); i++) {
+                final int start = m.start(i);
+                final int end = m.end(i);
+                final int length = end - start;
+                copy.setStyle(start, length, StyledString.COUNTER_STYLER);
+            }
+        }
+    }
+
+    private void addRegexMatchesToHighlight(final StyledString copy, final Matcher m) {
+        for (int i = 1; i <= m.groupCount(); i++) {
             final int start = m.start(i);
             final int end = m.end(i);
             final int length = end - start;
             copy.setStyle(start, length, StyledString.COUNTER_STYLER);
         }
-        copy.append(" (partial)", StyledString.COUNTER_STYLER);
-        return copy;
     }
 
     public List<String> getPrefixBigrams() {
