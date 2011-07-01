@@ -122,14 +122,22 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         final int definitions = selfcalls.getNumberOfDefinitions();
         final String text = "Based on " + definitions + " implementations of " + method.getElementName()
                 + " we created the following statistics. Implementors may consider to call the following methods.";
+        final SubclassingProvider provider = this;
 
-        disposeChildren(composite);
-        displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
-        final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method, method.getElementName(),
-                this, server, new TemplateEditDialog(getShell()));
-        line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL, false, true);
-        displayDirectives(selfcalls.getCalls(), "call", definitions);
-        composite.layout(true);
+        new UIJob("Updating Subclassing Provider") {
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                disposeChildren(composite);
+                displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
+                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method,
+                        method.getElementName(), provider, server, new TemplateEditDialog(getShell()));
+                line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL, false,
+                        true);
+                displayDirectives(selfcalls.getCalls(), "call", definitions);
+                composite.layout(true);
+                return Status.OK_STATUS;
+            }
+        }.schedule();
 
         return true;
     }
@@ -137,16 +145,15 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     private void displayMethodOverrideInformation(final String subclassedTypeName, final int methodOverrides,
             final int superCalls) {
         final String text = "Subclasses of " + subclassedTypeName + " typically should override this method ("
-                + methodOverrides + "%). When overriding subclasses may call the super implementation (" + superCalls
-                + "%).";
+                + methodOverrides + " times). When overriding subclasses may call the super implementation ("
+                + superCalls + " times).";
         final StyledText styledText = SwtFactory.createStyledText(composite, text);
         final int length = subclassedTypeName.length();
+        final int length2 = getLength(methodOverrides);
         SwtFactory.createStyleRange(styledText, 14, length, SWT.NORMAL, false, true);
         SwtFactory.createStyleRange(styledText, length + 25, 6, SWT.BOLD, false, false);
-        SwtFactory.createStyleRange(styledText, length + 55, 3, SWT.NORMAL, true, false);
-        SwtFactory.createStyleRange(styledText, length + 88, 3, SWT.BOLD, false, false);
-        SwtFactory.createStyleRange(styledText, length + 101, 5, SWT.NORMAL, false, true);
-        SwtFactory.createStyleRange(styledText, length + 123, 3, SWT.NORMAL, true, false);
+        SwtFactory.createStyleRange(styledText, length + 90 + length2, 3, SWT.BOLD, false, false);
+        SwtFactory.createStyleRange(styledText, length + 103 + length2, 5, SWT.NORMAL, false, true);
     }
 
     private void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,

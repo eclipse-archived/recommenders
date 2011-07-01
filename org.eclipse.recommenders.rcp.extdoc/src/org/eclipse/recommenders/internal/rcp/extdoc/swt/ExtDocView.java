@@ -43,6 +43,7 @@ public class ExtDocView extends ViewPart {
 
     static final int HEAD_LABEL_HEIGHT = 20;
     private static final String SASH_POSITION_KEY = "extDocSashPosition";
+    private static boolean linkingEnabled = true;
 
     private final ProviderStore providerStore;
 
@@ -134,7 +135,7 @@ public class ExtDocView extends ViewPart {
         if (viewSite != null) {
             final IToolBarManager toolbar = viewSite.getActionBars().getToolBarManager();
             toolbar.removeAll();
-            toolbar.add(new FeedbackAction(new FeedbackDialog(getSite().getShell())));
+            toolbar.add(new LinkWithEditorAction());
         }
     }
 
@@ -166,21 +167,24 @@ public class ExtDocView extends ViewPart {
         scrolled.forceFocus();
     }
 
-    private static final class FeedbackAction extends Action {
+    public final boolean isLinkingEnabled() {
+        return linkingEnabled;
+    }
 
-        private final FeedbackDialog dialog;
+    private static final class LinkWithEditorAction extends Action {
 
-        private FeedbackAction(final FeedbackDialog dialog) {
-            this.dialog = dialog;
-            final URL entry = ExtDocPlugin.getDefault().getBundle().getEntry("icons/full/lcl16/feedback.png");
+        private LinkWithEditorAction() {
+            super("Link with Selection", SWT.TOGGLE);
+            final URL entry = ExtDocPlugin.getDefault().getBundle().getEntry("icons/full/lcl16/link.gif");
             final ImageDescriptor descriptor = ImageDescriptor.createFromURL(entry);
             setImageDescriptor(descriptor);
-            setToolTipText("Feedback for ExtDoc");
+            setToolTipText("Link with Selection");
+            setChecked(true);
         }
 
         @Override
         public void run() {
-            dialog.open();
+            linkingEnabled = !linkingEnabled;
         }
     }
 }

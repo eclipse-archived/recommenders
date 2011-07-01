@@ -38,7 +38,7 @@ final class UiManager implements IExtendedSelectionListener {
         if (!hasViewListener) {
             initViewListener();
         }
-        if (isViewVisible && isUiThread() && !isEqualToLastSelection(selection)) {
+        if (isViewVisible && extDocView.isLinkingEnabled() && isUiThread() && !isEqualToLastSelection(selection)) {
             extDocView.selectionChanged(selection);
         }
         lastSelection = selection;

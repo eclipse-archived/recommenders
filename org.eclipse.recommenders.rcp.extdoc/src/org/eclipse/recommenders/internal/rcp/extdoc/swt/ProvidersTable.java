@@ -57,6 +57,7 @@ final class ProvidersTable {
         locationLabel.setLayoutData(gridData);
         locationLabel.setImage(ExtDocPlugin.getIcon("eview16/context.gif"));
         locationLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
+        locationLabel.setToolTipText("Provider selection is sensitive to the displayed code location.");
 
         table = new Table(composite, style);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
