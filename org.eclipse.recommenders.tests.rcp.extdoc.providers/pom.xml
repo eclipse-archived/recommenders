@@ -8,7 +8,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
-	<artifactId>org.eclipse.recommenders.rcp.extdoc.providers</artifactId>
+	<artifactId>org.eclipse.recommenders.tests.rcp.extdoc.providers</artifactId>
 	<version>0.2.0-SNAPSHOT</version>
 	<packaging>eclipse-test-plugin</packaging>
 	
@@ -41,7 +41,7 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.internal.rcp.extdoc.providers</testSuite>
+				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc.providers</testSuite>
           					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.providers.UnitTestSuite</testClass>
 				        	<useUIHarness>true</useUIHarness>
 							<useUIThread>true</useUIThread>
@@ -73,7 +73,7 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.internal.rcp.extdoc.providers</testSuite>
+				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc.providers</testSuite>
           					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.providers.UnitTestSuite</testClass>
           						<useUIHarness>true</useUIHarness>
 							<useUIThread>true</useUIThread>
@@ -102,8 +102,8 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc</testSuite>
-          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.providers.UnitTestSuite</testClass>
+				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc.provider</testSuite>
+          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.provider.UnitTestSuite</testClass>
           					<argLine>${ui.test.vmargs}</argLine>
 				       </configuration>
 				     </plugin>

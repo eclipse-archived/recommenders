@@ -41,7 +41,7 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.internal.server.extdoc</testSuite>
+				       		<testSuite>org.eclipse.recommenders.tests.server.extdoc</testSuite>
           					<testClass>org.eclipse.recommenders.internal.server.extdoc.UnitTestSuite</testClass>
 				        	<useUIHarness>true</useUIHarness>
 							<useUIThread>true</useUIThread>
@@ -73,7 +73,7 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.internal.server.extdoc</testSuite>
+				       		<testSuite>org.eclipse.recommenders.tests.server.extdoc</testSuite>
           					<testClass>org.eclipse.recommenders.internal.server.extdoc.UnitTestSuite</testClass>
           						<useUIHarness>true</useUIHarness>
 							<useUIThread>true</useUIThread>
@@ -102,7 +102,7 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.internal.server.extdoc</testSuite>
+				       		<testSuite>org.eclipse.recommenders.tests.server.extdoc</testSuite>
           					<testClass>org.eclipse.recommenders.internal.server.extdoc.UnitTestSuite</testClass>
           					<argLine>${ui.test.vmargs}</argLine>
 				       </configuration>
