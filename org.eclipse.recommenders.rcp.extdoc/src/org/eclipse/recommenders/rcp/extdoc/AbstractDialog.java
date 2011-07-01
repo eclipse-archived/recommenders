@@ -44,7 +44,8 @@ public abstract class AbstractDialog extends TitleAreaDialog {
         setTitleImage(image);
     }
 
-    protected abstract void contentsCreated();
+    protected void contentsCreated() {
+    }
 
     protected final void setOkButtonText(final String text) {
         getButton(IDialogConstants.OK_ID).setText(text);

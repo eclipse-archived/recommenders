@@ -33,11 +33,6 @@ final class DeleteDialog extends AbstractDialog {
     }
 
     @Override
-    protected void contentsCreated() {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
     protected Control createDialogArea(final Composite parent) {
         setTitle(String.format("Delete %s", objectName));
         setMessage("Are you sure?");

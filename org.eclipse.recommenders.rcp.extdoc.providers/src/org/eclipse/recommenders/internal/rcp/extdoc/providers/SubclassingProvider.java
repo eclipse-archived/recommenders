@@ -107,21 +107,11 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         if (selfcalls == null) {
             return false;
         }
-        final String subclassedTypeName = first.getParent().getElementName();
-        String text = "Subclasses of "
-                + subclassedTypeName
-                + " typically should overrride this method (92%). When overriding subclasses may call the super implementation (25%).";
-        final StyledText styledText = SwtFactory.createStyledText(composite, text);
-        final int length = subclassedTypeName.length();
-        SwtFactory.createStyleRange(styledText, 14, length, SWT.NORMAL, false, true);
-        SwtFactory.createStyleRange(styledText, length + 25, 6, SWT.BOLD, false, false);
-        SwtFactory.createStyleRange(styledText, length + 55, 3, SWT.NORMAL, true, false);
-        SwtFactory.createStyleRange(styledText, length + 88, 3, SWT.BOLD, false, false);
-        SwtFactory.createStyleRange(styledText, length + 101, 5, SWT.NORMAL, false, true);
-        SwtFactory.createStyleRange(styledText, length + 123, 3, SWT.NORMAL, true, false);
+
+        displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
 
         final int definitions = selfcalls.getNumberOfDefinitions();
-        text = "Based on " + definitions + " implementations of " + method.getElementName()
+        final String text = "Based on " + definitions + " implementations of " + method.getElementName()
                 + " we created the following statistics. Implementors may consider to call the following methods.";
         final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method, method.getElementName(),
                 this, server, new TemplateEditDialog(getShell()));
@@ -133,28 +123,47 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         return true;
     }
 
+    private void displayMethodOverrideInformation(final String subclassedTypeName, final int methodOverrides,
+            final int superCalls) {
+        final String text = "Subclasses of " + subclassedTypeName + " typically should override this method ("
+                + methodOverrides + "%). When overriding subclasses may call the super implementation (" + superCalls
+                + "%).";
+        final StyledText styledText = SwtFactory.createStyledText(composite, text);
+        final int length = subclassedTypeName.length();
+        SwtFactory.createStyleRange(styledText, 14, length, SWT.NORMAL, false, true);
+        SwtFactory.createStyleRange(styledText, length + 25, 6, SWT.BOLD, false, false);
+        SwtFactory.createStyleRange(styledText, length + 55, 3, SWT.NORMAL, true, false);
+        SwtFactory.createStyleRange(styledText, length + 88, 3, SWT.BOLD, false, false);
+        SwtFactory.createStyleRange(styledText, length + 101, 5, SWT.NORMAL, false, true);
+        SwtFactory.createStyleRange(styledText, length + 123, 3, SWT.NORMAL, true, false);
+    }
+
     private void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
             final int definitions) {
         final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 2, 15, 0);
-        final Map<IMethodName, Integer> orderedMap = new TreeMap<IMethodName, Integer>(new Comparator<IMethodName>() {
-            @Override
-            public int compare(final IMethodName o1, final IMethodName o2) {
-                return directives.get(o2).compareTo(directives.get(o1));
-            }
-        });
-        orderedMap.putAll(directives);
-        for (final Entry<IMethodName, Integer> directive : orderedMap.entrySet()) {
+        for (final Entry<IMethodName, Integer> directive : orderDirectives(directives).entrySet()) {
             final int percent = (int) Math.round(directive.getValue() * 100.0 / definitions);
 
             SwtFactory.createSquare(directiveComposite);
             SwtFactory.createLabel(directiveComposite, getLabel(percent), true, false, SWT.COLOR_BLACK);
             SwtFactory.createLabel(directiveComposite,
                     actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, true, SWT.COLOR_BLACK);
-            final StyledText txt = SwtFactory.createStyledText(directiveComposite, "(" + directive.getValue()
+            final StyledText text = SwtFactory.createStyledText(directiveComposite, "(" + directive.getValue()
                     + " times - " + percent + "%)");
-            SwtFactory.createStyleRange(txt, 10 + getLength(directive.getValue()), getLength(percent) + 1, SWT.NORMAL,
+            SwtFactory.createStyleRange(text, 10 + getLength(directive.getValue()), getLength(percent) + 1, SWT.NORMAL,
                     true, false);
         }
+    }
+
+    private Map<IMethodName, Integer> orderDirectives(final Map<IMethodName, Integer> directives) {
+        final Map<IMethodName, Integer> orderedMap = new TreeMap<IMethodName, Integer>(new Comparator<IMethodName>() {
+            @Override
+            public int compare(final IMethodName directive1, final IMethodName directive2) {
+                return directives.get(directive2).compareTo(directives.get(directive1));
+            }
+        });
+        orderedMap.putAll(directives);
+        return orderedMap;
     }
 
     private String getLabel(final int percent) {

@@ -26,7 +26,7 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-public final class ProviderStore {
+public class ProviderStore {
 
     private static final String EXTENSION_ID = "org.eclipse.recommenders.rcp.extdoc.provider";
 
@@ -51,7 +51,7 @@ public final class ProviderStore {
         return ImmutableList.copyOf(providers);
     }
 
-    public void setProviderPriority(final IProvider provider, final int priority) {
+    public final void setProviderPriority(final IProvider provider, final int priority) {
         Preconditions.checkArgument(providers.contains(provider));
         Preconditions.checkArgument(priority > 0);
         ExtDocPlugin.getPreferences().putInt(getPreferenceId(provider), priority);

@@ -13,15 +13,15 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core,
  org.eclipse.recommenders.commons.utils,
  com.google.guava,
- org.eclipse.recommenders.commons.injection,
- org.eclipse.recommenders.rcp.utils
+ org.eclipse.jface.text,
+ org.eclipse.recommenders.commons.injection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin
-Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.swt;x-internal:=true,
  org.eclipse.recommenders.rcp.extdoc;
   uses:="org.eclipse.core.runtime,
+   org.eclipse.jdt.internal.ui.javaeditor,
    org.eclipse.jdt.core,
    org.eclipse.ui,
    org.eclipse.swt.custom,
@@ -30,10 +30,8 @@ Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
    org.eclipse.swt.widgets,
    org.eclipse.jface.dialogs",
  org.eclipse.recommenders.rcp.extdoc.features;uses:="org.eclipse.recommenders.rcp.extdoc,org.eclipse.swt.widgets,org.eclipse.jface.dialogs",
- org.eclipse.recommenders.rcp.extdoc.preferences
+ org.eclipse.recommenders.rcp.extdoc.preferences;uses:="org.eclipse.jface.preference,org.eclipse.ui,org.eclipse.core.runtime.preferences"
 Bundle-ClassPath: .
-Import-Package: org.apache.commons.lang3,
- org.eclipse.jface.text,
- org.eclipse.jface.text.source,
- org.eclipse.text.edits,
+Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.ui.editors.text,
  org.eclipse.ui.texteditor

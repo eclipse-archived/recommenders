@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Inject;
@@ -129,9 +130,12 @@ public class ExtDocView extends ViewPart {
     }
 
     private void fillActionBars() {
-        final IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
-        toolbar.removeAll();
-        toolbar.add(new FeedbackAction(new FeedbackDialog(getSite().getShell())));
+        final IViewSite viewSite = getViewSite();
+        if (viewSite != null) {
+            final IToolBarManager toolbar = viewSite.getActionBars().getToolBarManager();
+            toolbar.removeAll();
+            toolbar.add(new FeedbackAction(new FeedbackDialog(getSite().getShell())));
+        }
     }
 
     public final boolean selectionChanged(final IJavaElementSelection selection) {

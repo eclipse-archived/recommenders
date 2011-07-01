@@ -700,10 +700,6 @@
             <ruleset>Naming Rules</ruleset>
         </rule>
         <rule>
-            <name>LongVariable</name>
-            <ruleset>Naming Rules</ruleset>
-        </rule>
-        <rule>
             <name>MethodNamingConventions</name>
             <ruleset>Naming Rules</ruleset>
         </rule>

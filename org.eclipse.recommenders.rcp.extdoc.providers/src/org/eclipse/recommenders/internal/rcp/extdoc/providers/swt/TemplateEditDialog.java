@@ -22,10 +22,6 @@ public final class TemplateEditDialog extends AbstractDialog {
     }
 
     @Override
-    protected void contentsCreated() {
-    }
-
-    @Override
     protected Control createDialogArea(final Composite parent) {
         setTitle("Bla Bla");
         setMessage("Bla Bla");

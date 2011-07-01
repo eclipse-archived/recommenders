@@ -10,10 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
-import org.eclipse.ui.IEditorPart;
+import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -24,11 +23,7 @@ public final class UiManagerTest {
     public void testSelectionChanged() {
         final ExtDocView view = Mockito.mock(ExtDocView.class);
 
-        final IJavaElementSelection selection = Mockito.mock(IJavaElementSelection.class);
-        final IJavaElement javaElement = Mockito.mock(IJavaElement.class);
-        final IEditorPart editorPart = Mockito.mock(IEditorPart.class);
-        Mockito.when(selection.getJavaElement()).thenReturn(javaElement);
-        Mockito.when(selection.getEditor()).thenReturn(editorPart);
+        final IJavaElementSelection selection = UnitTestSuite.getSelection();
 
         final UiManager manager = new UiManager(view);
         manager.selectionChanged(selection);

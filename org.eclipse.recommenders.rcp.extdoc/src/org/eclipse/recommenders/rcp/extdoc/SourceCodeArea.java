@@ -21,16 +21,18 @@ import org.eclipse.jdt.ui.text.IColorManager;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
-import org.apache.commons.lang3.SystemUtils;
-
 @SuppressWarnings({ "restriction", "unchecked" })
-public final class SourceCodeArea extends JavaSourceViewer {
+final class SourceCodeArea extends JavaSourceViewer {
+
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     private static final IPreferenceStore store = JavaPlugin.getDefault().getCombinedPreferenceStore();
     private static final IColorManager colorManager = JavaPlugin.getDefault().getJavaTextTools().getColorManager();
@@ -65,7 +67,7 @@ public final class SourceCodeArea extends JavaSourceViewer {
         formatter = ToolFactory.createCodeFormatter(options);
     }
 
-    public SourceCodeArea(final Composite parent) {
+    SourceCodeArea(final Composite parent) {
         super(parent, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
 
         configure(configuration);
@@ -80,24 +82,21 @@ public final class SourceCodeArea extends JavaSourceViewer {
         setInput(document);
     }
 
-    private boolean format(final IDocument document) {
+    private void format(final IDocument document) {
         final String sourceCode = document.get();
-        final int startPosition = 0;
         final int length = document.getLength();
-        final int indentationLevel = 0;
-        final TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, sourceCode, startPosition, length,
-                indentationLevel, SystemUtils.LINE_SEPARATOR);
-        if (edit == null) {
-            return false;
+        final TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, sourceCode, 0, length, 0, LINE_SEPARATOR);
+        if (edit != null) {
+            applyTextFormattings(document, edit);
         }
-        return applyTextFormattings(document, edit);
     }
 
-    private boolean applyTextFormattings(final IDocument document, final TextEdit edit) {
+    private void applyTextFormattings(final IDocument document, final TextEdit edit) {
         try {
             edit.apply(document);
-            return true;
-        } catch (final Exception e) {
+        } catch (final MalformedTreeException e) {
+            throw new IllegalStateException(e);
+        } catch (final BadLocationException e) {
             throw new IllegalStateException(e);
         }
     }

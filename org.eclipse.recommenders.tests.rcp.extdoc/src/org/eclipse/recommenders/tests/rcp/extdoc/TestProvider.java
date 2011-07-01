@@ -13,14 +13,20 @@ package org.eclipse.recommenders.tests.rcp.extdoc;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-public final class TestProvider extends AbstractProviderComposite {
+public final class TestProvider extends AbstractProviderComposite implements IDeletionProvider {
 
     private Label text;
+
+    @Override
+    public String getProviderName() {
+        return "TestProvider";
+    }
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
@@ -37,6 +43,10 @@ public final class TestProvider extends AbstractProviderComposite {
     protected Control createContentControl(final Composite parent) {
         text = SwtFactory.createLabel(parent, "");
         return text;
+    }
+
+    @Override
+    public void requestDeletion(final Object object) {
     }
 
 }

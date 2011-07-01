@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.tests.rcp.extdoc;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
@@ -34,7 +35,7 @@ public final class TestServer implements IStarsRatingsServer, ICommentsServer {
 
     @Override
     public List<IComment> getComments(final Object object) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

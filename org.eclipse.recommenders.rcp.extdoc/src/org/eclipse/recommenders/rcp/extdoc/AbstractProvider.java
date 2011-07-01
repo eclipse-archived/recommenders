@@ -39,7 +39,7 @@ abstract class AbstractProvider implements IProvider {
     }
 
     @Override
-    public final String getProviderName() {
+    public String getProviderName() {
         return providerName;
     }
 

@@ -8,10 +8,9 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.providers;
+package org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;
 
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
@@ -31,15 +30,19 @@ public final class BrowserSizeWorkaround {
 
     public BrowserSizeWorkaround(final Browser browser) {
         this.browser = browser;
+        browser.setJavascriptEnabled(true);
+
         ensureParentHasGridLayout();
         initializeGridData();
-        initializeBrowser();
-        registerListener();
+
+        registerProgressListener();
+        registerLocationListener();
     }
 
     private void ensureParentHasGridLayout() {
         if (!(browser.getParent().getLayout() instanceof GridLayout)) {
-            Throws.throwIllegalStateException("Browser size workaround requires that the parent composite of the browser widget uses a GridLayout.");
+            throw new IllegalStateException(
+                    "Browser size workaround requires that the parent composite of the browser widget uses a GridLayout.");
         }
     }
 
@@ -49,8 +52,8 @@ public final class BrowserSizeWorkaround {
         browser.setLayoutData(gridData);
     }
 
-    private void initializeBrowser() {
-        browser.setJavascriptEnabled(true);
+    private void recalculateAndSetHeight() {
+        Display.getDefault().asyncExec(new RescaleAction(this));
     }
 
     private void setHeightAndTriggerLayout(final int height) {
@@ -59,35 +62,7 @@ public final class BrowserSizeWorkaround {
         browser.getParent().getParent().layout();
     }
 
-    private void recalculateAndSetHeight() {
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (final InterruptedException e) {
-                    e.printStackTrace();
-                }
-                final Object result = browser
-                        .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
-
-                if (result == null) {
-                    // terminate re-layout operation if browser widget fails to
-                    // compute its size
-                    return;
-                }
-                final int height = (int) Math.ceil((Double) result);
-                setHeightAndTriggerLayout(height);
-
-            }
-        });
-    }
-
-    public void switchToMinimumSize() {
-        setHeightAndTriggerLayout(MINIMUM_HEIGHT);
-    }
-
-    private void registerListener() {
+    private void registerProgressListener() {
         browser.addProgressListener(new ProgressListener() {
             @Override
             public void completed(final ProgressEvent event) {
@@ -98,16 +73,46 @@ public final class BrowserSizeWorkaround {
             public void changed(final ProgressEvent event) {
             }
         });
+    }
 
+    private void registerLocationListener() {
         browser.addLocationListener(new LocationListener() {
             @Override
             public void changing(final LocationEvent event) {
-                switchToMinimumSize();
+                setHeightAndTriggerLayout(MINIMUM_HEIGHT);
             }
 
             @Override
             public void changed(final LocationEvent event) {
             }
         });
+    }
+
+    private static final class RescaleAction implements Runnable {
+
+        private final BrowserSizeWorkaround browserSizeWorkaround;
+
+        public RescaleAction(final BrowserSizeWorkaround browserSizeWorkaround) {
+            this.browserSizeWorkaround = browserSizeWorkaround;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(500);
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
+            final Object result = browserSizeWorkaround.browser
+                    .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
+
+            if (result == null) {
+                // terminate re-layout operation if browser widget fails to
+                // compute its size
+                return;
+            }
+            final int height = (int) Math.ceil((Double) result);
+            browserSizeWorkaround.setHeightAndTriggerLayout(height);
+        }
     }
 }

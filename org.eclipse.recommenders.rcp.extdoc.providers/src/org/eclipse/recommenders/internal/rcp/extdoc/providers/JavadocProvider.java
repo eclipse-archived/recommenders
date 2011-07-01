@@ -18,6 +18,7 @@ import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.BrowserSizeWorkaround;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.swt.browser.Browser;
@@ -32,14 +33,13 @@ import org.apache.commons.lang3.StringUtils;
 public final class JavadocProvider extends AbstractProviderComposite {
 
     private ExtendedJavadocView javadoc;
-    private BrowserSizeWorkaround browserSizeWorkaround;
 
     @Override
     protected Control createContentControl(final Composite parent) {
         javadoc = new ExtendedJavadocView(parent, getPartSite());
 
         if (javadoc.getControl() instanceof Browser) {
-            browserSizeWorkaround = new BrowserSizeWorkaround((Browser) javadoc.getControl());
+            new BrowserSizeWorkaround((Browser) javadoc.getControl());
         }
         return javadoc.getControl();
     }
@@ -53,8 +53,6 @@ public final class JavadocProvider extends AbstractProviderComposite {
             }
             selection.getJavaElement().getAttachedJavadoc(null);
             javadoc.setInput(javaElement);
-            // TODO: Do we need this?
-            // browserSizeWorkaround.switchToMinimumSize();
             return true;
         } catch (final JavaModelException e) {
             return false;
@@ -78,7 +76,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
      */
     private static final class ExtendedJavadocView extends JavadocView {
 
-        private ExtendedJavadocView(final Composite parent, final IWorkbenchPartSite partSite) {
+        ExtendedJavadocView(final Composite parent, final IWorkbenchPartSite partSite) {
             setSite(partSite);
             createPartControl(parent);
         }

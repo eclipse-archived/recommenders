@@ -10,15 +10,40 @@
  */
 package org.eclipse.recommenders.tests.rcp.extdoc;
 
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStoreTest;
 import org.eclipse.recommenders.internal.rcp.extdoc.UiManagerTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocViewTest;
+import org.eclipse.recommenders.rcp.extdoc.SourceCodeAreaTest;
+import org.eclipse.recommenders.rcp.extdoc.features.CommentsDialogTest;
+import org.eclipse.recommenders.rcp.extdoc.features.DeleteDialogTest;
 import org.eclipse.recommenders.rcp.extdoc.features.FeaturesCompositeTest;
+import org.eclipse.ui.IEditorPart;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.mockito.Mockito;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ProviderStoreTest.class, UiManagerTest.class, FeaturesCompositeTest.class })
-final class UnitTestSuite {
+@SuiteClasses({ ProviderStoreTest.class, UiManagerTest.class, ExtDocViewTest.class, SourceCodeAreaTest.class,
+        CommentsDialogTest.class, DeleteDialogTest.class, FeaturesCompositeTest.class })
+public final class UnitTestSuite {
+
+    private static IJavaElementSelection selection;
+
+    public static IJavaElementSelection getSelection() {
+        if (selection == null) {
+            selection = Mockito.mock(IJavaElementSelection.class);
+            final IJavaElement javaElement = Mockito.mock(IJavaElement.class);
+            final IEditorPart editorPart = Mockito.mock(IEditorPart.class);
+
+            Mockito.when(selection.getJavaElement()).thenReturn(javaElement);
+            Mockito.when(selection.getElementLocation()).thenReturn(JavaElementLocation.METHOD_BODY);
+            Mockito.when(selection.getEditor()).thenReturn(editorPart);
+        }
+        return selection;
+    }
 }

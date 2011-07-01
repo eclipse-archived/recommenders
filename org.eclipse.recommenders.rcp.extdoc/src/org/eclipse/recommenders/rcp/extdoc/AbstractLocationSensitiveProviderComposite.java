@@ -66,7 +66,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IType) {
             return updateImportDeclarationSelection(selection, (IType) javaElement);
         }
-        return logUnexpectedJavaElementInSelection(selection);
+        throw new IllegalArgumentException(selection.toString());
     }
 
     protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
@@ -85,7 +85,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IType) {
             return updateParameterDeclarationSelection(selection, (IType) javaElement);
         }
-        return logUnexpectedJavaElementInSelection(selection);
+        throw new IllegalArgumentException(selection.toString());
     }
 
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
@@ -104,7 +104,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IType) {
             return updateImplementsDeclarationSelection(selection, (IType) javaElement);
         }
-        return logUnexpectedJavaElementInSelection(selection);
+        throw new IllegalArgumentException(selection.toString());
     }
 
     protected boolean updateImplementsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
@@ -121,7 +121,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         if (javaElement instanceof IType) {
             return updateExtendsDeclarationSelection(selection, (IType) javaElement);
         }
-        return logUnexpectedJavaElementInSelection(selection);
+        throw new IllegalArgumentException(selection.toString());
     }
 
     protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
@@ -135,7 +135,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IType) {
             return updateTypeDeclarationSelection(selection, (IType) javaElement);
         }
-        return logUnexpectedJavaElementInSelection(selection);
+        throw new IllegalArgumentException(selection.toString());
     }
 
     protected boolean updateTypeDeclarationSelection(final IJavaElementSelection selection, final IType type) {
@@ -153,7 +153,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IType) {
             return updatePackageDeclarationSelection(selection, (IType) javaElement);
         }
-        return logUnexpectedJavaElementInSelection(selection);
+        throw new IllegalArgumentException(selection.toString());
     }
 
     protected boolean updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type) {
@@ -172,7 +172,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IType) {
             return updateMethodDeclarationSelection(selection, (IType) javaElement);
         }
-        return logUnexpectedJavaElementInSelection(selection);
+        throw new IllegalArgumentException(selection.toString());
     }
 
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
@@ -194,7 +194,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IMethod) {
             return updateMethodBodySelection(selection, (IMethod) javaElement);
         }
-        return logUnexpectedJavaElementInSelection(selection);
+        throw new IllegalArgumentException(selection.toString());
     }
 
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
@@ -220,7 +220,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IType) {
             return updateFieldDeclarationSelection(selection, (IType) javaElement);
         }
-        return logUnexpectedJavaElementInSelection(selection);
+        throw new IllegalArgumentException(selection.toString());
     }
 
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
@@ -228,12 +228,6 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
     }
 
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
-        return false;
-    }
-
-    private boolean logUnexpectedJavaElementInSelection(final IJavaElementSelection selection) {
-        final IJavaElement javaElement = selection.getJavaElement();
-        System.out.printf("invalid javaelement in selection: '%s'. %s", javaElement.getElementName(), selection);
         return false;
     }
 }

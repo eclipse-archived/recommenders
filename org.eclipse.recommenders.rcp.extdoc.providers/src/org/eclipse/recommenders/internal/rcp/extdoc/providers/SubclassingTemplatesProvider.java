@@ -98,11 +98,9 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
             for (final Entry<IMethodName, Double> entry : entries) {
                 SwtFactory.createSquare(template);
                 final IMethodName method = entry.getKey();
-                SwtFactory
-                        .createLabel(
-                                template,
-                                "override " + method.getDeclaringType().getClassName() + "."
-                                        + Names.vm2srcSimpleMethod(method), false, true, SWT.COLOR_BLACK);
+                final String text2 = "override " + method.getDeclaringType().getClassName() + "."
+                        + Names.vm2srcSimpleMethod(method);
+                SwtFactory.createLabel(template, text2, false, true, SWT.COLOR_BLACK);
                 SwtFactory.createLabel(template, "-");
                 SwtFactory.createLabel(template, format("~ %3.0f%%", entry.getValue() * 100), false, false,
                         SWT.COLOR_BLUE);

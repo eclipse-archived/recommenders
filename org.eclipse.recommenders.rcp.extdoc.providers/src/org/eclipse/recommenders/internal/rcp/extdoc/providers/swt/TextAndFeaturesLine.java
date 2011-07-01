@@ -20,13 +20,12 @@ import org.eclipse.swt.widgets.Composite;
 
 public final class TextAndFeaturesLine {
 
-    private final Composite line;
     private final StyledText styledText;
 
     public TextAndFeaturesLine(final Composite parent, final String text, final Object element,
             final String elementName, final IProvider provider, final IStarsRatingsServer server,
             final Dialog editDialog) {
-        line = SwtFactory.createGridComposite(parent, 2, 10, 0, 0, 0);
+        final Composite line = SwtFactory.createGridComposite(parent, 2, 10, 0, 0, 0);
         styledText = SwtFactory.createStyledText(line, text);
         FeaturesComposite.create(line, element, elementName, provider, server, editDialog);
     }
@@ -34,10 +33,6 @@ public final class TextAndFeaturesLine {
     public void createStyleRange(final int start, final int length, final int fontStyle, final boolean makeBlue,
             final boolean makeCodeFont) {
         SwtFactory.createStyleRange(styledText, start, length, fontStyle, makeBlue, makeCodeFont);
-    }
-
-    public void dispose() {
-        line.dispose();
     }
 
 }
