@@ -10,27 +10,56 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.checkStringMatchesPrefixPattern;
-
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.viewers.StyledString;
 
 @SuppressWarnings("restriction")
 public class SubwordsAnonymousCompletionProposal extends AnonymousTypeCompletionProposal {
 
-	public SubwordsAnonymousCompletionProposal(AnonymousTypeCompletionProposal jdtProposal, final CompletionProposal proposal,
-			JavaContentAssistInvocationContext ctx) throws CoreException {
-		super(ctx.getProject(), ctx.getCompilationUnit(), ctx, proposal.getReplaceStart(), jdtProposal.getReplacementLength(), String
-				.valueOf(proposal.getCompletion()), jdtProposal.getStyledDisplayString(), String.valueOf(proposal.getDeclarationSignature()),
-				((IType) ctx.getProject().findElement(new String(proposal.getDeclarationKey()), null)), jdtProposal.getRelevance());
-	}
+    public static SubwordsAnonymousCompletionProposal create(final SubwordsProposalContext subwordsContext)
+            throws JavaModelException {
+        final JavaContentAssistInvocationContext context = subwordsContext.getContext();
+        final CompletionProposal proposal = subwordsContext.getProposal();
+        final JavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
+        final IJavaProject project = context.getProject();
+        final String declarationSignature = String.valueOf(proposal.getDeclarationSignature());
+        final String declarationKey = String.valueOf(proposal.getDeclarationKey());
+        final String completionText = String.valueOf(proposal.getCompletion());
 
-	@Override
-	protected boolean isPrefix(final String prefix, String completion) {
-		return checkStringMatchesPrefixPattern(prefix, completion);
-	}
+        return new SubwordsAnonymousCompletionProposal(project, context.getCompilationUnit(), context,
+                proposal.getReplaceStart(), jdtProposal.getReplacementLength(), completionText,
+                jdtProposal.getStyledDisplayString(), declarationSignature, (IType) project.findElement(declarationKey,
+                        null), jdtProposal.getRelevance(), subwordsContext);
+    }
 
+    private final SubwordsProposalContext subwordsContext;
+
+    private SubwordsAnonymousCompletionProposal(final IJavaProject jproject, final ICompilationUnit cu,
+            final JavaContentAssistInvocationContext invocationContext, final int start, final int length,
+            final String constructorCompletion, final StyledString displayName, final String declarationSignature,
+            final IType superType, final int relevance, final SubwordsProposalContext subwordsContext) {
+        super(jproject, cu, invocationContext, start, length, constructorCompletion, displayName, declarationSignature,
+                superType, relevance);
+        this.subwordsContext = subwordsContext;
+    }
+
+    @Override
+    protected boolean isPrefix(final String prefix, final String completion) {
+        subwordsContext.setPrefix(prefix);
+        setRelevance(SubwordsUtils.calculateRelevance(subwordsContext));
+        return subwordsContext.isRegexMatch();
+    }
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        final StyledString origin = super.getStyledDisplayString();
+        return subwordsContext.getStyledDisplayString(origin);
+    }
 }

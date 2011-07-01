@@ -12,12 +12,12 @@ package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockUtils.mockCompletionProposal;
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockUtils.mockInvocationContext;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockUtils.mockJdtCompletion;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsJavaMethodCompletionProposal;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,10 +77,13 @@ public class RegexMatcherTest {
     }
 
     private SubwordsJavaMethodCompletionProposal createJavaCompletionProposal() {
-        final CompletionProposal dummyProposal = mockCompletionProposal();
+        final CompletionProposal dummyProposal = mockCompletionProposal(CompletionProposal.METHOD_REF, c1);
         final JavaContentAssistInvocationContext dummyInvocationContext = mockInvocationContext();
-        final SubwordsJavaMethodCompletionProposal someSubwordsProposal = new SubwordsJavaMethodCompletionProposal(
-                dummyProposal, dummyInvocationContext);
+
+        final SubwordsProposalContext subwordsContext = new SubwordsProposalContext("", dummyProposal,
+                mockJdtCompletion(c1), dummyInvocationContext);
+        final SubwordsJavaMethodCompletionProposal someSubwordsProposal = SubwordsJavaMethodCompletionProposal
+                .create(subwordsContext);
         return someSubwordsProposal;
     }
 

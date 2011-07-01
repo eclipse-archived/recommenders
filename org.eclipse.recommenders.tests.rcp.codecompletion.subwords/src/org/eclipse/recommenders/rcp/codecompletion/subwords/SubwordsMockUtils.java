@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 public class SubwordsMockUtils {
@@ -28,6 +29,8 @@ public class SubwordsMockUtils {
         final CompletionProposal mock = mockCompletionProposal();
         when(mock.getKind()).thenReturn(proposalKind);
         when(mock.getCompletion()).thenReturn(completion.toCharArray());
+        when(mock.getName()).thenReturn(completion.toCharArray());
+
         return mock;
     }
 
@@ -53,6 +56,12 @@ public class SubwordsMockUtils {
 
     public static ICompilationUnit mockICompilationUnit() {
         return mock(ICompilationUnit.class);
+    }
+
+    public static JavaCompletionProposal mockJdtCompletion(final String proposalDisplayString) {
+        final JavaCompletionProposal mock = mock(JavaCompletionProposal.class);
+        when(mock.getDisplayString()).thenReturn(proposalDisplayString);
+        return mock;
     }
 
 }

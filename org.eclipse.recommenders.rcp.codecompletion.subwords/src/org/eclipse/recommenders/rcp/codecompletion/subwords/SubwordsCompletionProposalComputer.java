@@ -30,15 +30,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
     public List<?> computeCompletionProposals(final ContentAssistInvocationContext context,
             final IProgressMonitor monitor) {
         ctx = (JavaContentAssistInvocationContext) context;
-        if (isPrefixTokenEmpty()) {
-            return Collections.emptyList();
-        }
         return findSubwordMatchingProposals();
-    }
-
-    private boolean isPrefixTokenEmpty() {
-        final String token = getToken();
-        return token.isEmpty();
     }
 
     private String getToken() {

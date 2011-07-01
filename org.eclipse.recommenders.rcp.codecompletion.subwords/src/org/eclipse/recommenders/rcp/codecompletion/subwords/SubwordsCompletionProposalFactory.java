@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaFieldWithCastedReceiverCompletionProposal;
@@ -19,29 +19,31 @@ import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 @SuppressWarnings("restriction")
 public class SubwordsCompletionProposalFactory {
 
-    public static IJavaCompletionProposal createFromJDTProposal(final IJavaCompletionProposal jdtProposal,
-            final CompletionProposal initialProposal, final JavaContentAssistInvocationContext ctx) {
+    public static AbstractJavaCompletionProposal createFromJDTProposal(final SubwordsProposalContext subwordsContext) {
+        final IJavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
+
         if (jdtProposal instanceof JavaMethodCompletionProposal) {
-            return new SubwordsJavaMethodCompletionProposal(initialProposal, ctx);
+            return SubwordsJavaMethodCompletionProposal.create(subwordsContext);
+
         } else if (jdtProposal instanceof JavaCompletionProposal) {
-            return new SubwordsJavaCompletionProposal((JavaCompletionProposal) jdtProposal, initialProposal, ctx);
+            return SubwordsJavaCompletionProposal.create(subwordsContext);
+
         } else if (jdtProposal instanceof LazyJavaTypeCompletionProposal) {
-            return new SubwordsJavaTypeCompletionProposal(initialProposal, ctx);
+            return SubwordsJavaTypeCompletionProposal.create(subwordsContext);
+
         } else if (jdtProposal instanceof JavaFieldWithCastedReceiverCompletionProposal) {
-            return new SubwordsFieldCastedCompletionProposal(
-                    (JavaFieldWithCastedReceiverCompletionProposal) jdtProposal, initialProposal, ctx);
+            return SubwordsFieldCastedCompletionProposal.create(subwordsContext);
+
         } else if (jdtProposal instanceof OverrideCompletionProposal) {
-            return new SubwordsOverrideCompletionProposal((OverrideCompletionProposal) jdtProposal, initialProposal,
-                    ctx);
+            return SubwordsOverrideCompletionProposal.create(subwordsContext);
+
         } else if (jdtProposal instanceof AnonymousTypeCompletionProposal) {
             try {
-                return new SubwordsAnonymousCompletionProposal((AnonymousTypeCompletionProposal) jdtProposal,
-                        initialProposal, ctx);
+                return SubwordsAnonymousCompletionProposal.create(subwordsContext);
             } catch (final CoreException e) {
                 throw new RuntimeException(e);
             }
