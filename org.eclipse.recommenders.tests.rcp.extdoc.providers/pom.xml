@@ -102,8 +102,8 @@
 				       <artifactId>maven-osgi-test-plugin</artifactId>
 				       <version>${tycho-version}</version>
 				       <configuration>
-				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc.provider</testSuite>
-          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.provider.UnitTestSuite</testClass>
+				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc.providers</testSuite>
+          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.providers.UnitTestSuite</testClass>
           					<argLine>${ui.test.vmargs}</argLine>
 				       </configuration>
 				     </plugin>
