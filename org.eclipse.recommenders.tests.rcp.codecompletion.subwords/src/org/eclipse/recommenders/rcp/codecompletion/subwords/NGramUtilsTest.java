@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.calculateMatchingNGrams;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.createNGrams;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.createLowerCaseNGrams;
 
 import java.util.List;
 
@@ -64,18 +64,18 @@ public class NGramUtilsTest {
 
     @Test
     public void test2GramCreation() {
-        final List<String> nGrams = createNGrams("abcde", 2);
+        final List<String> nGrams = createLowerCaseNGrams("abcde", 2);
         Assert.assertEquals(Lists.newArrayList("ab", "bc", "cd", "de"), nGrams);
     }
 
     @Test
     public void test3GramCreation() {
-        final List<String> nGrams = createNGrams("abcde", 3);
+        final List<String> nGrams = createLowerCaseNGrams("abcde", 3);
         Assert.assertEquals(Lists.newArrayList("abc", "bcd", "cde"), nGrams);
     }
 
     @Test
     public void testNGramCreationOnShortString() {
-        Assert.assertEquals(0, createNGrams("ab", 3).size());
+        Assert.assertEquals(0, createLowerCaseNGrams("ab", 3).size());
     }
 }

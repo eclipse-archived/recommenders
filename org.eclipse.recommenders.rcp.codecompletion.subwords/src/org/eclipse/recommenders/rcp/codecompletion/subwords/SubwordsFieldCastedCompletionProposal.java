@@ -10,37 +10,45 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.checkStringMatchesPrefixPattern;
-
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaFieldWithCastedReceiverCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.swt.graphics.Image;
 
 @SuppressWarnings("restriction")
 public class SubwordsFieldCastedCompletionProposal extends JavaFieldWithCastedReceiverCompletionProposal {
 
-    private String token;
+    public static SubwordsFieldCastedCompletionProposal create(final SubwordsProposalContext subwordsContext) {
+        final JavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
 
-    public SubwordsFieldCastedCompletionProposal(final JavaFieldWithCastedReceiverCompletionProposal jdtProposal,
-            final CompletionProposal originalProposal, final JavaContentAssistInvocationContext context,
-            final String token) {
-        super(jdtProposal.getDisplayString(), jdtProposal.getReplacementOffset(), jdtProposal.getReplacementLength(),
-                jdtProposal.getImage(), jdtProposal.getStyledDisplayString(), jdtProposal.getRelevance(), true,
-                context, originalProposal);
-        this.token = ensureIsNotNull(token);
+        return new SubwordsFieldCastedCompletionProposal(jdtProposal.getDisplayString(),
+                jdtProposal.getReplacementOffset(), jdtProposal.getReplacementLength(), jdtProposal.getImage(),
+                jdtProposal.getStyledDisplayString(), jdtProposal.getRelevance(), true, subwordsContext.getContext(),
+                subwordsContext.getProposal(), subwordsContext);
+    }
+
+    private final SubwordsProposalContext subwordsContext;
+
+    private SubwordsFieldCastedCompletionProposal(final String completion, final int start, final int length,
+            final Image image, final StyledString label, final int relevance, final boolean inJavadoc,
+            final JavaContentAssistInvocationContext invocationContext, final CompletionProposal proposal,
+            final SubwordsProposalContext subwordsContext) {
+        super(completion, start, length, image, label, relevance, inJavadoc, invocationContext, proposal);
+        this.subwordsContext = subwordsContext;
     }
 
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
-        this.token = ensureIsNotNull(prefix);
-        return checkStringMatchesPrefixPattern(prefix, completion);
+        subwordsContext.setPrefix(prefix);
+        setRelevance(SubwordsUtils.calculateRelevance(subwordsContext));
+        return subwordsContext.isRegexMatch();
     }
 
     @Override
     public StyledString getStyledDisplayString() {
         final StyledString origin = super.getStyledDisplayString();
-        return SubwordsUtils.createStyledProposalDisplayString(origin, token);
+        return subwordsContext.getStyledDisplayString(origin);
     }
 }

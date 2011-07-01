@@ -12,6 +12,7 @@ package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockUtils.mockCompletionProposal;
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockUtils.mockInvocationContext;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockUtils.mockJdtCompletion;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -76,10 +77,13 @@ public class RegexMatcherTest {
     }
 
     private SubwordsJavaMethodCompletionProposal createJavaCompletionProposal() {
-        final CompletionProposal dummyProposal = mockCompletionProposal();
+        final CompletionProposal dummyProposal = mockCompletionProposal(CompletionProposal.METHOD_REF, c1);
         final JavaContentAssistInvocationContext dummyInvocationContext = mockInvocationContext();
-        final SubwordsJavaMethodCompletionProposal someSubwordsProposal = new SubwordsJavaMethodCompletionProposal(
-                dummyProposal, dummyInvocationContext, "");
+
+        final SubwordsProposalContext subwordsContext = new SubwordsProposalContext("", dummyProposal,
+                mockJdtCompletion(), dummyInvocationContext);
+        final SubwordsJavaMethodCompletionProposal someSubwordsProposal = SubwordsJavaMethodCompletionProposal
+                .create(subwordsContext);
         return someSubwordsProposal;
     }
 

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 public class SubwordsMockUtils {
@@ -53,6 +54,10 @@ public class SubwordsMockUtils {
 
     public static ICompilationUnit mockICompilationUnit() {
         return mock(ICompilationUnit.class);
+    }
+
+    public static JavaCompletionProposal mockJdtCompletion() {
+        return mock(JavaCompletionProposal.class);
     }
 
 }

@@ -26,14 +26,21 @@ import com.google.common.collect.Sets;
 
 public class SubwordsUtils {
 
+    public static final int PREFIX_BONUS = 5000;
+
     public static int calculateMatchingNGrams(final String s1, final String s2, final int n) {
-        final Set<String> nGrams1 = Sets.newHashSet(createNGrams(s1, n));
-        final Set<String> nGrams2 = Sets.newHashSet(createNGrams(s2, n));
+        return calculateMatchingNGrams(createLowerCaseNGrams(s1, n), createLowerCaseNGrams(s2, n));
+    }
+
+    private static int calculateMatchingNGrams(final List<String> ngrams1, final List<String> ngrams2) {
+        final Set<String> nGrams1 = Sets.newHashSet(ngrams1);
+        final Set<String> nGrams2 = Sets.newHashSet(ngrams2);
         nGrams1.retainAll(nGrams2);
         return nGrams1.size();
     }
 
-    public static List<String> createNGrams(final String candidate, final int n) {
+    public static List<String> createLowerCaseNGrams(String candidate, final int n) {
+        candidate = candidate.toLowerCase();
         final List<String> nGrams = Lists.newLinkedList();
         for (int i = 0; i + n <= candidate.length(); i++) {
             final String nGram = candidate.substring(i, i + n);
@@ -44,6 +51,20 @@ public class SubwordsUtils {
 
     public static StyledString createStyledProposalDisplayString(final StyledString displayString,
             final String completionToken) {
+        final StyledString copy = deepCopy(displayString);
+
+        final String string = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(copy.getString());
+        for (final String bigram : SubwordsUtils.createLowerCaseNGrams(completionToken, 2)) {
+            final int indexOf = StringUtils.indexOfIgnoreCase(string, bigram);
+            if (indexOf != -1) {
+                copy.setStyle(indexOf, bigram.length(), StyledString.COUNTER_STYLER);
+            }
+        }
+        copy.append(" (partial)", StyledString.COUNTER_STYLER);
+        return copy;
+    }
+
+    public static StyledString deepCopy(final StyledString displayString) {
         final StyledString copy = new StyledString(displayString.getString());
         for (final StyleRange range : displayString.getStyleRanges()) {
             copy.setStyle(range.start, range.length, new Styler() {
@@ -58,15 +79,6 @@ public class SubwordsUtils {
                 }
             });
         }
-
-        final String string = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(copy.getString());
-        for (final String bigram : SubwordsUtils.createNGrams(completionToken, 2)) {
-            final int indexOf = StringUtils.indexOfIgnoreCase(string, bigram);
-            if (indexOf != -1) {
-                copy.setStyle(indexOf, bigram.length(), StyledString.COUNTER_STYLER);
-            }
-        }
-        copy.append(" (partial)", StyledString.COUNTER_STYLER);
         return copy;
     }
 
@@ -92,7 +104,7 @@ public class SubwordsUtils {
                 // if not just search for any proposal containing this letter in
                 // upper case OR lower case.
                 final char lowerCase = Character.toUpperCase(c);
-                sb.append("[").append(lowerCase).append(c).append("]");
+                sb.append("([").append(lowerCase).append(c).append("])");
             }
             sb.append(".*");
         }
@@ -111,5 +123,17 @@ public class SubwordsUtils {
             completion = StringUtils.substringAfterLast(completion, " ");
         }
         return completion;
+    }
+
+    public static int calculateRelevance(final SubwordsProposalContext state) {
+        final List<String> prefixBigrams = state.getPrefixBigrams();
+        final List<String> matchingRegionBigrams = state.getMatchingRegionBigrams();
+        final int matches = calculateMatchingNGrams(prefixBigrams, matchingRegionBigrams);
+
+        int relevance = state.getJdtProposal().getRelevance() + matches;
+        if (state.isPrefixMatch()) {
+            relevance += PREFIX_BONUS;
+        }
+        return relevance;
     }
 }

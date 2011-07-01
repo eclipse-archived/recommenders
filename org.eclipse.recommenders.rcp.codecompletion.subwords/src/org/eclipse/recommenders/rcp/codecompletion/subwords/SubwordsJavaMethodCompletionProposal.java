@@ -10,9 +10,6 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.checkStringMatchesPrefixPattern;
-
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
@@ -20,23 +17,30 @@ import org.eclipse.jface.viewers.StyledString;
 
 @SuppressWarnings("restriction")
 public final class SubwordsJavaMethodCompletionProposal extends JavaMethodCompletionProposal {
-    private String token;
 
-    public SubwordsJavaMethodCompletionProposal(final CompletionProposal proposal,
-            final JavaContentAssistInvocationContext context, final String token) {
+    public static SubwordsJavaMethodCompletionProposal create(final SubwordsProposalContext subwordsContext) {
+        return new SubwordsJavaMethodCompletionProposal(subwordsContext.getProposal(), subwordsContext.getContext(),
+                subwordsContext);
+    }
+
+    private final SubwordsProposalContext subwordsContext;
+
+    private SubwordsJavaMethodCompletionProposal(final CompletionProposal proposal,
+            final JavaContentAssistInvocationContext context, final SubwordsProposalContext subwordsContext) {
         super(proposal, context);
-        this.token = ensureIsNotNull(token);
+        this.subwordsContext = subwordsContext;
     }
 
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
-        this.token = ensureIsNotNull(prefix);
-        return checkStringMatchesPrefixPattern(prefix, completion);
+        subwordsContext.setPrefix(prefix);
+        setRelevance(SubwordsUtils.calculateRelevance(subwordsContext));
+        return subwordsContext.isRegexMatch();
     }
 
     @Override
     public StyledString getStyledDisplayString() {
         final StyledString origin = super.getStyledDisplayString();
-        return SubwordsUtils.createStyledProposalDisplayString(origin, token);
+        return subwordsContext.getStyledDisplayString(origin);
     }
 }

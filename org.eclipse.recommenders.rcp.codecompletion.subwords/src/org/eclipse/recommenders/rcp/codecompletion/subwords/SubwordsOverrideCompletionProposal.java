@@ -10,11 +10,11 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.checkStringMatchesPrefixPattern;
-
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.viewers.StyledString;
@@ -22,27 +22,38 @@ import org.eclipse.jface.viewers.StyledString;
 @SuppressWarnings("restriction")
 public class SubwordsOverrideCompletionProposal extends OverrideCompletionProposal {
 
-    private String token;
+    public static SubwordsOverrideCompletionProposal create(final SubwordsProposalContext subwordsContext) {
+        final JavaContentAssistInvocationContext context = subwordsContext.getContext();
+        final JavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
+        final CompletionProposal proposal = subwordsContext.getProposal();
+        final String signature = String.valueOf(proposal.getSignature());
+        final String completionText = String.valueOf(proposal.getCompletion());
+        final String proposalName = String.valueOf(proposal.getName());
+        return new SubwordsOverrideCompletionProposal(context.getProject(), context.getCompilationUnit(), proposalName,
+                Signature.getParameterTypes(signature), proposal.getReplaceStart(), jdtProposal.getReplacementLength(),
+                jdtProposal.getStyledDisplayString(), completionText, subwordsContext);
+    }
 
-    public SubwordsOverrideCompletionProposal(final OverrideCompletionProposal jdtProposal,
-            final CompletionProposal completionProposal, final JavaContentAssistInvocationContext context,
-            final String token) {
-        super(context.getProject(), context.getCompilationUnit(), String.valueOf(completionProposal.getName()),
-                Signature.getParameterTypes(String.valueOf(completionProposal.getSignature())), completionProposal
-                        .getReplaceStart(), jdtProposal.getReplacementLength(), jdtProposal.getStyledDisplayString(),
-                String.valueOf(completionProposal.getCompletion()));
-        this.token = ensureIsNotNull(token);
+    private final SubwordsProposalContext subwordsContext;
+
+    private SubwordsOverrideCompletionProposal(final IJavaProject jproject, final ICompilationUnit cu,
+            final String methodName, final String[] paramTypes, final int start, final int length,
+            final StyledString displayName, final String completionProposal,
+            final SubwordsProposalContext subwordsContext) {
+        super(jproject, cu, methodName, paramTypes, start, length, displayName, completionProposal);
+        this.subwordsContext = subwordsContext;
     }
 
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
-        this.token = ensureIsNotNull(prefix);
-        return checkStringMatchesPrefixPattern(prefix, completion);
+        subwordsContext.setPrefix(prefix);
+        setRelevance(SubwordsUtils.calculateRelevance(subwordsContext));
+        return subwordsContext.isRegexMatch();
     }
 
     @Override
     public StyledString getStyledDisplayString() {
         final StyledString origin = super.getStyledDisplayString();
-        return SubwordsUtils.createStyledProposalDisplayString(origin, token);
+        return subwordsContext.getStyledDisplayString(origin);
     }
 }
