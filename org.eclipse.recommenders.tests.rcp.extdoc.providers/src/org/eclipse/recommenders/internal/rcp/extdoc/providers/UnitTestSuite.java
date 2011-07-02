@@ -21,7 +21,8 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.mockito.Mockito;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ExamplesProviderTest.class, JavadocProviderTest.class, WikiProviderTest.class })
+@SuiteClasses({ CallsProviderTest.class, ExamplesProviderTest.class, JavadocProviderTest.class,
+        SubclassingProviderTest.class, SubclassingTemplatesProviderTest.class, WikiProviderTest.class })
 public final class UnitTestSuite {
 
     private static IJavaElementSelection selection;

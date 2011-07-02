@@ -10,11 +10,15 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.eclipse.recommenders.server.extdoc.CallsServer;
 
-@RunWith(Suite.class)
-@SuiteClasses({ CallsServerTest.class, CodeExamplesServerTest.class, SubclassingServerTest.class, WikiServerTest.class })
-public final class UnitTestSuite {
+import org.junit.Test;
+
+public final class CallsServerTest {
+
+    @Test
+    public void testCallsServer() {
+        final CallsServer server = new CallsServer();
+    }
+
 }

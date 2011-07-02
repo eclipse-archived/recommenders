@@ -23,7 +23,6 @@ import org.eclipse.jdt.internal.corext.util.MethodOverrideTester;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
@@ -119,7 +118,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     private void createEditAndRatingHeader(final int snippetIndex, final IJavaElement element) {
         final String text = "Example #" + (snippetIndex + 1) + ":";
         final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, element, element.getElementName(),
-                this, server, new TemplateEditDialog(getShell()));
+                this, server, null);
         line.createStyleRange(0, text.length(), SWT.BOLD, false, false);
     }
 }

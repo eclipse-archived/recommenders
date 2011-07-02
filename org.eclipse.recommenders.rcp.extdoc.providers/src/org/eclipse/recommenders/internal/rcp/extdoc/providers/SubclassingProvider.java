@@ -25,7 +25,6 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -94,12 +93,11 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 disposeChildren(composite);
                 final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, elementName, provider,
-                        server, new TemplateEditDialog(getShell()));
+                        server, null);
                 line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
                 displayDirectives(overrides.getOverrides(), "override", subclasses);
                 if (calls != null) {
-                    new TextAndFeaturesLine(composite, text2, type, elementName, provider, server,
-                            new TemplateEditDialog(getShell()));
+                    new TextAndFeaturesLine(composite, text2, type, elementName, provider, server, null);
                     displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
                 }
                 composite.layout(true);
@@ -130,7 +128,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                 disposeChildren(composite);
                 displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
                 final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method,
-                        method.getElementName(), provider, server, new TemplateEditDialog(getShell()));
+                        method.getElementName(), provider, server, null);
                 line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL, false,
                         true);
                 displayDirectives(selfcalls.getCalls(), "call", definitions);

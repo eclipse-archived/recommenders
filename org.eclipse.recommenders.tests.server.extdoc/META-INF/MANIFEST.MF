@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for Templates Completion
-Bundle-SymbolicName: org.eclipse.recommenders.tests.server.extdoc
+Bundle-SymbolicName: org.eclipse.recommenders.tests.server.extdoc;singleton:=true
 Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.server.extdoc;bundle-version="0.2.0.qualifier"

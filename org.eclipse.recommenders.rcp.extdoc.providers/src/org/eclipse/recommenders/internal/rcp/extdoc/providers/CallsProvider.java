@@ -33,7 +33,6 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFactory;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedIntelligentCompletionContext;
@@ -89,7 +88,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>());
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type);
     }
 
     @Override
@@ -105,7 +104,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>());
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type);
     }
 
     @Override
@@ -116,12 +115,12 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     @Override
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return displayProposalsForType(type, new HashSet<IMethodName>());
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type);
     }
 
     @Override
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return displayProposalsForType(type, new HashSet<IMethodName>());
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type);
     }
 
     @Override
@@ -146,13 +145,14 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
         context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(method.getDeclaringType(), ImmutableSet.of(elementResolver.toRecMethod(method)));
+        final Set<IMethodName> invokedMethods = ImmutableSet.of(elementResolver.toRecMethod(method));
+        return displayProposalsForType(method.getDeclaringType(), invokedMethods, method);
     }
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
         context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>());
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type);
     }
 
     private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors) {
@@ -166,11 +166,12 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         return false;
     }
 
-    private boolean displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods) {
+    private boolean displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods,
+            final IJavaElement referenceElement) {
         final ITypeName typeName = elementResolver.toRecType(type);
         if (modelStore.hasModel(typeName)) {
             final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, invokedMethods, false);
-            return displayProposals(type, calls, new HashSet<IMethodName>());
+            return displayProposals(referenceElement, calls, new HashSet<IMethodName>());
         }
         return false;
     }
@@ -257,7 +258,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 disposeChildren(composite);
                 final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element,
-                        element.getElementName(), provider, server, new TemplateEditDialog(getShell()));
+                        element.getElementName(), provider, server, null);
                 line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
                 displayProposals(proposals, calledMethods);
                 composite.layout(true);

@@ -47,7 +47,9 @@ public final class FeaturesComposite {
         if (server instanceof ICommentsServer) {
             features.addCommentsIcon(object, objectName, (ICommentsServer) server, provider.getShell());
         }
-        features.addEditIcon(editDialog);
+        if (editDialog != null) {
+            features.addEditIcon(editDialog);
+        }
         if (provider instanceof IDeletionProvider) {
             features.addDeleteIcon(object, objectName, (IDeletionProvider) provider);
         }

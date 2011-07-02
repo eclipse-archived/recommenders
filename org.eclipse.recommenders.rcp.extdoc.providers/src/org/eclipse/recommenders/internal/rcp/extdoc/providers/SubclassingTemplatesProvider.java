@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import static java.lang.String.format;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,7 +23,6 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
@@ -77,9 +74,9 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         final MethodPattern[] patterns = getPatternsSortedByFrequency(directive);
         final int numberOfSubclasses = computeTotalNumberOfSubclasses(patterns);
 
-        final String text = format(
-                "By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
-                numberOfSubclasses);
+        final String text = String
+                .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
+                        numberOfSubclasses);
         final SubclassingTemplatesProvider provider = this;
 
         new UIJob("") {
@@ -93,11 +90,11 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                 for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
                     final MethodPattern pattern = patterns[i];
                     final double patternProbability = pattern.getNumberOfObservations() / (double) numberOfSubclasses;
-                    String text2 = format(
+                    String text2 = String.format(
                             "Pattern #%d - covers approximately %3.0f%% of the examined subclasses (%d subclasses).",
                             i + 1, 100 * patternProbability, pattern.getNumberOfObservations());
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(templates, text2, type,
-                            type.getElementName(), provider, server, new TemplateEditDialog(getShell()));
+                            type.getElementName(), provider, server, null);
                     // line.createStyleRange(0, 16, SWT.BOLD, false, false);
                     // line.createStyleRange(40, 3, SWT.NORMAL, true, false);
 
@@ -110,8 +107,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                                 + Names.vm2srcSimpleMethod(method);
                         SwtFactory.createLabel(template, text2, false, true, SWT.COLOR_BLACK);
                         SwtFactory.createLabel(template, "-");
-                        SwtFactory.createLabel(template, format("~ %3.0f%%", entry.getValue() * 100), false, false,
-                                SWT.COLOR_BLUE);
+                        SwtFactory.createLabel(template, String.format("~ %3.0f%%", entry.getValue() * 100), false,
+                                false, SWT.COLOR_BLUE);
                     }
                 }
                 composite.layout(true);

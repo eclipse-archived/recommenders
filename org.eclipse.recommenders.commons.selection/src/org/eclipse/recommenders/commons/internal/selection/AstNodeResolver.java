@@ -16,6 +16,8 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.NodeFinder;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Resolves the active java element's AST node for an invocation context.
  */
@@ -44,7 +46,7 @@ final class AstNodeResolver {
      */
     private static ASTNode resolveAst(final ITypeRoot compilationUnit) {
         PARSER.setResolveBindings(true);
-        PARSER.setSource(compilationUnit);
+        PARSER.setSource(Preconditions.checkNotNull(compilationUnit));
         return PARSER.createAST(null);
     }
 

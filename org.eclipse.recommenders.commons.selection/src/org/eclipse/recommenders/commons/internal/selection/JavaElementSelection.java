@@ -89,7 +89,7 @@ final class JavaElementSelection implements IJavaElementSelection {
 
     @Override
     public ASTNode getAstNode() {
-        if (cachedAstNode == null) {
+        if (cachedAstNode == null && getCompilationUnit() != null) {
             cachedAstNode = AstNodeResolver.resolveNode(getCompilationUnit(), invocationOffset);
         }
         return cachedAstNode;
