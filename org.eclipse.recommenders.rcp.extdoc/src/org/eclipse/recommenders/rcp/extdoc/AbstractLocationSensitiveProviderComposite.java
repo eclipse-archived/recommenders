@@ -16,6 +16,8 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.core.ImportDeclaration;
+import org.eclipse.jdt.internal.core.PackageDeclaration;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Throws;
@@ -29,6 +31,9 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
 
     @Override
     public final boolean selectionChanged(final IJavaElementSelection selection) {
+        if (selection.getElementLocation() == null) {
+            return false;
+        }
         hookInitalize(selection);
 
         switch (selection.getElementLocation()) {
@@ -65,6 +70,8 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
             return updateImportDeclarationSelection(selection, (IPackageFragment) javaElement);
         } else if (javaElement instanceof IType) {
             return updateImportDeclarationSelection(selection, (IType) javaElement);
+        } else if (javaElement instanceof ImportDeclaration) {
+            return false;
         }
         throw new IllegalArgumentException(selection.toString());
     }
@@ -193,6 +200,8 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
             return updateMethodBodySelection(selection, (IType) javaElement);
         } else if (javaElement instanceof IMethod) {
             return updateMethodBodySelection(selection, (IMethod) javaElement);
+        } else if (javaElement instanceof PackageDeclaration) {
+            return false;
         }
         throw new IllegalArgumentException(selection.toString());
     }
