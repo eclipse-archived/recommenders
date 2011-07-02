@@ -53,7 +53,9 @@ public final class BrowserSizeWorkaround {
     }
 
     private void recalculateAndSetHeight() {
-        Display.getDefault().asyncExec(new RescaleAction(this));
+        if (!browser.isDisposed()) {
+            Display.getDefault().asyncExec(new RescaleAction(this));
+        }
     }
 
     private void setHeightAndTriggerLayout(final int height) {

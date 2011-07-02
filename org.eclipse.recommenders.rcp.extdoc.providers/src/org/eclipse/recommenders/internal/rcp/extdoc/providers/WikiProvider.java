@@ -71,13 +71,15 @@ public final class WikiProvider extends AbstractProviderComposite {
         new UIJob("Updating Wiki provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
-                initComposite();
-                if (markup == null) {
-                    displayNoText(element);
-                } else {
-                    displayText(element, markup);
+                if (!parentComposite.isDisposed()) {
+                    initComposite();
+                    if (markup == null) {
+                        displayNoText(element);
+                    } else {
+                        displayText(element, markup);
+                    }
+                    parentComposite.layout(true);
                 }
-                parentComposite.layout(true);
                 return Status.OK_STATUS;
             }
         }.schedule();

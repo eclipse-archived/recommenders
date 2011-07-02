@@ -256,12 +256,14 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         new UIJob("Updating Calls Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
-                disposeChildren(composite);
-                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element,
-                        element.getElementName(), provider, server, null);
-                line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
-                displayProposals(proposals, calledMethods);
-                composite.layout(true);
+                if (!composite.isDisposed()) {
+                    disposeChildren(composite);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element,
+                            element.getElementName(), provider, server, null);
+                    line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
+                    displayProposals(proposals, calledMethods);
+                    composite.layout(true);
+                }
                 return Status.OK_STATUS;
             }
         }.schedule();

@@ -44,7 +44,9 @@ class ProviderUpdateJob extends Job {
             new UIJob("Update provider table") {
                 @Override
                 public IStatus runInUIThread(final IProgressMonitor monitor) {
-                    table.setContentVisible(item, hasContent);
+                    if (!item.isDisposed()) {
+                        table.setContentVisible(item, hasContent);
+                    }
                     return Status.OK_STATUS;
                 }
             }.schedule();

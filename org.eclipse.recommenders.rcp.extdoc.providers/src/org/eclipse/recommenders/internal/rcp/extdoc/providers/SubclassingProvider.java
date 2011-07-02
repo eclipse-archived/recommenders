@@ -91,16 +91,18 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         new UIJob("Updating Subclassing Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
-                disposeChildren(composite);
-                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, elementName, provider,
-                        server, null);
-                line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
-                displayDirectives(overrides.getOverrides(), "override", subclasses);
-                if (calls != null) {
-                    new TextAndFeaturesLine(composite, text2, type, elementName, provider, server, null);
-                    displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
+                if (!composite.isDisposed()) {
+                    disposeChildren(composite);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, elementName,
+                            provider, server, null);
+                    line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
+                    displayDirectives(overrides.getOverrides(), "override", subclasses);
+                    if (calls != null) {
+                        new TextAndFeaturesLine(composite, text2, type, elementName, provider, server, null);
+                        displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
+                    }
+                    composite.layout(true);
                 }
-                composite.layout(true);
                 return Status.OK_STATUS;
             }
         }.schedule();
@@ -125,14 +127,16 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         new UIJob("Updating Subclassing Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
-                disposeChildren(composite);
-                displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
-                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method,
-                        method.getElementName(), provider, server, null);
-                line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL, false,
-                        true);
-                displayDirectives(selfcalls.getCalls(), "call", definitions);
-                composite.layout(true);
+                if (!composite.isDisposed()) {
+                    disposeChildren(composite);
+                    displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method,
+                            method.getElementName(), provider, server, null);
+                    line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL,
+                            false, true);
+                    displayDirectives(selfcalls.getCalls(), "call", definitions);
+                    composite.layout(true);
+                }
                 return Status.OK_STATUS;
             }
         }.schedule();

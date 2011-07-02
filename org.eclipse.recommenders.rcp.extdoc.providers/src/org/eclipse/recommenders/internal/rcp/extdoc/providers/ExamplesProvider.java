@@ -95,15 +95,17 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         if (codeExamples == null) {
             return false;
         }
-        new UIJob("") {
+        new UIJob("Updating Examples Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
-                disposeChildren(container);
-                final CodeSnippet[] snippets = codeExamples.getExamples();
-                for (int i = 0; i < snippets.length; ++i) {
-                    createSnippetVisualization(i, element, snippets[i].getCode());
+                if (!container.isDisposed()) {
+                    disposeChildren(container);
+                    final CodeSnippet[] snippets = codeExamples.getExamples();
+                    for (int i = 0; i < snippets.length; ++i) {
+                        createSnippetVisualization(i, element, snippets[i].getCode());
+                    }
+                    container.layout(true);
                 }
-                container.layout(true);
                 return Status.OK_STATUS;
             }
         }.schedule();
