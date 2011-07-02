@@ -10,17 +10,17 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.progress.UIJob;
 
-class ProviderUpdateJob extends WorkspaceJob {
+class ProviderUpdateJob extends Job {
 
     private final ProvidersTable table;
     private final TableItem item;
@@ -37,7 +37,7 @@ class ProviderUpdateJob extends WorkspaceJob {
     }
 
     @Override
-    public IStatus runInWorkspace(final IProgressMonitor monitor) {
+    public IStatus run(final IProgressMonitor monitor) {
         try {
             monitor.beginTask("Updating Extended Javadocs", 1);
             final boolean hasContent = provider.selectionChanged(selection);

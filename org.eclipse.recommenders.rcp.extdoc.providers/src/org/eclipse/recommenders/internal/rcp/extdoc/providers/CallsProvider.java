@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -36,8 +35,8 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStor
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TemplateEditDialog;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFactory;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedIntelligentCompletionContext;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
@@ -50,6 +49,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.progress.UIJob;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.internal.util.Sets;
@@ -88,45 +88,13 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     @Override
     protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        setNullVariableContext(selection);
-        return displayProposalsForType(type);
-    }
-
-    @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
-        if (!setLocalVariableContext(selection, local)) {
-            return false;
-        }
-        return displayProposalsForVariable(local, false);
-    }
-
-    @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
-        setFieldVariableContext(selection, field);
-        return displayProposalsForVariable(field, false);
-    }
-
-    @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
-        try {
-            if (method.isConstructor()) {
-                return updateMethodBodySelection(selection, method.getDeclaringType());
-            }
-        } catch (final JavaModelException e) {
-            throw new IllegalStateException(e);
-        }
-        return false;
-    }
-
-    @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
-        setNullVariableContext(selection);
-        return displayProposalsForType(type);
+        context = ContextFactory.setNullVariableContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>());
     }
 
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
-        setFieldVariableContext(selection, field);
+        context = ContextFactory.setFieldVariableContext(selection, field);
         if (!displayProposalsForVariable(field, false)) {
             return false;
         }
@@ -136,116 +104,55 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        setNullVariableContext(selection);
-        return displayProposalsForType(type);
+        context = ContextFactory.setNullVariableContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>());
     }
 
     @Override
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
-        setThisVariableContext(selection, method);
-        try {
-            return displayProposalsForMethod(method);
-        } catch (final JavaModelException e) {
-            throw new IllegalStateException(e);
-        }
+        context = ContextFactory.setThisVariableContext(selection, method);
+        return displayProposalsForMethod(method);
     }
 
     @Override
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return displayProposalsForType(type);
+        return displayProposalsForType(type, new HashSet<IMethodName>());
     }
 
     @Override
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        // TODO: this doesn't work yet because JDT fails to resolve the
-        // enclosing method and throws an exception (for whatever reason)
-        return displayProposalsForType(type);
+        return displayProposalsForType(type, new HashSet<IMethodName>());
     }
 
     @Override
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local) {
-        if (!setLocalVariableContext(selection, local)) {
-            return false;
-        }
-        return displayProposalsForVariable(local, true);
+        context = ContextFactory.setLocalVariableContext(selection, local);
+        return context == null ? false : displayProposalsForVariable(local, true);
     }
 
-    private void setNullVariableContext(final IJavaElementSelection selection) {
-        context = new MockedIntelligentCompletionContext(selection, elementResolver) {
-            @Override
-            public Variable getVariable() {
-                return null;
-            };
-        };
+    @Override
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
+        context = ContextFactory.setLocalVariableContext(selection, local);
+        return context == null ? false : displayProposalsForVariable(local, false);
     }
 
-    private void setThisVariableContext(final IJavaElementSelection selection, final IMethod enclosingMethod) {
-        final IMethodName ctxEnclosingMethod = elementResolver.toRecMethod(enclosingMethod);
-        final IMethodName ctxFirstDeclaration = elementResolver.toRecMethod(JdtUtils
-                .findFirstDeclaration(enclosingMethod));
-
-        context = new MockedIntelligentCompletionContext(selection, elementResolver) {
-            @Override
-            public IMethodName getEnclosingMethod() {
-                return ctxEnclosingMethod;
-            };
-
-            @Override
-            public IMethodName getEnclosingMethodsFirstDeclaration() {
-                return ctxFirstDeclaration;
-            };
-
-            @Override
-            public Variable getVariable() {
-                return Variable.create("this", elementResolver.toRecType(enclosingMethod.getDeclaringType()),
-                        elementResolver.toRecMethod(enclosingMethod));
-            };
-        };
+    @Override
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
+        context = ContextFactory.setFieldVariableContext(selection, field);
+        return context == null ? false : displayProposalsForVariable(field, false);
     }
 
-    private boolean setFieldVariableContext(final IJavaElementSelection selection, final IField element) {
-        final IField field = element;
-        final String name = field.getElementName();
-        final IType declaringType = field.getDeclaringType();
-        try {
-            final String typeSignature = field.getTypeSignature();
-            final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
-            final IJavaProject javaProject = field.getJavaProject();
-            final IType fieldType = javaProject.findType(resolvedTypeName);
-            return setMockedContext(selection, name, fieldType, false);
-        } catch (final JavaModelException e) {
-            throw new IllegalStateException(e);
-        }
+    @Override
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
+        context = ContextFactory.setNullVariableContext(selection);
+        return displayProposalsForType(method.getDeclaringType(), ImmutableSet.of(elementResolver.toRecMethod(method)));
     }
 
-    private boolean setMockedContext(final IJavaElementSelection selection, final String varName,
-            final IType variableType, final boolean isArgument) {
-        if (variableType == null) {
-            return false;
-        }
-        context = new MockedIntelligentCompletionContext(selection, elementResolver) {
-            @Override
-            public Variable getVariable() {
-                return Variable.create(varName, elementResolver.toRecType(variableType), getEnclosingMethod());
-            };
-        };
-        return true;
-    }
-
-    private boolean setLocalVariableContext(final IJavaElementSelection selection, final ILocalVariable var) {
-        final String name = var.getElementName();
-        final IType variableType = VariableResolver.resolveTypeSignature(var);
-        return setMockedContext(selection, name, variableType, false);
-    }
-
-    private Set<IMethodName> resolveCalledMethods() {
-        for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
-            if (resolver.canResolve(context)) {
-                return resolver.getReceiverMethodInvocations();
-            }
-        }
-        return Sets.newHashSet();
+    @Override
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
+        context = ContextFactory.setNullVariableContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>());
     }
 
     private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors) {
@@ -259,33 +166,37 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         return false;
     }
 
-    private boolean displayProposalsForType(final IType type) {
+    private boolean displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods) {
         final ITypeName typeName = elementResolver.toRecType(type);
         if (modelStore.hasModel(typeName)) {
-            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName,
-                    new HashSet<IMethodName>(), false);
+            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, invokedMethods, false);
             return displayProposals(type, calls, new HashSet<IMethodName>());
         }
         return false;
     }
 
-    private boolean displayProposalsForMethod(final IMethod method) throws JavaModelException {
-        final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
-        if (superclassTypeSignature == null) {
-            return false;
-        }
-        final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
-                method.getDeclaringType());
-        final IType supertype = method.getJavaProject().findType(superclassTypeName);
-        final ITypeName type = JavaElementResolver.INSTANCE.toRecType(supertype);
-        if (type != null && modelStore.hasModel(type)) {
-            final Set<IMethodName> calledMethods = resolveCalledMethods();
-            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
-            return displayProposals(method, calls, calledMethods);
-        } else {
-            // TODO: first is not correct in all cases. this needs to be fixed
-            final IMethod first = JdtUtils.findFirstDeclaration(method);
-            return first.equals(method) ? false : displayProposalsForMethod(first);
+    private boolean displayProposalsForMethod(final IMethod method) {
+        try {
+            final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
+            if (superclassTypeSignature == null) {
+                return false;
+            }
+            final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
+                    method.getDeclaringType());
+            final IType supertype = method.getJavaProject().findType(superclassTypeName);
+            final ITypeName type = JavaElementResolver.INSTANCE.toRecType(supertype);
+            if (type != null && modelStore.hasModel(type)) {
+                final Set<IMethodName> calledMethods = resolveCalledMethods();
+                final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
+                return displayProposals(method, calls, calledMethods);
+            } else {
+                // TODO: first is not correct in all cases. this needs to be
+                // fixed
+                final IMethod first = JdtUtils.findFirstDeclaration(method);
+                return first.equals(method) ? false : displayProposalsForMethod(first);
+            }
+        } catch (final JavaModelException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -307,6 +218,15 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private Set<IMethodName> resolveCalledMethods() {
+        for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
+            if (resolver.canResolve(context)) {
+                return resolver.getReceiverMethodInvocations();
+            }
+        }
+        return Sets.newHashSet();
     }
 
     private SortedSet<Tuple<IMethodName, Double>> computeRecommendations(final ITypeName typeName,

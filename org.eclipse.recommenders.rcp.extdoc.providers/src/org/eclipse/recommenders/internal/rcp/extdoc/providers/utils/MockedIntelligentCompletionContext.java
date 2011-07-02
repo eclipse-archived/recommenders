@@ -15,11 +15,8 @@ import java.util.Set;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.WorkingCopyOwner;
 import org.eclipse.jdt.internal.codeassist.CompletionEngine;
@@ -43,16 +40,13 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerAstCompletionNodeFinder;
-import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerBindings;
 import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionRequestor;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.recommenders.rcp.utils.JdtUtils;
 
 // TODO: Lots of methods taken from IntelligentCompletionContext.java
 @SuppressWarnings("restriction")
@@ -219,59 +213,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public Variable getVariable() {
-        if (isReceiverImplicitThis() || "this".equals(getReceiverName())) {
-            return Variable.create("this", getSuperclassOfEnclosingType(), getEnclosingMethod());
-        }
-
-        if (getReceiverName() != null && getReceiverType() != null) {
-            return Variable.create(getReceiverName(), getReceiverType(), getEnclosingMethod());
-        }
-        final LocalDeclaration match = findMatchingLocalVariable(getReceiverName());
-        if (match == null) {
-            return null;
-        }
-        final String name = String.valueOf(match.name);
-        final ITypeName type = CompilerBindings.toTypeName(match.type);
-        return Variable.create(name, type, getEnclosingMethod());
-    }
-
-    private ITypeName getSuperclassOfEnclosingType() {
-        try {
-            IType enclosingType = findEnclosingType();
-            if (enclosingType == null) {
-                return null;
-            }
-            // TODO :: Rework code to resolve supertype name... this is
-            // odd/wrong location for this, right?
-            enclosingType = JdtUtils.resolveJavaElementProxy(enclosingType);
-            final ITypeHierarchy typeHierarchy = SuperTypeHierarchyCache.getTypeHierarchy(enclosingType);
-            final IType superclass = typeHierarchy.getSuperclass(enclosingType);
-            return superclass == null ? null : resolver.toRecType(superclass);
-        } catch (final JavaModelException e) {
-            throw Throws.throwUnhandledException(e);
-        }
-    }
-
-    private IType findEnclosingType() {
-        final IJavaElement element = selection.getJavaElement().getParent();
-        if (element instanceof IMethod) {
-            return ((IMethod) element).getDeclaringType();
-        } else if (element instanceof IField) {
-            return ((IField) element).getDeclaringType();
-        } else if (element instanceof IType) {
-            return (IType) element;
-        }
-        return null;
-    }
-
-    private LocalDeclaration findMatchingLocalVariable(final String receiverName) {
-        for (final LocalDeclaration local : getLocalDeclarations()) {
-            final String name = String.valueOf(local.name);
-            if (name.equals(receiverName)) {
-                return local;
-            }
-        }
-        return null;
+        throw new IllegalAccessError();
     }
 
     @Override
