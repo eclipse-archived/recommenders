@@ -21,11 +21,30 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.SourceRange;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.preference.JFacePreferences;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
+import org.eclipse.swt.graphics.TextStyle;
 
 import com.google.common.collect.Lists;
 
 public class SubwordsProposalContext {
+
+    private static Styler BIGRAMS_STYLER = new Styler() {
+        @Override
+        public void applyStyles(final TextStyle textStyle) {
+            textStyle.foreground = JFaceResources.getColorRegistry().get(JFacePreferences.COUNTER_COLOR);
+        }
+    };
+
+    private static Styler REGEX_STYLER = new Styler() {
+
+        @Override
+        public void applyStyles(final TextStyle textStyle) {
+            textStyle.underline = true;
+        }
+    };
 
     private String prefix;
     private final String subwordsMatchingRegion;
@@ -80,14 +99,14 @@ public class SubwordsProposalContext {
 
     public StyledString getStyledDisplayString(final StyledString origin) {
         final StyledString copy = SubwordsUtils.deepCopy(origin);
-        highlighBigramMatches(copy);
         highlightRegexMatches(copy);
+        highlighBigramMatches(copy);
         return copy;
     }
 
     private void highlighBigramMatches(final StyledString copy) {
         for (final SourceRange range : findBigramHighlightRanges()) {
-            copy.setStyle(range.getOffset(), range.getLength(), StyledString.COUNTER_STYLER);
+            copy.setStyle(range.getOffset(), range.getLength(), BIGRAMS_STYLER);
         }
     }
 
@@ -105,7 +124,7 @@ public class SubwordsProposalContext {
 
     private void highlightRegexMatches(final StyledString copy) {
         for (final SourceRange range : findRegexHighlightRanges()) {
-            copy.setStyle(range.getOffset(), range.getLength(), StyledString.COUNTER_STYLER);
+            copy.setStyle(range.getOffset(), range.getLength(), REGEX_STYLER);
         }
     }
 
