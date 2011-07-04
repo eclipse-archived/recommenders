@@ -53,7 +53,7 @@ public class SubwordsCompletionContextTest {
         final List<SourceRange> bigramMatches = sut.findBigramHighlightRanges();
         final List<SourceRange> regexMatches = sut.findRegexHighlightRanges();
         // verify:
-        checkCorrectStartingIndexes(bigramMatches, 11);
+        checkCorrectStartingIndexes(bigramMatches, 11, 10);
         checkCorrectStartingIndexes(regexMatches, 3, 6, 8, 10, 11);
     }
 
