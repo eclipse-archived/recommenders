@@ -222,11 +222,9 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     }
 
     private Set<IMethodName> resolveCalledMethods() {
-        if (context.getCompilationUnit() != null) {
-            for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
-                if (resolver.canResolve(context)) {
-                    return resolver.getReceiverMethodInvocations();
-                }
+        for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
+            if (resolver.canResolve(context)) {
+                return resolver.getReceiverMethodInvocations();
             }
         }
         return Sets.newHashSet();

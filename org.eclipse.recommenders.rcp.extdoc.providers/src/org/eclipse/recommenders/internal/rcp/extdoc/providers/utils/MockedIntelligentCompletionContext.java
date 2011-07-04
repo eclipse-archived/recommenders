@@ -21,6 +21,7 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameRefere
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
+import org.eclipse.jdt.internal.core.ClassFile;
 import org.eclipse.jdt.internal.core.CompilationUnit;
 import org.eclipse.jdt.internal.corext.util.MethodOverrideTester;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
@@ -83,8 +84,12 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final ICompilationUnit getCompilationUnit() {
-        if (compilationUnit == null && selection.getCompilationUnit() instanceof CompilationUnit) {
-            compilationUnit = Checks.cast(selection.getCompilationUnit());
+        if (compilationUnit == null) {
+            if (selection.getCompilationUnit() instanceof ClassFile) {
+                compilationUnit = Checks.cast(((ClassFile) selection.getCompilationUnit()).getCompilationUnit());
+            } else {
+                compilationUnit = Checks.cast(selection.getCompilationUnit());
+            }
         }
         return compilationUnit;
     }
