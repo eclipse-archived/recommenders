@@ -94,7 +94,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
         context = ContextFactory.setFieldVariableContext(selection, field);
-        if (!displayProposalsForVariable(field, false)) {
+        if (context == null || !displayProposalsForVariable(field, false)) {
             return false;
         }
         displayProposalsForAllMethods(selection, field);
@@ -222,9 +222,11 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     }
 
     private Set<IMethodName> resolveCalledMethods() {
-        for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
-            if (resolver.canResolve(context)) {
-                return resolver.getReceiverMethodInvocations();
+        if (context.getCompilationUnit() != null) {
+            for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
+                if (resolver.canResolve(context)) {
+                    return resolver.getReceiverMethodInvocations();
+                }
             }
         }
         return Sets.newHashSet();

@@ -83,7 +83,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final ICompilationUnit getCompilationUnit() {
-        if (compilationUnit == null) {
+        if (compilationUnit == null && selection.getCompilationUnit() instanceof CompilationUnit) {
             compilationUnit = Checks.cast(selection.getCompilationUnit());
         }
         return compilationUnit;
