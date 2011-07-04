@@ -28,25 +28,20 @@ public class SubwordsCompletionProposalFactory {
 
         if (jdtProposal instanceof JavaMethodCompletionProposal) {
             return SubwordsJavaMethodCompletionProposal.create(subwordsContext);
-
-        } else if (jdtProposal instanceof JavaCompletionProposal) {
-            return SubwordsJavaCompletionProposal.create(subwordsContext);
-
-        } else if (jdtProposal instanceof LazyJavaTypeCompletionProposal) {
-            return SubwordsJavaTypeCompletionProposal.create(subwordsContext);
-
         } else if (jdtProposal instanceof JavaFieldWithCastedReceiverCompletionProposal) {
             return SubwordsFieldCastedCompletionProposal.create(subwordsContext);
-
         } else if (jdtProposal instanceof OverrideCompletionProposal) {
             return SubwordsOverrideCompletionProposal.create(subwordsContext);
-
         } else if (jdtProposal instanceof AnonymousTypeCompletionProposal) {
             try {
                 return SubwordsAnonymousCompletionProposal.create(subwordsContext);
             } catch (final CoreException e) {
                 throw new RuntimeException(e);
             }
+        } else if (jdtProposal instanceof JavaCompletionProposal) {
+            return SubwordsJavaCompletionProposal.create(subwordsContext);
+        } else if (jdtProposal instanceof LazyJavaTypeCompletionProposal) {
+            return SubwordsJavaTypeCompletionProposal.create(subwordsContext);
         } else {
             // XXX should we throw an exception here?
             return null;

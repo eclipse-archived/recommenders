@@ -46,11 +46,6 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     @Override
     public void accept(final CompletionProposal proposal) {
-        // REVIEW: Name mismatch: it's not just a score calculator. It also
-        // computes regex match etc. Pls rename.
-
-        // bug: proposal.getCompletion for method overrides does not play well
-        // with getTokensUntilFirstOpeningBracket!
         final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal
                 .getCompletion());
         if (!SubwordsUtils.checkStringMatchesPrefixPattern(prefix, subwordsMatchingRegion)) {
