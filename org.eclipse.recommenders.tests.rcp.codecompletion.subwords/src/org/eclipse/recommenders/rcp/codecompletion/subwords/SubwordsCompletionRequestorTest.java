@@ -10,8 +10,11 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
+import static org.eclipse.jdt.core.CompletionProposal.FIELD_REF_WITH_CASTED_RECEIVER;
 import static org.eclipse.jdt.core.CompletionProposal.JAVADOC_BLOCK_TAG;
+import static org.eclipse.jdt.core.CompletionProposal.METHOD_DECLARATION;
 import static org.eclipse.jdt.core.CompletionProposal.METHOD_REF;
+import static org.eclipse.jdt.core.CompletionProposal.TYPE_REF;
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockUtils.mockCompletionProposal;
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockUtils.mockInvocationContext;
 import static org.junit.Assert.assertEquals;
@@ -19,13 +22,14 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.junit.Test;
 
 public class SubwordsCompletionRequestorTest {
 
     @Test
-    public void testHappyPath() {
+    public void testHappyPath() throws JavaModelException {
         // setup:
         final CompletionProposal proposal = mockCompletionProposal(METHOD_REF, "completion()");
         final SubwordsCompletionRequestor sut = createSut("cmp");
@@ -36,7 +40,7 @@ public class SubwordsCompletionRequestorTest {
     }
 
     @Test
-    public void testRightProposalKindButNoCompletionMatch() {
+    public void testRightProposalKindButNoCompletionMatch() throws JavaModelException {
         // setup:
         final CompletionProposal proposal = mockCompletionProposal(METHOD_REF, "completion(...)");
         final SubwordsCompletionRequestor sut = createSut("moc");
@@ -47,7 +51,7 @@ public class SubwordsCompletionRequestorTest {
     }
 
     @Test
-    public void testCompletionMatchButWrongProposalKind() {
+    public void testCompletionMatchButWrongProposalKind() throws JavaModelException {
         // setup:
         final CompletionProposal proposal = mockCompletionProposal(JAVADOC_BLOCK_TAG, "completion(...)");
         final SubwordsCompletionRequestor sut = createSut("cmpl");
@@ -57,6 +61,51 @@ public class SubwordsCompletionRequestorTest {
         assertNumberOfAcceptedProposals(0, sut);
     }
 
+    @Test
+    public void testTypeCompletion() throws JavaModelException {
+        // setup:
+        final CompletionProposal proposal = mockCompletionProposal(TYPE_REF, "Text(...)");
+        final SubwordsCompletionRequestor sut = createSut("te");
+        // exercise:
+        sut.accept(proposal);
+        // verify:
+        assertNumberOfAcceptedProposals(1, sut);
+    }
+
+    @Test
+    public void testFieldCompletion() throws JavaModelException {
+        // setup:
+        final CompletionProposal proposal = mockCompletionProposal(FIELD_REF_WITH_CASTED_RECEIVER, "field");
+        final SubwordsCompletionRequestor sut = createSut("ld");
+        // exercise:
+        sut.accept(proposal);
+        // verify:
+        assertNumberOfAcceptedProposals(1, sut);
+    }
+
+    @Test
+    public void testOverrideCompletion() throws JavaModelException {
+        // setup:
+        final CompletionProposal proposal = mockCompletionProposal(METHOD_DECLARATION, "createControl");
+        final SubwordsCompletionRequestor sut = createSut("cont");
+        // exercise:
+        sut.accept(proposal);
+        // verify:
+        assertNumberOfAcceptedProposals(1, sut);
+    }
+
+    @Test
+    public void testAnonymousTypeCompletion() throws JavaModelException {
+        // setup:
+        final CompletionProposal proposal = mockCompletionProposal(CompletionProposal.ANONYMOUS_CLASS_DECLARATION,
+                "TestClass");
+        final SubwordsCompletionRequestor sut = createSut("est");
+        // exercise:
+        sut.accept(proposal);
+        // verify:
+        assertNumberOfAcceptedProposals(1, sut);
+    }
+
     private void assertNumberOfAcceptedProposals(final int expectedNumberOfProposals,
             final SubwordsCompletionRequestor requestor) {
         final List<IJavaCompletionProposal> acceptedProposals = requestor.getProposals();
@@ -64,7 +113,7 @@ public class SubwordsCompletionRequestorTest {
                 acceptedProposals.size());
     }
 
-    private SubwordsCompletionRequestor createSut(final String token) {
+    private SubwordsCompletionRequestor createSut(final String token) throws JavaModelException {
         return new SubwordsCompletionRequestor(token, mockInvocationContext());
     }
 }

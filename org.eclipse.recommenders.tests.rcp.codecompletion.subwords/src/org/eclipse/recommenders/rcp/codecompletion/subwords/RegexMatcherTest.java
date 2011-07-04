@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,7 @@ public class RegexMatcherTest {
     private SubwordsJavaMethodCompletionProposal sut;
 
     @Before
-    public void before() {
+    public void before() throws JavaModelException {
         sut = createJavaCompletionProposal();
     }
 
@@ -76,7 +77,7 @@ public class RegexMatcherTest {
         assertFalse(sut.isPrefix("void", c1));
     }
 
-    private SubwordsJavaMethodCompletionProposal createJavaCompletionProposal() {
+    private SubwordsJavaMethodCompletionProposal createJavaCompletionProposal() throws JavaModelException {
         final CompletionProposal dummyProposal = mockCompletionProposal(CompletionProposal.METHOD_REF, c1);
         final JavaContentAssistInvocationContext dummyInvocationContext = mockInvocationContext();
 
