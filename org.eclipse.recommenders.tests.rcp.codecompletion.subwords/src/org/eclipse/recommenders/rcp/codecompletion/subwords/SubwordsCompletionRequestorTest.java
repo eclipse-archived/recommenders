@@ -7,7 +7,8 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
- */package org.eclipse.recommenders.rcp.codecompletion.subwords;
+ */
+package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import static org.eclipse.jdt.core.CompletionProposal.JAVADOC_BLOCK_TAG;
 import static org.eclipse.jdt.core.CompletionProposal.METHOD_REF;
@@ -19,22 +20,19 @@ import java.util.List;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
-import org.junit.Ignore;
 import org.junit.Test;
 
-public class SubwordsCompletionRequestorTest {;
-
+public class SubwordsCompletionRequestorTest {
 
     @Test
-    @Ignore
     public void testHappyPath() {
         // setup:
-        final CompletionProposal proposal = mockCompletionProposal(METHOD_REF,"completion()");
+        final CompletionProposal proposal = mockCompletionProposal(METHOD_REF, "completion()");
         final SubwordsCompletionRequestor sut = createSut("cmp");
         // exercise:
         sut.accept(proposal);
         // verify:
-        assertNumberOfAcceptedProposals(1,sut);
+        assertNumberOfAcceptedProposals(1, sut);
     }
 
     @Test
@@ -45,7 +43,7 @@ public class SubwordsCompletionRequestorTest {;
         // exercise:
         sut.accept(proposal);
         // verify:
-        assertNumberOfAcceptedProposals(0,sut);
+        assertNumberOfAcceptedProposals(0, sut);
     }
 
     @Test
@@ -56,14 +54,15 @@ public class SubwordsCompletionRequestorTest {;
         // exercise:
         sut.accept(proposal);
         // verify:
-        assertNumberOfAcceptedProposals(0,sut);
-    }
-    
-    private void assertNumberOfAcceptedProposals(final int expectedNumberOfProposals, final SubwordsCompletionRequestor requestor) {
-        final List<IJavaCompletionProposal> acceptedProposals = requestor.getProposals();
-        assertEquals("proposal requestor did not accept what you expected :(",expectedNumberOfProposals, acceptedProposals.size());
+        assertNumberOfAcceptedProposals(0, sut);
     }
 
+    private void assertNumberOfAcceptedProposals(final int expectedNumberOfProposals,
+            final SubwordsCompletionRequestor requestor) {
+        final List<IJavaCompletionProposal> acceptedProposals = requestor.getProposals();
+        assertEquals("proposal requestor did not accept what you expected :(", expectedNumberOfProposals,
+                acceptedProposals.size());
+    }
 
     private SubwordsCompletionRequestor createSut(final String token) {
         return new SubwordsCompletionRequestor(token, mockInvocationContext());

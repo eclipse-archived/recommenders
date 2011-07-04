@@ -30,6 +30,7 @@ public class SubwordsMockUtils {
         when(mock.getKind()).thenReturn(proposalKind);
         when(mock.getCompletion()).thenReturn(completion.toCharArray());
         when(mock.getName()).thenReturn(completion.toCharArray());
+        when(mock.getSignature()).thenReturn("()V".toCharArray());
 
         return mock;
     }
