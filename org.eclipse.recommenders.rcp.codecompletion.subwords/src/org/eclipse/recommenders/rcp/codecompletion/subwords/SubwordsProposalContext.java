@@ -18,9 +18,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.SourceRange;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.viewers.StyledString;
+
+import com.google.common.collect.Lists;
 
 public class SubwordsProposalContext {
 
@@ -79,45 +82,45 @@ public class SubwordsProposalContext {
         final StyledString copy = SubwordsUtils.deepCopy(origin);
         highlighBigramMatches(copy);
         highlightRegexMatches(copy);
-        // copy.append(" (partial)", StyledString.QUALIFIER_STYLER);
         return copy;
     }
 
     private void highlighBigramMatches(final StyledString copy) {
-        for (final String bigram : prefixBigrams) {
-            final int indexOf = StringUtils.indexOfIgnoreCase(subwordsMatchingRegion, bigram);
-            if (indexOf != -1) {
-                copy.setStyle(indexOf, bigram.length(), StyledString.COUNTER_STYLER);
-            }
-
-            // int indexOf = -1;
-            // while ((indexOf =
-            // StringUtils.indexOfIgnoreCase(subwordsMatchingRegion, bigram,
-            // indexOf + 1)) != -1) {
-            // copy.setStyle(indexOf, 2, StyledString.COUNTER_STYLER);
-            // }
+        for (final SourceRange range : findBigramHighlightRanges()) {
+            copy.setStyle(range.getOffset(), range.getLength(), StyledString.COUNTER_STYLER);
         }
     }
 
+    protected List<SourceRange> findBigramHighlightRanges() {
+        final List<SourceRange> res = Lists.newLinkedList();
+        for (final String bigram : prefixBigrams) {
+            final int indexOf = StringUtils.indexOfIgnoreCase(subwordsMatchingRegion, bigram);
+            if (indexOf != -1) {
+                final SourceRange range = new SourceRange(indexOf, bigram.length());
+                res.add(range);
+            }
+        }
+        return res;
+    }
+
     private void highlightRegexMatches(final StyledString copy) {
+        for (final SourceRange range : findRegexHighlightRanges()) {
+            copy.setStyle(range.getOffset(), range.getLength(), StyledString.COUNTER_STYLER);
+        }
+    }
+
+    protected List<SourceRange> findRegexHighlightRanges() {
         final Matcher m = createMatcher();
+        final List<SourceRange> res = Lists.newLinkedList();
         if (m.find()) {
             for (int i = 1; i <= m.groupCount(); i++) {
                 final int start = m.start(i);
                 final int end = m.end(i);
                 final int length = end - start;
-                copy.setStyle(start, length, StyledString.COUNTER_STYLER);
+                res.add(new SourceRange(start, length));
             }
         }
-    }
-
-    private void addRegexMatchesToHighlight(final StyledString copy, final Matcher m) {
-        for (int i = 1; i <= m.groupCount(); i++) {
-            final int start = m.start(i);
-            final int end = m.end(i);
-            final int length = end - start;
-            copy.setStyle(start, length, StyledString.COUNTER_STYLER);
-        }
+        return res;
     }
 
     public List<String> getPrefixBigrams() {
