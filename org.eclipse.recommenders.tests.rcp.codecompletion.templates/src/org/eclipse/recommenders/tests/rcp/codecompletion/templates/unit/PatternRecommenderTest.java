@@ -18,13 +18,14 @@ import java.util.SortedSet;
 
 import junit.framework.Assert;
 
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.PatternNode;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacade;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.PatternRecommender;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
@@ -59,12 +60,16 @@ public final class PatternRecommenderTest {
     }
 
     protected static PatternRecommender getPatternRecommenderMock(final ITypeName receiverType) {
-        final ICallsModelStore store = Mockito.mock(CallsModelStore.class);
-        final ObjectMethodCallsNet net = getCallsNetMock(receiverType);
-        Mockito.when(Boolean.valueOf(store.hasModel(receiverType))).thenReturn(Boolean.TRUE);
-        Mockito.when(store.acquireModel(receiverType)).thenReturn(net);
 
-        return new PatternRecommender(store, new Provider<Set<IVariableUsageResolver>>() {
+        final ProjectModelFacade modelFacade = Mockito.mock(ProjectModelFacade.class);
+        final ObjectMethodCallsNet net = getCallsNetMock(receiverType);
+        Mockito.when(modelFacade.hasModel(receiverType)).thenReturn(Boolean.TRUE);
+        Mockito.when(modelFacade.acquireModel(receiverType)).thenReturn(net);
+
+        final ProjectServices projectServices = Mockito.mock(ProjectServices.class);
+        Mockito.when(projectServices.getModelFacade(Mockito.any(IJavaProject.class))).thenReturn(modelFacade);
+
+        return new PatternRecommender(projectServices, new Provider<Set<IVariableUsageResolver>>() {
             @Override
             public Set<IVariableUsageResolver> get() {
                 return Collections.emptySet();

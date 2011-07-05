@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.tests.rcp.codecompletion.templates.unit;
 
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
@@ -110,6 +111,9 @@ public final class CompletionTargetVariableBuilderTest {
                 typeName).getClassName()) + (variableName != null ? " " + variableName : ""));
         Mockito.when(node.toString()).thenReturn("<test:" + bla + ">");
         Mockito.when(context.getCompletionNode()).thenReturn(node);
+
+        final ICompilationUnit compilationUnit = Mockito.mock(ICompilationUnit.class);
+        Mockito.when(context.getCompilationUnit()).thenReturn(compilationUnit);
         return context;
     }
 }

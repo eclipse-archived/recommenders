@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.eclipse.jdt.core.ElementChangedEvent;
@@ -27,6 +29,8 @@ import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
+
+import com.google.common.collect.Sets;
 
 public class ProjectModelFacade implements IElementChangedListener {
 
@@ -135,5 +139,10 @@ public class ProjectModelFacade implements IElementChangedListener {
 
     private boolean isClasspathChange(final int flags) {
         return (flags & IJavaElementDelta.F_RESOLVED_CLASSPATH_CHANGED) != 0;
+    }
+
+    public Set<ITypeName> findTypesBySimpleName(final ITypeName receiverType) {
+        // TODO: Implement simple name lookup service.
+        return Sets.newHashSet();
     }
 }

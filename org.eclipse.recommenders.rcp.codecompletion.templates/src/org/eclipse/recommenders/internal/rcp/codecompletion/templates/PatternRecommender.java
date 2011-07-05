@@ -16,13 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacade;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -49,12 +50,12 @@ public final class PatternRecommender {
     private static final double PATTERN_PROBABILITY_THRESHOLD = 0.02d;
     private static final double METHOD_PROBABILITY_THRESHOLD = 0.1d;
 
-    private final ICallsModelStore callsModelStore;
     private final Provider<Set<IVariableUsageResolver>> usageResolvers;
 
     private IIntelligentCompletionContext context;
     private Set<IMethodName> receiverMethodInvocations;
     private IObjectMethodCallsNet model;
+    private final ProjectServices projectServices;
 
     /**
      * @param callsModelStore
@@ -65,9 +66,9 @@ public final class PatternRecommender {
      *            and preceding method invocations from a given context.
      */
     @Inject
-    public PatternRecommender(final ICallsModelStore callsModelStore,
+    public PatternRecommender(final ProjectServices projectServices,
             final Provider<Set<IVariableUsageResolver>> usageResolvers) {
-        this.callsModelStore = callsModelStore;
+        this.projectServices = projectServices;
         this.usageResolvers = usageResolvers;
     }
 
@@ -94,8 +95,10 @@ public final class PatternRecommender {
     }
 
     private void releaseModels(final ImmutableSet<IObjectMethodCallsNet> models) {
+        final IJavaProject javaProject = context.getCompilationUnit().getJavaProject();
+        final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
         for (final IObjectMethodCallsNet model : models) {
-            callsModelStore.releaseModel(model);
+            modelFacade.releaseModel(model);
         }
         this.model = null;
     }
@@ -140,19 +143,22 @@ public final class PatternRecommender {
      */
     private ImmutableSet<IObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
         final Builder<IObjectMethodCallsNet> models = ImmutableSet.builder();
+        final IJavaProject javaProject = context.getCompilationUnit().getJavaProject();
+        final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
         if (receiverType.getPackage().isDefaultPackage()) {
-            final Set<ITypeName> typeNames = callsModelStore.findTypesBySimpleName(receiverType);
-            models.addAll(acquireModels(typeNames));
-        } else if (callsModelStore.hasModel(receiverType)) {
-            models.add(callsModelStore.acquireModel(receiverType));
+            final Set<ITypeName> typeNames = modelFacade.findTypesBySimpleName(receiverType);
+            models.addAll(acquireModels(modelFacade, typeNames));
+        } else if (modelFacade.hasModel(receiverType)) {
+            models.add(modelFacade.acquireModel(receiverType));
         }
         return models.build();
     }
 
-    private Iterable<? extends IObjectMethodCallsNet> acquireModels(final Set<ITypeName> typeNames) {
+    private Iterable<? extends IObjectMethodCallsNet> acquireModels(final ProjectModelFacade modelFacade,
+            final Set<ITypeName> typeNames) {
         final Set<IObjectMethodCallsNet> models = Sets.newHashSet();
         for (final ITypeName typeName : typeNames) {
-            models.add(callsModelStore.acquireModel(typeName));
+            models.add(modelFacade.acquireModel(typeName));
         }
         return models;
     }

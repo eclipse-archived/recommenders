@@ -12,6 +12,7 @@ package org.eclipse.recommenders.tests.rcp.codecompletion.templates.unit;
 
 import java.util.HashSet;
 
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
@@ -23,6 +24,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.mockito.Mockito;
 
 /**
  * All Unit tests to be executed are included here. Furthermore this class
@@ -71,6 +73,9 @@ public final class UnitTestSuite {
             final String typeName, final boolean needsConstructor) {
         final IIntelligentCompletionContext context = CompletionTargetVariableBuilderTest.getMockedContext(code,
                 variableName, typeName);
+
+        final ICompilationUnit compilationUnit = Mockito.mock(ICompilationUnit.class);
+        Mockito.when(context.getCompilationUnit()).thenReturn(compilationUnit);
         return new CompletionTargetVariable(variableName, VmTypeName.get(typeName), new HashSet<IMethodName>(),
                 new Region(0, 0), needsConstructor, context);
     }
