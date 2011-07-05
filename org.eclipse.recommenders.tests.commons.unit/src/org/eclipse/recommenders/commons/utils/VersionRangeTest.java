@@ -109,4 +109,36 @@ public class VersionRangeTest {
         final VersionRange sut = new VersionRangeBuilder().minExclusive(v36).maxExclusive(v38).build();
         assertEquals("(3.6.0,3.8.0)", sut.toString());
     }
+
+    @Test
+    public void testVersionBelowInclusive() {
+        final VersionRange sut = new VersionRangeBuilder().minInclusive(v37).maxExclusive(v38).build();
+        assertTrue(sut.isVersionBelow(v36));
+        assertFalse(sut.isVersionBelow(v37));
+        assertFalse(sut.isVersionBelow(v38));
+    }
+
+    @Test
+    public void testVersionBelowExclusive() {
+        final VersionRange sut = new VersionRangeBuilder().minExclusive(v37).maxExclusive(v38).build();
+        assertTrue(sut.isVersionBelow(v36));
+        assertTrue(sut.isVersionBelow(v37));
+        assertFalse(sut.isVersionBelow(v38));
+    }
+
+    @Test
+    public void testVersionAboveInclusive() {
+        final VersionRange sut = new VersionRangeBuilder().minInclusive(v36).maxInclusive(v37).build();
+        assertFalse(sut.isVersionAbove(v36));
+        assertFalse(sut.isVersionAbove(v37));
+        assertTrue(sut.isVersionAbove(v38));
+    }
+
+    @Test
+    public void testVersionAboveExclusive() {
+        final VersionRange sut = new VersionRangeBuilder().minExclusive(v36).maxExclusive(v37).build();
+        assertFalse(sut.isVersionAbove(v36));
+        assertTrue(sut.isVersionAbove(v37));
+        assertTrue(sut.isVersionAbove(v38));
+    }
 }

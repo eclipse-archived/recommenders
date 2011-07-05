@@ -126,4 +126,46 @@ public class VersionRange {
         final String upperBoundCharacter = isMaxVersionInclusive() ? "]" : ")";
         return String.format("%s%s,%s%s", lowerBoundCharacter, getMinVersion(), getMaxVersion(), upperBoundCharacter);
     }
+
+    public boolean isVersionBelow(final Version version) {
+        final int compare = minVersion.compareTo(version);
+        if (compare == 0) {
+            return !isMinVersionInclusive();
+        }
+        return compare > 0;
+    }
+
+    public boolean isVersionAbove(final Version version) {
+        final int compare = maxVersion.compareTo(version);
+        if (compare == 0) {
+            return !isMaxVersionInclusive();
+        }
+        return compare < 0;
+    }
+
+    public boolean isUpperBoundHigherThan(final VersionRange range) {
+        final int cmp = getMaxVersion().compareTo(range.getMaxVersion());
+        if (cmp == 0) {
+            return isMaxVersionInclusive() && !range.isMaxVersionInclusive();
+        }
+        return cmp > 0;
+    }
+
+    public boolean isLowerBoundLowerThan(final VersionRange range) {
+        final int cmp = getMinVersion().compareTo(range.getMinVersion());
+        if (cmp == 0) {
+            return isMinVersionInclusive() && !range.isMinVersionInclusive();
+        }
+        return cmp < 0;
+    }
+
+    public boolean isUpperBoundEquals(final VersionRange range) {
+        return isMaxVersionInclusive() == range.isMaxVersionInclusive()
+                && getMaxVersion().equals(range.getMaxVersion());
+    }
+
+    public boolean isLowerBoundEquals(final VersionRange range) {
+        return isMinVersionInclusive() == range.isMinVersionInclusive()
+                && getMinVersion().equals(range.getMinVersion());
+    }
 }

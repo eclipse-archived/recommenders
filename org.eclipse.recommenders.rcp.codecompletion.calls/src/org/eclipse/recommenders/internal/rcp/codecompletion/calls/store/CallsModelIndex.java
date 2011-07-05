@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.recommenders.commons.utils.Version;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
@@ -30,18 +29,8 @@ public class CallsModelIndex {
         archives.add(newModelArchive);
 
         for (final IPackageFragmentRoot packageRoot : packageRoot2Id.keySet()) {
-            replaceIfServesAndNewer(newModelArchive, packageRoot);
-        }
-    }
-
-    private void replaceIfServesAndNewer(final IModelArchive newModelArchive, final IPackageFragmentRoot packageRoot) {
-        final LibraryIdentifier libraryIdentifier = packageRoot2Id.get(packageRoot);
-        final Manifest manifest = newModelArchive.getManifest();
-        if (serves(libraryIdentifier, manifest)) {
-            final IModelArchive previousArchive = packageRoot2modelArchive.get(packageRoot);
-            if (isPreviousMatchOlder(previousArchive, newModelArchive)) {
-                packageRoot2modelArchive.put(packageRoot, newModelArchive);
-            }
+            final IModelArchive bestMatch = findMatchingModelArchive(packageRoot2Id.get(packageRoot));
+            packageRoot2modelArchive.put(packageRoot, bestMatch);
         }
     }
 
@@ -52,27 +41,8 @@ public class CallsModelIndex {
     }
 
     private IModelArchive findMatchingModelArchive(final LibraryIdentifier libraryIdentifier) {
-        IModelArchive bestMatch = IModelArchive.NULL;
-        for (final IModelArchive archive : archives) {
-            if (serves(libraryIdentifier, archive.getManifest()) && isPreviousMatchOlder(bestMatch, archive)) {
-                bestMatch = archive;
-            }
-        }
-        return bestMatch;
-    }
-
-    private boolean serves(final LibraryIdentifier libraryIdentifier, final Manifest manifest) {
-        final Version libraryVersion = libraryIdentifier.version;
-        final boolean isNameEquals = libraryIdentifier.name.equals(manifest.getName());
-        final boolean isVersionIncluded = manifest.getVersionRange().isIncluded(libraryVersion);
-        return isNameEquals && (isVersionIncluded || libraryVersion.isUnknown());
-    }
-
-    private boolean isPreviousMatchOlder(final IModelArchive previousMatch, final IModelArchive newMatch) {
-        final Version prevMaxVersion = previousMatch.getManifest().getVersionRange().getMaxVersion();
-        final Version newMaxVersion = newMatch.getManifest().getVersionRange().getMaxVersion();
-
-        return previousMatch.getManifest().getTimestamp().compareTo(newMatch.getManifest().getTimestamp()) < 0;
+        final ArchiveMatcher matcher = new ArchiveMatcher(archives, libraryIdentifier);
+        return matcher.getBestMatch();
     }
 
     public void load(final IPackageFragmentRoot[] packageFragmentRoots) {

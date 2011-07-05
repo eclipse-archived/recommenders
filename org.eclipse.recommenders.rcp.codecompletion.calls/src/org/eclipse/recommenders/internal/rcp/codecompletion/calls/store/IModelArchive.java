@@ -17,6 +17,11 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMet
 
 public interface IModelArchive extends Closeable {
 
+    /**
+     * Dummy object returned by a model archive store if no matching archive
+     * could be found. Calls to {@link #hasModel(ITypeName)} will always return
+     * false.
+     */
     public static final IModelArchive NULL = new NullModelArchive();
 
     public abstract Manifest getManifest();
