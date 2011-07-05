@@ -34,7 +34,7 @@ public class SubwordsJavaTypeCompletionProposal extends LazyJavaTypeCompletionPr
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        setRelevance(SubwordsUtils.calculateRelevance(subwordsContext));
+        setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 

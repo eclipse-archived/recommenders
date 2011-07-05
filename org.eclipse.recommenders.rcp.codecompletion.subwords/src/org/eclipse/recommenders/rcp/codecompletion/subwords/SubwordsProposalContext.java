@@ -31,6 +31,8 @@ import com.google.common.collect.Lists;
 
 public class SubwordsProposalContext {
 
+    public static final int PREFIX_BONUS = 5000;
+
     private static Styler BIGRAMS_STYLER = new Styler() {
         @Override
         public void applyStyles(final TextStyle textStyle) {
@@ -152,6 +154,16 @@ public class SubwordsProposalContext {
 
     public boolean isPrefixMatch() {
         return subwordsMatchingRegion.startsWith(prefix);
+    }
+
+    public int calculateRelevance() {
+        final int matches = SubwordsUtils.calculateMatchingNGrams(prefixBigrams, matchingRegionBigrams);
+
+        int relevance = jdtProposal.getRelevance() + matches;
+        if (isPrefixMatch()) {
+            relevance += PREFIX_BONUS;
+        }
+        return relevance;
     }
 
 }

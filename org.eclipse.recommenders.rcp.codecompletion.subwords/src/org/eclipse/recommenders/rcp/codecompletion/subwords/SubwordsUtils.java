@@ -26,13 +26,11 @@ import com.google.common.collect.Sets;
 
 public class SubwordsUtils {
 
-    public static final int PREFIX_BONUS = 5000;
-
     public static int calculateMatchingNGrams(final String s1, final String s2, final int n) {
         return calculateMatchingNGrams(createLowerCaseNGrams(s1, n), createLowerCaseNGrams(s2, n));
     }
 
-    private static int calculateMatchingNGrams(final List<String> ngrams1, final List<String> ngrams2) {
+    static int calculateMatchingNGrams(final List<String> ngrams1, final List<String> ngrams2) {
         final Set<String> nGrams1 = Sets.newHashSet(ngrams1);
         final Set<String> nGrams2 = Sets.newHashSet(ngrams2);
         nGrams1.retainAll(nGrams2);
@@ -132,17 +130,5 @@ public class SubwordsUtils {
             completion = StringUtils.substringAfterLast(completion, " ");
         }
         return completion;
-    }
-
-    public static int calculateRelevance(final SubwordsProposalContext state) {
-        final List<String> prefixBigrams = state.getPrefixBigrams();
-        final List<String> matchingRegionBigrams = state.getMatchingRegionBigrams();
-        final int matches = calculateMatchingNGrams(prefixBigrams, matchingRegionBigrams);
-
-        int relevance = state.getJdtProposal().getRelevance() + matches;
-        if (state.isPrefixMatch()) {
-            relevance += PREFIX_BONUS;
-        }
-        return relevance;
     }
 }
