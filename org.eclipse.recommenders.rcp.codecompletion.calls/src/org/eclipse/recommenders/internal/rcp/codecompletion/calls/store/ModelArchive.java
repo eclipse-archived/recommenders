@@ -16,6 +16,9 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -30,6 +33,15 @@ public class ModelArchive implements IModelArchive {
     private ZipFile zipFile;
     private Manifest manifest;
     private final File file;
+
+    private final GenericKeyedObjectPool pool = createPool();
+
+    private GenericKeyedObjectPool createPool() {
+        final GenericKeyedObjectPool pool = new GenericKeyedObjectPool(new CallsModelPoolFactory());
+        pool.setMaxTotal(100);
+        pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
+        return pool;
+    }
 
     public ModelArchive(final File file) {
         this.file = file;
@@ -71,7 +83,25 @@ public class ModelArchive implements IModelArchive {
     }
 
     @Override
-    public IObjectMethodCallsNet loadModel(final ITypeName name) {
+    public IObjectMethodCallsNet acquireModel(final ITypeName name) {
+        Checks.ensureIsTrue(hasModel(name));
+        try {
+            return (IObjectMethodCallsNet) pool.borrowObject(name);
+        } catch (final Exception e) {
+            throw Throws.throwUnhandledException(e);
+        }
+    }
+
+    @Override
+    public void releaseModel(final IObjectMethodCallsNet model) {
+        try {
+            pool.returnObject(model.getType(), model);
+        } catch (final Exception e) {
+            Throws.throwUnhandledException(e);
+        }
+    }
+
+    private IObjectMethodCallsNet loadModel(final ITypeName name) {
         final ZipEntry entry = zipFile.getEntry(getFilenameFromType(name));
         try {
             return loader.load(name, zipFile.getInputStream(entry));
@@ -84,5 +114,30 @@ public class ModelArchive implements IModelArchive {
     @Override
     public void close() throws IOException {
         zipFile.close();
+    }
+
+    private class CallsModelPoolFactory implements KeyedPoolableObjectFactory {
+        @Override
+        public boolean validateObject(final Object arg0, final Object arg1) {
+            return true;
+        }
+
+        @Override
+        public void passivateObject(final Object arg0, final Object arg1) throws Exception {
+        }
+
+        @Override
+        public Object makeObject(final Object key) throws Exception {
+            return loadModel((ITypeName) key);
+        }
+
+        @Override
+        public void destroyObject(final Object arg0, final Object arg1) throws Exception {
+        }
+
+        @Override
+        public void activateObject(final Object typeName, final Object callsNet) throws Exception {
+            ((IObjectMethodCallsNet) callsNet).clearEvidence();
+        }
     }
 }

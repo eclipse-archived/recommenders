@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.google.common.collect.Maps;
+
 public class HashBag<T> implements Bag<T> {
 
     public static <T> HashBag<T> newHashBag() {
@@ -216,4 +218,14 @@ public class HashBag<T> implements Bag<T> {
     public boolean contains(final T element) {
         return index.containsKey(element);
     }
+
+    @Override
+    public Map<T, Integer> asMap() {
+        return Maps.newHashMap(index);
+    }
+
+    public boolean isEmpty() {
+        return index.isEmpty();
+    }
+
 }

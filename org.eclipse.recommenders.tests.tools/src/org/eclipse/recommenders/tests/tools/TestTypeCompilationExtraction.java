@@ -17,8 +17,8 @@ import java.util.jar.JarFile;
 import junit.framework.Assert;
 
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
-import org.eclipse.recommenders.tools.ClassId;
-import org.eclipse.recommenders.tools.ClassIdExtractor;
+import org.eclipse.recommenders.internal.commons.analysis.archive.ClassId;
+import org.eclipse.recommenders.internal.commons.analysis.archive.ClassIdExtractor;
 import org.junit.Test;
 
 public class TestTypeCompilationExtraction {

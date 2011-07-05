@@ -238,9 +238,15 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
     }
 
     private IJavaElement findEnclosingElement() {
-        final CompletionContext coreContext = completionRequestor.getCompletionContext();
-        final IJavaElement element = coreContext.getEnclosingElement();
-        return element;
+        try {
+            final CompletionContext coreContext = completionRequestor.getCompletionContext();
+            final IJavaElement element = coreContext.getEnclosingElement();
+            return element;
+        } catch (final RuntimeException e) {
+            RecommendersPlugin.logError(e, "error in jdt resolving enclosing element.",
+                    completionRequestor.getCompletionContext());
+        }
+        return null;
     }
 
     @Override
@@ -340,9 +346,10 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
 
     @Override
     public Variable getVariable() {
-        if (isReceiverImplicitThis()) {
+        if (isReceiverImplicitThis() || isReceiverExplicitThis()) {
             return Variable.create("this", getSuperclassOfEnclosingType(), getEnclosingMethod());
         }
+
         if (getReceiverName() != null && getReceiverType() != null) {
             return Variable.create(getReceiverName(), getReceiverType(), getEnclosingMethod());
         }
@@ -353,6 +360,10 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         final String name = String.valueOf(match.name);
         final ITypeName type = CompilerBindings.toTypeName(match.type);
         return Variable.create(name, type, getEnclosingMethod());
+    }
+
+    private boolean isReceiverExplicitThis() {
+        return "this".equals(getReceiverName());
     }
 
     @Override
@@ -366,6 +377,10 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         AbstractVariableDeclaration match = findMatchingLocalVariable(getReceiverName());
         if (match == null) {
             match = findMatchingFieldDeclaration(variableName);
+            if (match == null) {
+                match = findMatchingLocalVariable(variableName);
+            }
+
         }
         if (match == null) {
             return null;

@@ -23,6 +23,8 @@ public interface IModelArchive extends Closeable {
 
     public abstract boolean hasModel(final ITypeName name);
 
-    public abstract IObjectMethodCallsNet loadModel(final ITypeName name);
+    public abstract IObjectMethodCallsNet acquireModel(final ITypeName name);
+
+    public abstract void releaseModel(IObjectMethodCallsNet model);
 
 }

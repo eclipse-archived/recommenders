@@ -34,7 +34,12 @@ public class NullModelArchive implements IModelArchive {
     }
 
     @Override
-    public IObjectMethodCallsNet loadModel(final ITypeName name) {
+    public IObjectMethodCallsNet acquireModel(final ITypeName name) {
         throw throwIllegalStateException("Not allowed to load non existing model. Call hasModel() to check existance.");
+    }
+
+    @Override
+    public void releaseModel(final IObjectMethodCallsNet model) {
+        throw throwIllegalStateException("Can not release model on NullModelArchive.");
     }
 }

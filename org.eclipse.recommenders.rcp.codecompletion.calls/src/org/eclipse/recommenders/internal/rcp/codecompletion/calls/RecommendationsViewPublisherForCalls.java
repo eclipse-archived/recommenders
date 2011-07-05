@@ -75,6 +75,7 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
                 if (findModel(variable.type)) {
                     RecommendationsViewPublisherForCalls.this.variable = variable;
                     computeRecommendationsForObjectInstance();
+                    releaseModel();
                 }
                 return false;
             }
@@ -87,9 +88,18 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
         final IJavaProject javaProject = jdtCompilationUnit.getJavaProject();
         final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
         if (modelFacade.hasModel(type)) {
-            model = modelFacade.getModel(type);
+            model = modelFacade.acquireModel(type);
         }
         return model != null;
+    }
+
+    protected void releaseModel() {
+        if (model != null) {
+            final IJavaProject javaProject = jdtCompilationUnit.getJavaProject();
+            final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+            modelFacade.releaseModel(model);
+            model = null;
+        }
     }
 
     private void computeRecommendationsForObjectInstance() {

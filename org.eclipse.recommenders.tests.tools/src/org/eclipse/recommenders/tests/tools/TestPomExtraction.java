@@ -15,7 +15,7 @@ import java.io.ByteArrayInputStream;
 import junit.framework.Assert;
 
 import org.eclipse.recommenders.commons.utils.Version;
-import org.eclipse.recommenders.tools.MavenPomJarIdExtractor;
+import org.eclipse.recommenders.internal.commons.analysis.archive.MavenPomJarIdExtractor;
 import org.junit.Test;
 
 public class TestPomExtraction {

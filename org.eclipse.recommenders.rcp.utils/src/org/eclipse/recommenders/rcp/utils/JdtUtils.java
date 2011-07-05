@@ -57,6 +57,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.rcp.utils.ast.MethodDeclarationFinder;
 import org.eclipse.recommenders.rcp.utils.internal.MyWorkingCopyOwner;
+import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -76,6 +77,31 @@ public class JdtUtils {
 
     public static <T extends IJavaElement> T resolveJavaElementProxy(final IJavaElement element) {
         return (T) element.getPrimaryElement();
+    }
+
+    public static IMethod findOverriddenMethod(final IMethod method) {
+        try {
+            final IMethod res = SuperTypeHierarchyCache.getMethodOverrideTester(method.getDeclaringType())
+                    .findOverriddenMethod(method, true);
+            return res;
+        } catch (final JavaModelException e) {
+            RecommendersUtilsPlugin.log(e);
+            return null;
+        }
+    }
+
+    public static IMethod findFirstDeclaration(final IMethod method) {
+
+        IMethod res = method;
+        while (true) {
+            final IMethod find = findOverriddenMethod(res);
+            if (find == null) {
+                break;
+            } else {
+                res = find;
+            }
+        }
+        return res;
     }
 
     private static IJavaElement[] codeResolve(final IJavaElement input, final ITextSelection selection)

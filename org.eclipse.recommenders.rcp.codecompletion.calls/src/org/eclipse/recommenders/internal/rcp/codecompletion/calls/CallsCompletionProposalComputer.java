@@ -118,6 +118,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         }
         findRecommendations();
         findMatchingProposals();
+        releaseModel();
         return this.proposals;
     }
 
@@ -154,9 +155,18 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
 
         if (modelFacade.hasModel(receiverType)) {
-            model = modelFacade.getModel(receiverType);
+            model = modelFacade.acquireModel(receiverType);
         }
         return model != null;
+    }
+
+    private void releaseModel() {
+        if (model != null) {
+            final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
+            final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+            modelFacade.releaseModel(model);
+            model = null;
+        }
     }
 
     private void findRecommendations() {

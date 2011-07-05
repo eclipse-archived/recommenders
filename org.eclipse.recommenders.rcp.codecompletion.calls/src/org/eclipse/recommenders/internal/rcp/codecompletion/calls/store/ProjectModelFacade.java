@@ -55,8 +55,12 @@ public class ProjectModelFacade implements IElementChangedListener {
         return getModelArchive(name).hasModel(name);
     }
 
-    public IObjectMethodCallsNet getModel(final ITypeName name) {
-        return getModelArchive(name).loadModel(name);
+    public IObjectMethodCallsNet acquireModel(final ITypeName name) {
+        return getModelArchive(name).acquireModel(name);
+    }
+
+    public void releaseModel(final IObjectMethodCallsNet model) {
+        getModelArchive(model.getType()).releaseModel(model);
     }
 
     private IModelArchive getModelArchive(final ITypeName name) {

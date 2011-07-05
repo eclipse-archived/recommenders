@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Paul-Emmanuel Faidherbe - Completion generalization
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
@@ -29,15 +30,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
     public List<?> computeCompletionProposals(final ContentAssistInvocationContext context,
             final IProgressMonitor monitor) {
         ctx = (JavaContentAssistInvocationContext) context;
-        if (isPrefixTokenEmpty()) {
-            return Collections.emptyList();
-        }
         return findSubwordMatchingProposals();
-    }
-
-    private boolean isPrefixTokenEmpty() {
-        final String token = getToken();
-        return token.isEmpty();
     }
 
     private String getToken() {
@@ -59,6 +52,8 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
         } catch (final JavaModelException e) {
             // TODO: won't do that in a later version... but for this early
             // prototype...
+            // REVIEW: could improve my code and log this message to the error
+            // log?
             e.printStackTrace();
         }
         return requestor.getProposals();

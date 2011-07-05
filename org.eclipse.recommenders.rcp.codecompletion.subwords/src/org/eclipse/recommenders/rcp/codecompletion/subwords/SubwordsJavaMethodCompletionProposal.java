@@ -10,30 +10,37 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.createRegexPatternFromPrefix;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.getTokensUntilFirstOpeningBracket;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaMethodCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.viewers.StyledString;
 
 @SuppressWarnings("restriction")
 public final class SubwordsJavaMethodCompletionProposal extends JavaMethodCompletionProposal {
-    public SubwordsJavaMethodCompletionProposal(final CompletionProposal proposal,
-            final JavaContentAssistInvocationContext context) {
+
+    public static SubwordsJavaMethodCompletionProposal create(final SubwordsProposalContext subwordsContext) {
+        return new SubwordsJavaMethodCompletionProposal(subwordsContext.getProposal(), subwordsContext.getContext(),
+                subwordsContext);
+    }
+
+    private final SubwordsProposalContext subwordsContext;
+
+    private SubwordsJavaMethodCompletionProposal(final CompletionProposal proposal,
+            final JavaContentAssistInvocationContext context, final SubwordsProposalContext subwordsContext) {
         super(proposal, context);
+        this.subwordsContext = subwordsContext;
     }
 
     @Override
-    public boolean isPrefix(final String prefix, String completion) {
-        final Pattern pattern = createRegexPatternFromPrefix(prefix);
-        completion = getTokensUntilFirstOpeningBracket(completion);
-        final Matcher m = pattern.matcher(completion);
-        final boolean matches = m.matches();
-        return matches;
+    protected boolean isPrefix(final String prefix, final String completion) {
+        subwordsContext.setPrefix(prefix);
+        setRelevance(subwordsContext.calculateRelevance());
+        return subwordsContext.isRegexMatch();
     }
 
+    @Override
+    public StyledString getStyledDisplayString() {
+        final StyledString origin = super.getStyledDisplayString();
+        return subwordsContext.getStyledDisplayString(origin);
+    }
 }

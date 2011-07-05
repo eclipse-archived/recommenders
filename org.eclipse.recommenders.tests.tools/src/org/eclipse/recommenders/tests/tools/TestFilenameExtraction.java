@@ -12,7 +12,7 @@ package org.eclipse.recommenders.tests.tools;
 
 import java.util.jar.JarFile;
 
-import org.eclipse.recommenders.tools.FilenameJarIdExtractor;
+import org.eclipse.recommenders.internal.commons.analysis.archive.FilenameJarIdExtractor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

@@ -18,7 +18,7 @@ import java.util.jar.Manifest;
 import junit.framework.Assert;
 
 import org.eclipse.recommenders.commons.utils.Version;
-import org.eclipse.recommenders.tools.OsgiManifestJarIdExtractor;
+import org.eclipse.recommenders.internal.commons.analysis.archive.OsgiManifestJarIdExtractor;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.osgi.framework.Constants;

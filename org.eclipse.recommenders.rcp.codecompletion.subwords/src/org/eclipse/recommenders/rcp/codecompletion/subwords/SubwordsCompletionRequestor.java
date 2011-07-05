@@ -11,49 +11,75 @@
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.createRegexPatternFromPrefix;
-import static org.eclipse.recommenders.rcp.codecompletion.subwords.RegexUtil.getTokensUntilFirstOpeningBracket;
+import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
+import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 import com.google.common.collect.Lists;
 
+@SuppressWarnings("restriction")
 public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private final List<IJavaCompletionProposal> proposals = Lists.newLinkedList();
 
-    private final Pattern pattern;
-
     private final JavaContentAssistInvocationContext ctx;
 
-    public SubwordsCompletionRequestor(final String token, final JavaContentAssistInvocationContext ctx) {
-        checkNotNull(token);
+    private final CompletionProposalCollector collector;
+
+    private final String prefix;
+
+    public SubwordsCompletionRequestor(final String prefix, final JavaContentAssistInvocationContext ctx) {
+        checkNotNull(prefix);
         checkNotNull(ctx);
+        this.prefix = prefix;
         this.ctx = ctx;
-        pattern = createRegexPatternFromPrefix(token);
+        this.collector = new CompletionProposalCollector(ctx.getCompilationUnit());
+        this.collector.acceptContext(ctx.getCoreContext());
     }
 
     @Override
     public void accept(final CompletionProposal proposal) {
-        switch (proposal.getKind()) {
-        case CompletionProposal.METHOD_REF:
-        case CompletionProposal.CONSTRUCTOR_INVOCATION:
-        case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
-        case CompletionProposal.METHOD_NAME_REFERENCE:
-        case CompletionProposal.JAVADOC_METHOD_REF:
-            final String completion = getTokensUntilFirstOpeningBracket(proposal.getCompletion());
-            final Matcher m = pattern.matcher(completion);
-            if (m.matches()) {
-                final IJavaCompletionProposal javaProposal = new SubwordsJavaMethodCompletionProposal(proposal, ctx);
-                proposals.add(javaProposal);
-            }
+        final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal
+                .getCompletion());
+        if (!SubwordsUtils.checkStringMatchesPrefixPattern(prefix, subwordsMatchingRegion)) {
+            return;
+        }
+
+        final IJavaCompletionProposal jdtProposal = tryCreateJdtProposal(proposal);
+        if (jdtProposal == null) {
+            return;
+        }
+
+        final SubwordsProposalContext subwordsContext = new SubwordsProposalContext(prefix, proposal, jdtProposal, ctx);
+
+        createSubwordsProposal(subwordsContext);
+
+    }
+
+    private IJavaCompletionProposal tryCreateJdtProposal(final CompletionProposal proposal) {
+        final int previousProposalsCount = collector.getJavaCompletionProposals().length;
+        collector.accept(proposal);
+        final boolean isAccepted = collector.getJavaCompletionProposals().length > previousProposalsCount;
+        if (isAccepted) {
+            return collector.getJavaCompletionProposals()[previousProposalsCount];
+        } else {
+            return null;
+        }
+    }
+
+    private void createSubwordsProposal(final SubwordsProposalContext subwordsContext) {
+        final AbstractJavaCompletionProposal subWordProposal = SubwordsCompletionProposalFactory
+                .createFromJDTProposal(subwordsContext);
+        if (subWordProposal != null) {
+            subWordProposal.setRelevance(subwordsContext.calculateRelevance());
+            proposals.add(subWordProposal);
         }
     }
 
