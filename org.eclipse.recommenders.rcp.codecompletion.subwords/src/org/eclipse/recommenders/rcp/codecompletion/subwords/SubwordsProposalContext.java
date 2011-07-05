@@ -12,7 +12,9 @@ package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +30,7 @@ import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.TextStyle;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class SubwordsProposalContext {
 
@@ -45,6 +48,15 @@ public class SubwordsProposalContext {
         @Override
         public void applyStyles(final TextStyle textStyle) {
             textStyle.underline = true;
+        }
+    };
+
+    private static Styler COMPOUND_STYLER = new Styler() {
+
+        @Override
+        public void applyStyles(final TextStyle textStyle) {
+            BIGRAMS_STYLER.applyStyles(textStyle);
+            REGEX_STYLER.applyStyles(textStyle);
         }
     };
 
@@ -101,14 +113,35 @@ public class SubwordsProposalContext {
 
     public StyledString getStyledDisplayString(final StyledString origin) {
         final StyledString copy = SubwordsUtils.deepCopy(origin);
-        highlightRegexMatches(copy);
-        highlighBigramMatches(copy);
+        final List<SourceRange> bigramHighlightRanges = findBigramHighlightRanges();
+        final List<SourceRange> regexHighlightRanges = findRegexHighlightRanges();
+        final Set<SourceRange> intersections = findIntersections(bigramHighlightRanges, regexHighlightRanges);
+
+        setStyle(copy, bigramHighlightRanges, BIGRAMS_STYLER);
+        setStyle(copy, regexHighlightRanges, REGEX_STYLER);
+        setStyle(copy, intersections, COMPOUND_STYLER);
+
         return copy;
     }
 
-    private void highlighBigramMatches(final StyledString copy) {
-        for (final SourceRange range : findBigramHighlightRanges()) {
-            copy.setStyle(range.getOffset(), range.getLength(), BIGRAMS_STYLER);
+    protected Set<SourceRange> findIntersections(final List<SourceRange> ranges1, final List<SourceRange> ranges2) {
+        final Set<SourceRange> intersections = Sets.newHashSet();
+        for (final SourceRange range1 : ranges1) {
+            for (final SourceRange range2 : ranges2) {
+                final int start = Math.max(range1.getOffset(), range2.getOffset());
+                final int end = Math.min(range1.getOffset() + range1.getLength(),
+                        range2.getOffset() + range2.getLength());
+                if (start < end) {
+                    intersections.add(new SourceRange(start, end - start));
+                }
+            }
+        }
+        return intersections;
+    }
+
+    private void setStyle(final StyledString copy, final Collection<SourceRange> ranges, final Styler styler) {
+        for (final SourceRange range : ranges) {
+            copy.setStyle(range.getOffset(), range.getLength(), styler);
         }
     }
 
@@ -122,12 +155,6 @@ public class SubwordsProposalContext {
             }
         }
         return res;
-    }
-
-    private void highlightRegexMatches(final StyledString copy) {
-        for (final SourceRange range : findRegexHighlightRanges()) {
-            copy.setStyle(range.getOffset(), range.getLength(), REGEX_STYLER);
-        }
     }
 
     protected List<SourceRange> findRegexHighlightRanges() {

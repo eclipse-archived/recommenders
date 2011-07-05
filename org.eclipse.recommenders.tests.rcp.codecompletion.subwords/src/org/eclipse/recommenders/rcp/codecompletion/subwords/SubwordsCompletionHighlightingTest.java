@@ -25,7 +25,12 @@ import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockU
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsMockUtils.mockJdtCompletion;
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.SourceRange;
@@ -40,11 +45,14 @@ public class SubwordsCompletionHighlightingTest {
         // exercise:
         final List<SourceRange> bigramMatches = sut.findBigramHighlightRanges();
         final List<SourceRange> regexMatches = sut.findRegexHighlightRanges();
+        final Set<SourceRange> intersections = sut.findIntersections(bigramMatches, regexMatches);
         // verify:
         checkCorrectStartingIndexes(bigramMatches, 0);
         checkCorrectStartingIndexes(regexMatches, 0, 1);
+        checkCorrectStartingIndexes(intersections, 0, 1);
         checkCorrectLength(bigramMatches, 2);
         checkCorrectLength(regexMatches, 1);
+        checkCorrectLength(intersections, 1);
     }
 
     @Test
@@ -54,11 +62,14 @@ public class SubwordsCompletionHighlightingTest {
         // exercise:
         final List<SourceRange> bigramMatches = sut.findBigramHighlightRanges();
         final List<SourceRange> regexMatches = sut.findRegexHighlightRanges();
+        final Set<SourceRange> intersections = sut.findIntersections(bigramMatches, regexMatches);
         // verify:
         checkCorrectStartingIndexes(bigramMatches, 11, 10);
         checkCorrectStartingIndexes(regexMatches, 3, 6, 8, 10, 11);
+        checkCorrectStartingIndexes(intersections, 10, 11);
         checkCorrectLength(bigramMatches, 2);
         checkCorrectLength(regexMatches, 1);
+        checkCorrectLength(intersections, 1);
     }
 
     @Test
@@ -68,11 +79,14 @@ public class SubwordsCompletionHighlightingTest {
         // exercise:
         final List<SourceRange> bigramMatches = sut.findBigramHighlightRanges();
         final List<SourceRange> regexMatches = sut.findRegexHighlightRanges();
+        final Set<SourceRange> intersections = sut.findIntersections(bigramMatches, regexMatches);
         // verify:
         checkCorrectStartingIndexes(bigramMatches, 2, 3);
         checkCorrectStartingIndexes(regexMatches, 0, 2, 3, 4);
+        checkCorrectStartingIndexes(intersections, 2, 3, 4);
         checkCorrectLength(bigramMatches, 2);
         checkCorrectLength(regexMatches, 1);
+        checkCorrectLength(intersections, 1);
     }
 
     private SubwordsProposalContext createTestContext(final String prefix, final String completion)
@@ -80,6 +94,17 @@ public class SubwordsCompletionHighlightingTest {
         final SubwordsProposalContext sut = new SubwordsProposalContext(prefix, mockCompletionProposal(),
                 mockJdtCompletion(completion), mockInvocationContext());
         return sut;
+    }
+
+    private void checkCorrectStartingIndexes(final Set<SourceRange> ranges, final int... startIndexes) {
+        final ArrayList<SourceRange> list = new ArrayList<SourceRange>(ranges);
+        Collections.sort(list, new Comparator<SourceRange>() {
+            @Override
+            public int compare(final SourceRange o1, final SourceRange o2) {
+                return new Integer(o1.getOffset()).compareTo(o2.getOffset());
+            }
+        });
+        checkCorrectStartingIndexes(list, startIndexes);
     }
 
     private void checkCorrectStartingIndexes(final List<SourceRange> ranges, final int... startIndexes) {
@@ -90,7 +115,7 @@ public class SubwordsCompletionHighlightingTest {
         }
     }
 
-    private void checkCorrectLength(final List<SourceRange> ranges, final int length) {
+    private void checkCorrectLength(final Collection<SourceRange> ranges, final int length) {
         for (final SourceRange range : ranges) {
             assertEquals(length, range.getLength());
         }
