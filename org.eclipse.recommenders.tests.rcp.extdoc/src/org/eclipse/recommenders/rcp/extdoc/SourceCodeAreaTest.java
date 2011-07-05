@@ -10,9 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,7 +19,7 @@ public final class SourceCodeAreaTest {
 
     @Test
     public void testSourceCodeArea() {
-        final SourceCodeArea area = new SourceCodeArea(new Composite(new Shell(), SWT.NONE));
+        final SourceCodeArea area = new SourceCodeArea(UnitTestSuite.getShell());
         area.setCode("...");
         Assert.assertTrue(true);
     }

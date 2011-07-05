@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
+import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.widgets.Shell;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,8 +21,8 @@ public final class ProvidersCompositeTest {
 
     @Test
     public void testExtDocView() {
-        final ProvidersComposite composite = new ProvidersComposite(new ScrolledComposite(new Shell(), SWT.NONE),
-                SWT.NONE);
+        final ProvidersComposite composite = new ProvidersComposite(new ScrolledComposite(UnitTestSuite.getShell(),
+                SWT.NONE), SWT.NONE);
 
         Assert.assertTrue(true);
     }

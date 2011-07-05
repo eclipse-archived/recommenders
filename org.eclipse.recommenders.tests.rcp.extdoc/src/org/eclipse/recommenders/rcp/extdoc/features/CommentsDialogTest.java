@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.rcp.extdoc.features;
 
 import org.eclipse.recommenders.tests.rcp.extdoc.TestServer;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +20,8 @@ public final class CommentsDialogTest {
 
     @Test
     public void testCommentsDialog() {
-        final CommentsDialog dialog = new CommentsDialog(new Shell(), new TestServer(), new Object(), "TestName");
+        final CommentsDialog dialog = new CommentsDialog(UnitTestSuite.getShell(), new TestServer(), new Object(),
+                "TestName");
         // dialog.open();
         dialog.okPressed();
         Assert.assertTrue(true);

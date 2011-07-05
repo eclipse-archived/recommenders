@@ -15,8 +15,7 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.tests.rcp.extdoc.TestProvider;
 import org.eclipse.recommenders.tests.rcp.extdoc.TestServer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
 import org.eclipse.swt.widgets.Shell;
 
 import org.junit.Assert;
@@ -26,15 +25,14 @@ public final class FeaturesCompositeTest {
 
     @Test
     public void testCreate() {
-        final Shell shell = new Shell();
-        final Composite parent = new Composite(shell, SWT.NONE);
+        final Shell shell = UnitTestSuite.getShell();
         final IProvider provider = new TestProvider();
         final IStarsRatingsServer server = new TestServer();
         final Dialog editDialog = new TitleAreaDialog(shell);
 
-        provider.createControl(parent, null);
+        provider.createControl(shell, null);
 
-        final FeaturesComposite composite = FeaturesComposite.create(parent, null, null, provider, server, editDialog);
+        final FeaturesComposite composite = FeaturesComposite.create(shell, null, null, provider, server, editDialog);
 
         Assert.assertNotNull(composite);
     }
