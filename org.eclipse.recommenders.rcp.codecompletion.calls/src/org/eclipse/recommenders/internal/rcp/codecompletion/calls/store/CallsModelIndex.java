@@ -29,8 +29,7 @@ public class CallsModelIndex {
         archives.add(newModelArchive);
 
         for (final IPackageFragmentRoot packageRoot : packageRoot2Id.keySet()) {
-            final IModelArchive bestMatch = findMatchingModelArchive(packageRoot2Id.get(packageRoot));
-            packageRoot2modelArchive.put(packageRoot, bestMatch);
+            updateArchiveReferenceIfBetterMatch(newModelArchive, packageRoot);
         }
     }
 
@@ -43,6 +42,21 @@ public class CallsModelIndex {
     private IModelArchive findMatchingModelArchive(final LibraryIdentifier libraryIdentifier) {
         final ArchiveMatcher matcher = new ArchiveMatcher(archives, libraryIdentifier);
         return matcher.getBestMatch();
+    }
+
+    private void updateArchiveReferenceIfBetterMatch(final IModelArchive newModelArchive, final IPackageFragmentRoot packageRoot) {
+        final IModelArchive previousMatch = packageRoot2modelArchive.get(packageRoot);
+        if (previousMatch == null || previousMatch == IModelArchive.NULL || isBetterMatch(newModelArchive, packageRoot)) {
+            packageRoot2modelArchive.put(packageRoot, newModelArchive);
+        }
+    }
+
+    private boolean isBetterMatch(final IModelArchive newModelArchive, final IPackageFragmentRoot packageRoot) {
+        final IModelArchive previousMatch = packageRoot2modelArchive.get(packageRoot);
+        final LibraryIdentifier libraryIdentifier = packageRoot2Id.get(packageRoot);
+        final ArchiveMatcher matcher = new ArchiveMatcher(Lists.newArrayList(previousMatch, newModelArchive),
+                libraryIdentifier);
+        return matcher.getBestMatch() == newModelArchive;
     }
 
     public void load(final IPackageFragmentRoot[] packageFragmentRoots) {
