@@ -280,7 +280,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     }
 
     private void setReceiverName(final char[] name) {
-        String s = String.valueOf(name);
+        final String s = String.valueOf(name);
         setReceiverName(s);
     }
 
@@ -444,7 +444,9 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             storeCompletionNode(fieldDeclaration);
             return false;
         }
-        if (isCompletionOnVariableInitialization(fieldDeclaration.initialization)) {
+        if (isCompletionOnVariableInitialization(fieldDeclaration.initialization)
+                && checkFieldTypeIsKnown(fieldDeclaration)) {
+
             setExpectedReturnType(fieldDeclaration.binding.type);
             completionNodeParent = fieldDeclaration;
         } else {
@@ -453,6 +455,14 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             fieldDeclarations.add(fieldDeclaration);
         }
         return true;
+    }
+
+    /**
+     * the field declaration binding may be null in the case of an ill-defined
+     * field declaration (that doesn't compile).
+     */
+    private boolean checkFieldTypeIsKnown(final FieldDeclaration fieldDeclaration) {
+        return fieldDeclaration.binding != null;
     }
 
     private boolean isCompletionOnVariableInitialization(final Expression initialization) {
