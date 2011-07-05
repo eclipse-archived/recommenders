@@ -141,4 +141,62 @@ public class VersionRangeTest {
         assertTrue(sut.isVersionAbove(v37));
         assertTrue(sut.isVersionAbove(v38));
     }
+
+    @Test
+    public void testUpperBoundHigherThanHappyPath() {
+        final VersionRange range1 = new VersionRangeBuilder().maxExclusive(v36).build();
+        final VersionRange range2 = new VersionRangeBuilder().maxExclusive(v37).build();
+
+        assertFalse(range1.isUpperBoundHigherThan(range2));
+        assertTrue(range2.isUpperBoundHigherThan(range1));
+    }
+
+    @Test
+    public void testUpperBoundHigherThanOnEqualVersion() {
+        final VersionRange range1 = new VersionRangeBuilder().maxExclusive(v36).build();
+        final VersionRange range2 = new VersionRangeBuilder().maxInclusive(v36).build();
+
+        assertFalse(range1.isUpperBoundHigherThan(range2));
+        assertTrue(range2.isUpperBoundHigherThan(range1));
+        assertFalse(range1.isUpperBoundHigherThan(range1));
+        assertFalse(range2.isUpperBoundHigherThan(range2));
+    }
+
+    @Test
+    public void testLowerBoundLowerThanHappyPath() {
+        final VersionRange range1 = new VersionRangeBuilder().minExclusive(v37).build();
+        final VersionRange range2 = new VersionRangeBuilder().minExclusive(v36).build();
+
+        assertFalse(range1.isLowerBoundLowerThan(range2));
+        assertTrue(range2.isLowerBoundLowerThan(range1));
+    }
+
+    @Test
+    public void testLowerBoundLowerThanOnEqualVersion() {
+        final VersionRange range1 = new VersionRangeBuilder().minExclusive(v36).build();
+        final VersionRange range2 = new VersionRangeBuilder().minInclusive(v36).build();
+
+        assertFalse(range1.isLowerBoundLowerThan(range2));
+        assertTrue(range2.isLowerBoundLowerThan(range1));
+        assertFalse(range1.isLowerBoundLowerThan(range1));
+        assertFalse(range2.isLowerBoundLowerThan(range2));
+    }
+
+    @Test
+    public void testIsUpperBoundEquals() {
+        final VersionRange range1 = new VersionRangeBuilder().maxExclusive(v36).build();
+        final VersionRange range2 = new VersionRangeBuilder().maxInclusive(v36).build();
+
+        assertTrue(range1.isUpperBoundEquals(range1));
+        assertFalse(range1.isUpperBoundEquals(range2));
+    }
+
+    @Test
+    public void testIsLowerBoundEquals() {
+        final VersionRange range1 = new VersionRangeBuilder().minExclusive(v36).build();
+        final VersionRange range2 = new VersionRangeBuilder().minInclusive(v36).build();
+
+        assertTrue(range1.isLowerBoundEquals(range1));
+        assertFalse(range1.isLowerBoundEquals(range2));
+    }
 }
