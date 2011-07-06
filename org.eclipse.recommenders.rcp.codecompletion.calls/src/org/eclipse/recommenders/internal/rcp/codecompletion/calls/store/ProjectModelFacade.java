@@ -23,10 +23,17 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.search.IJavaSearchConstants;
+import org.eclipse.jdt.internal.codeassist.ISearchRequestor;
+import org.eclipse.jdt.internal.compiler.env.AccessRestriction;
+import org.eclipse.jdt.internal.core.DefaultWorkingCopyOwner;
+import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.jdt.internal.core.SearchableEnvironment;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 
@@ -141,8 +148,40 @@ public class ProjectModelFacade implements IElementChangedListener {
         return (flags & IJavaElementDelta.F_RESOLVED_CLASSPATH_CHANGED) != 0;
     }
 
+    @SuppressWarnings("restriction")
     public Set<ITypeName> findTypesBySimpleName(final ITypeName receiverType) {
-        // TODO: Implement simple name lookup service.
-        return Sets.newHashSet();
+        final Set<ITypeName> result = Sets.newHashSet();
+        try {
+            final SearchableEnvironment environment = ((JavaProject) project)
+                    .newSearchableNameEnvironment(DefaultWorkingCopyOwner.PRIMARY);
+            environment.findTypes(receiverType.getClassName().toCharArray(), false, false, IJavaSearchConstants.TYPE,
+                    new ISearchRequestor() {
+                        @Override
+                        public void acceptConstructor(final int modifiers, final char[] simpleTypeName,
+                                final int parameterCount, final char[] signature, final char[][] parameterTypes,
+                                final char[][] parameterNames, final int typeModifiers, final char[] packageName,
+                                final int extraFlags, final String path, final AccessRestriction access) {
+                        }
+
+                        @Override
+                        public void acceptType(final char[] packageName, final char[] typeName,
+                                final char[][] enclosingTypeNames, final int modifiers,
+                                final AccessRestriction accessRestriction) {
+                            result.add(createTypeName(String.valueOf(packageName), String.valueOf(typeName)));
+                        }
+
+                        @Override
+                        public void acceptPackage(final char[] packageName) {
+                        }
+                    });
+        } catch (final JavaModelException e) {
+            Throws.throwUnhandledException(e);
+        }
+        return result;
+    }
+
+    protected ITypeName createTypeName(String packageName, final String typeName) {
+        packageName = packageName.replaceAll("\\.", "/");
+        return VmTypeName.get("L" + packageName + "/" + typeName);
     }
 }

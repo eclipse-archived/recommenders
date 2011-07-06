@@ -158,7 +158,9 @@ public final class PatternRecommender {
             final Set<ITypeName> typeNames) {
         final Set<IObjectMethodCallsNet> models = Sets.newHashSet();
         for (final ITypeName typeName : typeNames) {
-            models.add(modelFacade.acquireModel(typeName));
+            if (modelFacade.hasModel(typeName)) {
+                models.add(modelFacade.acquireModel(typeName));
+            }
         }
         return models;
     }
