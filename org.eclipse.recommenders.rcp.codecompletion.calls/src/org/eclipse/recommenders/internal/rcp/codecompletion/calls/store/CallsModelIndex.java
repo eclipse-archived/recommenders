@@ -39,12 +39,17 @@ public class CallsModelIndex {
         packageRoot2modelArchive.put(packageRoot, archive);
     }
 
-    private IModelArchive findMatchingModelArchive(final LibraryIdentifier libraryIdentifier) {
+    IModelArchive findMatchingModelArchive(final LibraryIdentifier libraryIdentifier) {
         final ArchiveMatcher matcher = new ArchiveMatcher(archives, libraryIdentifier);
         return matcher.getBestMatch();
     }
 
-    private void updateArchiveReferenceIfBetterMatch(final IModelArchive newModelArchive, final IPackageFragmentRoot packageRoot) {
+    List<IModelArchive> getAllArchives() {
+        return archives;
+    }
+
+    private void updateArchiveReferenceIfBetterMatch(final IModelArchive newModelArchive,
+            final IPackageFragmentRoot packageRoot) {
         final IModelArchive previousMatch = packageRoot2modelArchive.get(packageRoot);
         if (previousMatch == null || previousMatch == IModelArchive.NULL || isBetterMatch(newModelArchive, packageRoot)) {
             packageRoot2modelArchive.put(packageRoot, newModelArchive);

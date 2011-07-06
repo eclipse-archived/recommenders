@@ -46,11 +46,11 @@ public class ModelArchive implements IModelArchive {
     public ModelArchive(final File file) {
         this.file = file;
         loader = new BinarySmileCallsNetLoader();
-        initializeZipFile();
+        open();
         readManifest();
     }
 
-    private void initializeZipFile() {
+    public void open() {
         try {
             zipFile = new ZipFile(file);
         } catch (final Exception e) {
@@ -114,6 +114,10 @@ public class ModelArchive implements IModelArchive {
     @Override
     public void close() throws IOException {
         zipFile.close();
+    }
+
+    public File getFile() {
+        return file;
     }
 
     private class CallsModelPoolFactory implements KeyedPoolableObjectFactory {

@@ -10,15 +10,14 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import java.io.IOException;
 import java.util.List;
-
-import org.eclipse.recommenders.commons.utils.Version;
 
 public interface IModelArchiveStore {
 
-    Manifest getManifest(String name, Version version);
+    Manifest getManifest(LibraryIdentifier libraryIdentifier);
 
     List<Manifest> getAllManifests();
 
-    boolean offer(ModelArchive archive);
+    boolean offer(ModelArchive archive) throws IOException;
 }

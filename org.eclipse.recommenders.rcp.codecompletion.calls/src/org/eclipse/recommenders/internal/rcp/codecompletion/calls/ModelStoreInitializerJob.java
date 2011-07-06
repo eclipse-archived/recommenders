@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 
+import static org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionModule.CALLS_STORE_LOCATION;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +39,7 @@ import com.google.common.collect.Lists;
 public class ModelStoreInitializerJob extends WorkspaceJob {
 
     @Inject
-    @Named("calls.store.location")
+    @Named(CALLS_STORE_LOCATION)
     private File modelArchiveLocation;
     @Inject
     private CallsModelIndex modelIndex;

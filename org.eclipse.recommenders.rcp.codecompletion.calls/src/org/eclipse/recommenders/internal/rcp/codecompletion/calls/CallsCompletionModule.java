@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.internal.rcp.analysis.IRecommendersProjectLifeCycleListener;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelIndex;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IModelArchiveStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.osgi.framework.FrameworkUtil;
@@ -26,6 +28,8 @@ import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 
 public class CallsCompletionModule extends AbstractModule {
+
+    public static final String CALLS_STORE_LOCATION = "calls.store.location";
 
     @Override
     protected void configure() {
@@ -43,9 +47,10 @@ public class CallsCompletionModule extends AbstractModule {
 
     private void configureArchiveModelStore() {
         bind(CallsModelIndex.class).in(Scopes.SINGLETON);
+        bind(IModelArchiveStore.class).to(ModelArchiveStore.class).in(Scopes.SINGLETON);
 
         final IPath stateLocation = Platform.getStateLocation(FrameworkUtil.getBundle(getClass()));
-        bind(File.class).annotatedWith(Names.named("calls.store.location")).toInstance(stateLocation.toFile());
+        bind(File.class).annotatedWith(Names.named(CALLS_STORE_LOCATION)).toInstance(stateLocation.toFile());
     }
 
     private void configureRecommendationsViewPublisher() {
