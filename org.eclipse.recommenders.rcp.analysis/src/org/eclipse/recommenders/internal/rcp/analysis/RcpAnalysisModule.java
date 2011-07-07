@@ -25,6 +25,7 @@ import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICallGraphAn
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IClassAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitConsumer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitFinalizer;
+import org.eclipse.recommenders.internal.commons.analysis.analyzers.IDependencyFingerprintComputer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IMethodAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IdCompilationUnitFinalizer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.JavaLangInstanceKeysRemoverCompilationUnitFinalizer;
@@ -131,7 +132,10 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
         binder.addBinding().to(JavaLangInstanceKeysRemoverCompilationUnitFinalizer.class).in(Singleton.class);
         binder.addBinding().to(WalaDefaultInstanceKeysRemoverCompilationUnitFinalizer.class).in(Singleton.class);
         binder.addBinding().to(ThisObjectInstanceKeyCompilationUnitFinalizer.class).in(Singleton.class);
+
         binder.addBinding().to(FingerprintCompilationUnitFinalizer.class).in(Singleton.class);
+        bind(IDependencyFingerprintComputer.class).to(JdtBinaryTypeEntryFingerprintComputer.class).in(Singleton.class);
+
         binder.addBinding().to(IdCompilationUnitFinalizer.class).in(Singleton.class);
     }
 

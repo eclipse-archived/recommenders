@@ -26,12 +26,19 @@ import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
 
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
+import com.google.inject.Inject;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.types.TypeReference;
 
 public class FingerprintCompilationUnitFinalizer implements ICompilationUnitFinalizer {
     private final Map<IClass, String/* fingerprint */> map = new MapMaker().softKeys().makeMap();
+    private final IDependencyFingerprintComputer fingerprintComputer;
+
+    @Inject
+    public FingerprintCompilationUnitFinalizer(final IDependencyFingerprintComputer fingerprintComputer) {
+        this.fingerprintComputer = fingerprintComputer;
+    }
 
     @Override
     public void finalizeClass(final CompilationUnit compilationUnit, final IClass exampleClass,
@@ -43,6 +50,7 @@ public class FingerprintCompilationUnitFinalizer implements ICompilationUnitFina
             final TypeReference walaType = WalaNameUtils.rec2walaType(recType);
             final IClass clazz = ClassUtils.findClass(walaType, cha);
             if (clazz != null) {
+
                 addTypeToUsedTypes(compilationUnit, recType, clazz);
             }
         }
@@ -78,7 +86,7 @@ public class FingerprintCompilationUnitFinalizer implements ICompilationUnitFina
     }
 
     private void addTypeToUsedTypes(final CompilationUnit compilationUnit, final ITypeName recType, final IClass clazz) {
-        final String fingerprint = fingerprint(clazz);
+        final String fingerprint = fingerprintComputer.computeContainerFingerprint(clazz);
         final org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeReference recTypeRef = org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeReference
                 .create(recType, fingerprint);
         compilationUnit.imports.add(recTypeRef);

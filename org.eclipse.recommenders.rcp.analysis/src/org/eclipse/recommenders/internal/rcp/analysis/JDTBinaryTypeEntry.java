@@ -16,16 +16,19 @@ package org.eclipse.recommenders.internal.rcp.analysis;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.BinaryType;
+import org.eclipse.recommenders.internal.commons.analysis.utils.IJarFileProvider;
 
 import com.ibm.wala.classLoader.Module;
 import com.ibm.wala.classLoader.ModuleEntry;
 
 @SuppressWarnings("restriction")
-public class JDTBinaryTypeEntry implements ModuleEntry {
+public class JDTBinaryTypeEntry implements ModuleEntry, IJarFileProvider {
 
     private final BinaryType b;
 
@@ -70,5 +73,12 @@ public class JDTBinaryTypeEntry implements ModuleEntry {
     @Override
     public boolean isSourceFile() {
         return false;
+    }
+
+    @Override
+    public File getJarFile() {
+        final IPath fullPath = b.getPath();
+        final File file = fullPath.toFile();
+        return file;
     }
 }

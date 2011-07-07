@@ -124,7 +124,8 @@ public class Checks {
         ensureIsNotNull(clazz);
         final boolean instanceOf = clazz.isInstance(obj);
         if (!instanceOf) {
-            throwIllegalArgumentException("object is not a (sub-)type of " + clazz.getName());
+            throwIllegalArgumentException("object of type '%s' is not a (sub-)type of '%s'", obj.getClass().getName(),
+                    clazz.getName());
         }
         return (T) obj;
     }

@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.commons.analysis.codeelements;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -28,7 +29,8 @@ public class TypeReference implements Comparable<TypeReference> {
 
     public static TypeReference create(final ITypeName name, final String fingerprint) {
         ensureIsNotNull(name);
-        ensureIsNotNull(fingerprint);
+        // null is acceptable now:
+        // ensureIsNotNull(fingerprint);
         final TypeReference res = new TypeReference();
         res.name = name;
         res.fingerprint = fingerprint;
@@ -47,8 +49,7 @@ public class TypeReference implements Comparable<TypeReference> {
 
     @Override
     public int compareTo(final TypeReference o) {
-        final int nameComparison = o.name.compareTo(name);
-        return nameComparison != 0 ? nameComparison : o.fingerprint.compareTo(fingerprint);
+        return CompareToBuilder.reflectionCompare(this, o);
     }
 
     @Override
