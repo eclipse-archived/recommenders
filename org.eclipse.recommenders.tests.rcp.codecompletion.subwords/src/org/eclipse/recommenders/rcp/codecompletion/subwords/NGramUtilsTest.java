@@ -10,12 +10,11 @@
  */
 package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
+import static junit.framework.Assert.assertEquals;
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.calculateMatchingNGrams;
 import static org.eclipse.recommenders.rcp.codecompletion.subwords.SubwordsUtils.createLowerCaseNGrams;
 
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -25,57 +24,68 @@ public class NGramUtilsTest {
 
     @Test
     public void testIdentity() {
-        Assert.assertEquals(1, calculateMatchingNGrams("ab", "ab", 2));
+        assertEquals(1, calculateMatchingNGrams("ab", "ab", 2));
     }
 
     @Test
     public void testCompletlyDifferent() {
-        Assert.assertEquals(0, calculateMatchingNGrams("ab", "de", 2));
+        assertEquals(0, calculateMatchingNGrams("ab", "de", 2));
     }
 
     @Test
     public void testForShortStrings() {
-        Assert.assertEquals(0, calculateMatchingNGrams("ab", "de", 3));
+        assertEquals(0, calculateMatchingNGrams("ab", "de", 3));
     }
 
     @Test
     public void testPartialMatches() {
-        Assert.assertEquals(1, calculateMatchingNGrams("abcd", "ab", 2));
-        Assert.assertEquals(1, calculateMatchingNGrams("abcd", "bc", 2));
-        Assert.assertEquals(1, calculateMatchingNGrams("abcd", "cd", 2));
+        assertEquals(1, calculateMatchingNGrams("abcd", "ab", 2));
+        assertEquals(1, calculateMatchingNGrams("abcd", "bc", 2));
+        assertEquals(1, calculateMatchingNGrams("abcd", "cd", 2));
 
-        Assert.assertEquals(1, calculateMatchingNGrams("ab", "abcd", 2));
-        Assert.assertEquals(1, calculateMatchingNGrams("bc", "abcd", 2));
-        Assert.assertEquals(1, calculateMatchingNGrams("cd", "abcd", 2));
+        assertEquals(1, calculateMatchingNGrams("ab", "abcd", 2));
+        assertEquals(1, calculateMatchingNGrams("bc", "abcd", 2));
+        assertEquals(1, calculateMatchingNGrams("cd", "abcd", 2));
     }
 
     @Test
     public void testTrigrams() {
-        Assert.assertEquals(0, calculateMatchingNGrams("abcd", "ab", 3));
-        Assert.assertEquals(1, calculateMatchingNGrams("abcd", "abc", 3));
-        Assert.assertEquals(1, calculateMatchingNGrams("abcd", "bcd", 3));
+        assertEquals(0, calculateMatchingNGrams("abcd", "ab", 3));
+        assertEquals(1, calculateMatchingNGrams("abcd", "abc", 3));
+        assertEquals(1, calculateMatchingNGrams("abcd", "bcd", 3));
     }
 
     @Test
     public void testMultipleOccurences() {
-        Assert.assertEquals(1, calculateMatchingNGrams("xyxy", "xy", 2));
-        Assert.assertEquals(1, calculateMatchingNGrams("xy", "xyxy", 2));
+        assertEquals(1, calculateMatchingNGrams("xyxy", "xy", 2));
+        assertEquals(1, calculateMatchingNGrams("xy", "xyxy", 2));
     }
 
     @Test
     public void test2GramCreation() {
         final List<String> nGrams = createLowerCaseNGrams("abcde", 2);
-        Assert.assertEquals(Lists.newArrayList("ab", "bc", "cd", "de"), nGrams);
+        assertEquals(Lists.newArrayList("ab", "bc", "cd", "de"), nGrams);
     }
 
     @Test
     public void test3GramCreation() {
         final List<String> nGrams = createLowerCaseNGrams("abcde", 3);
-        Assert.assertEquals(Lists.newArrayList("abc", "bcd", "cde"), nGrams);
+        assertEquals(Lists.newArrayList("abc", "bcd", "cde"), nGrams);
     }
 
     @Test
     public void testNGramCreationOnShortString() {
-        Assert.assertEquals(0, createLowerCaseNGrams("ab", 3).size());
+        assertEquals(0, createLowerCaseNGrams("ab", 3).size());
     }
+
+    @Test
+    public void testSimpleMatch() {
+        assertEquals(1, calculateMatchingNGrams("xyz", "xy", 2));
+    }
+
+    @Test
+    public void testMultipleMatch() {
+        assertEquals(1, calculateMatchingNGrams("xyzabxy", "xy", 2));
+    }
+
 }

@@ -11,9 +11,7 @@
 package org.eclipse.recommenders.rcp.extdoc.features;
 
 import org.eclipse.recommenders.tests.rcp.extdoc.TestProvider;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +21,7 @@ public final class DeleteDialogTest {
     @Test
     public void testCommentsDialog() {
         final TestProvider provider = new TestProvider();
-        provider.createControl(new Composite(new Shell(), SWT.NONE), null);
+        provider.createControl(UnitTestSuite.getShell(), null);
 
         final DeleteDialog dialog = new DeleteDialog(provider, new Object(), "TestObject");
         // dialog.open();

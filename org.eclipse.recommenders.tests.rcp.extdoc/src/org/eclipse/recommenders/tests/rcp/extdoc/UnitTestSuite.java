@@ -22,6 +22,8 @@ import org.eclipse.recommenders.rcp.extdoc.SourceCodeAreaTest;
 import org.eclipse.recommenders.rcp.extdoc.features.CommentsDialogTest;
 import org.eclipse.recommenders.rcp.extdoc.features.DeleteDialogTest;
 import org.eclipse.recommenders.rcp.extdoc.features.FeaturesCompositeTest;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 
 import org.junit.runner.RunWith;
@@ -36,6 +38,7 @@ import org.mockito.Mockito;
 public final class UnitTestSuite {
 
     private static IJavaElementSelection selection;
+    private static Shell shell;
 
     public static IJavaElementSelection getSelection() {
         if (selection == null) {
@@ -48,5 +51,24 @@ public final class UnitTestSuite {
             Mockito.when(selection.getEditor()).thenReturn(editorPart);
         }
         return selection;
+    }
+
+    public static Shell getShell() {
+        if (shell == null) {
+            shell = new MyShell(Display.getDefault());
+        }
+        return shell;
+    }
+
+    private static class MyShell extends Shell {
+
+        MyShell(final Display display) {
+            super(display);
+        }
+
+        @Override
+        protected void checkSubclass() {
+        }
+
     }
 }

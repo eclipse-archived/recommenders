@@ -42,7 +42,7 @@ public class SubwordsFieldCastedCompletionProposal extends JavaFieldWithCastedRe
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        setRelevance(SubwordsUtils.calculateRelevance(subwordsContext));
+        setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 

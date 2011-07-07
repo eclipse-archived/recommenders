@@ -34,7 +34,7 @@ public final class ExtDocViewTest {
         };
 
         // final ExtDocView view = new ExtDocView(store);
-        // view.createPartControl(new Composite(new Shell(), SWT.NONE));
+        // view.createPartControl(UnitTestSuite.getShell());
         // view.selectionChanged(UnitTestSuite.getSelection());
 
         Assert.assertTrue(true);

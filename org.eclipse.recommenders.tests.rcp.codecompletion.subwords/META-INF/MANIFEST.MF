@@ -19,4 +19,5 @@ Require-Bundle: org.junit4,
  org.eclipse.pde,
  org.eclipse.ui,
  org.eclipse.recommenders.tests.commons,
- org.objenesis
+ org.objenesis,
+ org.eclipse.ui.editors

@@ -57,9 +57,9 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
             return;
         }
 
-        final SubwordsProposalContext state = new SubwordsProposalContext(prefix, proposal, jdtProposal, ctx);
+        final SubwordsProposalContext subwordsContext = new SubwordsProposalContext(prefix, proposal, jdtProposal, ctx);
 
-        createSubwordsProposal(state);
+        createSubwordsProposal(subwordsContext);
 
     }
 
@@ -74,11 +74,11 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         }
     }
 
-    private void createSubwordsProposal(final SubwordsProposalContext state) {
+    private void createSubwordsProposal(final SubwordsProposalContext subwordsContext) {
         final AbstractJavaCompletionProposal subWordProposal = SubwordsCompletionProposalFactory
-                .createFromJDTProposal(state);
+                .createFromJDTProposal(subwordsContext);
         if (subWordProposal != null) {
-            subWordProposal.setRelevance(SubwordsUtils.calculateRelevance(state));
+            subWordProposal.setRelevance(subwordsContext.calculateRelevance());
             proposals.add(subWordProposal);
         }
     }
