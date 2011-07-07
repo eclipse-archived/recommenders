@@ -10,18 +10,20 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 public class ArchiveMatcher {
 
-    private final List<IModelArchive> archives;
+    private Collection<IModelArchive> archives;
     private IModelArchive bestExactMatch;
     private IModelArchive closestUpperMatch;
     private IModelArchive bestMatch = IModelArchive.NULL;
@@ -51,13 +53,14 @@ public class ArchiveMatcher {
     }
 
     private void filterByName(final String name) {
-        final ListIterator<IModelArchive> iterator = archives.listIterator();
-        while (iterator.hasNext()) {
-            final Manifest manifest = iterator.next().getManifest();
-            if (!name.equals(manifest.getName())) {
-                iterator.remove();
+        archives = Collections2.filter(archives, new Predicate<IModelArchive>() {
+
+            @Override
+            public boolean apply(final IModelArchive input) {
+                final String manifestNname = input.getManifest().getName();
+                return name.equals(manifestNname);
             }
-        }
+        });
     }
 
     private boolean findBestExactMatch() {
@@ -88,12 +91,11 @@ public class ArchiveMatcher {
     }
 
     private boolean findClosestUpperMatch() {
-        closestUpperMatch = null;
         VersionRange closestRange = new VersionRangeBuilder().minExclusive(Version.LATEST).build();
         for (final IModelArchive archive : archives) {
             final VersionRange range = archive.getManifest().getVersionRange();
             if (range.isVersionBelow(targetVersion)) {
-                if (closestUpperMatch == null || range.isLowerBoundLowerThan(closestRange)) {
+                if (range.isLowerBoundLowerThan(closestRange)) {
                     closestUpperMatch = archive;
                     closestRange = range;
                 } else if (range.isLowerBoundEquals(closestRange) && isPreviousMatchOlder(closestUpperMatch, archive)) {
@@ -102,17 +104,15 @@ public class ArchiveMatcher {
                 }
             }
         }
-
         return closestUpperMatch != null;
     }
 
     private boolean findClosestLowerMatch() {
-        closestLowerMatch = null;
         VersionRange closestRange = new VersionRangeBuilder().maxExclusive(Version.UNKNOWN).build();
         for (final IModelArchive archive : archives) {
             final VersionRange range = archive.getManifest().getVersionRange();
             if (range.isVersionAbove(targetVersion)) {
-                if (closestLowerMatch == null || range.isUpperBoundHigherThan(closestRange)) {
+                if (range.isUpperBoundHigherThan(closestRange)) {
                     closestLowerMatch = archive;
                     closestRange = range;
                 } else if (range.isUpperBoundEquals(closestRange) && isPreviousMatchOlder(closestLowerMatch, archive)) {
@@ -121,7 +121,6 @@ public class ArchiveMatcher {
                 }
             }
         }
-
         return closestLowerMatch != null;
     }
 

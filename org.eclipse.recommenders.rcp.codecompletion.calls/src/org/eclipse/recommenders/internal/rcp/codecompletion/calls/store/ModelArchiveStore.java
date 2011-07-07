@@ -40,7 +40,7 @@ public class ModelArchiveStore implements IModelArchiveStore {
 
     @Override
     public List<Manifest> getAllManifests() {
-        final List<IModelArchive> archives = index.getAllArchives();
+        final List<IModelArchive> archives = index.getArchives();
         final List<Manifest> manifests = Lists.newLinkedList();
         for (final IModelArchive archive : archives) {
             manifests.add(archive.getManifest());

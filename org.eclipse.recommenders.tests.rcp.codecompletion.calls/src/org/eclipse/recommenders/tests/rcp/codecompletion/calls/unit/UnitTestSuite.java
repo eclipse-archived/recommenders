@@ -15,7 +15,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ BestMatchforUnknownModelFinder.class, CallsModelIndexTest.class })
+@SuiteClasses({ CallsModelIndexTest.class, ModelArchiveStoreTest.class })
 public class UnitTestSuite {
 
 }

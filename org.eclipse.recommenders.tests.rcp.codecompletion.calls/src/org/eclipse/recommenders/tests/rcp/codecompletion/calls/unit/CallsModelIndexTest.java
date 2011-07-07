@@ -167,6 +167,7 @@ public class CallsModelIndexTest {
         final LibraryIdentifier identifier = createLibraryIdentifier(NAME_ECLIPSE, v38);
         sut.setResolved(aPackageRoot, identifier);
         sut.register(eclipseArchive_3_6);
+        // i35-e37 is newer than i36-e37 and has same range as i36...:
         sut.register(eclipseArchive_3_5_3_7);
         // exercise:
         final IModelArchive actual = sut.getModelArchive(aPackageRoot);

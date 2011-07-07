@@ -44,14 +44,13 @@ public class CallsModelIndex {
         return matcher.getBestMatch();
     }
 
-    List<IModelArchive> getAllArchives() {
+    List<IModelArchive> getArchives() {
         return archives;
     }
 
     private void updateArchiveReferenceIfBetterMatch(final IModelArchive newModelArchive,
             final IPackageFragmentRoot packageRoot) {
-        final IModelArchive previousMatch = packageRoot2modelArchive.get(packageRoot);
-        if (previousMatch == null || previousMatch == IModelArchive.NULL || isBetterMatch(newModelArchive, packageRoot)) {
+        if (isBetterMatch(newModelArchive, packageRoot)) {
             packageRoot2modelArchive.put(packageRoot, newModelArchive);
         }
     }
