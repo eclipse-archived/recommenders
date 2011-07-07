@@ -88,13 +88,9 @@ public class LuceneSearchService {
     }
 
     private void initializeFeatureWeights() {
-        try {
-            this.weights = new FeatureWeights();
-            this.weights.weights = GsonUtil.deserialize(weightsFile, new TypeToken<Map<String, Float>>() {
-            }.getType());
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.weights = new FeatureWeights();
+        this.weights.weights = GsonUtil.deserialize(weightsFile, new TypeToken<Map<String, Float>>() {
+        }.getType());
     }
 
     public List<LuceneSearchResult> search(final Request request) {

@@ -64,35 +64,21 @@ public class CallsModelIndexTest {
     @Test
     public void testHappyPath() {
         final LibraryIdentifier identifier = createLibraryIdentifier(NAME_ECLIPSE, v36);
-        sut.setResolved(aPackageRoot, identifier);
         sut.register(androidArchive);
         sut.register(eclipseArchive_3_6);
         // exercise:
-        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(identifier);
         // verify:
         assertEquals(eclipseArchive_3_6, actual);
     }
 
     @Test
-    public void testUnresolvedFragmentRoot() {
-        final LibraryIdentifier identifier = createLibraryIdentifier(NAME_ECLIPSE, v36);
-        sut.setResolved(createPackageFragmentRoot(), identifier);
-        sut.register(androidArchive);
-        sut.register(eclipseArchive_3_6);
-        // exercise:
-        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
-        // verify:
-        assertEquals(IModelArchive.NULL, actual);
-    }
-
-    @Test
     public void testEclipseLatestVersion() {
         final LibraryIdentifier identifier = createLibraryIdentifier(NAME_ECLIPSE, Version.LATEST);
-        sut.setResolved(aPackageRoot, identifier);
         sut.register(androidArchive);
         sut.register(eclipseArchive_3_6);
         // exercise:
-        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(identifier);
         // verify:
         assertEquals(eclipseArchive_3_6, actual);
     }
@@ -100,12 +86,11 @@ public class CallsModelIndexTest {
     @Test
     public void testUnknownVersion() {
         final LibraryIdentifier identifier = createLibraryIdentifier(NAME_ECLIPSE, Version.UNKNOWN);
-        sut.setResolved(aPackageRoot, identifier);
         sut.register(androidArchive);
         sut.register(eclipseArchive_3_6);
         sut.register(eclipseArchive_3_7);
         // exercise:
-        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(identifier);
         // verify:
         assertEquals(eclipseArchive_3_7, actual);
     }
@@ -115,11 +100,10 @@ public class CallsModelIndexTest {
         sut.register(androidArchive);
         sut.register(eclipseArchive_3_6);
         final LibraryIdentifier identifier = createLibraryIdentifier(NAME_ECLIPSE, v362);
-        sut.setResolved(aPackageRoot, identifier);
         final IModelArchive updatedEclipseArchive = createModelArchive(NAME_ECLIPSE, vi36_e37, new Date(100));
         // exercise:
         sut.register(updatedEclipseArchive);
-        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(identifier);
         // verify:
         assertEquals(updatedEclipseArchive, actual);
     }
@@ -127,12 +111,11 @@ public class CallsModelIndexTest {
     @Test
     public void testUnknownVersionForUpdatedArchive() {
         final LibraryIdentifier identifier = createLibraryIdentifier(NAME_ECLIPSE, Version.UNKNOWN);
-        sut.setResolved(aPackageRoot, identifier);
         sut.register(androidArchive);
         sut.register(eclipseArchive_3_6);
         sut.register(eclipseArchive_3_6_NEWER);
         // exercise:
-        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(identifier);
         // verify:
         assertEquals(eclipseArchive_3_6_NEWER, actual);
     }
@@ -140,12 +123,11 @@ public class CallsModelIndexTest {
     @Test
     public void testVersionBetweenRanges() {
         final LibraryIdentifier identifier = createLibraryIdentifier(NAME_ECLIPSE, v36);
-        sut.setResolved(aPackageRoot, identifier);
         sut.register(eclipseArchive_3_5);
         sut.register(eclipseArchive_3_7);
         sut.register(eclipseArchive_3_8);
         // exercise:
-        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(identifier);
         // verify:
         assertEquals(eclipseArchive_3_7, actual);
     }
@@ -156,8 +138,7 @@ public class CallsModelIndexTest {
         sut.register(eclipseArchive_3_5);
         sut.register(eclipseArchive_3_5_3_7);
         // exercise:
-        sut.setResolved(aPackageRoot, identifier);
-        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(identifier);
         // verify:
         assertEquals(eclipseArchive_3_5_3_7, actual);
     }
@@ -165,12 +146,11 @@ public class CallsModelIndexTest {
     @Test
     public void testOnlyLowerVersionsAvailableEqualUpperBound() {
         final LibraryIdentifier identifier = createLibraryIdentifier(NAME_ECLIPSE, v38);
-        sut.setResolved(aPackageRoot, identifier);
         sut.register(eclipseArchive_3_6);
         // i35-e37 is newer than i36-e37 and has same range as i36...:
         sut.register(eclipseArchive_3_5_3_7);
         // exercise:
-        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(identifier);
         // verify:
         assertEquals(eclipseArchive_3_5_3_7, actual);
     }

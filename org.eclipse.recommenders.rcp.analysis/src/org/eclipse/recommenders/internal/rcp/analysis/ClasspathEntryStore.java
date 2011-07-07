@@ -11,14 +11,13 @@ package org.eclipse.recommenders.internal.rcp.analysis;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureExists;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
+import static org.eclipse.recommenders.internal.rcp.analysis.RcpAnalysisModule.CLASSPATH_ENTRY_STORE_BASEDIR;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.modules.ClasspathEntry;
-import static org.eclipse.recommenders.internal.rcp.analysis.RcpAnalysisModule.*;
+
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
@@ -39,11 +38,7 @@ public class ClasspathEntryStore {
     public ClasspathEntry get(final String fingerprint) {
         final File f = computeModelFileHandle(fingerprint);
         ensureExists(f);
-        try {
-            return GsonUtil.deserialize(f, ClasspathEntry.class);
-        } catch (final IOException e) {
-            throw throwUnhandledException(e);
-        }
+        return GsonUtil.deserialize(f, ClasspathEntry.class);
     }
 
     private File computeModelFileHandle(final String fingerprint) {
