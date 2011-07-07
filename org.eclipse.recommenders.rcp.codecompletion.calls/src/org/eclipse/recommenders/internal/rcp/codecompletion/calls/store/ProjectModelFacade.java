@@ -38,16 +38,22 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMet
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 
 import com.google.common.collect.Sets;
+import com.google.inject.assistedinject.Assisted;
 
 public class ProjectModelFacade implements IElementChangedListener {
 
-    private final CallsModelIndex index;
+    private final CallsModelIndex modelIndex;
     private final IJavaProject project;
     private IPackageFragmentRoot[] packageFragmentRoots;
+    private final FragmentIndex fragmentIndex;
+    private final FragmentResolver fragmentResolver;
 
     @Inject
-    public ProjectModelFacade(final CallsModelIndex index, final IJavaProject project) {
-        this.index = index;
+    public ProjectModelFacade(final CallsModelIndex modelIndex, final FragmentIndex fragmentIndex,
+            final FragmentResolver fragmentResolver, @Assisted final IJavaProject project) {
+        this.modelIndex = modelIndex;
+        this.fragmentIndex = fragmentIndex;
+        this.fragmentResolver = fragmentResolver;
         this.project = project;
         JavaCore.addElementChangedListener(this);
         readClasspathDependencies();
@@ -56,7 +62,7 @@ public class ProjectModelFacade implements IElementChangedListener {
     private void readClasspathDependencies() {
         try {
             packageFragmentRoots = project.getAllPackageFragmentRoots();
-            index.load(packageFragmentRoots);
+            fragmentResolver.resolve(packageFragmentRoots);
         } catch (final JavaModelException e) {
             Throws.throwUnhandledException(e, "Unable to resolve classpath dependencies for project %s", project);
         }
@@ -81,7 +87,8 @@ public class ProjectModelFacade implements IElementChangedListener {
                 return ModelArchive.NULL;
             }
             final IPackageFragmentRoot packageFragmentRoot = getPackageRoot(type);
-            final IModelArchive archive = index.getModelArchive(packageFragmentRoot);
+            final LibraryIdentifier libraryIdentifier = fragmentIndex.getLibraryIdentifier(packageFragmentRoot);
+            final IModelArchive archive = modelIndex.findModelArchive(libraryIdentifier);
             return archive;
         } catch (final JavaModelException e) {
             throw Throws.throwUnhandledException(e, "Unable to load model for type name: %s", name);

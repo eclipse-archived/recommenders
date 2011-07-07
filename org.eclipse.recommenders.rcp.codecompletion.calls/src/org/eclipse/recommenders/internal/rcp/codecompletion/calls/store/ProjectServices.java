@@ -25,11 +25,11 @@ import com.google.common.collect.Maps;
 public class ProjectServices implements IRecommendersProjectLifeCycleListener {
 
     private final Map<IJavaProject, ProjectModelFacade> modelFacades = Maps.newHashMap();
-    private final CallsModelIndex index;
+    private final ProjectModelFacadeFactory facadeFactory;
 
     @Inject
-    protected ProjectServices(final CallsModelIndex index) {
-        this.index = index;
+    protected ProjectServices(final ProjectModelFacadeFactory facadeFactory) {
+        this.facadeFactory = facadeFactory;
     }
 
     public ProjectModelFacade getModelFacade(final IJavaProject project) {
@@ -43,7 +43,7 @@ public class ProjectServices implements IRecommendersProjectLifeCycleListener {
 
     @Override
     public void projectOpened(final IJavaProject project) {
-        final ProjectModelFacade facade = new ProjectModelFacade(index, project);
+        final ProjectModelFacade facade = facadeFactory.create(project);
         modelFacades.put(project, facade);
     }
 

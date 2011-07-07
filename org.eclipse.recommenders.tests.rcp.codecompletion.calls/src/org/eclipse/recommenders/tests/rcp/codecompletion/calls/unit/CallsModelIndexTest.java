@@ -68,7 +68,7 @@ public class CallsModelIndexTest {
         sut.register(androidArchive);
         sut.register(eclipseArchive_3_6);
         // exercise:
-        final IModelArchive actual = sut.getModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
         // verify:
         assertEquals(eclipseArchive_3_6, actual);
     }
@@ -80,7 +80,7 @@ public class CallsModelIndexTest {
         sut.register(androidArchive);
         sut.register(eclipseArchive_3_6);
         // exercise:
-        final IModelArchive actual = sut.getModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
         // verify:
         assertEquals(IModelArchive.NULL, actual);
     }
@@ -92,7 +92,7 @@ public class CallsModelIndexTest {
         sut.register(androidArchive);
         sut.register(eclipseArchive_3_6);
         // exercise:
-        final IModelArchive actual = sut.getModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
         // verify:
         assertEquals(eclipseArchive_3_6, actual);
     }
@@ -105,7 +105,7 @@ public class CallsModelIndexTest {
         sut.register(eclipseArchive_3_6);
         sut.register(eclipseArchive_3_7);
         // exercise:
-        final IModelArchive actual = sut.getModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
         // verify:
         assertEquals(eclipseArchive_3_7, actual);
     }
@@ -119,7 +119,7 @@ public class CallsModelIndexTest {
         final IModelArchive updatedEclipseArchive = createModelArchive(NAME_ECLIPSE, vi36_e37, new Date(100));
         // exercise:
         sut.register(updatedEclipseArchive);
-        final IModelArchive actual = sut.getModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
         // verify:
         assertEquals(updatedEclipseArchive, actual);
     }
@@ -132,7 +132,7 @@ public class CallsModelIndexTest {
         sut.register(eclipseArchive_3_6);
         sut.register(eclipseArchive_3_6_NEWER);
         // exercise:
-        final IModelArchive actual = sut.getModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
         // verify:
         assertEquals(eclipseArchive_3_6_NEWER, actual);
     }
@@ -145,7 +145,7 @@ public class CallsModelIndexTest {
         sut.register(eclipseArchive_3_7);
         sut.register(eclipseArchive_3_8);
         // exercise:
-        final IModelArchive actual = sut.getModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
         // verify:
         assertEquals(eclipseArchive_3_7, actual);
     }
@@ -157,7 +157,7 @@ public class CallsModelIndexTest {
         sut.register(eclipseArchive_3_5_3_7);
         // exercise:
         sut.setResolved(aPackageRoot, identifier);
-        final IModelArchive actual = sut.getModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
         // verify:
         assertEquals(eclipseArchive_3_5_3_7, actual);
     }
@@ -170,7 +170,7 @@ public class CallsModelIndexTest {
         // i35-e37 is newer than i36-e37 and has same range as i36...:
         sut.register(eclipseArchive_3_5_3_7);
         // exercise:
-        final IModelArchive actual = sut.getModelArchive(aPackageRoot);
+        final IModelArchive actual = sut.findModelArchive(aPackageRoot);
         // verify:
         assertEquals(eclipseArchive_3_5_3_7, actual);
     }

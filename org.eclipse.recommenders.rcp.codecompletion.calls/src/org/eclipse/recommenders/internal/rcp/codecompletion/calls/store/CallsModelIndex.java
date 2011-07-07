@@ -13,30 +13,29 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 
 public class CallsModelIndex {
 
     private final List<IModelArchive> archives = Lists.newLinkedList();
-    private final ConcurrentMap<IPackageFragmentRoot, IModelArchive> packageRoot2modelArchive = new MapMaker()
+
+    private final ConcurrentMap<LibraryIdentifier, IModelArchive> libraryIdentifier2modelArchive = new MapMaker()
             .makeMap();
-    private final ConcurrentMap<IPackageFragmentRoot, LibraryIdentifier> packageRoot2Id = new MapMaker().makeMap();
 
     public void register(final IModelArchive newModelArchive) {
         archives.add(newModelArchive);
 
-        for (final IPackageFragmentRoot packageRoot : packageRoot2Id.keySet()) {
-            updateArchiveReferenceIfBetterMatch(newModelArchive, packageRoot);
+        for (final LibraryIdentifier libraryIdentifier : libraryIdentifier2modelArchive.keySet()) {
+            updateArchiveReferenceIfBetterMatch(newModelArchive, libraryIdentifier);
         }
     }
 
-    public void setResolved(final IPackageFragmentRoot packageRoot, final LibraryIdentifier libraryId) {
-        packageRoot2Id.put(packageRoot, libraryId);
-        final IModelArchive archive = findMatchingModelArchive(libraryId);
-        packageRoot2modelArchive.put(packageRoot, archive);
+    private void updateArchiveReferenceIfBetterMatch(final IModelArchive newModelArchive,
+            final LibraryIdentifier libraryIdentifier) {
+        if (isBetterMatch(newModelArchive, libraryIdentifier)) {
+            libraryIdentifier2modelArchive.put(libraryIdentifier, newModelArchive);
+        }
     }
 
     IModelArchive findMatchingModelArchive(final LibraryIdentifier libraryIdentifier) {
@@ -48,40 +47,20 @@ public class CallsModelIndex {
         return archives;
     }
 
-    private void updateArchiveReferenceIfBetterMatch(final IModelArchive newModelArchive,
-            final IPackageFragmentRoot packageRoot) {
-        if (isBetterMatch(newModelArchive, packageRoot)) {
-            packageRoot2modelArchive.put(packageRoot, newModelArchive);
-        }
-    }
-
-    private boolean isBetterMatch(final IModelArchive newModelArchive, final IPackageFragmentRoot packageRoot) {
-        final IModelArchive previousMatch = packageRoot2modelArchive.get(packageRoot);
-        final LibraryIdentifier libraryIdentifier = packageRoot2Id.get(packageRoot);
+    private boolean isBetterMatch(final IModelArchive newModelArchive, final LibraryIdentifier libraryIdentifier) {
+        final IModelArchive previousMatch = libraryIdentifier2modelArchive.get(libraryIdentifier);
         final ArchiveMatcher matcher = new ArchiveMatcher(Lists.newArrayList(previousMatch, newModelArchive),
                 libraryIdentifier);
         return matcher.getBestMatch() == newModelArchive;
     }
 
-    public void load(final IPackageFragmentRoot[] packageFragmentRoots) {
-        scheduleLookup(packageFragmentRoots);
-    }
-
-    boolean isLibraryIdentifierResolved(final IPackageFragmentRoot packageRoot) {
-        return packageRoot2Id.containsKey(packageRoot);
-    }
-
-    private void scheduleLookup(final IPackageFragmentRoot[] packageRoots) {
-        new LibraryIdentifierResolverJob(this, packageRoots).schedule();
-    }
-
-    public IModelArchive getModelArchive(final IPackageFragmentRoot packageFragmentRoot) {
-        final IModelArchive modelArchive = packageRoot2modelArchive.get(packageFragmentRoot);
+    public IModelArchive findModelArchive(final LibraryIdentifier libraryIdentifier) {
+        IModelArchive modelArchive = libraryIdentifier2modelArchive.get(libraryIdentifier);
         if (modelArchive == null) {
-            return IModelArchive.NULL;
-        } else {
-            return modelArchive;
+            modelArchive = findMatchingModelArchive(libraryIdentifier);
+            libraryIdentifier2modelArchive.put(libraryIdentifier, modelArchive);
         }
+        return modelArchive;
     }
 
 }

@@ -10,8 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 
+import org.eclipse.recommenders.commons.injection.InjectionService;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.FragmentIndex;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import com.google.inject.Injector;
 
 public class CallsCompletionPlugin extends AbstractUIPlugin {
     private static CallsCompletionPlugin plugin;
@@ -30,6 +34,13 @@ public class CallsCompletionPlugin extends AbstractUIPlugin {
     @Override
     public void stop(final BundleContext context) throws Exception {
         plugin = null;
+        storeFragmentIndex();
         super.stop(context);
+    }
+
+    private void storeFragmentIndex() {
+        final Injector injector = InjectionService.getInstance().getInjector();
+        final FragmentIndex fragmentIndex = injector.getInstance(FragmentIndex.class);
+        fragmentIndex.store();
     }
 }

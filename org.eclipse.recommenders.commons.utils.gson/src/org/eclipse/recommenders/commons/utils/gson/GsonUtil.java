@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledExcept
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,7 @@ import java.lang.reflect.Type;
 import java.util.Date;
 
 import org.eclipse.recommenders.commons.utils.IOUtils;
+import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.IFieldName;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -77,10 +79,15 @@ public class GsonUtil {
         return res;
     }
 
-    public static <T> T deserialize(final File jsonFile, final Type classOfT) throws IOException {
+    public static <T> T deserialize(final File jsonFile, final Type classOfT) {
         ensureIsNotNull(jsonFile);
         ensureIsNotNull(classOfT);
-        final FileInputStream fis = new FileInputStream(jsonFile);
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(jsonFile);
+        } catch (final FileNotFoundException e) {
+            throw Throws.throwUnhandledException(e, "Unable to deserialize from file " + jsonFile.getAbsolutePath());
+        }
         return deserialize(fis, classOfT);
     }
 
