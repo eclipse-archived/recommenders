@@ -361,11 +361,7 @@ public class JdtUtils {
     }
 
     public static IPackageFragmentRoot getPackageFragmentRoot(final IPackageFragment packageFragment) {
-        IJavaElement currentElement = packageFragment;
-        while (!(currentElement instanceof IPackageFragmentRoot)) {
-            currentElement = currentElement.getParent();
-        }
-        return (IPackageFragmentRoot) currentElement;
+        return (IPackageFragmentRoot) packageFragment.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
     }
 
 }

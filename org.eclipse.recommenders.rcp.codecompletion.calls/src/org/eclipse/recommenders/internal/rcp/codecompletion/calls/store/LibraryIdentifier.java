@@ -21,6 +21,10 @@ public class LibraryIdentifier {
     public String name;
     public Version version;
 
+    protected LibraryIdentifier() {
+        // Only used for deserialization
+    }
+
     public LibraryIdentifier(final String name, final Version version) {
         this.name = name;
         this.version = version;

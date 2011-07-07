@@ -12,8 +12,12 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
 public class PackageFragmentRootConfiguration {
 
-    private final LibraryIdentifier libraryIdentifier;
-    private final UpdatePolicy updatePolicy;
+    private LibraryIdentifier libraryIdentifier;
+    private UpdatePolicy updatePolicy;
+
+    protected PackageFragmentRootConfiguration() {
+        // Used for deserialization only
+    }
 
     public PackageFragmentRootConfiguration(final LibraryIdentifier libraryIdentifier, final UpdatePolicy updatePolicy) {
         this.libraryIdentifier = libraryIdentifier;
