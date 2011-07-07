@@ -14,6 +14,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;
 import org.junit.Test;
 
@@ -22,6 +24,7 @@ public class VersionRangeTest {
     Version v36 = Version.create(3, 6);
     Version v37 = Version.create(3, 7);
     Version v38 = Version.create(3, 8);
+    Version v39 = Version.create(3, 9);
 
     @Test
     public void testInRange() {
@@ -198,5 +201,49 @@ public class VersionRangeTest {
 
         assertTrue(range1.isLowerBoundEquals(range1));
         assertFalse(range1.isLowerBoundEquals(range2));
+    }
+
+    @Test
+    public void testResiduesInnerRange() {
+        final VersionRange outerRange = new VersionRangeBuilder().minInclusive(v36).maxExclusive(v39).build();
+        final VersionRange innerRange = new VersionRangeBuilder().minInclusive(v37).maxExclusive(v38).build();
+
+        final List<VersionRange> residues = outerRange.getResidues(innerRange);
+
+        assertEquals(2, residues.size());
+        final VersionRange lowerResidue = residues.get(0);
+        assertEquals(v36, lowerResidue.getMinVersion());
+        assertTrue(lowerResidue.isMinVersionInclusive());
+        assertEquals(v37, lowerResidue.getMaxVersion());
+        assertFalse(lowerResidue.isMaxVersionInclusive());
+
+        final VersionRange upperResidue = residues.get(1);
+        assertEquals(v38, upperResidue.getMinVersion());
+        assertTrue(upperResidue.isMinVersionInclusive());
+        assertEquals(v39, upperResidue.getMaxVersion());
+        assertFalse(upperResidue.isMaxVersionInclusive());
+    }
+
+    @Test
+    public void testResiduesNoIntersection() {
+        final VersionRange range1 = new VersionRangeBuilder().minInclusive(v36).maxExclusive(v38).build();
+        final VersionRange range2 = new VersionRangeBuilder().minInclusive(v38).maxExclusive(v39).build();
+
+        final List<VersionRange> residues = range1.getResidues(range2);
+
+        assertEquals(1, residues.size());
+        assertEquals(range1, residues.get(0));
+    }
+
+    @Test
+    public void testEmpty() {
+        final VersionRange range = new VersionRangeBuilder().minInclusive(v37).maxInclusive(v36).build();
+        assertTrue(range.isEmpty());
+    }
+
+    @Test
+    public void testNotEmpty() {
+        final VersionRange range = new VersionRangeBuilder().minInclusive(v36).maxInclusive(v36).build();
+        assertFalse(range.isEmpty());
     }
 }

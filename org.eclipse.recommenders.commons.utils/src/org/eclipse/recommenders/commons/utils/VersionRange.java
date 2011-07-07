@@ -10,6 +10,10 @@
  */
 package org.eclipse.recommenders.commons.utils;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
+
 public class VersionRange {
 
     public static VersionRange ALL = new VersionRangeBuilder().minInclusive(Version.UNKNOWN)
@@ -167,5 +171,55 @@ public class VersionRange {
     public boolean isLowerBoundEquals(final VersionRange range) {
         return isMinVersionInclusive() == range.isMinVersionInclusive()
                 && getMinVersion().equals(range.getMinVersion());
+    }
+
+    public boolean isEmpty() {
+        final int compare = getMinVersion().compareTo(getMaxVersion());
+        if (compare < 0) {
+            return false;
+        } else if (compare == 0 && isMinVersionInclusive() && isMaxVersionInclusive()) {
+            return false;
+        }
+        return true;
+    }
+
+    public List<VersionRange> getResidues(final VersionRange range) {
+        final List<VersionRange> residues = Lists.newLinkedList();
+        final VersionRange lowerResidue = getLowerResidue(range);
+        if (!lowerResidue.isEmpty()) {
+            residues.add(lowerResidue);
+        }
+        final VersionRange upperResidue = getUpperResidue(range);
+        if (!upperResidue.isEmpty()) {
+            residues.add(upperResidue);
+        }
+        return residues;
+    }
+
+    private VersionRange getLowerResidue(final VersionRange range) {
+        return new VersionRange(getMinVersion(), isMinVersionInclusive(), range.getMinVersion(),
+                !range.isMinVersionInclusive());
+    }
+
+    private VersionRange getUpperResidue(final VersionRange range) {
+        return new VersionRange(range.getMaxVersion(), !range.isMaxVersionInclusive(), getMaxVersion(),
+                isMaxVersionInclusive());
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof VersionRange) {
+            final VersionRange range = (VersionRange) obj;
+            return minVersion.equals(range.minVersion) && maxVersion.equals(range.maxVersion)
+                    && minVersionInclusive == range.minVersionInclusive
+                    && maxVersionInclusive == range.maxVersionInclusive;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return minVersion.hashCode() ^ maxVersion.hashCode();
     }
 }
