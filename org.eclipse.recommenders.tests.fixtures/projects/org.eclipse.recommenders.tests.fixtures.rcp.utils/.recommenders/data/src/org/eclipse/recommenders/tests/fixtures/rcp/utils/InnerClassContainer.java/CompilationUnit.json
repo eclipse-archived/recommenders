@@ -1,0 +1,373 @@
+{
+  "_id": "07c0ad6f8da8ef50da0eff2dfd04ad5e512b5fa2",
+  "creationTimestamp": "2011-07-08T10:27:00.003+02:00",
+  "imports": [
+    {
+      "kind": "TYPE_REFERENCE",
+      "name": "Ljava/lang/Object",
+      "fingerprint": "461e37adec8b28e74247c7473d930235838ea91e"
+    },
+    {
+      "kind": "TYPE_REFERENCE",
+      "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+      "fingerprint": "1bb88941337373a91d3d024b037c3c894b5a3360"
+    },
+    {
+      "kind": "TYPE_REFERENCE",
+      "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2",
+      "fingerprint": "60edcbdb96ee6785f66d9a62cef4100faaaf3708"
+    },
+    {
+      "kind": "TYPE_REFERENCE",
+      "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3",
+      "fingerprint": "5fe58f1a950f05ea01b4fb4f5db4aad8354a7129"
+    }
+  ],
+  "kind": "SNAPSHOT",
+  "analysedOn": "2011-07-08T10:27:00.003+02:00",
+  "fingerprint": "1bb88941337373a91d3d024b037c3c894b5a3360",
+  "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+  "primaryType": {
+    "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+    "superclass": "Ljava/lang/Object",
+    "interfaces": [],
+    "fields": [],
+    "methods": [
+      {
+        "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer.\u003cinit\u003e()V",
+        "superDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+        "firstDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+        "line": 13,
+        "nestedTypes": [],
+        "modifiers": 1,
+        "objects": [
+          {
+            "type": "Ljava/lang/Object",
+            "names": [
+              "this"
+            ],
+            "kind": "PARAMETER",
+            "parameterCallSites": [],
+            "receiverCallSites": [
+              {
+                "receiver": "this",
+                "targetMethod": "Ljava/lang/Object.\u003cinit\u003e()V",
+                "sourceMethod": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer.\u003cinit\u003e()V",
+                "line": 13
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "line": 0,
+    "memberTypes": [
+      {
+        "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass4",
+        "superclass": "Ljava/lang/Object",
+        "interfaces": [],
+        "fields": [
+          "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer"
+        ],
+        "methods": [
+          {
+            "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass4.\u003cinit\u003e(Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer;)V",
+            "superDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+            "firstDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+            "line": 29,
+            "nestedTypes": [],
+            "modifiers": 2,
+            "objects": [
+              {
+                "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                "names": [
+                  "this$0"
+                ],
+                "kind": "PARAMETER",
+                "parameterCallSites": [],
+                "receiverCallSites": []
+              },
+              {
+                "type": "Ljava/lang/Object",
+                "names": [
+                  "this"
+                ],
+                "kind": "PARAMETER",
+                "parameterCallSites": [],
+                "receiverCallSites": []
+              },
+              {
+                "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                "names": [
+                  "this$0"
+                ],
+                "kind": "FIELD",
+                "definitionSite": {
+                  "kind": "FIELD",
+                  "definedByField": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass4.this$0;Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                  "lineNumber": 0
+                },
+                "parameterCallSites": [],
+                "receiverCallSites": []
+              }
+            ]
+          }
+        ],
+        "line": 0,
+        "memberTypes": [],
+        "modifiers": 32
+      },
+      {
+        "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3",
+        "superclass": "Ljava/lang/Object",
+        "interfaces": [],
+        "fields": [
+          "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer"
+        ],
+        "methods": [
+          {
+            "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3.\u003cinit\u003e(Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer;)V",
+            "superDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+            "firstDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+            "line": 22,
+            "nestedTypes": [],
+            "modifiers": 2,
+            "objects": [
+              {
+                "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                "names": [
+                  "this$0"
+                ],
+                "kind": "FIELD",
+                "definitionSite": {
+                  "kind": "FIELD",
+                  "definedByField": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3.this$0;Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                  "lineNumber": 0
+                },
+                "parameterCallSites": [],
+                "receiverCallSites": []
+              },
+              {
+                "type": "Ljava/lang/Object",
+                "names": [
+                  "this"
+                ],
+                "kind": "PARAMETER",
+                "parameterCallSites": [],
+                "receiverCallSites": []
+              },
+              {
+                "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                "names": [
+                  "this$0"
+                ],
+                "kind": "PARAMETER",
+                "parameterCallSites": [],
+                "receiverCallSites": []
+              }
+            ]
+          }
+        ],
+        "line": 0,
+        "memberTypes": [
+          {
+            "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3$InnerClass4",
+            "superclass": "Ljava/lang/Object",
+            "interfaces": [],
+            "fields": [
+              "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3"
+            ],
+            "methods": [
+              {
+                "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3$InnerClass4.\u003cinit\u003e(Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3;)V",
+                "superDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+                "firstDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+                "line": 24,
+                "nestedTypes": [],
+                "modifiers": 2,
+                "objects": [
+                  {
+                    "type": "Ljava/lang/Object",
+                    "names": [
+                      "this"
+                    ],
+                    "kind": "PARAMETER",
+                    "parameterCallSites": [],
+                    "receiverCallSites": []
+                  },
+                  {
+                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3",
+                    "names": [
+                      "this$1"
+                    ],
+                    "kind": "FIELD",
+                    "definitionSite": {
+                      "kind": "FIELD",
+                      "definedByField": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3$InnerClass4.this$1;Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3",
+                      "lineNumber": 0
+                    },
+                    "parameterCallSites": [],
+                    "receiverCallSites": []
+                  },
+                  {
+                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3",
+                    "names": [
+                      "this$1"
+                    ],
+                    "kind": "PARAMETER",
+                    "parameterCallSites": [],
+                    "receiverCallSites": []
+                  },
+                  {
+                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                    "names": [
+                      "this$0"
+                    ],
+                    "kind": "FIELD",
+                    "definitionSite": {
+                      "kind": "FIELD",
+                      "definedByField": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass3.this$0;Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                      "lineNumber": 0
+                    },
+                    "parameterCallSites": [],
+                    "receiverCallSites": []
+                  }
+                ]
+              }
+            ],
+            "line": 0,
+            "memberTypes": [],
+            "modifiers": 32
+          }
+        ],
+        "modifiers": 32
+      },
+      {
+        "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2",
+        "superclass": "Ljava/lang/Object",
+        "interfaces": [],
+        "fields": [
+          "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer"
+        ],
+        "methods": [
+          {
+            "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2.\u003cinit\u003e(Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer;)V",
+            "superDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+            "firstDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+            "line": 15,
+            "nestedTypes": [],
+            "modifiers": 2,
+            "objects": [
+              {
+                "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                "names": [
+                  "this$0"
+                ],
+                "kind": "FIELD",
+                "definitionSite": {
+                  "kind": "FIELD",
+                  "definedByField": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2.this$0;Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                  "lineNumber": 0
+                },
+                "parameterCallSites": [],
+                "receiverCallSites": []
+              },
+              {
+                "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                "names": [
+                  "this$0"
+                ],
+                "kind": "PARAMETER",
+                "parameterCallSites": [],
+                "receiverCallSites": []
+              },
+              {
+                "type": "Ljava/lang/Object",
+                "names": [
+                  "this"
+                ],
+                "kind": "PARAMETER",
+                "parameterCallSites": [],
+                "receiverCallSites": []
+              }
+            ]
+          }
+        ],
+        "line": 0,
+        "memberTypes": [
+          {
+            "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2$InnerClass3",
+            "superclass": "Ljava/lang/Object",
+            "interfaces": [],
+            "fields": [
+              "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2"
+            ],
+            "methods": [
+              {
+                "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2$InnerClass3.\u003cinit\u003e(Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2;)V",
+                "superDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+                "firstDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+                "line": 17,
+                "nestedTypes": [],
+                "modifiers": 2,
+                "objects": [
+                  {
+                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                    "names": [
+                      "this$0"
+                    ],
+                    "kind": "FIELD",
+                    "definitionSite": {
+                      "kind": "FIELD",
+                      "definedByField": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2.this$0;Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer",
+                      "lineNumber": 0
+                    },
+                    "parameterCallSites": [],
+                    "receiverCallSites": []
+                  },
+                  {
+                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2",
+                    "names": [
+                      "this$1"
+                    ],
+                    "kind": "PARAMETER",
+                    "parameterCallSites": [],
+                    "receiverCallSites": []
+                  },
+                  {
+                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2",
+                    "names": [
+                      "this$1"
+                    ],
+                    "kind": "FIELD",
+                    "definitionSite": {
+                      "kind": "FIELD",
+                      "definedByField": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2$InnerClass3.this$1;Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/InnerClassContainer$InnerClass2",
+                      "lineNumber": 0
+                    },
+                    "parameterCallSites": [],
+                    "receiverCallSites": []
+                  },
+                  {
+                    "type": "Ljava/lang/Object",
+                    "names": [
+                      "this"
+                    ],
+                    "kind": "PARAMETER",
+                    "parameterCallSites": [],
+                    "receiverCallSites": []
+                  }
+                ]
+              }
+            ],
+            "line": 0,
+            "memberTypes": [],
+            "modifiers": 32
+          }
+        ],
+        "modifiers": 32
+      }
+    ],
+    "modifiers": 33
+  }
+}
