@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: RCP Utils Tests
+Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp.utils
+Bundle-Version: 0.1.0.qualifier
+Require-Bundle: org.eclipse.core.runtime,
+ org.junit,
+ org.eclipse.recommenders.tests.commons,
+ org.eclipse.core.resources,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.recommenders.rcp.utils,
+ org.eclipse.recommenders.tests.fixtures.rcp.utils
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
