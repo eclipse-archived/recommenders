@@ -421,4 +421,9 @@ public class Names {
         //
         return internal_vm2srcTypeName(vmTypeName.toCharArray(), 0);
     }
+
+    public static ITypeName java2vmType(final Class<?> clazz) {
+        final String vmName = src2vmType(clazz.getName());
+        return VmTypeName.get(vmName);
+    }
 }
