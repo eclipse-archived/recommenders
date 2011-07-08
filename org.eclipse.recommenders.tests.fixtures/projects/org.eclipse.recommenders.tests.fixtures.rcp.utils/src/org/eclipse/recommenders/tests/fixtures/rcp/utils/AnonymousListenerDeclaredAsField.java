@@ -10,12 +10,11 @@
  */
 package org.eclipse.recommenders.tests.fixtures.rcp.utils;
 
-public class InnerClassContainer {
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlListener;
 
-    public class InnerClass2 {
+public class AnonymousListenerDeclaredAsField {
 
-        public class InnerClass3 {
-
-        }
-    }
+    ControlListener l = new ControlAdapter() {
+    };
 }

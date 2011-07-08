@@ -13,8 +13,8 @@ package org.eclipse.recommenders.commons.utils;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnreachable;
-import static org.eclipse.recommenders.commons.utils.Throws.throwUnsupportedOperation;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +24,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.commons.utils.names.IPackageName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 
 /**
@@ -228,6 +229,13 @@ public class Names {
         return new String[] { type, methodName, methodDescriptor };
     }
 
+    public static String src2vmMethod(final String srcDeclaringType, final String methodName,
+            final String[] srcParameterTypes, final String srcReturnType) {
+        final String vmDeclaringTypeName = src2vmType(srcDeclaringType);
+        final String vmMethodName = src2vmMethod(methodName, srcParameterTypes, srcReturnType);
+        return vmDeclaringTypeName + "." + vmMethodName;
+    }
+
     public static String src2vmMethod(final String methodName, final String[] srcParameterTypes,
             final String srcReturnType) {
         // TODO this code is incomplete and does not work well with arrays!
@@ -252,17 +260,19 @@ public class Names {
         return sb.toString();
     }
 
-    public static String src2vmType(final String type) {
+    public static String src2vmType(String type) {
         ensureIsNotNull(type, "type");
         //
         final PrimitiveType p = PrimitiveType.fromSrc(type);
         if (p != null) {
             return String.valueOf(p.vm());
         }
+        int dimensions = 0;
         if (type.endsWith("]")) {
-            throw throwUnsupportedOperation("arrays not supported yet. Consider Raising an issue in our issue tracker if needed.");
+            dimensions = StringUtils.countMatches(type, "[]");
+            type = StringUtils.substringBefore(type, "[") + ";";
         }
-        return "L" + type.replaceAll("\\.", "/");
+        return StringUtils.repeat("[", dimensions) + "L" + type.replaceAll("\\.", "/");
     }
 
     public static List<String> src2vmType(final String[] srcTypes) {
@@ -425,5 +435,38 @@ public class Names {
     public static ITypeName java2vmType(final Class<?> clazz) {
         final String vmName = src2vmType(clazz.getName());
         return VmTypeName.get(vmName);
+    }
+
+    public static IMethodName java2vmType(final Method method) {
+        final String declaringType = method.getDeclaringClass().getName();
+        final String returnType = method.getReturnType().getName();
+        final String[] parameterTypes = java2srcTypeNames(method.getParameterTypes());
+        final String methodName = src2vmMethod(declaringType, method.getName(), parameterTypes, returnType);
+        return VmMethodName.get(methodName);
+    }
+
+    private static String[] java2srcTypeNames(final Class<?>[] types) {
+        final String[] res = new String[types.length];
+
+        for (int i = types.length; i-- > 0;) {
+            final Tuple<Class<?>, Integer> typeInfo = getDimension(types[i]);
+            res[i] = toSrcType(typeInfo);
+        }
+        return res;
+    }
+
+    private static String toSrcType(final Tuple<Class<?>, Integer> typeInfo) {
+        final String res = typeInfo.getFirst().getName() + StringUtils.repeat("[]", typeInfo.getSecond());
+        return res;
+    }
+
+    public static Tuple<Class<?>, Integer> getDimension(Class<?> type) {
+        int dimension = 0;
+        while (type.isArray()) {
+            dimension++;
+            type = type.getComponentType();
+        }
+        return Tuple.create(type, dimension);
+
     }
 }

@@ -10,12 +10,12 @@
  */
 package org.eclipse.recommenders.tests.fixtures.rcp.utils;
 
-public class InnerClassContainer {
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlListener;
 
-    public class InnerClass2 {
+public class AnonymousListenerDeclaredAsStaticField {
 
-        public class InnerClass3 {
+    static ControlListener lstatic = new ControlAdapter() {
+    };
 
-        }
-    }
 }

@@ -12,21 +12,21 @@ package org.eclipse.recommenders.tests.fixtures.rcp.utils;
 
 public class StaticInnerClassContainer {
 
-    private static class InnerClass2 {
+    public static class InnerClass2 {
 
-        private class InnerClass3 {
-
-        }
-    }
-
-    private static class InnerClass3 {
-
-        private static class InnerClass4 {
+        public class InnerClass3 {
 
         }
     }
 
-    private static class InnerClass4 {
+    public static class InnerClass3 {
+
+        public static class InnerClass4 {
+
+        }
+    }
+
+    public static class InnerClass4 {
 
     }
 }

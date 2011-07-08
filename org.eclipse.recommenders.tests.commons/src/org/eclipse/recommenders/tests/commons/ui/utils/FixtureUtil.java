@@ -29,10 +29,10 @@ public class FixtureUtil {
 
     public static IProject copyProjectToWorkspace(final String projectName) throws IOException, CoreException {
         final IWorkspaceRoot root = getWorkspaceRoot();
-        final File wsDir = root.getLocation().toFile();
-        final File destDir = new File(wsDir, projectName);
-        assertFalse(destDir.exists());
-        final File srcDir = new File(new File(fixturesBasedir, "projects"), projectName);
+        final File wsDir = root.getLocation().toFile().getCanonicalFile();
+        final File destDir = new File(wsDir, projectName).getCanonicalFile();
+        assertFalse(destDir + " already exists!", destDir.exists());
+        final File srcDir = new File(new File(fixturesBasedir, "projects"), projectName).getCanonicalFile();
         FileUtils.copyDirectory(srcDir, destDir);
         final IProject project = root.getProject(projectName);
         project.create(null);

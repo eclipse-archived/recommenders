@@ -10,27 +10,20 @@
  */
 package org.eclipse.recommenders.tests.fixtures.rcp.utils;
 
-import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlListener;
 
 public class AnonymousListenerDeclaredInMethodBody {
 
     public void __test() {
 
-        final ControlListener l = new ControlListener() {
-
-            @Override
-            public void controlMoved(final ControlEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void controlResized(final ControlEvent e) {
-                // TODO Auto-generated method stub
-
-            }
+        final ControlListener l = new ControlAdapter() {
         };
+    }
 
+    public void __testInlineClassDeclaration() {
+
+        class Adapter extends ControlAdapter {
+        }
     }
 }

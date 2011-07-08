@@ -1,6 +1,6 @@
 {
   "_id": "548e4f53df108d4acdd5370a1dbb04476759a846",
-  "creationTimestamp": "2011-07-08T10:26:53.157+02:00",
+  "creationTimestamp": "2011-07-08T16:49:51.221+02:00",
   "imports": [
     {
       "kind": "TYPE_REFERENCE",
@@ -10,12 +10,12 @@
     {
       "kind": "TYPE_REFERENCE",
       "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1",
-      "fingerprint": "90644e3ae2be21ba38f553e30235ee9647bd8e6a"
+      "fingerprint": "89a51dbb69414d818f9fb5c040962716f50e1a02"
     }
   ],
   "kind": "SNAPSHOT",
-  "analysedOn": "2011-07-08T10:26:53.157+02:00",
-  "fingerprint": "151cacbd21adb33c7a9b14b6f0d093cff8f55cb9",
+  "analysedOn": "2011-07-08T16:49:51.222+02:00",
+  "fingerprint": "e26ea99737ce39e0e5a61ada8cd8ee77253151ca",
   "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody",
   "primaryType": {
     "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody",
@@ -24,28 +24,52 @@
     "fields": [],
     "methods": [
       {
+        "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody.__testInlineClassDeclaration()V",
+        "line": 28,
+        "nestedTypes": [],
+        "modifiers": 1,
+        "objects": [
+          {
+            "type": "Ljava/lang/Object",
+            "names": [
+              "this"
+            ],
+            "kind": "PARAMETER",
+            "parameterCallSites": [],
+            "receiverCallSites": []
+          }
+        ]
+      },
+      {
         "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody.__test()V",
         "line": 20,
         "nestedTypes": [
           {
             "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1",
-            "superclass": "Ljava/lang/Object",
-            "interfaces": [
-              "Lorg/eclipse/swt/events/ControlListener"
-            ],
+            "superclass": "Lorg/eclipse/swt/events/ControlAdapter",
+            "interfaces": [],
             "fields": [
               "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody"
             ],
             "methods": [
               {
                 "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1.\u003cinit\u003e(Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody;)V",
-                "superDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
-                "firstDeclaration": "Ljava/lang/Object.\u003cinit\u003e()V",
+                "superDeclaration": "Lorg/eclipse/swt/events/ControlAdapter.\u003cinit\u003e()V",
+                "firstDeclaration": "Lorg/eclipse/swt/events/ControlAdapter.\u003cinit\u003e()V",
                 "line": 1,
                 "nestedTypes": [],
                 "modifiers": 0,
                 "objects": [
                   {
+                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1",
+                    "names": [
+                      "this"
+                    ],
+                    "kind": "PARAMETER",
+                    "parameterCallSites": [],
+                    "receiverCallSites": []
+                  },
+                  {
                     "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody",
                     "names": [
                       "this$0"
@@ -65,99 +89,6 @@
                       "this$0"
                     ],
                     "kind": "PARAMETER",
-                    "parameterCallSites": [],
-                    "receiverCallSites": []
-                  },
-                  {
-                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1",
-                    "names": [
-                      "this"
-                    ],
-                    "kind": "PARAMETER",
-                    "parameterCallSites": [],
-                    "receiverCallSites": []
-                  }
-                ]
-              },
-              {
-                "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1.controlMoved(Lorg/eclipse/swt/events/ControlEvent;)V",
-                "superDeclaration": "Lorg/eclipse/swt/events/ControlListener.controlMoved(Lorg/eclipse/swt/events/ControlEvent;)V",
-                "firstDeclaration": "Lorg/eclipse/swt/events/ControlListener.controlMoved(Lorg/eclipse/swt/events/ControlEvent;)V",
-                "line": 26,
-                "nestedTypes": [],
-                "modifiers": 1,
-                "objects": [
-                  {
-                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody",
-                    "names": [
-                      "this$0"
-                    ],
-                    "kind": "FIELD",
-                    "definitionSite": {
-                      "kind": "FIELD",
-                      "definedByField": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1.this$0;Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody",
-                      "lineNumber": 0
-                    },
-                    "parameterCallSites": [],
-                    "receiverCallSites": []
-                  },
-                  {
-                    "type": "Lorg/eclipse/swt/events/ControlEvent",
-                    "names": [
-                      "e"
-                    ],
-                    "kind": "PARAMETER",
-                    "parameterCallSites": [],
-                    "receiverCallSites": []
-                  },
-                  {
-                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1",
-                    "names": [
-                      "this"
-                    ],
-                    "kind": "PARAMETER",
-                    "parameterCallSites": [],
-                    "receiverCallSites": []
-                  }
-                ]
-              },
-              {
-                "name": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1.controlResized(Lorg/eclipse/swt/events/ControlEvent;)V",
-                "superDeclaration": "Lorg/eclipse/swt/events/ControlListener.controlResized(Lorg/eclipse/swt/events/ControlEvent;)V",
-                "firstDeclaration": "Lorg/eclipse/swt/events/ControlListener.controlResized(Lorg/eclipse/swt/events/ControlEvent;)V",
-                "line": 32,
-                "nestedTypes": [],
-                "modifiers": 1,
-                "objects": [
-                  {
-                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1",
-                    "names": [
-                      "this"
-                    ],
-                    "kind": "PARAMETER",
-                    "parameterCallSites": [],
-                    "receiverCallSites": []
-                  },
-                  {
-                    "type": "Lorg/eclipse/swt/events/ControlEvent",
-                    "names": [
-                      "e"
-                    ],
-                    "kind": "PARAMETER",
-                    "parameterCallSites": [],
-                    "receiverCallSites": []
-                  },
-                  {
-                    "type": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody",
-                    "names": [
-                      "this$0"
-                    ],
-                    "kind": "FIELD",
-                    "definitionSite": {
-                      "kind": "FIELD",
-                      "definedByField": "Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody$1.this$0;Lorg/eclipse/recommenders/tests/fixtures/rcp/utils/AnonymousListenerDeclaredInMethodBody",
-                      "lineNumber": 0
-                    },
                     "parameterCallSites": [],
                     "receiverCallSites": []
                   }

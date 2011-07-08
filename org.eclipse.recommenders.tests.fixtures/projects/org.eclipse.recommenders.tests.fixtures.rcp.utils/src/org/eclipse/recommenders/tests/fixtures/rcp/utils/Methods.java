@@ -10,12 +10,20 @@
  */
 package org.eclipse.recommenders.tests.fixtures.rcp.utils;
 
-public class InnerClassContainer {
+public interface Methods {
 
-    public class InnerClass2 {
+    public void __testVoid();
 
-        public class InnerClass3 {
+    public void __test(String s);
 
-        }
-    }
+    public String __testString();
+
+    public void __test(String... s);
+
+    public void __test(String[] s, String s2);
+
+    // Currently no support for generics
+    // public <T> T __test(T c);
+    // public void __test(List<String> l);
+
 }
