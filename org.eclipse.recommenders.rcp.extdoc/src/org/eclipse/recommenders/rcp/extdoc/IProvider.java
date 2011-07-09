@@ -16,7 +16,6 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 public interface IProvider extends IExecutableExtension {
@@ -32,7 +31,5 @@ public interface IProvider extends IExecutableExtension {
     Control createControl(Composite parent, IWorkbenchPartSite partSite);
 
     boolean selectionChanged(IJavaElementSelection context);
-
-    Shell getShell();
 
 }

@@ -54,7 +54,7 @@ public class ExtDocView extends ViewPart {
     private JavaElementLabelProvider labelProvider;
 
     @Inject
-    public ExtDocView(final ProviderStore providerStore) {
+    ExtDocView(final ProviderStore providerStore) {
         this.providerStore = providerStore;
         initializeLabelProvider();
     }

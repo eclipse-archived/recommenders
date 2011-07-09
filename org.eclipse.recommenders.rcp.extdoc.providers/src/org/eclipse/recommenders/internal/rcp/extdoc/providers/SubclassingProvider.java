@@ -93,12 +93,11 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, elementName,
-                            provider, server, null);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, provider, server);
                     line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
                     displayDirectives(overrides.getOverrides(), "override", subclasses);
                     if (calls != null) {
-                        new TextAndFeaturesLine(composite, text2, type, elementName, provider, server, null);
+                        new TextAndFeaturesLine(composite, text2, type, provider, server);
                         displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
                     }
                     composite.layout(true);
@@ -130,8 +129,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
                     displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method,
-                            method.getElementName(), provider, server, null);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method, provider, server);
                     line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL,
                             false, true);
                     displayDirectives(selfcalls.getCalls(), "call", definitions);

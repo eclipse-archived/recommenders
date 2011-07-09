@@ -16,14 +16,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
-import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.progress.UIJob;
 
-public final class TestProvider extends AbstractProviderComposite implements IDeletionProvider {
+public final class TestProvider extends AbstractProviderComposite {
 
     private Label text;
 
@@ -53,10 +52,6 @@ public final class TestProvider extends AbstractProviderComposite implements IDe
     protected Control createContentControl(final Composite parent) {
         text = SwtFactory.createLabel(parent, "");
         return text;
-    }
-
-    @Override
-    public void requestDeletion(final Object object) {
     }
 
 }

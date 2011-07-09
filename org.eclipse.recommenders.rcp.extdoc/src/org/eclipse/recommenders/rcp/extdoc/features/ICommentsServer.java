@@ -12,10 +12,12 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 
 import java.util.List;
 
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
+
 public interface ICommentsServer {
 
-    List<IComment> getComments(Object object);
+    List<IComment> getComments(Object object, IProvider provider);
 
-    IComment addComment(Object object, String text);
+    IComment addComment(Object object, String text, IProvider provider);
 
 }

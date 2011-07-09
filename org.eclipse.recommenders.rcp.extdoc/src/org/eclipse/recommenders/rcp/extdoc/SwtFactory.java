@@ -27,10 +27,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-@SuppressWarnings("restriction")
 public final class SwtFactory {
 
-    public static final Font CODEFONT = JFaceResources.getTextFont();
+    static final Font CODEFONT = JFaceResources.getTextFont();
     private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 
     private static final Map<Integer, Color> COLORCACHE = new HashMap<Integer, Color>();
@@ -51,7 +50,7 @@ public final class SwtFactory {
         return composite;
     }
 
-    public static void createSeparator(final Composite parent) {
+    static void createSeparator(final Composite parent) {
         final Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     }

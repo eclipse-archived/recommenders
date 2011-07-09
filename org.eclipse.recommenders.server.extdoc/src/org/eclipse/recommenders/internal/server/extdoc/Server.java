@@ -42,25 +42,30 @@ public final class Server {
     @Inject
     private static JavaElementResolver resolver;
 
-    private static final String QUOTE;
-    private static final String BRACEOPEN;
-    private static final String BRACECLOSE;
-
-    static {
-        QUOTE = encode("\"");
-        BRACEOPEN = encode("{");
-        BRACECLOSE = encode("}");
-    }
+    private static final String QUOTE = encode("\"");
+    private static final String BRACEOPEN = encode("{");
+    private static final String BRACECLOSE = encode("}");
 
     private Server() {
     }
 
+    public static <T> T get(final String path, final Class<T> resultType) {
+        return getClient().doGetRequest(path, resultType);
+    }
+
+    public static void post(final Object object) {
+        getClient().doPostRequest("", object);
+    }
+
+    public static <T> T getProviderContent(final String view, final String providerId, final String key,
+            final String value, final Class<T> resultType) {
+        final String path = buildPath(view, providerId, key, value);
+        return get(path, resultType);
+    }
+
     public static <T> T getProviderContent(final String providerId, final String key, final String value,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        Checks.ensureIsNotNull(value);
-        final String path = String.format(
-                "_design/providers/_view/providers?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s&stale=ok", BRACEOPEN,
-                QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, encode(value), QUOTE, BRACECLOSE);
+        final String path = buildPath("providers", providerId, key, value);
         try {
             final List<ResultObject<T>> rows = getClient().doGetRequest(path, resultType).rows;
             return rows.isEmpty() ? null : rows.get(0).value;
@@ -81,8 +86,11 @@ public final class Server {
         return typeName == null ? null : typeName.getIdentifier();
     }
 
-    public static void post(final Object object) {
-        getClient().doPostRequest("", object);
+    private static String buildPath(final String view, final String providerId, final String key, final String value) {
+        Checks.ensureIsNotNull(value);
+        return String.format("_design/providers/_view/%s?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s?stale=ok", view,
+                BRACEOPEN, QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, encode(value), QUOTE,
+                BRACECLOSE);
     }
 
     private static String encode(final String text) {

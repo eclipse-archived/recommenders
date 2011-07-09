@@ -119,8 +119,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
 
     private void createEditAndRatingHeader(final int snippetIndex, final IJavaElement element) {
         final String text = "Example #" + (snippetIndex + 1) + ":";
-        final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, element, element.getElementName(),
-                this, server, null);
+        final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, element, this, server);
         line.createStyleRange(0, text.length(), SWT.BOLD, false, false);
     }
 }

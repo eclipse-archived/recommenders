@@ -22,6 +22,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Throws;
 
+@SuppressWarnings("restriction")
 public abstract class AbstractLocationSensitiveProviderComposite extends AbstractProviderComposite {
 
     @Override
@@ -228,6 +229,8 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
             return updateFieldDeclarationSelection(selection, (IField) javaElement);
         } else if (javaElement instanceof IType) {
             return updateFieldDeclarationSelection(selection, (IType) javaElement);
+        } else if (javaElement instanceof IMethod) {
+            return updateFieldDeclarationSelection(selection, (IMethod) javaElement);
         }
         throw new IllegalArgumentException(selection.toString());
     }
@@ -237,6 +240,10 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
     }
 
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
+        return false;
+    }
+
+    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
         return false;
     }
 }

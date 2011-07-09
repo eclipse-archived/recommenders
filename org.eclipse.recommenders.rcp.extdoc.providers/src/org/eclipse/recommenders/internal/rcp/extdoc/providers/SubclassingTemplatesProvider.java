@@ -26,7 +26,6 @@ import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
-import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
@@ -39,8 +38,7 @@ import org.eclipse.ui.progress.UIJob;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveProviderComposite implements
-        IDeletionProvider {
+public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveProviderComposite {
 
     private final SubclassingServer server;
 
@@ -96,8 +94,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                         String text2 = String
                                 .format("Pattern #%d - covers approximately %3.0f%% of the examined subclasses (%d subclasses).",
                                         i + 1, 100 * patternProbability, pattern.getNumberOfObservations());
-                        final TextAndFeaturesLine line = new TextAndFeaturesLine(templates, text2, type,
-                                type.getElementName(), provider, server, null);
+                        final TextAndFeaturesLine line = new TextAndFeaturesLine(templates, text2, type, provider,
+                                server);
                         // line.createStyleRange(0, 16, SWT.BOLD, false, false);
                         // line.createStyleRange(40, 3, SWT.NORMAL, true,
                         // false);
@@ -139,8 +137,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         final MethodPattern[] patterns = directive.getPatterns();
         Arrays.sort(patterns, new Comparator<MethodPattern>() {
             @Override
-            public int compare(final MethodPattern o1, final MethodPattern o2) {
-                return o2.getNumberOfObservations() - o1.getNumberOfObservations();
+            public int compare(final MethodPattern pattern1, final MethodPattern pattern2) {
+                return pattern2.getNumberOfObservations() - pattern1.getNumberOfObservations();
             }
         });
         return patterns;
@@ -152,11 +150,6 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
             numberOfSubclasses += p.getNumberOfObservations();
         }
         return numberOfSubclasses;
-    }
-
-    @Override
-    public void requestDeletion(final Object object) {
-        // TODO Auto-generated method stub
     }
 
 }

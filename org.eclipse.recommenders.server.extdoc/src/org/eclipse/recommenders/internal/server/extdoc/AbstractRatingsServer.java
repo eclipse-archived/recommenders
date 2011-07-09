@@ -10,38 +10,35 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
+import org.eclipse.recommenders.server.extdoc.types.Rating;
 
 public abstract class AbstractRatingsServer implements IStarsRatingsServer {
 
-    private final Map<Object, Integer> userRatings = new HashMap<Object, Integer>();
-
-    private final Map<Object, Integer> starsCounts = new HashMap<Object, Integer>();
-    private final Map<Object, Integer> starsSums = new HashMap<Object, Integer>();
-
     @Override
-    public final int getAverageRating(final Object object) {
-        if (!starsCounts.containsKey(object)) {
-            final Integer count = (int) Math.ceil(Math.random() * 3.0);
-            starsCounts.put(object, count);
-            starsSums.put(object, (int) (Math.ceil(Math.random() * 5.0) * count));
-        }
-        return starsSums.get(object) / starsCounts.get(object);
+    public final int getAverageRating(final Object object, final IProvider provider) {
+        final String providerId = provider.getClass().getSimpleName();
+        final String objectId = String.valueOf(object.hashCode());
+        final RatingSummary stats = true ? new RatingSummary() : Server.getProviderContent("stars", providerId,
+                "object", objectId, RatingSummary.class);
+        return stats.count == 0 ? 0 : stats.sum / stats.count;
     }
 
     @Override
-    public final int getUserRating(final Object object) {
-        return userRatings.containsKey(object) ? userRatings.get(object) : -1;
+    public final int getUserRating(final Object object, final IProvider provider) {
+        return -1;
     }
 
     @Override
-    public final void addRating(final Object object, final int stars) {
-        userRatings.put(object, stars);
-        starsCounts.put(object, starsCounts.get(object) + 1);
-        starsSums.put(object, starsSums.get(object) + stars);
+    public final void addRating(final Object object, final int stars, final IProvider provider) {
+        final Rating rating = Rating.create(provider, object, stars);
+        Server.post(rating);
+    }
+
+    private static final class RatingSummary {
+        private int sum;
+        private int count;
     }
 
 }

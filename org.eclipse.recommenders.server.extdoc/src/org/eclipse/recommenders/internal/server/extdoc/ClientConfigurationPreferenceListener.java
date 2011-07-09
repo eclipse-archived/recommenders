@@ -27,11 +27,10 @@ final class ClientConfigurationPreferenceListener implements IPropertyChangeList
             @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION) final ClientConfiguration config,
             @Named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE) final IPreferenceStore store) {
         this.config = config;
-
         final String host = store.getString(PreferenceConstants.WEBSERVICE_HOST);
-        store.addPropertyChangeListener(this);
-
         config.setBaseUrl(host);
+
+        store.addPropertyChangeListener(this);
     }
 
     @Override

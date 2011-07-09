@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
-import org.eclipse.recommenders.server.extdoc.CallsServer;
+import org.eclipse.recommenders.server.extdoc.GenericServer;
 
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public final class CallsServerTest {
 
     @Test
     public void testCallsServer() {
-        final CallsServer server = new CallsServer();
+        final GenericServer server = new GenericServer();
     }
 
 }

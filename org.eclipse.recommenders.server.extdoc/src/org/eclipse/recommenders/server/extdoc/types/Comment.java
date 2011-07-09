@@ -16,8 +16,17 @@ import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 
 public final class Comment implements IComment {
 
-    private String text;
+    private String object;
     private Date date;
+    private String text;
+
+    public static Comment create(final Object object, final String text) {
+        final Comment comment = new Comment();
+        comment.object = String.valueOf(object.hashCode());
+        comment.date = new Date();
+        comment.text = text;
+        return comment;
+    }
 
     String getText() {
         return text;

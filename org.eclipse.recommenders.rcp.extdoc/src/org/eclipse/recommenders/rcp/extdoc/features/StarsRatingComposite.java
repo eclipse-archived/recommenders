@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.rcp.extdoc.features;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -23,29 +24,34 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-class StarsRatingComposite {
+public class StarsRatingComposite {
 
     private static final Image ICON_STAR = ExtDocPlugin.getIcon("eview16/star.png");
     private static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
     private static final Image ICON_STAR_EMPTY = ExtDocPlugin.getIcon("eview16/star_empty.png");
 
-    private final Object element;
-    private final IStarsRatingsServer server;
+    private Object element;
+    private IProvider provider;
+    private IStarsRatingsServer server;
 
-    private final Composite parentComposite;
+    private Composite parentComposite;
     private Composite composite;
 
-    protected StarsRatingComposite(final Composite parent, final Object element, final IStarsRatingsServer server) {
-        this.element = element;
-        this.server = server;
-        parentComposite = new Composite(parent, SWT.NONE);
-        parentComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-        printStars();
+    public static StarsRatingComposite create(final Composite parent, final Object object, final IProvider provider,
+            final IStarsRatingsServer server) {
+        final StarsRatingComposite composite = new StarsRatingComposite();
+        composite.element = object;
+        composite.provider = provider;
+        composite.server = server;
+        composite.parentComposite = new Composite(parent, SWT.NONE);
+        composite.parentComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+        composite.printStars();
+        return composite;
     }
 
     private void printStars() {
-        final int averageRating = server.getAverageRating(element);
-        final int userRating = server.getUserRating(element);
+        final int averageRating = server.getAverageRating(element, provider);
+        final int userRating = server.getUserRating(element, provider);
 
         composite = new Composite(parentComposite, SWT.NONE);
         final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
@@ -62,7 +68,7 @@ class StarsRatingComposite {
     private void createStars(final int averageRating, final int userRating) {
         for (int i = 1; i <= 5; ++i) {
             final Label label = new Label(composite, SWT.NONE);
-            label.setImage(userRating == i ? ICON_STAR_ACTIVE : (averageRating < i ? ICON_STAR_EMPTY : ICON_STAR));
+            label.setImage(userRating == i ? ICON_STAR_ACTIVE : averageRating < i ? ICON_STAR_EMPTY : ICON_STAR);
             if (userRating < 1) {
                 final StarListener listener = new StarListener(i);
                 label.addMouseListener(listener);
@@ -76,7 +82,7 @@ class StarsRatingComposite {
     }
 
     private void addRating(final int stars) {
-        server.addRating(element, stars);
+        server.addRating(element, stars, provider);
         composite.dispose();
         printStars();
         parentComposite.layout(true);

@@ -8,10 +8,10 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc;
+package org.eclipse.recommenders.server.extdoc;
 
-public interface IDeletionProvider extends IProvider {
+import org.eclipse.recommenders.internal.server.extdoc.AbstractCommentsServer;
 
-    void requestDeletion(Object object);
+public final class GenericServer extends AbstractCommentsServer {
 
 }

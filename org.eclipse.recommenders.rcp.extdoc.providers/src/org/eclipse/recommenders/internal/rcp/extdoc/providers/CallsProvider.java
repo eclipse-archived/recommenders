@@ -42,7 +42,7 @@ import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComp
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
-import org.eclipse.recommenders.server.extdoc.CallsServer;
+import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -59,7 +59,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     private final CallsModelStore modelStore;
     private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;
     private final JavaElementResolver elementResolver;
-    private final CallsServer server;
+    private final GenericServer server;
 
     private Composite composite;
     private IIntelligentCompletionContext context;
@@ -67,7 +67,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Inject
     public CallsProvider(final CallsModelStore modelStore,
             final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
-            final JavaElementResolver elementResolver, final CallsServer server) {
+            final JavaElementResolver elementResolver, final GenericServer server) {
         this.modelStore = modelStore;
         this.usageResolversProvider = usageResolversProvider;
         this.elementResolver = elementResolver;
@@ -258,8 +258,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element,
-                            element.getElementName(), provider, server, null);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element, provider, server);
                     line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
                     displayProposals(proposals, calledMethods);
                     composite.layout(true);

@@ -16,19 +16,17 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 public abstract class AbstractProviderComposite extends AbstractProvider {
 
-    private Composite container;
     private IWorkbenchPartSite partSite;
     private CLabel titleLabel;
 
     @Override
     public final Control createControl(final Composite parent, final IWorkbenchPartSite site) {
         partSite = site;
-        container = SwtFactory.createGridComposite(parent, 1, 0, 3, 8, 8);
+        final Composite container = SwtFactory.createGridComposite(parent, 1, 0, 3, 8, 8);
 
         titleLabel = new CLabel(container, SWT.NONE);
         titleLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
@@ -42,11 +40,6 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
     }
 
     protected abstract Control createContentControl(Composite parent);
-
-    @Override
-    public final Shell getShell() {
-        return container.getShell();
-    }
 
     public final IWorkbenchPartSite getPartSite() {
         return partSite;

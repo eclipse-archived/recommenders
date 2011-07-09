@@ -22,7 +22,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
+import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -91,8 +91,8 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     private void displayText(final IJavaElement element, final String markup) {
-        final WikiEditDialog editDialog = new WikiEditDialog(this, element, markup);
-        FeaturesComposite.create(composite, element, element.getElementName(), this, server, editDialog);
+        StarsRatingComposite.create(composite, element, this, server);
+        // TODO: Add editing option.
 
         final StyledText text = new StyledText(composite, SWT.NONE);
         text.setText(parser.parseTextile(markup));
@@ -110,7 +110,7 @@ public final class WikiProvider extends AbstractProviderComposite {
         final WikiEditDialog editDialog = new WikiEditDialog(this, element, null);
         final Composite editLine = SwtFactory.createGridComposite(composite, 2, 0, 0, 0, 0);
         SwtFactory.createLabel(editLine, "You can start one by clicking on the pen icon: ");
-        new FeaturesComposite(editLine).addEditIcon(editDialog);
+        // new FeaturesComposite(editLine).addEditIcon(editDialog);
     }
 
     public void update(final IJavaElement javaElement, final String text) {

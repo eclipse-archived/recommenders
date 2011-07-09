@@ -17,11 +17,10 @@ import org.eclipse.recommenders.tests.rcp.extdoc.TestProvider;
 import org.eclipse.recommenders.tests.rcp.extdoc.TestServer;
 import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
 import org.eclipse.swt.widgets.Shell;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-public final class FeaturesCompositeTest {
+public final class StarsRatingCompositeTest {
 
     @Test
     public void testCreate() {
@@ -32,7 +31,7 @@ public final class FeaturesCompositeTest {
 
         provider.createControl(shell, null);
 
-        final FeaturesComposite composite = FeaturesComposite.create(shell, null, null, provider, server, editDialog);
+        final StarsRatingComposite composite = StarsRatingComposite.create(shell, null, provider, server);
 
         Assert.assertNotNull(composite);
     }
