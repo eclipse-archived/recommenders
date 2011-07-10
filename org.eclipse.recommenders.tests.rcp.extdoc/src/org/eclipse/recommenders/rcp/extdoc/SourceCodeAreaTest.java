@@ -10,8 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
-import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
-
+import org.eclipse.recommenders.tests.commons.extdoc.RcpUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,7 +18,7 @@ public final class SourceCodeAreaTest {
 
     @Test
     public void testSourceCodeArea() {
-        final SourceCodeArea area = new SourceCodeArea(UnitTestSuite.getShell());
+        final SourceCodeArea area = new SourceCodeArea(RcpUtils.getShell());
         area.setCode("...");
         Assert.assertTrue(true);
     }

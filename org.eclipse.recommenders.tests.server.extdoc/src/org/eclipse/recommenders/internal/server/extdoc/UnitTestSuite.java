@@ -15,6 +15,8 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ CallsServerTest.class, CodeExamplesServerTest.class, SubclassingServerTest.class, WikiServerTest.class })
+@SuiteClasses({ CodeExamplesServerTest.class, GenericServerTest.class, SubclassingServerTest.class,
+        WikiServerTest.class })
 public final class UnitTestSuite {
+
 }

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
-<fragment>
+<plugin>
    <extension
          point="org.eclipse.recommenders.rcp.extdoc.provider">
       <provider
-            class="org.eclipse.recommenders.tests.rcp.extdoc.TestProvider"
+            class="org.eclipse.recommenders.tests.commons.extdoc.TestProvider"
             icon="default-icon.gif"
             long_name="TestProvider"
             priority="1"
             short_name="TestProvider">
       </provider>
    </extension>
-
-</fragment>
+</plugin>

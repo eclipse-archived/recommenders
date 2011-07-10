@@ -89,7 +89,7 @@ public final class ContextFactory {
         return setMockedContext(selection, name, variableType, false);
     }
 
-    public static MockedIntelligentCompletionContext setMockedContext(final IJavaElementSelection selection,
+    private static MockedIntelligentCompletionContext setMockedContext(final IJavaElementSelection selection,
             final String varName, final IType variableType, final boolean isArgument) {
         if (variableType == null) {
             return null;
@@ -100,6 +100,10 @@ public final class ContextFactory {
                 return Variable.create(varName, elementResolver.toRecType(variableType), getEnclosingMethod());
             };
         };
+    }
+
+    public static void setElementResolver(final JavaElementResolver elementResolver) {
+        ContextFactory.elementResolver = elementResolver;
     }
 
 }

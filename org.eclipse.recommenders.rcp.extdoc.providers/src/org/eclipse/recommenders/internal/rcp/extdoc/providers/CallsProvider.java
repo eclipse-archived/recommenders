@@ -40,6 +40,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.CommentsComposite;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
@@ -261,6 +262,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element, provider, server);
                     line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
                     displayProposals(proposals, calledMethods);
+                    CommentsComposite.create(composite, element, provider, server);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;
@@ -287,4 +289,5 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             SwtFactory.createLabel(calls, Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
         }
     }
+
 }

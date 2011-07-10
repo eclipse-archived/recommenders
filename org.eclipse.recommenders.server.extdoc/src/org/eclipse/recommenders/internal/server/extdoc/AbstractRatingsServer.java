@@ -14,7 +14,7 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 import org.eclipse.recommenders.server.extdoc.types.Rating;
 
-public abstract class AbstractRatingsServer implements IStarsRatingsServer {
+abstract class AbstractRatingsServer implements IStarsRatingsServer {
 
     @Override
     public final int getAverageRating(final Object object, final IProvider provider) {

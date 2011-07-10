@@ -86,7 +86,7 @@ final class ProvidersTable {
     public void setContext(final IJavaElementSelection selection) {
         final JavaElementLocation location = selection.getElementLocation();
         if (lastSelection == null || lastSelection.getElementLocation() != location) {
-            for (final TableItem item : table.getItems()) {
+            for (final TableItem item : getItems()) {
                 final IProvider provider = (IProvider) ((Control) item.getData()).getData();
                 boolean selectProvider = false;
                 if (preferences.getBoolean(getPreferenceId(provider, location), true)) {

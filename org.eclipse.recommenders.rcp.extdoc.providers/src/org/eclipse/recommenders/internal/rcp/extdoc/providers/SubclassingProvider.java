@@ -75,7 +75,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     private boolean displayContentForType(final IType type) {
-        final ClassOverrideDirectives overrides = server.getClassOverrideDirective(type);
+        final ClassOverrideDirectives overrides = server.getClassOverrideDirectives(type);
         if (overrides == null) {
             return false;
         }
@@ -85,7 +85,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         final String text = "Based on " + subclasses + " direct subclasses of " + elementName
                 + " we created the following statistics. Subclassers may consider to override the following methods.";
         final String text2 = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
-        final ClassSelfcallDirectives calls = server.getClassSelfcallDirective(type);
+        final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
         final SubclassingProvider provider = this;
 
         new UIJob("Updating Subclassing Provider") {
@@ -98,7 +98,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                     displayDirectives(overrides.getOverrides(), "override", subclasses);
                     if (calls != null) {
                         new TextAndFeaturesLine(composite, text2, type, provider, server);
-                        displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
+                        displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses());
                     }
                     composite.layout(true);
                 }
@@ -113,7 +113,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         final IMethod first = JdtUtils.findFirstDeclaration(method);
         // TODO first is not correct in all cases. this needs to be fixed soon
         // after the demo
-        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(first);
+        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(first);
         if (selfcalls == null) {
             return false;
         }

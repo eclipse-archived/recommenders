@@ -10,29 +10,23 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.tests.rcp.extdoc.TestProvider;
-import org.eclipse.recommenders.tests.rcp.extdoc.TestServer;
-import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
+import org.eclipse.recommenders.tests.commons.extdoc.RcpUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestProvider;
+import org.eclipse.recommenders.tests.commons.extdoc.TestServer;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.Assert;
 import org.junit.Test;
 
 public final class StarsRatingCompositeTest {
 
     @Test
     public void testCreate() {
-        final Shell shell = UnitTestSuite.getShell();
+        final Shell shell = RcpUtils.getShell();
         final IProvider provider = new TestProvider();
-        final IStarsRatingsServer server = new TestServer();
-        final Dialog editDialog = new TitleAreaDialog(shell);
 
         provider.createControl(shell, null);
 
-        final StarsRatingComposite composite = StarsRatingComposite.create(shell, null, provider, server);
-
-        Assert.assertNotNull(composite);
+        final StarsRatingComposite composite = StarsRatingComposite.create(shell, null, provider, new TestServer());
+        composite.addRating(4);
     }
 }

@@ -12,11 +12,11 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
+import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
 import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
-
+import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public final class SubclassingServerTest {
@@ -24,24 +24,33 @@ public final class SubclassingServerTest {
     private final SubclassingServer server = new SubclassingServer();
 
     @Test
-    @Ignore
-    public void testGetClassOverrideDirective() {
-        final ClassOverrideDirectives directive = server.getClassOverrideDirective(null);
-        Assert.assertNotNull(directive);
+    public void testGetClassOverrideDirectives() {
+        final ClassOverrideDirectives directive = server.getClassOverrideDirectives(TestUtils.getDefaultType());
+        Assert.assertTrue(directive.getNumberOfSubclasses() > 0);
+        Assert.assertFalse(directive.getOverrides().isEmpty());
+        directive.validate();
     }
 
     @Test
-    @Ignore
-    public void testGetClassSelfcallDirective() {
-        final ClassSelfcallDirectives directive = server.getClassSelfcallDirective(null);
-        Assert.assertNotNull(directive);
+    public void testGetClassSelfcallDirectives() {
+        final ClassSelfcallDirectives directive = server.getClassSelfcallDirectives(TestUtils.getDefaultType());
+        Assert.assertTrue(directive.getNumberOfSubclasses() > 0);
+        Assert.assertFalse(directive.getCalls().isEmpty());
+        directive.validate();
     }
 
     @Test
-    @Ignore
-    public void testGetMethodSelfcallDirective() {
-        final MethodSelfcallDirectives directive = server.getMethodSelfcallDirective(null);
-        Assert.assertNotNull(directive);
+    public void testGetMethodSelfcallDirectives() {
+        final MethodSelfcallDirectives directive = server.getMethodSelfcallDirectives(TestUtils.getDefaultMethod());
+        Assert.assertTrue(directive.getNumberOfDefinitions() > 0);
+        Assert.assertFalse(directive.getCalls().isEmpty());
+        directive.validate();
+    }
+
+    @Test
+    public void testGetClassOverridePatterns() {
+        final ClassOverridePatterns patterns = server.getClassOverridePatterns(TestUtils.getDefaultType());
+        // Assert.assertTrue(patterns.getPatterns().length > 0);
     }
 
 }

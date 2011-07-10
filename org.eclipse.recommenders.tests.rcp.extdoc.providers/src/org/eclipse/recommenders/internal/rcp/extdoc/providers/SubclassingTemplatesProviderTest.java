@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
-
+import org.eclipse.recommenders.tests.commons.extdoc.SelectionsUtils;
 import org.junit.Test;
 
 public final class SubclassingTemplatesProviderTest {
@@ -19,5 +19,6 @@ public final class SubclassingTemplatesProviderTest {
     @Test
     public void testSubclassingTemplatesProvider() {
         final SubclassingTemplatesProvider provider = new SubclassingTemplatesProvider(new SubclassingServer());
+        provider.selectionChanged(SelectionsUtils.getSelection());
     }
 }

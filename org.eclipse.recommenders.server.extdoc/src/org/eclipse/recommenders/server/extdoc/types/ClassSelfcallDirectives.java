@@ -40,7 +40,7 @@ public final class ClassSelfcallDirectives implements IServerType {
         return res;
     }
 
-    public int getNumberOfSubclasse() {
+    public int getNumberOfSubclasses() {
         return numberOfSubclasses;
     }
 

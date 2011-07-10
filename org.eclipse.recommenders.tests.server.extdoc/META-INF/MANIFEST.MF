@@ -9,5 +9,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4;bundle-version="4.8.1",
  org.eclipse.recommenders.tests.commons;bundle-version="0.0.0",
  org.eclipse.recommenders.tests.commons
-Import-Package: org.eclipse.recommenders.server.extdoc
+Import-Package: org.eclipse.recommenders.commons.selection,
+ org.eclipse.recommenders.server.extdoc,
+ org.eclipse.recommenders.tests.commons.extdoc
 Export-Package: org.eclipse.recommenders.internal.server.extdoc;x-internal:=true

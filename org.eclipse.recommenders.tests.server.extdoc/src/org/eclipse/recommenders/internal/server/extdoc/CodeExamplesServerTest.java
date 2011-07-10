@@ -11,14 +11,27 @@
 package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
-
+import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
+import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
 import org.junit.Test;
 
 public class CodeExamplesServerTest {
 
-    @Test
-    public void testCodeExamplesServer() {
-        final CodeExamplesServer server = new CodeExamplesServer();
+    private final CodeExamplesServer server = new CodeExamplesServer();
+    static {
+        ServerUtils.initServer();
     }
 
+    @Test
+    public void testGetOverridenMethodCodeExamples() {
+        final CodeExamples examples = server.getOverridenMethodCodeExamples(TestUtils.getDefaultMethod());
+        // examples.getExamples();
+    }
+
+    @Test
+    public void testGetTypeCodeExamples() {
+        final CodeExamples examples = server.getTypeCodeExamples(TestUtils.getDefaultType());
+        // examples.getExamples();
+    }
 }

@@ -11,8 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
-
-import org.junit.Assert;
+import org.eclipse.recommenders.tests.commons.extdoc.SelectionsUtils;
 import org.junit.Test;
 
 public final class SubclassingProviderTest {
@@ -20,8 +19,7 @@ public final class SubclassingProviderTest {
     @Test
     public void testSubclassingProvider() {
         final SubclassingProvider provider = new SubclassingProvider(new SubclassingServer());
-
-        Assert.assertTrue(true);
+        provider.selectionChanged(SelectionsUtils.getSelection());
     }
 
 }

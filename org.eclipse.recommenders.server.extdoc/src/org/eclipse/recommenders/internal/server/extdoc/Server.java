@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.IMethod;
@@ -49,31 +50,51 @@ public final class Server {
     private Server() {
     }
 
-    public static <T> T get(final String path, final Class<T> resultType) {
-        return getClient().doGetRequest(path, resultType);
+    private static <T> T get(final String path, final Class<T> resultType) {
+        try {
+            return getClient().doGetRequest(path, resultType);
+        } catch (final ServerErrorException e) {
+            return null;
+        } catch (final ServerUnreachableException e) {
+            return null;
+        }
+    }
+
+    static <T> List<T> getRows(final String path, final GenericType<GenericResultObjectView<T>> resultType) {
+        try {
+            final List<T> results = new ArrayList<T>();
+            final GenericResultObjectView<T> rows = getClient().doGetRequest(path, resultType);
+            for (final ResultObject<T> resultObject : rows.rows) {
+                results.add(resultObject.value);
+            }
+            return results;
+        } catch (final ServerErrorException e) {
+            return null;
+        } catch (final ServerUnreachableException e) {
+            return null;
+        }
     }
 
     public static void post(final Object object) {
         getClient().doPostRequest("", object);
     }
 
-    public static <T> T getProviderContent(final String view, final String providerId, final String key,
-            final String value, final Class<T> resultType) {
-        final String path = buildPath(view, providerId, key, value);
+    static <T> T getProviderContent(final String view, final String providerId, final String key, final String value,
+            final Class<T> resultType) {
+        final String path = buildPath(view, providerId, key, value, false);
         return get(path, resultType);
     }
 
     public static <T> T getProviderContent(final String providerId, final String key, final String value,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        final String path = buildPath("providers", providerId, key, value);
-        try {
-            final List<ResultObject<T>> rows = getClient().doGetRequest(path, resultType).rows;
-            return rows.isEmpty() ? null : rows.get(0).value;
-        } catch (final ServerErrorException e) {
-            return null;
-        } catch (final ServerUnreachableException e) {
-            return null;
-        }
+        return getProviderContent("providers", providerId, key, value, resultType);
+    }
+
+    public static <T> T getProviderContent(final String view, final String providerId, final String key,
+            final String value, final GenericType<GenericResultObjectView<T>> resultType) {
+        final String path = buildPath(view, providerId, key, value, true);
+        final List<T> rows = getRows(path, resultType);
+        return rows == null || rows.isEmpty() ? null : rows.get(0);
     }
 
     public static String createKey(final IMethod method) {
@@ -86,11 +107,12 @@ public final class Server {
         return typeName == null ? null : typeName.getIdentifier();
     }
 
-    private static String buildPath(final String view, final String providerId, final String key, final String value) {
+    static String buildPath(final String view, final String providerId, final String key, final String value,
+            final boolean stale) {
         Checks.ensureIsNotNull(value);
-        return String.format("_design/providers/_view/%s?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s?stale=ok", view,
+        return String.format("_design/providers/_view/%s?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s%s", view,
                 BRACEOPEN, QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, encode(value), QUOTE,
-                BRACECLOSE);
+                BRACECLOSE, stale ? "&stale=ok" : "");
     }
 
     private static String encode(final String text) {
@@ -108,5 +130,10 @@ public final class Server {
             lazyClient = new WebServiceClient(clientConfig);
         }
         return lazyClient;
+    }
+
+    public static void setConfig(final ClientConfiguration clientConfig, final JavaElementResolver resolver) {
+        Server.clientConfig = clientConfig;
+        Server.resolver = Checks.ensureIsNotNull(resolver);
     }
 }

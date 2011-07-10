@@ -81,7 +81,7 @@ public class StarsRatingComposite {
         }
     }
 
-    private void addRating(final int stars) {
+    void addRating(final int stars) {
         server.addRating(element, stars, provider);
         composite.dispose();
         printStars();

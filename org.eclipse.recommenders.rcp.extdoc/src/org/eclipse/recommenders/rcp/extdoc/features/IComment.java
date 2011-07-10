@@ -10,6 +10,12 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
+import java.util.Date;
+
 public interface IComment {
+
+    String getText();
+
+    Date getDate();
 
 }

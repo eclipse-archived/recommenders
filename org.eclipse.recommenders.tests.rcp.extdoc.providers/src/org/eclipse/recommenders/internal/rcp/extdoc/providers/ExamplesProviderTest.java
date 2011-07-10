@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.junit.Assert;
+import org.eclipse.recommenders.tests.commons.extdoc.SelectionsUtils;
 import org.junit.Test;
 
 public final class ExamplesProviderTest {
@@ -18,9 +18,7 @@ public final class ExamplesProviderTest {
     @Test
     public void testExamplesProvider() {
         final ExamplesProvider provider = new ExamplesProvider();
-        provider.selectionChanged(UnitTestSuite.getSelection());
-
-        Assert.assertTrue(true);
+        provider.selectionChanged(SelectionsUtils.getSelection());
     }
 
 }

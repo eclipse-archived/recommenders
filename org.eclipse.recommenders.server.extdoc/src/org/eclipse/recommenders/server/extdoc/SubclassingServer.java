@@ -27,19 +27,19 @@ public final class SubclassingServer extends AbstractCommentsServer {
     private static final String S_METHOD = "method";
     private static final String S_TYPE = "type";
 
-    public ClassOverrideDirectives getClassOverrideDirective(final IType type) {
+    public ClassOverrideDirectives getClassOverrideDirectives(final IType type) {
         return Server.getProviderContent(ClassOverrideDirectives.class.getSimpleName(), S_TYPE, Server.createKey(type),
                 new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
                 });
     }
 
-    public ClassSelfcallDirectives getClassSelfcallDirective(final IType type) {
+    public ClassSelfcallDirectives getClassSelfcallDirectives(final IType type) {
         return Server.getProviderContent(ClassSelfcallDirectives.class.getSimpleName(), S_TYPE, Server.createKey(type),
                 new GenericType<GenericResultObjectView<ClassSelfcallDirectives>>() {
                 });
     }
 
-    public MethodSelfcallDirectives getMethodSelfcallDirective(final IMethod method) {
+    public MethodSelfcallDirectives getMethodSelfcallDirectives(final IMethod method) {
         final String key = Server.createKey(method);
         if (key == null) {
             return null;

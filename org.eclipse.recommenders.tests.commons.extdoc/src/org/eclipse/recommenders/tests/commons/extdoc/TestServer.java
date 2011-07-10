@@ -8,9 +8,10 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.rcp.extdoc;
+package org.eclipse.recommenders.tests.commons.extdoc;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -41,6 +42,16 @@ public final class TestServer implements IStarsRatingsServer, ICommentsServer {
 
     @Override
     public IComment addComment(final Object object, final String text, final IProvider provider) {
-        return null;
+        return new IComment() {
+            @Override
+            public String getText() {
+                return text;
+            }
+
+            @Override
+            public Date getDate() {
+                return new Date();
+            }
+        };
     }
 }

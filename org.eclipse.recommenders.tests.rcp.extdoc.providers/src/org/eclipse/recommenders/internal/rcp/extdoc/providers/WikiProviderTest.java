@@ -12,7 +12,9 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
-
+import org.eclipse.recommenders.tests.commons.extdoc.SelectionsUtils;
+import org.eclipse.swt.widgets.Shell;
+import org.junit.Assert;
 import org.junit.Test;
 
 public final class WikiProviderTest {
@@ -20,11 +22,8 @@ public final class WikiProviderTest {
     @Test
     public void testWikiProvider() {
         final WikiProvider provider = new WikiProvider(new WikiServer(), new MarkupParser());
-        /*
-         * provider.createContentControl(new Shell());
-         * 
-         * Assert.assertTrue(provider.selectionChanged(UnitTestSuite.getSelection
-         * ()));
-         */
+        provider.createContentControl(new Shell());
+
+        Assert.assertTrue(provider.selectionChanged(SelectionsUtils.getSelection()));
     }
 }

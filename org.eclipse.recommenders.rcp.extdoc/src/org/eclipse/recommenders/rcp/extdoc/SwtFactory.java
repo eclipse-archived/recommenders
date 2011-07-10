@@ -15,10 +15,12 @@ import java.util.Map;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -69,6 +71,16 @@ public final class SwtFactory {
             label.setFont(BOLDFONT);
         }
         label.setForeground(createColor(color));
+        return label;
+    }
+
+    public static CLabel createCLabel(final Composite parent, final String text, final boolean bold, final Image image) {
+        final CLabel label = new CLabel(parent, SWT.NONE);
+        label.setText(text);
+        if (bold) {
+            label.setFont(BOLDFONT);
+        }
+        label.setImage(image);
         return label;
     }
 

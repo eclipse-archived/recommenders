@@ -10,19 +10,18 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.recommenders.tests.rcp.extdoc.TestProvider;
-import org.eclipse.recommenders.tests.rcp.extdoc.TestServer;
-import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
-import org.junit.Assert;
+import org.eclipse.recommenders.tests.commons.extdoc.RcpUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestProvider;
+import org.eclipse.recommenders.tests.commons.extdoc.TestServer;
 import org.junit.Test;
 
-public final class CommentsDialogTest {
+public final class CommentsCompositeTest {
 
     @Test
-    public void testCommentsDialog() {
-        final CommentsComposite composite = new CommentsComposite(UnitTestSuite.getShell(), new Object(),
+    public void testCommentsComposite() {
+        final CommentsComposite composite = CommentsComposite.create(RcpUtils.getShell(), new Object(),
                 new TestProvider(), new TestServer());
-        Assert.assertTrue(true);
+        composite.addComment("Test");
     }
 
 }
