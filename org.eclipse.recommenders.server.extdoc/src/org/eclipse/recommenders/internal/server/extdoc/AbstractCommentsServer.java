@@ -17,6 +17,7 @@ import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
+import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.recommenders.server.extdoc.types.Comment;
 
 import com.google.common.collect.ImmutableMap;
@@ -36,7 +37,7 @@ public abstract class AbstractCommentsServer extends AbstractRatingsServer imple
 
     @Override
     public final IComment addComment(final Object object, final String text, final IProvider provider) {
-        final IComment comment = Comment.create(provider, object, text, UserUtils.getUserMacAddress());
+        final IComment comment = Comment.create(provider, object, text, UUIDHelper.getUUID());
         Server.post(comment);
         return comment;
     }

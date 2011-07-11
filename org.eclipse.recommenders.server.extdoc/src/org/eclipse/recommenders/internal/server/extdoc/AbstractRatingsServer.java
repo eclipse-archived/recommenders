@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.server.extdoc;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
+import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.recommenders.server.extdoc.types.Rating;
 
 import com.google.common.collect.ImmutableMap;
@@ -33,7 +34,7 @@ abstract class AbstractRatingsServer implements IStarsRatingsServer {
         final String providerId = provider.getClass().getSimpleName();
         final String objectId = String.valueOf(object.hashCode());
         final ImmutableMap<String, String> key = ImmutableMap.of("providerId", providerId, "object", objectId, "user",
-                UserUtils.getUserMacAddress());
+                UUIDHelper.getUUID());
         return Server.get(Server.buildPath("starsUsers", key), Rating.class);
     }
 
@@ -42,7 +43,7 @@ abstract class AbstractRatingsServer implements IStarsRatingsServer {
         final IRating oldRating = getUserRating(object, provider);
         // TODO: remove old rating
 
-        final Rating rating = Rating.create(provider, object, stars, UserUtils.getUserMacAddress());
+        final Rating rating = Rating.create(provider, object, stars, UUIDHelper.getUUID());
         Server.post(rating);
     }
 

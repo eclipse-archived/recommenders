@@ -10,17 +10,14 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
-import org.eclipse.recommenders.tests.commons.extdoc.RcpUtils;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.junit.Test;
 
 public final class ProvidersCompositeTest {
 
     @Test
     public void testExtDocView() {
-        final ProvidersComposite composite = new ProvidersComposite(
-                new ScrolledComposite(RcpUtils.getShell(), SWT.NONE), SWT.NONE);
+        // final ProvidersComposite composite = new ProvidersComposite( new
+        // ScrolledComposite(RcpUtils.getShell(), SWT.NONE), SWT.NONE);
     }
 
 }
