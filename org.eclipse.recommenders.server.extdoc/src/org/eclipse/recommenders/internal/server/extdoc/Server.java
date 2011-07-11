@@ -55,7 +55,6 @@ public final class Server {
 
     static <T> T get(final String path, final Class<T> resultType) {
         try {
-            System.err.println(path);
             return getClient().doGetRequest(path, resultType);
         } catch (final ServerErrorException e) {
             return null;

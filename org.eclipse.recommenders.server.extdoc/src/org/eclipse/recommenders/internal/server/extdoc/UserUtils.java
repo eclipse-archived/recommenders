@@ -21,6 +21,9 @@ public class UserUtils {
         try {
             final InetAddress ip = InetAddress.getLocalHost();
             final NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+            if (network == null) {
+                return null;
+            }
 
             final byte[] mac = network.getHardwareAddress();
 

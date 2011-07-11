@@ -17,7 +17,6 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 
 public final class Rating implements IServerType, IRating {
@@ -39,7 +38,7 @@ public final class Rating implements IServerType, IRating {
         instance.providerId = provider.getClass().getSimpleName();
         instance.object = String.valueOf(object.hashCode());
         instance.date = new Date();
-        instance.user = Preconditions.checkNotNull(user);
+        instance.user = user;
         instance.rating = rating;
         instance.validate();
         return instance;
