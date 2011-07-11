@@ -27,8 +27,7 @@ Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
    org.eclipse.swt.custom,
    org.eclipse.recommenders.commons.selection,
    org.eclipse.swt.graphics,
-   org.eclipse.swt.widgets,
-   org.eclipse.jface.dialogs",
+   org.eclipse.swt.widgets",
  org.eclipse.recommenders.rcp.extdoc.features;uses:="org.eclipse.recommenders.rcp.extdoc,org.eclipse.swt.widgets,org.eclipse.jface.dialogs",
  org.eclipse.recommenders.rcp.extdoc.preferences;uses:="org.eclipse.jface.preference,org.eclipse.ui,org.eclipse.core.runtime.preferences"
 Bundle-ClassPath: .

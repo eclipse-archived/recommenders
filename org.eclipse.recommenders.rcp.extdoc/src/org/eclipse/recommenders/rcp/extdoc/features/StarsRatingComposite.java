@@ -51,7 +51,7 @@ public class StarsRatingComposite {
 
     private void printStars() {
         final int averageRating = server.getAverageRating(element, provider);
-        final int userRating = server.getUserRating(element, provider);
+        final IRating userRating = server.getUserRating(element, provider);
 
         composite = new Composite(parentComposite, SWT.NONE);
         final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
@@ -65,11 +65,12 @@ public class StarsRatingComposite {
         createStars(averageRating, userRating);
     }
 
-    private void createStars(final int averageRating, final int userRating) {
+    private void createStars(final int averageRating, final IRating userRating) {
+        final int userStars = userRating == null ? -1 : userRating.getRating();
         for (int i = 1; i <= 5; ++i) {
             final Label label = new Label(composite, SWT.NONE);
-            label.setImage(userRating == i ? ICON_STAR_ACTIVE : averageRating < i ? ICON_STAR_EMPTY : ICON_STAR);
-            if (userRating < 1) {
+            label.setImage(userStars == i ? ICON_STAR_ACTIVE : averageRating < i ? ICON_STAR_EMPTY : ICON_STAR);
+            if (userStars < 1) {
                 final StarListener listener = new StarListener(i);
                 label.addMouseListener(listener);
                 label.addKeyListener(listener);

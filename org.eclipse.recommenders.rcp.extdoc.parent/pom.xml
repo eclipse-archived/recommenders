@@ -271,6 +271,7 @@
 		<module>../org.eclipse.recommenders.rcp.extdoc.feature</module>
 		<module>../org.eclipse.recommenders.rcp.extdoc.update-site</module>
 		<module>../org.eclipse.recommenders.server.extdoc</module>
+		<module>../org.eclipse.recommenders.tests.commons.extdoc</module>
 		<module>../org.eclipse.recommenders.tests.commons.selection</module>
 		<module>../org.eclipse.recommenders.tests.rcp.extdoc</module>
 		<module>../org.eclipse.recommenders.tests.rcp.extdoc.providers</module>

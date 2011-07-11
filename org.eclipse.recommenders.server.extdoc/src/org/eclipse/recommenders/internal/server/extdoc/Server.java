@@ -14,6 +14,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -29,6 +31,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sun.jersey.api.client.GenericType;
@@ -50,8 +53,9 @@ public final class Server {
     private Server() {
     }
 
-    private static <T> T get(final String path, final Class<T> resultType) {
+    static <T> T get(final String path, final Class<T> resultType) {
         try {
+            System.err.println(path);
             return getClient().doGetRequest(path, resultType);
         } catch (final ServerErrorException e) {
             return null;
@@ -81,7 +85,7 @@ public final class Server {
 
     static <T> T getProviderContent(final String view, final String providerId, final String key, final String value,
             final Class<T> resultType) {
-        final String path = buildPath(view, providerId, key, value, false);
+        final String path = buildPath(view, ImmutableMap.of("providerId", providerId, key, value));
         return get(path, resultType);
     }
 
@@ -92,7 +96,7 @@ public final class Server {
 
     public static <T> T getProviderContent(final String view, final String providerId, final String key,
             final String value, final GenericType<GenericResultObjectView<T>> resultType) {
-        final String path = buildPath(view, providerId, key, value, true);
+        final String path = buildPath(view, ImmutableMap.of("providerId", providerId, key, value));
         final List<T> rows = getRows(path, resultType);
         return rows == null || rows.isEmpty() ? null : rows.get(0);
     }
@@ -107,12 +111,15 @@ public final class Server {
         return typeName == null ? null : typeName.getIdentifier();
     }
 
-    static String buildPath(final String view, final String providerId, final String key, final String value,
-            final boolean stale) {
-        Checks.ensureIsNotNull(value);
-        return String.format("_design/providers/_view/%s?key=%s%sproviderId%s:%s%s%s,%s%s%s:%s%s%s%s%s", view,
-                BRACEOPEN, QUOTE, QUOTE, QUOTE, providerId, QUOTE, QUOTE, key, QUOTE, QUOTE, encode(value), QUOTE,
-                BRACECLOSE, stale ? "&stale=ok" : "");
+    static String buildPath(final String view, final Map<String, String> key) {
+        final StringBuilder path = new StringBuilder();
+        path.append(String.format("_design/providers/_view/%s?key=%s", view, BRACEOPEN));
+        for (final Entry<String, String> keyEntry : key.entrySet()) {
+            path.append(String.format("%s%s%s:%s%s%s,", QUOTE, keyEntry.getKey(), QUOTE, QUOTE,
+                    encode(keyEntry.getValue()), QUOTE));
+        }
+        path.replace(path.length() - 1, path.length(), BRACECLOSE);
+        return String.format("%s%s", path.toString(), "&stale=ok");
     }
 
     private static String encode(final String text) {

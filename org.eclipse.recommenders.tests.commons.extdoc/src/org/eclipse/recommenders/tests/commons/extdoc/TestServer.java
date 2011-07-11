@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
+import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 
 public final class TestServer implements IStarsRatingsServer, ICommentsServer {
@@ -27,8 +28,8 @@ public final class TestServer implements IStarsRatingsServer, ICommentsServer {
     }
 
     @Override
-    public int getUserRating(final Object object, final IProvider provider) {
-        return 0;
+    public IRating getUserRating(final Object object, final IProvider provider) {
+        return null;
     }
 
     @Override

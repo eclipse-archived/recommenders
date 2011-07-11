@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tests for Selection Engine
-Bundle-SymbolicName: org.eclipse.recommenders.tests.commons.selection;singleton:=true
+Bundle-Name: Commons for ExtDoc Tests
+Bundle-SymbolicName: org.eclipse.recommenders.tests.commons.extdoc;singleton:=true
 Bundle-Version: 0.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Eclipse Code Recommenders

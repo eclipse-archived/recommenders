@@ -14,10 +14,12 @@ import java.util.Date;
 
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 
+import com.google.common.base.Objects;
 import com.google.gson.annotations.SerializedName;
 
-public final class Rating implements IServerType {
+public final class Rating implements IServerType, IRating {
 
     @SerializedName("_id")
     private String id;
@@ -26,7 +28,7 @@ public final class Rating implements IServerType {
 
     private String providerId;
 
-    private int object;
+    private String object;
     private Date date;
     private String user;
     private int rating;
@@ -34,7 +36,7 @@ public final class Rating implements IServerType {
     public static Rating create(final IProvider provider, final Object object, final int rating) {
         final Rating instance = new Rating();
         instance.providerId = provider.getClass().getSimpleName();
-        instance.object = object.hashCode();
+        instance.object = String.valueOf(object.hashCode());
         instance.date = new Date();
         instance.user = "user";
         instance.rating = rating;
@@ -46,13 +48,19 @@ public final class Rating implements IServerType {
         return date;
     }
 
-    int getRating() {
+    @Override
+    public int getRating() {
         return rating;
     }
 
     @Override
     public void validate() {
         Checks.ensureIsTrue(rating > 0);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this).addValue(object).addValue(user).addValue(rating).toString();
     }
 
 }
