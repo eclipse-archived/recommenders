@@ -12,6 +12,8 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
 import java.util.List;
 
+import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
+
 public class LibraryIdentifierToManifestMatcher {
 
     private final List<IModelArchive> archives;

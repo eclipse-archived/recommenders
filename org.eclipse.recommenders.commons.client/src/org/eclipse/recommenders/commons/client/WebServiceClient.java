@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 
-
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -96,8 +95,16 @@ public class WebServiceClient {
             ServerUnreachableException {
         try {
             final Builder builder = createRequestBuilder(path);
-            System.out.println("webservice client request path: " + path);
             return builder.post(resultType, requestEntity);
+        } catch (final RuntimeException e) {
+            return handlePutAndPostRequestException(e);
+        }
+    }
+
+    public <T> T doPostRequest(final String path, final Object requestEntity, final GenericType<T> genericType)
+            throws NotFoundException, ServerUnreachableException, ServerErrorException {
+        try {
+            return createRequestBuilder(path).post(genericType);
         } catch (final RuntimeException e) {
             return handlePutAndPostRequestException(e);
         }

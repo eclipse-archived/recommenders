@@ -1,3 +1,4 @@
+package org.eclipse.recommenders.commons.lfm;
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
@@ -8,7 +9,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
+
 
 import java.util.Date;
 

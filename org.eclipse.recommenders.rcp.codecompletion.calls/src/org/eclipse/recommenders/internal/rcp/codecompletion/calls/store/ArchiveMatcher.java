@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
+import org.eclipse.recommenders.commons.lfm.Manifest;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;

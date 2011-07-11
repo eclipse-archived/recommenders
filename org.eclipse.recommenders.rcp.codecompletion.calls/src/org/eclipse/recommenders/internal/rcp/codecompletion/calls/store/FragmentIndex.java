@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionModule.FragmentIndexFile;
 

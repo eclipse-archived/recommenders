@@ -36,7 +36,8 @@ Require-Bundle: smile,
  org.apache.commons.io,
  javax.inject,
  org.apache.commons.pool,
- com.google.inject.assistedinject
+ com.google.inject.assistedinject,
+ org.eclipse.recommenders.commons.lfm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion.calls,
  org.eclipse.recommenders.internal.rcp.codecompletion.calls.net,

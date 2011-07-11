@@ -20,6 +20,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
+import org.eclipse.recommenders.commons.lfm.Manifest;
+
 import com.google.common.collect.Lists;
 
 public class ModelArchiveStore implements IModelArchiveStore {

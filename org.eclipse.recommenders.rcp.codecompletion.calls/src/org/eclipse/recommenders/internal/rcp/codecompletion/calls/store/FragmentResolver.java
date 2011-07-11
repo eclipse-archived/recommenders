@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 import javax.inject.Inject;
 
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
 
 public class FragmentResolver {
 

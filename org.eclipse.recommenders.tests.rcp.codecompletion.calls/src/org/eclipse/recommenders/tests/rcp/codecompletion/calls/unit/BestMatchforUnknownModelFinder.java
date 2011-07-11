@@ -13,10 +13,10 @@ package org.eclipse.recommenders.tests.rcp.codecompletion.calls.unit;
 import java.util.Collection;
 import java.util.Set;
 
+import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
+import org.eclipse.recommenders.commons.lfm.Manifest;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IModelArchive;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.LibraryIdentifier;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.Manifest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;

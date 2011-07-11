@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
+import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 
