@@ -31,7 +31,7 @@ public final class ExtDocViewTest {
             }
         };
 
-        final ExtDocView view = new ExtDocView(store);
+        // final ExtDocView view = new ExtDocView(store);
         // view.createPartControl(RcpUtils.getShell());
         // view.selectionChanged(UnitTestSuite.getSelection());
     }
