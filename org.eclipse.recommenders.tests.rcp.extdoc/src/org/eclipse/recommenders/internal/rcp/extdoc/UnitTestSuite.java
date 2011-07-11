@@ -8,13 +8,12 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc;
+package org.eclipse.recommenders.internal.rcp.extdoc;
 
-import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStoreTest;
-import org.eclipse.recommenders.internal.rcp.extdoc.UiManagerTest;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocViewTest;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersCompositeTest;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersTableTest;
+import org.eclipse.recommenders.rcp.extdoc.SourceCodeAreaTest;
 import org.eclipse.recommenders.rcp.extdoc.features.CommentsCompositeTest;
 import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingCompositeTest;
 import org.junit.runner.RunWith;
