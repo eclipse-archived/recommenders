@@ -10,5 +10,5 @@
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders.tests.commons.extdoc</artifactId>
 	<version>0.2.0-SNAPSHOT</version>
-	<packaging>eclipse-test-plugin</packaging>
+	<packaging>eclipse-plugin</packaging>
 </project>
