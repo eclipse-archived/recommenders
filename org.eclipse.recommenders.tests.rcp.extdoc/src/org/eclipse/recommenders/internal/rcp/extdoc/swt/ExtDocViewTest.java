@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.tests.commons.extdoc.RcpUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestProvider;
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ public final class ExtDocViewTest {
         };
 
         final ExtDocView view = new ExtDocView(store);
-        view.createPartControl(RcpUtils.getShell());
+        // view.createPartControl(RcpUtils.getShell());
         // view.selectionChanged(UnitTestSuite.getSelection());
     }
 

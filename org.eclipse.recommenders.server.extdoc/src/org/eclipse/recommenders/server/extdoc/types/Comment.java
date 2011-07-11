@@ -29,15 +29,17 @@ public final class Comment implements IComment {
 
     private String object;
     private Date date;
+    private String user;
     private String text;
 
-    public static Comment create(final IProvider provider, final Object object, final String text) {
+    public static Comment create(final IProvider provider, final Object object, final String text, final String user) {
         Checks.ensureIsTrue(!text.isEmpty());
         final Comment comment = new Comment();
         comment.providerId = provider.getClass().getSimpleName();
         comment.object = String.valueOf(object.hashCode());
         comment.date = new Date();
         comment.text = text;
+        comment.user = user;
         return comment;
     }
 

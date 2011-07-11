@@ -36,7 +36,7 @@ public abstract class AbstractCommentsServer extends AbstractRatingsServer imple
 
     @Override
     public final IComment addComment(final Object object, final String text, final IProvider provider) {
-        final IComment comment = Comment.create(provider, object, text);
+        final IComment comment = Comment.create(provider, object, text, UserUtils.getUserMacAddress());
         Server.post(comment);
         return comment;
     }
