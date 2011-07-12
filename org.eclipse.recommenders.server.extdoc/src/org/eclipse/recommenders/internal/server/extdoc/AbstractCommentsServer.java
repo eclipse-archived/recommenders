@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
@@ -40,7 +42,14 @@ public abstract class AbstractCommentsServer extends AbstractRatingsServer imple
         final List<Comment> rows = getServer().getRows("comments", key,
                 new GenericType<GenericResultObjectView<Comment>>() {
                 });
-        return new ArrayList<IComment>(rows);
+        final ArrayList<IComment> list = new ArrayList<IComment>(rows);
+        Collections.sort(list, new Comparator<IComment>() {
+            @Override
+            public int compare(final IComment o1, final IComment o2) {
+                return o1.getDate().compareTo(o2.getDate());
+            }
+        });
+        return list;
     }
 
     @Override
