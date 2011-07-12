@@ -32,6 +32,7 @@ import org.eclipse.recommenders.commons.utils.names.VmFieldName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 
+import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -59,6 +60,8 @@ public class GsonUtil {
             builder.setPrettyPrinting();
             // builder.setDateFormat("dd.MM.yyyy HH:mm:ss");
             builder.registerTypeAdapter(Date.class, new ISO8601DateParser());
+            builder.registerTypeAdapter(Multimap.class, new MultimapTypeAdapter());
+            builder.enableComplexMapKeySerialization();
             gson = builder.create();
         }
         return gson;

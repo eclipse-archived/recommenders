@@ -13,16 +13,23 @@ package org.eclipse.recommenders.commons.utils.gson;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
+import java.util.Map;
 
 import org.eclipse.recommenders.commons.utils.NamesTest;
+import org.eclipse.recommenders.commons.utils.Version;
+import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.junit.Test;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 
 public class GsonUtilTest {
     @Test
@@ -111,5 +118,50 @@ public class GsonUtilTest {
         final GsonTestStruct output = GsonUtil.deserialize(prettyJson, GsonTestStruct.class);
         // verify
         assertEquals(input, output);
+    }
+
+    @Test
+    public void testMultimapOfStrings() {
+        // setup:
+        final Multimap<String, String> map = HashMultimap.create();
+        map.put("key", "value1");
+        map.put("key", "value2");
+        // exercise:
+        final String json = GsonUtil.getInstance().toJson(map, new TypeToken<Multimap<String, String>>() {
+        }.getType());
+        final Multimap<String, String> output = GsonUtil.deserialize(json, new TypeToken<Multimap<String, String>>() {
+        }.getType());
+        // verify
+        assertEquals(map, output);
+    }
+
+    @Test
+    public void testMultimapOfComplexType() {
+        // setup:
+        final Multimap<VersionRange, Version> map = HashMultimap.create();
+        final VersionRange range = new VersionRange(Version.create(3, 5), true, Version.create(3, 6), false);
+        map.put(range, Version.create(3, 5, 2));
+        map.put(range, Version.create(3, 5, 5));
+        // exercise:
+        final String json = GsonUtil.getInstance().toJson(map, new TypeToken<Multimap<VersionRange, Version>>() {
+        }.getType());
+        final Multimap<VersionRange, Version> output = GsonUtil.deserialize(json,
+                new TypeToken<Multimap<VersionRange, Version>>() {
+                }.getType());
+        // verify
+        assertEquals(map, output);
+    }
+
+    @Test
+    public void testMapOfComplexType() {
+        final Map<Version, Version> map = Maps.newHashMap();
+        map.put(Version.create(3, 5, 0), Version.create(3, 5, 2));
+        // exercise:
+        final String json = GsonUtil.getInstance().toJson(map, new TypeToken<Map<Version, Version>>() {
+        }.getType());
+        final Map<Version, Version> output = GsonUtil.deserialize(json, new TypeToken<Map<Version, Version>>() {
+        }.getType());
+        // verify
+        assertEquals(map, output);
     }
 }

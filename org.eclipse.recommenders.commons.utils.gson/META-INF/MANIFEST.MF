@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.eclipse.recommenders.commons.utils.gson
 Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: com.google.gson;bundle-version="1.6.0";visibility:=reexport,
- org.eclipse.recommenders.commons.utils
+Require-Bundle: com.google.gson;bundle-version="1.7.1";visibility:=reexport,
+ org.eclipse.recommenders.commons.utils,
+ com.google.guava
 Export-Package: org.eclipse.recommenders.commons.utils.gson
 Import-Package: javax.xml.bind
