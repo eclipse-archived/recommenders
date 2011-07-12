@@ -19,6 +19,7 @@ import java.lang.annotation.Target;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.internal.rcp.analysis.IRecommendersProjectLifeCycleListener;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelIndex;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.FragmentIndex;
@@ -26,6 +27,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IModelAr
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacadeFactory;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.osgi.framework.FrameworkUtil;
 
@@ -65,6 +67,10 @@ public class CallsCompletionModule extends AbstractModule {
                 new File(stateLocation.toFile(), "fragmentsIndex.json"));
         bind(FragmentIndex.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(ProjectModelFacadeFactory.class));
+
+        bind(ClientConfiguration.class).annotatedWith(LfmServer.class).toInstance(
+                ClientConfiguration.create("http://localhost:8080/lfm/"));
+        install(new FactoryModuleBuilder().build(RemoteResolverJobFactory.class));
     }
 
     private void configureRecommendationsViewPublisher() {
@@ -76,5 +82,11 @@ public class CallsCompletionModule extends AbstractModule {
     @Target(PARAMETER)
     @Retention(RUNTIME)
     public static @interface FragmentIndexFile {
+    }
+
+    @BindingAnnotation
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    public static @interface LfmServer {
     }
 }

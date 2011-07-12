@@ -18,10 +18,12 @@ import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
 public class FragmentResolver {
 
     private final FragmentIndex fragmentIndex;
+    private final RemoteResolverJobFactory jobfactory;
 
     @Inject
-    public FragmentResolver(final FragmentIndex fragmentIndex) {
+    public FragmentResolver(final FragmentIndex fragmentIndex, final RemoteResolverJobFactory jobfactory) {
         this.fragmentIndex = fragmentIndex;
+        this.jobfactory = jobfactory;
     }
 
     public void resolve(final IPackageFragmentRoot[] packageFragmentRoots) {
@@ -35,7 +37,10 @@ public class FragmentResolver {
     }
 
     private void scheduleJob(final IPackageFragmentRoot packageRoot) {
-        new LocalLibraryIdentifierResolverJob(packageRoot, fragmentIndex).schedule();
+        // new LocalLibraryIdentifierResolverJob(packageRoot,
+        // fragmentIndex).schedule();
+        final RemoteLibraryIdentifierResolverJob job = jobfactory.create(packageRoot, fragmentIndex);
+        job.schedule();
     }
 
 }
