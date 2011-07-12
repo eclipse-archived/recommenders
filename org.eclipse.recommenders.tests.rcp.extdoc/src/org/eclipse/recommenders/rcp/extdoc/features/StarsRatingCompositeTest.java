@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.rcp.extdoc.features;
 
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.tests.commons.extdoc.TestProvider;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.junit.Test;
 
 public final class StarsRatingCompositeTest {
@@ -19,7 +19,7 @@ public final class StarsRatingCompositeTest {
     @Test
     public void testCreate() {
         // final Shell shell = RcpUtils.getShell();
-        final IProvider provider = new TestProvider();
+        final IProvider provider = ExtDocUtils.getTestProvider();
 
         // provider.createControl(shell, null);
 

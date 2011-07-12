@@ -16,16 +16,17 @@ public final class ProvidersTableTest {
 
     @Test
     public void testExtDocView() {
-        // final ProvidersTable table = new ProvidersTable(RcpUtils.getShell(),
-        // SWT.NONE, new ProviderStore());
+        // final ProvidersTable table = new
+        // ProvidersTable(ExtDocUtils.getComposite(), SWT.NONE, new
+        // ProviderStore());
 
-        // final Composite control = new Composite(RcpUtils.getShell(),
+        // final Composite control = new Composite(ExtDocUtils.getComposite(),
         // SWT.NONE);
         // control.setLayoutData(new GridData());
-        // control.setData(new TestProvider());
+        // control.setData(ExtDocUtils.getTestProvider());
         // table.addProvider(control, "Test", null, true);
 
-        // table.setContext(SelectionsUtils.getSelection());
+        // table.setContext(ExtDocUtils.getSelection());
     }
 
 }

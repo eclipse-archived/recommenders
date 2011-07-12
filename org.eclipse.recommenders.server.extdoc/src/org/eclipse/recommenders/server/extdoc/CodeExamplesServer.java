@@ -14,26 +14,31 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractCommentsServer;
-import org.eclipse.recommenders.internal.server.extdoc.Server;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 
+import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;
 
 public final class CodeExamplesServer extends AbstractCommentsServer {
 
     private static final String PROVIDERID = CodeExamples.class.getSimpleName();
 
+    @Inject
+    public CodeExamplesServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener) {
+        super(server, usernameListener);
+    }
+
     public CodeExamples getOverridenMethodCodeExamples(final IMethod method) {
-        final String key = Server.createKey(method);
-        final CodeExamples result = Server.getProviderContent(PROVIDERID, "method", key,
+        final String key = getServer().createKey(method);
+        final CodeExamples result = getServer().getProviderContent(PROVIDERID, "method", key,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });
         return result;
     }
 
     public CodeExamples getTypeCodeExamples(final IType type) {
-        final String key = Server.createKey(type);
-        final CodeExamples result = Server.getProviderContent(PROVIDERID, "type", key,
+        final String key = getServer().createKey(type);
+        final CodeExamples result = getServer().getProviderContent(PROVIDERID, "type", key,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });
         return result;

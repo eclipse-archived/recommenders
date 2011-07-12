@@ -84,7 +84,8 @@ public final class CommentsComposite {
         }
 
         for (final IComment comment : comments) {
-            final String headLine = String.format("%s, %s", dateFormat.format(comment.getDate()), "Anonymous");
+            final String headLine = String
+                    .format("%s, %s", dateFormat.format(comment.getDate()), comment.getUsername());
             SwtFactory.createCLabel(composite, headLine, true, commentsIcon);
             SwtFactory.createLabel(composite, comment.getText());
         }

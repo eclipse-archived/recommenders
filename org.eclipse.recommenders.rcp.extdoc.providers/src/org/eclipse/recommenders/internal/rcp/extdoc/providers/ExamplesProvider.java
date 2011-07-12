@@ -35,11 +35,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.progress.UIJob;
 
+import com.google.inject.Inject;
+
 @SuppressWarnings("restriction")
 public final class ExamplesProvider extends AbstractProviderComposite {
 
     private Composite container;
-    private final CodeExamplesServer server = new CodeExamplesServer();
+    private final CodeExamplesServer server;
+
+    @Inject
+    ExamplesProvider(final CodeExamplesServer server) {
+        this.server = server;
+    }
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {

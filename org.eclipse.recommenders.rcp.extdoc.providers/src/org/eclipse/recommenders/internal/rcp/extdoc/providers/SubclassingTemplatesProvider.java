@@ -45,7 +45,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
     private Composite composite;
 
     @Inject
-    public SubclassingTemplatesProvider(final SubclassingServer server) {
+    SubclassingTemplatesProvider(final SubclassingServer server) {
         this.server = server;
     }
 

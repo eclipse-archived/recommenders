@@ -17,8 +17,9 @@ public final class CommentsCompositeTest {
     @Test
     public void testCommentsComposite() {
         // final CommentsComposite composite =
-        // CommentsComposite.create(RcpUtils.getShell(), new Object(), new
-        // TestProvider(), new TestServer());
+        // CommentsComposite.create(ExtDocUtils.getComposite(), new
+        // Object(),ExtDocUtils.getTestProvider(),
+        // ServerUtils.getGenericServer());
         // composite.addComment("Test");
     }
 }

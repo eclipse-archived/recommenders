@@ -10,25 +10,43 @@
  */
 package org.eclipse.recommenders.tests.commons.extdoc;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.internal.server.extdoc.Server;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
+import org.eclipse.recommenders.server.extdoc.GenericServer;
+import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
+import org.eclipse.recommenders.server.extdoc.UsernamePreferenceListener;
+import org.mockito.Mockito;
 
-@SuppressWarnings("restriction")
 public final class ServerUtils {
 
-    private static boolean isInit;
+    private static ICouchDbServer server;
+    private static GenericServer genericServer;
+    private static UsernamePreferenceListener usernameListener;
 
     private ServerUtils() {
     }
 
-    public static void initServer() {
-        if (!isInit) {
-            final ClientConfiguration config = new ClientConfiguration();
-            config.setBaseUrl("http://localhost:5984/extdoc");
-            Server.setConfig(config, new JavaElementResolver());
-            isInit = true;
+    public static ICouchDbServer getServer() {
+        if (server == null) {
+            server = new TestCouchDbServer();
         }
+        return server;
+    }
+
+    public static UsernamePreferenceListener getUsernameListener() {
+        if (usernameListener == null) {
+            final IPreferenceStore store = Mockito.mock(IPreferenceStore.class);
+            Mockito.when(store.getString(PreferenceConstants.USERNAME)).thenReturn("TestUser");
+            usernameListener = new UsernamePreferenceListener(store);
+        }
+        return usernameListener;
+    }
+
+    public static GenericServer getGenericServer() {
+        if (genericServer == null) {
+            genericServer = new GenericServer(getServer(), getUsernameListener());
+        }
+        return genericServer;
     }
 
 }

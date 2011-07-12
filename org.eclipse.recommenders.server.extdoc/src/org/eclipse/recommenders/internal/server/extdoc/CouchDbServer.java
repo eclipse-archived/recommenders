@@ -30,32 +30,35 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sun.jersey.api.client.GenericType;
 
-public final class Server {
-
-    @Inject
-    @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION)
-    private static ClientConfiguration clientConfig;
-    private static WebServiceClient lazyClient;
-
-    @Inject
-    private static JavaElementResolver resolver;
+final class CouchDbServer implements ICouchDbServer {
 
     private static final String QUOTE = encode("\"");
     private static final String BRACEOPEN = encode("{");
     private static final String BRACECLOSE = encode("}");
 
-    private Server() {
+    private final ClientConfiguration clientConfig;
+    private WebServiceClient lazyClient;
+    private final JavaElementResolver resolver;
+
+    @Inject
+    CouchDbServer(
+            @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION) final ClientConfiguration clientConfig,
+            final JavaElementResolver resolver) {
+        this.clientConfig = clientConfig;
+        this.resolver = resolver;
     }
 
-    static <T> T get(final String path, final Class<T> resultType) {
+    @Override
+    public <T> T get(final String view, final Map<String, String> key, final Class<T> resultType) {
         try {
-            return getClient().doGetRequest(path, resultType);
+            return getClient().doGetRequest(buildPath(view, key), resultType);
         } catch (final ServerErrorException e) {
             return null;
         } catch (final ServerUnreachableException e) {
@@ -63,10 +66,12 @@ public final class Server {
         }
     }
 
-    static <T> List<T> getRows(final String path, final GenericType<GenericResultObjectView<T>> resultType) {
+    @Override
+    public <T> List<T> getRows(final String view, final Map<String, String> key,
+            final GenericType<GenericResultObjectView<T>> resultType) {
         try {
             final List<T> results = new ArrayList<T>();
-            final GenericResultObjectView<T> rows = getClient().doGetRequest(path, resultType);
+            final GenericResultObjectView<T> rows = getClient().doGetRequest(buildPath(view, key), resultType);
             for (final ResultObject<T> resultObject : rows.rows) {
                 results.add(resultObject.value);
             }
@@ -78,39 +83,31 @@ public final class Server {
         }
     }
 
-    public static void post(final Object object) {
+    @Override
+    public void post(final Object object) {
         getClient().doPostRequest("", object);
     }
 
-    static <T> T getProviderContent(final String view, final String providerId, final String key, final String value,
-            final Class<T> resultType) {
-        final String path = buildPath(view, ImmutableMap.of("providerId", providerId, key, value));
-        return get(path, resultType);
-    }
-
-    public static <T> T getProviderContent(final String providerId, final String key, final String value,
+    @Override
+    public <T> T getProviderContent(final String providerId, final String key, final String value,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        return getProviderContent("providers", providerId, key, value, resultType);
-    }
-
-    public static <T> T getProviderContent(final String view, final String providerId, final String key,
-            final String value, final GenericType<GenericResultObjectView<T>> resultType) {
-        final String path = buildPath(view, ImmutableMap.of("providerId", providerId, key, value));
-        final List<T> rows = getRows(path, resultType);
+        final List<T> rows = getRows("providers", ImmutableMap.of("providerId", providerId, key, value), resultType);
         return rows == null || rows.isEmpty() ? null : rows.get(0);
     }
 
-    public static String createKey(final IMethod method) {
+    @Override
+    public String createKey(final IMethod method) {
         final IMethodName methodName = resolver.toRecMethod(method);
         return methodName == null ? null : methodName.getIdentifier();
     }
 
-    public static String createKey(final IType type) {
+    @Override
+    public String createKey(final IType type) {
         final ITypeName typeName = resolver.toRecType(type);
         return typeName == null ? null : typeName.getIdentifier();
     }
 
-    static String buildPath(final String view, final Map<String, String> key) {
+    private String buildPath(final String view, final Map<String, String> key) {
         final StringBuilder path = new StringBuilder();
         path.append(String.format("_design/providers/_view/%s?key=%s", view, BRACEOPEN));
         for (final Entry<String, String> keyEntry : key.entrySet()) {
@@ -129,17 +126,12 @@ public final class Server {
         }
     }
 
-    private static WebServiceClient getClient() {
+    private WebServiceClient getClient() {
         if (lazyClient == null) {
             Checks.ensureIsNotNull(clientConfig,
                     "ClientConfiguration was not injected. Check your guice configuration.");
             lazyClient = new WebServiceClient(clientConfig);
         }
         return lazyClient;
-    }
-
-    public static void setConfig(final ClientConfiguration clientConfig, final JavaElementResolver resolver) {
-        Server.clientConfig = clientConfig;
-        Server.resolver = Checks.ensureIsNotNull(resolver);
     }
 }

@@ -12,6 +12,13 @@ package org.eclipse.recommenders.server.extdoc;
 
 import org.eclipse.recommenders.internal.server.extdoc.AbstractCommentsServer;
 
+import com.google.inject.Inject;
+
 public final class GenericServer extends AbstractCommentsServer {
+
+    @Inject
+    public GenericServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener) {
+        super(server, usernameListener);
+    }
 
 }

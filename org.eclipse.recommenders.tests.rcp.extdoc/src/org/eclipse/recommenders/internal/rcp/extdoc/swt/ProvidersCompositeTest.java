@@ -16,8 +16,9 @@ public final class ProvidersCompositeTest {
 
     @Test
     public void testExtDocView() {
-        // final ProvidersComposite composite = new ProvidersComposite( new
-        // ScrolledComposite(RcpUtils.getShell(), SWT.NONE), SWT.NONE);
+        // final ScrolledComposite scrolled = new
+        // ScrolledComposite(ExtDocUtils.getComposite(), SWT.NONE);
+        // final ProvidersComposite composite = new ProvidersComposite(scrolled,
+        // SWT.NONE);
     }
-
 }

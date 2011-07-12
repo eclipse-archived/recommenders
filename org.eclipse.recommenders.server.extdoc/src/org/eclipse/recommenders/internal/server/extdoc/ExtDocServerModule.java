@@ -12,9 +12,11 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
-import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
+import org.eclipse.recommenders.server.extdoc.GenericServer;
+import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
+import org.eclipse.recommenders.server.extdoc.UsernamePreferenceListener;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 
 import com.google.inject.AbstractModule;
@@ -28,6 +30,7 @@ public final class ExtDocServerModule extends AbstractModule {
         bind(ClientConfiguration.class).annotatedWith(
                 Names.named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION)).toInstance(
                 new ClientConfiguration());
+        bind(ICouchDbServer.class).to(CouchDbServer.class);
 
         bind(GenericServer.class).in(Scopes.SINGLETON);
         bind(CodeExamplesServer.class).in(Scopes.SINGLETON);
@@ -35,7 +38,9 @@ public final class ExtDocServerModule extends AbstractModule {
         bind(WikiServer.class).in(Scopes.SINGLETON);
 
         bind(ClientConfigurationPreferenceListener.class).asEagerSingleton();
-        requestStaticInjection(Server.class);
+        bind(UsernamePreferenceListener.class).asEagerSingleton();
+
+        requestStaticInjection(AbstractCommentsServer.class);
     }
 
 }

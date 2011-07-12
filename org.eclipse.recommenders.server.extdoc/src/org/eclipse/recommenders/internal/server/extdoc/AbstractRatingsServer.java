@@ -14,18 +14,29 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
+import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.types.Rating;
 
 import com.google.common.collect.ImmutableMap;
 
 abstract class AbstractRatingsServer implements IStarsRatingsServer {
 
+    private final ICouchDbServer server;
+
+    AbstractRatingsServer(final ICouchDbServer server) {
+        this.server = server;
+    }
+
+    protected ICouchDbServer getServer() {
+        return server;
+    }
+
     @Override
     public final int getAverageRating(final Object object, final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
         final String objectId = String.valueOf(object.hashCode());
-        final RatingSummary stats = true ? new RatingSummary() : Server.getProviderContent("stars", providerId,
-                "object", objectId, RatingSummary.class);
+        final RatingSummary stats = true ? new RatingSummary() : server.get("stars",
+                ImmutableMap.of("providerId", providerId, "object", objectId), RatingSummary.class);
         return stats.count == 0 ? 0 : stats.sum / stats.count;
     }
 
@@ -35,7 +46,7 @@ abstract class AbstractRatingsServer implements IStarsRatingsServer {
         final String objectId = String.valueOf(object.hashCode());
         final ImmutableMap<String, String> key = ImmutableMap.of("providerId", providerId, "object", objectId, "user",
                 UUIDHelper.getUUID());
-        return Server.get(Server.buildPath("starsUsers", key), Rating.class);
+        return server.get("starsUsers", key, Rating.class);
     }
 
     @Override
@@ -43,8 +54,8 @@ abstract class AbstractRatingsServer implements IStarsRatingsServer {
         final IRating oldRating = getUserRating(object, provider);
         // TODO: remove old rating
 
-        final Rating rating = Rating.create(provider, object, stars, UUIDHelper.getUUID());
-        Server.post(rating);
+        final Rating rating = Rating.create(provider, object, stars);
+        server.post(rating);
     }
 
     private static final class RatingSummary {

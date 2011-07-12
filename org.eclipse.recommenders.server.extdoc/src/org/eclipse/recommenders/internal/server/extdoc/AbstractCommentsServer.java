@@ -17,7 +17,8 @@ import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
-import org.eclipse.recommenders.rcp.utils.UUIDHelper;
+import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
+import org.eclipse.recommenders.server.extdoc.UsernamePreferenceListener;
 import org.eclipse.recommenders.server.extdoc.types.Comment;
 
 import com.google.common.collect.ImmutableMap;
@@ -25,20 +26,27 @@ import com.sun.jersey.api.client.GenericType;
 
 public abstract class AbstractCommentsServer extends AbstractRatingsServer implements ICommentsServer {
 
+    private final UsernamePreferenceListener listener;
+
+    public AbstractCommentsServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener) {
+        super(server);
+        listener = usernameListener;
+    }
+
     @Override
     public final List<IComment> getComments(final Object object, final IProvider provider) {
         final ImmutableMap<String, String> key = ImmutableMap.of("providerId", provider.getClass().getSimpleName(),
                 "object", String.valueOf(object.hashCode()));
-        final String path = Server.buildPath("comments", key);
-        final List<Comment> rows = Server.getRows(path, new GenericType<GenericResultObjectView<Comment>>() {
-        });
+        final List<Comment> rows = getServer().getRows("comments", key,
+                new GenericType<GenericResultObjectView<Comment>>() {
+                });
         return new ArrayList<IComment>(rows);
     }
 
     @Override
     public final IComment addComment(final Object object, final String text, final IProvider provider) {
-        final IComment comment = Comment.create(provider, object, text, UUIDHelper.getUUID());
-        Server.post(comment);
+        final IComment comment = Comment.create(provider, object, text, listener.getUsername());
+        getServer().post(comment);
         return comment;
     }
 

@@ -18,4 +18,6 @@ public interface IComment {
 
     Date getDate();
 
+    String getUsername();
+
 }

@@ -25,6 +25,7 @@ public final class ExtDocPreferencePage extends FieldEditorPreferencePage implem
 
     @Override
     protected void createFieldEditors() {
+        addField(new StringFieldEditor(PreferenceConstants.USERNAME, "Username for Comments:", getFieldEditorParent()));
         addField(new StringFieldEditor(PreferenceConstants.WEBSERVICE_HOST, "Webservice URL:", getFieldEditorParent()));
     }
 

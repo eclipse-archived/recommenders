@@ -19,7 +19,7 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.ui.IEditorPart;
 import org.mockito.Mockito;
 
-public class TestJavaElementSelection implements IJavaElementSelection {
+class TestJavaElementSelection implements IJavaElementSelection {
 
     private IType javaElement;
     private final IEditorPart editorPart = Mockito.mock(IEditorPart.class);

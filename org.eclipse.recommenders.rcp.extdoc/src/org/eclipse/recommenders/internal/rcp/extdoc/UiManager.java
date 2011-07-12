@@ -112,7 +112,6 @@ final class UiManager implements IExtendedSelectionListener {
         @Override
         public void partInputChanged(final IWorkbenchPartReference partRef) {
         }
-
     }
 
 }

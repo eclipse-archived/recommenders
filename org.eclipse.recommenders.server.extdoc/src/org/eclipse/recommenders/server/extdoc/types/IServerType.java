@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.server.extdoc.types;
 
-public interface IServerType {
+interface IServerType {
 
     void validate();
 

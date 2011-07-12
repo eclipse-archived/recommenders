@@ -104,16 +104,12 @@ final class JavaElementSelection implements IJavaElementSelection {
     @Override
     public String toString() {
         final ToStringHelper string = Objects.toStringHelper(this).add("\n\nJavaElementClass",
-                javaElement == null ? null : (javaElement.getClass() + " / " + javaElement.getHandleIdentifier()));
+                javaElement == null ? null : javaElement.getClass() + " / " + javaElement.getHandleIdentifier());
         string.add("\nElementLocation", getElementLocation());
         if (getAstNode() != null) {
             final ASTNode astNode = getAstNode();
             string.add("\nAstNode", astNode.getNodeType() + " ("
                     + ASTNode.nodeClassForType(astNode.getNodeType()).getSimpleName() + ")");
-            string.add(
-                    "\nAstNodeParent",
-                    astNode.getParent().getNodeType() + " ("
-                            + ASTNode.nodeClassForType(astNode.getParent().getNodeType()).getSimpleName() + ")");
         }
         string.add("\n\nInvocationOffset", invocationOffset + "\n\n");
         return string.toString();

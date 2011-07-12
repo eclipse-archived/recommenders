@@ -24,7 +24,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.recommenders.tests.commons.extdoc.SelectionsUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -43,8 +43,9 @@ public final class CallsProviderTest {
         calls.add(call);
         Mockito.when(model.getRecommendedMethodCalls(Matchers.anyDouble(), Matchers.anyInt())).thenReturn(calls);
 
-        final CallsProvider provider = new CallsProvider(store, null, new JavaElementResolver(), null);
-        final IJavaElementSelection selection = SelectionsUtils.getSelection();
+        final CallsProvider provider = new CallsProvider(store, null, new JavaElementResolver(),
+                ServerUtils.getGenericServer());
+        final IJavaElementSelection selection = ExtDocUtils.getSelection();
 
         final ILocalVariable variable = Mockito.mock(ILocalVariable.class);
         Mockito.when(variable.getTypeSignature()).thenReturn("Button;");
@@ -54,7 +55,7 @@ public final class CallsProviderTest {
         Mockito.when(variable.getJavaProject()).thenReturn(project);
         // Mockito.when(selection.getJavaElement()).thenReturn(variable);
 
-        ServerUtils.initServer();
+        // provider.createContentControl(ExtDocUtils.getComposite());
         provider.selectionChanged(selection);
     }
 }

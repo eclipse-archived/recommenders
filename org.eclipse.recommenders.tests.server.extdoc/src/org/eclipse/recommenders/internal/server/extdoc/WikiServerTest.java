@@ -20,7 +20,7 @@ public final class WikiServerTest {
 
     private static final String TESTINPUT = "This is a test using Button. I like using Button.";
 
-    private final WikiServer server = new WikiServer();
+    private final WikiServer server = new WikiServer(ServerUtils.getServer(), ServerUtils.getUsernameListener());
     private final IJavaElement element;
 
     public WikiServerTest() {
@@ -31,12 +31,10 @@ public final class WikiServerTest {
 
     @Test
     public void testWikiServer() throws InterruptedException {
-        ServerUtils.initServer();
-
         final String oldDocument = server.getText(element);
         final String write = TESTINPUT.substring(0, (int) (Math.random() * TESTINPUT.length())) + "...";
-        // server.setText(element, write);
-        // final String document = server.getText(element);
+        server.setText(element, write);
+        final String document = server.getText(element);
 
         // Assert.assertEquals(write, document);
         // Assert.assertNotSame(oldDocument, document);

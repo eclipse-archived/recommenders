@@ -15,6 +15,7 @@ import java.util.Date;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
+import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
 import com.google.common.base.Objects;
 import com.google.gson.annotations.SerializedName;
@@ -33,19 +34,15 @@ public final class Rating implements IServerType, IRating {
     private String user;
     private int rating;
 
-    public static Rating create(final IProvider provider, final Object object, final int rating, final String user) {
+    public static Rating create(final IProvider provider, final Object object, final int rating) {
         final Rating instance = new Rating();
         instance.providerId = provider.getClass().getSimpleName();
         instance.object = String.valueOf(object.hashCode());
         instance.date = new Date();
-        instance.user = user;
+        instance.user = UUIDHelper.getUUID();
         instance.rating = rating;
         instance.validate();
         return instance;
-    }
-
-    Date getDate() {
-        return date;
     }
 
     @Override

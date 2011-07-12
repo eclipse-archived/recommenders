@@ -16,7 +16,8 @@ public final class SourceCodeAreaTest {
 
     @Test
     public void testSourceCodeArea() {
-        // final SourceCodeArea area = new SourceCodeArea(RcpUtils.getShell());
+        // final SourceCodeArea area = new
+        // SourceCodeArea(ExtDocUtils.getComposite());
         // area.setCode("...");
     }
 

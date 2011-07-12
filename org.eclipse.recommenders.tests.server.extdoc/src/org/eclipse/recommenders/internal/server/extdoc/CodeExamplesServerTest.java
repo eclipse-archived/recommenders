@@ -18,10 +18,8 @@ import org.junit.Test;
 
 public class CodeExamplesServerTest {
 
-    private final CodeExamplesServer server = new CodeExamplesServer();
-    static {
-        ServerUtils.initServer();
-    }
+    private final CodeExamplesServer server = new CodeExamplesServer(ServerUtils.getServer(),
+            ServerUtils.getUsernameListener());
 
     @Test
     public void testGetOverridenMethodCodeExamples() {

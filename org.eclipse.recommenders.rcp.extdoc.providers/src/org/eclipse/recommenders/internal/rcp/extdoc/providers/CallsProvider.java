@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.progress.UIJob;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -66,13 +67,12 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     private IIntelligentCompletionContext context;
 
     @Inject
-    public CallsProvider(final CallsModelStore modelStore,
-            final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
+    CallsProvider(final CallsModelStore modelStore, final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
             final JavaElementResolver elementResolver, final GenericServer server) {
         this.modelStore = modelStore;
         this.usageResolversProvider = usageResolversProvider;
         this.elementResolver = elementResolver;
-        this.server = server;
+        this.server = Preconditions.checkNotNull(server);
     }
 
     @Override

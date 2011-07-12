@@ -27,7 +27,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
-
 import org.osgi.framework.BundleContext;
 
 /**
@@ -70,6 +69,9 @@ public final class SelectionPlugin extends AbstractUIPlugin {
 
     private static void start() {
         workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (workbenchWindow == null) {
+            return;
+        }
 
         SelectionPlugin.internalListener = new InternalSelectionListener();
         SelectionPlugin.partListener = new PartListener(internalListener);

@@ -48,7 +48,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     private Composite composite;
 
     @Inject
-    public SubclassingProvider(final SubclassingServer server) {
+    SubclassingProvider(final SubclassingServer server) {
         this.server = server;
     }
 

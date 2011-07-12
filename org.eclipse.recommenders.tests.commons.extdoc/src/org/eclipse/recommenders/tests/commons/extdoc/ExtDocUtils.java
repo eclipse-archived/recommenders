@@ -11,12 +11,23 @@
 package org.eclipse.recommenders.tests.commons.extdoc;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.swt.widgets.Composite;
 
-public final class SelectionsUtils {
+public final class ExtDocUtils {
 
+    private static TestProvider provider;
     private static IJavaElementSelection selection;
+    private static Composite composite;
 
-    private SelectionsUtils() {
+    private ExtDocUtils() {
+    }
+
+    public static IProvider getTestProvider() {
+        if (provider == null) {
+            provider = new TestProvider();
+        }
+        return provider;
     }
 
     public static IJavaElementSelection getSelection() {
@@ -24,6 +35,14 @@ public final class SelectionsUtils {
             selection = new TestJavaElementSelection();
         }
         return selection;
+    }
+
+    public static Composite getComposite() {
+        if (composite == null) {
+            // TODO: Some way to "fake" a shell?
+            composite = null;
+        }
+        return composite;
     }
 
 }

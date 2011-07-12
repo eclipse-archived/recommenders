@@ -11,15 +11,18 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
-import org.eclipse.recommenders.tests.commons.extdoc.SelectionsUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.junit.Test;
 
 public final class SubclassingProviderTest {
 
     @Test
     public void testSubclassingProvider() {
-        final SubclassingProvider provider = new SubclassingProvider(new SubclassingServer());
-        provider.selectionChanged(SelectionsUtils.getSelection());
+        final SubclassingServer server = new SubclassingServer(ServerUtils.getServer(),
+                ServerUtils.getUsernameListener());
+        final SubclassingProvider provider = new SubclassingProvider(server);
+        provider.selectionChanged(ExtDocUtils.getSelection());
     }
 
 }
