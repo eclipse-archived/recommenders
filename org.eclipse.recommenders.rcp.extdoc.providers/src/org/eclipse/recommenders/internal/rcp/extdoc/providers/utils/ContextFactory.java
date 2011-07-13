@@ -102,8 +102,4 @@ public final class ContextFactory {
         };
     }
 
-    public static void setElementResolver(final JavaElementResolver elementResolver) {
-        ContextFactory.elementResolver = elementResolver;
-    }
-
 }

@@ -18,6 +18,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -123,6 +124,14 @@ public final class SwtFactory {
         final SourceCodeArea codeArea = new SourceCodeArea(parent);
         codeArea.setCode(snippet);
         return codeArea;
+    }
+
+    public static Button createButton(final Composite parent, final String text,
+            final SelectionListener selectionListener) {
+        final Button button = new Button(parent, SWT.NONE);
+        button.setText(text);
+        button.addSelectionListener(selectionListener);
+        return button;
     }
 
     public static Button createCheck(final Composite area, final String text, final boolean selected) {

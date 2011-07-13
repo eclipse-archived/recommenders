@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesCompletionProposalComputer;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFactory;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
-import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
@@ -24,7 +23,6 @@ public final class ExtDocProvidersModule extends AbstractModule {
     protected void configure() {
         bind(IntelligentCompletionContextResolver.class).in(Scopes.SINGLETON);
         bind(TemplatesCompletionProposalComputer.class).in(Scopes.SINGLETON);
-        bind(MarkupParser.class).in(Scopes.SINGLETON);
 
         requestStaticInjection(ContextFactory.class);
     }

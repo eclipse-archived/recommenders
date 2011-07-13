@@ -8,16 +8,17 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc;
+package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-
 import org.osgi.framework.BundleContext;
 
 public final class ExtDocPlugin extends AbstractUIPlugin {
+
+    private static final String BUNDLENAME = "org.eclipse.recommenders.rcp.extdoc";
 
     private static ExtDocPlugin plugin;
     private static IEclipsePreferences preferences;
@@ -26,7 +27,7 @@ public final class ExtDocPlugin extends AbstractUIPlugin {
     public void start(final BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
-        preferences = new InstanceScope().getNode(getBundle().getSymbolicName());
+        preferences = new InstanceScope().getNode(BUNDLENAME);
     }
 
     @Override
@@ -46,7 +47,7 @@ public final class ExtDocPlugin extends AbstractUIPlugin {
 
     public static Image getIcon(final String filename) {
         final String uri = String.format("icons/full/%s", filename);
-        return imageDescriptorFromPlugin(plugin.getBundle().getSymbolicName(), uri).createImage();
+        return imageDescriptorFromPlugin(BUNDLENAME, uri).createImage();
     }
 
 }

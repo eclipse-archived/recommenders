@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.progress.UIJob;
@@ -34,6 +35,8 @@ class ProviderUpdateJob extends Job {
         this.item = item;
         provider = (IProvider) ((Control) item.getData()).getData();
         this.selection = selection;
+
+        item.setImage(table.getLoadingIcon());
     }
 
     @Override
@@ -46,6 +49,7 @@ class ProviderUpdateJob extends Job {
                 public IStatus runInUIThread(final IProgressMonitor monitor) {
                     if (!item.isDisposed()) {
                         table.setContentVisible(item, hasContent);
+                        item.setImage((Image) item.getData("image"));
                     }
                     return Status.OK_STATUS;
                 }

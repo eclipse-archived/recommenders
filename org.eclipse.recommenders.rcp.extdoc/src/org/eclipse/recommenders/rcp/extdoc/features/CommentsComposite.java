@@ -14,7 +14,7 @@ import java.text.DateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
@@ -24,7 +24,6 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
@@ -101,9 +100,7 @@ public final class CommentsComposite {
         SwtFactory.createLabel(composite, "");
         final Text text = SwtFactory.createText(composite, "", 45, 0);
 
-        final Button button = new Button(composite, SWT.NONE);
-        button.setText("Add Comment");
-        button.addSelectionListener(new SelectionListener() {
+        SwtFactory.createButton(composite, "Add Comment", new SelectionListener() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 addComment(text.getText());

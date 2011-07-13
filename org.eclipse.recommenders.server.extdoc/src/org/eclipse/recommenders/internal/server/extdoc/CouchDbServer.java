@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,7 +20,6 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.commons.client.ResultObject;
 import org.eclipse.recommenders.commons.client.ServerErrorException;
 import org.eclipse.recommenders.commons.client.ServerUnreachableException;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
@@ -56,26 +54,10 @@ final class CouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public <T> T get(final String view, final Map<String, String> key, final Class<T> resultType) {
-        try {
-            return getClient().doGetRequest(buildPath(view, key), resultType);
-        } catch (final ServerErrorException e) {
-            return null;
-        } catch (final ServerUnreachableException e) {
-            return null;
-        }
-    }
-
-    @Override
     public <T> List<T> getRows(final String view, final Map<String, String> key,
             final GenericType<GenericResultObjectView<T>> resultType) {
         try {
-            final List<T> results = new ArrayList<T>();
-            final GenericResultObjectView<T> rows = getClient().doGetRequest(buildPath(view, key), resultType);
-            for (final ResultObject<T> resultObject : rows.rows) {
-                results.add(resultObject.value);
-            }
-            return results;
+            return getClient().doGetRequest(buildPath(view, key), resultType).getTransformedResult();
         } catch (final ServerErrorException e) {
             return null;
         } catch (final ServerUnreachableException e) {

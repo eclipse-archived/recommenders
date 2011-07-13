@@ -12,7 +12,7 @@ package org.eclipse.recommenders.rcp.extdoc.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 
 public final class PreferenceInitializer extends AbstractPreferenceInitializer {
 

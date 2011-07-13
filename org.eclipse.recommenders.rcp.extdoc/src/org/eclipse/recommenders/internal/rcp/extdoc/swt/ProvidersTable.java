@@ -14,8 +14,8 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
@@ -40,6 +40,8 @@ final class ProvidersTable {
 
     private static final Color COLOR_BLACK = SwtFactory.createColor(SWT.COLOR_BLACK);
     private static final Color COLOR_GRAY = SwtFactory.createColor(SWT.COLOR_DARK_GRAY);
+
+    private final Image loadingIcon = ExtDocPlugin.getIcon("lcl16/loading.gif");
 
     private final Table table;
 
@@ -74,8 +76,9 @@ final class ProvidersTable {
         final TableItem tableItem = new TableItem(table, SWT.NONE);
         tableItem.setText(text);
         tableItem.setData(providerControl);
-        tableItem.setImage(image);
         tableItem.setChecked(false);
+        tableItem.setImage(loadingIcon);
+        tableItem.setData("image", image);
         setContentVisible(tableItem, false);
     }
 
@@ -110,6 +113,10 @@ final class ProvidersTable {
 
         tableItem.setGrayed(!visible);
         tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
+    }
+
+    Image getLoadingIcon() {
+        return loadingIcon;
     }
 
     private static String getPreferenceId(final IProvider provider, final JavaElementLocation location) {

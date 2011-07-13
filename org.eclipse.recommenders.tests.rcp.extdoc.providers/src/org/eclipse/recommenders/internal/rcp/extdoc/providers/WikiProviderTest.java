@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
@@ -23,7 +22,7 @@ public final class WikiProviderTest {
     @Test
     public void testWikiProvider() {
         final WikiServer server = new WikiServer(ServerUtils.getServer(), ServerUtils.getUsernameListener());
-        final WikiProvider provider = new WikiProvider(server, new MarkupParser());
+        final WikiProvider provider = new WikiProvider(server);
         provider.createContentControl(new Shell());
 
         Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection()));

@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.spi.RegistryContributor;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Preconditions;

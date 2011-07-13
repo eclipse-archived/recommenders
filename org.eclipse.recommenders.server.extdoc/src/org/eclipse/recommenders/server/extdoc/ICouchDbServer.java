@@ -21,8 +21,6 @@ import com.sun.jersey.api.client.GenericType;
 
 public interface ICouchDbServer {
 
-    <T> T get(String view, Map<String, String> key, Class<T> resultType);
-
     <T> List<T> getRows(String view, Map<String, String> key, GenericType<GenericResultObjectView<T>> resultType);
 
     void post(Object object);
