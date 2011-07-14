@@ -16,12 +16,12 @@ import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-final class DragListener implements DragSourceListener {
+final class ProvidersTableDragListener implements DragSourceListener {
 
     private final Table table;
     private TableItem dragSourceItem;
 
-    DragListener(final Table table) {
+    ProvidersTableDragListener(final Table table) {
         this.table = table;
     }
 

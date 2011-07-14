@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.internal.rcp.extdoc.swt.SourceCodeArea;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StyleRange;
@@ -32,7 +33,7 @@ import org.eclipse.swt.widgets.Text;
 
 public final class SwtFactory {
 
-    static final Font CODEFONT = JFaceResources.getTextFont();
+    public static final Font CODEFONT = JFaceResources.getTextFont();
     private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 
     private static final Map<Integer, Color> COLORCACHE = new HashMap<Integer, Color>();

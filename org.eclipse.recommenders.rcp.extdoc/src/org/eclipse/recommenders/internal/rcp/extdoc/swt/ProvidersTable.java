@@ -20,7 +20,6 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DropTarget;
@@ -31,8 +30,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
@@ -41,18 +38,20 @@ final class ProvidersTable {
     private static final Color COLOR_BLACK = SwtFactory.createColor(SWT.COLOR_BLACK);
     private static final Color COLOR_GRAY = SwtFactory.createColor(SWT.COLOR_DARK_GRAY);
 
-    private final Image loadingIcon = ExtDocPlugin.getIcon("lcl16/loading.gif");
-
-    private final Table table;
-
+    private CLabel locationLabel;
+    private Table table;
     private final IEclipsePreferences preferences;
-
-    private final CLabel locationLabel;
     private IJavaElementSelection lastSelection;
 
-    ProvidersTable(final Composite parent, final int style, final ProviderStore providerStore) {
+    ProvidersTable(final Composite parent, final ProviderStore providerStore) {
         final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 6, 0, 0);
+        createLocationLabel(composite);
+        createTable(composite, providerStore);
+        composite.setBackground(table.getBackground());
+        preferences = ExtDocPlugin.getPreferences();
+    }
 
+    private void createLocationLabel(final Composite composite) {
         locationLabel = new CLabel(composite, SWT.NONE);
         final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gridData.heightHint = ExtDocView.HEAD_LABEL_HEIGHT;
@@ -60,16 +59,13 @@ final class ProvidersTable {
         locationLabel.setImage(ExtDocPlugin.getIcon("eview16/context.gif"));
         locationLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
         locationLabel.setToolTipText("Provider selection is sensitive to the displayed code location.");
+    }
 
-        table = new Table(composite, style);
+    private void createTable(final Composite composite, final ProviderStore providerStore) {
+        table = new Table(composite, SWT.CHECK | SWT.FULL_SELECTION);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        composite.setBackground(table.getBackground());
-
-        table.addListener(SWT.Selection, new SelectionListener(this));
+        table.addListener(SWT.Selection, new ProvidersTableSelectionListener(this));
         enableDragAndDrop(providerStore);
-
-        preferences = ExtDocPlugin.getPreferences();
     }
 
     void addProvider(final Control providerControl, final String text, final Image image, final boolean checked) {
@@ -77,7 +73,7 @@ final class ProvidersTable {
         tableItem.setText(text);
         tableItem.setData(providerControl);
         tableItem.setChecked(false);
-        tableItem.setImage(loadingIcon);
+        tableItem.setImage(image);
         tableItem.setData("image", image);
         setContentVisible(tableItem, false);
     }
@@ -90,19 +86,23 @@ final class ProvidersTable {
         final JavaElementLocation location = selection.getElementLocation();
         if (lastSelection == null || lastSelection.getElementLocation() != location) {
             for (final TableItem item : getItems()) {
-                final IProvider provider = (IProvider) ((Control) item.getData()).getData();
-                boolean selectProvider = false;
-                if (preferences.getBoolean(getPreferenceId(provider, location), true)) {
-                    selectProvider = provider.isAvailableForLocation(location);
-                }
-                item.setChecked(selectProvider);
-                if (!selectProvider) {
-                    setContentVisible(item, false);
-                }
+                updateProvider(item, location);
             }
         }
         lastSelection = selection;
         locationLabel.setText(location == null ? "" : location.getDisplayName());
+    }
+
+    private void updateProvider(final TableItem item, final JavaElementLocation location) {
+        final IProvider provider = (IProvider) ((Control) item.getData()).getData();
+        boolean selectProvider = false;
+        if (preferences.getBoolean(getPreferenceId(provider, location), true)) {
+            selectProvider = provider.isAvailableForLocation(location);
+        }
+        item.setChecked(selectProvider);
+        if (!selectProvider) {
+            setContentVisible(item, false);
+        }
     }
 
     void setContentVisible(final TableItem tableItem, final boolean visible) {
@@ -115,55 +115,37 @@ final class ProvidersTable {
         tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
     }
 
-    Image getLoadingIcon() {
-        return loadingIcon;
-    }
-
-    private static String getPreferenceId(final IProvider provider, final JavaElementLocation location) {
+    static String getPreferenceId(final IProvider provider, final JavaElementLocation location) {
         return "provider" + provider.hashCode() + location;
     }
 
     private void enableDragAndDrop(final ProviderStore providerStore) {
         final Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
         final int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
-
-        final DragSource source = new DragSource(table, operations);
-        source.setTransfer(types);
-        final DragListener dragListener = new DragListener(table);
-        source.addDragListener(dragListener);
-
-        final DropTarget target = new DropTarget(table, operations);
-        target.setTransfer(types);
-        target.addDropListener(new DropAdapter(table, dragListener, providerStore));
+        final ProvidersTableDragListener dragListener = createDragSource(types, operations);
+        createDropTarget(types, operations, dragListener, providerStore);
     }
 
-    private static final class SelectionListener implements Listener {
+    private ProvidersTableDragListener createDragSource(final Transfer[] types, final int operations) {
+        final DragSource source = new DragSource(table, operations);
+        source.setTransfer(types);
+        final ProvidersTableDragListener dragListener = new ProvidersTableDragListener(table);
+        source.addDragListener(dragListener);
+        return dragListener;
+    }
 
-        private final ProvidersTable table;
+    private void createDropTarget(final Transfer[] types, final int operations,
+            final ProvidersTableDragListener dragListener, final ProviderStore providerStore) {
+        final DropTarget target = new DropTarget(table, operations);
+        target.setTransfer(types);
+        target.addDropListener(new ProvidersTableDropAdapter(table, dragListener, providerStore));
+    }
 
-        SelectionListener(final ProvidersTable table) {
-            this.table = table;
-        }
+    IJavaElementSelection getLastSelection() {
+        return lastSelection;
+    }
 
-        @Override
-        public void handleEvent(final Event event) {
-            final TableItem tableItem = (TableItem) event.item;
-            final Control control = (Control) tableItem.getData();
-            if (event.detail == SWT.CHECK) {
-                final String preferenceId = getPreferenceId((IProvider) control.getData(),
-                        table.lastSelection.getElementLocation());
-                table.preferences.putBoolean(preferenceId, tableItem.getChecked());
-                if (tableItem.getGrayed()) {
-                    if (tableItem.getChecked()) {
-                        new ProviderUpdateJob(table, tableItem, table.lastSelection).schedule();
-                    }
-                } else {
-                    table.setContentVisible(tableItem, tableItem.getChecked());
-                }
-            } else if (!tableItem.getGrayed()) {
-                ((ScrolledComposite) control.getParent().getParent()).setOrigin(control.getLocation());
-            }
-        }
-
+    void setChecked(final String preferenceId, final boolean isChecked) {
+        preferences.putBoolean(preferenceId, isChecked);
     }
 }

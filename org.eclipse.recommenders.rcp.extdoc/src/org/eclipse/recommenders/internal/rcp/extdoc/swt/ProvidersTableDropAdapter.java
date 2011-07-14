@@ -22,13 +22,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-final class DropAdapter extends DropTargetAdapter {
+final class ProvidersTableDropAdapter extends DropTargetAdapter {
 
     private final Table table;
-    private final DragListener dragListener;
+    private final ProvidersTableDragListener dragListener;
     private final ProviderStore providerStore;
 
-    DropAdapter(final Table table, final DragListener dragListener, final ProviderStore providerStore) {
+    ProvidersTableDropAdapter(final Table table, final ProvidersTableDragListener dragListener, final ProviderStore providerStore) {
         this.table = table;
         this.dragListener = dragListener;
         this.providerStore = providerStore;

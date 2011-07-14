@@ -24,12 +24,6 @@ import com.sun.jersey.api.client.GenericType;
 class TestCouchDbServer implements ICouchDbServer {
 
     @Override
-    public <T> T get(final String view, final Map<String, String> key, final Class<T> resultType) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public <T> List<T> getRows(final String view, final Map<String, String> key,
             final GenericType<GenericResultObjectView<T>> resultType) {
         return Collections.emptyList();

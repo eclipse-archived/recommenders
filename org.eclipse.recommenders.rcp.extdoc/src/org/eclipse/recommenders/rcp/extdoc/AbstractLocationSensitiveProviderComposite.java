@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.core.ImportContainer;
 import org.eclipse.jdt.internal.core.ImportDeclaration;
 import org.eclipse.jdt.internal.core.PackageDeclaration;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
@@ -202,6 +203,8 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IMethod) {
             return updateMethodBodySelection(selection, (IMethod) javaElement);
         } else if (javaElement instanceof PackageDeclaration) {
+            return false;
+        } else if (javaElement instanceof ImportContainer) {
             return false;
         }
         throw new IllegalArgumentException(selection.toString());

@@ -25,7 +25,7 @@ public final class TextAndFeaturesLine {
             final IProvider provider, final IStarsRatingsServer server) {
         final Composite line = SwtFactory.createGridComposite(parent, 2, 10, 0, 0, 0);
         styledText = SwtFactory.createStyledText(line, text);
-        StarsRatingComposite.create(line, element, provider, server);
+        new StarsRatingComposite(line, element, provider, server);
     }
 
     public void createStyleRange(final int start, final int length, final int fontStyle, final boolean makeBlue,

@@ -15,10 +15,12 @@ import java.util.List;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
+import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
 import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.types.Rating;
+import org.eclipse.recommenders.server.extdoc.types.RatingSummary;
 
 import com.google.common.collect.ImmutableMap;
 import com.sun.jersey.api.client.GenericType;
@@ -36,18 +38,22 @@ abstract class AbstractRatingsServer implements IStarsRatingsServer {
     }
 
     @Override
-    public final int getAverageRating(final Object object, final IProvider provider) {
+    public IRatingSummary getRatingSummary(final Object object, final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
         final String objectId = String.valueOf(object.hashCode());
         final List<RatingSummary> list = server.getRows("stars",
                 ImmutableMap.of("providerId", providerId, "object", objectId),
                 new GenericType<GenericResultObjectView<RatingSummary>>() {
                 });
-        return list.isEmpty() ? 0 : list.get(0).getAverage();
+        if (list.isEmpty()) {
+            return RatingSummary.create(0, 0);
+        }
+        final RatingSummary summary = list.get(0);
+        summary.setUserRating(getUserRating(objectId, provider));
+        return summary;
     }
 
-    @Override
-    public final IRating getUserRating(final Object object, final IProvider provider) {
+    private final Rating getUserRating(final Object object, final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
         final String objectId = String.valueOf(object.hashCode());
         final ImmutableMap<String, String> key = ImmutableMap.of("providerId", providerId, "object", objectId, "user",
@@ -59,23 +65,15 @@ abstract class AbstractRatingsServer implements IStarsRatingsServer {
     }
 
     @Override
-    public final void addRating(final Object object, final int stars, final IProvider provider) {
-        final IRating oldRating = getUserRating(object, provider);
+    public final IRating addRating(final Object object, final int stars, final IProvider provider) {
+        final Rating oldRating = getUserRating(object, provider);
         if (oldRating != null) {
             // TODO: remove old rating
         }
 
-        final Rating rating = Rating.create(provider, object, stars);
+        final IRating rating = Rating.create(provider, object, stars);
         server.post(rating);
-    }
-
-    private static final class RatingSummary {
-        private int sum;
-        private int count;
-
-        private int getAverage() {
-            return count == 0 ? 0 : sum / count;
-        }
+        return rating;
     }
 
 }

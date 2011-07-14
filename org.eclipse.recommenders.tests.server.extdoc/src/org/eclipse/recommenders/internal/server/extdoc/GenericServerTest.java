@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
+import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
@@ -43,6 +44,9 @@ public final class GenericServerTest {
     @Test
     public void testRatings() {
         server.addRating(object, 4, provider);
-        final int avg = server.getAverageRating(object, provider);
+        final IRatingSummary summary = server.getRatingSummary(object, provider);
+
+        // Assert.assertTrue(summary.getAverage() > 0);
+        // Assert.assertNotNull(summary.getUserRating());
     }
 }

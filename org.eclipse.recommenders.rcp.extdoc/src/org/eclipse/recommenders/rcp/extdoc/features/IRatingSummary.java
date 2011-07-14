@@ -10,12 +10,12 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
+public interface IRatingSummary {
 
-public interface IStarsRatingsServer {
+    int getAverage();
 
-    IRatingSummary getRatingSummary(Object object, IProvider provider);
+    void addUserRating(final IRating userRating);
 
-    IRating addRating(Object object, int stars, IProvider provider);
+    IRating getUserRating();
 
 }

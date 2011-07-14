@@ -81,7 +81,7 @@ public class ExtDocView extends ViewPart {
     }
 
     private void createLeftSashSide(final SashForm sashForm) {
-        table = new ProvidersTable(sashForm, SWT.CHECK | SWT.FULL_SELECTION, providerStore);
+        table = new ProvidersTable(sashForm, providerStore);
     }
 
     private void createRightSashSide(final SashForm sashForm) {
@@ -142,18 +142,22 @@ public class ExtDocView extends ViewPart {
     public final boolean selectionChanged(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
             table.setContext(selection);
-            for (final TableItem item : table.getItems()) {
-                if (item.getChecked()) {
-                    final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
-                    job.setSystem(true);
-                    job.schedule();
-                }
-            }
+            updateProviders(selection);
             scrolled.setOrigin(0, 0);
             updateSelectionLabel(selection.getJavaElement());
             return true;
         }
         return false;
+    }
+
+    private void updateProviders(final IJavaElementSelection selection) {
+        for (final TableItem item : table.getItems()) {
+            if (item.getChecked()) {
+                final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
+                job.setSystem(true);
+                job.schedule();
+            }
+        }
     }
 
     private void updateSelectionLabel(final IJavaElement javaElement) {
@@ -176,8 +180,7 @@ public class ExtDocView extends ViewPart {
         private LinkWithEditorAction() {
             super("Link with Selection", SWT.TOGGLE);
             final URL entry = ExtDocPlugin.getDefault().getBundle().getEntry("icons/full/lcl16/link.gif");
-            final ImageDescriptor descriptor = ImageDescriptor.createFromURL(entry);
-            setImageDescriptor(descriptor);
+            setImageDescriptor(ImageDescriptor.createFromURL(entry));
             setToolTipText("Link with Selection");
             setChecked(true);
         }
