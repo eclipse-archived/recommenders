@@ -17,10 +17,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.graphics.Image;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 
 import com.google.common.base.Preconditions;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 public abstract class AbstractProvider implements IProvider {
 
@@ -61,12 +62,12 @@ public abstract class AbstractProvider implements IProvider {
     }
 
     @Override
-    public boolean equals(final Object object) {
+    public final boolean equals(final Object object) {
         return object instanceof IProvider && hashCode() == object.hashCode();
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return getClass().getName().hashCode();
     }
 

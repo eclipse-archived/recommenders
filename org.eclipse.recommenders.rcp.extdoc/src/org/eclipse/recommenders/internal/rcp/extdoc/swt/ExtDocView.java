@@ -151,6 +151,7 @@ public class ExtDocView extends ViewPart {
     }
 
     private void updateProviders(final IJavaElementSelection selection) {
+        ProviderUpdateJob.cancelActiveJobs();
         for (final TableItem item : table.getItems()) {
             if (item.getChecked()) {
                 final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);

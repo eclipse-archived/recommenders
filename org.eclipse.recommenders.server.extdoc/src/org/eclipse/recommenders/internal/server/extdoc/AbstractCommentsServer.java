@@ -42,7 +42,14 @@ public abstract class AbstractCommentsServer extends AbstractRatingsServer imple
         final List<Comment> rows = getServer().getRows("comments", key,
                 new GenericType<GenericResultObjectView<Comment>>() {
                 });
-        final ArrayList<IComment> list = new ArrayList<IComment>(rows);
+        if (rows == null) {
+            return Collections.emptyList();
+        }
+        return sortComments(rows);
+    }
+
+    private List<IComment> sortComments(final List<Comment> rows) {
+        final List<IComment> list = new ArrayList<IComment>(rows);
         Collections.sort(list, new Comparator<IComment>() {
             @Override
             public int compare(final IComment o1, final IComment o2) {

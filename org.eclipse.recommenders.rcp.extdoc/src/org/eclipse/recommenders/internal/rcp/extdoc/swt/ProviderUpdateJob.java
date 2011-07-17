@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -24,7 +27,9 @@ import org.eclipse.ui.progress.UIJob;
 
 class ProviderUpdateJob extends Job {
 
-    private static final Image loadingIcon = ExtDocPlugin.getIcon("lcl16/loading.gif");
+    private static final Image ICON_LOADING = ExtDocPlugin.getIcon("lcl16/loading.gif");
+
+    private static Set<ProviderUpdateJob> active = new HashSet<ProviderUpdateJob>();
 
     private final ProvidersTable table;
     private final TableItem item;
@@ -33,13 +38,15 @@ class ProviderUpdateJob extends Job {
 
     ProviderUpdateJob(final ProvidersTable table, final TableItem item, final IJavaElementSelection selection) {
         super(String.format("Updating %s", ((IProvider) ((Control) item.getData()).getData()).getProviderFullName()));
-        super.setPriority(SHORT);
+        super.setPriority(LONG);
+        active.add(this);
+
         this.table = table;
         this.item = item;
         provider = (IProvider) ((Control) item.getData()).getData();
         this.selection = selection;
 
-        item.setImage(loadingIcon);
+        item.setImage(ICON_LOADING);
     }
 
     @Override
@@ -50,6 +57,7 @@ class ProviderUpdateJob extends Job {
             return Status.OK_STATUS;
         } finally {
             monitor.done();
+            active.remove(this);
         }
     }
 
@@ -65,5 +73,12 @@ class ProviderUpdateJob extends Job {
                 return Status.OK_STATUS;
             }
         }.schedule();
+    }
+
+    public static void cancelActiveJobs() {
+        for (final ProviderUpdateJob job : active) {
+            job.cancel();
+        }
+        active.clear();
     }
 }

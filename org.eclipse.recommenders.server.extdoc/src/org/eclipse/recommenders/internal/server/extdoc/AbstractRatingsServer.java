@@ -29,10 +29,17 @@ abstract class AbstractRatingsServer implements IStarsRatingsServer {
 
     private final ICouchDbServer server;
 
+    /**
+     * @param server
+     *            The CouchDB server to be used for receiving ratings.
+     */
     AbstractRatingsServer(final ICouchDbServer server) {
         this.server = server;
     }
 
+    /**
+     * @return The CouchDB server in use.
+     */
     protected ICouchDbServer getServer() {
         return server;
     }
@@ -45,7 +52,7 @@ abstract class AbstractRatingsServer implements IStarsRatingsServer {
                 ImmutableMap.of("providerId", providerId, "object", objectId),
                 new GenericType<GenericResultObjectView<RatingSummary>>() {
                 });
-        if (list.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             return RatingSummary.create(0, 0);
         }
         final RatingSummary summary = list.get(0);
@@ -53,15 +60,15 @@ abstract class AbstractRatingsServer implements IStarsRatingsServer {
         return summary;
     }
 
-    private final Rating getUserRating(final Object object, final IProvider provider) {
+    private Rating getUserRating(final Object object, final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
         final String objectId = String.valueOf(object.hashCode());
         final ImmutableMap<String, String> key = ImmutableMap.of("providerId", providerId, "object", objectId, "user",
                 UUIDHelper.getUUID());
-        final List<Rating> rating = server.getRows("starsUsers", key,
+        final List<Rating> ratings = server.getRows("starsUsers", key,
                 new GenericType<GenericResultObjectView<Rating>>() {
                 });
-        return rating.isEmpty() ? null : rating.get(0);
+        return ratings == null || ratings.isEmpty() ? null : ratings.get(0);
     }
 
     @Override

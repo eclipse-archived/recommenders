@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: henss-checkstyle
+    Checkstyle-Configuration: Code Recommenders
     Description: none
 -->
 <module name="Checker">
@@ -40,7 +40,7 @@
     <module name="AvoidStarImport"/>
     <module name="IllegalImport"/>
     <module name="ImportOrder">
-      <property name="groups" value="java, javax, cc, com, de, org, junit"/>
+      <property name="groups" value="java, javax, org.eclipse, cc, com, de, org, junit"/>
     </module>
     <module name="RedundantImport"/>
     <module name="UnusedImports"/>
