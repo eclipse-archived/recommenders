@@ -48,7 +48,7 @@ public class StarsRatingComposite {
         final Composite parentComposite = new Composite(parent, SWT.NONE);
         parentComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-        final IRatingSummary ratingSummary = server.getUserFeedback(null, provider).getRatingSummary();
+        final IRatingSummary ratingSummary = server.getUserFeedback(element, provider).getRatingSummary();
         createStarsComposite(parentComposite);
         printStars(ratingSummary);
     }

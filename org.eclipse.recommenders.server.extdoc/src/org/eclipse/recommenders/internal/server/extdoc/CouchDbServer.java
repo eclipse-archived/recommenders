@@ -71,6 +71,12 @@ final class CouchDbServer implements ICouchDbServer {
     }
 
     @Override
+    public void delete(final String view, final Map<String, String> key, final String rev) {
+        final String path = buildPath(view, key);
+        getClient().doDeleteRequest(path.substring(0, path.length() - 8) + "&rev=" + rev, null);
+    }
+
+    @Override
     public <T> T getProviderContent(final String providerId, final String key, final String value,
             final GenericType<GenericResultObjectView<T>> resultType) {
         final List<T> rows = getRows("providers", ImmutableMap.of("providerId", providerId, key, value), resultType);

@@ -71,4 +71,14 @@ public final class UserFeedback implements IUserFeedback {
         comments.add((Comment) comment);
     }
 
+    @Override
+    public IName getElement() {
+        return element;
+    }
+
+    @Override
+    public String getRevision() {
+        return rev;
+    }
+
 }

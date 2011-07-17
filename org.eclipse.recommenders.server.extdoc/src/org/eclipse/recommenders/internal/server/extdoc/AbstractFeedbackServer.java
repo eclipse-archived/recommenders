@@ -61,6 +61,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         final IUserFeedback feedback = getUserFeedback(javaElement, provider);
         final IRating rating = Rating.create(stars);
         feedback.addRating(rating);
+        deleteFeedback(feedback, provider);
         server.post(feedback);
         return rating;
     }
@@ -70,7 +71,8 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         final IUserFeedback feedback = getUserFeedback(javaElement, provider);
         final IComment comment = Comment.create(text, listener.getUsername());
         feedback.addComment(comment);
-        getServer().post(feedback);
+        deleteFeedback(feedback, provider);
+        server.post(feedback);
         return comment;
     }
 
@@ -88,6 +90,15 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
             return resolver.toRecType((IType) javaElement);
         }
         throw new IllegalArgumentException(javaElement.toString());
+    }
+
+    private void deleteFeedback(final IUserFeedback feedback, final IProvider provider) {
+        if (feedback.getRevision() != null) {
+            final String providerId = provider.getClass().getSimpleName();
+            server.delete("feedback",
+                    ImmutableMap.of("providerId", providerId, "element", feedback.getElement().getIdentifier()),
+                    feedback.getRevision());
+        }
     }
 
 }
