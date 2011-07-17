@@ -14,4 +14,6 @@ public interface IRating {
 
     int getRating();
 
+    String getUserId();
+
 }

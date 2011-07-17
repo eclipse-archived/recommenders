@@ -21,7 +21,8 @@ public final class WikiProviderTest {
 
     @Test
     public void testWikiProvider() {
-        final WikiServer server = new WikiServer(ServerUtils.getServer(), ServerUtils.getUsernameListener());
+        final WikiServer server = new WikiServer(ServerUtils.getServer(), ServerUtils.getUsernameListener(),
+                ExtDocUtils.getResolver());
         final WikiProvider provider = new WikiProvider(server);
         provider.createContentControl(new Shell());
 

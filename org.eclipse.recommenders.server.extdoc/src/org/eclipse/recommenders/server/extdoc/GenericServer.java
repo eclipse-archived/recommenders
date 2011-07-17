@@ -10,15 +10,17 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import org.eclipse.recommenders.internal.server.extdoc.AbstractCommentsServer;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 import com.google.inject.Inject;
 
-public final class GenericServer extends AbstractCommentsServer {
+public final class GenericServer extends AbstractFeedbackServer {
 
     @Inject
-    public GenericServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener) {
-        super(server, usernameListener);
+    public GenericServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+            final JavaElementResolver resolver) {
+        super(server, usernameListener, resolver);
     }
 
 }

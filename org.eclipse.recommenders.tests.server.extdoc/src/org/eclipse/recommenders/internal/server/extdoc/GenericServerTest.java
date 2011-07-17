@@ -10,32 +10,29 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
-import java.util.List;
+import java.util.Collection;
 
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
 import org.junit.Test;
 
 public final class GenericServerTest {
 
-    final GenericServer server = ServerUtils.getGenericServer();
-    final IProvider provider = ExtDocUtils.getTestProvider();
+    private final GenericServer server = ServerUtils.getGenericServer();
+    private final IProvider provider = ExtDocUtils.getTestProvider();
 
-    final Object object = new Object() {
-        @Override
-        public int hashCode() {
-            return 1;
-        }
-    };
+    private final IJavaElement element = TestUtils.getDefaultMethod();
 
     @Test
     public void testComments() {
-        final IComment comment = server.addComment(object, "Test text", provider);
-        final List<IComment> comments = server.getComments(object, provider);
+        final IComment comment = server.addComment("Test text", element, provider);
+        final Collection<? extends IComment> comments = server.getUserFeedback(element, provider).getComments();
 
         // Assert.assertFalse(comments.isEmpty());
         // Assert.assertTrue(comments.contains(comment));
@@ -43,8 +40,8 @@ public final class GenericServerTest {
 
     @Test
     public void testRatings() {
-        server.addRating(object, 4, provider);
-        final IRatingSummary summary = server.getRatingSummary(object, provider);
+        server.addRating(4, element, provider);
+        final IRatingSummary summary = server.getUserFeedback(element, provider).getRatingSummary();
 
         // Assert.assertTrue(summary.getAverage() > 0);
         // Assert.assertNotNull(summary.getUserRating());

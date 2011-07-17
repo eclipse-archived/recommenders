@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
 import org.junit.Test;
@@ -19,7 +20,7 @@ import org.junit.Test;
 public class CodeExamplesServerTest {
 
     private final CodeExamplesServer server = new CodeExamplesServer(ServerUtils.getServer(),
-            ServerUtils.getUsernameListener());
+            ServerUtils.getUsernameListener(), ExtDocUtils.getResolver());
 
     @Test
     public void testGetOverridenMethodCodeExamples() {

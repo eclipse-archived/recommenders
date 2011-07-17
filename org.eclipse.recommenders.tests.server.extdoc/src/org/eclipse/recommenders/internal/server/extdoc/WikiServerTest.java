@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -20,7 +21,8 @@ public final class WikiServerTest {
 
     private static final String TESTINPUT = "This is a test using Button. I like using Button.";
 
-    private final WikiServer server = new WikiServer(ServerUtils.getServer(), ServerUtils.getUsernameListener());
+    private final WikiServer server = new WikiServer(ServerUtils.getServer(), ServerUtils.getUsernameListener(),
+            ExtDocUtils.getResolver());
     private final IJavaElement element;
 
     public WikiServerTest() {

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
@@ -29,15 +30,15 @@ public class StarsRatingComposite {
     private static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
     private static final Image ICON_STAR_EMPTY = ExtDocPlugin.getIcon("eview16/star_empty.png");
 
-    private final Object element;
+    private final IJavaElement element;
     private final IProvider provider;
-    private final IStarsRatingsServer server;
+    private final IUserFeedbackServer server;
 
     private Composite composite;
 
-    public StarsRatingComposite(final Composite parent, final Object object, final IProvider provider,
-            final IStarsRatingsServer server) {
-        element = object;
+    public StarsRatingComposite(final Composite parent, final IJavaElement element, final IProvider provider,
+            final IUserFeedbackServer server) {
+        this.element = element;
         this.provider = provider;
         this.server = server;
         createStars(parent);
@@ -47,7 +48,7 @@ public class StarsRatingComposite {
         final Composite parentComposite = new Composite(parent, SWT.NONE);
         parentComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-        final IRatingSummary ratingSummary = server.getRatingSummary(element, provider);
+        final IRatingSummary ratingSummary = server.getUserFeedback(null, provider).getRatingSummary();
         createStarsComposite(parentComposite);
         printStars(ratingSummary);
     }
@@ -97,7 +98,7 @@ public class StarsRatingComposite {
     }
 
     private void addRating(final int stars, final IRatingSummary ratingSummary) {
-        final IRating userRating = server.addRating(element, stars, provider);
+        final IRating userRating = server.addRating(stars, element, provider);
         for (final Control child : composite.getChildren()) {
             child.dispose();
         }

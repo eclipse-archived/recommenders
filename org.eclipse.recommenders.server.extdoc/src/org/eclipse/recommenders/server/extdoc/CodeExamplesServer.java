@@ -13,19 +13,21 @@ package org.eclipse.recommenders.server.extdoc;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.internal.server.extdoc.AbstractCommentsServer;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;
 
-public final class CodeExamplesServer extends AbstractCommentsServer {
+public final class CodeExamplesServer extends AbstractFeedbackServer {
 
     private static final String PROVIDERID = CodeExamples.class.getSimpleName();
 
     @Inject
-    public CodeExamplesServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener) {
-        super(server, usernameListener);
+    public CodeExamplesServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+            final JavaElementResolver resolver) {
+        super(server, usernameListener, resolver);
     }
 
     public CodeExamples getOverridenMethodCodeExamples(final IMethod method) {

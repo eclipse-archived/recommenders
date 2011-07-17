@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc.types;
+package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
@@ -19,10 +19,11 @@ public final class RatingSummary implements IRatingSummary {
     private int count;
     private IRating userRating;
 
-    public static IRatingSummary create(final int sum, final int count) {
+    public static IRatingSummary create(final int sum, final int count, final IRating userRating) {
         final RatingSummary summary = new RatingSummary();
         summary.sum = sum;
         summary.count = count;
+        summary.userRating = userRating;
         return summary;
     }
 
@@ -32,19 +33,15 @@ public final class RatingSummary implements IRatingSummary {
     }
 
     @Override
-    public void addUserRating(final IRating userRating) {
-        setUserRating(userRating);
+    public void addUserRating(final IRating rating) {
+        this.userRating = rating;
         ++count;
-        sum += userRating.getRating();
+        sum += rating.getRating();
     }
 
     @Override
     public IRating getUserRating() {
         return userRating;
-    }
-
-    public void setUserRating(final IRating userRating) {
-        this.userRating = userRating;
     }
 
 }

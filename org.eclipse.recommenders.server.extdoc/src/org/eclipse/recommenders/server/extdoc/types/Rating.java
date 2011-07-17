@@ -13,31 +13,19 @@ package org.eclipse.recommenders.server.extdoc.types;
 import java.util.Date;
 
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
 import com.google.common.base.Objects;
-import com.google.gson.annotations.SerializedName;
 
 public final class Rating implements IServerType, IRating {
 
-    @SerializedName("_id")
-    private String id;
-    @SerializedName("_rev")
-    private String rev;
-
-    private String providerId;
-
-    private String object;
     private Date date;
     private String user;
     private int rating;
 
-    public static Rating create(final IProvider provider, final Object object, final int rating) {
+    public static Rating create(final int rating) {
         final Rating instance = new Rating();
-        instance.providerId = provider.getClass().getSimpleName();
-        instance.object = String.valueOf(object.hashCode());
         instance.date = new Date();
         instance.user = UUIDHelper.getUUID();
         instance.rating = rating;
@@ -51,13 +39,18 @@ public final class Rating implements IServerType, IRating {
     }
 
     @Override
+    public String getUserId() {
+        return user;
+    }
+
+    @Override
     public void validate() {
         Checks.ensureIsTrue(rating > 0);
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).addValue(object).addValue(user).addValue(rating).toString();
+        return Objects.toStringHelper(this).addValue(user).addValue(rating).toString();
     }
 
 }

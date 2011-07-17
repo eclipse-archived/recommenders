@@ -12,6 +12,7 @@ package org.eclipse.recommenders.tests.commons.extdoc;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.swt.widgets.Composite;
 
 public final class ExtDocUtils {
@@ -43,6 +44,10 @@ public final class ExtDocUtils {
             composite = null;
         }
         return composite;
+    }
+
+    public static JavaElementResolver getResolver() {
+        return new JavaElementResolver();
     }
 
 }

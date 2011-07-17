@@ -20,7 +20,7 @@ public final class SubclassingTemplatesProviderTest {
     @Test
     public void testSubclassingTemplatesProvider() {
         final SubclassingServer server = new SubclassingServer(ServerUtils.getServer(),
-                ServerUtils.getUsernameListener());
+                ServerUtils.getUsernameListener(), ExtDocUtils.getResolver());
         final SubclassingTemplatesProvider provider = new SubclassingTemplatesProvider(server);
         provider.selectionChanged(ExtDocUtils.getSelection());
     }

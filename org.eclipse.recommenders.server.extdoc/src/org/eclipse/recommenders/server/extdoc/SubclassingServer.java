@@ -13,7 +13,8 @@ package org.eclipse.recommenders.server.extdoc;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.internal.server.extdoc.AbstractCommentsServer;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
@@ -22,14 +23,15 @@ import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;
 
-public final class SubclassingServer extends AbstractCommentsServer {
+public final class SubclassingServer extends AbstractFeedbackServer {
 
     private static final String S_METHOD = "method";
     private static final String S_TYPE = "type";
 
     @Inject
-    public SubclassingServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener) {
-        super(server, usernameListener);
+    public SubclassingServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+            final JavaElementResolver resolver) {
+        super(server, usernameListener, resolver);
     }
 
     public ClassOverrideDirectives getClassOverrideDirectives(final IType type) {

@@ -13,32 +13,19 @@ package org.eclipse.recommenders.server.extdoc.types;
 import java.util.Date;
 
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
-import com.google.gson.annotations.SerializedName;
-
 public final class Comment implements IComment {
 
-    @SerializedName("_id")
-    private String id;
-    @SerializedName("_rev")
-    private String rev;
-
-    private String providerId;
-
-    private String object;
     private Date date;
     private String user;
     private String text;
     private String username;
 
-    public static Comment create(final IProvider provider, final Object object, final String text, final String username) {
+    public static Comment create(final String text, final String username) {
         Checks.ensureIsTrue(!text.isEmpty());
         final Comment comment = new Comment();
-        comment.providerId = provider.getClass().getSimpleName();
-        comment.object = String.valueOf(object.hashCode());
         comment.date = new Date();
         comment.text = text;
         comment.user = UUIDHelper.getUUID();
@@ -63,7 +50,7 @@ public final class Comment implements IComment {
 
     @Override
     public int hashCode() {
-        return object.hashCode() + date.hashCode() + text.hashCode();
+        return date.hashCode() + text.hashCode();
     }
 
     @Override

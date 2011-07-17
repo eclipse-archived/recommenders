@@ -40,7 +40,7 @@ public final class ExtDocServerModule extends AbstractModule {
         bind(ClientConfigurationPreferenceListener.class).asEagerSingleton();
         bind(UsernamePreferenceListener.class).asEagerSingleton();
 
-        requestStaticInjection(AbstractCommentsServer.class);
+        requestStaticInjection(AbstractFeedbackServer.class);
     }
 
 }

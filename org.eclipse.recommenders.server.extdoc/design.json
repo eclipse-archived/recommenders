@@ -6,15 +6,8 @@
        "providers": {
            "map": "function(doc) {\n  key = {};\n  key[\"providerId\"] = doc.providerId;\n  key[\"type\"] = doc.type;\n  key[\"method\"] = doc.method;\n  emit(key, doc);\n}"
        },
-       "stars": {
-           "map": "function(doc) {\n  if(doc.rating >= 0) {\n    key = {};  \n    key[\"providerId\"] = doc.providerId;\n    key[\"object\"] = doc.object;\n    emit(key, doc.rating);\n  }\n}",
-           "reduce": "function (keys, values, rereduce) { \n   return {\"sum\": sum(values), \"count\": values.length};\n}"
-       },
-       "comments": {
-           "map": "function(doc) {\n  if(doc.text && doc.object) {\n    key = {};\n    key[\"providerId\"] = doc.providerId;\n    key[\"object\"] = doc.object;\n    emit(key, doc);\n  }\n}"
-       },
-       "starsUsers": {
-           "map": "function(doc) {\n  if(doc.rating >= 0) {\n    key = {};  \n    key[\"providerId\"] = doc.providerId;\n    key[\"object\"] = doc.object;\n    key[\"user\"] = doc.user;\n    emit(key, doc);\n  }\n}"
+       "feedback": {
+           "map": "function(doc) {\n  if(doc.element) {\n    var key = {};\n    key['providerId'] = doc.providerId;\n    key['element'] = doc.element;\n    emit(key, doc);\n  }\n}"
        }
    }
 }

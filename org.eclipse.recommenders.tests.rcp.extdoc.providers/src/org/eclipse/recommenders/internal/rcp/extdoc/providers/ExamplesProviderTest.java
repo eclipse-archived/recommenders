@@ -20,7 +20,7 @@ public final class ExamplesProviderTest {
     @Test
     public void testExamplesProvider() {
         final CodeExamplesServer server = new CodeExamplesServer(ServerUtils.getServer(),
-                ServerUtils.getUsernameListener());
+                ServerUtils.getUsernameListener(), ExtDocUtils.getResolver());
         final ExamplesProvider provider = new ExamplesProvider(server);
         provider.selectionChanged(ExtDocUtils.getSelection());
     }

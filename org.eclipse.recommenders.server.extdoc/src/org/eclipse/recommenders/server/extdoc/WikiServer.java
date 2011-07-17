@@ -12,19 +12,21 @@ package org.eclipse.recommenders.server.extdoc;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.internal.server.extdoc.AbstractCommentsServer;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.WikiEntry;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;
 
-public final class WikiServer extends AbstractCommentsServer {
+public final class WikiServer extends AbstractFeedbackServer {
 
     private static final String PROVIDER_ID = WikiEntry.class.getSimpleName();
 
     @Inject
-    public WikiServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener) {
-        super(server, usernameListener);
+    public WikiServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+            final JavaElementResolver resolver) {
+        super(server, usernameListener, resolver);
     }
 
     public String getText(final IJavaElement javaElement) {
