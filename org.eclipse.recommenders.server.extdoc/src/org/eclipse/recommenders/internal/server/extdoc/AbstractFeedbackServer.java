@@ -53,7 +53,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
                 ImmutableMap.of("providerId", providerId, "element", name.getIdentifier()),
                 new GenericType<GenericResultObjectView<UserFeedback>>() {
                 });
-        return list == null || list.isEmpty() ? UserFeedback.create(provider, name) : list.get(0);
+        return list == null || list.isEmpty() ? UserFeedback.create(provider, name.getIdentifier()) : list.get(0);
     }
 
     @Override
@@ -61,8 +61,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         final IUserFeedback feedback = getUserFeedback(javaElement, provider);
         final IRating rating = Rating.create(stars);
         feedback.addRating(rating);
-        deleteFeedback(feedback, provider);
-        server.post(feedback);
+        storeFeedback(feedback, provider);
         return rating;
     }
 
@@ -71,8 +70,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         final IUserFeedback feedback = getUserFeedback(javaElement, provider);
         final IComment comment = Comment.create(text, listener.getUsername());
         feedback.addComment(comment);
-        deleteFeedback(feedback, provider);
-        server.post(feedback);
+        storeFeedback(feedback, provider);
         return comment;
     }
 
@@ -92,12 +90,13 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         throw new IllegalArgumentException(javaElement.toString());
     }
 
-    private void deleteFeedback(final IUserFeedback feedback, final IProvider provider) {
-        if (feedback.getRevision() != null) {
+    private void storeFeedback(final IUserFeedback feedback, final IProvider provider) {
+        if (feedback.getRevision() == null) {
+            server.post(feedback);
+        } else {
             final String providerId = provider.getClass().getSimpleName();
-            server.delete("feedback",
-                    ImmutableMap.of("providerId", providerId, "element", feedback.getElement().getIdentifier()),
-                    feedback.getRevision());
+            server.put("feedback", ImmutableMap.of("providerId", providerId, "element", feedback.getElementId()),
+                    feedback.getRevision(), feedback);
         }
     }
 

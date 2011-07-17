@@ -25,7 +25,7 @@ public interface ICouchDbServer {
 
     void post(Object object);
 
-    void delete(String view, Map<String, String> key, String rev);
+    void put(String view, Map<String, String> key, String rev, Object object);
 
     <T> T getProviderContent(String providerId, String key, String value,
             GenericType<GenericResultObjectView<T>> resultType);

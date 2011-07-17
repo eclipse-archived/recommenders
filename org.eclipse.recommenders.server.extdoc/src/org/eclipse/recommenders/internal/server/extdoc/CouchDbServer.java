@@ -71,9 +71,9 @@ final class CouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public void delete(final String view, final Map<String, String> key, final String rev) {
+    public void put(final String view, final Map<String, String> key, final String rev, final Object object) {
         final String path = buildPath(view, key);
-        getClient().doDeleteRequest(path.substring(0, path.length() - 8) + "&rev=" + rev, null);
+        getClient().doPutRequest(path.substring(0, path.length() - 9) + "&rev=" + rev, object, null);
     }
 
     @Override

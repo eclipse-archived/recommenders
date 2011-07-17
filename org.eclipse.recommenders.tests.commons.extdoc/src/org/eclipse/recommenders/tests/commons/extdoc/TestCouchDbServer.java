@@ -55,7 +55,7 @@ class TestCouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public void delete(final String view, final Map<String, String> key) {
+    public void put(final String view, final Map<String, String> key, final String rev, final Object object) {
         // TODO Auto-generated method stub
 
     }

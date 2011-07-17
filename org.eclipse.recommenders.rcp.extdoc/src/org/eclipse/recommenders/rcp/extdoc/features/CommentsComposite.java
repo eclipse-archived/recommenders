@@ -50,7 +50,7 @@ public final class CommentsComposite {
         composite.provider = provider;
         composite.server = Preconditions.checkNotNull(server);
         composite.element = element;
-        composite.comments = new LinkedList<IComment>(server.getUserFeedback(null, provider).getComments());
+        composite.comments = new LinkedList<IComment>(server.getUserFeedback(element, provider).getComments());
 
         composite.createCommentsArea(parent);
         return composite;

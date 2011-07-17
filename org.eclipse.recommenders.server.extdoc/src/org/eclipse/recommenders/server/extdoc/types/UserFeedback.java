@@ -16,13 +16,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.internal.server.extdoc.RatingSummary;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
+import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -34,21 +34,30 @@ public final class UserFeedback implements IUserFeedback {
     private String rev;
 
     private String providerId;
-    private IName element;
+    private String element;
 
     private final Set<Rating> ratings = new HashSet<Rating>();
     private final List<Comment> comments = new LinkedList<Comment>();
 
-    public static UserFeedback create(final IProvider provider, final IName javaElement) {
+    public static UserFeedback create(final IProvider provider, final String element) {
         final UserFeedback feedback = new UserFeedback();
         feedback.providerId = provider.getClass().getSimpleName();
-        feedback.element = javaElement;
+        feedback.element = element;
         return feedback;
     }
 
     @Override
     public IRatingSummary getRatingSummary() {
-        return RatingSummary.create(0, 0, null);
+        int sum = 0;
+        Rating userRating = null;
+        final String userId = UUIDHelper.getUUID();
+        for (final Rating rating : ratings) {
+            sum += rating.getRating();
+            if (rating.getUserId().equals(userId)) {
+                userRating = rating;
+            }
+        }
+        return RatingSummary.create(sum, ratings.size(), userRating);
     }
 
     @Override
@@ -72,7 +81,7 @@ public final class UserFeedback implements IUserFeedback {
     }
 
     @Override
-    public IName getElement() {
+    public String getElementId() {
         return element;
     }
 
