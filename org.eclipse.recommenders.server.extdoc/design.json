@@ -1,13 +1,18 @@
 {
    "_id": "_design/providers",
-   "_rev": "16-c26bf168b42654581f47881e6ee23a75",
    "language": "javascript",
    "views": {
        "providers": {
-           "map": "function(doc) {\n  key = {};\n  key[\"providerId\"] = doc.providerId;\n  key[\"type\"] = doc.type;\n  key[\"method\"] = doc.method;\n  emit(key, doc);\n}"
+           "map": "function(doc) {\n  var key = {};\n  key['providerId'] = doc.providerId;\n  if(doc.method) {\n    key['method'] = doc.method;\n  } else {\n    key['type'] = doc.type;\n  }\n  emit(key, doc);\n}"
        },
        "feedback": {
            "map": "function(doc) {\n  if(doc.element) {\n    var key = {};\n    key['providerId'] = doc.providerId;\n    key['element'] = doc.element;\n    emit(key, doc);\n  }\n}"
+       },
+       "comments": {
+           "map": "function(doc) {\n  if(doc.comments) {\n    for(var i = 0; i < doc.comments.length; i++) {\n      var entry = {};\n      entry['date'] = doc.comments[i].date;\n      entry['text'] = doc.comments[i].text;\n      entry['username'] = doc.comments[i].username;\n      entry['providerId'] = doc.providerId;\n      entry['element'] = doc.element;\n      emit(entry.date, entry);\n    }\n  }\n}"
        }
+   },
+   "lists": {
+       "rss": "function(head, req) { var row; start({ \"headers\": { \"Content-Type\": \"text/xml\" } }); send('<?xml version=\"1.0\" encoding=\"utf-8\"?><rss version=\"2.0\"><channel><title>ExtDoc Comments</title>'); while(row = getRow()) { send('<item><title>'+row.value.providerId+': '+row.value.element+'</title><description>'+row.value.text+'</description><author>'+row.value.username+'</author><pubDate>'+row.value.date+'</pubDate></item>'); } send('</channel></rss>'); }"
    }
 }
