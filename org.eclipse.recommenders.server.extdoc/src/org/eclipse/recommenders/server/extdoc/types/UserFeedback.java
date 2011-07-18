@@ -16,7 +16,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.recommenders.internal.server.extdoc.RatingSummary;
+import org.eclipse.recommenders.internal.server.extdoc.types.Comment;
+import org.eclipse.recommenders.internal.server.extdoc.types.IServerType;
+import org.eclipse.recommenders.internal.server.extdoc.types.Rating;
+import org.eclipse.recommenders.internal.server.extdoc.types.RatingSummary;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
@@ -26,10 +29,8 @@ import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class UserFeedback implements IUserFeedback {
+public final class UserFeedback implements IUserFeedback, IServerType {
 
-    @SerializedName("_id")
-    private String id;
     @SerializedName("_rev")
     private String rev;
 
@@ -43,6 +44,7 @@ public final class UserFeedback implements IUserFeedback {
         final UserFeedback feedback = new UserFeedback();
         feedback.providerId = provider.getClass().getSimpleName();
         feedback.element = element;
+        feedback.validate();
         return feedback;
     }
 
@@ -88,6 +90,10 @@ public final class UserFeedback implements IUserFeedback {
     @Override
     public String getRevision() {
         return rev;
+    }
+
+    @Override
+    public void validate() {
     }
 
 }

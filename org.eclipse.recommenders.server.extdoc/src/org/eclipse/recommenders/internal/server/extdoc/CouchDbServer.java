@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
@@ -24,8 +25,7 @@ import org.eclipse.recommenders.commons.client.ServerErrorException;
 import org.eclipse.recommenders.commons.client.ServerUnreachableException;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.recommenders.commons.utils.names.IMethodName;
-import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
@@ -36,6 +36,9 @@ import com.google.inject.name.Named;
 import com.sun.jersey.api.client.GenericType;
 
 final class CouchDbServer implements ICouchDbServer {
+
+    private static final String S_METHOD = "method";
+    private static final String S_TYPE = "type";
 
     private static final String QUOTE = encode("\"");
     private static final String BRACEOPEN = encode("{");
@@ -54,10 +57,10 @@ final class CouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public <T> List<T> getRows(final String view, final Map<String, String> key,
+    public <T> List<T> getRows(final String view, final Map<String, String> keyParts,
             final GenericType<GenericResultObjectView<T>> resultType) {
         try {
-            return getClient().doGetRequest(buildPath(view, key), resultType).getTransformedResult();
+            return getClient().doGetRequest(buildPath(view, keyParts), resultType).getTransformedResult();
         } catch (final ServerErrorException e) {
             return null;
         } catch (final ServerUnreachableException e) {
@@ -71,34 +74,33 @@ final class CouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public void put(final String view, final Map<String, String> key, final String rev, final Object object) {
-        final String path = buildPath(view, key);
-        getClient().doPutRequest(path.substring(0, path.length() - 9) + "&rev=" + rev, object, null);
+    public void put(final String view, final Map<String, String> keyParts, final String rev, final Object object) {
+        String path = buildPath(view, keyParts);
+        path = String.format("%s&rev=%s", path.substring(0, path.length() - 9), rev);
+        getClient().doPutRequest(path, object, null);
     }
 
     @Override
-    public <T> T getProviderContent(final String providerId, final String key, final String value,
+    public <T> T getProviderContent(final String providerId, final IMember element,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        final List<T> rows = getRows("providers", ImmutableMap.of("providerId", providerId, key, value), resultType);
+        String key;
+        IName name;
+        if (element instanceof IMethod) {
+            key = S_METHOD;
+            name = resolver.toRecMethod((IMethod) element);
+        } else {
+            key = S_TYPE;
+            name = resolver.toRecType((IType) element);
+        }
+        final List<T> rows = getRows("providers", ImmutableMap.of("providerId", providerId, key, name.getIdentifier()),
+                resultType);
         return rows == null || rows.isEmpty() ? null : rows.get(0);
     }
 
-    @Override
-    public String createKey(final IMethod method) {
-        final IMethodName methodName = resolver.toRecMethod(method);
-        return methodName == null ? null : methodName.getIdentifier();
-    }
-
-    @Override
-    public String createKey(final IType type) {
-        final ITypeName typeName = resolver.toRecType(type);
-        return typeName == null ? null : typeName.getIdentifier();
-    }
-
-    private String buildPath(final String view, final Map<String, String> key) {
-        final StringBuilder path = new StringBuilder();
+    private static String buildPath(final String view, final Map<String, String> keyParts) {
+        final StringBuilder path = new StringBuilder(32);
         path.append(String.format("_design/providers/_view/%s?key=%s", view, BRACEOPEN));
-        for (final Entry<String, String> keyEntry : key.entrySet()) {
+        for (final Entry<String, String> keyEntry : keyParts.entrySet()) {
             path.append(String.format("%s%s%s:%s%s%s,", QUOTE, keyEntry.getKey(), QUOTE, QUOTE,
                     encode(keyEntry.getValue()), QUOTE));
         }

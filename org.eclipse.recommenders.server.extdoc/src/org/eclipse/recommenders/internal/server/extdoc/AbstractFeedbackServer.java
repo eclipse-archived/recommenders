@@ -12,11 +12,14 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.commons.utils.names.IName;
+import org.eclipse.recommenders.internal.server.extdoc.types.Comment;
+import org.eclipse.recommenders.internal.server.extdoc.types.Rating;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
@@ -25,8 +28,6 @@ import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.UsernamePreferenceListener;
-import org.eclipse.recommenders.server.extdoc.types.Comment;
-import org.eclipse.recommenders.server.extdoc.types.Rating;
 import org.eclipse.recommenders.server.extdoc.types.UserFeedback;
 
 import com.google.common.collect.ImmutableMap;
@@ -38,7 +39,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     private final UsernamePreferenceListener listener;
     private final JavaElementResolver resolver;
 
-    public AbstractFeedbackServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+    protected AbstractFeedbackServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
             final JavaElementResolver resolver) {
         this.server = server;
         listener = usernameListener;
@@ -48,12 +49,12 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     @Override
     public final IUserFeedback getUserFeedback(final IJavaElement javaElement, final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
-        final IName name = resolveName(javaElement);
-        final List<UserFeedback> list = server.getRows("feedback",
-                ImmutableMap.of("providerId", providerId, "element", name.getIdentifier()),
+        final String elementId = resolveNameIdentifier(javaElement);
+        final List<UserFeedback> feedbacks = server.getRows("feedback",
+                ImmutableMap.of("providerId", providerId, "element", elementId),
                 new GenericType<GenericResultObjectView<UserFeedback>>() {
                 });
-        return list == null || list.isEmpty() ? UserFeedback.create(provider, name.getIdentifier()) : list.get(0);
+        return feedbacks == null || feedbacks.isEmpty() ? UserFeedback.create(provider, elementId) : feedbacks.get(0);
     }
 
     @Override
@@ -81,11 +82,17 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         return server;
     }
 
-    private IName resolveName(final IJavaElement javaElement) {
+    private String resolveNameIdentifier(final IJavaElement javaElement) {
         if (javaElement instanceof IMethod) {
-            return resolver.toRecMethod((IMethod) javaElement);
+            return resolver.toRecMethod((IMethod) javaElement).getIdentifier();
         } else if (javaElement instanceof IType) {
-            return resolver.toRecType((IType) javaElement);
+            return resolver.toRecType((IType) javaElement).getIdentifier();
+        } else if (javaElement instanceof ILocalVariable) {
+            return resolver.toRecMethod((IMethod) javaElement.getParent()).getIdentifier() + "."
+                    + javaElement.getElementName();
+        } else if (javaElement instanceof IField) {
+            return resolver.toRecType((IType) javaElement.getParent()).getIdentifier() + "."
+                    + javaElement.getElementName();
         }
         throw new IllegalArgumentException(javaElement.toString());
     }

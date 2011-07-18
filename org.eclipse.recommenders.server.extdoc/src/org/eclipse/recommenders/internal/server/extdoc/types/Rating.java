@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc.types;
+package org.eclipse.recommenders.internal.server.extdoc.types;
 
 import java.util.Date;
 
@@ -16,9 +16,7 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
-import com.google.common.base.Objects;
-
-public final class Rating implements IServerType, IRating {
+public final class Rating implements IRating, IServerType {
 
     private Date date;
     private String user;
@@ -46,11 +44,6 @@ public final class Rating implements IServerType, IRating {
     @Override
     public void validate() {
         Checks.ensureIsTrue(rating > 0);
-    }
-
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this).addValue(user).addValue(rating).toString();
     }
 
 }

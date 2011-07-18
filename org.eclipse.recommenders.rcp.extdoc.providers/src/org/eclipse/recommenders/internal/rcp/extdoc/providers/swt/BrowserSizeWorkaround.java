@@ -94,7 +94,7 @@ public final class BrowserSizeWorkaround {
 
         private final BrowserSizeWorkaround browserSizeWorkaround;
 
-        public RescaleAction(final BrowserSizeWorkaround browserSizeWorkaround) {
+        private RescaleAction(final BrowserSizeWorkaround browserSizeWorkaround) {
             this.browserSizeWorkaround = browserSizeWorkaround;
         }
 
@@ -103,7 +103,7 @@ public final class BrowserSizeWorkaround {
             try {
                 Thread.sleep(500);
             } catch (final InterruptedException e) {
-                e.printStackTrace();
+                throw new IllegalStateException(e);
             }
             final Object result = browserSizeWorkaround.browser
                     .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");

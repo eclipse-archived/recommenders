@@ -71,7 +71,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
             return false;
         }
         final MethodPattern[] patterns = getPatternsSortedByFrequency(directive);
-        final int numberOfSubclasses = computeTotalNumberOfSubclasses(patterns);
+        final Integer numberOfSubclasses = computeTotalNumberOfSubclasses(patterns);
 
         final String text = String
                 .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
@@ -89,16 +89,12 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
 
                     for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
                         final MethodPattern pattern = patterns[i];
-                        final double patternProbability = pattern.getNumberOfObservations()
-                                / (double) numberOfSubclasses;
+                        final Integer patternProbability = (int) (pattern.getNumberOfObservations()
+                                / numberOfSubclasses.doubleValue() * 100);
                         String text2 = String
                                 .format("Pattern #%d - covers approximately %3.0f%% of the examined subclasses (%d subclasses).",
-                                        i + 1, 100 * patternProbability, pattern.getNumberOfObservations());
-                        final TextAndFeaturesLine line = new TextAndFeaturesLine(templates, text2, type, provider,
-                                server);
-                        // line.createStyleRange(0, 16, SWT.BOLD, false, false);
-                        // line.createStyleRange(40, 3, SWT.NORMAL, true,
-                        // false);
+                                        i + 1, patternProbability, pattern.getNumberOfObservations());
+                        new TextAndFeaturesLine(templates, text2, type, provider, server);
 
                         final Composite template = SwtFactory.createGridComposite(templates, 4, 12, 2, 12, 0);
                         final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
@@ -122,7 +118,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         return true;
     }
 
-    private List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(final MethodPattern pattern) {
+    private static List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(
+            final MethodPattern pattern) {
         final List<Entry<IMethodName, Double>> entries = Lists.newArrayList(pattern.getMethods().entrySet());
         Collections.sort(entries, new Comparator<Entry<IMethodName, Double>>() {
             @Override
@@ -133,7 +130,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         return entries;
     }
 
-    private MethodPattern[] getPatternsSortedByFrequency(final ClassOverridePatterns directive) {
+    private static MethodPattern[] getPatternsSortedByFrequency(final ClassOverridePatterns directive) {
         final MethodPattern[] patterns = directive.getPatterns();
         Arrays.sort(patterns, new Comparator<MethodPattern>() {
             @Override
@@ -144,7 +141,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         return patterns;
     }
 
-    private int computeTotalNumberOfSubclasses(final MethodPattern[] patterns) {
+    private static int computeTotalNumberOfSubclasses(final MethodPattern[] patterns) {
         int numberOfSubclasses = 0;
         for (final MethodPattern p : patterns) {
             numberOfSubclasses += p.getNumberOfObservations();

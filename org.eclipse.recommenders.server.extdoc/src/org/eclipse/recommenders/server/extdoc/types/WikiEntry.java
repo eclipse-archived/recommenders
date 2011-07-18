@@ -10,17 +10,11 @@
  */
 package org.eclipse.recommenders.server.extdoc.types;
 
-import com.google.gson.annotations.SerializedName;
-
 public final class WikiEntry {
-
-    @SerializedName("_id")
-    private String id;
-    @SerializedName("_rev")
-    private String rev;
 
     private final String providerId = getClass().getSimpleName();
     private String type;
+
     private String text;
 
     public static WikiEntry create(final String elementId, final String text) {

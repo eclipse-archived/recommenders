@@ -19,8 +19,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -119,6 +123,34 @@ public final class SwtFactory {
             styleRange.font = CODEFONT;
         }
         styledText.setStyleRange(styleRange);
+    }
+
+    // TODO: Use link and put together with a image into a grid.
+    public static CLabel createLink(final Composite parent, final String text, final Image image,
+            final MouseListener listener) {
+        final CLabel link = new CLabel(parent, SWT.NONE);
+        link.setText(text);
+        link.setForeground(createColor(SWT.COLOR_BLUE));
+        link.setImage(image);
+        link.addMouseListener(listener);
+        link.setCursor(new Cursor(parent.getDisplay(), SWT.CURSOR_HAND));
+        link.addMouseTrackListener(new MouseTrackListener() {
+
+            @Override
+            public void mouseHover(final MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExit(final MouseEvent e) {
+                link.setForeground(createColor(SWT.COLOR_BLUE));
+            }
+
+            @Override
+            public void mouseEnter(final MouseEvent e) {
+                link.setForeground(createColor(SWT.COLOR_DARK_BLUE));
+            }
+        });
+        return link;
     }
 
     public static SourceCodeArea createSourceCodeArea(final Composite parent, final String snippet) {

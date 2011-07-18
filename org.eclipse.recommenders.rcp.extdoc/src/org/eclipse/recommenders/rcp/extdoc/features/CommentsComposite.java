@@ -18,8 +18,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -43,6 +41,9 @@ public final class CommentsComposite {
 
     private Composite composite;
 
+    /**
+     * @wbp.parser.entryPoint
+     */
     public static CommentsComposite create(final Composite parent, final IJavaElement element,
             final IProvider provider, final IUserFeedbackServer server) {
         final CommentsComposite composite = new CommentsComposite();
@@ -59,23 +60,21 @@ public final class CommentsComposite {
     private void createCommentsArea(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
 
-        final CLabel showComments = new CLabel(composite, SWT.NONE);
-        showComments.setText("Show / Add Comments (" + comments.size() + ")");
-        showComments.setImage(commentsIcon);
-        showComments.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseUp(final MouseEvent e) {
-                displayComments();
-            }
+        SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", commentsIcon,
+                new MouseListener() {
+                    @Override
+                    public void mouseUp(final MouseEvent e) {
+                        displayComments();
+                    }
 
-            @Override
-            public void mouseDown(final MouseEvent e) {
-            }
+                    @Override
+                    public void mouseDown(final MouseEvent e) {
+                    }
 
-            @Override
-            public void mouseDoubleClick(final MouseEvent e) {
-            }
-        });
+                    @Override
+                    public void mouseDoubleClick(final MouseEvent e) {
+                    }
+                });
     }
 
     private void displayComments() {

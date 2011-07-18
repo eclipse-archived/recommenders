@@ -63,7 +63,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
         return true;
     }
 
-    private IJavaElement getJavaElement(final IJavaElement javaElement) {
+    private static IJavaElement getJavaElement(final IJavaElement javaElement) {
         if (javaElement instanceof ILocalVariable) {
             return VariableResolver.resolveTypeSignature((ILocalVariable) javaElement);
         }

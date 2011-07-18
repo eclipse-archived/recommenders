@@ -25,9 +25,6 @@ import com.sun.jersey.api.client.GenericType;
 
 public final class SubclassingServer extends AbstractFeedbackServer {
 
-    private static final String S_METHOD = "method";
-    private static final String S_TYPE = "type";
-
     @Inject
     public SubclassingServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
             final JavaElementResolver resolver) {
@@ -35,30 +32,26 @@ public final class SubclassingServer extends AbstractFeedbackServer {
     }
 
     public ClassOverrideDirectives getClassOverrideDirectives(final IType type) {
-        return getServer().getProviderContent(ClassOverrideDirectives.class.getSimpleName(), S_TYPE,
-                getServer().createKey(type), new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
+        return getServer().getProviderContent(ClassOverrideDirectives.class.getSimpleName(), type,
+                new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
                 });
     }
 
     public ClassSelfcallDirectives getClassSelfcallDirectives(final IType type) {
-        return getServer().getProviderContent(ClassSelfcallDirectives.class.getSimpleName(), S_TYPE,
-                getServer().createKey(type), new GenericType<GenericResultObjectView<ClassSelfcallDirectives>>() {
+        return getServer().getProviderContent(ClassSelfcallDirectives.class.getSimpleName(), type,
+                new GenericType<GenericResultObjectView<ClassSelfcallDirectives>>() {
                 });
     }
 
     public MethodSelfcallDirectives getMethodSelfcallDirectives(final IMethod method) {
-        final String key = getServer().createKey(method);
-        if (key == null) {
-            return null;
-        }
-        return getServer().getProviderContent(MethodSelfcallDirectives.class.getSimpleName(), S_METHOD, key,
+        return getServer().getProviderContent(MethodSelfcallDirectives.class.getSimpleName(), method,
                 new GenericType<GenericResultObjectView<MethodSelfcallDirectives>>() {
                 });
     }
 
     public ClassOverridePatterns getClassOverridePatterns(final IType type) {
-        return getServer().getProviderContent(ClassOverridePatterns.class.getSimpleName(), S_TYPE,
-                getServer().createKey(type), new GenericType<GenericResultObjectView<ClassOverridePatterns>>() {
+        return getServer().getProviderContent(ClassOverridePatterns.class.getSimpleName(), type,
+                new GenericType<GenericResultObjectView<ClassOverridePatterns>>() {
                 });
     }
 

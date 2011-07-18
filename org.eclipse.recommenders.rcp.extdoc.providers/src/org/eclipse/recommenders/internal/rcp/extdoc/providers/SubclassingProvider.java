@@ -160,7 +160,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             final int definitions) {
         final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 2, 15, 0);
         for (final Entry<IMethodName, Integer> directive : orderDirectives(directives).entrySet()) {
-            final int percent = (int) Math.round(directive.getValue() * 100.0 / definitions);
+            final int percent = (int) Math.round(directive.getValue().doubleValue() * 100.0 / definitions);
 
             SwtFactory.createSquare(directiveComposite);
             SwtFactory.createLabel(directiveComposite, getLabel(percent), true, false, SWT.COLOR_BLACK);
@@ -173,7 +173,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         }
     }
 
-    private Map<IMethodName, Integer> orderDirectives(final Map<IMethodName, Integer> directives) {
+    private static Map<IMethodName, Integer> orderDirectives(final Map<IMethodName, Integer> directives) {
         final Map<IMethodName, Integer> orderedMap = new TreeMap<IMethodName, Integer>(new Comparator<IMethodName>() {
             @Override
             public int compare(final IMethodName directive1, final IMethodName directive2) {
@@ -184,7 +184,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         return orderedMap;
     }
 
-    private String getLabel(final int percent) {
+    private static String getLabel(final int percent) {
         if (percent >= 95) {
             return "must";
         } else if (percent >= 65) {
@@ -197,7 +197,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         return "should not";
     }
 
-    private int getLength(final int number) {
+    private static int getLength(final int number) {
         return String.valueOf(number).length();
     }
 

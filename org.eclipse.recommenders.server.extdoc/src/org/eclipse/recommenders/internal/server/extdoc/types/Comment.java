@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc.types;
+package org.eclipse.recommenders.internal.server.extdoc.types;
 
 import java.util.Date;
 
@@ -16,7 +16,7 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
-public final class Comment implements IComment {
+public final class Comment implements IComment, IServerType {
 
     private Date date;
     private String user;
@@ -24,12 +24,12 @@ public final class Comment implements IComment {
     private String username;
 
     public static Comment create(final String text, final String username) {
-        Checks.ensureIsTrue(!text.isEmpty());
         final Comment comment = new Comment();
         comment.date = new Date();
         comment.text = text;
         comment.user = UUIDHelper.getUUID();
         comment.username = username;
+        comment.validate();
         return comment;
     }
 
@@ -49,13 +49,21 @@ public final class Comment implements IComment {
     }
 
     @Override
+    public void validate() {
+        Checks.ensureIsNotNull(getDate());
+        Checks.ensureIsTrue(!user.isEmpty());
+        Checks.ensureIsTrue(!getText().isEmpty());
+        Checks.ensureIsTrue(!getUsername().isEmpty());
+    }
+
+    @Override
     public int hashCode() {
         return date.hashCode() + text.hashCode();
     }
 
     @Override
     public boolean equals(final Object object) {
-        return object instanceof Comment && object.hashCode() == hashCode();
+        return this == object || object instanceof IComment && object.hashCode() == hashCode();
     }
 
 }

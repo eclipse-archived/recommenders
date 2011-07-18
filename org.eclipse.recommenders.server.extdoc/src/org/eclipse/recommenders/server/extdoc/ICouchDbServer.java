@@ -13,25 +13,19 @@ package org.eclipse.recommenders.server.extdoc;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 
 import com.sun.jersey.api.client.GenericType;
 
 public interface ICouchDbServer {
 
-    <T> List<T> getRows(String view, Map<String, String> key, GenericType<GenericResultObjectView<T>> resultType);
+    <T> List<T> getRows(String view, Map<String, String> keyParts, GenericType<GenericResultObjectView<T>> resultType);
 
     void post(Object object);
 
-    void put(String view, Map<String, String> key, String rev, Object object);
+    void put(String view, Map<String, String> keyParts, String rev, Object object);
 
-    <T> T getProviderContent(String providerId, String key, String value,
-            GenericType<GenericResultObjectView<T>> resultType);
-
-    String createKey(IType type);
-
-    String createKey(IMethod method);
+    <T> T getProviderContent(String providerId, IMember element, GenericType<GenericResultObjectView<T>> resultType);
 
 }

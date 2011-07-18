@@ -8,9 +8,9 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc.types;
+package org.eclipse.recommenders.internal.server.extdoc.types;
 
-interface IServerType {
+public interface IServerType {
 
     void validate();
 

@@ -13,16 +13,18 @@ package org.eclipse.recommenders.server.extdoc.types;
 import java.util.Map;
 
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.internal.server.extdoc.types.IServerType;
 
-public final class MethodPattern {
+public final class MethodPattern implements IServerType {
 
     private int numberOfObservations;
     private Map<IMethodName, Double> methods;
 
-    public static MethodPattern create(final int numberOfObservations, final Map<IMethodName, Double> methodGroup) {
+    public static MethodPattern create(final int numberOfObservations, final Map<IMethodName, Double> methods) {
         final MethodPattern res = new MethodPattern();
         res.numberOfObservations = numberOfObservations;
-        res.methods = methodGroup;
+        res.methods = methods;
+        res.validate();
         return res;
     }
 
@@ -32,5 +34,9 @@ public final class MethodPattern {
 
     public Map<IMethodName, Double> getMethods() {
         return methods;
+    }
+
+    @Override
+    public void validate() {
     }
 }

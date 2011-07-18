@@ -178,7 +178,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final boolean isReceiverImplicitThis() {
-        return ("".equals(getReceiverName()) || astCompletionNodeFinder.completionNode instanceof CompletionOnSingleNameReference)
+        return (getReceiverName().isEmpty() || astCompletionNodeFinder.completionNode instanceof CompletionOnSingleNameReference)
                 && getReceiverType() == null;
     }
 

@@ -31,16 +31,14 @@ public final class CodeExamplesServer extends AbstractFeedbackServer {
     }
 
     public CodeExamples getOverridenMethodCodeExamples(final IMethod method) {
-        final String key = getServer().createKey(method);
-        final CodeExamples result = getServer().getProviderContent(PROVIDERID, "method", key,
+        final CodeExamples result = getServer().getProviderContent(PROVIDERID, method,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });
         return result;
     }
 
     public CodeExamples getTypeCodeExamples(final IType type) {
-        final String key = getServer().createKey(type);
-        final CodeExamples result = getServer().getProviderContent(PROVIDERID, "type", key,
+        final CodeExamples result = getServer().getProviderContent(PROVIDERID, type,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });
         return result;

@@ -13,13 +13,16 @@ package org.eclipse.recommenders.internal.server.extdoc;
 import java.util.Collection;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.internal.server.extdoc.types.Rating;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
+import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 public final class GenericServerTest {
@@ -43,7 +46,12 @@ public final class GenericServerTest {
         server.addRating(4, element, provider);
         final IRatingSummary summary = server.getUserFeedback(element, provider).getRatingSummary();
 
-        // Assert.assertTrue(summary.getAverage() > 0);
-        // Assert.assertNotNull(summary.getUserRating());
+        Assert.assertEquals(0, summary.getAverage());
+
+        final IRating userRating = Rating.create(3);
+        summary.addUserRating(userRating);
+
+        Assert.assertEquals(3, summary.getAverage());
+        Assert.assertEquals(userRating, summary.getUserRating());
     }
 }

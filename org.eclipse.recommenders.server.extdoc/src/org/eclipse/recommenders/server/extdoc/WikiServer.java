@@ -10,12 +10,15 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
+import java.util.List;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.WikiEntry;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;
 
@@ -46,10 +49,11 @@ public final class WikiServer extends AbstractFeedbackServer {
 
     private WikiEntry getEntry(final IJavaElement javaElement) {
         final String key = getIdentifier(javaElement);
-        final WikiEntry result = getServer().getProviderContent(PROVIDER_ID, "type", key,
+        final List<WikiEntry> entries = getServer().getRows("providers",
+                ImmutableMap.of("providerId", PROVIDER_ID, "type", key),
                 new GenericType<GenericResultObjectView<WikiEntry>>() {
                 });
-        return result;
+        return entries == null || entries.isEmpty() ? null : entries.get(0);
     }
 
     private static String getIdentifier(final IJavaElement javaElement) {

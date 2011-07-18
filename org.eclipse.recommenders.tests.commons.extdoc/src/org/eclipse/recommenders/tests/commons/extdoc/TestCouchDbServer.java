@@ -14,8 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 
@@ -36,28 +35,16 @@ class TestCouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public <T> T getProviderContent(final String providerId, final String key, final String value,
+    public void put(final String view, final Map<String, String> keyParts, final String rev, final Object object) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public <T> T getProviderContent(final String providerId, final IMember element,
             final GenericType<GenericResultObjectView<T>> resultType) {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public String createKey(final IType type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String createKey(final IMethod method) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void put(final String view, final Map<String, String> key, final String rev, final Object object) {
-        // TODO Auto-generated method stub
-
     }
 
 }
