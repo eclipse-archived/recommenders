@@ -27,7 +27,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.eclipse.recommenders.commons.utils.VersionRange;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelIndex;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchive;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
@@ -35,26 +34,17 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class ModelStoreInitializer {
+public class ModelStoreCleanup {
 
     private final File modelArchiveLocation;
-    private final CallsModelIndex modelIndex;
 
     @Inject
-    public ModelStoreInitializer(@Named(CALLS_STORE_LOCATION) final File modelArchiveLocation,
-            final CallsModelIndex modelIndex) {
+    public ModelStoreCleanup(@Named(CALLS_STORE_LOCATION) final File modelArchiveLocation) {
         this.modelArchiveLocation = modelArchiveLocation;
-        this.modelIndex = modelIndex;
     }
 
     public void initializeModelIndex() {
-        final List<ModelArchive> archives = loadArchives();
-        final List<ModelArchive> deprecatedArchives = findDeprecatedArchives(archives);
-        archives.removeAll(deprecatedArchives);
-
-        for (final ModelArchive modelArchive : archives) {
-            modelIndex.register(modelArchive);
-        }
+        final List<ModelArchive> deprecatedArchives = findDeprecatedArchives(loadArchives());
         deleteArchives(deprecatedArchives);
     }
 

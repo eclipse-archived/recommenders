@@ -21,8 +21,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.internal.rcp.analysis.IRecommendersProjectLifeCycleListener;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelIndex;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.FragmentIndex;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacadeFactory;
@@ -57,15 +56,15 @@ public class CallsCompletionModule extends AbstractModule {
     }
 
     private void configureArchiveModelStore() {
-        bind(CallsModelIndex.class).in(Scopes.SINGLETON);
         bind(IModelArchiveStore.class).to(ModelArchiveStore.class).in(Scopes.SINGLETON);
 
         final IPath stateLocation = Platform.getStateLocation(FrameworkUtil.getBundle(getClass()));
-        bind(File.class).annotatedWith(Names.named(CALLS_STORE_LOCATION)).toInstance(stateLocation.toFile());
+        bind(File.class).annotatedWith(Names.named(CALLS_STORE_LOCATION)).toInstance(
+                new File(stateLocation.toFile(), "models"));
 
-        bind(File.class).annotatedWith(FragmentIndexFile.class).toInstance(
-                new File(stateLocation.toFile(), "fragmentsIndex.json"));
-        bind(FragmentIndex.class).in(Scopes.SINGLETON);
+        bind(File.class).annotatedWith(ClasspathDependencyStoreLocation.class).toInstance(
+                new File(stateLocation.toFile(), "dependencyIndex"));
+        bind(ClasspathDependencyStore.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(ProjectModelFacadeFactory.class));
 
         bind(ClientConfiguration.class).annotatedWith(LfmServer.class).toInstance(
@@ -81,7 +80,7 @@ public class CallsCompletionModule extends AbstractModule {
     @BindingAnnotation
     @Target(PARAMETER)
     @Retention(RUNTIME)
-    public static @interface FragmentIndexFile {
+    public static @interface ClasspathDependencyStoreLocation {
     }
 
     @BindingAnnotation

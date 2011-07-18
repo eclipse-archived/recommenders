@@ -24,7 +24,7 @@ import org.eclipse.recommenders.commons.lfm.Manifest;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ModelStoreInitializer;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ModelStoreCleanup;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelIndex;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchive;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class ModelStoreInitializerJobTest {
 
     @Test
     public void testRegisterArchives() throws CoreException {
-        final ModelStoreInitializer sut = createSut();
+        final ModelStoreCleanup sut = createSut();
         final ModelArchive archive = createAndAddArchive("org.eclipse.test", range_i36_e37, 1);
         sut.initializeModelIndex();
 
@@ -50,7 +50,7 @@ public class ModelStoreInitializerJobTest {
 
     @Test
     public void testDetectDeprecatedArchives() {
-        final ModelStoreInitializer sut = createSut();
+        final ModelStoreCleanup sut = createSut();
         final ModelArchive oldArchive = createAndAddArchive("org.eclipse.test", range_i36_e37, 1);
         final ModelArchive newArchive = createAndAddArchive("org.eclipse.test", range_i36_e37, 10);
         sut.initializeModelIndex();
@@ -72,11 +72,11 @@ public class ModelStoreInitializerJobTest {
         return archive;
     }
 
-    private ModelStoreInitializer createSut() {
+    private ModelStoreCleanup createSut() {
         return new MockInitializer();
     }
 
-    private class MockInitializer extends ModelStoreInitializer {
+    private class MockInitializer extends ModelStoreCleanup {
 
         public MockInitializer() {
             super(new File(""), index);

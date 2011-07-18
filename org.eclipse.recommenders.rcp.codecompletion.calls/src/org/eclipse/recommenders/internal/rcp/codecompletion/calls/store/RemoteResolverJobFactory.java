@@ -14,5 +14,5 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 
 public interface RemoteResolverJobFactory {
 
-    RemoteLibraryIdentifierResolverJob create(IPackageFragmentRoot packageRoot, FragmentIndex fragmentIndex);
+    SearchManifestJob create(IPackageFragmentRoot packageRoot);
 }

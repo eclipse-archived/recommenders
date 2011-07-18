@@ -10,37 +10,51 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import java.io.File;
+import java.util.Set;
+
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
 
+import com.google.common.collect.Sets;
+
+@Singleton
 public class FragmentResolver {
 
-    private final FragmentIndex fragmentIndex;
-    private final RemoteResolverJobFactory jobfactory;
+    private final Set<File> inProgress = Sets.newHashSet();
+    private final ClasspathDependencyStore dependencyStore;
+    private final RemoteResolverJobFactory jobFactory;
 
     @Inject
-    public FragmentResolver(final FragmentIndex fragmentIndex, final RemoteResolverJobFactory jobfactory) {
-        this.fragmentIndex = fragmentIndex;
-        this.jobfactory = jobfactory;
+    public FragmentResolver(final ClasspathDependencyStore dependencyStore, final RemoteResolverJobFactory jobFactory) {
+        this.dependencyStore = dependencyStore;
+        this.jobFactory = jobFactory;
     }
 
     public void resolve(final IPackageFragmentRoot[] packageFragmentRoots) {
         for (final IPackageFragmentRoot packageRoot : packageFragmentRoots) {
-            if (!fragmentIndex.contains(packageRoot)) {
-                fragmentIndex.put(packageRoot, LibraryIdentifier.UNKNOWN);
-
+            final File file = getLocation(packageRoot);
+            if (inProgress.contains(file)) {
+                continue;
+            }
+            if (!dependencyStore.containsClasspathDependencyInfo(packageRoot)
+                    || !dependencyStore.containsManifest(packageRoot)) {
+                inProgress.add(file);
                 scheduleJob(packageRoot);
             }
         }
     }
 
     private void scheduleJob(final IPackageFragmentRoot packageRoot) {
-        // new LocalLibraryIdentifierResolverJob(packageRoot,
-        // fragmentIndex).schedule();
-        final RemoteLibraryIdentifierResolverJob job = jobfactory.create(packageRoot, fragmentIndex);
+        final SearchManifestJob job = jobFactory.create(packageRoot);
         job.schedule();
+    }
+
+    private File getLocation(final IPackageFragmentRoot packageRoot) {
+        final File location = packageRoot.getPath().toFile();
+        return location;
     }
 
 }

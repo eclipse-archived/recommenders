@@ -10,17 +10,10 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.List;
-
-import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
-import org.eclipse.recommenders.commons.lfm.Manifest;
 
 public interface IModelArchiveStore {
 
-    Manifest getManifest(LibraryIdentifier libraryIdentifier);
-
-    List<Manifest> getAllManifests();
-
-    boolean offer(ModelArchive archive) throws IOException;
+    void register(File archive) throws IOException;
 }

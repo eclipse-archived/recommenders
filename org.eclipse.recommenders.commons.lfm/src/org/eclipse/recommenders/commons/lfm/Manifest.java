@@ -1,4 +1,5 @@
 package org.eclipse.recommenders.commons.lfm;
+
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
@@ -10,7 +11,7 @@ package org.eclipse.recommenders.commons.lfm;
  *    Johannes Lerch - initial API and implementation.
  */
 
-
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -48,5 +49,12 @@ public class Manifest {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    // TODO: Move somewhere else
+    public String getIdentifier() {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmm");
+        final String time = dateFormat.format(getTimestamp());
+        return getName() + "_" + getVersionRange() + "_" + time;
     }
 }

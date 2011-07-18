@@ -14,70 +14,64 @@ import static org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCo
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
 import org.eclipse.recommenders.commons.lfm.Manifest;
+import org.eclipse.recommenders.commons.utils.Checks;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class ModelArchiveStore implements IModelArchiveStore {
 
-    private final CallsModelIndex index;
     private final File modelArchivesLocation;
+    private final Map<Manifest, IModelArchive> manifest2archive = Maps.newConcurrentMap();
 
     @Inject
-    public ModelArchiveStore(final CallsModelIndex index, @Named(CALLS_STORE_LOCATION) final File modelArchivesLocation) {
-        this.index = index;
+    public ModelArchiveStore(@Named(CALLS_STORE_LOCATION) final File modelArchivesLocation) {
         this.modelArchivesLocation = modelArchivesLocation;
+        modelArchivesLocation.mkdirs();
     }
 
-    @Override
-    public Manifest getManifest(final LibraryIdentifier libraryIdentifier) {
-        return index.findMatchingModelArchive(libraryIdentifier).getManifest();
-    }
-
-    @Override
-    public List<Manifest> getAllManifests() {
-        final List<IModelArchive> archives = index.getArchives();
-        final List<Manifest> manifests = Lists.newLinkedList();
-        for (final IModelArchive archive : archives) {
-            manifests.add(archive.getManifest());
+    public IModelArchive getModelArchive(final Manifest manifest) {
+        IModelArchive archive = manifest2archive.get(manifest);
+        if (archive == null) {
+            final File file = getModelFile(manifest);
+            if (file.exists()) {
+                archive = new ModelArchive(file);
+            } else {
+                archive = IModelArchive.NULL;
+            }
+            manifest2archive.put(manifest, archive);
         }
-        return manifests;
+        return archive;
+    }
+
+    private File getModelFile(final Manifest manifest) {
+        return new File(modelArchivesLocation, manifest.getIdentifier() + ".zip").getAbsoluteFile();
     }
 
     @Override
-    public boolean offer(final ModelArchive archive) throws IOException {
+    public void register(final File file) throws IOException {
+        final ModelArchive archive = new ModelArchive(file);
         final Manifest manifest = archive.getManifest();
-        final File destination = new File(modelArchivesLocation, createFilename(manifest));
-        if (destination.exists()) {
-            return false;
-        }
-
+        final File destination = getModelFile(manifest);
+        Checks.ensureIsFalse(destination.exists(), "Offered archive already exists: '%s'", destination);
         moveArchive(archive, destination);
-        index.register(archive);
-        return true;
+        manifest2archive.put(manifest, archive);
     }
 
     private void moveArchive(final ModelArchive archive, final File destination) throws IOException {
         archive.close();
         final File source = archive.getFile();
-        final boolean successfulyMoved = source.renameTo(destination);
-        if (!successfulyMoved) {
+        final boolean successfullyMoved = source.renameTo(destination);
+        if (!successfullyMoved) {
             throw new IOException(String.format("Unable to move ModelArchive file from '%s' to '%s'",
                     source.getAbsolutePath(), destination.getAbsolutePath()));
         }
+        archive.setFile(destination);
         archive.open();
-    }
-
-    private String createFilename(final Manifest manifest) {
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmm");
-        final String time = dateFormat.format(manifest.getTimestamp());
-        return manifest.getName() + "_" + manifest.getVersionRange() + "_" + time + ".zip";
     }
 }

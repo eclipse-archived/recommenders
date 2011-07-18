@@ -45,7 +45,7 @@ public class ModelArchiveStoreTest {
         final File file = mockFile();
         final ModelArchive archive = mockArchive(file);
         // exercise:
-        final boolean offerSuccessful = sut.offer(archive);
+        final boolean offerSuccessful = sut.register(archive);
         // verify:
         assertTrue(offerSuccessful);
         final InOrder inOrder = inOrder(archive, file, index);

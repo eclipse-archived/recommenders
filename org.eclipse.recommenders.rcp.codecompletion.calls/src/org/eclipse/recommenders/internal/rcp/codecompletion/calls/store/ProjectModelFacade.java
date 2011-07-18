@@ -29,7 +29,7 @@ import org.eclipse.jdt.internal.compiler.env.AccessRestriction;
 import org.eclipse.jdt.internal.core.DefaultWorkingCopyOwner;
 import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.SearchableEnvironment;
-import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
+import org.eclipse.recommenders.commons.lfm.Manifest;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Throws;
@@ -43,18 +43,18 @@ import com.google.inject.assistedinject.Assisted;
 
 public class ProjectModelFacade implements IElementChangedListener {
 
-    private final CallsModelIndex modelIndex;
     private final IJavaProject project;
     private IPackageFragmentRoot[] packageFragmentRoots;
-    private final FragmentIndex fragmentIndex;
     private final FragmentResolver fragmentResolver;
+    private final ClasspathDependencyStore dependencyStore;
+    private final ModelArchiveStore archiveStore;
 
     @Inject
-    public ProjectModelFacade(final CallsModelIndex modelIndex, final FragmentIndex fragmentIndex,
-            final FragmentResolver fragmentResolver, @Assisted final IJavaProject project) {
-        this.modelIndex = modelIndex;
-        this.fragmentIndex = fragmentIndex;
+    public ProjectModelFacade(final ModelArchiveStore archiveStore, final FragmentResolver fragmentResolver,
+            final ClasspathDependencyStore dependencyStore, @Assisted final IJavaProject project) {
+        this.archiveStore = archiveStore;
         this.fragmentResolver = fragmentResolver;
+        this.dependencyStore = dependencyStore;
         this.project = project;
         JavaCore.addElementChangedListener(this);
         readClasspathDependencies();
@@ -88,9 +88,16 @@ public class ProjectModelFacade implements IElementChangedListener {
                 return ModelArchive.NULL;
             }
             final IPackageFragmentRoot packageFragmentRoot = getPackageRoot(type);
-            final LibraryIdentifier libraryIdentifier = fragmentIndex.getLibraryIdentifier(packageFragmentRoot);
-            final IModelArchive archive = modelIndex.findModelArchive(libraryIdentifier);
-            return archive;
+            if (dependencyStore.containsManifest(packageFragmentRoot)) {
+                final Manifest manifest = dependencyStore.getManifest(packageFragmentRoot);
+                final IModelArchive archive = archiveStore.getModelArchive(manifest);
+                if (archive == IModelArchive.NULL) {
+                    dependencyStore.invalidateManifest(packageFragmentRoot);
+                }
+                return archive;
+            } else {
+                return IModelArchive.NULL;
+            }
         } catch (final JavaModelException e) {
             throw Throws.throwUnhandledException(e, "Unable to load model for type name: %s", name);
         }

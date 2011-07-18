@@ -30,8 +30,8 @@ public class ModelStoreInitializerJob extends WorkspaceJob {
     public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
         monitor.beginTask("Indexing available recommender models...", 1);
         try {
-            final ModelStoreInitializer initializer = InjectionService.getInstance().getInjector()
-                    .getInstance(ModelStoreInitializer.class);
+            final ModelStoreCleanup initializer = InjectionService.getInstance().getInjector()
+                    .getInstance(ModelStoreCleanup.class);
             initializer.initializeModelIndex();
         } finally {
             monitor.done();

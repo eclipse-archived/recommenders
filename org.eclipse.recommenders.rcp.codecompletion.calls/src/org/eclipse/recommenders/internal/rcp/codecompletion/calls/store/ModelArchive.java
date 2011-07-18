@@ -33,7 +33,7 @@ public class ModelArchive implements IModelArchive {
     private final BinarySmileCallsNetLoader loader;
     private ZipFile zipFile;
     private Manifest manifest;
-    private final File file;
+    private File file;
 
     private final GenericKeyedObjectPool pool = createPool();
 
@@ -121,6 +121,10 @@ public class ModelArchive implements IModelArchive {
         return file;
     }
 
+    public void setFile(final File file) {
+        this.file = file;
+    }
+
     private class CallsModelPoolFactory implements KeyedPoolableObjectFactory {
         @Override
         public boolean validateObject(final Object arg0, final Object arg1) {
@@ -145,4 +149,5 @@ public class ModelArchive implements IModelArchive {
             ((IObjectMethodCallsNet) callsNet).clearEvidence();
         }
     }
+
 }

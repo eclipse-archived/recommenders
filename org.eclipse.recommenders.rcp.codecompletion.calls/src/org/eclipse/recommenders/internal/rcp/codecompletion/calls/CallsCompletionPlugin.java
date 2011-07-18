@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 
 import org.eclipse.recommenders.commons.injection.InjectionService;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.FragmentIndex;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -34,13 +34,13 @@ public class CallsCompletionPlugin extends AbstractUIPlugin {
     @Override
     public void stop(final BundleContext context) throws Exception {
         plugin = null;
-        storeFragmentIndex();
+        storeDependencyInfo();
         super.stop(context);
     }
 
-    private void storeFragmentIndex() {
+    private void storeDependencyInfo() {
         final Injector injector = InjectionService.getInstance().getInjector();
-        final FragmentIndex fragmentIndex = injector.getInstance(FragmentIndex.class);
-        fragmentIndex.store();
+        final ClasspathDependencyStore dependencyStore = injector.getInstance(ClasspathDependencyStore.class);
+        dependencyStore.store();
     }
 }

@@ -50,7 +50,7 @@ public class ArchiveDetailsExtractor {
         jarIdExtractors.add(new FilenameJarIdExtractor());
     }
 
-    private String createFingerprint() {
+    public String createFingerprint() {
         if (lazyFingerprint == null) {
             lazyFingerprint = Fingerprints.sha1(file);
         }
