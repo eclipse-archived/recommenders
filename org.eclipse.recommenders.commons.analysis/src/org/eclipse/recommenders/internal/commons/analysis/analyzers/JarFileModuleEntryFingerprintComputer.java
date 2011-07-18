@@ -38,7 +38,7 @@ public class JarFileModuleEntryFingerprintComputer implements IDependencyFingerp
         final File f = new File(jarFileEntry.getJarFile().getName());
         String fingerprint = fingerprints.get(f);
         if (fingerprint == null) {
-            fingerprint = Fingerprints.sha1(jarFileEntry.getInputStream());
+            fingerprint = Fingerprints.sha1(f);
             fingerprints.put(f, fingerprint);
         }
         return fingerprint;

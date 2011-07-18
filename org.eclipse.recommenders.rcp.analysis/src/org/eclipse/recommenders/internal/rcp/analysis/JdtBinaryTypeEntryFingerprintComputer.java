@@ -48,7 +48,7 @@ public class JdtBinaryTypeEntryFingerprintComputer implements IDependencyFingerp
         final File f = entry.getJarFile();
         String fingerprint = fingerprints.get(f);
         if (fingerprint == null) {
-            fingerprint = Fingerprints.sha1(entry.getInputStream());
+            fingerprint = Fingerprints.sha1(f);
             fingerprints.put(f, fingerprint);
         }
         return fingerprint;
