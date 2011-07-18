@@ -147,7 +147,10 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
         context = ContextFactory.setNullVariableContext(selection);
         final Set<IMethodName> invokedMethods = ImmutableSet.of(elementResolver.toRecMethod(method));
-        return displayProposalsForType(method.getDeclaringType(), invokedMethods, method);
+        final ITypeName receiverType = context.getReceiverType();
+        return displayProposalsForType(
+                receiverType == null ? method.getDeclaringType() : elementResolver.toJdtType(receiverType),
+                invokedMethods, method);
     }
 
     @Override

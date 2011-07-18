@@ -39,6 +39,7 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         titleLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
         titleLabel.setImage(getIcon());
         titleLabel.setText(getProviderFullName());
+        titleLabel.setLeftMargin(0);
     }
 
     protected abstract Control createContentControl(Composite parent);

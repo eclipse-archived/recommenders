@@ -46,20 +46,19 @@ public final class CommentsComposite {
      */
     public static CommentsComposite create(final Composite parent, final IJavaElement element,
             final IProvider provider, final IUserFeedbackServer server) {
-        final CommentsComposite composite = new CommentsComposite();
+        final CommentsComposite comments = new CommentsComposite();
 
-        composite.provider = provider;
-        composite.server = Preconditions.checkNotNull(server);
-        composite.element = element;
-        composite.comments = new LinkedList<IComment>(server.getUserFeedback(element, provider).getComments());
+        comments.provider = provider;
+        comments.server = Preconditions.checkNotNull(server);
+        comments.element = element;
+        comments.comments = new LinkedList<IComment>(server.getUserFeedback(element, provider).getComments());
 
-        composite.createCommentsArea(parent);
-        return composite;
+        comments.composite = SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
+        comments.createCommentsArea();
+        return comments;
     }
 
-    private void createCommentsArea(final Composite parent) {
-        composite = SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
-
+    private void createCommentsArea() {
         SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", commentsIcon,
                 new MouseListener() {
                     @Override
@@ -78,9 +77,7 @@ public final class CommentsComposite {
     }
 
     private void displayComments() {
-        for (final Control child : composite.getChildren()) {
-            child.dispose();
-        }
+        disposeChildren();
 
         for (final IComment comment : comments) {
             final String headLine = String
@@ -90,20 +87,28 @@ public final class CommentsComposite {
         }
 
         displayAddComment();
-        composite.layout(true);
-        if (composite.getParent().getParent() != null) {
-            composite.getParent().getParent().getParent().layout(true);
-        }
+        layout();
     }
 
     private void displayAddComment() {
         SwtFactory.createLabel(composite, "");
         final Text text = SwtFactory.createText(composite, "", 45, 0);
 
-        SwtFactory.createButton(composite, "Add Comment", new SelectionListener() {
+        final Composite buttons = SwtFactory.createGridComposite(composite, 2, 5, 0, 0, 0);
+        SwtFactory.createButton(buttons, "Add Comment", new SelectionListener() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 addComment(text.getText());
+            }
+
+            @Override
+            public void widgetDefaultSelected(final SelectionEvent e) {
+            }
+        });
+        SwtFactory.createButton(buttons, "Hide Comments", new SelectionListener() {
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                hideComments();
             }
 
             @Override
@@ -116,5 +121,24 @@ public final class CommentsComposite {
         final IComment comment = server.addComment(text, element, provider);
         comments.add(comment);
         displayComments();
+    }
+
+    private void hideComments() {
+        disposeChildren();
+        createCommentsArea();
+        layout();
+    }
+
+    private void disposeChildren() {
+        for (final Control child : composite.getChildren()) {
+            child.dispose();
+        }
+    }
+
+    private void layout() {
+        composite.layout(true);
+        if (composite.getParent().getParent() != null) {
+            composite.getParent().getParent().getParent().layout(true);
+        }
     }
 }
