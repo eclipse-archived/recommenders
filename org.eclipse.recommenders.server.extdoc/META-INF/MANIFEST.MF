@@ -14,16 +14,20 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.commons.utils.gson,
  org.eclipse.recommenders.commons.client,
  org.eclipse.recommenders.rcp.extdoc,
- org.eclipse.recommenders.rcp.utils
+ org.eclipse.recommenders.rcp.utils,
+ org.eclipse.core.runtime
 Export-Package: org.eclipse.recommenders.internal.server.extdoc;x-internal:=true,
+ org.eclipse.recommenders.internal.server.extdoc.types;x-internal:=true,
  org.eclipse.recommenders.server.extdoc;
-  uses:="org.eclipse.jface.preference,
+  uses:="org.eclipse.recommenders.rcp.utils,
+   org.eclipse.jface.preference,
    org.eclipse.recommenders.server.extdoc.types,
    org.eclipse.jdt.core,
    org.eclipse.jface.util,
    com.sun.jersey.api.client,
    org.eclipse.recommenders.internal.server.extdoc",
- org.eclipse.recommenders.server.extdoc.types;uses:="org.eclipse.recommenders.rcp.extdoc.features,org.eclipse.recommenders.rcp.extdoc,org.eclipse.recommenders.commons.utils.names"
-Bundle-ClassPath: .
-Import-Package: org.eclipse.core.runtime;version="3.4.0",
- org.eclipse.recommenders.rcp.extdoc.features
+ org.eclipse.recommenders.server.extdoc.types;
+  uses:="org.eclipse.recommenders.rcp.extdoc.features,
+   org.eclipse.recommenders.internal.server.extdoc.types,
+   org.eclipse.recommenders.rcp.extdoc,
+   org.eclipse.recommenders.commons.utils.names"

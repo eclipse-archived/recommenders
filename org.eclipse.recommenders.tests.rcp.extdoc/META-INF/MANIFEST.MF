@@ -9,7 +9,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.ui,
  org.junit4;bundle-version="4.8.1",
  org.eclipse.recommenders.tests.commons.extdoc,
- org.eclipse.recommenders.server.extdoc,
  org.mockito
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.swt;x-internal:=true,
