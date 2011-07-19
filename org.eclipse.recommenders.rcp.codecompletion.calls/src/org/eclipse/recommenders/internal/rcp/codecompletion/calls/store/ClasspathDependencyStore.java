@@ -69,7 +69,7 @@ public class ClasspathDependencyStore {
 
     public boolean containsClasspathDependencyInfo(final IPackageFragmentRoot packageRoot) {
         final File file = getLocation(packageRoot);
-        final ClasspathDependencyInformation dependencyInformation = resource2dependencyInfo.get(packageRoot);
+        final ClasspathDependencyInformation dependencyInformation = resource2dependencyInfo.get(file);
         if (dependencyInformation == null) {
             return false;
         }

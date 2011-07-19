@@ -54,7 +54,7 @@ public class Manifest {
     // TODO: Move somewhere else
     public String getIdentifier() {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmm");
-        final String time = dateFormat.format(getTimestamp());
+        final String time = getTimestamp() == null ? "" : dateFormat.format(getTimestamp());
         return getName() + "_" + getVersionRange() + "_" + time;
     }
 }
