@@ -19,7 +19,6 @@ import org.eclipse.recommenders.internal.commons.analysis.analyzers.ConstructorS
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.DeclaredFieldsClassAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.DeclaredInterfacesClassAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.DeclaredSuperclassClassAnalyzer;
-import org.eclipse.recommenders.internal.commons.analysis.analyzers.FingerprintCompilationUnitFinalizer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.FirstDeclarationMethodAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICallGraphAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IClassAnalyzer;
@@ -27,7 +26,7 @@ import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilation
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitFinalizer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IDependencyFingerprintComputer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IMethodAnalyzer;
-import org.eclipse.recommenders.internal.commons.analysis.analyzers.IdCompilationUnitFinalizer;
+import org.eclipse.recommenders.internal.commons.analysis.analyzers.IdFingerprintCompilationUnitFinalizer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.JavaLangInstanceKeysRemoverCompilationUnitFinalizer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.LineNumberMethodAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.LocalNamesCollectingCallGraphAnalyzer;
@@ -133,10 +132,8 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
         binder.addBinding().to(WalaDefaultInstanceKeysRemoverCompilationUnitFinalizer.class).in(Singleton.class);
         binder.addBinding().to(ThisObjectInstanceKeyCompilationUnitFinalizer.class).in(Singleton.class);
 
-        binder.addBinding().to(FingerprintCompilationUnitFinalizer.class).in(Singleton.class);
+        binder.addBinding().to(IdFingerprintCompilationUnitFinalizer.class).in(Singleton.class);
         bind(IDependencyFingerprintComputer.class).to(JdtBinaryTypeEntryFingerprintComputer.class).in(Singleton.class);
-
-        binder.addBinding().to(IdCompilationUnitFinalizer.class).in(Singleton.class);
     }
 
     private void bindClasspathStore() {

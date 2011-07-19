@@ -31,12 +31,12 @@ import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.types.TypeReference;
 
-public class FingerprintCompilationUnitFinalizer implements ICompilationUnitFinalizer {
+public class IdFingerprintCompilationUnitFinalizer implements ICompilationUnitFinalizer {
     private final Map<IClass, String/* fingerprint */> map = new MapMaker().softKeys().makeMap();
     private final IDependencyFingerprintComputer fingerprintComputer;
 
     @Inject
-    public FingerprintCompilationUnitFinalizer(final IDependencyFingerprintComputer fingerprintComputer) {
+    public IdFingerprintCompilationUnitFinalizer(final IDependencyFingerprintComputer fingerprintComputer) {
         this.fingerprintComputer = fingerprintComputer;
     }
 
@@ -57,7 +57,7 @@ public class FingerprintCompilationUnitFinalizer implements ICompilationUnitFina
     }
 
     private void setCompilationUnitFingerprint(final CompilationUnit compilationUnit, final IClass exampleClass) {
-        compilationUnit.fingerprint = fingerprint(exampleClass);
+        compilationUnit.id = fingerprint(exampleClass);
     }
 
     private Set<ITypeName> findAllUsedTypes(final CompilationUnit compilationUnit) {

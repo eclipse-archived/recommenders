@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.commons.analysis.analyzers.modules;
 
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitFinalizer;
-import org.eclipse.recommenders.internal.commons.analysis.analyzers.FingerprintCompilationUnitFinalizer;
+import org.eclipse.recommenders.internal.commons.analysis.analyzers.IdFingerprintCompilationUnitFinalizer;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
@@ -22,6 +22,6 @@ public class FingerprintCompilationUnitFinalizerPluginModule extends AbstractMod
     public void configure() {
         final Multibinder<ICompilationUnitFinalizer> binder = Multibinder.newSetBinder(binder(),
                 ICompilationUnitFinalizer.class);
-        binder.addBinding().to(FingerprintCompilationUnitFinalizer.class).in(Singleton.class);
+        binder.addBinding().to(IdFingerprintCompilationUnitFinalizer.class).in(Singleton.class);
     }
 }

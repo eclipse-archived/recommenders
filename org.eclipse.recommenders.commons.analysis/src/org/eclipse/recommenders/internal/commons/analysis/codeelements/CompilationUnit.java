@@ -75,8 +75,6 @@ public class CompilationUnit implements ICodeElement {
 
     public Date analysedOn = new Date();
 
-    public String fingerprint;
-
     public String name;
 
     public IName getName() {
