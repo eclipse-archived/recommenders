@@ -117,7 +117,7 @@ public final class CommentsComposite {
         });
     }
 
-    private void addComment(final String text) {
+    void addComment(final String text) {
         final IComment comment = server.addComment(text, element, provider);
         comments.add(comment);
         displayComments();

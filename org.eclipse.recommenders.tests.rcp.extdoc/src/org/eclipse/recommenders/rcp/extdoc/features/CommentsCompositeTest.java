@@ -16,10 +16,12 @@ public final class CommentsCompositeTest {
 
     @Test
     public void testCommentsComposite() {
-        // final CommentsComposite composite =
-        // CommentsComposite.create(ExtDocUtils.getComposite(), new
-        // Object(),ExtDocUtils.getTestProvider(),
-        // ServerUtils.getGenericServer());
-        // composite.addComment("Test");
+        /*
+         * final IJavaElement element = TestUtils.getDefaultType(); final
+         * CommentsComposite composite =
+         * CommentsComposite.create(ExtDocUtils.getShell(), element,
+         * ExtDocUtils.getTestProvider(), ServerUtils.getGenericServer());
+         * composite.addComment("Test");
+         */
     }
 }

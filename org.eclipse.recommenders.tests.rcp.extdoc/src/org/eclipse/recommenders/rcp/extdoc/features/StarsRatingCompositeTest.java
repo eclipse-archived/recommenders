@@ -12,19 +12,23 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
 
 public final class StarsRatingCompositeTest {
 
     @Test
     public void testCreate() {
-        // final Shell shell = RcpUtils.getShell();
+        final Shell shell = ExtDocUtils.getShell();
         final IProvider provider = ExtDocUtils.getTestProvider();
 
-        // provider.createControl(shell, null);
+        provider.createControl(shell, null);
 
-        // final StarsRatingComposite composite =
-        // StarsRatingComposite.create(shell, null, provider, new TestServer());
-        // composite.addRating(4);
+        /*
+         * final GenericServer server = ServerUtils.getGenericServer(); final
+         * StarsRatingComposite composite = new StarsRatingComposite(shell,
+         * null, provider, server); final IRatingSummary summary =
+         * Mockito.mock(IRatingSummary.class); composite.addRating(4, summary);
+         */
     }
 }

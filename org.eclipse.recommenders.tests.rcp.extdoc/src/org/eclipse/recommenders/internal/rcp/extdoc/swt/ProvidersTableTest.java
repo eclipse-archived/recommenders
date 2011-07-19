@@ -10,23 +10,25 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
+import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
 import org.junit.Test;
 
 public final class ProvidersTableTest {
 
     @Test
     public void testExtDocView() {
-        // final ProvidersTable table = new
-        // ProvidersTable(ExtDocUtils.getComposite(), SWT.NONE, new
-        // ProviderStore());
+        final ProvidersTable table = new ProvidersTable(ExtDocUtils.getShell(), new ProviderStore());
 
-        // final Composite control = new Composite(ExtDocUtils.getComposite(),
-        // SWT.NONE);
-        // control.setLayoutData(new GridData());
-        // control.setData(ExtDocUtils.getTestProvider());
-        // table.addProvider(control, "Test", null, true);
+        final Composite control = new Composite(ExtDocUtils.getShell(), SWT.NONE);
+        control.setLayoutData(new GridData());
+        control.setData(ExtDocUtils.getTestProvider());
+        table.addProvider(control, "Test", null, true);
 
-        // table.setContext(ExtDocUtils.getSelection());
+        table.setContext(ExtDocUtils.getSelection());
     }
 
 }

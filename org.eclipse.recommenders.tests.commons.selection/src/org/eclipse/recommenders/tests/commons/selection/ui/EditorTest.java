@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import junit.framework.Assert;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.internal.core.LocalVariable;
@@ -29,14 +31,12 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.recommenders.commons.internal.selection.SelectionPlugin;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEclipseEditor;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import junit.framework.Assert;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
 @RunWith(SWTBotJunit4ClassRunner.class)
@@ -94,13 +94,19 @@ public final class EditorTest extends AbstractUiTest {
         SelectionPlugin.triggerUpdate(new TextSelection(offset + index, 0));
         final IJavaElementSelection selection = getLastSelection();
         final IJavaElement javaElement = selection.getJavaElement();
+        final JavaElementLocation location = selection.getElementLocation();
 
         final Class expectedType = TYPES.get(parts[0]);
-        Assert.assertEquals(annotation, expectedType, javaElement == null ? null : javaElement.getClass());
-        Assert.assertEquals(annotation, parts[1], selection.getElementLocation().name());
-        Assert.assertEquals(annotation, parts[2],
-                ASTNode.nodeClassForType(selection.getAstNode().getParent().getNodeType()).getSimpleName());
+        final String expectedLocation = parts[1];
+        final String expectedAstParent = parts[2];
 
+        Assert.assertEquals(annotation, expectedType, javaElement == null ? null : javaElement.getClass());
+        Assert.assertEquals(annotation, expectedLocation, location.getDisplayName());
+        Assert.assertEquals(annotation, expectedAstParent,
+                ASTNode.nodeClassForType(selection.getAstNode().getParent().getNodeType()).getSimpleName());
+        Assert.assertTrue(!("Type Declaration".equals(expectedLocation)
+                || "Extends Declaration".equals(expectedLocation) || "Implements Declaration".equals(expectedLocation))
+                || JavaElementLocation.isInTypeDeclaration(location));
         Assert.assertNotNull(selection.getCompilationUnit());
 
         // TODO ...

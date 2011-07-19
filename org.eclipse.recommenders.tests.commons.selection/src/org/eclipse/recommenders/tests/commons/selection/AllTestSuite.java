@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.tests.commons.selection;
 
 import org.eclipse.recommenders.commons.internal.selection.UnitTestSuite;
+import org.eclipse.recommenders.tests.commons.selection.ui.UiTestSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -20,7 +21,6 @@ import org.junit.runners.Suite.SuiteClasses;
  * driven by SWTBot.
  */
 @RunWith(Suite.class)
-// UiTestSuite.class
-@SuiteClasses({ UnitTestSuite.class })
+@SuiteClasses({ UnitTestSuite.class, UiTestSuite.class })
 public class AllTestSuite {
 }

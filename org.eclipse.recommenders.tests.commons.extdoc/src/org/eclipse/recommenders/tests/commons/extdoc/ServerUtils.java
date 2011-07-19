@@ -44,7 +44,8 @@ public final class ServerUtils {
 
     public static GenericServer getGenericServer() {
         if (genericServer == null) {
-            genericServer = new GenericServer(getServer(), getUsernameListener(), ExtDocUtils.getResolver());
+            final UsernamePreferenceListener usernameListener = getUsernameListener();
+            genericServer = new GenericServer(getServer(), usernameListener, ExtDocUtils.getResolver());
         }
         return genericServer;
     }

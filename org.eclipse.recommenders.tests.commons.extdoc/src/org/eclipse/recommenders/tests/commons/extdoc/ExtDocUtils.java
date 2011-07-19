@@ -13,13 +13,13 @@ package org.eclipse.recommenders.tests.commons.extdoc;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 
 public final class ExtDocUtils {
 
     private static TestProvider provider;
     private static IJavaElementSelection selection;
-    private static Composite composite;
+    private static Shell shell;
 
     private ExtDocUtils() {
     }
@@ -38,12 +38,11 @@ public final class ExtDocUtils {
         return selection;
     }
 
-    public static Composite getComposite() {
-        if (composite == null) {
-            // TODO: Some way to "fake" a shell?
-            composite = null;
+    public static Shell getShell() {
+        if (shell == null) {
+            shell = new Shell();
         }
-        return composite;
+        return shell;
     }
 
     public static JavaElementResolver getResolver() {

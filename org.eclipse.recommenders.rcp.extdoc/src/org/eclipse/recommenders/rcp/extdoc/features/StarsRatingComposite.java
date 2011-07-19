@@ -97,7 +97,7 @@ public class StarsRatingComposite {
         }
     }
 
-    private void addRating(final int stars, final IRatingSummary ratingSummary) {
+    void addRating(final int stars, final IRatingSummary ratingSummary) {
         final IRating userRating = server.addRating(stars, element, provider);
         for (final Control child : composite.getChildren()) {
             child.dispose();

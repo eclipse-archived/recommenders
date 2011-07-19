@@ -10,15 +10,16 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
+import org.eclipse.recommenders.internal.rcp.extdoc.swt.SourceCodeArea;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.junit.Test;
 
 public final class SourceCodeAreaTest {
 
     @Test
     public void testSourceCodeArea() {
-        // final SourceCodeArea area = new
-        // SourceCodeArea(ExtDocUtils.getComposite());
-        // area.setCode("...");
+        final SourceCodeArea area = new SourceCodeArea(ExtDocUtils.getShell());
+        area.setCode("...");
     }
 
 }
