@@ -27,4 +27,13 @@ public class ClasspathDependencyInformation {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
     }
+
+    public static ClasspathDependencyInformation create(final String symbolicName, final Version version,
+            final String jarFingerprint) {
+        final ClasspathDependencyInformation res = new ClasspathDependencyInformation();
+        res.symbolicName = symbolicName;
+        res.version = version;
+        res.jarFileFingerprint = jarFingerprint;
+        return res;
+    }
 }

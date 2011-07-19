@@ -28,7 +28,9 @@ public class JarFileModuleEntryFingerprintComputer implements IDependencyFingerp
 
     @Override
     public String computeContainerFingerprint(final IClass clazz) {
-
+        if (clazz.isArrayClass()) {
+            return null;
+        }
         final ShrikeClass shrikeClazz = ensureIsInstanceOf(clazz, ShrikeClass.class);
         final JarFileEntry entry = ensureIsInstanceOf(shrikeClazz.getModuleEntry(), JarFileEntry.class);
         return findOrCreateFingerprint(entry);
