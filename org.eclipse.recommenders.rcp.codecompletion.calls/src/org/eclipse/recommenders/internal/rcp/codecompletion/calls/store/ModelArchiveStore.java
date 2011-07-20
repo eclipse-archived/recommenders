@@ -56,6 +56,10 @@ public class ModelArchiveStore implements IModelArchiveStore {
     @Override
     public void register(final File file) throws IOException {
         final ModelArchive archive = new ModelArchive(file);
+        register(archive);
+    }
+
+    public void register(final ModelArchive archive) throws IOException {
         final Manifest manifest = archive.getManifest();
         final File destination = getModelFile(manifest);
         Checks.ensureIsFalse(destination.exists(), "Offered archive already exists: '%s'", destination);

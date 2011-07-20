@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.tests.rcp.codecompletion.calls.unit;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,7 +23,6 @@ import org.eclipse.recommenders.commons.lfm.Manifest;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelIndex;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchive;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchiveStore;
 import org.junit.Test;
@@ -34,25 +33,24 @@ public class ModelArchiveStoreTest {
 
     private static final Manifest manifest = createManifest();
     private static File storeLocation = new File("/test/store/location");
-    private static File expectedDestinationFile = new File(storeLocation,
-            "org.eclipse.test_[3.6.0,3.7.0)_20110612-1230.zip");
+    private static File expectedDestinationFile = new File(storeLocation, manifest.getIdentifier() + ".zip")
+            .getAbsoluteFile();
 
     @Test
     public void testOffer() throws IOException {
         // setup:
-        final CallsModelIndex index = mockIndex();
-        final ModelArchiveStore sut = new ModelArchiveStore(index, storeLocation);
+
+        final ModelArchiveStore sut = new ModelArchiveStore(storeLocation);
         final File file = mockFile();
         final ModelArchive archive = mockArchive(file);
         // exercise:
-        final boolean offerSuccessful = sut.register(archive);
+        sut.register(archive);
         // verify:
-        assertTrue(offerSuccessful);
-        final InOrder inOrder = inOrder(archive, file, index);
+        final InOrder inOrder = inOrder(archive, file);
         inOrder.verify(archive).close();
         inOrder.verify(file).renameTo(expectedDestinationFile);
         inOrder.verify(archive).open();
-        inOrder.verify(index).register(archive);
+        assertEquals(archive, sut.getModelArchive(manifest));
     }
 
     private File mockFile() {
@@ -77,9 +75,5 @@ public class ModelArchiveStoreTest {
         final GregorianCalendar calendar = new GregorianCalendar(2011, 5, 12, 12, 30);
         final Manifest manifest = new Manifest("org.eclipse.test", range, calendar.getTime());
         return manifest;
-    }
-
-    private CallsModelIndex mockIndex() {
-        return mock(CallsModelIndex.class);
     }
 }

@@ -25,18 +25,16 @@ import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ModelStoreCleanup;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelIndex;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchive;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-public class ModelStoreInitializerJobTest {
+public class ModelStoreCleanupTest {
 
     private final Version v36 = Version.create(3, 6);
     private final Version v37 = Version.create(3, 7);
     private final VersionRange range_i36_e37 = new VersionRangeBuilder().minInclusive(v36).maxExclusive(v37).build();
-    private final CallsModelIndex index = mock(CallsModelIndex.class);
     private final List<ModelArchive> archives = Lists.newLinkedList();
 
     @Test
@@ -45,7 +43,7 @@ public class ModelStoreInitializerJobTest {
         final ModelArchive archive = createAndAddArchive("org.eclipse.test", range_i36_e37, 1);
         sut.initializeModelIndex();
 
-        verify(index).register(archive);
+        verify(archive.getFile(), never()).delete();
     }
 
     @Test
@@ -55,8 +53,7 @@ public class ModelStoreInitializerJobTest {
         final ModelArchive newArchive = createAndAddArchive("org.eclipse.test", range_i36_e37, 10);
         sut.initializeModelIndex();
 
-        verify(index).register(newArchive);
-        verify(index, never()).register(oldArchive);
+        verify(newArchive.getFile(), never()).delete();
         verify(oldArchive.getFile()).delete();
     }
 
@@ -79,7 +76,7 @@ public class ModelStoreInitializerJobTest {
     private class MockInitializer extends ModelStoreCleanup {
 
         public MockInitializer() {
-            super(new File(""), index);
+            super(new File(""));
         }
 
         @Override
