@@ -16,6 +16,9 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
+/**
+ * A comment submitted by a user to a provider.
+ */
 public final class Comment implements IComment {
 
     private Date date;
@@ -23,6 +26,13 @@ public final class Comment implements IComment {
     private String text;
     private String username;
 
+    /**
+     * @param text
+     *            The comment's text.
+     * @param username
+     *            The displayed user name set by the user.
+     * @return The created comment object.
+     */
     public static Comment create(final String text, final String username) {
         final Comment comment = new Comment();
         comment.date = new Date();

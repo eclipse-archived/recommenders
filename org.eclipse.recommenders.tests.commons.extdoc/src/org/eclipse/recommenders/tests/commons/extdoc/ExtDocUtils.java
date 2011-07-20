@@ -17,36 +17,28 @@ import org.eclipse.swt.widgets.Shell;
 
 public final class ExtDocUtils {
 
-    private static TestProvider provider;
-    private static IJavaElementSelection selection;
-    private static Shell shell;
+    private static TestProvider provider = new TestProvider();
+    private static IJavaElementSelection selection = new TestJavaElementSelection();
+    private static Shell shell = new Shell();
+    private static JavaElementResolver resolver = new JavaElementResolver();
 
     private ExtDocUtils() {
     }
 
     public static IProvider getTestProvider() {
-        if (provider == null) {
-            provider = new TestProvider();
-        }
         return provider;
     }
 
     public static IJavaElementSelection getSelection() {
-        if (selection == null) {
-            selection = new TestJavaElementSelection();
-        }
         return selection;
     }
 
     public static Shell getShell() {
-        if (shell == null) {
-            shell = new Shell();
-        }
         return shell;
     }
 
     public static JavaElementResolver getResolver() {
-        return new JavaElementResolver();
+        return resolver;
     }
 
 }

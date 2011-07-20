@@ -68,7 +68,7 @@ final class ProvidersTable {
         enableDragAndDrop(providerStore);
     }
 
-    void addProvider(final Control providerControl, final String text, final Image image, final boolean checked) {
+    TableItem addProvider(final Control providerControl, final String text, final Image image, final boolean checked) {
         final TableItem tableItem = new TableItem(table, SWT.NONE);
         tableItem.setText(text);
         tableItem.setData(providerControl);
@@ -76,6 +76,7 @@ final class ProvidersTable {
         tableItem.setImage(image);
         tableItem.setData("image", image);
         setContentVisible(tableItem, false);
+        return tableItem;
     }
 
     public TableItem[] getItems() {

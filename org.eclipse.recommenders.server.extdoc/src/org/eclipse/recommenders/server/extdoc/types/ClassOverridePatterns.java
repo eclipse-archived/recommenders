@@ -16,6 +16,7 @@ import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class ClassOverridePatterns implements IServerType {
 
+    @SuppressWarnings("unused")
     private final String providerId = getClass().getSimpleName();
     private ITypeName type;
 
@@ -24,7 +25,7 @@ public final class ClassOverridePatterns implements IServerType {
     public static ClassOverridePatterns create(final ITypeName type, final MethodPattern[] patterns) {
         final ClassOverridePatterns res = new ClassOverridePatterns();
         res.type = type;
-        res.patterns = patterns;
+        res.patterns = patterns.clone();
         res.validate();
         return res;
     }

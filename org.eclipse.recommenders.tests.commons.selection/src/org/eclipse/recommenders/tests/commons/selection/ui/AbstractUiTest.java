@@ -31,9 +31,9 @@ public abstract class AbstractUiTest extends DefaultUiTest {
         try {
             FixtureUtil.copyProjectToWorkspace(FIXTUREPROJECT);
         } catch (final IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         } catch (final CoreException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
 
         final SWTBotView packageExplorer = bot.viewByTitle("Package Explorer");

@@ -17,6 +17,7 @@ import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class CodeExamples implements IServerType {
 
+    @SuppressWarnings("unused")
     private final String providerId = getClass().getSimpleName();
     private ITypeName type;
 

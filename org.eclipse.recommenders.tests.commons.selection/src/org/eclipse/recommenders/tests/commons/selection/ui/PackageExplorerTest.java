@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.tests.commons.selection.ui;
 
-import junit.framework.Assert;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.NamedMember;
@@ -23,11 +21,13 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@SuppressWarnings({ "restriction", "rawtypes" })
+import junit.framework.Assert;
+
+@SuppressWarnings("restriction")
 @RunWith(SWTBotJunit4ClassRunner.class)
 public final class PackageExplorerTest extends AbstractUiTest {
 
-    private IJavaElementSelection testCommons(final SWTBotTreeItem item, final Class expectedElement) {
+    private IJavaElementSelection testCommons(final SWTBotTreeItem item, final Class<?> expectedElement) {
         item.expand().select();
         final IJavaElementSelection selection = getLastSelection();
 
@@ -53,7 +53,7 @@ public final class PackageExplorerTest extends AbstractUiTest {
     }
 
     private void testFolder(final SWTBotTreeItem folder) {
-        final Class expectedJavaElement = "src".equals(folder.getText()) ? PackageFragmentRoot.class : null;
+        final Class<?> expectedJavaElement = "src".equals(folder.getText()) ? PackageFragmentRoot.class : null;
         final IJavaElementSelection selection = testCommons(folder, expectedJavaElement);
 
         // TODO: ...

@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.Assert;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.internal.core.LocalVariable;
@@ -37,6 +35,8 @@ import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import junit.framework.Assert;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
 @RunWith(SWTBotJunit4ClassRunner.class)
@@ -88,10 +88,9 @@ public final class EditorTest extends AbstractUiTest {
 
     private void testAnnotation(final String annotation, final int offset, final String lineText)
             throws BadLocationException {
-        final int index = lineText.indexOf(annotation);
         final String[] parts = annotation.substring(3, annotation.length() - 3).split(" \\| ");
 
-        SelectionPlugin.triggerUpdate(new TextSelection(offset + index, 0));
+        SelectionPlugin.triggerUpdate(new TextSelection(offset + lineText.indexOf(annotation), 0));
         final IJavaElementSelection selection = getLastSelection();
         final IJavaElement javaElement = selection.getJavaElement();
         final JavaElementLocation location = selection.getElementLocation();

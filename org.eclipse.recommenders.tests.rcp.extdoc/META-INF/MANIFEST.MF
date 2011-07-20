@@ -14,3 +14,4 @@ Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
  org.eclipse.recommenders.internal.rcp.extdoc.swt;x-internal:=true,
  org.eclipse.recommenders.rcp.extdoc,
  org.eclipse.recommenders.rcp.extdoc.features
+Import-Package: org.eclipse.recommenders.server.extdoc

@@ -12,6 +12,7 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Map;
 
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
@@ -38,5 +39,7 @@ public final class MethodPattern implements IServerType {
 
     @Override
     public void validate() {
+        Checks.ensureIsTrue(numberOfObservations > 0);
+        Checks.ensureIsTrue(!methods.isEmpty());
     }
 }

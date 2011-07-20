@@ -53,7 +53,10 @@ public final class WikiServer extends AbstractFeedbackServer {
                 ImmutableMap.of("providerId", PROVIDER_ID, "type", key),
                 new GenericType<GenericResultObjectView<WikiEntry>>() {
                 });
-        return entries == null || entries.isEmpty() ? null : entries.get(0);
+        if (entries != null && !entries.isEmpty()) {
+            return entries.get(0);
+        }
+        return null;
     }
 
     private static String getIdentifier(final IJavaElement javaElement) {

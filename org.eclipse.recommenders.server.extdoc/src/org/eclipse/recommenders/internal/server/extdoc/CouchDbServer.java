@@ -101,12 +101,12 @@ final class CouchDbServer implements ICouchDbServer {
         final StringBuilder path = new StringBuilder(32);
         path.append(String.format("_design/providers/_view/%s?key=%s", view, BRACEOPEN));
         for (final Entry<String, String> keyEntry : keyParts.entrySet()) {
-            path.append(String.format("%s%s%s:%s%s%s,", QUOTE, keyEntry.getKey(), QUOTE, QUOTE,
-                    encode(keyEntry.getValue()), QUOTE));
+            final String value = encode(keyEntry.getValue());
+            path.append(String.format("%s%s%s:%s%s%s,", QUOTE, keyEntry.getKey(), QUOTE, QUOTE, value, QUOTE));
         }
         path.replace(path.length() - 1, path.length(), BRACECLOSE);
-        // TODO: Remove or keep "&stale=ok"? Do some trick to resolve version
-        // conflicts? (TransactionResult.class)
+        // TODO: Keep "&stale=ok"? Use TransactionResult.class to resolve
+        // version conflicts?
         return String.format("%s%s", path.toString(), "");
     }
 

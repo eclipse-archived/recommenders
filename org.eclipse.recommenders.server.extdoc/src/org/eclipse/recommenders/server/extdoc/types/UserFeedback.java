@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.server.extdoc.types.Comment;
 import org.eclipse.recommenders.internal.server.extdoc.types.Rating;
 import org.eclipse.recommenders.internal.server.extdoc.types.RatingSummary;
@@ -28,10 +29,11 @@ import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("unused")
 public final class UserFeedback implements IUserFeedback {
 
     @SerializedName("_id")
-    private String id;
+    private String documentId;
     @SerializedName("_rev")
     private String rev;
 
@@ -90,11 +92,12 @@ public final class UserFeedback implements IUserFeedback {
 
     @Override
     public String getDocumentId() {
-        return id;
+        return documentId;
     }
 
     @Override
     public void validate() {
+        Checks.ensureIsTrue(!element.isEmpty());
     }
 
 }

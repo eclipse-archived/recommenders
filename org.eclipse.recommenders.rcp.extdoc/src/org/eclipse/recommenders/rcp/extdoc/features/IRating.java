@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
+import java.util.Date;
+
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public interface IRating extends IServerType {
@@ -17,5 +19,7 @@ public interface IRating extends IServerType {
     int getRating();
 
     String getUserId();
+
+    Date getDate();
 
 }

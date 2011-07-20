@@ -14,12 +14,24 @@ import java.util.Date;
 
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
+/**
+ * A comment submitted by a user to a provider.
+ */
 public interface IComment extends IServerType {
 
-    String getText();
-
+    /**
+     * @return The date the comment was submitted.
+     */
     Date getDate();
 
+    /**
+     * @return The displayed author name.
+     */
     String getUsername();
+
+    /**
+     * @return The text of the comment.
+     */
+    String getText();
 
 }

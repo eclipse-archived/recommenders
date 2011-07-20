@@ -13,10 +13,11 @@ package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
-import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+
+import org.junit.Test;
 
 public final class ExtDocViewTest {
 

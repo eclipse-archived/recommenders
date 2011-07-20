@@ -15,6 +15,7 @@ import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class WikiEntry implements IServerType {
 
+    @SuppressWarnings("unused")
     private final String providerId = getClass().getSimpleName();
     private String type;
 

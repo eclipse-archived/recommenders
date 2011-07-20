@@ -212,10 +212,6 @@
             <ruleset>Controversial Rules</ruleset>
         </rule>
         <rule>
-            <name>AtLeastOneConstructor</name>
-            <ruleset>Controversial Rules</ruleset>
-        </rule>
-        <rule>
             <name>AvoidAccessibilityAlteration</name>
             <ruleset>Controversial Rules</ruleset>
         </rule>
@@ -245,10 +241,6 @@
         </rule>
         <rule>
             <name>DataflowAnomalyAnalysis</name>
-            <ruleset>Controversial Rules</ruleset>
-        </rule>
-        <rule>
-            <name>DefaultPackage</name>
             <ruleset>Controversial Rules</ruleset>
         </rule>
         <rule>

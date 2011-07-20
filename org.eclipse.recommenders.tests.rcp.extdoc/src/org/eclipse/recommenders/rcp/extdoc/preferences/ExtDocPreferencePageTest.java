@@ -8,23 +8,21 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.rcp.extdoc.preferences;
 
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.widgets.Composite;
 
 import org.junit.Test;
 
-public final class ProvidersCompositeTest {
+public final class ExtDocPreferencePageTest {
 
     @Test
-    public void testExtDocView() {
-        final ScrolledComposite scrolled = new ScrolledComposite(ExtDocUtils.getShell(), SWT.NONE);
-        final ProvidersComposite composite = new ProvidersComposite(scrolled, SWT.NONE);
-
-        composite.layout(true);
-
-        // Assert.assertTrue(composite.setFocus());
+    public void testExtDocPreferencePage() {
+        final ExtDocPreferencePage page = new ExtDocPreferencePage();
+        page.createControl(new Composite(ExtDocUtils.getShell(), SWT.NONE));
+        page.createFieldEditors();
     }
+
 }

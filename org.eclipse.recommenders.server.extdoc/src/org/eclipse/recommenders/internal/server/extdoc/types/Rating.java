@@ -42,8 +42,13 @@ public final class Rating implements IRating {
     }
 
     @Override
+    public Date getDate() {
+        return date;
+    }
+
+    @Override
     public void validate() {
-        Checks.ensureIsTrue(rating > 0);
+        Checks.ensureIsTrue(rating > 0 && rating <= 5);
     }
 
 }

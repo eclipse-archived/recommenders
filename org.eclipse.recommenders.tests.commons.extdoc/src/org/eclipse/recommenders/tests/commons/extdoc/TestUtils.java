@@ -13,6 +13,7 @@ package org.eclipse.recommenders.tests.commons.extdoc;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+
 import org.mockito.Mockito;
 
 public final class TestUtils {

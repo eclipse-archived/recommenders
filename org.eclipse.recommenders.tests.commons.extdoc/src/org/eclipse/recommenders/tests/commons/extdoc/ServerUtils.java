@@ -19,7 +19,7 @@ import org.mockito.Mockito;
 
 public final class ServerUtils {
 
-    private static ICouchDbServer server;
+    private static ICouchDbServer server = new TestCouchDbServer();
     private static GenericServer genericServer;
     private static UsernameProvider usernameListener;
 
@@ -27,9 +27,6 @@ public final class ServerUtils {
     }
 
     public static ICouchDbServer getServer() {
-        if (server == null) {
-            server = new TestCouchDbServer();
-        }
         return server;
     }
 

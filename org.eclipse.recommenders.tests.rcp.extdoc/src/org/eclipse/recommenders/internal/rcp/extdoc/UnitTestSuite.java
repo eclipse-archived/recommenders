@@ -12,17 +12,20 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocViewTest;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersCompositeTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersTableSelectionListenerTest;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersTableTest;
 import org.eclipse.recommenders.rcp.extdoc.SourceCodeAreaTest;
 import org.eclipse.recommenders.rcp.extdoc.features.CommentsCompositeTest;
 import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingCompositeTest;
+import org.eclipse.recommenders.rcp.extdoc.preferences.ExtDocPreferencePageTest;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ProviderStoreTest.class, UiManagerTest.class, ExtDocViewTest.class, ProvidersCompositeTest.class,
-        ProvidersTableTest.class, SourceCodeAreaTest.class, CommentsCompositeTest.class, StarsRatingCompositeTest.class })
+        ProvidersTableSelectionListenerTest.class, ProvidersTableTest.class, SourceCodeAreaTest.class,
+        CommentsCompositeTest.class, StarsRatingCompositeTest.class, ExtDocPreferencePageTest.class })
 public final class UnitTestSuite {
-
 }
