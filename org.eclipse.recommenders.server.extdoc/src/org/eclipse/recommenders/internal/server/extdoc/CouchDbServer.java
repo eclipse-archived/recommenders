@@ -23,9 +23,11 @@ import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.client.ServerErrorException;
 import org.eclipse.recommenders.commons.client.ServerUnreachableException;
+import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IName;
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
@@ -69,15 +71,13 @@ final class CouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public void post(final Object object) {
+    public void post(final IServerType object) {
         getClient().doPostRequest("", object);
     }
 
     @Override
-    public void put(final String view, final Map<String, String> keyParts, final String rev, final Object object) {
-        String path = buildPath(view, keyParts);
-        path = String.format("%s&rev=%s", path.substring(0, path.length() - 9), rev);
-        getClient().doPutRequest(path, object, null);
+    public TransactionResult put(final String view, final String documentId, final IServerType object) {
+        return getClient().doPutRequest(documentId, object, TransactionResult.class);
     }
 
     @Override
@@ -105,7 +105,9 @@ final class CouchDbServer implements ICouchDbServer {
                     encode(keyEntry.getValue()), QUOTE));
         }
         path.replace(path.length() - 1, path.length(), BRACECLOSE);
-        return String.format("%s%s", path.toString(), "&stale=ok");
+        // TODO: Remove or keep "&stale=ok"? Do some trick to resolve version
+        // conflicts? (TransactionResult.class)
+        return String.format("%s%s", path.toString(), "");
     }
 
     private static String encode(final String text) {

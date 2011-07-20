@@ -10,7 +10,10 @@
  */
 package org.eclipse.recommenders.server.extdoc.types;
 
-public final class WikiEntry {
+import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
+
+public final class WikiEntry implements IServerType {
 
     private final String providerId = getClass().getSimpleName();
     private String type;
@@ -21,6 +24,7 @@ public final class WikiEntry {
         final WikiEntry result = new WikiEntry();
         result.type = elementId;
         result.text = text;
+        result.validate();
         return result;
     }
 
@@ -30,5 +34,11 @@ public final class WikiEntry {
 
     public void setText(final String text) {
         this.text = text;
+    }
+
+    @Override
+    public void validate() {
+        Checks.ensureIsTrue(!type.isEmpty());
+        Checks.ensureIsTrue(!text.isEmpty());
     }
 }

@@ -18,10 +18,21 @@ import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+/**
+ * Provides general server settings and listens for user changes.
+ */
 final class ClientConfigurationPreferenceListener implements IPropertyChangeListener {
 
     private final ClientConfiguration config;
 
+    /**
+     * @param config
+     *            General configuration for server implementations, e.g.
+     *            includes server URL.
+     * @param store
+     *            Will be listened to for user changes to the server
+     *            configuration.
+     */
     @Inject
     ClientConfigurationPreferenceListener(
             @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION) final ClientConfiguration config,

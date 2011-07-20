@@ -12,7 +12,9 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 
 import java.util.Collection;
 
-public interface IUserFeedback {
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
+
+public interface IUserFeedback extends IServerType {
 
     IRatingSummary getRatingSummary();
 
@@ -24,6 +26,6 @@ public interface IUserFeedback {
 
     String getElementId();
 
-    String getRevision();
+    String getDocumentId();
 
 }

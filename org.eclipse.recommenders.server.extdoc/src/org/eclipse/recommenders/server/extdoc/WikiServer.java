@@ -27,7 +27,7 @@ public final class WikiServer extends AbstractFeedbackServer {
     private static final String PROVIDER_ID = WikiEntry.class.getSimpleName();
 
     @Inject
-    public WikiServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+    public WikiServer(final ICouchDbServer server, final UsernameProvider usernameListener,
             final JavaElementResolver resolver) {
         super(server, usernameListener, resolver);
     }

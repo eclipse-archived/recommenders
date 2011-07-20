@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.recommenders.internal.server.extdoc.types.Comment;
-import org.eclipse.recommenders.internal.server.extdoc.types.IServerType;
 import org.eclipse.recommenders.internal.server.extdoc.types.Rating;
 import org.eclipse.recommenders.internal.server.extdoc.types.RatingSummary;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -29,8 +28,10 @@ import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class UserFeedback implements IUserFeedback, IServerType {
+public final class UserFeedback implements IUserFeedback {
 
+    @SerializedName("_id")
+    private String id;
     @SerializedName("_rev")
     private String rev;
 
@@ -88,8 +89,8 @@ public final class UserFeedback implements IUserFeedback, IServerType {
     }
 
     @Override
-    public String getRevision() {
-        return rev;
+    public String getDocumentId() {
+        return id;
     }
 
     @Override

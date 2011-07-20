@@ -25,7 +25,7 @@ public final class CodeExamplesServer extends AbstractFeedbackServer {
     private static final String PROVIDERID = CodeExamples.class.getSimpleName();
 
     @Inject
-    public CodeExamplesServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+    public CodeExamplesServer(final ICouchDbServer server, final UsernameProvider usernameListener,
             final JavaElementResolver resolver) {
         super(server, usernameListener, resolver);
     }

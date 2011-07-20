@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: Code Recommenders
+    Checkstyle-Configuration: Eclipse Code Recommenders
     Description: none
 -->
 <module name="Checker">
@@ -57,8 +57,7 @@
       <property name="max" value="120"/>
     </module>
     <module name="MethodLength">
-      <property name="max" value="22"/>
-      <property name="tokens" value="CTOR_DEF,METHOD_DEF"/>
+      <property name="max" value="17"/>
     </module>
     <module name="ParameterNumber"/>
     <module name="EmptyForInitializerPad"/>
@@ -134,7 +133,9 @@
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
-    <module name="ReturnCount"/>
+    <module name="ReturnCount">
+      <property name="max" value="4"/>
+    </module>
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>
     <module name="StringLiteralEquality"/>
@@ -188,13 +189,14 @@
     <module name="EqualsAvoidNull"/>
     <module name="NoClone"/>
     <module name="NoFinalizer"/>
+    <module name="MethodCount"/>
+    <module name="InnerTypeLast"/>
+    <module name="NestedForDepth"/>
+    <module name="OneStatementPerLine"/>
+    <module name="OuterTypeFilename"/>
   </module>
   <module name="FileLength"/>
   <module name="FileTabCharacter"/>
-  <module name="StrictDuplicateCode">
-    <property name="severity" value="ignore"/>
-    <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
-  </module>
   <module name="NewlineAtEndOfFile">
     <property name="severity" value="ignore"/>
     <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>

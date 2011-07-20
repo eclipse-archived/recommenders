@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-public interface IRating {
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
+
+public interface IRating extends IServerType {
 
     int getRating();
 

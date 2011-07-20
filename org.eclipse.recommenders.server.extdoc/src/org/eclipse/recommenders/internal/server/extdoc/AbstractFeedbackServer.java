@@ -27,22 +27,36 @@ import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
-import org.eclipse.recommenders.server.extdoc.UsernamePreferenceListener;
+import org.eclipse.recommenders.server.extdoc.UsernameProvider;
 import org.eclipse.recommenders.server.extdoc.types.UserFeedback;
 
 import com.google.common.collect.ImmutableMap;
 import com.sun.jersey.api.client.GenericType;
 
+/**
+ * Abstract superclass for servers which want to store user feedback expressed
+ * through a provider.
+ */
 public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
 
     private final ICouchDbServer server;
-    private final UsernamePreferenceListener listener;
+    private final UsernameProvider username;
     private final JavaElementResolver resolver;
 
-    protected AbstractFeedbackServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+    /**
+     * @param server
+     *            The server implementation used to receive and store feedback.
+     *            Can be accessed by subclasses.
+     * @param usernameProvider
+     *            Provides the user's name from a preference page. Should be
+     *            used together with a IPropertyChangeListener.
+     * @param resolver
+     *            Used to resolve {@link IJavaElement}s to generate server IDs.
+     */
+    protected AbstractFeedbackServer(final ICouchDbServer server, final UsernameProvider usernameProvider,
             final JavaElementResolver resolver) {
         this.server = server;
-        listener = usernameListener;
+        username = usernameProvider;
         this.resolver = resolver;
     }
 
@@ -62,16 +76,16 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         final IUserFeedback feedback = getUserFeedback(javaElement, provider);
         final IRating rating = Rating.create(stars);
         feedback.addRating(rating);
-        storeFeedback(feedback, provider);
+        storeFeedback(feedback);
         return rating;
     }
 
     @Override
     public final IComment addComment(final String text, final IJavaElement javaElement, final IProvider provider) {
         final IUserFeedback feedback = getUserFeedback(javaElement, provider);
-        final IComment comment = Comment.create(text, listener.getUsername());
+        final IComment comment = Comment.create(text, username.getUsername());
         feedback.addComment(comment);
-        storeFeedback(feedback, provider);
+        storeFeedback(feedback);
         return comment;
     }
 
@@ -82,6 +96,12 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         return server;
     }
 
+    /**
+     * @param javaElement
+     *            The element to be resolved to an ID.
+     * @return An ID string to be used as the element's identifier in the
+     *         database.
+     */
     private String resolveNameIdentifier(final IJavaElement javaElement) {
         if (javaElement instanceof IMethod) {
             return resolver.toRecMethod((IMethod) javaElement).getIdentifier();
@@ -97,13 +117,15 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         throw new IllegalArgumentException(javaElement.toString());
     }
 
-    private void storeFeedback(final IUserFeedback feedback, final IProvider provider) {
-        if (feedback.getRevision() == null) {
+    /**
+     * @param feedback
+     *            Feedback to be either newly stored or updated.
+     */
+    private void storeFeedback(final IUserFeedback feedback) {
+        if (feedback.getDocumentId() == null) {
             server.post(feedback);
         } else {
-            final String providerId = provider.getClass().getSimpleName();
-            server.put("feedback", ImmutableMap.of("providerId", providerId, "element", feedback.getElementId()),
-                    feedback.getRevision(), feedback);
+            server.put("feedback", feedback.getDocumentId(), feedback);
         }
     }
 

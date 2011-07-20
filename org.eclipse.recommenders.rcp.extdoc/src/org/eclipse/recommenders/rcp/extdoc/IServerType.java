@@ -8,10 +8,14 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.server.extdoc.types;
+package org.eclipse.recommenders.rcp.extdoc;
 
 public interface IServerType {
 
+    /**
+     * Object might be requested for validation of its content to ensure valid
+     * data is delivered by the server.
+     */
     void validate();
 
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-import org.eclipse.recommenders.internal.server.extdoc.types.IServerType;
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class ClassSelfcallDirectives implements IServerType {
 

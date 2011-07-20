@@ -18,7 +18,7 @@ import com.google.inject.Inject;
 public final class GenericServer extends AbstractFeedbackServer {
 
     @Inject
-    public GenericServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+    public GenericServer(final ICouchDbServer server, final UsernameProvider usernameListener,
             final JavaElementResolver resolver) {
         super(server, usernameListener, resolver);
     }

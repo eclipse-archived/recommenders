@@ -12,17 +12,15 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
-import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
-import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
-import org.eclipse.recommenders.server.extdoc.SubclassingServer;
-import org.eclipse.recommenders.server.extdoc.UsernamePreferenceListener;
-import org.eclipse.recommenders.server.extdoc.WikiServer;
+import org.eclipse.recommenders.server.extdoc.UsernameProvider;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 
+/**
+ * Binds dependencies required by server classes.
+ */
 public final class ExtDocServerModule extends AbstractModule {
 
     @Override
@@ -32,15 +30,8 @@ public final class ExtDocServerModule extends AbstractModule {
                 new ClientConfiguration());
         bind(ICouchDbServer.class).to(CouchDbServer.class);
 
-        bind(GenericServer.class).in(Scopes.SINGLETON);
-        bind(CodeExamplesServer.class).in(Scopes.SINGLETON);
-        bind(SubclassingServer.class).in(Scopes.SINGLETON);
-        bind(WikiServer.class).in(Scopes.SINGLETON);
-
         bind(ClientConfigurationPreferenceListener.class).asEagerSingleton();
-        bind(UsernamePreferenceListener.class).asEagerSingleton();
-
-        requestStaticInjection(AbstractFeedbackServer.class);
+        bind(UsernameProvider.class).asEagerSingleton();
     }
 
 }

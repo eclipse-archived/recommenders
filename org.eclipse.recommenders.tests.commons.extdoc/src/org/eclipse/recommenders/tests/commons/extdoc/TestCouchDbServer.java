@@ -10,12 +10,13 @@
  */
 package org.eclipse.recommenders.tests.commons.extdoc;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
+import org.eclipse.recommenders.commons.client.TransactionResult;
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 
 import com.sun.jersey.api.client.GenericType;
@@ -23,21 +24,22 @@ import com.sun.jersey.api.client.GenericType;
 class TestCouchDbServer implements ICouchDbServer {
 
     @Override
-    public <T> List<T> getRows(final String view, final Map<String, String> key,
+    public <T> List<T> getRows(final String view, final Map<String, String> keyParts,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        return Collections.emptyList();
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public void post(final Object object) {
+    public void post(final IServerType object) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void put(final String view, final Map<String, String> keyParts, final String rev, final Object object) {
+    public TransactionResult put(final String view, final String documentId, final IServerType object) {
         // TODO Auto-generated method stub
-
+        return null;
     }
 
     @Override

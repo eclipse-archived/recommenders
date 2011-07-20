@@ -18,12 +18,12 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-public final class UsernamePreferenceListener implements IPropertyChangeListener {
+public final class UsernameProvider implements IPropertyChangeListener {
 
     private String username;
 
     @Inject
-    public UsernamePreferenceListener(
+    public UsernameProvider(
             @Named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE) final IPreferenceStore store) {
         username = Preconditions.checkNotNull(store.getString(PreferenceConstants.USERNAME));
         store.addPropertyChangeListener(this);

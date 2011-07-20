@@ -12,7 +12,9 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 
 import java.util.Date;
 
-public interface IComment {
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
+
+public interface IComment extends IServerType {
 
     String getText();
 

@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-public class StarsRatingComposite {
+public final class StarsRatingComposite {
 
     private static final Image ICON_STAR = ExtDocPlugin.getIcon("eview16/star.png");
     private static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");

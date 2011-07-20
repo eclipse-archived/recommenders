@@ -26,7 +26,7 @@ import com.sun.jersey.api.client.GenericType;
 public final class SubclassingServer extends AbstractFeedbackServer {
 
     @Inject
-    public SubclassingServer(final ICouchDbServer server, final UsernamePreferenceListener usernameListener,
+    public SubclassingServer(final ICouchDbServer server, final UsernameProvider usernameListener,
             final JavaElementResolver resolver) {
         super(server, usernameListener, resolver);
     }

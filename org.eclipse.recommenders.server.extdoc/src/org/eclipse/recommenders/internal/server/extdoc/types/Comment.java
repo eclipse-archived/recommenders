@@ -16,7 +16,7 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
-public final class Comment implements IComment, IServerType {
+public final class Comment implements IComment {
 
     private Date date;
     private String user;

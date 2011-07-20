@@ -16,7 +16,7 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
-public final class Rating implements IRating, IServerType {
+public final class Rating implements IRating {
 
     private Date date;
     private String user;
