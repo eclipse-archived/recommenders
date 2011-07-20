@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
-import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
+import org.eclipse.recommernders.server.lfm.model.LibraryIdentifier;
 
 public class PackageFragmentRootConfiguration {
 

@@ -47,14 +47,16 @@ public class ClasspathDependencyStore {
     }
 
     private void initialize() {
-        initializeMap(dependencyInfoFile, resource2dependencyInfo);
-        initializeMap(manifestIdFile, resource2manifestId);
+        initializeMap(dependencyInfoFile, resource2dependencyInfo,
+                new TypeToken<Map<File, ClasspathDependencyInformation>>() {
+                });
+        initializeMap(manifestIdFile, resource2manifestId, new TypeToken<Map<File, Manifest>>() {
+        });
     }
 
-    private <T> void initializeMap(final File f, final Map<File, T> map) {
+    private <T> void initializeMap(final File f, final Map<File, T> map, final TypeToken<?> token) {
         if (f.exists()) {
-            final Map<File, T> deserializedMap = GsonUtil.deserialize(f, new TypeToken<Map<File, T>>() {
-            }.getType());
+            final Map<File, T> deserializedMap = GsonUtil.deserialize(f, token.getType());
             map.putAll(deserializedMap);
         }
     }

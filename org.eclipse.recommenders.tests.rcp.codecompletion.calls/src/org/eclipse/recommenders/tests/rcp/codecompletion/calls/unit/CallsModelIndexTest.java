@@ -17,13 +17,13 @@ import static org.mockito.Mockito.when;
 import java.util.Date;
 
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.recommenders.commons.lfm.LibraryIdentifier;
 import org.eclipse.recommenders.commons.lfm.Manifest;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelIndex;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IModelArchive;
+import org.eclipse.recommernders.server.lfm.model.LibraryIdentifier;
 import org.junit.Test;
 
 public class CallsModelIndexTest {
