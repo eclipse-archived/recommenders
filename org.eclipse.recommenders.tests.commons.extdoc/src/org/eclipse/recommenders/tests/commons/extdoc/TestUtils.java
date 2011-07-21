@@ -10,44 +10,37 @@
  */
 package org.eclipse.recommenders.tests.commons.extdoc;
 
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
-
-import org.mockito.Mockito;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmMethodName;
+import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 
 public final class TestUtils {
 
-    private static IType defaultType;
-    private static IMethod defaultMethod;
+    private static ITypeName defaultType;
+    private static IMethodName defaultMethod;
+    private static IMethodName defaultConstructor;
+
+    static {
+        defaultType = VmTypeName.get("Lorg/eclipse/swt/widgets/Button");
+        defaultMethod = VmMethodName.get("Lorg/eclipse/swt/widgets/Button.getText()Ljava/lang/String;");
+        defaultConstructor = VmMethodName
+                .get("Lorg/eclipse/swt/widgets/Button.<init>(Lorg/eclipse/swt/widgets/Composite;I)V");
+    }
 
     private TestUtils() {
     }
 
-    public static IType getDefaultType() {
-        if (defaultType == null) {
-            defaultType = Mockito.mock(IType.class);
-            Mockito.when(defaultType.getPrimaryElement()).thenReturn(defaultType);
-            Mockito.when(defaultType.getFullyQualifiedName()).thenReturn("org/eclipse/swt/widgets/Composite");
-        }
+    public static ITypeName getDefaultType() {
         return defaultType;
     }
 
-    public static IMethod getDefaultMethod() {
-        if (defaultMethod == null) {
-            defaultMethod = Mockito.mock(IMethod.class);
-            Mockito.when(defaultMethod.getPrimaryElement()).thenReturn(defaultMethod);
-            final IType declaringType = getDefaultType();
-            Mockito.when(defaultMethod.getDeclaringType()).thenReturn(declaringType);
-            Mockito.when(defaultMethod.getParameterTypes()).thenReturn(new String[] {});
-            try {
-                Mockito.when(defaultMethod.getReturnType()).thenReturn("V");
-                Mockito.when(defaultMethod.isConstructor()).thenReturn(true);
-            } catch (final JavaModelException e) {
-                throw new IllegalStateException(e);
-            }
-        }
+    public static IMethodName getDefaultMethod() {
         return defaultMethod;
+    }
+
+    public static IMethodName getDefaultConstructor() {
+        return defaultConstructor;
     }
 
 }

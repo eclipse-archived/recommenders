@@ -10,12 +10,9 @@
  */
 package org.eclipse.recommenders.tests.commons.extdoc;
 
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.UsernameProvider;
-import org.mockito.Mockito;
 
 public final class ServerUtils {
 
@@ -32,9 +29,12 @@ public final class ServerUtils {
 
     public static UsernameProvider getUsernameListener() {
         if (usernameListener == null) {
-            final IPreferenceStore store = Mockito.mock(IPreferenceStore.class);
-            Mockito.when(store.getString(PreferenceConstants.USERNAME)).thenReturn("TestUser");
-            usernameListener = new UsernameProvider(store);
+            usernameListener = new UsernameProvider(null) {
+                @Override
+                public final String getUsername() {
+                    return "TestUser";
+                }
+            };
         }
         return usernameListener;
     }
@@ -42,7 +42,7 @@ public final class ServerUtils {
     public static GenericServer getGenericServer() {
         if (genericServer == null) {
             final UsernameProvider usernameListener = getUsernameListener();
-            genericServer = new GenericServer(getServer(), usernameListener, ExtDocUtils.getResolver());
+            genericServer = new GenericServer(getServer(), usernameListener);
         }
         return genericServer;
     }

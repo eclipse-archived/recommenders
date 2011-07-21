@@ -23,9 +23,9 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -43,8 +43,7 @@ public final class CallsProviderTest {
         calls.add(call);
         Mockito.when(model.getRecommendedMethodCalls(Matchers.anyDouble(), Matchers.anyInt())).thenReturn(calls);
 
-        final CallsProvider provider = new CallsProvider(store, null, new JavaElementResolver(),
-                ServerUtils.getGenericServer());
+        final CallsProvider provider = new CallsProvider(store, null, ServerUtils.getGenericServer());
         final IJavaElementSelection selection = ExtDocUtils.getSelection();
 
         final ILocalVariable variable = Mockito.mock(ILocalVariable.class);

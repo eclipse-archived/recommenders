@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.recommenders.internal.server.extdoc.types.Comment;
-import org.eclipse.recommenders.internal.server.extdoc.types.Rating;
-import org.eclipse.recommenders.internal.server.extdoc.types.RatingSummary;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;

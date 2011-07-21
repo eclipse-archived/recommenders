@@ -14,6 +14,7 @@ import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.swt.widgets.Shell;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,8 +22,7 @@ public final class WikiProviderTest {
 
     @Test
     public void testWikiProvider() {
-        final WikiServer server = new WikiServer(ServerUtils.getServer(), ServerUtils.getUsernameListener(),
-                ExtDocUtils.getResolver());
+        final WikiServer server = new WikiServer(ServerUtils.getServer(), ServerUtils.getUsernameListener());
         final WikiProvider provider = new WikiProvider(server);
         provider.createContentControl(new Shell());
 

@@ -18,15 +18,16 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-public final class UsernameProvider implements IPropertyChangeListener {
+public class UsernameProvider implements IPropertyChangeListener {
 
     private String username;
 
     @Inject
-    public UsernameProvider(
-            @Named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE) final IPreferenceStore store) {
-        username = Preconditions.checkNotNull(store.getString(PreferenceConstants.USERNAME));
-        store.addPropertyChangeListener(this);
+    public UsernameProvider(@Named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE) final IPreferenceStore store) {
+        if (store != null) {
+            username = Preconditions.checkNotNull(store.getString(PreferenceConstants.USERNAME));
+            store.addPropertyChangeListener(this);
+        }
     }
 
     public String getUsername() {
@@ -34,7 +35,7 @@ public final class UsernameProvider implements IPropertyChangeListener {
     }
 
     @Override
-    public void propertyChange(final PropertyChangeEvent event) {
+    public final void propertyChange(final PropertyChangeEvent event) {
         if (event.getProperty().equals(PreferenceConstants.USERNAME)) {
             final Object newValue = event.getNewValue();
             username = Preconditions.checkNotNull(newValue.toString());

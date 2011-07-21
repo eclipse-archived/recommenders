@@ -11,8 +11,13 @@
 package org.eclipse.recommenders.rcp.extdoc.features;
 
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.recommenders.server.extdoc.GenericServer;
+import org.eclipse.recommenders.server.extdoc.types.RatingSummary;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
 import org.eclipse.swt.widgets.Shell;
+
 import org.junit.Test;
 
 public final class StarsRatingCompositeTest {
@@ -24,11 +29,9 @@ public final class StarsRatingCompositeTest {
 
         provider.createControl(shell, null);
 
-        /*
-         * final GenericServer server = ServerUtils.getGenericServer(); final
-         * StarsRatingComposite composite = new StarsRatingComposite(shell,
-         * null, provider, server); final IRatingSummary summary =
-         * Mockito.mock(IRatingSummary.class); composite.addRating(4, summary);
-         */
+        final GenericServer server = ServerUtils.getGenericServer();
+        final StarsRatingComposite composite = new StarsRatingComposite(shell, TestUtils.getDefaultMethod(), provider,
+                server);
+        composite.addRating(4, RatingSummary.create(0, 0, null));
     }
 }

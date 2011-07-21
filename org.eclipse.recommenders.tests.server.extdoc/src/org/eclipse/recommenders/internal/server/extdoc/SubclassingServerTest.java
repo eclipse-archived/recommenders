@@ -15,15 +15,15 @@ import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
 import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
-import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+
 import org.junit.Test;
 
 public final class SubclassingServerTest {
 
     private final SubclassingServer server = new SubclassingServer(ServerUtils.getServer(),
-            ServerUtils.getUsernameListener(), ExtDocUtils.getResolver());
+            ServerUtils.getUsernameListener());
 
     @Test
     public void testGetClassOverrideDirectives() {

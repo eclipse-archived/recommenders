@@ -29,19 +29,20 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFactory;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommentsComposite;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.SWT;
@@ -60,7 +61,6 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     private final CallsModelStore modelStore;
     private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;
-    private final JavaElementResolver elementResolver;
     private final GenericServer server;
 
     private Composite composite;
@@ -68,10 +68,9 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     @Inject
     CallsProvider(final CallsModelStore modelStore, final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
-            final JavaElementResolver elementResolver, final GenericServer server) {
+            final GenericServer server) {
         this.modelStore = modelStore;
         this.usageResolversProvider = usageResolversProvider;
-        this.elementResolver = elementResolver;
         this.server = Preconditions.checkNotNull(server);
     }
 
@@ -83,7 +82,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     @Override
     protected void hookInitalize(final IJavaElementSelection selection) {
-        context = new MockedIntelligentCompletionContext(selection, elementResolver);
+        context = new MockedIntelligentCompletionContext(selection);
     }
 
     @Override
@@ -146,10 +145,10 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
         context = ContextFactory.setNullVariableContext(selection);
-        final Set<IMethodName> invokedMethods = ImmutableSet.of(elementResolver.toRecMethod(method));
+        final Set<IMethodName> invokedMethods = ImmutableSet.of(ElementResolver.toRecMethod(method));
         final ITypeName receiverType = context.getReceiverType();
         return displayProposalsForType(
-                receiverType == null ? method.getDeclaringType() : elementResolver.toJdtType(receiverType),
+                receiverType == null ? method.getDeclaringType() : ElementResolver.toJdtType(receiverType),
                 invokedMethods, method);
     }
 
@@ -165,17 +164,19 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
             final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
                     resolveCalledMethods, negateConstructors);
-            return displayProposals(element, recommendedMethodCalls, resolveCalledMethods);
+            final IName name = element instanceof IField ? ElementResolver.toRecField((IField) element, variable.type)
+                    : variable.getName();
+            return displayProposals(element, name, recommendedMethodCalls, resolveCalledMethods);
         }
         return false;
     }
 
     private boolean displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods,
             final IJavaElement referenceElement) {
-        final ITypeName typeName = elementResolver.toRecType(type);
+        final ITypeName typeName = ElementResolver.toRecType(type);
         if (modelStore.hasModel(typeName)) {
             final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, invokedMethods, false);
-            return displayProposals(referenceElement, calls, new HashSet<IMethodName>());
+            return displayProposals(referenceElement, typeName, calls, new HashSet<IMethodName>());
         }
         return false;
     }
@@ -189,11 +190,11 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
                     method.getDeclaringType());
             final IType supertype = method.getJavaProject().findType(superclassTypeName);
-            final ITypeName type = JavaElementResolver.INSTANCE.toRecType(supertype);
+            final ITypeName type = ElementResolver.toRecType(supertype);
             if (type != null && modelStore.hasModel(type)) {
                 final Set<IMethodName> calledMethods = resolveCalledMethods();
                 final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
-                return displayProposals(method, calls, calledMethods);
+                return displayProposals(method, ElementResolver.toRecMethod(method), calls, calledMethods);
             } else {
                 // TODO: first is not correct in all cases. this needs to be
                 // fixed
@@ -210,11 +211,11 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             final ITypeName fieldType = context.getVariable().type;
             for (final IMethod method : field.getDeclaringType().getMethods()) {
                 if (false) {
-                    context = new MockedIntelligentCompletionContext(selection, elementResolver) {
+                    context = new MockedIntelligentCompletionContext(selection) {
                         @Override
                         public Variable getVariable() {
                             return Variable.create(field.getElementName(), fieldType,
-                                    elementResolver.toRecMethod(method));
+                                    ElementResolver.toRecMethod(method));
                         };
                     };
                     displayProposalsForMethod(method);
@@ -249,8 +250,8 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         return recommendedMethodCalls;
     }
 
-    private boolean displayProposals(final IJavaElement element, final SortedSet<Tuple<IMethodName, Double>> proposals,
-            final Set<IMethodName> calledMethods) {
+    private boolean displayProposals(final IJavaElement element, final IName name,
+            final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods) {
         if (proposals.isEmpty()) {
             return false;
         }
@@ -262,10 +263,10 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, element, provider, server);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, name, provider, server);
                     line.createStyleRange(15, element.getElementName().length(), SWT.NORMAL, false, true);
                     displayProposals(proposals, calledMethods);
-                    CommentsComposite.create(composite, element, provider, server);
+                    CommentsComposite.create(composite, name, provider, server);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;

@@ -12,16 +12,17 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.util.Collection;
 
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.recommenders.internal.server.extdoc.types.Rating;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
+import org.eclipse.recommenders.server.extdoc.types.Rating;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ public final class GenericServerTest {
     private final GenericServer server = ServerUtils.getGenericServer();
     private final IProvider provider = ExtDocUtils.getTestProvider();
 
-    private final IJavaElement element = TestUtils.getDefaultMethod();
+    private final IName element = TestUtils.getDefaultMethod();
 
     @Test
     public void testComments() {

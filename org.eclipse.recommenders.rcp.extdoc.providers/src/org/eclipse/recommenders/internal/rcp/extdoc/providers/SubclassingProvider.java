@@ -25,7 +25,9 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -67,19 +69,21 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     public boolean selectionChanged(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
-            return displayContentForType((IType) element);
+            return displayContentForType(ElementResolver.toRecType((IType) element));
         } else if (element instanceof IMethod) {
-            return displayContentForMethod((IMethod) element);
+            final IMethod firstDeclaration = JdtUtils.findFirstDeclaration((IMethod) element);
+            return displayContentForMethod(ElementResolver.toRecMethod((IMethod) element),
+                    ElementResolver.toRecMethod(firstDeclaration));
         }
         return false;
     }
 
-    private boolean displayContentForType(final IType type) {
+    private boolean displayContentForType(final ITypeName type) {
         final ClassOverrideDirectives overrides = server.getClassOverrideDirectives(type);
         if (overrides == null) {
             return false;
         }
-        final String elementName = type.getElementName();
+        final String elementName = type.getClassName();
         final int subclasses = overrides.getNumberOfSubclasses();
 
         final String text = "Based on " + subclasses + " direct subclasses of " + elementName
@@ -109,17 +113,16 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         return true;
     }
 
-    private boolean displayContentForMethod(final IMethod method) {
-        final IMethod first = JdtUtils.findFirstDeclaration(method);
+    private boolean displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration) {
         // TODO first is not correct in all cases. this needs to be fixed soon
         // after the demo
-        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(first);
+        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(firstDeclaration);
         if (selfcalls == null) {
             return false;
         }
 
         final int definitions = selfcalls.getNumberOfDefinitions();
-        final String text = "Based on " + definitions + " implementations of " + method.getElementName()
+        final String text = "Based on " + definitions + " implementations of " + method.getName()
                 + " we created the following statistics. Implementors may consider to call the following methods.";
         final SubclassingProvider provider = this;
 
@@ -128,10 +131,10 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
-                    displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
+                    displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(), 92, 25);
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method, provider, server);
-                    line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL,
-                            false, true);
+                    line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false,
+                            true);
                     displayDirectives(selfcalls.getCalls(), "call", definitions);
                     composite.layout(true);
                 }

@@ -11,16 +11,21 @@
 package org.eclipse.recommenders.tests.commons.extdoc;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.swt.widgets.Shell;
 
+@SuppressWarnings("restriction")
 public final class ExtDocUtils {
 
     private static TestProvider provider = new TestProvider();
     private static IJavaElementSelection selection = new TestJavaElementSelection();
     private static Shell shell = new Shell();
-    private static JavaElementResolver resolver = new JavaElementResolver();
+
+    static {
+        ElementResolver.setJavaElementResolver(new JavaElementResolver());
+    }
 
     private ExtDocUtils() {
     }
@@ -35,10 +40,6 @@ public final class ExtDocUtils {
 
     public static Shell getShell() {
         return shell;
-    }
-
-    public static JavaElementResolver getResolver() {
-        return resolver;
     }
 
 }

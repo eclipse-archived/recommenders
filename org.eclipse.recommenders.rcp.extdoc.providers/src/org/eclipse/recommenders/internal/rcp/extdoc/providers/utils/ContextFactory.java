@@ -20,22 +20,16 @@ import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
-
-import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public final class ContextFactory {
-
-    @Inject
-    private static JavaElementResolver elementResolver;
 
     private ContextFactory() {
     }
 
     public static MockedIntelligentCompletionContext setNullVariableContext(final IJavaElementSelection selection) {
-        return new MockedIntelligentCompletionContext(selection, elementResolver) {
+        return new MockedIntelligentCompletionContext(selection) {
             @Override
             public Variable getVariable() {
                 return null;
@@ -45,11 +39,11 @@ public final class ContextFactory {
 
     public static MockedIntelligentCompletionContext setThisVariableContext(final IJavaElementSelection selection,
             final IMethod enclosingMethod) {
-        final IMethodName ctxEnclosingMethod = elementResolver.toRecMethod(enclosingMethod);
-        final IMethodName ctxFirstDeclaration = elementResolver.toRecMethod(JdtUtils
+        final IMethodName ctxEnclosingMethod = ElementResolver.toRecMethod(enclosingMethod);
+        final IMethodName ctxFirstDeclaration = ElementResolver.toRecMethod(JdtUtils
                 .findFirstDeclaration(enclosingMethod));
 
-        return new MockedIntelligentCompletionContext(selection, elementResolver) {
+        return new MockedIntelligentCompletionContext(selection) {
             @Override
             public IMethodName getEnclosingMethod() {
                 return ctxEnclosingMethod;
@@ -62,8 +56,8 @@ public final class ContextFactory {
 
             @Override
             public Variable getVariable() {
-                return Variable.create("this", elementResolver.toRecType(enclosingMethod.getDeclaringType()),
-                        elementResolver.toRecMethod(enclosingMethod));
+                return Variable.create("this", ElementResolver.toRecType(enclosingMethod.getDeclaringType()),
+                        ElementResolver.toRecMethod(enclosingMethod));
             };
         };
     }
@@ -90,14 +84,14 @@ public final class ContextFactory {
     }
 
     private static MockedIntelligentCompletionContext setMockedContext(final IJavaElementSelection selection,
-            final String varName, final IType variableType, final boolean isArgument) {
+            final String variableName, final IType variableType, final boolean isArgument) {
         if (variableType == null) {
             return null;
         }
-        return new MockedIntelligentCompletionContext(selection, elementResolver) {
+        return new MockedIntelligentCompletionContext(selection) {
             @Override
             public Variable getVariable() {
-                return Variable.create(varName, elementResolver.toRecType(variableType), getEnclosingMethod());
+                return Variable.create(variableName, ElementResolver.toRecType(variableType), getEnclosingMethod());
             };
         };
     }

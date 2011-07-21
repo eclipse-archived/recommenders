@@ -10,11 +10,10 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 
 import com.google.inject.Inject;
@@ -25,19 +24,18 @@ public final class CodeExamplesServer extends AbstractFeedbackServer {
     private static final String PROVIDERID = CodeExamples.class.getSimpleName();
 
     @Inject
-    public CodeExamplesServer(final ICouchDbServer server, final UsernameProvider usernameListener,
-            final JavaElementResolver resolver) {
-        super(server, usernameListener, resolver);
+    public CodeExamplesServer(final ICouchDbServer server, final UsernameProvider usernameListener) {
+        super(server, usernameListener);
     }
 
-    public CodeExamples getOverridenMethodCodeExamples(final IMethod method) {
+    public CodeExamples getOverridenMethodCodeExamples(final IMethodName method) {
         final CodeExamples result = getServer().getProviderContent(PROVIDERID, method,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });
         return result;
     }
 
-    public CodeExamples getTypeCodeExamples(final IType type) {
+    public CodeExamples getTypeCodeExamples(final ITypeName type) {
         final CodeExamples result = getServer().getProviderContent(PROVIDERID, type,
                 new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });

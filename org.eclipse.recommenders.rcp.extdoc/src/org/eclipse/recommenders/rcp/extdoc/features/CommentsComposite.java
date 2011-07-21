@@ -14,7 +14,7 @@ import java.text.DateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -34,7 +34,7 @@ public final class CommentsComposite {
     private static Image commentsIcon = ExtDocPlugin.getIcon("eview16/comments.png");
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 
-    private IJavaElement element;
+    private IName element;
     private IProvider provider;
     private IUserFeedbackServer server;
     private List<IComment> comments;
@@ -44,8 +44,8 @@ public final class CommentsComposite {
     /**
      * @wbp.parser.entryPoint
      */
-    public static CommentsComposite create(final Composite parent, final IJavaElement element,
-            final IProvider provider, final IUserFeedbackServer server) {
+    public static CommentsComposite create(final Composite parent, final IName element, final IProvider provider,
+            final IUserFeedbackServer server) {
         final CommentsComposite comments = new CommentsComposite();
 
         comments.provider = provider;

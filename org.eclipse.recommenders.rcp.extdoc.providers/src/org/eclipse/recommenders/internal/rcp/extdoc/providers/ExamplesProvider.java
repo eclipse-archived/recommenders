@@ -23,7 +23,10 @@ import org.eclipse.jdt.internal.corext.util.MethodOverrideTester;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.commons.utils.names.IName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -85,7 +88,8 @@ public final class ExamplesProvider extends AbstractProviderComposite {
             if (overriddenMethod == null) {
                 return false;
             }
-            return displayCodeSnippets(method, server.getOverridenMethodCodeExamples(overriddenMethod));
+            return displayCodeSnippets(ElementResolver.toRecMethod(method),
+                    server.getOverridenMethodCodeExamples(ElementResolver.toRecMethod(overriddenMethod)));
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
@@ -95,10 +99,11 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         if (type == null) {
             return false;
         }
-        return displayCodeSnippets(type, server.getTypeCodeExamples(type));
+        final ITypeName name = ElementResolver.toRecType(type);
+        return displayCodeSnippets(name, server.getTypeCodeExamples(name));
     }
 
-    private boolean displayCodeSnippets(final IJavaElement element, final CodeExamples codeExamples) {
+    private boolean displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
         if (codeExamples == null) {
             return false;
         }
@@ -119,12 +124,12 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         return true;
     }
 
-    private void createSnippetVisualization(final int snippetIndex, final IJavaElement element, final String snippet) {
+    private void createSnippetVisualization(final int snippetIndex, final IName element, final String snippet) {
         createEditAndRatingHeader(snippetIndex, element);
         SwtFactory.createSourceCodeArea(container, snippet);
     }
 
-    private void createEditAndRatingHeader(final int snippetIndex, final IJavaElement element) {
+    private void createEditAndRatingHeader(final int snippetIndex, final IName element) {
         final String text = "Example #" + (snippetIndex + 1) + ":";
         final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, element, this, server);
         line.createStyleRange(0, text.length(), SWT.BOLD, false, false);

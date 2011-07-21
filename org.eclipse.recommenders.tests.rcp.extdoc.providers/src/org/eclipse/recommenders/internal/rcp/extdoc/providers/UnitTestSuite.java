@@ -18,5 +18,4 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ CallsProviderTest.class, ExamplesProviderTest.class, JavadocProviderTest.class,
         SubclassingProviderTest.class, SubclassingTemplatesProviderTest.class, WikiProviderTest.class })
 public final class UnitTestSuite {
-
 }

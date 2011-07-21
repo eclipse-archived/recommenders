@@ -13,9 +13,9 @@ package org.eclipse.recommenders.server.extdoc;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.core.IMember;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.client.TransactionResult;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 import com.sun.jersey.api.client.GenericType;
@@ -28,6 +28,6 @@ public interface ICouchDbServer {
 
     TransactionResult put(String view, String documentId, IServerType object);
 
-    <T> T getProviderContent(String providerId, IMember element, GenericType<GenericResultObjectView<T>> resultType);
+    <T> T getProviderContent(String providerId, IName element, GenericType<GenericResultObjectView<T>> resultType);
 
 }

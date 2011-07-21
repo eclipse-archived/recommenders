@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
@@ -30,13 +30,13 @@ public final class StarsRatingComposite {
     private static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
     private static final Image ICON_STAR_EMPTY = ExtDocPlugin.getIcon("eview16/star_empty.png");
 
-    private final IJavaElement element;
+    private final IName element;
     private final IProvider provider;
     private final IUserFeedbackServer server;
 
     private Composite composite;
 
-    public StarsRatingComposite(final Composite parent, final IJavaElement element, final IProvider provider,
+    public StarsRatingComposite(final Composite parent, final IName element, final IProvider provider,
             final IUserFeedbackServer server) {
         this.element = element;
         this.provider = provider;

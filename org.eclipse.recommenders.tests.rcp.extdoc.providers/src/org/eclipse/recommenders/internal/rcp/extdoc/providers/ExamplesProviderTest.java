@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+
 import org.junit.Test;
 
 public final class ExamplesProviderTest {
@@ -20,7 +21,7 @@ public final class ExamplesProviderTest {
     @Test
     public void testExamplesProvider() {
         final CodeExamplesServer server = new CodeExamplesServer(ServerUtils.getServer(),
-                ServerUtils.getUsernameListener(), ExtDocUtils.getResolver());
+                ServerUtils.getUsernameListener());
         final ExamplesProvider provider = new ExamplesProvider(server);
         provider.selectionChanged(ExtDocUtils.getSelection());
     }

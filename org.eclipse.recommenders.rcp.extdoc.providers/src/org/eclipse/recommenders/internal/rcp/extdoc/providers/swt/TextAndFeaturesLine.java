@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;
 
-import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
@@ -22,7 +22,7 @@ public final class TextAndFeaturesLine {
 
     private final StyledText styledText;
 
-    public TextAndFeaturesLine(final Composite parent, final String text, final IJavaElement element,
+    public TextAndFeaturesLine(final Composite parent, final String text, final IName element,
             final IProvider provider, final IUserFeedbackServer server) {
         final Composite line = SwtFactory.createGridComposite(parent, 2, 10, 0, 0, 0);
         styledText = SwtFactory.createStyledText(line, text);

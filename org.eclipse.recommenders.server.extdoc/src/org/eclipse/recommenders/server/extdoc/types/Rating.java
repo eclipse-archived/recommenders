@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.server.extdoc.types;
+package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Date;
 

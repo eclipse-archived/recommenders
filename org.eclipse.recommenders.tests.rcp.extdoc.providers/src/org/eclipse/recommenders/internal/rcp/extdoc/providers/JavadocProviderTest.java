@@ -10,18 +10,20 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchWindow;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class JavadocProviderTest {
+public final class JavadocProviderTest {
 
     @Test
     public void testJavadocProvider() {
-        final Shell shell = new Shell();
+        final Shell shell = ExtDocUtils.getShell();
 
         final JavadocProvider provider = new JavadocProvider();
         final IViewSite viewSite = Mockito.mock(IViewSite.class);

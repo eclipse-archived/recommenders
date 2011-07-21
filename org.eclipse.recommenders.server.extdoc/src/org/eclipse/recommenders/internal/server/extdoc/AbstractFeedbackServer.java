@@ -12,22 +12,17 @@ package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.util.List;
 
-import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.ILocalVariable;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.internal.server.extdoc.types.Comment;
-import org.eclipse.recommenders.internal.server.extdoc.types.Rating;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.UsernameProvider;
+import org.eclipse.recommenders.server.extdoc.types.Comment;
+import org.eclipse.recommenders.server.extdoc.types.Rating;
 import org.eclipse.recommenders.server.extdoc.types.UserFeedback;
 
 import com.google.common.collect.ImmutableMap;
@@ -41,7 +36,6 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
 
     private final ICouchDbServer server;
     private final UsernameProvider username;
-    private final JavaElementResolver resolver;
 
     /**
      * @param server
@@ -50,20 +44,17 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
      * @param usernameProvider
      *            Provides the user's name from a preference page. Should be
      *            used together with a IPropertyChangeListener.
-     * @param resolver
-     *            Used to resolve {@link IJavaElement}s to generate server IDs.
      */
-    protected AbstractFeedbackServer(final ICouchDbServer server, final UsernameProvider usernameProvider,
-            final JavaElementResolver resolver) {
+    protected AbstractFeedbackServer(final ICouchDbServer server, final UsernameProvider usernameProvider) {
         this.server = server;
         username = usernameProvider;
-        this.resolver = resolver;
     }
 
     @Override
-    public final IUserFeedback getUserFeedback(final IJavaElement javaElement, final IProvider provider) {
+    public final IUserFeedback getUserFeedback(final IName javaElement, final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
-        final String elementId = resolveNameIdentifier(javaElement);
+        // final String elementId = resolveNameIdentifier(javaElement);
+        final String elementId = javaElement.getIdentifier();
         final List<UserFeedback> feedbacks = server.getRows("feedback",
                 ImmutableMap.of("providerId", providerId, "element", elementId),
                 new GenericType<GenericResultObjectView<UserFeedback>>() {
@@ -72,7 +63,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     }
 
     @Override
-    public final IRating addRating(final int stars, final IJavaElement javaElement, final IProvider provider) {
+    public final IRating addRating(final int stars, final IName javaElement, final IProvider provider) {
         final IUserFeedback feedback = getUserFeedback(javaElement, provider);
         final IRating rating = Rating.create(stars);
         feedback.addRating(rating);
@@ -81,7 +72,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     }
 
     @Override
-    public final IComment addComment(final String text, final IJavaElement javaElement, final IProvider provider) {
+    public final IComment addComment(final String text, final IName javaElement, final IProvider provider) {
         final IUserFeedback feedback = getUserFeedback(javaElement, provider);
         final IComment comment = Comment.create(text, username.getUsername());
         feedback.addComment(comment);
@@ -94,27 +85,6 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
      */
     protected final ICouchDbServer getServer() {
         return server;
-    }
-
-    /**
-     * @param javaElement
-     *            The element to be resolved to an ID.
-     * @return An ID string to be used as the element's identifier in the
-     *         database.
-     */
-    private String resolveNameIdentifier(final IJavaElement javaElement) {
-        if (javaElement instanceof IMethod) {
-            return resolver.toRecMethod((IMethod) javaElement).getIdentifier();
-        } else if (javaElement instanceof IType) {
-            return resolver.toRecType((IType) javaElement).getIdentifier();
-        } else if (javaElement instanceof ILocalVariable) {
-            return resolver.toRecMethod((IMethod) javaElement.getParent()).getIdentifier() + "."
-                    + javaElement.getElementName();
-        } else if (javaElement instanceof IField) {
-            return resolver.toRecType((IType) javaElement.getParent()).getIdentifier() + "."
-                    + javaElement.getElementName();
-        }
-        throw new IllegalArgumentException(javaElement.toString());
     }
 
     /**

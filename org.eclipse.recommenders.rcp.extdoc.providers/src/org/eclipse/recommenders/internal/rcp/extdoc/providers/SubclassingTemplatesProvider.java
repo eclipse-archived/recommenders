@@ -24,7 +24,9 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
@@ -62,10 +64,10 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
 
     @Override
     protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return printProposals(type);
+        return printProposals(ElementResolver.toRecType(type));
     }
 
-    private boolean printProposals(final IType type) {
+    private boolean printProposals(final ITypeName type) {
         final ClassOverridePatterns directive = server.getClassOverridePatterns(type);
         if (directive == null) {
             return false;
@@ -89,8 +91,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
 
                     for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
                         final MethodPattern pattern = patterns[i];
-                        final Integer patternProbability = (int) (pattern.getNumberOfObservations()
-                                / numberOfSubclasses.doubleValue() * 100);
+                        final double patternProbability = pattern.getNumberOfObservations()
+                                / numberOfSubclasses.doubleValue();
                         String text2 = String
                                 .format("Pattern #%d - covers approximately %3.0f%% of the examined subclasses (%d subclasses).",
                                         i + 1, patternProbability, pattern.getNumberOfObservations());

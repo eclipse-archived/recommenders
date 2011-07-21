@@ -48,14 +48,12 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerAstCompletio
 import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerBindings;
 import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionRequestor;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 // TODO: Lots of methods taken from IntelligentCompletionContext.java
 @SuppressWarnings("restriction")
 public class MockedIntelligentCompletionContext implements IIntelligentCompletionContext {
 
     private final IJavaElementSelection selection;
-    private final JavaElementResolver resolver;
     private CompilationUnit compilationUnit;
 
     private CompilerAstCompletionNodeFinder astCompletionNodeFinder;
@@ -63,9 +61,8 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
     private CompletionEngine completionEngine;
     private CompletionParser completionParser;
 
-    public MockedIntelligentCompletionContext(final IJavaElementSelection selection, final JavaElementResolver resolver) {
+    public MockedIntelligentCompletionContext(final IJavaElementSelection selection) {
         this.selection = selection;
-        this.resolver = resolver;
     }
 
     private CompilerAstCompletionNodeFinder getNodeFinder() {
@@ -149,7 +146,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final Set<FieldDeclaration> getFieldDeclarations() {
-        throw new IllegalAccessError();
+        return getNodeFinder().fieldDeclarations;
     }
 
     @Override
@@ -172,7 +169,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
     @Override
     public IMethodName getEnclosingMethod() {
         final IMethod enclosingMethod = findEnclosingMethod();
-        return enclosingMethod == null ? null : resolver.toRecMethod(enclosingMethod);
+        return enclosingMethod == null ? null : ElementResolver.toRecMethod(enclosingMethod);
     }
 
     private IMethod findEnclosingMethod() {
@@ -245,7 +242,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
             final MethodOverrideTester methodOverrideTester = SuperTypeHierarchyCache.getMethodOverrideTester(method
                     .getDeclaringType());
             final IMethod declaringMethod = methodOverrideTester.findDeclaringMethod(method, true);
-            return declaringMethod == null ? null : resolver.toRecMethod(declaringMethod);
+            return declaringMethod == null ? null : ElementResolver.toRecMethod(declaringMethod);
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }

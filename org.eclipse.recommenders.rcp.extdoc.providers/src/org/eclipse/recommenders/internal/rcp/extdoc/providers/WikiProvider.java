@@ -20,6 +20,7 @@ import org.eclipse.mylyn.wikitext.core.parser.MarkupParser;
 import org.eclipse.mylyn.wikitext.mediawiki.core.MediaWikiLanguage;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -96,7 +97,7 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     private void displayText(final IJavaElement element, final String markup) {
-        new StarsRatingComposite(composite, element, this, server);
+        new StarsRatingComposite(composite, ElementResolver.resolveName(element), this, server);
         // TODO: Add editing option.
 
         final StyledText text = new StyledText(composite, SWT.NONE);

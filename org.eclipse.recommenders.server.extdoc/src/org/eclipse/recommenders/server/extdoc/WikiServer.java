@@ -15,7 +15,6 @@ import java.util.List;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.types.WikiEntry;
 
 import com.google.common.collect.ImmutableMap;
@@ -27,9 +26,8 @@ public final class WikiServer extends AbstractFeedbackServer {
     private static final String PROVIDER_ID = WikiEntry.class.getSimpleName();
 
     @Inject
-    public WikiServer(final ICouchDbServer server, final UsernameProvider usernameListener,
-            final JavaElementResolver resolver) {
-        super(server, usernameListener, resolver);
+    public WikiServer(final ICouchDbServer server, final UsernameProvider usernameListener) {
+        super(server, usernameListener);
     }
 
     public String getText(final IJavaElement javaElement) {

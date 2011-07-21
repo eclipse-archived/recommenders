@@ -18,5 +18,4 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ CodeExamplesServerTest.class, GenericServerTest.class, SubclassingServerTest.class,
         WikiServerTest.class })
 public final class UnitTestSuite {
-
 }

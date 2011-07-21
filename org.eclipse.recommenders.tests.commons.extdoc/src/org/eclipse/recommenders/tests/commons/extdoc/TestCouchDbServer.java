@@ -13,9 +13,9 @@ package org.eclipse.recommenders.tests.commons.extdoc;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.core.IMember;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.client.TransactionResult;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 
@@ -43,7 +43,7 @@ class TestCouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public <T> T getProviderContent(final String providerId, final IMember element,
+    public <T> T getProviderContent(final String providerId, final IName element,
             final GenericType<GenericResultObjectView<T>> resultType) {
         // TODO Auto-generated method stub
         return null;

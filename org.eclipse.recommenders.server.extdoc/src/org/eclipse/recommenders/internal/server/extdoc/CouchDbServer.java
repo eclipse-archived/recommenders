@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.client.ServerErrorException;
@@ -26,10 +23,10 @@ import org.eclipse.recommenders.commons.client.ServerUnreachableException;
 import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 
 import com.google.common.collect.ImmutableMap;
@@ -48,14 +45,11 @@ final class CouchDbServer implements ICouchDbServer {
 
     private final ClientConfiguration clientConfig;
     private WebServiceClient lazyClient;
-    private final JavaElementResolver resolver;
 
     @Inject
     CouchDbServer(
-            @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION) final ClientConfiguration clientConfig,
-            final JavaElementResolver resolver) {
+            @Named(PreferenceConstants.NAME_EXTDOC_WEBSERVICE_CONFIGURATION) final ClientConfiguration clientConfig) {
         this.clientConfig = clientConfig;
-        this.resolver = resolver;
     }
 
     @Override
@@ -81,19 +75,11 @@ final class CouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public <T> T getProviderContent(final String providerId, final IMember element,
+    public <T> T getProviderContent(final String providerId, final IName element,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        String key;
-        IName name;
-        if (element instanceof IMethod) {
-            key = S_METHOD;
-            name = resolver.toRecMethod((IMethod) element);
-        } else {
-            key = S_TYPE;
-            name = resolver.toRecType((IType) element);
-        }
-        final List<T> rows = getRows("providers", ImmutableMap.of("providerId", providerId, key, name.getIdentifier()),
-                resultType);
+        final String key = element instanceof IMethodName ? S_METHOD : S_TYPE;
+        final List<T> rows = getRows("providers",
+                ImmutableMap.of("providerId", providerId, key, element.getIdentifier()), resultType);
         return rows == null || rows.isEmpty() ? null : rows.get(0);
     }
 
