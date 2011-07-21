@@ -9,6 +9,7 @@
  */
 package org.eclipse.recommenders.server.commons;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import com.google.inject.Inject;
@@ -33,9 +34,23 @@ public class GuiceInjectableProvider implements InjectableProvider<Inject, Type>
 
             @Override
             public Object getValue() {
-                return injector.getInstance(Key.get(type));
+                final Annotation annotation = findAnnotation(ctx.getAnnotations());
+                if (annotation == null) {
+                    return injector.getInstance(Key.get(type));
+                } else {
+                    return injector.getInstance(Key.get(type, annotation));
+                }
             }
         };
+    }
+
+    protected static Annotation findAnnotation(final Annotation[] annotations) {
+        for (final Annotation annotation : annotations) {
+            if (!annotation.annotationType().equals(Inject.class)) {
+                return annotation;
+            }
+        }
+        return null;
     }
 
     @Override
