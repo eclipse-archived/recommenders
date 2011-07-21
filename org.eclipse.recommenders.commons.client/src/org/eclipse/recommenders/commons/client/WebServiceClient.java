@@ -16,6 +16,8 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsTrue;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Cookie;
@@ -35,6 +37,7 @@ public class WebServiceClient {
     private final ClientConfiguration configuration;
     private final Client client;
     private final Map<String, Cookie> cookies;
+    private final List<String> queryParameters = new LinkedList<String>();
 
     @Inject
     public WebServiceClient(final ClientConfiguration configuration) {
@@ -50,9 +53,23 @@ public class WebServiceClient {
 
     public Builder createRequestBuilder(final String path) {
         final String baseUrl = getBaseUrl();
-        final String fullPath = baseUrl + path;
+        String fullPath = baseUrl + path;
+        fullPath = appendQueryParameters(fullPath);
         return addCookies(client.resource(fullPath).accept(MediaType.APPLICATION_JSON_TYPE)
                 .type(MediaType.APPLICATION_JSON));
+    }
+
+    private String appendQueryParameters(final String path) {
+        final StringBuilder builder = new StringBuilder(path);
+        for (final String parameter : queryParameters) {
+            if (builder.indexOf("?") >= 0) {
+                builder.append("&");
+            } else {
+                builder.append("?");
+            }
+            builder.append(parameter);
+        }
+        return builder.toString();
     }
 
     private Builder addCookies(final Builder builder) {
@@ -186,5 +203,9 @@ public class WebServiceClient {
         } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void addQueryParameter(final String parameter) {
+        queryParameters.add(parameter);
     }
 }
