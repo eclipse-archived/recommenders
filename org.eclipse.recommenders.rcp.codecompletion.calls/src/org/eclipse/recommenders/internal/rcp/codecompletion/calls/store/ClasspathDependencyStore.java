@@ -120,7 +120,8 @@ public class ClasspathDependencyStore {
     }
 
     public void invalidateManifest(final IPackageFragmentRoot packageFragmentRoot) {
-        resource2manifestId.remove(packageFragmentRoot);
+        final File file = getLocation(packageFragmentRoot);
+        resource2manifestId.remove(file);
     }
 
     private File getLocation(final IPackageFragmentRoot packageRoot) {
