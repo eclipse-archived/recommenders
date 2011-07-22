@@ -135,7 +135,11 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         if (newActiveMethodContext == null) {
             newActiveMethodContext = NetworkUtils.CTX_NULL;
         }
-        junctionTree.addEvidence(contextNode, newActiveMethodContext.getIdentifier());
+
+        final String identifier = newActiveMethodContext.getIdentifier();
+        if (contextNode.getOutcomes().contains(identifier)) {
+            junctionTree.addEvidence(contextNode, identifier);
+        }
     }
 
     @Override
