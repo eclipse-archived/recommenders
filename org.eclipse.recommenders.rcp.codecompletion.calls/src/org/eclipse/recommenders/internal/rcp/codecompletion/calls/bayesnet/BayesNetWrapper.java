@@ -70,12 +70,12 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
     private void initializeNodes(final BayesianNetwork network) {
         final Collection<Node> nodes = network.getNodes();
         for (final Node node : nodes) {
-            final BayesNode bayesNode = new BayesNode();
+            final BayesNode bayesNode = new BayesNode(node.getIdentifier());
             final String[] states = node.getStates();
             for (int i = 0; i < states.length; i++) {
                 bayesNode.addOutcome(states[i]);
             }
-            bayesNet.addNode(node.getIdentifier(), bayesNode);
+            bayesNet.addNode(bayesNode);
 
             if (node.getIdentifier().equalsIgnoreCase(N_CALLING_CONTEXT)) {
                 contextNode = bayesNode;
@@ -92,14 +92,12 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         for (final Node node : nodes) {
             final Node[] parents = node.getParents();
             final BayesNode children = bayesNet.getNode(node.getIdentifier());
-            final LinkedList<Integer> parentIds = new LinkedList<Integer>();
+            final LinkedList<BayesNode> bnParents = new LinkedList<BayesNode>();
             for (int i = 0; i < parents.length; i++) {
-                final int parentId = bayesNet.getNodeId(parents[i].getIdentifier());
-                parentIds.add(parentId);
+                bnParents.add(bayesNet.getNode(parents[i].getIdentifier()));
             }
-            bayesNet.setParents(children.getId(), parentIds);
+            children.setParents(bnParents);
         }
-
     }
 
     private void initializeProbabilities(final BayesianNetwork network) {
@@ -119,7 +117,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
     public void setCalled(final IMethodName calledMethod) {
         final BayesNode node = bayesNet.getNode(calledMethod.getIdentifier());
         if (node != null) {
-            junctionTree.addEvidence(node.getId(), node.getOutcomeId(S_TRUE));
+            junctionTree.addEvidence(node, S_TRUE);
         }
     }
 
@@ -138,7 +136,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         if (newActiveMethodContext == null) {
             newActiveMethodContext = NetworkUtils.CTX_NULL;
         }
-        junctionTree.addEvidence(contextNode.getId(), contextNode.getOutcomeId(newActiveMethodContext.getIdentifier()));
+        junctionTree.addEvidence(contextNode, newActiveMethodContext.getIdentifier());
     }
 
     @Override
@@ -159,7 +157,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
             if (junctionTree.getEvidence().containsKey(bayesNode.getId())) {
                 continue;
             }
-            final double probability = junctionTree.getBeliefs(bayesNode.getId())[bayesNode.getOutcomeId(S_TRUE)];
+            final double probability = junctionTree.getBeliefs(bayesNode)[bayesNode.getOutcomeIndex(S_TRUE)];
             if (probability < minProbabilityThreshold) {
                 continue;
             }
@@ -203,18 +201,18 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         for (final IMethodName method : callNodes.keySet()) {
             if (method.isInit()) {
                 final BayesNode bayesNode = callNodes.get(method);
-                junctionTree.addEvidence(bayesNode.getId(), bayesNode.getOutcomeId(S_FALSE));
+                junctionTree.addEvidence(bayesNode, S_FALSE);
             }
         }
     }
 
     @Override
     public List<Tuple<String, Double>> getPatternsWithProbability() {
-        final double[] probs = junctionTree.getBeliefs(patternNode.getId());
+        final double[] probs = junctionTree.getBeliefs(patternNode);
         final List<Tuple<String, Double>> res = Lists.newArrayListWithCapacity(probs.length);
         final Set<String> outcomes = patternNode.getOutcomes();
         for (final String outcome : outcomes) {
-            final int probIndex = patternNode.getOutcomeId(outcome);
+            final int probIndex = patternNode.getOutcomeIndex(outcome);
             final double p = probs[probIndex];
             if (0.01 > p) {
                 continue;
@@ -226,7 +224,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public void setPattern(final String patternName) {
-        junctionTree.addEvidence(patternNode.getId(), patternNode.getOutcomeId(patternName));
+        junctionTree.addEvidence(patternNode, patternName);
     }
 
     @Override
