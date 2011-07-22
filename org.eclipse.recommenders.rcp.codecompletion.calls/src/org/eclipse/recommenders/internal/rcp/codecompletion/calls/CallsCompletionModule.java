@@ -15,7 +15,6 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayesnet.NewBNCallsModelStore;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.osgi.framework.FrameworkUtil;
 
@@ -32,26 +31,15 @@ public class CallsCompletionModule extends AbstractModule {
     }
 
     private void configureModelStore() {
-        // configureJsonModelStore();
         configureBinaryModelStore();
-    }
-
-    private void configureJsonModelStore() {
-        bind(ICallsModelLoader.class).to(CallsModelLoader.class).in(Scopes.SINGLETON);
-        bind(CallsModelStore.class).in(Scopes.SINGLETON);
-        final Path basedir = new Path("/data/models.zip");
-        final URL getModelFileUrl = getCallsModelFileUrl(basedir);
-        bind(URL.class).annotatedWith(Names.named("calls.model.fileUrl")).toInstance(getModelFileUrl);
-
     }
 
     private void configureBinaryModelStore() {
         bind(ICallsModelLoader.class).to(BinaryCallsModelLoader.class).in(Scopes.SINGLETON);
-        bind(CallsModelStore.class).to(NewBNCallsModelStore.class).in(Scopes.SINGLETON);
+        bind(CallsModelStore.class).in(Scopes.SINGLETON);
         final Path modelFile = new Path("/data/models.zip");
         final URL modelFileUrl = getCallsModelFileUrl(modelFile);
         bind(URL.class).annotatedWith(Names.named("calls.model.fileUrl")).toInstance(modelFileUrl);
-
     }
 
     private void configureRecommendationsViewPublisher() {

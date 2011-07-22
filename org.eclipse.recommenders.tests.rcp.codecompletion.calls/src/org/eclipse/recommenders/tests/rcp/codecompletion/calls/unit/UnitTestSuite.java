@@ -15,7 +15,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ CallsModelStoreAndLoaderTest.class, CallsModelStoreTest.class, NetworksRandomLoadTests.class })
+@SuiteClasses({ NetworksRandomLoadTests.class })
 public class UnitTestSuite {
 
 }

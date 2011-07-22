@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.calls.net;
+package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 
 import java.util.Collection;
 import java.util.List;

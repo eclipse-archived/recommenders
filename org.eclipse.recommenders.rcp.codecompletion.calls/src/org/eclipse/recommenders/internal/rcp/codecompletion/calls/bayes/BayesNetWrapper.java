@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayesnet;
+package org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayes;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureEquals;
 
@@ -30,8 +30,7 @@ import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayes.NetworkUtils;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;

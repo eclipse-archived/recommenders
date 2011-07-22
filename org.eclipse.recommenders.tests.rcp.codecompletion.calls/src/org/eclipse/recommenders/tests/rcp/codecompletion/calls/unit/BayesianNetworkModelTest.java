@@ -22,7 +22,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.ICallsModelLoader;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

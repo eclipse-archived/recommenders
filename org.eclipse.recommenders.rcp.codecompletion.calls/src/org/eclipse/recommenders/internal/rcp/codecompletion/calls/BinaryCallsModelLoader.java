@@ -26,6 +26,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 
@@ -81,10 +82,10 @@ public class BinaryCallsModelLoader implements ICallsModelLoader {
     }
 
     @Override
-    public <T> T loadObjectForTypeName(final ITypeName name, final Type returnType) throws IOException {
+    public BayesianNetwork loadNetworkForTypeName(final ITypeName name, final Type returnType) throws IOException {
         final ObjectInputStream inputStream = new ObjectInputStream(getModelInputStream(name));
         try {
-            return (T) inputStream.readObject();
+            return (BayesianNetwork) inputStream.readObject();
         } catch (final ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

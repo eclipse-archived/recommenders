@@ -4,8 +4,7 @@ Bundle-Name: Code Recommenders: RCP Intelligent Calls Completion Engine (Incubat
 Bundle-SymbolicName: org.eclipse.recommenders.rcp.codecompletion.calls;singleton:=true
 Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Require-Bundle: smile,
- org.eclipse.ui,
+Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.recommenders.rcp,
  org.eclipse.jdt.core,
@@ -37,8 +36,7 @@ Require-Bundle: smile,
  org.apache.commons.pool,
  org.eclipse.recommenders.bayes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion.calls,
- org.eclipse.recommenders.internal.rcp.codecompletion.calls.net
+Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion.calls
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionPlugin
 Bundle-ActivationPolicy: lazy
 

@@ -22,8 +22,7 @@ import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.PatternNode;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.PatternRecommender;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
@@ -59,7 +58,7 @@ public final class PatternRecommenderTest {
 
     protected static PatternRecommender getPatternRecommenderMock(final ITypeName receiverType) {
         final CallsModelStore store = Mockito.mock(CallsModelStore.class);
-        final ObjectMethodCallsNet net = getCallsNetMock(receiverType);
+        final IObjectMethodCallsNet net = getCallsNetMock(receiverType);
         Mockito.when(Boolean.valueOf(store.hasModel(receiverType))).thenReturn(Boolean.TRUE);
         Mockito.when(store.acquireModel(receiverType)).thenReturn(net);
 
@@ -71,16 +70,13 @@ public final class PatternRecommenderTest {
         });
     }
 
-    private static ObjectMethodCallsNet getCallsNetMock(final ITypeName receiverType) {
-        final ObjectMethodCallsNet model = Mockito.mock(ObjectMethodCallsNet.class);
+    private static IObjectMethodCallsNet getCallsNetMock(final ITypeName receiverType) {
+        final IObjectMethodCallsNet model = Mockito.mock(IObjectMethodCallsNet.class);
 
-        final PatternNode node = Mockito.mock(PatternNode.class);
         final List<Tuple<String, Double>> patterns = Lists.newArrayList();
         patterns.add(Tuple.create("Pattern 1", 0.5));
-        Mockito.when(node.getPatternsWithProbability()).thenReturn(patterns);
 
         Mockito.when(model.getType()).thenReturn(receiverType);
-        Mockito.when(model.getPatternsNode()).thenReturn(node);
         Mockito.when(model.getPatternsWithProbability()).thenReturn(patterns);
         Mockito.when(model.getRecommendedMethodCalls(Matchers.anyDouble())).thenReturn(getRecommendedMethods());
         return model;

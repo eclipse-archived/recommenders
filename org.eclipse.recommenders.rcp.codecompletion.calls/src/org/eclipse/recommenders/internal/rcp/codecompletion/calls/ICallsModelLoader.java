@@ -14,12 +14,14 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Set;
 
+import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 
 public interface ICallsModelLoader {
 
     public abstract Set<ITypeName> readAvailableTypes();
 
-    public abstract <T> T loadObjectForTypeName(final ITypeName name, final Type returnType) throws IOException;
+    public abstract BayesianNetwork loadNetworkForTypeName(final ITypeName name, final Type returnType)
+            throws IOException;
 
 }
