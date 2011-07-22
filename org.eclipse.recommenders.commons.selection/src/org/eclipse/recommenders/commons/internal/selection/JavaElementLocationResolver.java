@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.internal.core.BinaryType;
 import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 
@@ -128,7 +128,7 @@ final class JavaElementLocationResolver {
             return JavaElementLocation.TYPE_DECLARATION;
         } else {
             try {
-                if (!((BinaryType) javaElement).isInterface()) {
+                if (!((IType) javaElement).isInterface()) {
                     return JavaElementLocation.EXTENDS_DECLARATION;
                 }
             } catch (final JavaModelException e) {
