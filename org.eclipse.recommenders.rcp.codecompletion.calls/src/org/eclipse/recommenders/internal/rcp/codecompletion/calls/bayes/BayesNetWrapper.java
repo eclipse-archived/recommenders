@@ -12,115 +12,98 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayes;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureEquals;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.eclipse.recommenders.bayes.BayesNet;
+import org.eclipse.recommenders.bayes.BayesNode;
+import org.eclipse.recommenders.bayes.inference.junctionTree.JunctionTree;
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
-
-import smile.Network;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class SmileNetWrapper implements IObjectMethodCallsNet {
+public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     private static final String S_FALSE = "False";
     private static final String S_TRUE = "True";
     private static final String N_CALLING_CONTEXT = "calling context";
     private static final String N_CALL_GROUPS = "call groups";
-
-    private final BayesianNetwork bayesNetwork;
     private final ITypeName typeName;
-    private Network smileNetwork;
-    private NodeWrapper contextNode;
-    private NodeWrapper patternNode;
+    private BayesNet bayesNet;
+    private JunctionTree junctionTree;
+    private BayesNode contextNode;
+    private BayesNode patternNode;
+    private final HashMap<IMethodName, BayesNode> callNodes;
 
-    private final Set<IMethodName> knownContexts = Sets.newHashSet();
-    private final Map<String, NodeWrapper> nodeMapping = new HashMap<String, NodeWrapper>();
-    private final Map<VmMethodName, NodeWrapper> callNodes = new HashMap<VmMethodName, NodeWrapper>();
-
-    public SmileNetWrapper(final ITypeName typeName, final BayesianNetwork bayesNetwork) {
-        this.typeName = typeName;
-        this.bayesNetwork = bayesNetwork;
-        initializeSmileNetwork();
+    public BayesNetWrapper(final ITypeName name, final BayesianNetwork network) {
+        this.typeName = name;
+        callNodes = new HashMap<IMethodName, BayesNode>();
+        initializeNetwork(network);
     }
 
-    private void initializeSmileNetwork() {
-        smileNetwork = new Network();
-        initializeNodes();
-        initializeArcs();
-        initializeProbabilities();
+    private void initializeNetwork(final BayesianNetwork network) {
+        bayesNet = new BayesNet();
+
+        initializeNodes(network);
+        initializeArcs(network);
+        initializeProbabilities(network);
+
+        junctionTree = new JunctionTree();
+        junctionTree.setNetwork(bayesNet);
     }
 
-    private void initializeNodes() {
-        final Collection<Node> nodes = bayesNetwork.getNodes();
+    private void initializeNodes(final BayesianNetwork network) {
+        final Collection<Node> nodes = network.getNodes();
         for (final Node node : nodes) {
+            final BayesNode bayesNode = new BayesNode(node.getIdentifier());
+            final String[] states = node.getStates();
+            for (int i = 0; i < states.length; i++) {
+                bayesNode.addOutcome(states[i]);
+            }
+            bayesNet.addNode(bayesNode);
+
             if (node.getIdentifier().equalsIgnoreCase(N_CALLING_CONTEXT)) {
-                initalizeContextNode(node);
+                contextNode = bayesNode;
             } else if (node.getIdentifier().equalsIgnoreCase(N_CALL_GROUPS)) {
-                patternNode = new NodeWrapper(node, smileNetwork);
-                nodeMapping.put(node.getIdentifier(), patternNode);
-                // } else if (node.getIdentifier().equals("availability")) {
-                // availabilityNode = new NodeWrapper(node, smileNetwork);
-                // nodeMapping.put(node.getIdentifier(), availabilityNode);
+                patternNode = bayesNode;
             } else {
-                final NodeWrapper methodNode = initializeMethodNode(node);
-                nodeMapping.put(node.getIdentifier(), methodNode);
+                callNodes.put(VmMethodName.get(node.getIdentifier()), bayesNode);
             }
         }
     }
 
-    private void initalizeContextNode(final Node node) {
-        contextNode = new NodeWrapper(node, smileNetwork);
-        nodeMapping.put(node.getIdentifier(), contextNode);
-        for (final String s : contextNode.getStates()) {
-            final VmMethodName m = VmMethodName.get(s);
-            knownContexts.add(m);
-        }
-    }
-
-    private NodeWrapper initializeMethodNode(final Node node) {
-        final NodeWrapper nodeWrapper = new NodeWrapper(node, smileNetwork);
-        final String methodeName = node.getIdentifier();
-        callNodes.put(VmMethodName.get(methodeName), nodeWrapper);
-        return nodeWrapper;
-    }
-
-    private void initializeArcs() {
-        final Collection<Node> nodes = bayesNetwork.getNodes();
+    private void initializeArcs(final BayesianNetwork network) {
+        final Collection<Node> nodes = network.getNodes();
         for (final Node node : nodes) {
-            final NodeWrapper nodeWrapper = nodeMapping.get(node.getIdentifier());
             final Node[] parents = node.getParents();
-            if (parents == null) {
-                continue;
-            }
+            final BayesNode children = bayesNet.getNode(node.getIdentifier());
+            final LinkedList<BayesNode> bnParents = new LinkedList<BayesNode>();
             for (int i = 0; i < parents.length; i++) {
-                final NodeWrapper parentWrapper = nodeMapping.get(parents[i].getIdentifier());
-                smileNetwork.addArc(parentWrapper.getHandle(), nodeWrapper.getHandle());
+                bnParents.add(bayesNet.getNode(parents[i].getIdentifier()));
             }
+            children.setParents(bnParents);
         }
     }
 
-    private void initializeProbabilities() {
-        final Collection<Node> nodes = bayesNetwork.getNodes();
+    private void initializeProbabilities(final BayesianNetwork network) {
+        final Collection<Node> nodes = network.getNodes();
         for (final Node node : nodes) {
-            final NodeWrapper nodeWrapper = nodeMapping.get(node.getIdentifier());
-            smileNetwork.setNodeDefinition(nodeWrapper.getHandle(), node.getProbabilities());
+            final BayesNode bayesNode = bayesNet.getNode(node.getIdentifier());
+            bayesNode.setProbabilities(node.getProbabilities());
         }
     }
 
@@ -131,21 +114,20 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public void setCalled(final IMethodName calledMethod) {
-        final NodeWrapper nodeWrapper = callNodes.get(calledMethod);
-        if (nodeWrapper != null) {
-            nodeWrapper.observeState(S_TRUE);
+        final BayesNode node = bayesNet.getNode(calledMethod.getIdentifier());
+        if (node != null) {
+            junctionTree.addEvidence(node, S_TRUE);
         }
     }
 
     @Override
     public void updateBeliefs() {
-        smileNetwork.updateBeliefs();
+        junctionTree.updateBeliefs();
     }
 
     @Override
     public void clearEvidence() {
-        smileNetwork.clearAllEvidence();
-        // availabilityNode.observeState("true");
+        junctionTree.setEvidence(new HashMap<Integer, Integer>());
     }
 
     @Override
@@ -153,7 +135,7 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
         if (newActiveMethodContext == null) {
             newActiveMethodContext = NetworkUtils.CTX_NULL;
         }
-        contextNode.observeState(newActiveMethodContext.getIdentifier());
+        junctionTree.addEvidence(contextNode, newActiveMethodContext.getIdentifier());
     }
 
     @Override
@@ -169,12 +151,12 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
     public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold) {
         final TreeSet<Tuple<IMethodName, Double>> res = createSortedSet();
         for (final IMethodName method : callNodes.keySet()) {
-            final NodeWrapper nodeWrapper = callNodes.get(method);
+            final BayesNode bayesNode = callNodes.get(method);
 
-            if (nodeWrapper.isEvidence()) {
+            if (junctionTree.getEvidence().containsKey(bayesNode.getId())) {
                 continue;
             }
-            final double probability = nodeWrapper.getProbability()[nodeWrapper.getStateIndex(S_TRUE)];
+            final double probability = junctionTree.getBeliefs(bayesNode)[bayesNode.getOutcomeIndex(S_TRUE)];
             if (probability < minProbabilityThreshold) {
                 continue;
             }
@@ -215,21 +197,33 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public void negateConstructors() {
-        for (final VmMethodName method : callNodes.keySet()) {
+        for (final IMethodName method : callNodes.keySet()) {
             if (method.isInit()) {
-                callNodes.get(method).observeState(S_FALSE);
+                final BayesNode bayesNode = callNodes.get(method);
+                junctionTree.addEvidence(bayesNode, S_FALSE);
             }
         }
     }
 
     @Override
     public List<Tuple<String, Double>> getPatternsWithProbability() {
-        return patternNode.getStatesWithProbability();
+        final double[] probs = junctionTree.getBeliefs(patternNode);
+        final List<Tuple<String, Double>> res = Lists.newArrayListWithCapacity(probs.length);
+        final Set<String> outcomes = patternNode.getOutcomes();
+        for (final String outcome : outcomes) {
+            final int probIndex = patternNode.getOutcomeIndex(outcome);
+            final double p = probs[probIndex];
+            if (0.01 > p) {
+                continue;
+            }
+            res.add(Tuple.create(outcome, p));
+        }
+        return res;
     }
 
     @Override
     public void setPattern(final String patternName) {
-        patternNode.observeState(patternName);
+        junctionTree.addEvidence(patternNode, patternName);
     }
 
     @Override
@@ -237,40 +231,19 @@ public class SmileNetWrapper implements IObjectMethodCallsNet {
         return new LinkedList<IMethodName>(callNodes.keySet());
     }
 
-    private void printNetworkState() {
-        System.out.println("---- Context Node ----");
-        printStates(contextNode);
-        System.out.println("---- Pattern Node ----");
-        printStates(patternNode);
-        System.out.println("---- Probabilities for Calls ----");
-        for (final IMethodName method : callNodes.keySet()) {
-            final NodeWrapper nodeWrapper = callNodes.get(method);
-            final double probability = nodeWrapper.getProbability()[nodeWrapper.getStateIndex(S_TRUE)];
-            System.out.printf("%.4f\t%s\n", probability, method.getIdentifier());
-        }
-    }
-
-    private void printStates(final NodeWrapper wrapper) {
-        final List<Tuple<String, Double>> statesWithProbability = wrapper.getStatesWithProbability();
-        Collections.sort(statesWithProbability, new Comparator<Tuple<String, Double>>() {
-            @Override
-            public int compare(final Tuple<String, Double> o1, final Tuple<String, Double> o2) {
-                return o2.getSecond().compareTo(o1.getSecond());
-            }
-        });
-        for (final Tuple<String, Double> tuple : statesWithProbability) {
-            System.out.printf("%.4f\t%s\n", tuple.getSecond(), tuple.getFirst());
-        }
-    }
-
     @Override
     public Collection<IMethodName> getContexts() {
-        return knownContexts;
+        final Set<String> outcomes = contextNode.getOutcomes();
+        final LinkedList<IMethodName> result = new LinkedList<IMethodName>();
+        for (final String outcome : outcomes) {
+            result.add(VmMethodName.get(outcome));
+        }
+        return result;
     }
 
     @Override
     public Collection<String> getPatterns() {
-        final String[] states = patternNode.getStates();
-        return Arrays.asList(states);
+        return new LinkedList<String>(patternNode.getOutcomes());
     }
+
 }
