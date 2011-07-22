@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for Selection Engine
+Bundle-SymbolicName: org.eclipse.recommenders.tests.commons.selection;singleton:=true
+Bundle-Version: 0.2.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.commons.selection;bundle-version="0.2.0.qualifier"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit4;bundle-version="4.8.1",
+ org.eclipse.recommenders.tests.commons;bundle-version="0.0.0",
+ org.eclipse.jdt.ui,
+ org.eclipse.jdt.core,
+ org.eclipse.jface.text,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.swtbot.junit4_x,
+ org.eclipse.recommenders.tests.commons
+Import-Package: org.eclipse.core.resources,
+ org.eclipse.swtbot.swt.finder.junit
+Export-Package: org.eclipse.recommenders.commons.internal.selection;x-internal:=true,
+ org.eclipse.recommenders.tests.commons.selection;uses:="org.eclipse.recommenders.commons.selection",
+ org.eclipse.recommenders.tests.commons.selection.ui;uses:="org.eclipse.swtbot.swt.finder.widgets,org.eclipse.recommenders.commons.selection,org.eclipse.recommenders.tests.commons.ui.utils"

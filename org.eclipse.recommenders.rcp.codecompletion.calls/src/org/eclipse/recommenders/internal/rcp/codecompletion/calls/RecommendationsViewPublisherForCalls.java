@@ -70,17 +70,24 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
                 if (findModel(variable.type)) {
                     RecommendationsViewPublisherForCalls.this.variable = variable;
                     computeRecommendationsForObjectInstance();
+                    releaseModel();
                 }
                 return false;
             }
 
         });
+    }
 
+    protected void releaseModel() {
+        if (model != null) {
+            modelsStore.releaseModel(model);
+            model = null;
+        }
     }
 
     private boolean findModel(final ITypeName type) {
         if (modelsStore.hasModel(type)) {
-            model = modelsStore.getModel(type);
+            model = modelsStore.acquireModel(type);
         }
         return model != null;
     }

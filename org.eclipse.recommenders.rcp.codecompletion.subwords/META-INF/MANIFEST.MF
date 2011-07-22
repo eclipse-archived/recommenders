@@ -10,5 +10,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.ui,
  org.eclipse.ui,
  org.apache.commons.lang3,
- com.google.guava
+ com.google.guava,
+ org.eclipse.recommenders.commons.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -61,7 +61,7 @@ public final class PatternRecommenderTest {
         final CallsModelStore store = Mockito.mock(CallsModelStore.class);
         final ObjectMethodCallsNet net = getCallsNetMock(receiverType);
         Mockito.when(Boolean.valueOf(store.hasModel(receiverType))).thenReturn(Boolean.TRUE);
-        Mockito.when(store.getModel(receiverType)).thenReturn(net);
+        Mockito.when(store.acquireModel(receiverType)).thenReturn(net);
 
         return new PatternRecommender(store, new Provider<Set<IVariableUsageResolver>>() {
             @Override

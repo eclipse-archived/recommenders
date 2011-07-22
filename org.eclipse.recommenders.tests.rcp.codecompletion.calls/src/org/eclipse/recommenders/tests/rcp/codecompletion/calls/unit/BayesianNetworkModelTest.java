@@ -40,7 +40,7 @@ public class BayesianNetworkModelTest {
 
         final Set<ITypeName> availableTypes = loader.readAvailableTypes();
         for (final ITypeName type : availableTypes) {
-            testObservations(modelStore.getModel(type));
+            testObservations(modelStore.acquireModel(type));
         }
     }
 

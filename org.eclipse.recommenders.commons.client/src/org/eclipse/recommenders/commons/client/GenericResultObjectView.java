@@ -11,6 +11,7 @@ package org.eclipse.recommenders.commons.client;
  *    Johannes Lerch - initial API and implementation.
  */
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -21,4 +22,12 @@ public class GenericResultObjectView<T> {
     public int total_rows;
     public int offset;
     public List<ResultObject<T>> rows;
+
+    public List<T> getTransformedResult() {
+        final List<T> result = new LinkedList<T>();
+        for (final ResultObject<T> obj : rows) {
+            result.add(obj.value);
+        }
+        return result;
+    }
 }

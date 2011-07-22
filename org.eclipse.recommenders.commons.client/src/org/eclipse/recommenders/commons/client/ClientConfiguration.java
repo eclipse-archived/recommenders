@@ -27,11 +27,11 @@ public class ClientConfiguration {
 
     private String baseUrl;
 
-    public String getBaseUrl() {
+    public synchronized String getBaseUrl() {
         return baseUrl;
     }
 
-    public void setBaseUrl(String newBaseUrl) {
+    public synchronized void setBaseUrl(String newBaseUrl) {
         if (!newBaseUrl.endsWith("/")) {
             newBaseUrl += "/";
         }

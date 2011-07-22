@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for Subwords Code Completion
+Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp.codecompletion.subwords
+Bundle-Version: 0.2.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.rcp.codecompletion.subwords
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit4,
+ org.apache.log4j,
+ org.eclipse.ui,
+ org.apache.commons.collections,
+ org.hamcrest,
+ org.eclipse.swtbot.eclipse.core,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.swtbot.junit4_x,
+ org.eclipse.swtbot.swt.finder,
+ org.apache.commons.io,
+ org.eclipse.pde,
+ org.eclipse.ui,
+ org.eclipse.recommenders.tests.commons,
+ org.objenesis,
+ org.eclipse.ui.editors

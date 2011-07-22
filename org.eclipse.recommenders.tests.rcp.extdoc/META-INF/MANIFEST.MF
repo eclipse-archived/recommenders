@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for Templates Completion
+Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp.extdoc;singleton:=true
+Bundle-Version: 0.2.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.rcp.extdoc;bundle-version="0.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit4;bundle-version="4.8.1",
+ org.eclipse.recommenders.tests.commons;bundle-version="0.0.0",
+ org.eclipse.recommenders.tests.commons
+Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
+ org.eclipse.recommenders.rcp.extdoc.features,
+ org.eclipse.recommenders.tests.rcp.extdoc;
+  uses:="org.eclipse.core.runtime,
+   org.eclipse.recommenders.rcp.extdoc.features,
+   org.eclipse.ui,
+   org.eclipse.recommenders.rcp.extdoc,
+   org.eclipse.recommenders.commons.selection,
+   org.eclipse.swt.graphics,
+   org.eclipse.swt.widgets"

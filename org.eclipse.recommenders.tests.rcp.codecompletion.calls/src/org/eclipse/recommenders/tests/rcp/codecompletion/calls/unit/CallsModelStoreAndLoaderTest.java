@@ -45,7 +45,7 @@ public class CallsModelStoreAndLoaderTest {
         final CallsModelStore store = injector.getInstance(CallsModelStore.class);
 
         // exercise:
-        final IObjectMethodCallsNet model = store.getModel(VmTypeName.get("Lorg/eclipse/compare/BufferedContent"));
+        final IObjectMethodCallsNet model = store.acquireModel(VmTypeName.get("Lorg/eclipse/compare/BufferedContent"));
         final boolean hasBufferedContent = store.hasModel(VmTypeName.get("Lorg/eclipse/compare/BufferedContent"));
         final boolean hasCompareConfiguration = store.hasModel(VmTypeName
                 .get("Lorg/eclipse/compare/CompareConfiguration"));

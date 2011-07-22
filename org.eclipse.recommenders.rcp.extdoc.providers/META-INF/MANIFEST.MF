@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: RCP ExtDoc Providers (Incubation) (Experimental)
+Bundle-SymbolicName: org.eclipse.recommenders.rcp.extdoc.providers;singleton:=true
+Bundle-Version: 0.2.0.qualifier
+Implementation-Version: 0.2.0
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.jdt.ui,
+ org.eclipse.jdt.core,
+ org.eclipse.core.runtime,
+ com.google.guava,
+ com.google.inject,
+ org.eclipse.recommenders.rcp.extdoc,
+ org.eclipse.recommenders.rcp.codecompletion,
+ org.eclipse.recommenders.rcp.codecompletion.templates,
+ org.eclipse.recommenders.server.extdoc,
+ org.eclipse.recommenders.commons.selection,
+ org.eclipse.recommenders.commons.utils,
+ org.eclipse.jface.text,
+ org.apache.commons.lang3,
+ org.eclipse.recommenders.rcp.codecompletion.calls,
+ org.eclipse.recommenders.commons.analysis,
+ org.eclipse.recommenders.rcp.utils,
+ org.eclipse.recommenders.commons.injection,
+ org.eclipse.core.resources
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.recommenders.internal.rcp.extdoc.providers;x-internal:=true,
+ org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;x-internal:=true,
+ org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;x-internal:=true
+Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin
+Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy

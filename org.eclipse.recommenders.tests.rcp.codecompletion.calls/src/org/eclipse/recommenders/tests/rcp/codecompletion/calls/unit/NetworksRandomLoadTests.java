@@ -53,7 +53,7 @@ public class NetworksRandomLoadTests {
     public void testNullArguments() {
         for (final ITypeName type : availableTypes) {
             try {
-                final IObjectMethodCallsNet model = modelStore.getModel(type);
+                final IObjectMethodCallsNet model = modelStore.acquireModel(type);
                 model.clearEvidence();
                 model.setMethodContext(null);
                 model.setCalled(null);
@@ -77,7 +77,7 @@ public class NetworksRandomLoadTests {
                 System.out.printf("Models checked: %d\n", numberOfModelsChecked);
             }
             try {
-                final IObjectMethodCallsNet model = modelStore.getModel(type);
+                final IObjectMethodCallsNet model = modelStore.acquireModel(type);
                 testRandomlyObserveContextsAndPatterns(model);
                 testObserveAllMethodCallsOneByOne(model);
             } catch (final Exception e) {

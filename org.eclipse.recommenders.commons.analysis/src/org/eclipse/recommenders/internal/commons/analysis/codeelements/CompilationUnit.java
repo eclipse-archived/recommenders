@@ -22,6 +22,7 @@ import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * {@link CompilationUnit}s represent .class or .java files. All units MUST have
@@ -61,6 +62,13 @@ public class CompilationUnit implements ICodeElement {
         return res;
     }
 
+    @SerializedName("_id")
+    public String id;
+    @SerializedName("_rev")
+    public String rev;
+
+    public Date creationTimestamp = new Date();
+
     public Set<TypeReference> imports = Sets.newTreeSet();
 
     public Kind kind = Kind.SNAPSHOT;
@@ -68,8 +76,6 @@ public class CompilationUnit implements ICodeElement {
     public Date analysedOn = new Date();
 
     public String fingerprint;
-
-    public String fingerprintOfPrimaryTypeName;
 
     public String name;
 

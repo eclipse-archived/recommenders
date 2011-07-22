@@ -15,17 +15,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -37,6 +26,17 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Comp
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
  * Computes context-sensitive {@link PatternRecommendation}s from the
@@ -81,13 +81,22 @@ public final class PatternRecommender {
         final Builder<PatternRecommendation> recommendations = ImmutableSet.builder();
         context = targetVariable.getContext();
         if (canFindVariableUsage(targetVariable)) {
-            for (final IObjectMethodCallsNet typeModel : findModelsForType(targetVariable.getType())) {
+            final ImmutableSet<IObjectMethodCallsNet> modelsForType = findModelsForType(targetVariable.getType());
+            for (final IObjectMethodCallsNet typeModel : modelsForType) {
                 model = typeModel;
                 updateModel();
                 recommendations.addAll(computeRecommendationsForModel(targetVariable.isNeedsConstructor()));
             }
+            releaseModels(modelsForType);
         }
         return recommendations.build();
+    }
+
+    private void releaseModels(final ImmutableSet<IObjectMethodCallsNet> models) {
+        for (final IObjectMethodCallsNet model : models) {
+            callsModelStore.releaseModel(model);
+        }
+        this.model = null;
     }
 
     /**
@@ -131,11 +140,20 @@ public final class PatternRecommender {
     private ImmutableSet<IObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
         final Builder<IObjectMethodCallsNet> models = ImmutableSet.builder();
         if (receiverType.getPackage().isDefaultPackage()) {
-            models.addAll(callsModelStore.getModelsForSimpleName(receiverType));
+            final Set<ITypeName> typeNames = callsModelStore.findTypesBySimpleName(receiverType);
+            models.addAll(acquireModels(typeNames));
         } else if (callsModelStore.hasModel(receiverType)) {
-            models.add(callsModelStore.getModel(receiverType));
+            models.add(callsModelStore.acquireModel(receiverType));
         }
         return models.build();
+    }
+
+    private Iterable<? extends IObjectMethodCallsNet> acquireModels(final Set<ITypeName> typeNames) {
+        final Set<IObjectMethodCallsNet> models = Sets.newHashSet();
+        for (final ITypeName typeName : typeNames) {
+            models.add(callsModelStore.acquireModel(typeName));
+        }
+        return models;
     }
 
     /**

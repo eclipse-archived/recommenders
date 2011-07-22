@@ -17,11 +17,12 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.eclipse.recommenders.commons.utils.FixedSizeLinkedHashMap;
+import org.apache.commons.pool.KeyedPoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.annotations.Clumsy;
 import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -31,9 +32,9 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.NetworkBui
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.ObjectMethodCallsNet;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
-import com.google.inject.internal.util.Sets;
 
 @Clumsy
 public class CallsModelStore {
@@ -43,41 +44,55 @@ public class CallsModelStore {
 
     private Set<ITypeName> supportedTypes;
 
-    private final Map<ITypeName, IObjectMethodCallsNet> loadedNetworks = FixedSizeLinkedHashMap.create(100);
+    private final GenericKeyedObjectPool pool = createPool();
 
-    private void init() {
+    private GenericKeyedObjectPool createPool() {
+        final GenericKeyedObjectPool pool = new GenericKeyedObjectPool(new CallsModelPoolFactory());
+        pool.setMaxTotal(100);
+        pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
+        return pool;
+    }
+
+    private void readSupportedTypes() {
         if (supportedTypes == null) {
             supportedTypes = loader.readAvailableTypes();
         }
     }
 
     public boolean hasModel(@Nullable final ITypeName name) {
-        init();
+        readSupportedTypes();
         return name == null ? false : supportedTypes.contains(name);
     }
 
-    public IObjectMethodCallsNet getModel(final ITypeName name) {
+    public IObjectMethodCallsNet acquireModel(final ITypeName name) {
         ensureIsTrue(hasModel(name));
         //
-        IObjectMethodCallsNet network = loadedNetworks.get(name);
-        if (network == null) {
-            network = loadNetwork(name);
-            loadedNetworks.put(name, network);
+        try {
+            return (IObjectMethodCallsNet) pool.borrowObject(name);
+        } catch (final Exception e) {
+            throw Throws.throwUnhandledException(e);
         }
-        return network;
     }
 
-    public Set<IObjectMethodCallsNet> getModelsForSimpleName(final ITypeName simpleName) {
+    public void releaseModel(final IObjectMethodCallsNet callsNet) {
+        try {
+            pool.returnObject(callsNet.getType(), callsNet);
+        } catch (final Exception e) {
+            Throws.throwUnhandledException(e);
+        }
+    }
+
+    public Set<ITypeName> findTypesBySimpleName(final ITypeName simpleName) {
         Preconditions.checkArgument("".equals(simpleName.getPackage().getIdentifier()));
-        init();
-        final Set<IObjectMethodCallsNet> models = Sets.newHashSet();
+        readSupportedTypes();
+        final Set<ITypeName> types = Sets.newHashSet();
         final String expectedClassName = simpleName.getClassName().substring(1);
         for (final ITypeName supportedType : supportedTypes) {
             if (supportedType.getClassName().equals(expectedClassName)) {
-                models.add(getModel(supportedType));
+                types.add(supportedType);
             }
         }
-        return models;
+        return types;
     }
 
     protected IObjectMethodCallsNet loadNetwork(final ITypeName name) {
@@ -120,5 +135,30 @@ public class CallsModelStore {
         b.createPatternsNode();
         b.createMethodNodes();
         return b.build();
+    }
+
+    private class CallsModelPoolFactory implements KeyedPoolableObjectFactory {
+        @Override
+        public boolean validateObject(final Object arg0, final Object arg1) {
+            return true;
+        }
+
+        @Override
+        public void passivateObject(final Object arg0, final Object arg1) throws Exception {
+        }
+
+        @Override
+        public Object makeObject(final Object key) throws Exception {
+            return loadNetwork((ITypeName) key);
+        }
+
+        @Override
+        public void destroyObject(final Object arg0, final Object arg1) throws Exception {
+        }
+
+        @Override
+        public void activateObject(final Object typeName, final Object callsNet) throws Exception {
+            ((IObjectMethodCallsNet) callsNet).clearEvidence();
+        }
     }
 }

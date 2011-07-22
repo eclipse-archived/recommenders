@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.rcp.codecompletion.subwords"
-      label="Code Recommenders: Naive Subwords Code Completion (Incubation)"
+      label="Code Recommenders: Naive Subwords Completion (Incubation)"
       version="0.2.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

@@ -13,6 +13,7 @@ package org.eclipse.recommenders.commons.utils;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface Bag<T> extends Iterable<T> {
@@ -101,4 +102,11 @@ public interface Bag<T> extends Iterable<T> {
      */
     public abstract boolean contains(T element);
 
+    /**
+     * Returns the bag's content in a new map. Changes to this map are not
+     * reflected by this bag.
+     */
+    public Map<T, Integer> asMap();
+
+    public boolean isEmpty();
 }

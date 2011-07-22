@@ -70,6 +70,60 @@ public class CallsModelStoreTest {
     public void smokeTestModelRetrieval() {
         // setup
         loader.availableTypes.add(VmTypeName.BOOLEAN);
+        loader.observations.put(VmTypeName.BOOLEAN, createObservation());
+
+        // exercise
+        final IObjectMethodCallsNet model = store.acquireModel(VmTypeName.BOOLEAN);
+
+        // verify
+        Assert.assertNotNull(model);
+    }
+
+    @Test
+    public void testPoolingWithoutRelease() {
+        loader.availableTypes.add(VmTypeName.BOOLEAN);
+        loader.observations.put(VmTypeName.BOOLEAN, createObservation());
+
+        final IObjectMethodCallsNet booleanModel1 = store.acquireModel(VmTypeName.BOOLEAN);
+        final IObjectMethodCallsNet booleanModel2 = store.acquireModel(VmTypeName.BOOLEAN);
+
+        Assert.assertNotSame(booleanModel1, booleanModel2);
+    }
+
+    @Test
+    public void testPoolingWithRelease() {
+        loader.availableTypes.add(VmTypeName.BOOLEAN);
+        loader.observations.put(VmTypeName.BOOLEAN, createObservation());
+
+        final IObjectMethodCallsNet booleanModel1 = store.acquireModel(VmTypeName.BOOLEAN);
+        store.releaseModel(booleanModel1);
+        final IObjectMethodCallsNet booleanModel2 = store.acquireModel(VmTypeName.BOOLEAN);
+
+        Assert.assertSame(booleanModel1, booleanModel2);
+    }
+
+    @Test(timeout = 1000)
+    public void testMaxTotalCacheLimit() {
+        for (int i = 0; i < 200; i++) {
+            final VmTypeName type = VmTypeName.get("Lorg/v" + i);
+            loader.availableTypes.add(type);
+            loader.observations.put(type, createObservation());
+
+            final IObjectMethodCallsNet model = store.acquireModel(type);
+            store.releaseModel(model);
+        }
+    }
+
+    @Test(expected = IllegalStateException.class, timeout = 1000)
+    public void testFailOnExhaustion() {
+        loader.availableTypes.add(VmTypeName.BOOLEAN);
+        loader.observations.put(VmTypeName.BOOLEAN, createObservation());
+        for (int i = 0; i < 10; i++) {
+            store.acquireModel(VmTypeName.BOOLEAN);
+        }
+    }
+
+    private LinkedList<InstanceUsage> createObservation() {
         final LinkedList<InstanceUsage> observations = new LinkedList<InstanceUsage>();
         final InstanceUsage usage = new InstanceUsage();
         usage.name = "InstanceName";
@@ -77,13 +131,7 @@ public class CallsModelStoreTest {
         usage.observedContexts.put(VmMethodName.get("Ljava/lang/Boolean.toString()Ljava/lang/String;"), 1);
         usage.observedContexts.put(VmMethodName.get("Ljava/lang/String.toString()Ljava/lang/String;"), 1);
         observations.add(usage);
-        loader.observations.put(VmTypeName.BOOLEAN, observations);
-
-        // exercise
-        final IObjectMethodCallsNet model = store.getModel(VmTypeName.BOOLEAN);
-
-        // verify
-        Assert.assertNotNull(model);
+        return observations;
     }
 
     private class MockCallsModelLoader implements ICallsModelLoader {
