@@ -61,7 +61,7 @@
 							<testSuite>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</testSuite>
 							<testClass>org.eclipse.recommenders.rcp.codecompletion.subwords.UnitTestSuite</testClass>
 							<useUIHarness>true</useUIHarness>
-							<useUIThread>false</useUIThread>
+							<useUIThread>true</useUIThread>
 							<product>org.eclipse.sdk.ide</product>
 							<argLine>${ui.test.vmargs}</argLine>
 							<application>org.eclipse.ui.ide.workbench</application>
