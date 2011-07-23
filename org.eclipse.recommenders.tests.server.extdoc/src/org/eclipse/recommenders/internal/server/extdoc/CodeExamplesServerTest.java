@@ -25,12 +25,12 @@ public final class CodeExamplesServerTest {
     @Test
     public void testGetOverridenMethodCodeExamples() {
         final CodeExamples examples = server.getOverridenMethodCodeExamples(TestUtils.getDefaultMethod());
-        // examples.getExamples();
+        examples.getExamples();
     }
 
     @Test
     public void testGetTypeCodeExamples() {
         final CodeExamples examples = server.getTypeCodeExamples(TestUtils.getDefaultType());
-        // examples.getExamples();
+        examples.getExamples();
     }
 }

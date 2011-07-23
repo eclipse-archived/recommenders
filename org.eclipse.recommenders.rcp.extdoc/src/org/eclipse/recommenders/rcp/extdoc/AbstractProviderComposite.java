@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.rcp.extdoc.AbstractProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -21,7 +23,6 @@ import org.eclipse.ui.IWorkbenchPartSite;
 public abstract class AbstractProviderComposite extends AbstractProvider {
 
     private IWorkbenchPartSite partSite;
-    private CLabel titleLabel;
 
     @Override
     public final Control createControl(final Composite parent, final IWorkbenchPartSite site) {
@@ -30,12 +31,13 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         final Composite container = SwtFactory.createGridComposite(parent, 1, 0, 3, 8, 8);
         createProviderTitle(container);
         SwtFactory.createSeparator(container);
-        createContentControl(container);
+        final Control control = createContentControl(container);
+        Checks.ensureIsNotNull(control);
         return container;
     }
 
     private void createProviderTitle(final Composite container) {
-        titleLabel = new CLabel(container, SWT.NONE);
+        final CLabel titleLabel = new CLabel(container, SWT.NONE);
         titleLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
         titleLabel.setImage(getIcon());
         titleLabel.setText(getProviderFullName());
@@ -43,6 +45,11 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
     }
 
     protected abstract Control createContentControl(Composite parent);
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return location != JavaElementLocation.PACKAGE_DECLARATION;
+    }
 
     public final IWorkbenchPartSite getPartSite() {
         return partSite;

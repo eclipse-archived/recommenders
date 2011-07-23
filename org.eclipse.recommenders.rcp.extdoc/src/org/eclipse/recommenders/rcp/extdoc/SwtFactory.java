@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.SourceCodeArea;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StyleRange;

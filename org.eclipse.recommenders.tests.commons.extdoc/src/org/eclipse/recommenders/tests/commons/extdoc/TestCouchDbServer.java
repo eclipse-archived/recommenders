@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.tests.commons.extdoc;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +46,14 @@ class TestCouchDbServer implements ICouchDbServer {
     @Override
     public <T> T getProviderContent(final String providerId, final IName element,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        // TODO Auto-generated method stub
-        return null;
+        final Class<T> clazz = (Class<T>) ((ParameterizedType) resultType.getType()).getActualTypeArguments()[0];
+        try {
+            return clazz.newInstance();
+        } catch (final InstantiationException e) {
+            throw new IllegalAccessError();
+        } catch (final IllegalAccessException e) {
+            throw new IllegalAccessError();
+        }
     }
 
 }

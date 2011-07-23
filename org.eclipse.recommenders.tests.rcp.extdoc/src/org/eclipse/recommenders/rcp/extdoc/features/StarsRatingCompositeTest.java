@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.recommenders.server.extdoc.types.RatingSummary;
@@ -30,8 +31,9 @@ public final class StarsRatingCompositeTest {
         provider.createControl(shell, null);
 
         final GenericServer server = ServerUtils.getGenericServer();
-        final StarsRatingComposite composite = new StarsRatingComposite(shell, TestUtils.getDefaultMethod(), provider,
-                server);
-        composite.addRating(4, RatingSummary.create(0, 0, null));
+        for (final IName name : TestUtils.getDefaultNames()) {
+            final StarsRatingComposite composite = new StarsRatingComposite(shell, name, provider, server);
+            composite.addRating(4, RatingSummary.create(0, 0, null));
+        }
     }
 }

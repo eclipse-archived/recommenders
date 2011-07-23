@@ -6,6 +6,8 @@ Bundle-Version: 0.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Eclipse Code Recommenders
 Import-Package: com.sun.jersey.api.client,
+ com.sun.jersey.client.urlconnection,
+ org.eclipse.core.commands.common,
  org.eclipse.jdt.core,
  org.eclipse.jface.preference,
  org.eclipse.recommenders.commons.client,
@@ -31,4 +33,6 @@ Require-Bundle: org.eclipse.jdt.core,
  org.mockito,
  org.eclipse.core.runtime,
  org.eclipse.recommenders.rcp.extdoc,
- org.eclipse.recommenders.server.extdoc
+ org.eclipse.recommenders.server.extdoc,
+ org.eclipse.ui.workbench,
+ com.sun.jersey.client

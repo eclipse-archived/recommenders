@@ -27,7 +27,7 @@ import org.eclipse.recommenders.commons.utils.Throws;
 public abstract class AbstractLocationSensitiveProviderComposite extends AbstractProviderComposite {
 
     @Override
-    public boolean isAvailableForLocation(final JavaElementLocation location) {
+    public final boolean isAvailableForLocation(final JavaElementLocation location) {
         return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
@@ -162,7 +162,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IType) {
             return updatePackageDeclarationSelection(selection, (IType) javaElement);
         }
-        throw new IllegalArgumentException(selection.toString());
+        throw new IllegalArgumentException(javaElement.toString());
     }
 
     protected boolean updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type) {

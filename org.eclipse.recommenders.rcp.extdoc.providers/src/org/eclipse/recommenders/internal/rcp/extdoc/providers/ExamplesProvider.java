@@ -22,7 +22,6 @@ import org.eclipse.jdt.internal.core.SourceField;
 import org.eclipse.jdt.internal.corext.util.MethodOverrideTester;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
@@ -49,11 +48,6 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     @Inject
     ExamplesProvider(final CodeExamplesServer server) {
         this.server = server;
-    }
-
-    @Override
-    public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
     @Override

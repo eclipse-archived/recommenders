@@ -28,7 +28,8 @@ final class ProvidersTableDropAdapter extends DropTargetAdapter {
     private final ProvidersTableDragListener dragListener;
     private final ProviderStore providerStore;
 
-    ProvidersTableDropAdapter(final Table table, final ProvidersTableDragListener dragListener, final ProviderStore providerStore) {
+    ProvidersTableDropAdapter(final Table table, final ProvidersTableDragListener dragListener,
+            final ProviderStore providerStore) {
         this.table = table;
         this.dragListener = dragListener;
         this.providerStore = providerStore;
@@ -51,7 +52,6 @@ final class ProvidersTableDropAdapter extends DropTargetAdapter {
     public void drop(final DropTargetEvent event) {
         final int newIndex = getNewIndex(event);
         dropTableItem(dragListener.getDragSourceItem(), newIndex);
-        updateProviderStore(dragListener.getDragSourceItem());
     }
 
     private int getNewIndex(final DropTargetEvent event) {
@@ -73,7 +73,7 @@ final class ProvidersTableDropAdapter extends DropTargetAdapter {
         return index;
     }
 
-    private void dropTableItem(final TableItem dragSourceItem, final int index) {
+    void dropTableItem(final TableItem dragSourceItem, final int index) {
         final Control newItemControl = (Control) dragSourceItem.getData();
         if (index >= table.getItemCount()) {
             newItemControl.moveBelow((Control) table.getItem(index - 1).getData());
@@ -88,6 +88,8 @@ final class ProvidersTableDropAdapter extends DropTargetAdapter {
         newItem.setImage(dragSourceItem.getImage());
         newItem.setChecked(dragSourceItem.getChecked());
         newItem.setGrayed(dragSourceItem.getGrayed());
+
+        updateProviderStore(dragSourceItem);
     }
 
     private void updateProviderStore(final TableItem dragSourceItem) {

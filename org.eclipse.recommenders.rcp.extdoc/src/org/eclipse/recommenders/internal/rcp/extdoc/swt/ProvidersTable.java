@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -148,5 +149,10 @@ final class ProvidersTable {
 
     void setChecked(final String preferenceId, final boolean isChecked) {
         preferences.putBoolean(preferenceId, isChecked);
+    }
+
+    @Provisional
+    public Table getTable() {
+        return table;
     }
 }

@@ -26,6 +26,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodC
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -54,7 +55,7 @@ public final class CallsProviderTest {
         Mockito.when(variable.getJavaProject()).thenReturn(project);
         // Mockito.when(selection.getJavaElement()).thenReturn(variable);
 
-        // provider.createContentControl(ExtDocUtils.getComposite());
-        provider.selectionChanged(selection);
+        provider.createContentControl(ExtDocUtils.getShell());
+        Assert.assertTrue(provider.selectionChanged(selection));
     }
 }

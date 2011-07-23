@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
@@ -21,9 +21,10 @@ public final class CommentsCompositeTest {
 
     @Test
     public void testCommentsComposite() {
-        final ITypeName type = TestUtils.getDefaultType();
-        final CommentsComposite composite = CommentsComposite.create(ExtDocUtils.getShell(), type,
-                ExtDocUtils.getTestProvider(), ServerUtils.getGenericServer());
-        composite.addComment("Test");
+        for (final IName name : TestUtils.getDefaultNames()) {
+            final CommentsComposite composite = CommentsComposite.create(ExtDocUtils.getShell(), name,
+                    ExtDocUtils.getTestProvider(), ServerUtils.getGenericServer());
+            composite.addComment("Test");
+        }
     }
 }

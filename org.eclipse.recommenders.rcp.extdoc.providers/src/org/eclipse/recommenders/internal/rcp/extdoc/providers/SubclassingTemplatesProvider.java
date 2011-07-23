@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -55,11 +54,6 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
     protected Control createContentControl(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
         return composite;
-    }
-
-    @Override
-    public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
     @Override

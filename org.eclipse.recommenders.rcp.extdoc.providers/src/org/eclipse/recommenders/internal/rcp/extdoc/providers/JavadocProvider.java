@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
@@ -27,6 +26,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
+
+import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends AbstractProviderComposite {

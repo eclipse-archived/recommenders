@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.SourceCodeArea;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.junit.Test;
 

@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.server.extdoc.types;
 
 import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
@@ -30,8 +31,9 @@ public final class ClassOverridePatterns implements IServerType {
         return res;
     }
 
+    @Provisional(discussAPI = "Capture of null only for testing resons")
     public MethodPattern[] getPatterns() {
-        return patterns.clone();
+        return patterns == null ? new MethodPattern[0] : patterns.clone();
     }
 
     @Override

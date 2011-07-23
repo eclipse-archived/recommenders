@@ -34,7 +34,7 @@ public final class CodeExamples implements IServerType {
     }
 
     public CodeSnippet[] getExamples() {
-        return examples.clone();
+        return examples == null ? new CodeSnippet[0] : examples.clone();
     }
 
     @Override

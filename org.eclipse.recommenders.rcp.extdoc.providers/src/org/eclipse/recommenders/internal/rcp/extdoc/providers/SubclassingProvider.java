@@ -22,7 +22,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -58,11 +57,6 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     protected Control createContentControl(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 12, 0, 0);
         return composite;
-    }
-
-    @Override
-    public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
     @Override
@@ -122,14 +116,15 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         }
 
         final int definitions = selfcalls.getNumberOfDefinitions();
-        final String text = "Based on " + definitions + " implementations of " + method.getName()
-                + " we created the following statistics. Implementors may consider to call the following methods.";
         final SubclassingProvider provider = this;
 
         new UIJob("Updating Subclassing Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
+                    final String text = String
+                            .format("Based on %d implementations of %s we created the following statistics. Implementors may consider to call the following methods.",
+                                    definitions, method.getName());
                     disposeChildren(composite);
                     displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(), 92, 25);
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method, provider, server);

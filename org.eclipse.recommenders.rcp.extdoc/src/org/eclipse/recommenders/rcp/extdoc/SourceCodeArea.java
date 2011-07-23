@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.rcp.extdoc;
 
 import java.util.Map;
 
@@ -24,7 +24,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.text.edits.MalformedTreeException;

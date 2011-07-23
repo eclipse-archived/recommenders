@@ -31,28 +31,30 @@ public final class GenericServerTest {
     private final GenericServer server = ServerUtils.getGenericServer();
     private final IProvider provider = ExtDocUtils.getTestProvider();
 
-    private final IName element = TestUtils.getDefaultMethod();
-
     @Test
     public void testComments() {
-        final IComment comment = server.addComment("Test text", element, provider);
-        final Collection<? extends IComment> comments = server.getUserFeedback(element, provider).getComments();
+        for (final IName name : TestUtils.getDefaultNames()) {
+            final IComment comment = server.addComment("Test text", name, provider);
+            final Collection<? extends IComment> comments = server.getUserFeedback(name, provider).getComments();
 
-        // Assert.assertFalse(comments.isEmpty());
-        // Assert.assertTrue(comments.contains(comment));
+            Assert.assertTrue(comments.isEmpty());
+            // Assert.assertTrue(comments.contains(comment));
+        }
     }
 
     @Test
     public void testRatings() {
-        server.addRating(4, element, provider);
-        final IRatingSummary summary = server.getUserFeedback(element, provider).getRatingSummary();
+        for (final IName name : TestUtils.getDefaultNames()) {
+            server.addRating(4, name, provider);
+            final IRatingSummary summary = server.getUserFeedback(name, provider).getRatingSummary();
 
-        Assert.assertEquals(0, summary.getAverage());
+            Assert.assertEquals(0, summary.getAverage());
 
-        final IRating userRating = Rating.create(3);
-        summary.addUserRating(userRating);
+            final IRating userRating = Rating.create(3);
+            summary.addUserRating(userRating);
 
-        Assert.assertEquals(3, summary.getAverage());
-        Assert.assertEquals(userRating, summary.getUserRating());
+            Assert.assertEquals(3, summary.getAverage());
+            Assert.assertEquals(userRating, summary.getUserRating());
+        }
     }
 }

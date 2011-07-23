@@ -10,52 +10,83 @@
  */
 package org.eclipse.recommenders.tests.commons.extdoc;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.mockito.Mockito;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.part.EditorPart;
 
-class TestJavaElementSelection implements IJavaElementSelection {
+public class TestJavaElementSelection implements IJavaElementSelection {
 
-    private IType javaElement;
-    private final IEditorPart editorPart = Mockito.mock(IEditorPart.class);
+    private final IJavaElement javaElement;
+    private final JavaElementLocation location;
+    private final IEditorPart editorPart = new EditorPart() {
+
+        @Override
+        public void doSave(final IProgressMonitor monitor) {
+        }
+
+        @Override
+        public void doSaveAs() {
+        }
+
+        @Override
+        public void init(final IEditorSite site, final IEditorInput input) throws PartInitException {
+        }
+
+        @Override
+        public boolean isDirty() {
+            return false;
+        }
+
+        @Override
+        public boolean isSaveAsAllowed() {
+            return false;
+        }
+
+        @Override
+        public void createPartControl(final Composite parent) {
+        }
+
+        @Override
+        public void setFocus() {
+        }
+    };
+
+    public TestJavaElementSelection(final JavaElementLocation location, final IJavaElement javaElement) {
+        this.javaElement = javaElement;
+        this.location = location;
+    }
 
     @Override
     public IJavaElement getJavaElement() {
-        if (javaElement == null) {
-            javaElement = Mockito.mock(IType.class);
-            Mockito.when(javaElement.getPrimaryElement()).thenReturn(javaElement);
-            Mockito.when(javaElement.getElementName()).thenReturn("Composite");
-            Mockito.when(javaElement.getHandleIdentifier()).thenReturn("TestIdentifier");
-            Mockito.when(javaElement.getFullyQualifiedName()).thenReturn("org/eclipse/swt/widgets/Composite");
-        }
         return javaElement;
     }
 
     @Override
     public JavaElementLocation getElementLocation() {
-        return JavaElementLocation.METHOD_BODY;
+        return location;
     }
 
     @Override
     public int getInvocationOffset() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public ITypeRoot getCompilationUnit() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public ASTNode getAstNode() {
-        // TODO Auto-generated method stub
         return null;
     }
 
