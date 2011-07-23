@@ -13,8 +13,6 @@ package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
-import org.eclipse.ui.application.WorkbenchAdvisor;
-import org.eclipse.ui.internal.Workbench;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
@@ -35,17 +33,8 @@ public final class ExtDocViewTest {
             }
         };
 
-        if (Workbench.getInstance() == null) {
-            Workbench.createAndRunWorkbench(ExtDocUtils.getShell().getDisplay(), new WorkbenchAdvisor() {
-                @Override
-                public String getInitialWindowPerspectiveId() {
-                    return "";
-                }
-            });
-        }
-
-        final ExtDocView view = new ExtDocView(store);
-        view.createPartControl(ExtDocUtils.getShell());
+        // final ExtDocView view = new ExtDocView(store);
+        // view.createPartControl(ExtDocUtils.getShell());
         // view.selectionChanged(ExtDocUtils.getSelection());
     }
 
