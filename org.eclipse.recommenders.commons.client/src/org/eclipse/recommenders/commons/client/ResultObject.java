@@ -17,7 +17,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ResultObject<T> {
 
     public String id;
-    // TODO: key not required by anyone?
-    // public String key;
     public T value;
 }

@@ -29,6 +29,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResol
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 import org.eclipse.recommenders.server.extdoc.types.CodeSnippet;
@@ -101,6 +102,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         if (codeExamples == null) {
             return false;
         }
+        final StarsRatingComposite ratings = new StarsRatingComposite(element, this, server);
         new UIJob("Updating Examples Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
@@ -108,7 +110,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
                     disposeChildren(container);
                     final CodeSnippet[] snippets = codeExamples.getExamples();
                     for (int i = 0; i < snippets.length; ++i) {
-                        createSnippetVisualization(i, element, snippets[i].getCode());
+                        createSnippetVisualization(i, ratings, snippets[i].getCode());
                     }
                     container.layout(true);
                 }
@@ -118,14 +120,15 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         return true;
     }
 
-    private void createSnippetVisualization(final int snippetIndex, final IName element, final String snippet) {
-        createEditAndRatingHeader(snippetIndex, element);
+    private void createSnippetVisualization(final int snippetIndex, final StarsRatingComposite ratings,
+            final String snippet) {
+        createEditAndRatingHeader(snippetIndex, ratings);
         SwtFactory.createSourceCodeArea(container, snippet);
     }
 
-    private void createEditAndRatingHeader(final int snippetIndex, final IName element) {
+    private void createEditAndRatingHeader(final int snippetIndex, final StarsRatingComposite ratings) {
         final String text = "Example #" + (snippetIndex + 1) + ":";
-        final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, element, this, server);
+        final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, ratings);
         line.createStyleRange(0, text.length(), SWT.BOLD, false, false);
     }
 }

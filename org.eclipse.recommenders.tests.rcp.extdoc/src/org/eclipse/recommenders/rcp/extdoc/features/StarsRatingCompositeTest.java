@@ -32,7 +32,8 @@ public final class StarsRatingCompositeTest {
 
         final GenericServer server = ServerUtils.getGenericServer();
         for (final IName name : TestUtils.getDefaultNames()) {
-            final StarsRatingComposite composite = new StarsRatingComposite(shell, name, provider, server);
+            final StarsRatingComposite composite = new StarsRatingComposite(name, provider, server);
+            composite.createContents(shell);
             composite.addRating(4, RatingSummary.create(0, 0, null));
         }
     }

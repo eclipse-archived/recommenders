@@ -29,6 +29,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeature
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
@@ -84,18 +85,18 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                 + " we created the following statistics. Subclassers may consider to override the following methods.";
         final String text2 = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
-        final SubclassingProvider provider = this;
+        final StarsRatingComposite ratings = new StarsRatingComposite(type, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, provider, server);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, ratings);
                     line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
                     displayDirectives(overrides.getOverrides(), "override", subclasses);
                     if (calls != null) {
-                        new TextAndFeaturesLine(composite, text2, type, provider, server);
+                        new TextAndFeaturesLine(composite, text2, ratings);
                         displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses());
                     }
                     composite.layout(true);
@@ -111,12 +112,12 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         // TODO first is not correct in all cases. this needs to be fixed soon
         // after the demo
         final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(firstDeclaration);
-        if (selfcalls == null) {
+        if (selfcalls == null || method == null) {
             return false;
         }
 
         final int definitions = selfcalls.getNumberOfDefinitions();
-        final SubclassingProvider provider = this;
+        final StarsRatingComposite ratings = new StarsRatingComposite(method, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override
@@ -127,7 +128,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                                     definitions, method.getName());
                     disposeChildren(composite);
                     displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(), 92, 25);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method, provider, server);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, ratings);
                     line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false,
                             true);
                     displayDirectives(selfcalls.getCalls(), "call", definitions);

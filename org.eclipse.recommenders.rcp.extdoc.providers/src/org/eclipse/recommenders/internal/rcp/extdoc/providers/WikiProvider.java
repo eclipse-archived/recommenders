@@ -97,7 +97,7 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     private void displayText(final IJavaElement element, final String markup) {
-        new StarsRatingComposite(composite, ElementResolver.resolveName(element), this, server);
+        new StarsRatingComposite(ElementResolver.resolveName(element), this, server).createContents(composite);
         // TODO: Add editing option.
 
         final StyledText text = new StyledText(composite, SWT.NONE);

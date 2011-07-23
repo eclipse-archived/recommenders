@@ -18,7 +18,6 @@ import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
 import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public final class SubclassingProviderTest {
@@ -34,7 +33,7 @@ public final class SubclassingProviderTest {
         for (final IJavaElement element : TestUtils.getDefaultElements()) {
             final TestJavaElementSelection selection = new TestJavaElementSelection(JavaElementLocation.METHOD_BODY,
                     element);
-            Assert.assertTrue(provider.selectionChanged(selection));
+            provider.selectionChanged(selection);
         }
     }
 

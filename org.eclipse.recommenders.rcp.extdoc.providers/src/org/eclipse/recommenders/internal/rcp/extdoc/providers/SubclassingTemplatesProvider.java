@@ -28,6 +28,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeature
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.MethodPattern;
@@ -72,7 +73,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         final String text = String
                 .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
                         numberOfSubclasses);
-        final SubclassingTemplatesProvider provider = this;
+        final StarsRatingComposite ratings = new StarsRatingComposite(type, this, server);
 
         new UIJob("Updating Subclassing Templates Provider") {
             @Override
@@ -90,7 +91,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                         String text2 = String
                                 .format("Pattern #%d - covers approximately %3.0f%% of the examined subclasses (%d subclasses).",
                                         i + 1, patternProbability, pattern.getNumberOfObservations());
-                        new TextAndFeaturesLine(templates, text2, type, provider, server);
+                        new TextAndFeaturesLine(templates, text2, ratings);
 
                         final Composite template = SwtFactory.createGridComposite(templates, 4, 12, 2, 12, 0);
                         final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);

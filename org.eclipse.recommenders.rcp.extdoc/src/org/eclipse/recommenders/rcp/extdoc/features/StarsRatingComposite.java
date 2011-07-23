@@ -36,19 +36,19 @@ public final class StarsRatingComposite {
 
     private Composite composite;
 
-    public StarsRatingComposite(final Composite parent, final IName element, final IProvider provider,
-            final IUserFeedbackServer server) {
+    private final IRatingSummary ratingSummary;
+
+    public StarsRatingComposite(final IName element, final IProvider provider, final IUserFeedbackServer server) {
         this.element = element;
         this.provider = provider;
         this.server = server;
-        createStars(parent);
+        ratingSummary = server.getUserFeedback(element, provider).getRatingSummary();
     }
 
-    private void createStars(final Composite parent) {
+    public void createContents(final Composite parent) {
         final Composite parentComposite = new Composite(parent, SWT.NONE);
         parentComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-        final IRatingSummary ratingSummary = server.getUserFeedback(element, provider).getRatingSummary();
         createStarsComposite(parentComposite);
         printStars(ratingSummary);
     }

@@ -41,21 +41,19 @@ public final class CommentsComposite {
 
     private Composite composite;
 
-    /**
-     * @wbp.parser.entryPoint
-     */
-    public static CommentsComposite create(final Composite parent, final IName element, final IProvider provider,
+    public static CommentsComposite create(final IName element, final IProvider provider,
             final IUserFeedbackServer server) {
         final CommentsComposite comments = new CommentsComposite();
-
         comments.provider = provider;
         comments.server = Preconditions.checkNotNull(server);
         comments.element = element;
         comments.comments = new LinkedList<IComment>(server.getUserFeedback(element, provider).getComments());
-
-        comments.composite = SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
-        comments.createCommentsArea();
         return comments;
+    }
+
+    public void createContents(final Composite parent) {
+        composite = SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
+        createCommentsArea();
     }
 
     private void createCommentsArea() {
