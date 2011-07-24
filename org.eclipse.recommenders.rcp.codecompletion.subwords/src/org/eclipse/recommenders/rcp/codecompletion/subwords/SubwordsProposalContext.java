@@ -184,13 +184,18 @@ public class SubwordsProposalContext {
     }
 
     public int calculateRelevance() {
-        final int matches = SubwordsUtils.calculateMatchingNGrams(prefixBigrams, matchingRegionBigrams);
-
-        int relevance = jdtProposal.getRelevance() + matches;
-        if (isPrefixMatch()) {
-            relevance += PREFIX_BONUS;
-        }
-        return relevance;
+        return jdtProposal.getRelevance();
+        // TODO until https://bugs.eclipse.org/bugs/show_bug.cgi?id=350991 is
+        // fixed this should not be used:
+        // final int matches =
+        // SubwordsUtils.calculateMatchingNGrams(prefixBigrams,
+        // matchingRegionBigrams);
+        //
+        // int relevance = jdtProposal.getRelevance() + matches;
+        // if (isPrefixMatch()) {
+        // relevance += PREFIX_BONUS;
+        // }
+        // return relevance;
     }
 
 }
