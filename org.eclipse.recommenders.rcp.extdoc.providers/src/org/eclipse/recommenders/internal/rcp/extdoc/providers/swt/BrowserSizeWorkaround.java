@@ -61,7 +61,7 @@ public final class BrowserSizeWorkaround {
     private void setHeightAndTriggerLayout(final int height) {
         gridData.heightHint = height;
         gridData.minimumHeight = height;
-        browser.getParent().getParent().layout();
+        browser.getParent().getParent().getParent().layout(true);
     }
 
     private void registerProgressListener() {
