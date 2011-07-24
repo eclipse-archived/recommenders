@@ -42,7 +42,6 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsComposite;
 import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
@@ -98,7 +97,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         if (context == null || !displayProposalsForVariable(field, false)) {
             return false;
         }
-        displayProposalsForAllMethods(selection, field);
+        // displayProposalsForAllMethods(selection, field);
         return true;
     }
 
@@ -212,16 +211,13 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         try {
             final ITypeName fieldType = context.getVariable().type;
             for (final IMethod method : field.getDeclaringType().getMethods()) {
-                if (false) {
-                    context = new MockedIntelligentCompletionContext(selection) {
-                        @Override
-                        public Variable getVariable() {
-                            return Variable.create(field.getElementName(), fieldType,
-                                    ElementResolver.toRecMethod(method));
-                        };
+                context = new MockedIntelligentCompletionContext(selection) {
+                    @Override
+                    public Variable getVariable() {
+                        return Variable.create(field.getElementName(), fieldType, ElementResolver.toRecMethod(method));
                     };
-                    displayProposalsForMethod(method);
-                }
+                };
+                displayProposalsForMethod(method);
             }
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
@@ -259,9 +255,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         }
 
         final String text = "People who use " + elementName + " usually also call the following methods:";
-        final CallsProvider provider = this;
         final StarsRatingComposite ratings = new StarsRatingComposite(element, this, server);
-        final CommentsComposite comments = CommentsComposite.create(element, provider, server);
         new UIJob("Updating Calls Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
@@ -270,7 +264,6 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, ratings);
                     line.createStyleRange(15, elementName.length(), SWT.NORMAL, false, true);
                     displayProposals(proposals, calledMethods);
-                    comments.createContents(composite);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;

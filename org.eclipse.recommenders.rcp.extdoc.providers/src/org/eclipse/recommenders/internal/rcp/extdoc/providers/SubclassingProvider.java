@@ -29,6 +29,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeature
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.CommentsComposite;
 import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
@@ -86,6 +87,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         final String text2 = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
         final StarsRatingComposite ratings = new StarsRatingComposite(type, this, server);
+        final CommentsComposite comments = CommentsComposite.create(type, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override
@@ -99,6 +101,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                         new TextAndFeaturesLine(composite, text2, ratings);
                         displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses());
                     }
+                    comments.createContents(composite);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;
@@ -115,23 +118,25 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         if (selfcalls == null || method == null) {
             return false;
         }
-
         final int definitions = selfcalls.getNumberOfDefinitions();
         final StarsRatingComposite ratings = new StarsRatingComposite(method, this, server);
+        final CommentsComposite comments = CommentsComposite.create(method, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
+                    disposeChildren(composite);
+                    // displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(),
+                    // definitions, 25);
                     final String text = String
                             .format("Based on %d implementations of %s we created the following statistics. Implementors may consider to call the following methods.",
                                     definitions, method.getName());
-                    disposeChildren(composite);
-                    displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(), 92, 25);
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, ratings);
                     line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false,
                             true);
                     displayDirectives(selfcalls.getCalls(), "call", definitions);
+                    comments.createContents(composite);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;
@@ -193,7 +198,8 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         } else if (percent >= 10) {
             return "rarely";
         }
-        return "should not";
+        // TODO: Some other label for probability < 10%?
+        return "rarely";
     }
 
     private static int getLength(final int number) {

@@ -53,7 +53,11 @@ class ProviderUpdateJob extends Job {
     public IStatus run(final IProgressMonitor monitor) {
         try {
             monitor.beginTask("Updating Extended Javadocs", 1);
-            updateProvider();
+            try {
+                updateProvider();
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
             return Status.OK_STATUS;
         } finally {
             monitor.done();

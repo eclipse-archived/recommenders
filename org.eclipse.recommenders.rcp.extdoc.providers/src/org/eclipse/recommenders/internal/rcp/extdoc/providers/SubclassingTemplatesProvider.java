@@ -28,6 +28,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeature
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.CommentsComposite;
 import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
@@ -74,6 +75,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                 .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
                         numberOfSubclasses);
         final StarsRatingComposite ratings = new StarsRatingComposite(type, this, server);
+        final CommentsComposite comments = CommentsComposite.create(type, this, server);
 
         new UIJob("Updating Subclassing Templates Provider") {
             @Override
@@ -83,14 +85,13 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                     SwtFactory.createStyledText(composite, text);
 
                     final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
-
                     for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
                         final MethodPattern pattern = patterns[i];
-                        final double patternProbability = pattern.getNumberOfObservations()
-                                / numberOfSubclasses.doubleValue();
-                        String text2 = String
-                                .format("Pattern #%d - covers approximately %3.0f%% of the examined subclasses (%d subclasses).",
-                                        i + 1, patternProbability, pattern.getNumberOfObservations());
+                        final int patternProbability = (int) (pattern.getNumberOfObservations()
+                                / numberOfSubclasses.doubleValue() * 100);
+                        String text2 = String.format(
+                                "Pattern #%d - covers approximately %d%% of the examined subclasses (%d subclasses).",
+                                i + 1, patternProbability, pattern.getNumberOfObservations());
                         new TextAndFeaturesLine(templates, text2, ratings);
 
                         final Composite template = SwtFactory.createGridComposite(templates, 4, 12, 2, 12, 0);
@@ -106,6 +107,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                                     false, SWT.COLOR_BLUE);
                         }
                     }
+
+                    comments.createContents(composite);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;
