@@ -28,8 +28,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeature
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsComposite;
-import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.MethodPattern;
@@ -74,8 +73,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         final String text = String
                 .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
                         numberOfSubclasses);
-        final StarsRatingComposite ratings = new StarsRatingComposite(type, this, server);
-        final CommentsComposite comments = CommentsComposite.create(type, this, server);
+        final CommunityFeatures ratings = CommunityFeatures.create(type, this, server);
 
         new UIJob("Updating Subclassing Templates Provider") {
             @Override
@@ -108,7 +106,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                         }
                     }
 
-                    comments.createContents(composite);
+                    ratings.loadCommentsComposite(composite);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;

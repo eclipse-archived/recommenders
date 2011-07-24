@@ -25,7 +25,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResol
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsComposite;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
@@ -44,7 +44,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
     private Composite composite;
     private ExtendedJavadocView javadoc;
     private final GenericServer server;
-    private CommentsComposite comments;
+    private CommunityFeatures features;
 
     @Inject
     public JavadocProvider(final GenericServer server) {
@@ -91,8 +91,8 @@ public final class JavadocProvider extends AbstractProviderComposite {
     }
 
     private void displayComments(final IJavaElement javaElement) {
-        final CommentsComposite oldComments = comments;
-        comments = CommentsComposite.create(ElementResolver.resolveName(javaElement), this, server);
+        final CommunityFeatures oldComments = features;
+        features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), this, server);
         new UIJob("Updating JavaDoc Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
@@ -100,7 +100,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
                     if (oldComments != null) {
                         oldComments.dispose();
                     }
-                    comments.createContents(composite);
+                    features.loadCommentsComposite(composite);
                     composite.layout(true);
                     composite.getParent().getParent().layout(true);
                 }

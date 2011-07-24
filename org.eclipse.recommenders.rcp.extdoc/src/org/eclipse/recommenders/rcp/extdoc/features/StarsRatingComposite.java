@@ -38,14 +38,16 @@ public final class StarsRatingComposite {
 
     private final IRatingSummary ratingSummary;
 
-    public StarsRatingComposite(final IName element, final IProvider provider, final IUserFeedbackServer server) {
+    public StarsRatingComposite(final IName element, final IProvider provider, final IUserFeedback feedback,
+            final IUserFeedbackServer server, final Composite parent) {
         this.element = element;
         this.provider = provider;
         this.server = server;
-        ratingSummary = server.getUserFeedback(element, provider).getRatingSummary();
+        ratingSummary = feedback.getRatingSummary();
+        createContents(parent);
     }
 
-    public void createContents(final Composite parent) {
+    private void createContents(final Composite parent) {
         final Composite parentComposite = new Composite(parent, SWT.NONE);
         parentComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -105,6 +107,10 @@ public final class StarsRatingComposite {
         ratingSummary.addUserRating(userRating);
         printStars(ratingSummary);
         composite.layout(true);
+    }
+
+    public void dispose() {
+        composite.dispose();
     }
 
     private static final class HoverListener implements MouseTrackListener {

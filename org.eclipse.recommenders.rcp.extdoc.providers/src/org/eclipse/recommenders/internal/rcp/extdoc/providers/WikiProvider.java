@@ -24,7 +24,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResol
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -97,7 +97,8 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     private void displayText(final IJavaElement element, final String markup) {
-        new StarsRatingComposite(ElementResolver.resolveName(element), this, server).createContents(composite);
+        CommunityFeatures.create(ElementResolver.resolveName(element), this, server)
+                .loadStarsRatingComposite(composite);
         // TODO: Add editing option.
 
         final StyledText text = new StyledText(composite, SWT.NONE);

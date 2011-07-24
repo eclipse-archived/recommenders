@@ -42,7 +42,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.SWT;
@@ -255,13 +255,13 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         }
 
         final String text = "People who use " + elementName + " usually also call the following methods:";
-        final StarsRatingComposite ratings = new StarsRatingComposite(element, this, server);
+        final CommunityFeatures features = CommunityFeatures.create(element, this, server);
         new UIJob("Updating Calls Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, ratings);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
                     line.createStyleRange(15, elementName.length(), SWT.NORMAL, false, true);
                     displayProposals(proposals, calledMethods);
                     composite.layout(true);

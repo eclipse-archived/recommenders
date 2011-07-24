@@ -29,8 +29,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeature
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsComposite;
-import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
@@ -86,22 +85,21 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                 + " we created the following statistics. Subclassers may consider to override the following methods.";
         final String text2 = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
-        final StarsRatingComposite ratings = new StarsRatingComposite(type, this, server);
-        final CommentsComposite comments = CommentsComposite.create(type, this, server);
+        final CommunityFeatures features = CommunityFeatures.create(type, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, ratings);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
                     line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
                     displayDirectives(overrides.getOverrides(), "override", subclasses);
                     if (calls != null) {
-                        new TextAndFeaturesLine(composite, text2, ratings);
+                        new TextAndFeaturesLine(composite, text2, features);
                         displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses());
                     }
-                    comments.createContents(composite);
+                    features.loadCommentsComposite(composite);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;
@@ -119,8 +117,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             return false;
         }
         final int definitions = selfcalls.getNumberOfDefinitions();
-        final StarsRatingComposite ratings = new StarsRatingComposite(method, this, server);
-        final CommentsComposite comments = CommentsComposite.create(method, this, server);
+        final CommunityFeatures features = CommunityFeatures.create(method, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override
@@ -132,11 +129,11 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                     final String text = String
                             .format("Based on %d implementations of %s we created the following statistics. Implementors may consider to call the following methods.",
                                     definitions, method.getName());
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, ratings);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
                     line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false,
                             true);
                     displayDirectives(selfcalls.getCalls(), "call", definitions);
-                    comments.createContents(composite);
+                    features.loadCommentsComposite(composite);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;
