@@ -91,9 +91,7 @@ final class CouchDbServer implements ICouchDbServer {
             path.append(String.format("%s%s%s:%s%s%s,", QUOTE, keyEntry.getKey(), QUOTE, QUOTE, value, QUOTE));
         }
         path.replace(path.length() - 1, path.length(), BRACECLOSE);
-        // TODO: Keep "&stale=ok"? Use TransactionResult.class to resolve
-        // version conflicts?
-        return String.format("%s%s", path.toString(), "");
+        return String.format("%s%s", path.toString(), "&stale=update_after");
     }
 
     private static String encode(final String text) {

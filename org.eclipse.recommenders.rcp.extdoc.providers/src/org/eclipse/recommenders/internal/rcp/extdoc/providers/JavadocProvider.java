@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.JavaModelException;
@@ -19,24 +21,40 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.BrowserSizeWorkaround;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.CommentsComposite;
+import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.progress.UIJob;
+
+import com.google.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends AbstractProviderComposite {
 
+    private Composite composite;
     private ExtendedJavadocView javadoc;
+    private final GenericServer server;
+    private CommentsComposite comments;
+
+    @Inject
+    public JavadocProvider(final GenericServer server) {
+        this.server = server;
+    }
 
     @Override
     protected Control createContentControl(final Composite parent) {
-        javadoc = new ExtendedJavadocView(parent, getPartSite());
+        composite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
+        javadoc = new ExtendedJavadocView(composite, getPartSite());
 
         if (javadoc.getControl() instanceof Browser) {
             new BrowserSizeWorkaround((Browser) javadoc.getControl());
@@ -53,6 +71,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
             }
             selection.getJavaElement().getAttachedJavadoc(null);
             javadoc.setInput(javaElement);
+            displayComments(selection.getJavaElement());
             return true;
         } catch (final JavaModelException e) {
             return false;
@@ -69,6 +88,25 @@ public final class JavadocProvider extends AbstractProviderComposite {
             return VariableResolver.resolveTypeSignature((ILocalVariable) javaElement);
         }
         return javaElement;
+    }
+
+    private void displayComments(final IJavaElement javaElement) {
+        final CommentsComposite oldComments = comments;
+        comments = CommentsComposite.create(ElementResolver.resolveName(javaElement), this, server);
+        new UIJob("Updating JavaDoc Provider") {
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                if (!composite.isDisposed()) {
+                    if (oldComments != null) {
+                        oldComments.dispose();
+                    }
+                    comments.createContents(composite);
+                    composite.layout(true);
+                    composite.getParent().getParent().layout(true);
+                }
+                return Status.OK_STATUS;
+            }
+        }.schedule();
     }
 
     /**

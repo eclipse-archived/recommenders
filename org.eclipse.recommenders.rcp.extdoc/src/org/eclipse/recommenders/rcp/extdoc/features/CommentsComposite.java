@@ -77,11 +77,14 @@ public final class CommentsComposite {
     private void displayComments() {
         disposeChildren();
 
-        for (final IComment comment : comments) {
-            final String headLine = String
-                    .format("%s, %s", dateFormat.format(comment.getDate()), comment.getUsername());
-            SwtFactory.createCLabel(composite, headLine, true, commentsIcon);
-            SwtFactory.createLabel(composite, comment.getText());
+        if (!comments.isEmpty()) {
+            for (final IComment comment : comments) {
+                final String headLine = String.format("%s, %s", dateFormat.format(comment.getDate()),
+                        comment.getUsername());
+                SwtFactory.createCLabel(composite, headLine, true, commentsIcon);
+                SwtFactory.createLabel(composite, comment.getText());
+            }
+            SwtFactory.createLabel(composite, "");
         }
 
         displayAddComment();
@@ -89,7 +92,6 @@ public final class CommentsComposite {
     }
 
     private void displayAddComment() {
-        SwtFactory.createLabel(composite, "");
         final Text text = SwtFactory.createText(composite, "", 45, 0);
 
         final Composite buttons = SwtFactory.createGridComposite(composite, 2, 5, 0, 0, 0);
@@ -138,5 +140,9 @@ public final class CommentsComposite {
         if (composite.getParent().getParent() != null) {
             composite.getParent().getParent().getParent().layout(true);
         }
+    }
+
+    public void dispose() {
+        composite.dispose();
     }
 }

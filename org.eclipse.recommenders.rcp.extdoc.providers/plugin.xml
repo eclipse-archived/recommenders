@@ -45,7 +45,7 @@
             icon="icons/full/obj16/subclassing-patterns.gif">
       </provider>
       <provider
-            class="org.eclipse.recommenders.internal.rcp.extdoc.providers.JavadocProvider"
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.JavadocProvider"
             long_name="Javadoc Provider"
             priority="100"
             short_name="Javadoc"

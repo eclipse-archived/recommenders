@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.names.IFieldName;
@@ -21,6 +22,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmFieldName;
+import org.eclipse.recommenders.commons.utils.names.VmPackageName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
@@ -44,8 +46,10 @@ public final class ElementResolver {
             return Variable.create(javaElement.getElementName(), null, declaringMethod).getName();
         } else if (javaElement instanceof IField) {
             throw new IllegalArgumentException("Can't yet resolve fields!");
+        } else if (javaElement instanceof IPackageFragment) {
+            return VmPackageName.get(javaElement.getElementName());
         }
-        throw new IllegalArgumentException(javaElement.toString());
+        throw new IllegalArgumentException(javaElement.getClass().toString());
     }
 
     public static IMethodName toRecMethod(final IMethod jdtMethod) {
