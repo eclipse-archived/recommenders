@@ -12,14 +12,14 @@ package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.tests.rcp.extdoc.TestProvider;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
-import org.junit.Assert;
 import org.junit.Test;
 
+@SuppressWarnings("restriction")
 public final class ExtDocViewTest {
 
     @Test
@@ -28,16 +28,14 @@ public final class ExtDocViewTest {
             @Override
             public ImmutableList<IProvider> getProviders() {
                 final Builder<IProvider> builder = ImmutableList.builder();
-                builder.add(new TestProvider());
+                builder.add(ExtDocUtils.getTestProvider());
                 return builder.build();
             }
         };
 
         // final ExtDocView view = new ExtDocView(store);
-        // view.createPartControl(UnitTestSuite.getShell());
-        // view.selectionChanged(UnitTestSuite.getSelection());
-
-        Assert.assertTrue(true);
+        // view.createPartControl(ExtDocUtils.getShell());
+        // view.selectionChanged(ExtDocUtils.getSelection());
     }
 
 }

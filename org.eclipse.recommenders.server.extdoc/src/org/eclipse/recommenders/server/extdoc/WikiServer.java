@@ -10,22 +10,25 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
-import org.eclipse.recommenders.internal.server.extdoc.Server;
-import org.eclipse.recommenders.rcp.extdoc.features.IComment;
-import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
 import org.eclipse.recommenders.server.extdoc.types.WikiEntry;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;
 
-public final class WikiServer extends AbstractRatingsServer implements ICommentsServer {
+public final class WikiServer extends AbstractFeedbackServer {
 
-    private static final String PROVIDERID = WikiEntry.class.getSimpleName();
+    private static final String PROVIDER_ID = WikiEntry.class.getSimpleName();
+
+    @Inject
+    public WikiServer(final ICouchDbServer server, final UsernameProvider usernameListener) {
+        super(server, usernameListener);
+    }
 
     public String getText(final IJavaElement javaElement) {
         final WikiEntry entry = getEntry(javaElement);
@@ -39,27 +42,19 @@ public final class WikiServer extends AbstractRatingsServer implements IComments
         } else {
             entry.setText(text);
         }
-        Server.post(entry);
+        getServer().post(entry);
     }
 
-    @Override
-    public List<IComment> getComments(final Object object) {
-        // TODO Auto-generated method stub
-        return Collections.emptyList();
-    }
-
-    @Override
-    public IComment addComment(final Object object, final String text) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private static WikiEntry getEntry(final IJavaElement javaElement) {
+    private WikiEntry getEntry(final IJavaElement javaElement) {
         final String key = getIdentifier(javaElement);
-        final WikiEntry result = Server.getProviderContent(PROVIDERID, "type", key,
+        final List<WikiEntry> entries = getServer().getRows("providers",
+                ImmutableMap.of("providerId", PROVIDER_ID, "type", key),
                 new GenericType<GenericResultObjectView<WikiEntry>>() {
                 });
-        return result;
+        if (entries != null && !entries.isEmpty()) {
+            return entries.get(0);
+        }
+        return null;
     }
 
     private static String getIdentifier(final IJavaElement javaElement) {

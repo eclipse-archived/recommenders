@@ -12,7 +12,7 @@ package org.eclipse.recommenders.rcp.extdoc.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -25,6 +25,7 @@ public final class ExtDocPreferencePage extends FieldEditorPreferencePage implem
 
     @Override
     protected void createFieldEditors() {
+        addField(new StringFieldEditor(PreferenceConstants.USERNAME, "Username for Comments:", getFieldEditorParent()));
         addField(new StringFieldEditor(PreferenceConstants.WEBSERVICE_HOST, "Webservice URL:", getFieldEditorParent()));
     }
 

@@ -37,6 +37,11 @@
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site/</url>
 		</repository>
+		<repository>
+			<id>bayesnet</id>
+			<layout>p2</layout>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/students/th/michael-bayes/org.eclipse.recommenders.bayes.repository/target/site/</url>
+		</repository>
 	</repositories>
 
 
@@ -271,6 +276,7 @@
 		<module>../org.eclipse.recommenders.rcp.extdoc.feature</module>
 		<module>../org.eclipse.recommenders.rcp.extdoc.update-site</module>
 		<module>../org.eclipse.recommenders.server.extdoc</module>
+		<module>../org.eclipse.recommenders.tests.commons.extdoc</module>
 		<module>../org.eclipse.recommenders.tests.commons.selection</module>
 		<module>../org.eclipse.recommenders.tests.rcp.extdoc</module>
 		<module>../org.eclipse.recommenders.tests.rcp.extdoc.providers</module>

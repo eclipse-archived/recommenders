@@ -21,6 +21,6 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 // UiTestSuite.class
-@SuiteClasses({ UnitTestSuite.class })
+@SuiteClasses(UnitTestSuite.class)
 public class AllTestSuite {
 }

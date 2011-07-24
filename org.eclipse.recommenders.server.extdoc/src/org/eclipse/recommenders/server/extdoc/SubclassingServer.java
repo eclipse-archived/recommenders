@@ -10,65 +10,47 @@
  */
 package org.eclipse.recommenders.server.extdoc;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.internal.server.extdoc.AbstractRatingsServer;
-import org.eclipse.recommenders.internal.server.extdoc.Server;
-import org.eclipse.recommenders.rcp.extdoc.features.IComment;
-import org.eclipse.recommenders.rcp.extdoc.features.ICommentsServer;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
 import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 
+import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;
 
-public final class SubclassingServer extends AbstractRatingsServer implements ICommentsServer {
+public final class SubclassingServer extends AbstractFeedbackServer {
 
-    private static final String S_METHOD = "method";
-    private static final String S_TYPE = "type";
+    @Inject
+    public SubclassingServer(final ICouchDbServer server, final UsernameProvider usernameListener) {
+        super(server, usernameListener);
+    }
 
-    public ClassOverrideDirectives getClassOverrideDirective(final IType type) {
-        return Server.getProviderContent(ClassOverrideDirectives.class.getSimpleName(), S_TYPE, Server.createKey(type),
+    public ClassOverrideDirectives getClassOverrideDirectives(final ITypeName type) {
+        return getServer().getProviderContent(ClassOverrideDirectives.class.getSimpleName(), type,
                 new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
                 });
     }
 
-    public ClassSelfcallDirectives getClassSelfcallDirective(final IType type) {
-        return Server.getProviderContent(ClassSelfcallDirectives.class.getSimpleName(), S_TYPE, Server.createKey(type),
+    public ClassSelfcallDirectives getClassSelfcallDirectives(final ITypeName type) {
+        return getServer().getProviderContent(ClassSelfcallDirectives.class.getSimpleName(), type,
                 new GenericType<GenericResultObjectView<ClassSelfcallDirectives>>() {
                 });
     }
 
-    public MethodSelfcallDirectives getMethodSelfcallDirective(final IMethod method) {
-        final String key = Server.createKey(method);
-        if (key == null) {
-            return null;
-        }
-        return Server.getProviderContent(MethodSelfcallDirectives.class.getSimpleName(), S_METHOD, key,
+    public MethodSelfcallDirectives getMethodSelfcallDirectives(final IMethodName method) {
+        return getServer().getProviderContent(MethodSelfcallDirectives.class.getSimpleName(), method,
                 new GenericType<GenericResultObjectView<MethodSelfcallDirectives>>() {
                 });
     }
 
-    public ClassOverridePatterns getClassOverridePatterns(final IType type) {
-        return Server.getProviderContent(ClassOverridePatterns.class.getSimpleName(), S_TYPE, Server.createKey(type),
+    public ClassOverridePatterns getClassOverridePatterns(final ITypeName type) {
+        return getServer().getProviderContent(ClassOverridePatterns.class.getSimpleName(), type,
                 new GenericType<GenericResultObjectView<ClassOverridePatterns>>() {
                 });
     }
 
-    @Override
-    public List<IComment> getComments(final Object object) {
-        // TODO Auto-generated method stub
-        return Collections.emptyList();
-    }
-
-    @Override
-    public IComment addComment(final Object object, final String text) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

@@ -12,17 +12,28 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
 import java.util.Set;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.WorkingCopyOwner;
+import org.eclipse.jdt.internal.codeassist.CompletionEngine;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionParser;
+import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
+import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
+import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.core.ClassFile;
 import org.eclipse.jdt.internal.core.CompilationUnit;
+import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.jdt.internal.core.SearchableEnvironment;
 import org.eclipse.jdt.internal.corext.util.MethodOverrideTester;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -34,21 +45,82 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerAstCompletionNodeFinder;
+import org.eclipse.recommenders.internal.rcp.codecompletion.CompilerBindings;
+import org.eclipse.recommenders.internal.rcp.codecompletion.IntelligentCompletionRequestor;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 // TODO: Lots of methods taken from IntelligentCompletionContext.java
 @SuppressWarnings("restriction")
 public class MockedIntelligentCompletionContext implements IIntelligentCompletionContext {
 
     private final IJavaElementSelection selection;
-    private final JavaElementResolver resolver;
     private CompilationUnit compilationUnit;
-    private CompilerAstCompletionNodeFinder astCompletionNodeFinder;
 
-    public MockedIntelligentCompletionContext(final IJavaElementSelection selection, final JavaElementResolver resolver) {
+    private CompilerAstCompletionNodeFinder astCompletionNodeFinder;
+    private IntelligentCompletionRequestor completionRequestor;
+    private CompletionEngine completionEngine;
+    private CompletionParser completionParser;
+
+    public MockedIntelligentCompletionContext(final IJavaElementSelection selection) {
         this.selection = selection;
-        this.resolver = resolver;
+    }
+
+    private CompilerAstCompletionNodeFinder getNodeFinder() {
+        if (astCompletionNodeFinder == null) {
+            astCompletionNodeFinder = new CompilerAstCompletionNodeFinder();
+            performCodeCompletion();
+            final ReferenceContext referenceContext = completionParser.referenceContext;
+            if (completionParser.compilationUnit != null) {
+                final CompilationUnitDeclaration compUnit = completionParser.compilationUnit;
+                // completion parser sets this to true after his run and thus
+                // prevents visitors to visit this cu a second time. Reset this
+                // state:
+                compUnit.ignoreFurtherInvestigation = false;
+                compUnit.traverse(astCompletionNodeFinder, compUnit.scope);
+            } else if (referenceContext instanceof CompilationUnitDeclaration) {
+                final CompilationUnitDeclaration compUnit = Checks.cast(referenceContext);
+                compUnit.traverse(astCompletionNodeFinder, compUnit.scope);
+            } else if (referenceContext instanceof AbstractMethodDeclaration) {
+                final CompilationUnitDeclaration compUnit = findCompilationUnit((AbstractMethodDeclaration) referenceContext);
+                compUnit.traverse(astCompletionNodeFinder, compUnit.scope);
+            }
+        }
+        return astCompletionNodeFinder;
+    }
+
+    private void performCodeCompletion() {
+        initializeCompletionEngine();
+        org.eclipse.jdt.internal.compiler.env.ICompilationUnit compilerCu = compilationUnit;
+        if (compilationUnit.isWorkingCopy()) {
+            compilerCu = Checks.cast(compilationUnit.getOriginalElement());
+        }
+        completionEngine.complete(compilerCu, getInvocationOffset(), 0, getCompilationUnit().getPrimary());
+        completionParser = Checks.cast(completionEngine.getParser());
+    }
+
+    private void initializeCompletionEngine() {
+        try {
+            final JavaProject project = (JavaProject) getCompilationUnit().getJavaProject();
+            final WorkingCopyOwner owner = getCompilationUnit().getOwner();
+            final SearchableEnvironment s = project.newSearchableNameEnvironment(owner);
+            completionRequestor = new IntelligentCompletionRequestor((CompilationUnit) getCompilationUnit());
+            completionEngine = new CompletionEngine(s, completionRequestor, project.getOptions(true), project, owner,
+                    new NullProgressMonitor());
+        } catch (final JavaModelException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private CompilationUnitDeclaration findCompilationUnit(final AbstractMethodDeclaration methodContext) {
+        Scope tmp = methodContext.scope;
+        while (tmp != null) {
+            tmp = tmp.parent;
+            if (tmp instanceof CompilationUnitScope) {
+                final CompilationUnitScope scope = Checks.cast(tmp);
+                return scope.referenceContext;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -74,7 +146,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final Set<FieldDeclaration> getFieldDeclarations() {
-        throw new IllegalAccessError();
+        return getNodeFinder().fieldDeclarations;
     }
 
     @Override
@@ -97,7 +169,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
     @Override
     public IMethodName getEnclosingMethod() {
         final IMethod enclosingMethod = findEnclosingMethod();
-        return enclosingMethod == null ? null : resolver.toRecMethod(enclosingMethod);
+        return enclosingMethod == null ? null : ElementResolver.toRecMethod(enclosingMethod);
     }
 
     private IMethod findEnclosingMethod() {
@@ -115,7 +187,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final ITypeName getReceiverType() {
-        throw new IllegalAccessError();
+        return CompilerBindings.toTypeName(getNodeFinder().receiverType);
     }
 
     @Override
@@ -170,7 +242,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
             final MethodOverrideTester methodOverrideTester = SuperTypeHierarchyCache.getMethodOverrideTester(method
                     .getDeclaringType());
             final IMethod declaringMethod = methodOverrideTester.findDeclaringMethod(method, true);
-            return declaringMethod == null ? null : resolver.toRecMethod(declaringMethod);
+            return declaringMethod == null ? null : ElementResolver.toRecMethod(declaringMethod);
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
@@ -178,7 +250,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final boolean isReceiverImplicitThis() {
-        return ("".equals(getReceiverName()) || astCompletionNodeFinder.completionNode instanceof CompletionOnSingleNameReference)
+        return (getReceiverName().isEmpty() || getNodeFinder().completionNode instanceof CompletionOnSingleNameReference)
                 && getReceiverType() == null;
     }
 

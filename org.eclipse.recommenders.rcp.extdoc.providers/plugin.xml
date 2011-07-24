@@ -16,7 +16,7 @@
             short_name="Method Calls"
             icon="icons/full/obj16/calls.png">
       </provider>
-      <provider
+      <!-- <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.WikiProvider"
             long_name="Wiki Provider"
             priority="20"
@@ -29,7 +29,7 @@
             priority="10"
             short_name="Code Examples"
             icon="icons/full/obj16/examples.gif">
-      </provider>
+      </provider> -->
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.SubclassingProvider"
             long_name="Subclassing Directives Provider"

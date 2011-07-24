@@ -10,11 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;
 
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
-import org.eclipse.recommenders.rcp.extdoc.features.IStarsRatingsServer;
+import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 
@@ -22,12 +19,10 @@ public final class TextAndFeaturesLine {
 
     private final StyledText styledText;
 
-    public TextAndFeaturesLine(final Composite parent, final String text, final Object element,
-            final String elementName, final IProvider provider, final IStarsRatingsServer server,
-            final Dialog editDialog) {
+    public TextAndFeaturesLine(final Composite parent, final String text, final StarsRatingComposite ratings) {
         final Composite line = SwtFactory.createGridComposite(parent, 2, 10, 0, 0, 0);
         styledText = SwtFactory.createStyledText(line, text);
-        FeaturesComposite.create(line, element, elementName, provider, server, editDialog);
+        ratings.createContents(line);
     }
 
     public void createStyleRange(final int start, final int length, final int fontStyle, final boolean makeBlue,

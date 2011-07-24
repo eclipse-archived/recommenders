@@ -10,14 +10,28 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
+import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public final class SubclassingTemplatesProviderTest {
 
     @Test
     public void testSubclassingTemplatesProvider() {
-        final SubclassingTemplatesProvider provider = new SubclassingTemplatesProvider(new SubclassingServer());
+        final SubclassingServer server = new SubclassingServer(ServerUtils.getServer(),
+                ServerUtils.getUsernameListener());
+        final SubclassingTemplatesProvider provider = new SubclassingTemplatesProvider(server);
+
+        provider.createControl(ExtDocUtils.getShell(), null);
+
+        final TestJavaElementSelection selection = new TestJavaElementSelection(
+                JavaElementLocation.EXTENDS_DECLARATION, TestUtils.getDefaultJavaType());
+        Assert.assertTrue(provider.selectionChanged(selection));
     }
 }

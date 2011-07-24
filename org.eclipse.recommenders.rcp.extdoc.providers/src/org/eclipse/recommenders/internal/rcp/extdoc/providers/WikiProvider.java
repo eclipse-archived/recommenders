@@ -16,18 +16,25 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.mylyn.wikitext.core.parser.MarkupParser;
+import org.eclipse.mylyn.wikitext.mediawiki.core.MediaWikiLanguage;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.WikiEditDialog;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
-import org.eclipse.recommenders.rcp.extdoc.MarkupParser;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.FeaturesComposite;
+import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
@@ -35,15 +42,14 @@ import com.google.inject.Inject;
 public final class WikiProvider extends AbstractProviderComposite {
 
     private final WikiServer server;
-    private final MarkupParser parser;
+    private final MarkupParser parser = new MarkupParser(new MediaWikiLanguage());
 
     private Composite parentComposite;
     private Composite composite;
 
     @Inject
-    WikiProvider(final WikiServer server, final MarkupParser parser) {
+    WikiProvider(final WikiServer server) {
         this.server = server;
-        this.parser = parser;
     }
 
     @Override
@@ -91,11 +97,12 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     private void displayText(final IJavaElement element, final String markup) {
-        final WikiEditDialog editDialog = new WikiEditDialog(this, element, markup);
-        FeaturesComposite.create(composite, element, element.getElementName(), this, server, editDialog);
+        new StarsRatingComposite(ElementResolver.resolveName(element), this, server).createContents(composite);
+        // TODO: Add editing option.
 
         final StyledText text = new StyledText(composite, SWT.NONE);
-        text.setText(parser.parseTextile(markup));
+        // text.setText(parser.parseToHtml(markup));
+        text.setText(markup);
     }
 
     private void displayNoText(final IJavaElement element) {
@@ -107,17 +114,52 @@ public final class WikiProvider extends AbstractProviderComposite {
                 String.format("Currently there is no Wiki available for %s.", elementName));
         SwtFactory.createStyleRange(text, 41, elementName.length(), SWT.NORMAL, false, true);
 
-        final WikiEditDialog editDialog = new WikiEditDialog(this, element, null);
-        final Composite editLine = SwtFactory.createGridComposite(composite, 2, 0, 0, 0, 0);
-        SwtFactory.createLabel(editLine, "You can start one by clicking on the pen icon: ");
-        new FeaturesComposite(editLine).addEditIcon(editDialog);
+        SwtFactory.createCLabel(composite, "Click here to start writing.", false,
+                ExtDocPlugin.getIcon("eview16/edit.png")).addMouseListener(new MouseListener() {
+            @Override
+            public void mouseDoubleClick(final MouseEvent e) {
+            }
+
+            @Override
+            public void mouseDown(final MouseEvent e) {
+            }
+
+            @Override
+            public void mouseUp(final MouseEvent e) {
+                displayEditArea(element);
+            }
+        });
     }
 
-    public void update(final IJavaElement javaElement, final String text) {
+    private void displayEditArea(final IJavaElement element) {
+        initComposite();
+        final Text text = SwtFactory.createText(composite, "", 100, 0);
+        SwtFactory.createButton(composite, "Save Changes", new SelectionListener() {
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                update(element, text.getText());
+            }
+
+            @Override
+            public void widgetDefaultSelected(final SelectionEvent e) {
+            }
+        });
+        layout();
+    }
+
+    private void update(final IJavaElement javaElement, final String text) {
         server.setText(javaElement, text);
         initComposite();
         displayText(javaElement, text);
+        layout();
+    }
+
+    private void layout() {
+        composite.layout(true);
         parentComposite.layout(true);
+        if (parentComposite.getParent() != null) {
+            parentComposite.getParent().getParent().layout(true);
+        }
     }
 
 }

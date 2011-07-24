@@ -22,12 +22,14 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingComposite;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
@@ -48,7 +50,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     private Composite composite;
 
     @Inject
-    public SubclassingProvider(final SubclassingServer server) {
+    SubclassingProvider(final SubclassingServer server) {
         this.server = server;
     }
 
@@ -59,47 +61,43 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     @Override
-    public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location != JavaElementLocation.PACKAGE_DECLARATION;
-    }
-
-    @Override
     public boolean selectionChanged(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
-            return displayContentForType((IType) element);
+            return displayContentForType(ElementResolver.toRecType((IType) element));
         } else if (element instanceof IMethod) {
-            return displayContentForMethod((IMethod) element);
+            final IMethod firstDeclaration = JdtUtils.findFirstDeclaration((IMethod) element);
+            return displayContentForMethod(ElementResolver.toRecMethod((IMethod) element),
+                    ElementResolver.toRecMethod(firstDeclaration));
         }
         return false;
     }
 
-    private boolean displayContentForType(final IType type) {
-        final ClassOverrideDirectives overrides = server.getClassOverrideDirective(type);
+    private boolean displayContentForType(final ITypeName type) {
+        final ClassOverrideDirectives overrides = server.getClassOverrideDirectives(type);
         if (overrides == null) {
             return false;
         }
-        final String elementName = type.getElementName();
+        final String elementName = type.getClassName();
         final int subclasses = overrides.getNumberOfSubclasses();
 
         final String text = "Based on " + subclasses + " direct subclasses of " + elementName
                 + " we created the following statistics. Subclassers may consider to override the following methods.";
         final String text2 = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
-        final ClassSelfcallDirectives calls = server.getClassSelfcallDirective(type);
-        final SubclassingProvider provider = this;
+        final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
+        final StarsRatingComposite ratings = new StarsRatingComposite(type, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, type, elementName,
-                            provider, server, null);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, ratings);
                     line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
                     displayDirectives(overrides.getOverrides(), "override", subclasses);
                     if (calls != null) {
-                        new TextAndFeaturesLine(composite, text2, type, elementName, provider, server, null);
-                        displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasse());
+                        new TextAndFeaturesLine(composite, text2, ratings);
+                        displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses());
                     }
                     composite.layout(true);
                 }
@@ -110,30 +108,29 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         return true;
     }
 
-    private boolean displayContentForMethod(final IMethod method) {
-        final IMethod first = JdtUtils.findFirstDeclaration(method);
+    private boolean displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration) {
         // TODO first is not correct in all cases. this needs to be fixed soon
         // after the demo
-        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirective(first);
-        if (selfcalls == null) {
+        final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(firstDeclaration);
+        if (selfcalls == null || method == null) {
             return false;
         }
 
         final int definitions = selfcalls.getNumberOfDefinitions();
-        final String text = "Based on " + definitions + " implementations of " + method.getElementName()
-                + " we created the following statistics. Implementors may consider to call the following methods.";
-        final SubclassingProvider provider = this;
+        final StarsRatingComposite ratings = new StarsRatingComposite(method, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
+                    final String text = String
+                            .format("Based on %d implementations of %s we created the following statistics. Implementors may consider to call the following methods.",
+                                    definitions, method.getName());
                     disposeChildren(composite);
-                    displayMethodOverrideInformation(first.getParent().getElementName(), 92, 25);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, method,
-                            method.getElementName(), provider, server, null);
-                    line.createStyleRange(29 + getLength(definitions), method.getElementName().length(), SWT.NORMAL,
-                            false, true);
+                    displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(), 92, 25);
+                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, ratings);
+                    line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false,
+                            true);
                     displayDirectives(selfcalls.getCalls(), "call", definitions);
                     composite.layout(true);
                 }
@@ -162,7 +159,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             final int definitions) {
         final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 2, 15, 0);
         for (final Entry<IMethodName, Integer> directive : orderDirectives(directives).entrySet()) {
-            final int percent = (int) Math.round(directive.getValue() * 100.0 / definitions);
+            final int percent = (int) Math.round(directive.getValue().doubleValue() * 100.0 / definitions);
 
             SwtFactory.createSquare(directiveComposite);
             SwtFactory.createLabel(directiveComposite, getLabel(percent), true, false, SWT.COLOR_BLACK);
@@ -175,7 +172,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         }
     }
 
-    private Map<IMethodName, Integer> orderDirectives(final Map<IMethodName, Integer> directives) {
+    private static Map<IMethodName, Integer> orderDirectives(final Map<IMethodName, Integer> directives) {
         final Map<IMethodName, Integer> orderedMap = new TreeMap<IMethodName, Integer>(new Comparator<IMethodName>() {
             @Override
             public int compare(final IMethodName directive1, final IMethodName directive2) {
@@ -186,7 +183,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         return orderedMap;
     }
 
-    private String getLabel(final int percent) {
+    private static String getLabel(final int percent) {
         if (percent >= 95) {
             return "must";
         } else if (percent >= 65) {
@@ -199,7 +196,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         return "should not";
     }
 
-    private int getLength(final int number) {
+    private static int getLength(final int number) {
         return String.valueOf(number).length();
     }
 

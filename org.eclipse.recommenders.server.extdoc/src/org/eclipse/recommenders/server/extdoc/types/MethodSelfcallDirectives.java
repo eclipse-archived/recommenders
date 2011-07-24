@@ -14,15 +14,9 @@ import java.util.Map;
 
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
-
-import com.google.gson.annotations.SerializedName;
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class MethodSelfcallDirectives implements IServerType {
-
-    @SerializedName("_id")
-    private String id;
-    @SerializedName("_rev")
-    private String rev;
 
     private final String providerId = getClass().getSimpleName();
     private IMethodName method;
@@ -36,6 +30,7 @@ public final class MethodSelfcallDirectives implements IServerType {
         res.method = method;
         res.numberOfDefinitions = numberOfDefinitions;
         res.calls = selfcalls;
+        res.validate();
         return res;
     }
 

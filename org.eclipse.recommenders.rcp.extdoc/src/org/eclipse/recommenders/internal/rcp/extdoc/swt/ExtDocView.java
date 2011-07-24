@@ -19,8 +19,8 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
@@ -54,7 +54,7 @@ public class ExtDocView extends ViewPart {
     private JavaElementLabelProvider labelProvider;
 
     @Inject
-    public ExtDocView(final ProviderStore providerStore) {
+    ExtDocView(final ProviderStore providerStore) {
         this.providerStore = providerStore;
         initializeLabelProvider();
     }
@@ -81,7 +81,7 @@ public class ExtDocView extends ViewPart {
     }
 
     private void createLeftSashSide(final SashForm sashForm) {
-        table = new ProvidersTable(sashForm, SWT.CHECK | SWT.FULL_SELECTION, providerStore);
+        table = new ProvidersTable(sashForm, providerStore);
     }
 
     private void createRightSashSide(final SashForm sashForm) {
@@ -142,18 +142,23 @@ public class ExtDocView extends ViewPart {
     public final boolean selectionChanged(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
             table.setContext(selection);
-            for (final TableItem item : table.getItems()) {
-                if (item.getChecked()) {
-                    final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
-                    job.setSystem(true);
-                    job.schedule();
-                }
-            }
+            updateProviders(selection);
             scrolled.setOrigin(0, 0);
             updateSelectionLabel(selection.getJavaElement());
             return true;
         }
         return false;
+    }
+
+    private void updateProviders(final IJavaElementSelection selection) {
+        ProviderUpdateJob.cancelActiveJobs();
+        for (final TableItem item : table.getItems()) {
+            if (item.getChecked()) {
+                final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
+                job.setSystem(true);
+                job.schedule();
+            }
+        }
     }
 
     private void updateSelectionLabel(final IJavaElement javaElement) {
@@ -176,8 +181,7 @@ public class ExtDocView extends ViewPart {
         private LinkWithEditorAction() {
             super("Link with Selection", SWT.TOGGLE);
             final URL entry = ExtDocPlugin.getDefault().getBundle().getEntry("icons/full/lcl16/link.gif");
-            final ImageDescriptor descriptor = ImageDescriptor.createFromURL(entry);
-            setImageDescriptor(descriptor);
+            setImageDescriptor(ImageDescriptor.createFromURL(entry));
             setToolTipText("Link with Selection");
             setChecked(true);
         }
