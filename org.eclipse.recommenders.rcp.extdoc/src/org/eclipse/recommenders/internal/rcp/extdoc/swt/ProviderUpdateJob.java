@@ -27,7 +27,7 @@ import org.eclipse.ui.progress.UIJob;
 
 class ProviderUpdateJob extends Job {
 
-    private static final Image ICON_LOADING = ExtDocPlugin.getIcon("lcl16/loading.png");
+    private static final Image ICON_LOADING = ExtDocPlugin.getIcon("lcl16/loading.gif");
 
     private static Set<ProviderUpdateJob> active = new HashSet<ProviderUpdateJob>();
 
