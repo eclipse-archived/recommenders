@@ -103,7 +103,10 @@ public class SubwordsProposalContext {
         this.prefixBigrams = SubwordsUtils.createLowerCaseNGrams(prefix, 2);
     }
 
-    public boolean isRegexMatch() {
+    public boolean isRegexMatchButNoPrefixMatch() {
+        if (subwordsMatchingRegion.startsWith(prefix)) {
+            return false;
+        }
         return createMatcher().matches();
     }
 
@@ -184,7 +187,7 @@ public class SubwordsProposalContext {
     }
 
     public int calculateRelevance() {
-        return jdtProposal.getRelevance();
+        return jdtProposal.getRelevance() - 1;
         // TODO until https://bugs.eclipse.org/bugs/show_bug.cgi?id=350991 is
         // fixed this should not be used:
         // final int matches =
