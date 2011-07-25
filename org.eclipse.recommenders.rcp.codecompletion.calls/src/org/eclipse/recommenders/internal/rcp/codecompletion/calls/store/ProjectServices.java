@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.rcp.analysis.IRecommendersProjectLifeCycleListener;
 
 import com.google.common.collect.Maps;
@@ -33,8 +32,7 @@ public class ProjectServices implements IRecommendersProjectLifeCycleListener {
     }
 
     public IProjectModelFacade getModelFacade(final IJavaProject project) {
-        Checks.ensureIsNotNull(project);
-        if (modelFacades.containsKey(project)) {
+        if (project != null && modelFacades.containsKey(project)) {
             final ProjectModelFacade facade = modelFacades.get(project);
             return facade;
         } else {
