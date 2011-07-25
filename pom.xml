@@ -87,7 +87,6 @@
 		
 		<!-- Tools -->
 		<module>org.eclipse.recommenders.tools</module>
-		<module>org.eclipse.recommenders.tests.tools</module>
 		
 	</modules>
 
