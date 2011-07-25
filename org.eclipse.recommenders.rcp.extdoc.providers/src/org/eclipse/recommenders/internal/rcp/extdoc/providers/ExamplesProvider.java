@@ -36,6 +36,7 @@ import org.eclipse.recommenders.server.extdoc.types.CodeSnippet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
@@ -99,18 +100,20 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     }
 
     private boolean displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
-        if (codeExamples == null) {
-            return false;
-        }
         final CommunityFeatures features = CommunityFeatures.create(element, this, server);
         new UIJob("Updating Examples Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!container.isDisposed()) {
                     disposeChildren(container);
-                    final CodeSnippet[] snippets = codeExamples.getExamples();
-                    for (int i = 0; i < snippets.length; ++i) {
-                        createSnippetVisualization(i, features, snippets[i].getCode());
+                    if (codeExamples == null) {
+                        final Label label = new Label(container, SWT.NONE);
+                        label.setText("Sorry, this feature is currently under development. It will follow soon when ready.");
+                    } else {
+                        final CodeSnippet[] snippets = codeExamples.getExamples();
+                        for (int i = 0; i < snippets.length; ++i) {
+                            createSnippetVisualization(i, features, snippets[i].getCode());
+                        }
                     }
                     container.layout(true);
                 }

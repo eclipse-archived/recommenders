@@ -22,14 +22,14 @@
             priority="20"
             short_name="WikiDoc"
             icon="icons/full/obj16/wiki.gif">
-      </provider>
+      </provider> -->
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.ExamplesProvider"
             long_name="Code Examples Provider"
             priority="10"
             short_name="Code Examples"
             icon="icons/full/obj16/examples.gif">
-      </provider> -->
+      </provider>
       <provider
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.providers.SubclassingProvider"
             long_name="Subclassing Directives Provider"
