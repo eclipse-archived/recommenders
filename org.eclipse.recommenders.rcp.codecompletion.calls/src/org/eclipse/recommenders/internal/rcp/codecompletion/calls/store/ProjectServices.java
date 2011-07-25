@@ -32,13 +32,14 @@ public class ProjectServices implements IRecommendersProjectLifeCycleListener {
         this.facadeFactory = facadeFactory;
     }
 
-    public ProjectModelFacade getModelFacade(final IJavaProject project) {
+    public IProjectModelFacade getModelFacade(final IJavaProject project) {
         Checks.ensureIsNotNull(project);
-        Checks.ensureIsTrue(modelFacades.containsKey(project), "No ProjectModelFacade initialized for project: %s",
-                project);
-
-        final ProjectModelFacade facade = modelFacades.get(project);
-        return facade;
+        if (modelFacades.containsKey(project)) {
+            final ProjectModelFacade facade = modelFacades.get(project);
+            return facade;
+        } else {
+            return IProjectModelFacade.NULL;
+        }
     }
 
     @Override

@@ -12,6 +12,7 @@ package org.eclipse.recommenders.tests.commons.extdoc;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
@@ -21,7 +22,6 @@ import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
-
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
@@ -67,6 +67,8 @@ public final class TestUtils {
             Mockito.when(defaultJavaType.getElementName()).thenReturn("Composite");
             Mockito.when(defaultJavaType.getHandleIdentifier()).thenReturn("TestIdentifier");
             Mockito.when(defaultJavaType.getFullyQualifiedName()).thenReturn("org/eclipse/swt/widgets/Composite");
+            final IJavaProject javaProject = Mockito.mock(IJavaProject.class);
+            Mockito.when(defaultJavaType.getJavaProject()).thenReturn(javaProject);
             try {
                 final ITypeHierarchy hierarchy = Mockito.mock(ITypeHierarchy.class);
                 Mockito.when(hierarchy.getSuperInterfaces(Matchers.any(IType.class))).thenReturn(new IType[0]);

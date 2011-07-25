@@ -34,7 +34,7 @@ import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacade;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IProjectModelFacade;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.rcp.codecompletion.CompletionProposalDecorator;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -151,7 +151,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private boolean findModel() {
         final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
-        final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+        final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
 
         if (modelFacade.hasModel(receiverType)) {
             model = modelFacade.acquireModel(receiverType);
@@ -162,7 +162,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private void releaseModel() {
         if (model != null) {
             final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
-            final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+            final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
             modelFacade.releaseModel(model);
             model = null;
         }

@@ -42,7 +42,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.assistedinject.Assisted;
 
 @SuppressWarnings("restriction")
-public class ProjectModelFacade implements IElementChangedListener {
+public class ProjectModelFacade implements IElementChangedListener, IProjectModelFacade {
 
     private final IJavaProject project;
     private IPackageFragmentRoot[] packageFragmentRoots;
@@ -70,14 +70,17 @@ public class ProjectModelFacade implements IElementChangedListener {
         }
     }
 
+    @Override
     public boolean hasModel(final ITypeName name) {
         return getModelArchive(name).hasModel(name);
     }
 
+    @Override
     public IObjectMethodCallsNet acquireModel(final ITypeName name) {
         return getModelArchive(name).acquireModel(name);
     }
 
+    @Override
     public void releaseModel(final IObjectMethodCallsNet model) {
         getModelArchive(model.getType()).releaseModel(model);
     }
@@ -164,6 +167,7 @@ public class ProjectModelFacade implements IElementChangedListener {
         return (flags & IJavaElementDelta.F_RESOLVED_CLASSPATH_CHANGED) != 0;
     }
 
+    @Override
     public Set<ITypeName> findTypesBySimpleName(final ITypeName receiverType) {
         final Set<ITypeName> result = Sets.newHashSet();
         try {

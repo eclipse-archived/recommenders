@@ -20,7 +20,7 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Compilati
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnitVisitor;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacade;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IProjectModelFacade;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.eclipse.recommenders.rcp.IRecommendation;
@@ -85,7 +85,7 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
 
     private boolean findModel(final ITypeName type) {
         final IJavaProject javaProject = jdtCompilationUnit.getJavaProject();
-        final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+        final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
         if (modelFacade.hasModel(type)) {
             model = modelFacade.acquireModel(type);
         }
@@ -95,7 +95,7 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
     protected void releaseModel() {
         if (model != null) {
             final IJavaProject javaProject = jdtCompilationUnit.getJavaProject();
-            final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+            final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
             modelFacade.releaseModel(model);
             model = null;
         }

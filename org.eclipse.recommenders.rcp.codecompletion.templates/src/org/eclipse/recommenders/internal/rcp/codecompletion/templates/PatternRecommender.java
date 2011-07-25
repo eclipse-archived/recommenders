@@ -22,7 +22,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacade;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IProjectModelFacade;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
@@ -96,7 +96,7 @@ public final class PatternRecommender {
 
     private void releaseModels(final ImmutableSet<IObjectMethodCallsNet> models) {
         final IJavaProject javaProject = context.getCompilationUnit().getJavaProject();
-        final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+        final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
         for (final IObjectMethodCallsNet model : models) {
             modelFacade.releaseModel(model);
         }
@@ -144,7 +144,7 @@ public final class PatternRecommender {
     private ImmutableSet<IObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
         final Builder<IObjectMethodCallsNet> models = ImmutableSet.builder();
         final IJavaProject javaProject = context.getCompilationUnit().getJavaProject();
-        final ProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+        final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
         if (receiverType.getPackage().isDefaultPackage()) {
             final Set<ITypeName> typeNames = modelFacade.findTypesBySimpleName(receiverType);
             models.addAll(acquireModels(modelFacade, typeNames));
@@ -154,7 +154,7 @@ public final class PatternRecommender {
         return models.build();
     }
 
-    private Iterable<? extends IObjectMethodCallsNet> acquireModels(final ProjectModelFacade modelFacade,
+    private Iterable<? extends IObjectMethodCallsNet> acquireModels(final IProjectModelFacade modelFacade,
             final Set<ITypeName> typeNames) {
         final Set<IObjectMethodCallsNet> models = Sets.newHashSet();
         for (final ITypeName typeName : typeNames) {
