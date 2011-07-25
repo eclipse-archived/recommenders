@@ -28,7 +28,7 @@ final class ProvidersComposite extends Composite {
         super(parent, style);
         scrolledParent = parent;
         setLayout();
-        setBackground(parent.getShell().getDisplay());
+        setBackgroundColor(parent.getShell().getDisplay());
     }
 
     private void setLayout() {
@@ -40,7 +40,7 @@ final class ProvidersComposite extends Composite {
         setLayout(grid);
     }
 
-    private void setBackground(final Display display) {
+    private void setBackgroundColor(final Display display) {
         final ColorRegistry registry = JFaceResources.getColorRegistry();
         final RGB backgroundColor = registry.getRGB("org.eclipse.jdt.ui.JavadocView.backgroundColor");
         if (backgroundColor == null) {

@@ -14,7 +14,7 @@ import java.io.Closeable;
 
 import org.eclipse.recommenders.commons.lfm.Manifest;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
 
 public interface IModelArchive extends Closeable {
 

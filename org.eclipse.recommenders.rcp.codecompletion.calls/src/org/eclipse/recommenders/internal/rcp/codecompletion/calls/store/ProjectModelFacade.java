@@ -35,12 +35,13 @@ import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 
 import com.google.common.collect.Sets;
 import com.google.inject.assistedinject.Assisted;
 
+@SuppressWarnings("restriction")
 public class ProjectModelFacade implements IElementChangedListener {
 
     private final IJavaProject project;
@@ -163,7 +164,6 @@ public class ProjectModelFacade implements IElementChangedListener {
         return (flags & IJavaElementDelta.F_RESOLVED_CLASSPATH_CHANGED) != 0;
     }
 
-    @SuppressWarnings("restriction")
     public Set<ITypeName> findTypesBySimpleName(final ITypeName receiverType) {
         final Set<ITypeName> result = Sets.newHashSet();
         try {

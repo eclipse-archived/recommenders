@@ -10,18 +10,15 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
-import org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite;
-
-import org.junit.Assert;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.junit.Test;
 
 public final class SourceCodeAreaTest {
 
     @Test
     public void testSourceCodeArea() {
-        final SourceCodeArea area = new SourceCodeArea(UnitTestSuite.getShell());
+        final SourceCodeArea area = new SourceCodeArea(ExtDocUtils.getShell());
         area.setCode("...");
-        Assert.assertTrue(true);
     }
 
 }

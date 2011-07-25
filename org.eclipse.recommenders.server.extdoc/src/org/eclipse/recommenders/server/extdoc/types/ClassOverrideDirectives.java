@@ -15,15 +15,9 @@ import java.util.Map;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-
-import com.google.gson.annotations.SerializedName;
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class ClassOverrideDirectives implements IServerType {
-
-    @SerializedName("_id")
-    private String id;
-    @SerializedName("_rev")
-    private String rev;
 
     private final String providerId = getClass().getSimpleName();
     private ITypeName type;
@@ -37,6 +31,7 @@ public final class ClassOverrideDirectives implements IServerType {
         res.type = type;
         res.numberOfSubclasses = numberOfSubclasses;
         res.overrides = overriddenMethods;
+        res.validate();
         return res;
     }
 

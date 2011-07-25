@@ -34,7 +34,6 @@ import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectModelFacade;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
 import org.eclipse.recommenders.rcp.codecompletion.CompletionProposalDecorator;

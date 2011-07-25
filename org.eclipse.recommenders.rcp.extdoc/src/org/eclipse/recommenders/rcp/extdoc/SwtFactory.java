@@ -15,10 +15,17 @@ import java.util.Map;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -27,7 +34,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-@SuppressWarnings("restriction")
 public final class SwtFactory {
 
     public static final Font CODEFONT = JFaceResources.getTextFont();
@@ -51,7 +57,7 @@ public final class SwtFactory {
         return composite;
     }
 
-    public static void createSeparator(final Composite parent) {
+    static void createSeparator(final Composite parent) {
         final Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     }
@@ -70,6 +76,16 @@ public final class SwtFactory {
             label.setFont(BOLDFONT);
         }
         label.setForeground(createColor(color));
+        return label;
+    }
+
+    public static CLabel createCLabel(final Composite parent, final String text, final boolean bold, final Image image) {
+        final CLabel label = new CLabel(parent, SWT.NONE);
+        label.setText(text);
+        if (bold) {
+            label.setFont(BOLDFONT);
+        }
+        label.setImage(image);
         return label;
     }
 
@@ -108,10 +124,46 @@ public final class SwtFactory {
         styledText.setStyleRange(styleRange);
     }
 
+    // TODO: Use link and put together with a image into a grid.
+    public static CLabel createLink(final Composite parent, final String text, final Image image,
+            final MouseListener listener) {
+        final CLabel link = new CLabel(parent, SWT.NONE);
+        link.setText(text);
+        link.setForeground(createColor(SWT.COLOR_BLUE));
+        link.setImage(image);
+        link.addMouseListener(listener);
+        link.setCursor(new Cursor(parent.getDisplay(), SWT.CURSOR_HAND));
+        link.addMouseTrackListener(new MouseTrackListener() {
+
+            @Override
+            public void mouseHover(final MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExit(final MouseEvent e) {
+                link.setForeground(createColor(SWT.COLOR_BLUE));
+            }
+
+            @Override
+            public void mouseEnter(final MouseEvent e) {
+                link.setForeground(createColor(SWT.COLOR_DARK_BLUE));
+            }
+        });
+        return link;
+    }
+
     public static SourceCodeArea createSourceCodeArea(final Composite parent, final String snippet) {
         final SourceCodeArea codeArea = new SourceCodeArea(parent);
         codeArea.setCode(snippet);
         return codeArea;
+    }
+
+    public static Button createButton(final Composite parent, final String text,
+            final SelectionListener selectionListener) {
+        final Button button = new Button(parent, SWT.NONE);
+        button.setText(text);
+        button.addSelectionListener(selectionListener);
+        return button;
     }
 
     public static Button createCheck(final Composite area, final String text, final boolean selected) {

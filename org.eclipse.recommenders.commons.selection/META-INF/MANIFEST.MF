@@ -16,10 +16,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.recommenders.commons.injection
 Export-Package: org.eclipse.recommenders.commons.internal.selection;x-internal:=true,
- org.eclipse.recommenders.commons.selection;
-  uses:="org.eclipse.jdt.ui.text.java,
-   org.eclipse.jdt.core.dom,
-   org.eclipse.jdt.core,
-   org.eclipse.ui"
+ org.eclipse.recommenders.commons.selection;uses:="org.eclipse.jdt.core.dom,org.eclipse.jdt.core,org.eclipse.ui"
 Bundle-Activator: org.eclipse.recommenders.commons.internal.selection.SelectionPlugin
 Bundle-ActivationPolicy: lazy

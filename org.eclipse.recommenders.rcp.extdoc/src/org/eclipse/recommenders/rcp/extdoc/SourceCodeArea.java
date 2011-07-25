@@ -30,7 +30,7 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
 @SuppressWarnings({ "restriction", "unchecked" })
-final class SourceCodeArea extends JavaSourceViewer {
+public final class SourceCodeArea extends JavaSourceViewer {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -45,29 +45,10 @@ final class SourceCodeArea extends JavaSourceViewer {
     static {
         options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
         options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, "120");
-        //
-        // // initialize the compiler settings to be able to format 1.5 code
-        // options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
-        // options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-        // JavaCore.VERSION_1_5);
-        // options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
-        //
-        // final String alignment =
-        // DefaultCodeFormatterConstants.createAlignmentValue(false,
-        // DefaultCodeFormatterConstants.WRAP_COMPACT,
-        // DefaultCodeFormatterConstants.INDENT_DEFAULT);
-        // options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_ALLOCATION_EXPRESSION,
-        // alignment);
-        // options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION,
-        // alignment);
-        // options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ASSIGNMENT,
-        // alignment);
-        // options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_SELECTOR_IN_METHOD_INVOCATION,
-        // alignment);
         formatter = ToolFactory.createCodeFormatter(options);
     }
 
-    SourceCodeArea(final Composite parent) {
+    public SourceCodeArea(final Composite parent) {
         super(parent, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
 
         configure(configuration);

@@ -156,10 +156,6 @@
             <ruleset>Braces Rules</ruleset>
         </rule>
         <rule>
-            <name>CloneMethodMustImplementCloneable</name>
-            <ruleset>Type Resolution Rules</ruleset>
-        </rule>
-        <rule>
             <name>CloneThrowsCloneNotSupportedException</name>
             <ruleset>Clone Implementation Rules</ruleset>
         </rule>
@@ -213,10 +209,6 @@
         </rule>
         <rule>
             <name>AssignmentInOperand</name>
-            <ruleset>Controversial Rules</ruleset>
-        </rule>
-        <rule>
-            <name>AtLeastOneConstructor</name>
             <ruleset>Controversial Rules</ruleset>
         </rule>
         <rule>
@@ -294,10 +286,6 @@
         <rule>
             <name>ExcessiveImports</name>
             <ruleset>Coupling Rules</ruleset>
-        </rule>
-        <rule>
-            <name>LooseCoupling</name>
-            <ruleset>Type Resolution Rules</ruleset>
         </rule>
         <rule>
             <name>AbstractClassWithoutAbstractMethod</name>
@@ -532,10 +520,6 @@
             <ruleset>Import Statement Rules</ruleset>
         </rule>
         <rule>
-            <name>UnusedImports</name>
-            <ruleset>Type Resolution Rules</ruleset>
-        </rule>
-        <rule>
             <name>DoNotCallSystemExit</name>
             <ruleset>J2EE Rules</ruleset>
         </rule>
@@ -594,10 +578,6 @@
         <rule>
             <name>SystemPrintln</name>
             <ruleset>Java Logging Rules</ruleset>
-        </rule>
-        <rule>
-            <name>BeanMembersShouldSerialize</name>
-            <ruleset>JavaBean Rules</ruleset>
         </rule>
         <rule>
             <name>MissingSerialVersionUID</name>
@@ -854,10 +834,6 @@
         <rule>
             <name>ExceptionAsFlowControl</name>
             <ruleset>Strict Exception Rules</ruleset>
-        </rule>
-        <rule>
-            <name>SignatureDeclareThrowsException</name>
-            <ruleset>Type Resolution Rules</ruleset>
         </rule>
         <rule>
             <name>AppendCharacterWithChar</name>

@@ -21,13 +21,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
-import org.eclipse.recommenders.rcp.extdoc.IDeletionProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.MethodPattern;
@@ -39,15 +40,14 @@ import org.eclipse.ui.progress.UIJob;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveProviderComposite implements
-        IDeletionProvider {
+public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveProviderComposite {
 
     private final SubclassingServer server;
 
     private Composite composite;
 
     @Inject
-    public SubclassingTemplatesProvider(final SubclassingServer server) {
+    SubclassingTemplatesProvider(final SubclassingServer server) {
         this.server = server;
     }
 
@@ -58,27 +58,22 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
     }
 
     @Override
-    public boolean isAvailableForLocation(final JavaElementLocation location) {
-        return location != JavaElementLocation.PACKAGE_DECLARATION;
-    }
-
-    @Override
     protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return printProposals(type);
+        return printProposals(ElementResolver.toRecType(type));
     }
 
-    private boolean printProposals(final IType type) {
+    private boolean printProposals(final ITypeName type) {
         final ClassOverridePatterns directive = server.getClassOverridePatterns(type);
         if (directive == null) {
             return false;
         }
         final MethodPattern[] patterns = getPatternsSortedByFrequency(directive);
-        final int numberOfSubclasses = computeTotalNumberOfSubclasses(patterns);
+        final Integer numberOfSubclasses = computeTotalNumberOfSubclasses(patterns);
 
         final String text = String
                 .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
                         numberOfSubclasses);
-        final SubclassingTemplatesProvider provider = this;
+        final CommunityFeatures ratings = CommunityFeatures.create(type, this, server);
 
         new UIJob("Updating Subclassing Templates Provider") {
             @Override
@@ -88,19 +83,14 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                     SwtFactory.createStyledText(composite, text);
 
                     final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
-
                     for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
                         final MethodPattern pattern = patterns[i];
-                        final double patternProbability = pattern.getNumberOfObservations()
-                                / (double) numberOfSubclasses;
-                        String text2 = String
-                                .format("Pattern #%d - covers approximately %3.0f%% of the examined subclasses (%d subclasses).",
-                                        i + 1, 100 * patternProbability, pattern.getNumberOfObservations());
-                        final TextAndFeaturesLine line = new TextAndFeaturesLine(templates, text2, type,
-                                type.getElementName(), provider, server, null);
-                        // line.createStyleRange(0, 16, SWT.BOLD, false, false);
-                        // line.createStyleRange(40, 3, SWT.NORMAL, true,
-                        // false);
+                        final int patternProbability = (int) (pattern.getNumberOfObservations()
+                                / numberOfSubclasses.doubleValue() * 100);
+                        String text2 = String.format(
+                                "Pattern #%d - covers approximately %d%% of the examined subclasses (%d subclasses).",
+                                i + 1, patternProbability, pattern.getNumberOfObservations());
+                        new TextAndFeaturesLine(templates, text2, ratings);
 
                         final Composite template = SwtFactory.createGridComposite(templates, 4, 12, 2, 12, 0);
                         final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
@@ -115,6 +105,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                                     false, SWT.COLOR_BLUE);
                         }
                     }
+
+                    ratings.loadCommentsComposite(composite);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;
@@ -124,7 +116,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         return true;
     }
 
-    private List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(final MethodPattern pattern) {
+    private static List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(
+            final MethodPattern pattern) {
         final List<Entry<IMethodName, Double>> entries = Lists.newArrayList(pattern.getMethods().entrySet());
         Collections.sort(entries, new Comparator<Entry<IMethodName, Double>>() {
             @Override
@@ -135,28 +128,23 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         return entries;
     }
 
-    private MethodPattern[] getPatternsSortedByFrequency(final ClassOverridePatterns directive) {
+    private static MethodPattern[] getPatternsSortedByFrequency(final ClassOverridePatterns directive) {
         final MethodPattern[] patterns = directive.getPatterns();
         Arrays.sort(patterns, new Comparator<MethodPattern>() {
             @Override
-            public int compare(final MethodPattern o1, final MethodPattern o2) {
-                return o2.getNumberOfObservations() - o1.getNumberOfObservations();
+            public int compare(final MethodPattern pattern1, final MethodPattern pattern2) {
+                return pattern2.getNumberOfObservations() - pattern1.getNumberOfObservations();
             }
         });
         return patterns;
     }
 
-    private int computeTotalNumberOfSubclasses(final MethodPattern[] patterns) {
+    private static int computeTotalNumberOfSubclasses(final MethodPattern[] patterns) {
         int numberOfSubclasses = 0;
         for (final MethodPattern p : patterns) {
             numberOfSubclasses += p.getNumberOfObservations();
         }
         return numberOfSubclasses;
-    }
-
-    @Override
-    public void requestDeletion(final Object object) {
-        // TODO Auto-generated method stub
     }
 
 }

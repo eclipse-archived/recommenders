@@ -16,16 +16,18 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.core.ImportContainer;
 import org.eclipse.jdt.internal.core.ImportDeclaration;
 import org.eclipse.jdt.internal.core.PackageDeclaration;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Throws;
 
+@SuppressWarnings("restriction")
 public abstract class AbstractLocationSensitiveProviderComposite extends AbstractProviderComposite {
 
     @Override
-    public boolean isAvailableForLocation(final JavaElementLocation location) {
+    public final boolean isAvailableForLocation(final JavaElementLocation location) {
         return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
@@ -160,7 +162,7 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IType) {
             return updatePackageDeclarationSelection(selection, (IType) javaElement);
         }
-        throw new IllegalArgumentException(selection.toString());
+        throw new IllegalArgumentException(javaElement.toString());
     }
 
     protected boolean updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type) {
@@ -202,6 +204,8 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
             return updateMethodBodySelection(selection, (IMethod) javaElement);
         } else if (javaElement instanceof PackageDeclaration) {
             return false;
+        } else if (javaElement instanceof ImportContainer) {
+            return false;
         }
         throw new IllegalArgumentException(selection.toString());
     }
@@ -228,6 +232,8 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
             return updateFieldDeclarationSelection(selection, (IField) javaElement);
         } else if (javaElement instanceof IType) {
             return updateFieldDeclarationSelection(selection, (IType) javaElement);
+        } else if (javaElement instanceof IMethod) {
+            return updateFieldDeclarationSelection(selection, (IMethod) javaElement);
         }
         throw new IllegalArgumentException(selection.toString());
     }
@@ -237,6 +243,10 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
     }
 
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
+        return false;
+    }
+
+    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
         return false;
     }
 }

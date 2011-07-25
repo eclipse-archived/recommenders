@@ -12,8 +12,10 @@ package org.eclipse.recommenders.rcp.extdoc.preferences;
 
 public interface PreferenceConstants {
 
-    String NAME_EXTDOC_WEBSERVICE_CONFIGURATION = "extdoc.webservice.client";
     String NAME_EXTDOC_PREFERENCE_STORE = "extdoc.preferences.store";
+
+    String NAME_EXTDOC_WEBSERVICE_CONFIGURATION = "extdoc.webservice.client";
     String WEBSERVICE_HOST = "org.eclipse.recommenders.extdoc.webservice.host";
 
+    String USERNAME = "org.eclipse.recommenders.extdoc.server.username";
 }

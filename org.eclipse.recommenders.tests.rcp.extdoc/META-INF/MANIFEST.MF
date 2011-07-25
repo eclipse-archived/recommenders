@@ -1,21 +1,18 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tests for Templates Completion
+Bundle-Name: Tests for ExtDoc
 Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp.extdoc;singleton:=true
 Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Fragment-Host: org.eclipse.recommenders.rcp.extdoc;bundle-version="0.1.0"
+Fragment-Host: org.eclipse.recommenders.rcp.extdoc
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit4;bundle-version="4.8.1",
- org.eclipse.recommenders.tests.commons;bundle-version="0.0.0",
- org.eclipse.recommenders.tests.commons
+Require-Bundle: org.eclipse.ui,
+ org.junit4;bundle-version="4.8.1",
+ org.eclipse.recommenders.tests.commons.extdoc,
+ org.mockito,
+ org.eclipse.recommenders.server.extdoc
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
- org.eclipse.recommenders.rcp.extdoc.features,
- org.eclipse.recommenders.tests.rcp.extdoc;
-  uses:="org.eclipse.core.runtime,
-   org.eclipse.recommenders.rcp.extdoc.features,
-   org.eclipse.ui,
-   org.eclipse.recommenders.rcp.extdoc,
-   org.eclipse.recommenders.commons.selection,
-   org.eclipse.swt.graphics,
-   org.eclipse.swt.widgets"
+ org.eclipse.recommenders.internal.rcp.extdoc.swt;x-internal:=true,
+ org.eclipse.recommenders.rcp.extdoc,
+ org.eclipse.recommenders.rcp.extdoc.features
+Import-Package: org.eclipse.recommenders.server.extdoc

@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
 import com.google.common.base.Preconditions;
@@ -30,16 +31,14 @@ public class ProviderStore {
 
     private static final String EXTENSION_ID = "org.eclipse.recommenders.rcp.extdoc.provider";
 
-    private final List<IProvider> providers = new LinkedList<IProvider>();
-    private final Map<IProvider, Integer> priorities = new HashMap<IProvider, Integer>();
+    private final Map<IProvider, Integer> providers = new HashMap<IProvider, Integer>();
 
     public ProviderStore() {
         final IExtensionRegistry reg = Platform.getExtensionRegistry();
         for (final IConfigurationElement element : reg.getConfigurationElementsFor(EXTENSION_ID)) {
             try {
                 final IProvider provider = (IProvider) element.createExecutableExtension("class");
-                priorities.put(provider, Integer.parseInt(element.getAttribute("priority")));
-                providers.add(provider);
+                providers.put(provider, Integer.parseInt(element.getAttribute("priority")));
             } catch (final CoreException e) {
                 throw new IllegalStateException(e);
             }
@@ -47,12 +46,13 @@ public class ProviderStore {
     }
 
     public ImmutableList<IProvider> getProviders() {
-        Collections.sort(providers, new ProviderComparator());
-        return ImmutableList.copyOf(providers);
+        final List<IProvider> list = new ArrayList<IProvider>(providers.keySet());
+        Collections.sort(list, new ProviderComparator());
+        return ImmutableList.copyOf(list);
     }
 
     public final void setProviderPriority(final IProvider provider, final int priority) {
-        Preconditions.checkArgument(providers.contains(provider));
+        Preconditions.checkArgument(providers.containsKey(provider));
         Preconditions.checkArgument(priority > 0);
         ExtDocPlugin.getPreferences().putInt(getPreferenceId(provider), priority);
     }
@@ -74,7 +74,7 @@ public class ProviderStore {
             if (priorityPreference1 > -1 || priorityPreference2 > -1) {
                 return priorityPreference2.compareTo(priorityPreference1);
             }
-            return priorities.get(provider2).compareTo(priorities.get(provider1));
+            return providers.get(provider2).compareTo(providers.get(provider1));
         }
     }
 

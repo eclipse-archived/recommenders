@@ -10,25 +10,32 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchWindow;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class JavadocProviderTest {
+public final class JavadocProviderTest {
 
     @Test
     public void testJavadocProvider() {
-        final Shell shell = new Shell();
+        final Shell shell = ExtDocUtils.getShell();
 
-        final JavadocProvider provider = new JavadocProvider();
+        final JavadocProvider provider = new JavadocProvider(ServerUtils.getGenericServer());
         final IViewSite viewSite = Mockito.mock(IViewSite.class);
         Mockito.when(viewSite.getShell()).thenReturn(shell);
-        // provider.createControl(shell, viewSite);
 
-        Assert.assertTrue(true);
+        final IWorkbenchWindow workbenchWindow = Mockito.mock(IWorkbenchWindow.class);
+        Mockito.when(viewSite.getWorkbenchWindow()).thenReturn(workbenchWindow);
+        final IPartService partService = Mockito.mock(IPartService.class);
+        Mockito.when(workbenchWindow.getPartService()).thenReturn(partService);
+
+        // provider.createControl(shell, viewSite);
     }
 
 }

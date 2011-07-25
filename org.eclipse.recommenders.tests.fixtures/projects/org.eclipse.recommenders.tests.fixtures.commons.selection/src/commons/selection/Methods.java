@@ -8,23 +8,23 @@ public class Methods {
     
     private String localString;
 
-    public Methods/* SourceMethod | METHOD_DECLARATION | MethodDeclaration */(Composite/* ResolvedBinaryType | METHOD_DECLARATION_PARAMETER | SimpleType */ parent/* ResolvedBinaryType | METHOD_DECLARATION_PARAMETER | SimpleType */, int style) {
+    public Methods/* SourceMethod | Method Declaration | MethodDeclaration */(Composite/* ResolvedBinaryType | Parameter Declaration | SimpleType */ parent/* ResolvedBinaryType | Parameter Declaration | SimpleType */, int style) {
         super(parent, style);
     }
 
-    public Button/* ResolvedBinaryType | METHOD_DECLARATION | SimpleType */ objectMethodWithReturn/* SourceMethod | METHOD_DECLARATION | MethodDeclaration */() {
-        final Button/* ResolvedBinaryType | BLOCK | MethodDeclaration */ button/* LocalVariable | BLOCK | MethodDeclaration */ = new Button(null, 0);
-        button./* null | BLOCK | MethodDeclaration */
-        return button/* LocalVariable | BLOCK | MethodDeclaration */;
+    public Button/* ResolvedBinaryType | Method Declaration | SimpleType */ objectMethodWithReturn/* SourceMethod | Method Declaration | MethodDeclaration */() {
+        final Button/* ResolvedBinaryType | Method Body | MethodDeclaration */ button/* LocalVariable | Method Body | MethodDeclaration */ = new Button(null, 0);
+        button./* SourceMethod | Method Body | MethodDeclaration */
+        return button/* LocalVariable | Method Body | MethodDeclaration */;
     }
 
     @Override
-    public void selectionChanged(IWorkbenchPart part, ISelection/* ResolvedBinaryType | METHOD_DECLARATION_PARAMETER | SimpleType */ selection/* ResolvedBinaryType | METHOD_DECLARATION_PARAMETER | SimpleType */) {
-        localString/* ResolvedSourceField | BLOCK | MethodInvocation */.isEmpty/* ResolvedBinaryMethod | BLOCK | MethodInvocation */();
+    public void selectionChanged(IWorkbenchPart part, ISelection/* ResolvedBinaryType | Parameter Declaration | SimpleType */ selection/* ResolvedBinaryType | Parameter Declaration | SimpleType */) {
+        localString/* ResolvedSourceField | Method Body | MethodInvocation */.isEmpty/* ResolvedBinaryMethod | Method Body | MethodInvocation */();
     }
     
-    public static void staticMethod/* SourceMethod | METHOD_DECLARATION | MethodDeclaration */() {
-        final String/* ResolvedBinaryType | BLOCK | SimpleType */ localFieldinStatic/* LocalVariable | BLOCK | VariableDeclarationFragment */;
-        staticString/* ResolvedSourceField | BLOCK | MethodInvocation */.isEmpty/* ResolvedBinaryMethod | BLOCK | MethodInvocation */();
+    public static void staticMethod/* SourceMethod | Method Declaration | MethodDeclaration */() {
+        final String/* ResolvedBinaryType | Method Body | SimpleType */ localFieldinStatic/* LocalVariable | Method Body | VariableDeclarationFragment */;
+        staticString/* ResolvedSourceField | Method Body | MethodInvocation */.isEmpty/* ResolvedBinaryMethod | Method Body | MethodInvocation */();
     }
 }

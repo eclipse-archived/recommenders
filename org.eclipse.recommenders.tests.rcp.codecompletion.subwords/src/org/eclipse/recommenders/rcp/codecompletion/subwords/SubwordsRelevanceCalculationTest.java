@@ -19,9 +19,11 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("restriction")
+@Ignore("Relevance Calculation has been removed from implementation")
 public class SubwordsRelevanceCalculationTest {
 
     private static SubwordsProposalContext createSut(final String token, final String completion)
@@ -37,7 +39,7 @@ public class SubwordsRelevanceCalculationTest {
     @Test
     public void testEmptyToken() throws JavaModelException {
         final SubwordsProposalContext sut = createSut("", "someMethod");
-        assertTrue(sut.isRegexMatch());
+        assertTrue(sut.isRegexMatchButNoPrefixMatch());
         assertTrue(sut.isPrefixMatch());
         assertEquals(PREFIX_BONUS, sut.calculateRelevance());
     }
@@ -45,7 +47,7 @@ public class SubwordsRelevanceCalculationTest {
     @Test
     public void testPrefixToken() throws JavaModelException {
         final SubwordsProposalContext sut = createSut("set", "setText");
-        assertTrue(sut.isRegexMatch());
+        assertTrue(sut.isRegexMatchButNoPrefixMatch());
         assertTrue(sut.isPrefixMatch());
         assertEquals(PREFIX_BONUS + 2, sut.calculateRelevance());
     }
@@ -53,7 +55,7 @@ public class SubwordsRelevanceCalculationTest {
     @Test
     public void testSubword() throws JavaModelException {
         final SubwordsProposalContext sut = createSut("text", "setText");
-        assertTrue(sut.isRegexMatch());
+        assertTrue(sut.isRegexMatchButNoPrefixMatch());
         assertFalse(sut.isPrefixMatch());
         assertEquals(3, sut.calculateRelevance());
     }
@@ -61,6 +63,6 @@ public class SubwordsRelevanceCalculationTest {
     @Test
     public void testIrrelevantCompletion() throws JavaModelException {
         final SubwordsProposalContext sut = createSut("get", "setText");
-        assertFalse(sut.isRegexMatch());
+        assertFalse(sut.isRegexMatchButNoPrefixMatch());
     }
 }

@@ -44,7 +44,9 @@ public class CompilerBindings {
         // TODO: handling of generics is bogus!
         if (binding instanceof TypeVariableBinding) {
             final TypeVariableBinding generic = (TypeVariableBinding) binding;
-            binding = (TypeBinding) generic.declaringElement;
+            if (generic.declaringElement instanceof TypeBinding) {
+                binding = (TypeBinding) generic.declaringElement;
+            }
 
         }
         String signature = String.valueOf(binding.computeUniqueKey());

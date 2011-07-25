@@ -15,8 +15,8 @@ import java.io.ObjectInputStream;
 
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayes.SmileNetWrapper;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.bayes.BayesNetWrapper;
 
 public class BinarySmileCallsNetLoader {
 
@@ -24,7 +24,7 @@ public class BinarySmileCallsNetLoader {
         try {
             final ObjectInputStream objectStream = new ObjectInputStream(inputStream);
             final BayesianNetwork network = (BayesianNetwork) objectStream.readObject();
-            return new SmileNetWrapper(name, network);
+            return new BayesNetWrapper(name, network);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

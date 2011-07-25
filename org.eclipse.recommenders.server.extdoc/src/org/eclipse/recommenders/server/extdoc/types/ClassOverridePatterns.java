@@ -11,24 +11,29 @@
 package org.eclipse.recommenders.server.extdoc.types;
 
 import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class ClassOverridePatterns implements IServerType {
 
+    @SuppressWarnings("unused")
     private final String providerId = getClass().getSimpleName();
-
     private ITypeName type;
+
     private MethodPattern[] patterns;
 
     public static ClassOverridePatterns create(final ITypeName type, final MethodPattern[] patterns) {
         final ClassOverridePatterns res = new ClassOverridePatterns();
         res.type = type;
-        res.patterns = patterns;
+        res.patterns = patterns.clone();
+        res.validate();
         return res;
     }
 
+    @Provisional(discussAPI = "Capture of null only for testing resons")
     public MethodPattern[] getPatterns() {
-        return patterns.clone();
+        return patterns == null ? new MethodPattern[0] : patterns.clone();
     }
 
     @Override

@@ -42,7 +42,7 @@
 				       <version>${tycho-version}</version>
 				       <configuration>
 				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc</testSuite>
-          					<testClass>org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite</testClass>
+          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.UnitTestSuite</testClass>
 				        	<useUIHarness>true</useUIHarness>
 							<useUIThread>true</useUIThread>
 							<product>org.eclipse.sdk.ide</product>
@@ -74,7 +74,7 @@
 				       <version>${tycho-version}</version>
 				       <configuration>
 				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc</testSuite>
-          					<testClass>org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite</testClass>
+          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.UnitTestSuite</testClass>
           						<useUIHarness>true</useUIHarness>
 							<useUIThread>true</useUIThread>
 							<product>org.eclipse.sdk.ide</product>
@@ -103,7 +103,7 @@
 				       <version>${tycho-version}</version>
 				       <configuration>
 				       		<testSuite>org.eclipse.recommenders.tests.rcp.extdoc</testSuite>
-          					<testClass>org.eclipse.recommenders.tests.rcp.extdoc.UnitTestSuite</testClass>
+          					<testClass>org.eclipse.recommenders.internal.rcp.extdoc.UnitTestSuite</testClass>
           					<argLine>${ui.test.vmargs}</argLine>
 				       </configuration>
 				     </plugin>

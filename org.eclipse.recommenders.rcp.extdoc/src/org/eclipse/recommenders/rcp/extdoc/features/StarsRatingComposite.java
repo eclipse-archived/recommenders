@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
-import org.eclipse.recommenders.internal.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.commons.utils.names.IName;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
@@ -21,33 +21,42 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-class StarsRatingComposite {
+public final class StarsRatingComposite {
 
     private static final Image ICON_STAR = ExtDocPlugin.getIcon("eview16/star.png");
     private static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
     private static final Image ICON_STAR_EMPTY = ExtDocPlugin.getIcon("eview16/star_empty.png");
 
-    private final Object element;
-    private final IStarsRatingsServer server;
+    private final IName element;
+    private final IProvider provider;
+    private final IUserFeedbackServer server;
 
-    private final Composite parentComposite;
     private Composite composite;
 
-    protected StarsRatingComposite(final Composite parent, final Object element, final IStarsRatingsServer server) {
+    private final IRatingSummary ratingSummary;
+
+    public StarsRatingComposite(final IName element, final IProvider provider, final IUserFeedback feedback,
+            final IUserFeedbackServer server, final Composite parent) {
         this.element = element;
+        this.provider = provider;
         this.server = server;
-        parentComposite = new Composite(parent, SWT.NONE);
-        parentComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-        printStars();
+        ratingSummary = feedback.getRatingSummary();
+        createContents(parent);
     }
 
-    private void printStars() {
-        final int averageRating = server.getAverageRating(element);
-        final int userRating = server.getUserRating(element);
+    private void createContents(final Composite parent) {
+        final Composite parentComposite = new Composite(parent, SWT.NONE);
+        parentComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-        composite = new Composite(parentComposite, SWT.NONE);
+        createStarsComposite(parentComposite);
+        printStars(ratingSummary);
+    }
+
+    private void createStarsComposite(final Composite parent) {
+        composite = new Composite(parent, SWT.NONE);
         final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
         layout.spacing = 0;
         layout.marginBottom = 0;
@@ -55,63 +64,53 @@ class StarsRatingComposite {
         layout.marginLeft = 0;
         layout.marginTop = 0;
         composite.setLayout(layout);
-
-        createStars(averageRating, userRating);
     }
 
-    private void createStars(final int averageRating, final int userRating) {
-        for (int i = 1; i <= 5; ++i) {
-            final Label label = new Label(composite, SWT.NONE);
-            label.setImage(userRating == i ? ICON_STAR_ACTIVE : (averageRating < i ? ICON_STAR_EMPTY : ICON_STAR));
-            if (userRating < 1) {
-                final StarListener listener = new StarListener(i);
-                label.addMouseListener(listener);
-                label.addKeyListener(listener);
-                label.addMouseTrackListener(new HoverListener());
-                label.setToolTipText("Add " + i + " Stars");
-            } else {
-                label.setToolTipText("Average Rating: " + averageRating + " Stars");
-            }
+    private void printStars(final IRatingSummary ratingSummary) {
+        final int userStars = ratingSummary.getUserRating() == null ? -1 : ratingSummary.getUserRating().getRating();
+        for (int star = 1; star <= 5; ++star) {
+            createStar(star, userStars, ratingSummary);
         }
     }
 
-    private void addRating(final int stars) {
-        server.addRating(element, stars);
+    private void createStar(final int star, final int userStars, final IRatingSummary ratingSummary) {
+        final Label label = new Label(composite, SWT.NONE);
+        label.setImage(userStars == star ? ICON_STAR_ACTIVE : ratingSummary.getAverage() < star ? ICON_STAR_EMPTY
+                : ICON_STAR);
+        if (userStars < 1) {
+            label.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseDoubleClick(final MouseEvent e) {
+                }
+
+                @Override
+                public void mouseDown(final MouseEvent e) {
+                }
+
+                @Override
+                public void mouseUp(final MouseEvent e) {
+                    addRating(star, ratingSummary);
+                }
+            });
+            label.addMouseTrackListener(new HoverListener());
+            label.setToolTipText("Add " + star + " Stars");
+        } else {
+            label.setToolTipText("Average Rating: " + ratingSummary.getAverage() + " Stars");
+        }
+    }
+
+    void addRating(final int stars, final IRatingSummary ratingSummary) {
+        final IRating userRating = server.addRating(stars, element, provider);
+        for (final Control child : composite.getChildren()) {
+            child.dispose();
+        }
+        ratingSummary.addUserRating(userRating);
+        printStars(ratingSummary);
+        composite.layout(true);
+    }
+
+    public void dispose() {
         composite.dispose();
-        printStars();
-        parentComposite.layout(true);
-    }
-
-    private final class StarListener implements MouseListener, KeyListener {
-
-        private final int stars;
-
-        private StarListener(final int stars) {
-            this.stars = stars;
-        }
-
-        @Override
-        public void keyPressed(final KeyEvent e) {
-        }
-
-        @Override
-        public void keyReleased(final KeyEvent e) {
-            addRating(stars);
-        }
-
-        @Override
-        public void mouseDoubleClick(final MouseEvent e) {
-        }
-
-        @Override
-        public void mouseDown(final MouseEvent e) {
-        }
-
-        @Override
-        public void mouseUp(final MouseEvent e) {
-            addRating(stars);
-        }
-
     }
 
     private static final class HoverListener implements MouseTrackListener {

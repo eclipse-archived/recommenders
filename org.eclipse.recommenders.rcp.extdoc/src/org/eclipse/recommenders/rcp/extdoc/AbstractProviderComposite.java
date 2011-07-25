@@ -11,41 +11,44 @@
 package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.internal.rcp.extdoc.AbstractProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 public abstract class AbstractProviderComposite extends AbstractProvider {
 
-    private Composite container;
     private IWorkbenchPartSite partSite;
-    private CLabel titleLabel;
 
     @Override
     public final Control createControl(final Composite parent, final IWorkbenchPartSite site) {
         partSite = site;
-        container = SwtFactory.createGridComposite(parent, 1, 0, 3, 8, 8);
 
-        titleLabel = new CLabel(container, SWT.NONE);
+        final Composite container = SwtFactory.createGridComposite(parent, 1, 0, 3, 8, 8);
+        createProviderTitle(container);
+        SwtFactory.createSeparator(container);
+        final Control control = createContentControl(container);
+        Checks.ensureIsNotNull(control);
+        return container;
+    }
+
+    private void createProviderTitle(final Composite container) {
+        final CLabel titleLabel = new CLabel(container, SWT.NONE);
         titleLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
         titleLabel.setImage(getIcon());
         titleLabel.setText(getProviderFullName());
-        SwtFactory.createSeparator(container);
-
-        createContentControl(container);
-
-        return container;
+        titleLabel.setLeftMargin(0);
     }
 
     protected abstract Control createContentControl(Composite parent);
 
     @Override
-    public final Shell getShell() {
-        return container.getShell();
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
     public final IWorkbenchPartSite getPartSite() {
@@ -56,16 +59,6 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         for (final Control child : composite.getChildren()) {
             child.dispose();
         }
-    }
-
-    public final void setTitle(final String title) {
-        titleLabel.setText(title);
-        titleLabel.getParent().layout();
-    }
-
-    public final void setTitleIcon(final Image image) {
-        titleLabel.setImage(image);
-        titleLabel.getParent().layout();
     }
 
 }
