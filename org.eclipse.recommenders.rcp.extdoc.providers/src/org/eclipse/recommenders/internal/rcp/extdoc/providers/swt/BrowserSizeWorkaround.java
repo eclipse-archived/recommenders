@@ -53,9 +53,17 @@ public final class BrowserSizeWorkaround {
     }
 
     private void recalculateAndSetHeight() {
-        if (!browser.isDisposed()) {
-            Display.getDefault().asyncExec(new RescaleAction(this));
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                } catch (final InterruptedException e) {
+                    throw new IllegalStateException(e);
+                }
+                Display.getDefault().asyncExec(new RescaleAction());
+            }
+        }).start();
     }
 
     private void setHeightAndTriggerLayout(final int height) {
@@ -90,31 +98,22 @@ public final class BrowserSizeWorkaround {
         });
     }
 
-    private static final class RescaleAction implements Runnable {
-
-        private final BrowserSizeWorkaround browserSizeWorkaround;
-
-        private RescaleAction(final BrowserSizeWorkaround browserSizeWorkaround) {
-            this.browserSizeWorkaround = browserSizeWorkaround;
-        }
+    private final class RescaleAction implements Runnable {
 
         @Override
         public void run() {
-            try {
-                Thread.sleep(500);
-            } catch (final InterruptedException e) {
-                throw new IllegalStateException(e);
-            }
-            final Object result = browserSizeWorkaround.browser
-                    .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
+            if (!browser.isDisposed()) {
+                final Object result = browser
+                        .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
 
-            if (result == null) {
-                // terminate re-layout operation if browser widget fails to
-                // compute its size
-                return;
+                if (result == null) {
+                    // terminate re-layout operation if browser widget fails to
+                    // compute its size
+                    return;
+                }
+                final int height = (int) Math.ceil((Double) result);
+                setHeightAndTriggerLayout(height);
             }
-            final int height = (int) Math.ceil((Double) result);
-            browserSizeWorkaround.setHeightAndTriggerLayout(height);
         }
     }
 }
