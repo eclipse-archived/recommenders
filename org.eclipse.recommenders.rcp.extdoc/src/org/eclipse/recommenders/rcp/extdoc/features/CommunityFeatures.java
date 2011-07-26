@@ -28,6 +28,9 @@ public final class CommunityFeatures {
 
     public static CommunityFeatures create(final IName element, final IProvider provider,
             final IUserFeedbackServer server) {
+        if (element == null) {
+            return null;
+        }
         final CommunityFeatures features = new CommunityFeatures();
         features.provider = provider;
         features.server = Preconditions.checkNotNull(server);

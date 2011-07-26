@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
@@ -45,8 +46,9 @@ public final class ElementResolver {
             final IMethodName declaringMethod = toRecMethod((IMethod) javaElement.getParent());
             return Variable.create(javaElement.getElementName(), null, declaringMethod).getName();
         } else if (javaElement instanceof IField) {
-            throw new IllegalArgumentException("Can't yet resolve fields!");
-        } else if (javaElement instanceof IPackageFragment) {
+            final ITypeName type = VariableResolver.resolveTypeSignature((IField) javaElement);
+            return type == null ? null : toRecField((IField) javaElement, type);
+        } else if (javaElement instanceof IPackageFragment || javaElement instanceof IPackageDeclaration) {
             return VmPackageName.get(javaElement.getElementName());
         }
         throw new IllegalArgumentException(javaElement.getClass().toString());

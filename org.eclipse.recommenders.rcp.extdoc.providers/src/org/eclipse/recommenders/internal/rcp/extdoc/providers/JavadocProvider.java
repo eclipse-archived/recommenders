@@ -44,7 +44,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
     private Composite composite;
     private ExtendedJavadocView javadoc;
     private final GenericServer server;
-    private CommunityFeatures features;
+    private Composite feedbackComposite;
 
     @Inject
     public JavadocProvider(final GenericServer server) {
@@ -55,6 +55,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
     protected Control createContentControl(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
         javadoc = new ExtendedJavadocView(composite, getPartSite());
+        feedbackComposite = SwtFactory.createGridComposite(parent, 2, 0, 0, 0, 0);
 
         if (javadoc.getControl() instanceof Browser) {
             new BrowserSizeWorkaround((Browser) javadoc.getControl());
@@ -85,23 +86,24 @@ public final class JavadocProvider extends AbstractProviderComposite {
 
     private static IJavaElement getJavaElement(final IJavaElement javaElement) {
         if (javaElement instanceof ILocalVariable) {
-            return VariableResolver.resolveTypeSignature((ILocalVariable) javaElement);
+            return ElementResolver.toJdtType(VariableResolver.resolveTypeSignature((ILocalVariable) javaElement));
         }
         return javaElement;
     }
 
     private void displayComments(final IJavaElement javaElement) {
-        final CommunityFeatures oldComments = features;
-        features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), this, server);
+        final CommunityFeatures features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), this,
+                server);
         new UIJob("Updating JavaDoc Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
-                    if (oldComments != null) {
-                        oldComments.dispose();
+                    disposeChildren(feedbackComposite);
+                    if (features != null) {
+                        features.loadCommentsComposite(feedbackComposite);
+                        features.loadStarsRatingComposite(feedbackComposite);
                     }
-                    features.loadCommentsComposite(composite);
-                    composite.layout(true);
+                    feedbackComposite.layout(true);
                     composite.getParent().getParent().layout(true);
                 }
                 return Status.OK_STATUS;
