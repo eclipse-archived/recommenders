@@ -66,12 +66,21 @@ class ProviderUpdateJob extends Job {
     }
 
     private void updateProvider() {
+        new UIJob("Update provider table") {
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                if (!item.isDisposed()) {
+                    table.setContentVisible(item, false, false);
+                }
+                return Status.OK_STATUS;
+            }
+        }.schedule();
         final boolean hasContent = provider.selectionChanged(selection);
         new UIJob("Update provider table") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!item.isDisposed()) {
-                    table.setContentVisible(item, hasContent);
+                    table.setContentVisible(item, hasContent, true);
                     item.setImage((Image) item.getData("image"));
                 }
                 return Status.OK_STATUS;
