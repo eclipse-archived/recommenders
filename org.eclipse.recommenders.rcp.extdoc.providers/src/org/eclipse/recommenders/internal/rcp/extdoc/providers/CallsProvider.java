@@ -110,7 +110,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
         context = ContextFactory.setThisVariableContext(selection, method);
-        return displayProposalsForMethod(method);
+        return displayProposalsForMethod(method, true);
     }
 
     @Override
@@ -166,7 +166,8 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
                     resolveCalledMethods, negateConstructors);
             final IName name = element instanceof IField ? ElementResolver.toRecField((IField) element, variable.type)
                     : variable.getName();
-            return displayProposals(element.getElementName(), name, recommendedMethodCalls, resolveCalledMethods);
+            return displayProposals(element, element.getElementName(), name, false, recommendedMethodCalls,
+                    resolveCalledMethods);
         }
         return false;
     }
@@ -176,12 +177,12 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         final ITypeName typeName = ElementResolver.toRecType(type);
         if (modelStore.hasModel(typeName)) {
             final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, invokedMethods, false);
-            return displayProposals(elementName, typeName, calls, new HashSet<IMethodName>());
+            return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>());
         }
         return false;
     }
 
-    private boolean displayProposalsForMethod(final IMethod method) {
+    private boolean displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration) {
         try {
             final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
             if (superclassTypeSignature == null) {
@@ -194,13 +195,13 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             if (type != null && modelStore.hasModel(type)) {
                 final Set<IMethodName> calledMethods = resolveCalledMethods();
                 final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
-                return displayProposals(method.getElementName(), ElementResolver.toRecMethod(method), calls,
-                        calledMethods);
+                return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
+                        isMethodDeclaration, calls, calledMethods);
             } else {
                 // TODO: first is not correct in all cases. this needs to be
                 // fixed
                 final IMethod first = JdtUtils.findFirstDeclaration(method);
-                return first.equals(method) ? false : displayProposalsForMethod(first);
+                return first.equals(method) ? false : displayProposalsForMethod(first, isMethodDeclaration);
             }
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
@@ -217,7 +218,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
                         return Variable.create(field.getElementName(), fieldType, ElementResolver.toRecMethod(method));
                     };
                 };
-                displayProposalsForMethod(method);
+                displayProposalsForMethod(method, false);
             }
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
@@ -248,22 +249,26 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         return recommendedMethodCalls;
     }
 
-    private boolean displayProposals(final String elementName, final IName element,
-            final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods) {
+    private boolean displayProposals(final IJavaElement element, final String elementName, final IName elementId,
+            final boolean isMethodDeclaration, final SortedSet<Tuple<IMethodName, Double>> proposals,
+            final Set<IMethodName> calledMethods) {
         if (proposals.isEmpty()) {
             return false;
         }
 
-        final String text = "People who use " + elementName + " usually also call the following methods:";
-        final CommunityFeatures features = CommunityFeatures.create(element, this, server);
+        final String action = isMethodDeclaration ? "declare" : "use";
+        final String text = "People who " + action + " " + elementName + " usually also call the following methods"
+                + (isMethodDeclaration ? " inside" : "") + ":";
+        final CommunityFeatures features = CommunityFeatures.create(elementId, this, server);
+
         new UIJob("Updating Calls Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
-                    line.createStyleRange(15, elementName.length(), SWT.NORMAL, false, true);
-                    displayProposals(proposals, calledMethods);
+                    line.createStyleRange(12 + action.length(), elementName.length(), SWT.NORMAL, false, true);
+                    displayProposals(element, isMethodDeclaration, proposals, calledMethods);
                     composite.layout(true);
                 }
                 return Status.OK_STATUS;
@@ -273,24 +278,34 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         return true;
     }
 
-    private void displayProposals(final SortedSet<Tuple<IMethodName, Double>> proposals,
-            final Set<IMethodName> calledMethods) {
+    private void displayProposals(final IJavaElement element, final boolean isMethodDeclaration,
+            final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods) {
         final Composite calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
         for (final IMethodName method : calledMethods) {
             SwtFactory.createSquare(calls);
-            final String prefix = method.isInit() ? "new " : method.getDeclaringType().getClassName() + ".";
-            SwtFactory.createLabel(calls, String.format("%s%s", prefix, Names.vm2srcSimpleMethod(method)), false, true,
+            SwtFactory.createLabel(calls, formatMethodCall(element, method, isMethodDeclaration), false, true,
                     SWT.COLOR_DARK_GRAY);
             SwtFactory.createLabel(calls, "(called)", false, false, SWT.COLOR_DARK_GRAY);
         }
         for (final Tuple<IMethodName, Double> proposal : proposals) {
             SwtFactory.createSquare(calls);
-            final IMethodName method = proposal.getFirst();
-            final String prefix = method.isInit() ? "new " : method.getDeclaringType().getClassName() + ".";
-            SwtFactory.createLabel(calls, String.format("%s%s", prefix, Names.vm2srcSimpleMethod(method)), false, true,
-                    SWT.COLOR_BLACK);
+            SwtFactory.createLabel(calls, formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false,
+                    true, SWT.COLOR_BLACK);
             SwtFactory.createLabel(calls, Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
         }
     }
 
+    private String formatMethodCall(final IJavaElement element, final IMethodName method,
+            final boolean isMethodDeclaration) {
+        final String prefix;
+        final boolean isVariable = element instanceof ILocalVariable || element instanceof IField;
+        if (isMethodDeclaration) {
+            prefix = "this.";
+        } else if (method.isInit()) {
+            prefix = (isVariable ? element.getElementName() + " = " : "") + "new ";
+        } else {
+            prefix = (isVariable ? element.getElementName() : method.getDeclaringType().getClassName()) + ".";
+        }
+        return String.format("%s%s", prefix, Names.vm2srcSimpleMethod(method));
+    }
 }
