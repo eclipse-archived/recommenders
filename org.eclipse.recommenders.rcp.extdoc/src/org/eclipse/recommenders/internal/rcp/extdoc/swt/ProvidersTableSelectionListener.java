@@ -48,7 +48,7 @@ final class ProvidersTableSelectionListener implements Listener {
                 new ProviderUpdateJob(table, tableItem, lastSelection).schedule();
             }
         } else {
-            table.setContentVisible(tableItem, tableItem.getChecked());
+            table.setContentVisible(tableItem, tableItem.getChecked(), true);
         }
     }
 
