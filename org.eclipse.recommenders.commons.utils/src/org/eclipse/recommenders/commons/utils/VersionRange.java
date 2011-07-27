@@ -16,6 +16,8 @@ import com.google.common.collect.Lists;
 
 public class VersionRange {
 
+    public static final VersionRange EMPTY = new VersionRangeBuilder().minExclusive(Version.ZERO)
+            .maxExclusive(Version.ZERO).build();
     public static VersionRange ALL = new VersionRangeBuilder().minInclusive(Version.UNKNOWN)
             .maxInclusive(Version.LATEST).build();
 
