@@ -20,7 +20,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.recommenders.commons.lfm.Manifest;
-import org.eclipse.recommenders.commons.utils.Checks;
 
 import com.google.common.collect.Maps;
 
@@ -59,12 +58,13 @@ public class ModelArchiveStore implements IModelArchiveStore {
         register(archive);
     }
 
-    public void register(final ModelArchive archive) throws IOException {
+    public synchronized void register(final ModelArchive archive) throws IOException {
         final Manifest manifest = archive.getManifest();
         final File destination = getModelFile(manifest);
-        Checks.ensureIsFalse(destination.exists(), "Offered archive already exists: '%s'", destination);
-        moveArchive(archive, destination);
-        manifest2archive.put(manifest, archive);
+        if (!destination.exists()) {
+            moveArchive(archive, destination);
+            manifest2archive.put(manifest, archive);
+        }
     }
 
     private void moveArchive(final ModelArchive archive, final File destination) throws IOException {

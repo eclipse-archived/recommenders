@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 
 import com.google.common.collect.Sets;
@@ -49,6 +50,7 @@ public class FragmentResolver {
 
     private void scheduleJob(final IPackageFragmentRoot packageRoot) {
         final SearchManifestJob job = jobFactory.create(packageRoot);
+        job.setPriority(WorkspaceJob.DECORATE);
         job.schedule();
     }
 
