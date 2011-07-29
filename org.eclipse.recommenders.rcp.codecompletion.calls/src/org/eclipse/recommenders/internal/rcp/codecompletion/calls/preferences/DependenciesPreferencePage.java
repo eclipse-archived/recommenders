@@ -27,6 +27,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.recommenders.commons.lfm.ClasspathDependencyInformation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.swt.SWT;
@@ -94,6 +96,14 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
                 } else {
                     selectFile((File) ((StructuredSelection) selection).getFirstElement());
                 }
+            }
+        });
+        tableViewer.setComparator(new ViewerComparator() {
+            @Override
+            public int compare(final Viewer viewer, final Object e1, final Object e2) {
+                final File file1 = (File) e1;
+                final File file2 = (File) e2;
+                return file1.getName().compareTo(file2.getName());
             }
         });
     }
