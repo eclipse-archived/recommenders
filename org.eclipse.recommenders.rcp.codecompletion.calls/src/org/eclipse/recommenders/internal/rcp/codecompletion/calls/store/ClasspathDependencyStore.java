@@ -14,7 +14,9 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsTrue;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -71,6 +73,10 @@ public class ClasspathDependencyStore {
 
     public boolean containsClasspathDependencyInfo(final IPackageFragmentRoot packageRoot) {
         final File file = getLocation(packageRoot);
+        return containsClasspathDependencyInfo(file);
+    }
+
+    public boolean containsClasspathDependencyInfo(final File file) {
         final ClasspathDependencyInformation dependencyInformation = resource2dependencyInfo.get(file);
         if (dependencyInformation == null) {
             return false;
@@ -86,7 +92,11 @@ public class ClasspathDependencyStore {
 
     public boolean containsManifest(final IPackageFragmentRoot packageRoot) {
         final File file = getLocation(packageRoot);
-        if (containsClasspathDependencyInfo(packageRoot)) {
+        return containsManifest(file);
+    }
+
+    public boolean containsManifest(final File file) {
+        if (containsClasspathDependencyInfo(file)) {
             return resource2manifestId.containsKey(file);
         } else {
             resource2manifestId.remove(file);
@@ -95,16 +105,24 @@ public class ClasspathDependencyStore {
     }
 
     public ClasspathDependencyInformation getClasspathDependencyInfo(final IPackageFragmentRoot packageRoot) {
-        ensureIsTrue(containsClasspathDependencyInfo(packageRoot),
-                "PackageRoot not contained  in mapping. Call containsClasspathDependencyInfo() before getClasspathDependencyInfo().");
         final File file = getLocation(packageRoot);
+        return getClasspathDependencyInfo(file);
+    }
+
+    public ClasspathDependencyInformation getClasspathDependencyInfo(final File file) {
+        ensureIsTrue(containsClasspathDependencyInfo(file),
+                "PackageRoot not contained  in mapping. Call containsClasspathDependencyInfo() before getClasspathDependencyInfo().");
         return resource2dependencyInfo.get(file);
     }
 
     public Manifest getManifest(final IPackageFragmentRoot packageRoot) {
-        ensureIsTrue(containsManifest(packageRoot),
-                "PackageRoot not contained  in mapping. Call containsManifestIdentifier() before getManifestIdentifier().");
         final File file = getLocation(packageRoot);
+        return getManifest(file);
+    }
+
+    public Manifest getManifest(final File file) {
+        ensureIsTrue(containsManifest(file),
+                "PackageRoot not contained  in mapping. Call containsManifestIdentifier() before getManifestIdentifier().");
         return resource2manifestId.get(file);
     }
 
@@ -131,5 +149,9 @@ public class ClasspathDependencyStore {
 
     private boolean isFileChanged(final File file, final ClasspathDependencyInformation dependencyInformation) {
         return file.lastModified() != dependencyInformation.jarFileModificationDate.getTime();
+    }
+
+    public Set<File> getFiles() {
+        return new HashSet<File>(resource2dependencyInfo.keySet());
     }
 }

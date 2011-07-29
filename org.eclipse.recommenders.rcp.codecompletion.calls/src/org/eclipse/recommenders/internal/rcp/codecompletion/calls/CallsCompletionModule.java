@@ -68,7 +68,10 @@ public class CallsCompletionModule extends AbstractModule {
         install(new FactoryModuleBuilder().build(ProjectModelFacadeFactory.class));
 
         bind(ClientConfiguration.class).annotatedWith(LfmServer.class).toInstance(
-                ClientConfiguration.create("http://localhost:8080/lfm/"));
+                ClientConfiguration.create("http://vandyk.st.informatik.tu-darmstadt.de:29750/lfm/"));
+        // bind(ClientConfiguration.class).annotatedWith(LfmServer.class).toInstance(
+        // ClientConfiguration.create("http://localhost:8080/lfm/"));
+
         install(new FactoryModuleBuilder().build(RemoteResolverJobFactory.class));
     }
 
