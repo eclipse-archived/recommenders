@@ -19,6 +19,7 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -51,6 +52,7 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
     @Inject
     public DependenciesPreferencePage(final ClasspathDependencyStore dependencyStore) {
         this.dependencyStore = dependencyStore;
+        noDefaultAndApplyButton();
     }
 
     @Override
@@ -71,7 +73,8 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
 
     private void createTable(final Composite container) {
         final Composite tableComposite = new Composite(container, SWT.FILL);
-        final TableViewer tableViewer = new TableViewer(tableComposite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+        final TableViewer tableViewer = new TableViewer(tableComposite, SWT.FULL_SELECTION | SWT.H_SCROLL
+                | SWT.V_SCROLL | SWT.BORDER);
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         final TableColumnLayout tableColumnLayout = new TableColumnLayout();
@@ -101,6 +104,7 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
         final Image modelImage = loadImage("/icons/obj16/model.png");
         final Image modelUnknownImage = loadImage("/icons/obj16/model_unknown.png");
 
+        ColumnViewerToolTipSupport.enableFor(tableViewer);
         TableViewerColumn column = createTableViewerColumn(tableViewer, "File", 200, 0);
         column.getColumn().setResizable(false);
         tableColumnLayout.setColumnData(column.getColumn(), new ColumnWeightData(100));
@@ -108,6 +112,11 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
             @Override
             public String getText(final Object element) {
                 return ((File) element).getName();
+            }
+
+            @Override
+            public String getToolTipText(final Object element) {
+                return ((File) element).getAbsolutePath();
             }
         });
 
@@ -117,15 +126,24 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public Image getImage(final Object element) {
-                final File file = (File) element;
+                return hasDependencyInformation((File) element) ? versionImage : versionUnknownImage;
+            }
+
+            @Override
+            public String getToolTipText(final Object element) {
+                return hasDependencyInformation((File) element) ? "Name and version of dependency is known"
+                        : "Some details are unknown for this dependency";
+            }
+
+            private boolean hasDependencyInformation(final File file) {
                 if (dependencyStore.containsClasspathDependencyInfo(file)) {
                     final ClasspathDependencyInformation dependencyInfo = dependencyStore
                             .getClasspathDependencyInfo(file);
                     if (!dependencyInfo.symbolicName.isEmpty() && !dependencyInfo.version.isUnknown()) {
-                        return versionImage;
+                        return true;
                     }
                 }
-                return versionUnknownImage;
+                return false;
             }
         });
 
@@ -135,12 +153,17 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
         column.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public Image getImage(final Object element) {
-                final File file = (File) element;
-                if (dependencyStore.containsManifest(file)) {
-                    return modelImage;
-                } else {
-                    return modelUnknownImage;
-                }
+                return hasModel((File) element) ? modelImage : modelUnknownImage;
+            }
+
+            @Override
+            public String getToolTipText(final Object element) {
+                return hasModel((File) element) ? "Model for this dependency is available"
+                        : "No model for this dependency";
+            }
+
+            private boolean hasModel(final File file) {
+                return dependencyStore.containsManifest(file);
             }
         });
     }
@@ -176,6 +199,7 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
         gridData.grabExcessHorizontalSpace = true;
         gridData.verticalAlignment = GridData.BEGINNING;
         gridData.minimumWidth = minimumWidth;
+        gridData.heightHint = 400;
         control.setLayoutData(gridData);
     }
 
