@@ -11,9 +11,14 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -46,6 +51,7 @@ import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.progress.UIJob;
@@ -94,11 +100,10 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
         context = ContextFactory.setFieldVariableContext(selection, field);
-        if (context == null || !displayProposalsForVariable(field, false)) {
+        if (context == null) {
             return false;
         }
-        // displayProposalsForAllMethods(selection, field);
-        return true;
+        return displayProposalsForVariable(field, false, getProposalsFromSingleMethods(selection, field));
     }
 
     @Override
@@ -127,19 +132,19 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local) {
         context = ContextFactory.setLocalVariableContext(selection, local);
-        return context == null ? false : displayProposalsForVariable(local, true);
+        return context == null ? false : displayProposalsForVariable(local, true, null);
     }
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
         context = ContextFactory.setLocalVariableContext(selection, local);
-        return context == null ? false : displayProposalsForVariable(local, false);
+        return context == null ? false : displayProposalsForVariable(local, false, null);
     }
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
         context = ContextFactory.setFieldVariableContext(selection, field);
-        return context == null ? false : displayProposalsForVariable(field, false);
+        return context == null ? false : displayProposalsForVariable(field, false, null);
     }
 
     @Override
@@ -158,7 +163,8 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
     }
 
-    private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors) {
+    private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors,
+            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilityFromMethods) {
         final Variable variable = context.getVariable();
         if (variable != null && modelStore.hasModel(variable.type)) {
             final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
@@ -167,7 +173,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             final IName name = element instanceof IField ? ElementResolver.toRecField((IField) element, variable.type)
                     : variable.getName();
             return displayProposals(element, element.getElementName(), name, false, recommendedMethodCalls,
-                    resolveCalledMethods);
+                    resolveCalledMethods, maxProbabilityFromMethods);
         }
         return false;
     }
@@ -177,49 +183,73 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         final ITypeName typeName = ElementResolver.toRecType(type);
         if (modelStore.hasModel(typeName)) {
             final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, invokedMethods, false);
-            return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>());
+            return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>(), null);
         }
         return false;
     }
 
     private boolean displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration) {
+        final ITypeName type = getMethodsDeclaringType(method);
+        if (type != null && modelStore.hasModel(type)) {
+            final Set<IMethodName> calledMethods = resolveCalledMethods();
+            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
+            return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
+                    isMethodDeclaration, calls, calledMethods, null);
+        } else {
+            // TODO: first is not correct in all cases. this needs to be
+            // fixed
+            final IMethod first = JdtUtils.findFirstDeclaration(method);
+            return first.equals(method) ? false : displayProposalsForMethod(first, isMethodDeclaration);
+        }
+    }
+
+    private SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> getProposalsFromSingleMethods(
+            final IJavaElementSelection selection, final IField field) {
         try {
-            final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
-            if (superclassTypeSignature == null) {
-                return false;
+            final Map<IMethodName, Tuple<IMethod, Double>> maxProbs = new HashMap<IMethodName, Tuple<IMethod, Double>>();
+            final ITypeName fieldType = context.getVariable().type;
+            if (!modelStore.hasModel(fieldType)) {
+                return null;
             }
-            final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
-                    method.getDeclaringType());
-            final IType supertype = method.getJavaProject().findType(superclassTypeName);
-            final ITypeName type = ElementResolver.toRecType(supertype);
-            if (type != null && modelStore.hasModel(type)) {
-                final Set<IMethodName> calledMethods = resolveCalledMethods();
-                final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
-                return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
-                        isMethodDeclaration, calls, calledMethods);
-            } else {
-                // TODO: first is not correct in all cases. this needs to be
-                // fixed
-                final IMethod first = JdtUtils.findFirstDeclaration(method);
-                return first.equals(method) ? false : displayProposalsForMethod(first, isMethodDeclaration);
+            for (final IMethod method : field.getDeclaringType().getMethods()) {
+                context = ContextFactory.setLocalVariableContext(selection, field.getElementName(), fieldType,
+                        ElementResolver.toRecMethod(method));
+                for (final Tuple<IMethodName, Double> call : computeRecommendations(fieldType,
+                        new HashSet<IMethodName>(), true)) {
+                    if (!maxProbs.containsKey(call.getFirst())
+                            || maxProbs.get(call.getFirst()).getSecond() < call.getSecond()) {
+                        maxProbs.put(call.getFirst(), Tuple.create(method, call.getSecond()));
+                    }
+                }
             }
+            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> sorted = new TreeSet<Tuple<IMethodName, Tuple<IMethodName, Double>>>(
+                    new Comparator<Tuple<IMethodName, Tuple<IMethodName, Double>>>() {
+                        @Override
+                        public int compare(final Tuple<IMethodName, Tuple<IMethodName, Double>> arg0,
+                                final Tuple<IMethodName, Tuple<IMethodName, Double>> arg1) {
+                            return arg1.getSecond().getSecond().compareTo(arg0.getSecond().getSecond());
+                        }
+                    });
+            for (final Entry<IMethodName, Tuple<IMethod, Double>> methodCall : maxProbs.entrySet()) {
+                sorted.add(Tuple.create(methodCall.getKey(), Tuple.create(ElementResolver.toRecMethod(methodCall
+                        .getValue().getFirst()), methodCall.getValue().getSecond())));
+            }
+            return sorted;
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private void displayProposalsForAllMethods(final IJavaElementSelection selection, final IField field) {
+    private ITypeName getMethodsDeclaringType(final IMethod method) {
         try {
-            final ITypeName fieldType = context.getVariable().type;
-            for (final IMethod method : field.getDeclaringType().getMethods()) {
-                context = new MockedIntelligentCompletionContext(selection) {
-                    @Override
-                    public Variable getVariable() {
-                        return Variable.create(field.getElementName(), fieldType, ElementResolver.toRecMethod(method));
-                    };
-                };
-                displayProposalsForMethod(method, false);
+            final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
+            if (superclassTypeSignature == null) {
+                return null;
             }
+            final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
+                    method.getDeclaringType());
+            final IType supertype = method.getJavaProject().findType(superclassTypeName);
+            return ElementResolver.toRecType(supertype);
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
@@ -251,7 +281,8 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     private boolean displayProposals(final IJavaElement element, final String elementName, final IName elementId,
             final boolean isMethodDeclaration, final SortedSet<Tuple<IMethodName, Double>> proposals,
-            final Set<IMethodName> calledMethods) {
+            final Set<IMethodName> calledMethods,
+            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilitiesFromMethods) {
         if (proposals.isEmpty()) {
             return false;
         }
@@ -259,6 +290,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         final String action = isMethodDeclaration ? "declare" : "use";
         final String text = "People who " + action + " " + elementName + " usually also call the following methods"
                 + (isMethodDeclaration ? " inside" : "") + ":";
+        final String text2 = "When accessed from single methods, probabilites for this field's methods might be different:";
         final CommunityFeatures features = CommunityFeatures.create(elementId, this, server);
 
         new UIJob("Updating Calls Provider") {
@@ -269,7 +301,27 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
                     line.createStyleRange(12 + action.length(), elementName.length(), SWT.NORMAL, false, true);
                     displayProposals(element, isMethodDeclaration, proposals, calledMethods);
+
+                    if (maxProbabilitiesFromMethods != null) {
+                        new TextAndFeaturesLine(composite, text2, features);
+                        final Composite calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
+                        for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
+                            SwtFactory.createSquare(calls);
+                            SwtFactory.createLabel(calls,
+                                    formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true,
+                                    SWT.COLOR_BLACK);
+                            final int probability = (int) Math.round(proposal.getSecond().getSecond() * 100);
+                            final String origin = Names.vm2srcSimpleMethod(proposal.getSecond().getFirst());
+                            final int probLength = String.valueOf(probability).length();
+                            final StyledText styled = SwtFactory
+                                    .createStyledText(calls, probability + "% in " + origin);
+                            SwtFactory.createStyleRange(styled, 0, probLength + 1, SWT.NORMAL, true, false);
+                            SwtFactory.createStyleRange(styled, probLength + 5, origin.length(), SWT.NORMAL, false,
+                                    true);
+                        }
+                    }
                     composite.layout(true);
+                    composite.getParent().getParent().layout(true);
                 }
                 return Status.OK_STATUS;
             }
@@ -288,11 +340,16 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             SwtFactory.createLabel(calls, "(called)", false, false, SWT.COLOR_DARK_GRAY);
         }
         for (final Tuple<IMethodName, Double> proposal : proposals) {
-            SwtFactory.createSquare(calls);
-            SwtFactory.createLabel(calls, formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false,
-                    true, SWT.COLOR_BLACK);
-            SwtFactory.createLabel(calls, Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
+            displayProposal(proposal, calls, element, isMethodDeclaration);
         }
+    }
+
+    private void displayProposal(final Tuple<IMethodName, Double> proposal, final Composite parent,
+            final IJavaElement element, final boolean isMethodDeclaration) {
+        SwtFactory.createSquare(parent);
+        SwtFactory.createLabel(parent, formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false,
+                true, SWT.COLOR_BLACK);
+        SwtFactory.createLabel(parent, Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
     }
 
     private String formatMethodCall(final IJavaElement element, final IMethodName method,

@@ -60,25 +60,29 @@ public final class ContextFactory {
 
     public static MockedIntelligentCompletionContext setFieldVariableContext(final IJavaElementSelection selection,
             final IField field) {
-        return setMockedContext(selection, field.getElementName(), VariableResolver.resolveTypeSignature(field), false);
+        return setMockedContext(selection, field.getElementName(), VariableResolver.resolveTypeSignature(field), null);
     }
 
     public static MockedIntelligentCompletionContext setLocalVariableContext(final IJavaElementSelection selection,
-            final ILocalVariable var) {
-        final String name = var.getElementName();
-        final ITypeName variableType = VariableResolver.resolveTypeSignature(var);
-        return setMockedContext(selection, name, variableType, false);
+            final ILocalVariable local) {
+        return setMockedContext(selection, local.getElementName(), VariableResolver.resolveTypeSignature(local), null);
+    }
+
+    public static MockedIntelligentCompletionContext setLocalVariableContext(final IJavaElementSelection selection,
+            final String variableName, final ITypeName variableType, final IMethodName enclosingMethod) {
+        return setMockedContext(selection, variableName, variableType, enclosingMethod);
     }
 
     private static MockedIntelligentCompletionContext setMockedContext(final IJavaElementSelection selection,
-            final String variableName, final ITypeName variableType, final boolean isArgument) {
+            final String variableName, final ITypeName variableType, final IMethodName enclosingMethod) {
         if (variableType == null) {
             return null;
         }
         return new MockedIntelligentCompletionContext(selection) {
             @Override
             public Variable getVariable() {
-                return Variable.create(variableName, variableType, getEnclosingMethod());
+                return Variable.create(variableName, variableType, enclosingMethod == null ? getEnclosingMethod()
+                        : enclosingMethod);
             };
         };
     }

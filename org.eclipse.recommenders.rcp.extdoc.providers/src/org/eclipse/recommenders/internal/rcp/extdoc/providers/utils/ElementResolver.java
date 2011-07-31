@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
@@ -17,6 +18,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.names.IFieldName;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -50,6 +52,13 @@ public final class ElementResolver {
             return type == null ? null : toRecField((IField) javaElement, type);
         } else if (javaElement instanceof IPackageFragment || javaElement instanceof IPackageDeclaration) {
             return VmPackageName.get(javaElement.getElementName());
+        } else if (javaElement instanceof ICompilationUnit) {
+            try {
+                // TODO: This looks dangerous.
+                return toRecType(((ICompilationUnit) javaElement).getTypes()[0]);
+            } catch (final JavaModelException e) {
+                throw new IllegalStateException(e);
+            }
         }
         throw new IllegalArgumentException(javaElement.getClass().toString());
     }

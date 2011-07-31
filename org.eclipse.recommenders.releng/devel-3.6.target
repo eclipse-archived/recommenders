@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders Development Environment" sequenceNumber="1">
+<target name="Code Recommenders Development Environment" sequenceNumber="2">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.help.feature.group" version="1.2.1.r362_v20101111-7e7jEVFDr6xg-LSlC_z0w1D"/>
@@ -36,7 +36,7 @@
 <repository location="http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.bayes.feature.feature.group" version="0.2.0.v20110719-0916-b69"/>
+<unit id="org.eclipse.recommenders.bayes.feature.feature.group" version="0.2.0.v20110724-0841-b70"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/head"/>
 </location>
 </locations>
