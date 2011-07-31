@@ -96,7 +96,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     }
 
     private boolean displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
-        final CommunityFeatures features = CommunityFeatures.create(element, this, server);
+        final CommunityFeatures features = CommunityFeatures.create(element, null, this, server);
         new UIJob("Updating Examples Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {

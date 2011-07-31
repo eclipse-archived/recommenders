@@ -14,7 +14,6 @@ import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
-
 import org.junit.Test;
 
 public final class CommentsCompositeTest {
@@ -22,7 +21,7 @@ public final class CommentsCompositeTest {
     @Test
     public void testCommentsComposite() {
         for (final IName name : TestUtils.getDefaultNames()) {
-            final CommentsComposite composite = CommunityFeatures.create(name, ExtDocUtils.getTestProvider(),
+            final CommentsComposite composite = CommunityFeatures.create(name, "test", ExtDocUtils.getTestProvider(),
                     ServerUtils.getGenericServer()).loadCommentsComposite(ExtDocUtils.getShell());
             composite.addComment("Test");
         }

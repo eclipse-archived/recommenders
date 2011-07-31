@@ -21,12 +21,13 @@ public final class CommunityFeatures {
     private IProvider provider;
     private IUserFeedbackServer server;
     private IName element;
+    private String keyAppendix;
     private IUserFeedback feedback;
 
     private CommentsComposite comments;
     private StarsRatingComposite ratings;
 
-    public static CommunityFeatures create(final IName element, final IProvider provider,
+    public static CommunityFeatures create(final IName element, final String keyAppendix, final IProvider provider,
             final IUserFeedbackServer server) {
         if (element == null) {
             return null;
@@ -35,17 +36,18 @@ public final class CommunityFeatures {
         features.provider = provider;
         features.server = Preconditions.checkNotNull(server);
         features.element = element;
-        features.feedback = server.getUserFeedback(element, provider);
+        features.keyAppendix = keyAppendix;
+        features.feedback = server.getUserFeedback(element, keyAppendix, provider);
         return features;
     }
 
     public CommentsComposite loadCommentsComposite(final Composite parent) {
-        comments = CommentsComposite.create(element, provider, feedback, server, parent);
+        comments = CommentsComposite.create(element, keyAppendix, provider, feedback, server, parent);
         return comments;
     }
 
     public StarsRatingComposite loadStarsRatingComposite(final Composite parent) {
-        ratings = new StarsRatingComposite(element, provider, feedback, server, parent);
+        ratings = new StarsRatingComposite(element, keyAppendix, provider, feedback, server, parent);
         return ratings;
     }
 

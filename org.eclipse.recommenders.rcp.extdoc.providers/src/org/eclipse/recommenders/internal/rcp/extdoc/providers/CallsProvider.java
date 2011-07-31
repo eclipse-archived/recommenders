@@ -291,7 +291,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         final String text = "People who " + action + " " + elementName + " usually also call the following methods"
                 + (isMethodDeclaration ? " inside" : "") + ":";
         final String text2 = "When accessed from single methods, probabilites for this field's methods might be different:";
-        final CommunityFeatures features = CommunityFeatures.create(elementId, this, server);
+        final CommunityFeatures features = CommunityFeatures.create(elementId, null, this, server);
 
         new UIJob("Updating Calls Provider") {
             @Override
@@ -304,7 +304,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
                     if (maxProbabilitiesFromMethods != null) {
                         new TextAndFeaturesLine(composite, text2, features);
-                        final Composite calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
+                        final Composite calls = SwtFactory.createGridComposite(composite, 4, 12, 2, 12, 0);
                         for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
                             SwtFactory.createSquare(calls);
                             SwtFactory.createLabel(calls,
@@ -312,12 +312,9 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
                                     SWT.COLOR_BLACK);
                             final int probability = (int) Math.round(proposal.getSecond().getSecond() * 100);
                             final String origin = Names.vm2srcSimpleMethod(proposal.getSecond().getFirst());
-                            final int probLength = String.valueOf(probability).length();
-                            final StyledText styled = SwtFactory
-                                    .createStyledText(calls, probability + "% in " + origin);
-                            SwtFactory.createStyleRange(styled, 0, probLength + 1, SWT.NORMAL, true, false);
-                            SwtFactory.createStyleRange(styled, probLength + 5, origin.length(), SWT.NORMAL, false,
-                                    true);
+                            SwtFactory.createLabel(calls, probability + "%", false, false, SWT.COLOR_BLUE);
+                            final StyledText styled = SwtFactory.createStyledText(calls, "in " + origin);
+                            SwtFactory.createStyleRange(styled, 3, origin.length(), SWT.NORMAL, false, true);
                         }
                     }
                     composite.layout(true);

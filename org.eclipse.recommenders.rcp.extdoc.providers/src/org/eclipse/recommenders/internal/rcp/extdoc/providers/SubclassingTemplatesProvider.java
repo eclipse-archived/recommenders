@@ -73,7 +73,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         final String text = String
                 .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
                         numberOfSubclasses);
-        final CommunityFeatures ratings = CommunityFeatures.create(type, this, server);
+        final CommunityFeatures ratings = CommunityFeatures.create(type, null, this, server);
 
         new UIJob("Updating Subclassing Templates Provider") {
             @Override

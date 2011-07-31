@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -35,8 +36,6 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
-
-import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends AbstractProviderComposite {
@@ -92,8 +91,8 @@ public final class JavadocProvider extends AbstractProviderComposite {
     }
 
     private void displayComments(final IJavaElement javaElement) {
-        final CommunityFeatures features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), this,
-                server);
+        final CommunityFeatures features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), null,
+                this, server);
         new UIJob("Updating JavaDoc Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
