@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
 import java.io.Closeable;
 
-import org.eclipse.recommenders.commons.lfm.Manifest;
+import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
 

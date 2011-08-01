@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.recommenders.commons.lfm.Manifest;
+import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;

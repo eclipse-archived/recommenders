@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.lfm;
+package org.eclipse.recommenders.commons.udc;
 
 import java.util.Date;
 

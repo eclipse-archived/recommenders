@@ -14,7 +14,7 @@ import java.io.File;
 import java.text.DateFormat;
 
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.recommenders.commons.lfm.Manifest;
+import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

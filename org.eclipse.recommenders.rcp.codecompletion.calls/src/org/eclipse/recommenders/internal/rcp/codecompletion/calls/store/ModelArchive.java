@@ -18,7 +18,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
-import org.eclipse.recommenders.commons.lfm.Manifest;
+import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;

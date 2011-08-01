@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 
-import org.eclipse.recommenders.commons.lfm.Manifest;
+import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;

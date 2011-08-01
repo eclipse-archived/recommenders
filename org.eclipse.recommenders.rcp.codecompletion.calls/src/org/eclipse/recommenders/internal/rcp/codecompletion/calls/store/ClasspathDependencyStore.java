@@ -22,8 +22,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.recommenders.commons.lfm.ClasspathDependencyInformation;
-import org.eclipse.recommenders.commons.lfm.Manifest;
+import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
+import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionModule.ClasspathDependencyStoreLocation;
 

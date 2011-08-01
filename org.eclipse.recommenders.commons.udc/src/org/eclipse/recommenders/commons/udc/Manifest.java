@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.commons.lfm;
+package org.eclipse.recommenders.commons.udc;
 
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.

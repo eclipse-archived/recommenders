@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences;
 import java.io.File;
 
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.recommenders.commons.lfm.ClasspathDependencyInformation;
+import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.swt.SWT;
