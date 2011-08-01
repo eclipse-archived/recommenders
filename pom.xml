@@ -20,7 +20,7 @@
 		<module>org.eclipse.recommenders.commons.utils</module>
 		<module>org.eclipse.recommenders.commons.utils.gson</module>
 		<module>org.eclipse.recommenders.commons.bayesnet</module>
-		<module>org.eclipse.recommenders.commons.lfm</module>
+		<module>org.eclipse.recommenders.commons.udc</module>
 		<module>org.eclipse.recommenders.rcp</module>
 
 		<module>org.eclipse.recommenders.rcp.analysis</module>
