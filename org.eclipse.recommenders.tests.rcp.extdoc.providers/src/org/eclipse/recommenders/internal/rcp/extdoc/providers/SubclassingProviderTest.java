@@ -16,7 +16,7 @@ import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
-import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public final class SubclassingProviderTest {
 
         provider.createControl(ExtDocUtils.getShell(), null);
 
-        for (final IJavaElement element : TestUtils.getDefaultElements()) {
+        for (final IJavaElement element : TestTypeUtils.getDefaultElements()) {
             final TestJavaElementSelection selection = new TestJavaElementSelection(JavaElementLocation.METHOD_BODY,
                     element);
             provider.selectionChanged(selection);

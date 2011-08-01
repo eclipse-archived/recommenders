@@ -21,7 +21,7 @@ public final class ExtDocUtils {
 
     private static TestProvider provider = new TestProvider();
     private static TestJavaElementSelection selection = new TestJavaElementSelection(JavaElementLocation.METHOD_BODY,
-            TestUtils.getDefaultJavaType());
+            TestTypeUtils.getDefaultJavaType());
     private static Shell shell = new Shell();
 
     static {

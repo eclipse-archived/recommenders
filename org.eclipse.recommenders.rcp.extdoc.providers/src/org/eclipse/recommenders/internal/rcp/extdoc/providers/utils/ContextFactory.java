@@ -24,7 +24,7 @@ public final class ContextFactory {
     private ContextFactory() {
     }
 
-    public static MockedIntelligentCompletionContext setNullVariableContext(final IJavaElementSelection selection) {
+    public static MockedIntelligentCompletionContext createNullVariableContext(final IJavaElementSelection selection) {
         return new MockedIntelligentCompletionContext(selection) {
             @Override
             public Variable getVariable() {
@@ -33,7 +33,7 @@ public final class ContextFactory {
         };
     }
 
-    public static MockedIntelligentCompletionContext setThisVariableContext(final IJavaElementSelection selection,
+    public static MockedIntelligentCompletionContext createThisVariableContext(final IJavaElementSelection selection,
             final IMethod enclosingMethod) {
         final IMethodName ctxEnclosingMethod = ElementResolver.toRecMethod(enclosingMethod);
         final IMethodName ctxFirstDeclaration = ElementResolver.toRecMethod(JdtUtils
@@ -58,22 +58,22 @@ public final class ContextFactory {
         };
     }
 
-    public static MockedIntelligentCompletionContext setFieldVariableContext(final IJavaElementSelection selection,
+    public static MockedIntelligentCompletionContext createFieldVariableContext(final IJavaElementSelection selection,
             final IField field) {
-        return setMockedContext(selection, field.getElementName(), VariableResolver.resolveTypeSignature(field), null);
+        return createMockedContext(selection, field.getElementName(), VariableResolver.resolveTypeSignature(field), null);
     }
 
-    public static MockedIntelligentCompletionContext setLocalVariableContext(final IJavaElementSelection selection,
+    public static MockedIntelligentCompletionContext createLocalVariableContext(final IJavaElementSelection selection,
             final ILocalVariable local) {
-        return setMockedContext(selection, local.getElementName(), VariableResolver.resolveTypeSignature(local), null);
+        return createMockedContext(selection, local.getElementName(), VariableResolver.resolveTypeSignature(local), null);
     }
 
-    public static MockedIntelligentCompletionContext setLocalVariableContext(final IJavaElementSelection selection,
+    public static MockedIntelligentCompletionContext createLocalVariableContext(final IJavaElementSelection selection,
             final String variableName, final ITypeName variableType, final IMethodName enclosingMethod) {
-        return setMockedContext(selection, variableName, variableType, enclosingMethod);
+        return createMockedContext(selection, variableName, variableType, enclosingMethod);
     }
 
-    private static MockedIntelligentCompletionContext setMockedContext(final IJavaElementSelection selection,
+    private static MockedIntelligentCompletionContext createMockedContext(final IJavaElementSelection selection,
             final String variableName, final ITypeName variableType, final IMethodName enclosingMethod) {
         if (variableType == null) {
             return null;

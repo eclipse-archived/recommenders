@@ -12,7 +12,7 @@ package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
-import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -31,7 +31,7 @@ public final class AbstractLocationSensitiveProviderCompositeTest {
     @Test
     public void testProvidersComposite() {
         for (final JavaElementLocation location : JavaElementLocation.values()) {
-            composite.selectionChanged(new TestJavaElementSelection(location, TestUtils.getDefaultJavaType()));
+            composite.selectionChanged(new TestJavaElementSelection(location, TestTypeUtils.getDefaultJavaType()));
             Assert.assertTrue(location == JavaElementLocation.PACKAGE_DECLARATION
                     || composite.isAvailableForLocation(location));
         }

@@ -36,7 +36,6 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         if (selection.getElementLocation() == null) {
             return false;
         }
-        hookInitalize(selection);
 
         switch (selection.getElementLocation()) {
         case METHOD_BODY:
@@ -61,9 +60,6 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
             throw Throws.throwUnreachable("invalid element location observed: '%s'. %s",
                     selection.getElementLocation(), selection);
         }
-    }
-
-    protected void hookInitalize(final IJavaElementSelection selection) {
     }
 
     private boolean updateImportDeclarationSelection(final IJavaElementSelection selection) {

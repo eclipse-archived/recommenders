@@ -16,7 +16,7 @@ import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.ClassSelfcallDirectives;
 import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
-import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ public final class SubclassingServerTest {
 
     @Test
     public void testGetClassOverrideDirectives() {
-        final ClassOverrideDirectives directive = server.getClassOverrideDirectives(TestUtils.getDefaultType());
+        final ClassOverrideDirectives directive = server.getClassOverrideDirectives(TestTypeUtils.getDefaultType());
         // Assert.assertTrue(directive.getNumberOfSubclasses() > 0);
         // Assert.assertFalse(directive.getOverrides().isEmpty());
         // directive.validate();
@@ -35,7 +35,7 @@ public final class SubclassingServerTest {
 
     @Test
     public void testGetClassSelfcallDirectives() {
-        final ClassSelfcallDirectives directive = server.getClassSelfcallDirectives(TestUtils.getDefaultType());
+        final ClassSelfcallDirectives directive = server.getClassSelfcallDirectives(TestTypeUtils.getDefaultType());
         // Assert.assertTrue(directive.getNumberOfSubclasses() > 0);
         // Assert.assertFalse(directive.getCalls().isEmpty());
         // directive.validate();
@@ -43,7 +43,7 @@ public final class SubclassingServerTest {
 
     @Test
     public void testGetMethodSelfcallDirectives() {
-        final MethodSelfcallDirectives directive = server.getMethodSelfcallDirectives(TestUtils.getDefaultMethod());
+        final MethodSelfcallDirectives directive = server.getMethodSelfcallDirectives(TestTypeUtils.getDefaultMethod());
         // Assert.assertTrue(directive.getNumberOfDefinitions() > 0);
         // Assert.assertFalse(directive.getCalls().isEmpty());
         // directive.validate();
@@ -51,7 +51,7 @@ public final class SubclassingServerTest {
 
     @Test
     public void testGetClassOverridePatterns() {
-        final ClassOverridePatterns patterns = server.getClassOverridePatterns(TestUtils.getDefaultType());
+        final ClassOverridePatterns patterns = server.getClassOverridePatterns(TestTypeUtils.getDefaultType());
         // Assert.assertTrue(patterns.getPatterns().length > 0);
     }
 

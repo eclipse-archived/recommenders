@@ -10,12 +10,17 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CallsAdapterTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFactoryTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolverTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolverTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ CallsProviderTest.class, ExamplesProviderTest.class, JavadocProviderTest.class,
-        SubclassingProviderTest.class, SubclassingTemplatesProviderTest.class, WikiProviderTest.class })
+        SubclassingProviderTest.class, SubclassingTemplatesProviderTest.class, WikiProviderTest.class,
+        CallsAdapterTest.class, ContextFactoryTest.class, ElementResolverTest.class, VariableResolverTest.class })
 public final class UnitTestSuite {
 }

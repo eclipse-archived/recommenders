@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.tests.commons.extdoc;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -25,7 +26,7 @@ import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
-public final class TestUtils {
+public final class TestTypeUtils {
 
     private static ITypeName defaultType;
     private static IMethodName defaultMethod;
@@ -34,6 +35,8 @@ public final class TestUtils {
     private static IType defaultJavaType;
     private static IMethod defaultJavaMethod;
 
+    private static IField defaultField;
+
     static {
         defaultType = VmTypeName.get("Lorg/eclipse/swt/widgets/Button");
         defaultMethod = VmMethodName.get("Lorg/eclipse/swt/widgets/Button.getText()Ljava/lang/String;");
@@ -41,7 +44,7 @@ public final class TestUtils {
                 .get("Lorg/eclipse/swt/widgets/Button.<init>(Lorg/eclipse/swt/widgets/Composite;I)V");
     }
 
-    private TestUtils() {
+    private TestTypeUtils() {
     }
 
     public static ITypeName getDefaultType() {
@@ -92,6 +95,19 @@ public final class TestUtils {
 
     public static IJavaElement[] getDefaultElements() {
         return new IJavaElement[] { getDefaultJavaType(), getDefaultJavaMethod() };
+    }
+
+    public static IField getDefaultField() {
+        if (defaultField == null) {
+            defaultField = Mockito.mock(IField.class);
+            Mockito.when(defaultField.getDeclaringType()).thenReturn(TestTypeUtils.getDefaultJavaType());
+            try {
+                Mockito.when(defaultField.getTypeSignature()).thenReturn("QButton;");
+            } catch (final JavaModelException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return defaultField;
     }
 
 }

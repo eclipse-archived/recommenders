@@ -15,7 +15,7 @@ import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
-import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public final class SubclassingTemplatesProviderTest {
         provider.createControl(ExtDocUtils.getShell(), null);
 
         final TestJavaElementSelection selection = new TestJavaElementSelection(
-                JavaElementLocation.EXTENDS_DECLARATION, TestUtils.getDefaultJavaType());
+                JavaElementLocation.EXTENDS_DECLARATION, TestTypeUtils.getDefaultJavaType());
         Assert.assertTrue(provider.selectionChanged(selection));
     }
 }

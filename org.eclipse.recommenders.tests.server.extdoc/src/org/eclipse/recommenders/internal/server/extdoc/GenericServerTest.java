@@ -21,7 +21,7 @@ import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.recommenders.server.extdoc.types.Rating;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
-import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public final class GenericServerTest {
 
     @Test
     public void testComments() {
-        for (final IName name : TestUtils.getDefaultNames()) {
+        for (final IName name : TestTypeUtils.getDefaultNames()) {
             final IComment comment = server.addComment("Test text", name, "test", provider);
             final Collection<? extends IComment> comments = server.getUserFeedback(name, "test", provider)
                     .getComments();
@@ -44,7 +44,7 @@ public final class GenericServerTest {
 
     @Test
     public void testRatings() {
-        for (final IName name : TestUtils.getDefaultNames()) {
+        for (final IName name : TestTypeUtils.getDefaultNames()) {
             server.addRating(4, name, "test", provider);
             final IRatingSummary summary = server.getUserFeedback(name, "test", provider).getRatingSummary();
 

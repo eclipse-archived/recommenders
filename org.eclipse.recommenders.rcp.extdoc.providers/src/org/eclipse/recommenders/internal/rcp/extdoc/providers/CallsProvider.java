@@ -11,14 +11,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -28,8 +23,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Tuple;
@@ -38,12 +31,11 @@ import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CallsAdapter;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFactory;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -60,24 +52,20 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.internal.util.Sets;
 
-@SuppressWarnings("restriction")
 public final class CallsProvider extends AbstractLocationSensitiveProviderComposite {
 
     private final CallsModelStore modelStore;
-    private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;
     private final GenericServer server;
-
+    private final CallsAdapter adapter;
     private Composite composite;
-    private IIntelligentCompletionContext context;
 
     @Inject
     CallsProvider(final CallsModelStore modelStore, final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
             final GenericServer server) {
         this.modelStore = modelStore;
-        this.usageResolversProvider = usageResolversProvider;
         this.server = Preconditions.checkNotNull(server);
+        adapter = new CallsAdapter(modelStore, usageResolversProvider);
     }
 
     @Override
@@ -87,89 +75,88 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     }
 
     @Override
-    protected void hookInitalize(final IJavaElementSelection selection) {
-        context = new MockedIntelligentCompletionContext(selection);
-    }
-
-    @Override
     protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
+        final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
-        context = ContextFactory.setFieldVariableContext(selection, field);
+        final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
         if (context == null) {
             return false;
         }
-        return displayProposalsForVariable(field, false, getProposalsFromSingleMethods(selection, field));
+        return displayProposalsForVariable(field, false,
+                adapter.getProposalsFromSingleMethods(selection, field, context), context);
     }
 
     @Override
     protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
+        final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
-        context = ContextFactory.setThisVariableContext(selection, method);
-        return displayProposalsForMethod(method, true);
+        final MockedIntelligentCompletionContext context = ContextFactory.createThisVariableContext(selection, method);
+        return displayProposalsForMethod(method, true, context);
     }
 
     @Override
     protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
+        final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
+        final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local) {
-        context = ContextFactory.setLocalVariableContext(selection, local);
-        return context == null ? false : displayProposalsForVariable(local, true, null);
+        final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
+        return context == null ? false : displayProposalsForVariable(local, true, null, context);
     }
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
-        context = ContextFactory.setLocalVariableContext(selection, local);
-        return context == null ? false : displayProposalsForVariable(local, false, null);
+        final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
+        return context == null ? false : displayProposalsForVariable(local, false, null, context);
     }
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
-        context = ContextFactory.setFieldVariableContext(selection, field);
-        return context == null ? false : displayProposalsForVariable(field, false, null);
+        final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
+        return context == null ? false : displayProposalsForVariable(field, false, null, context);
     }
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
-        context = ContextFactory.setNullVariableContext(selection);
+        final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
         final Set<IMethodName> invokedMethods = ImmutableSet.of(ElementResolver.toRecMethod(method));
         final ITypeName receiverType = context.getReceiverType();
         return displayProposalsForType(
                 receiverType == null ? method.getDeclaringType() : ElementResolver.toJdtType(receiverType),
-                invokedMethods, method.getElementName());
+                invokedMethods, method.getElementName(), context);
     }
 
     @Override
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
-        context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
+        final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors,
-            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilityFromMethods) {
+            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilityFromMethods,
+            final MockedIntelligentCompletionContext context) {
         final Variable variable = context.getVariable();
         if (variable != null && modelStore.hasModel(variable.type)) {
-            final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
-            final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
-                    resolveCalledMethods, negateConstructors);
+            final Set<IMethodName> resolveCalledMethods = adapter.resolveCalledMethods(context);
+            final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = adapter.computeRecommendations(
+                    variable.type, resolveCalledMethods, negateConstructors, context);
             final IName name = element instanceof IField ? ElementResolver.toRecField((IField) element, variable.type)
                     : variable.getName();
             return displayProposals(element, element.getElementName(), name, false, recommendedMethodCalls,
@@ -179,104 +166,31 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     }
 
     private boolean displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods,
-            final String elementName) {
+            final String elementName, final MockedIntelligentCompletionContext context) {
         final ITypeName typeName = ElementResolver.toRecType(type);
         if (modelStore.hasModel(typeName)) {
-            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, invokedMethods, false);
+            final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(typeName,
+                    invokedMethods, false, context);
             return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>(), null);
         }
         return false;
     }
 
-    private boolean displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration) {
-        final ITypeName type = getMethodsDeclaringType(method);
+    private boolean displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration,
+            final MockedIntelligentCompletionContext context) {
+        final ITypeName type = adapter.getMethodsDeclaringType(method, context);
         if (type != null && modelStore.hasModel(type)) {
-            final Set<IMethodName> calledMethods = resolveCalledMethods();
-            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
+            final Set<IMethodName> calledMethods = adapter.resolveCalledMethods(context);
+            final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(type, calledMethods,
+                    true, context);
             return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
                     isMethodDeclaration, calls, calledMethods, null);
         } else {
             // TODO: first is not correct in all cases. this needs to be
             // fixed
             final IMethod first = JdtUtils.findFirstDeclaration(method);
-            return first.equals(method) ? false : displayProposalsForMethod(first, isMethodDeclaration);
+            return first.equals(method) ? false : displayProposalsForMethod(first, isMethodDeclaration, context);
         }
-    }
-
-    private SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> getProposalsFromSingleMethods(
-            final IJavaElementSelection selection, final IField field) {
-        try {
-            final Map<IMethodName, Tuple<IMethod, Double>> maxProbs = new HashMap<IMethodName, Tuple<IMethod, Double>>();
-            final ITypeName fieldType = context.getVariable().type;
-            if (!modelStore.hasModel(fieldType)) {
-                return null;
-            }
-            for (final IMethod method : field.getDeclaringType().getMethods()) {
-                context = ContextFactory.setLocalVariableContext(selection, field.getElementName(), fieldType,
-                        ElementResolver.toRecMethod(method));
-                for (final Tuple<IMethodName, Double> call : computeRecommendations(fieldType,
-                        new HashSet<IMethodName>(), true)) {
-                    if (!maxProbs.containsKey(call.getFirst())
-                            || maxProbs.get(call.getFirst()).getSecond() < call.getSecond()) {
-                        maxProbs.put(call.getFirst(), Tuple.create(method, call.getSecond()));
-                    }
-                }
-            }
-            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> sorted = new TreeSet<Tuple<IMethodName, Tuple<IMethodName, Double>>>(
-                    new Comparator<Tuple<IMethodName, Tuple<IMethodName, Double>>>() {
-                        @Override
-                        public int compare(final Tuple<IMethodName, Tuple<IMethodName, Double>> arg0,
-                                final Tuple<IMethodName, Tuple<IMethodName, Double>> arg1) {
-                            return arg1.getSecond().getSecond().compareTo(arg0.getSecond().getSecond());
-                        }
-                    });
-            for (final Entry<IMethodName, Tuple<IMethod, Double>> methodCall : maxProbs.entrySet()) {
-                sorted.add(Tuple.create(methodCall.getKey(), Tuple.create(ElementResolver.toRecMethod(methodCall
-                        .getValue().getFirst()), methodCall.getValue().getSecond())));
-            }
-            return sorted;
-        } catch (final JavaModelException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private ITypeName getMethodsDeclaringType(final IMethod method) {
-        try {
-            final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
-            if (superclassTypeSignature == null) {
-                return null;
-            }
-            final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
-                    method.getDeclaringType());
-            final IType supertype = method.getJavaProject().findType(superclassTypeName);
-            return ElementResolver.toRecType(supertype);
-        } catch (final JavaModelException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private Set<IMethodName> resolveCalledMethods() {
-        for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
-            if (resolver.canResolve(context)) {
-                return resolver.getReceiverMethodInvocations();
-            }
-        }
-        return Sets.newHashSet();
-    }
-
-    private SortedSet<Tuple<IMethodName, Double>> computeRecommendations(final ITypeName typeName,
-            final Set<IMethodName> invokedMethods, final boolean negateConstructors) {
-        final IObjectMethodCallsNet model = modelStore.acquireModel(typeName);
-        model.clearEvidence();
-        model.setMethodContext(context == null ? null : context.getEnclosingMethodsFirstDeclaration());
-        model.setObservedMethodCalls(typeName, invokedMethods);
-        if (negateConstructors) {
-            model.negateConstructors();
-        }
-        model.updateBeliefs();
-        final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model.getRecommendedMethodCalls(0.01, 5);
-        modelStore.releaseModel(model);
-        return recommendedMethodCalls;
     }
 
     private boolean displayProposals(final IJavaElement element, final String elementName, final IName elementId,

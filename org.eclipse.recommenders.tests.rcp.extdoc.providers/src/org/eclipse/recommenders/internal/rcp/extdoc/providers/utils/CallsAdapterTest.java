@@ -1,0 +1,76 @@
+/**
+ * Copyright (c) 2011 Stefan Henss.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Stefan Henss - initial API and implementation.
+ */
+package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
+
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.eclipse.recommenders.commons.utils.Tuple;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsModelStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
+
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+
+public final class CallsAdapterTest {
+
+    private final CallsAdapter adapter = new CallsAdapter(createStore(), null);
+    private final TestJavaElementSelection selection = ExtDocUtils.getSelection();
+
+    @Test
+    public void testGetProposalsFromSingleMethods() {
+        /*
+         * final MockedIntelligentCompletionContext context =
+         * ContextFactory.createFieldVariableContext(selection, field); final
+         * SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> proposals =
+         * adapter .getProposalsFromSingleMethods(selection, field, context);
+         */
+    }
+
+    @Test
+    public void testGetMethodsDeclaringType() {
+        final ITypeName declaringType = adapter.getMethodsDeclaringType(TestTypeUtils.getDefaultJavaMethod(), null);
+        // Assert.assertNotNull(declaringType);
+    }
+
+    @Test
+    public void testResolveCalledMethods() {
+        final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
+        // final Set<IMethodName> resolvedCalls =
+        // adapter.resolveCalledMethods(context);
+    }
+
+    @Test
+    public void testComputeRecommendations() {
+
+    }
+
+    public static CallsModelStore createStore() {
+        final CallsModelStore store = Mockito.mock(CallsModelStore.class);
+        Mockito.when(store.hasModel(Matchers.any(ITypeName.class))).thenReturn(true);
+        final IObjectMethodCallsNet model = Mockito.mock(IObjectMethodCallsNet.class);
+        Mockito.when(store.acquireModel(Matchers.any(ITypeName.class))).thenReturn(model);
+
+        final Tuple<IMethodName, Double> call = Tuple.create(null, 0.0);
+        final SortedSet<Tuple<IMethodName, Double>> calls = new TreeSet<Tuple<IMethodName, Double>>();
+        calls.add(call);
+        Mockito.when(model.getRecommendedMethodCalls(Matchers.anyDouble(), Matchers.anyInt())).thenReturn(calls);
+
+        return store;
+    }
+
+}
