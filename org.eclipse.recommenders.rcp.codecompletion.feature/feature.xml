@@ -126,7 +126,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.commons.lfm"
+         id="org.eclipse.recommenders.commons.udc"
          download-size="0"
          install-size="0"
          version="0.0.0"
