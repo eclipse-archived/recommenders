@@ -201,6 +201,7 @@
 					<encoding>UTF-8</encoding>
 					<header>org.eclipse.recommenders.releng/etc/license-tu-darmstadt-2011.txt</header>
 					<validHeaders>
+						<validHeader>org.eclipse.recommenders.releng/etc/license-frankenberger-2011.txt</validHeader>
 						<validHeader>org.eclipse.recommenders.releng/etc/license-fritz-kaluza-2010.txt</validHeader>
 						<validHeader>org.eclipse.recommenders.releng/etc/license-fritz-kaluza-2010.txt</validHeader>
 						<validHeader>org.eclipse.recommenders.releng/etc/license-tu-darmstadt-2010.txt</validHeader>
