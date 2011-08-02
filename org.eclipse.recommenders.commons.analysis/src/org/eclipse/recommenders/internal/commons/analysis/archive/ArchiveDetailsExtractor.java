@@ -47,6 +47,7 @@ public class ArchiveDetailsExtractor {
         jarIdExtractors = new LinkedList<JarIdExtractor>();
         jarIdExtractors.add(new OsgiManifestJarIdExtractor());
         jarIdExtractors.add(new MavenPomJarIdExtractor());
+        jarIdExtractors.add(new AndroidManifestJarIdExtractor());
         jarIdExtractors.add(new FilenameJarIdExtractor());
     }
 
