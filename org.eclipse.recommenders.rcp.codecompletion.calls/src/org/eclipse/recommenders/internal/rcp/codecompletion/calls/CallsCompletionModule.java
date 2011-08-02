@@ -19,8 +19,10 @@ import java.lang.annotation.Target;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.internal.rcp.analysis.IRecommendersProjectLifeCycleListener;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences.ClientConfigurationPreferenceListener;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchiveStore;
@@ -43,9 +45,17 @@ public class CallsCompletionModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        configurePreferences();
         configureProjectServices();
         configureArchiveModelStore();
         configureRecommendationsViewPublisher();
+    }
+
+    private void configurePreferences() {
+        final ClientConfiguration config = new ClientConfiguration();
+        final IPreferenceStore store = CallsCompletionPlugin.getDefault().getPreferenceStore();
+        store.addPropertyChangeListener(new ClientConfigurationPreferenceListener(config, store));
+        bind(ClientConfiguration.class).annotatedWith(UdcServer.class).toInstance(config);
     }
 
     private void configureProjectServices() {
@@ -66,12 +76,6 @@ public class CallsCompletionModule extends AbstractModule {
                 new File(stateLocation.toFile(), "dependencyIndex"));
         bind(ClasspathDependencyStore.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(ProjectModelFacadeFactory.class));
-
-        bind(ClientConfiguration.class).annotatedWith(UdcServer.class).toInstance(
-                ClientConfiguration.create("http://vandyk.st.informatik.tu-darmstadt.de:29750/udc/"));
-        // bind(ClientConfiguration.class).annotatedWith(LfmServer.class).toInstance(
-        // ClientConfiguration.create("http://localhost:8080/udc/"));
-
         install(new FactoryModuleBuilder().build(RemoteResolverJobFactory.class));
     }
 
@@ -90,5 +94,11 @@ public class CallsCompletionModule extends AbstractModule {
     @Target(PARAMETER)
     @Retention(RUNTIME)
     public static @interface UdcServer {
+    }
+
+    @BindingAnnotation
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    public static @interface PreferenceStore {
     }
 }

@@ -31,10 +31,22 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.recommenders.rcp.category.preferences"
+            class="org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences.CallsPreferencePage"
+            id="org.eclipse.recommenders.rcp.codecompletion.calls.page1"
+            name="Usage Data Collector">
+      </page>
+      <page
+            category="org.eclipse.recommenders.rcp.category.preferences"
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences.DependenciesPreferencePage"
             id="org.eclipse.recommenders.rcp.codecompletion.calls.page1"
             name="Dependencies">
       </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences.PreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>
