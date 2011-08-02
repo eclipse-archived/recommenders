@@ -67,10 +67,10 @@ public class CallsCompletionModule extends AbstractModule {
         bind(ClasspathDependencyStore.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(ProjectModelFacadeFactory.class));
 
-        bind(ClientConfiguration.class).annotatedWith(LfmServer.class).toInstance(
-                ClientConfiguration.create("http://vandyk.st.informatik.tu-darmstadt.de:29750/lfm/"));
+        bind(ClientConfiguration.class).annotatedWith(UdcServer.class).toInstance(
+                ClientConfiguration.create("http://vandyk.st.informatik.tu-darmstadt.de:29750/udc/"));
         // bind(ClientConfiguration.class).annotatedWith(LfmServer.class).toInstance(
-        // ClientConfiguration.create("http://localhost:8080/lfm/"));
+        // ClientConfiguration.create("http://localhost:8080/udc/"));
 
         install(new FactoryModuleBuilder().build(RemoteResolverJobFactory.class));
     }
@@ -89,6 +89,6 @@ public class CallsCompletionModule extends AbstractModule {
     @BindingAnnotation
     @Target(PARAMETER)
     @Retention(RUNTIME)
-    public static @interface LfmServer {
+    public static @interface UdcServer {
     }
 }

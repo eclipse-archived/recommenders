@@ -37,7 +37,7 @@ import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.udc.ManifestMatchResult;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.internal.commons.analysis.archive.ArchiveDetailsExtractor;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionModule.LfmServer;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionModule.UdcServer;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 import com.google.inject.assistedinject.Assisted;
@@ -55,7 +55,7 @@ public class SearchManifestJob extends WorkspaceJob {
     @Inject
     public SearchManifestJob(@Assisted final IPackageFragmentRoot packageRoot,
             final ClasspathDependencyStore dependencyStore, final ModelArchiveStore modelStore,
-            @LfmServer final ClientConfiguration config) {
+            @UdcServer final ClientConfiguration config) {
         super(getJobName(packageRoot));
         this.packageRoot = packageRoot;
         this.dependencyStore = dependencyStore;
