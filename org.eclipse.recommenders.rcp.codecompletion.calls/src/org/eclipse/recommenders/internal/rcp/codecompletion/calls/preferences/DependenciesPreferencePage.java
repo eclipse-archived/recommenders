@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.rcp.utils.ScaleOneDimensionLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -64,13 +65,26 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
 
     @Override
     protected Control createContents(final Composite parent) {
-        final Composite container = new Composite(parent, SWT.FILL);
-        container.setLayout(new GridLayout(2, true));
+        final Composite container = createTwoColumnContainer(parent);
 
-        createTable(container);
+        final Composite tableWrapper = createTableWrapper(container);
+        createTable(tableWrapper);
         createDetailsSection(container);
 
         return container;
+    }
+
+    private Composite createTwoColumnContainer(final Composite parent) {
+        final Composite container = new Composite(parent, SWT.FILL);
+        container.setLayout(new GridLayout(2, true));
+        return container;
+    }
+
+    private Composite createTableWrapper(final Composite container) {
+        final Composite tableWrapper = new Composite(container, SWT.FILL);
+        tableWrapper.setLayout(new ScaleOneDimensionLayout(SWT.HORIZONTAL));
+        setGridData(tableWrapper, MIN_WIDTH_TABLE);
+        return tableWrapper;
     }
 
     private void createTable(final Composite container) {
@@ -80,7 +94,6 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         final TableColumnLayout tableColumnLayout = new TableColumnLayout();
-        setGridData(tableComposite, MIN_WIDTH_TABLE);
         tableComposite.setLayout(tableColumnLayout);
 
         createColumns(tableViewer, tableColumnLayout);
@@ -206,10 +219,10 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
     private void setGridData(final Control control, final int minimumWidth) {
         final GridData gridData = new GridData();
         gridData.horizontalAlignment = GridData.FILL;
+        gridData.verticalAlignment = GridData.FILL;
         gridData.grabExcessHorizontalSpace = true;
-        gridData.verticalAlignment = GridData.BEGINNING;
+        gridData.grabExcessVerticalSpace = true;
         gridData.minimumWidth = minimumWidth;
-        gridData.heightHint = 400;
         control.setLayoutData(gridData);
     }
 
