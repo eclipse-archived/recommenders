@@ -71,20 +71,22 @@ public class SearchManifestJob extends WorkspaceJob {
 
     @Override
     public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
-        resolve();
+        resolve(monitor);
         return Status.OK_STATUS;
     }
 
-    private void resolve() {
+    private void resolve(final IProgressMonitor monitor) {
+        monitor.beginTask(null, 100);
         findClasspathDependencyInformation();
+        monitor.worked(10);
         if (!findManifest()) {
             return;
         }
-
+        monitor.worked(15);
         if (!storeContainsModel()) {
             downloadAndRegisterArchive(manifest);
         }
-
+        monitor.worked(90);
         dependencyStore.putManifest(packageRoot, manifest);
     }
 

@@ -16,7 +16,9 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletio
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static final String SERVER_URL = "http://137.248.121.220:29757/udc/";
+    // private static final String SERVER_URL =
+    // "http://137.248.121.220:29757/udc/";
+    private static final String SERVER_URL = "http://vandyk.st.informatik.tu-darmstadt.de:29750/udc/";
 
     @Override
     public void initializeDefaultPreferences() {
