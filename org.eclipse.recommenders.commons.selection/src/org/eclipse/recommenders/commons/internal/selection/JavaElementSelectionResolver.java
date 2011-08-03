@@ -11,16 +11,13 @@
 package org.eclipse.recommenders.commons.internal.selection;
 
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.SelectionResolver;
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
 
 /**
@@ -75,19 +72,8 @@ final class JavaElementSelectionResolver {
      * @return The selection context resolved from the editor selection.
      */
     private static IJavaElementSelection resolveFromEditor(final JavaEditor editor, final ITextSelection selection) {
-        IJavaElement javaElement = null;
-        final IEditorInput editorInput = editor.getEditorInput();
-        final ITypeRoot root = (ITypeRoot) JavaUI.getEditorInputJavaElement(editorInput);
-        try {
-            final IJavaElement[] elements = root.codeSelect(selection.getOffset(), 0);
-            if (elements.length > 0) {
-                javaElement = elements[0];
-            } else {
-                javaElement = root.getElementAt(selection.getOffset());
-            }
-        } catch (final JavaModelException e) {
-            throw new IllegalStateException(e);
-        }
+        final IJavaElement javaElement = SelectionResolver.resolveJavaElement(editor.getEditorInput(),
+                selection.getOffset());
         return javaElement == null ? null : new JavaElementSelection(javaElement, selection.getOffset(), editor);
     }
 }

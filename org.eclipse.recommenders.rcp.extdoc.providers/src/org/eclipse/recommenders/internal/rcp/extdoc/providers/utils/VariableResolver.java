@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.recommenders.commons.utils.Names;
+import org.eclipse.recommenders.commons.utils.Names.PrimitiveType;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 
@@ -47,7 +48,7 @@ public final class VariableResolver {
     private static ITypeName resolveTypeSignature(final IJavaElement element, final IType declaringType,
             final String typeSignature) throws JavaModelException {
         final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
-        if (resolvedTypeName.length() < 5) {
+        if (PrimitiveType.fromSrc(resolvedTypeName) != null) {
             return resolvePrimitive(resolvedTypeName);
         }
         final IJavaProject javaProject = declaringType.getJavaProject();
