@@ -26,7 +26,6 @@ import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
@@ -47,7 +46,6 @@ public class ExtDocView extends ViewPart {
 
     private final ProviderStore providerStore;
 
-    private ScrolledComposite scrolled;
     private ProvidersComposite providersComposite;
     private ProvidersTable table;
     private CLabel selectionLabel;
@@ -87,12 +85,7 @@ public class ExtDocView extends ViewPart {
     private void createRightSashSide(final SashForm sashForm) {
         final Composite container = SwtFactory.createGridComposite(sashForm, 1, 0, 0, 0, 0);
         createSelectionLabel(container);
-
-        scrolled = createScrolledComposite(container);
-        scrolled.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        providersComposite = new ProvidersComposite(scrolled, SWT.NONE);
-        scrolled.setContent(providersComposite);
-        providersComposite.layout();
+        providersComposite = new ProvidersComposite(container, true);
     }
 
     private void handleSashWeights(final SashForm sashForm) {
@@ -114,18 +107,9 @@ public class ExtDocView extends ViewPart {
         selectionLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
     }
 
-    private static ScrolledComposite createScrolledComposite(final Composite parent) {
-        final ScrolledComposite composite = new ScrolledComposite(parent, SWT.V_SCROLL);
-        composite.setExpandVertical(true);
-        composite.setExpandHorizontal(true);
-        composite.getVerticalBar().setIncrement(20);
-        return composite;
-    }
-
     private void addProviders() {
         for (final IProvider provider : providerStore.getProviders()) {
-            final Control control = provider.createControl(providersComposite, getViewSite());
-            control.setData(provider);
+            final Control control = providersComposite.addProvider(provider, getViewSite());
             table.addProvider(control, provider.getProviderName(), provider.getIcon(), true);
         }
     }
@@ -143,7 +127,7 @@ public class ExtDocView extends ViewPart {
         if (selection != null && table != null) {
             table.setContext(selection);
             updateProviders(selection);
-            scrolled.setOrigin(0, 0);
+            providersComposite.scrollToTop();
             updateSelectionLabel(selection.getJavaElement());
             return true;
         }
@@ -169,7 +153,7 @@ public class ExtDocView extends ViewPart {
 
     @Override
     public final void setFocus() {
-        scrolled.forceFocus();
+        providersComposite.setFocus();
     }
 
     public final boolean isLinkingEnabled() {

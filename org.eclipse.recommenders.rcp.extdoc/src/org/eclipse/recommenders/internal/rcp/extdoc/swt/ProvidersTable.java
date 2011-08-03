@@ -76,7 +76,7 @@ final class ProvidersTable {
         tableItem.setChecked(false);
         tableItem.setImage(image);
         tableItem.setData("image", image);
-        setContentVisible(tableItem, false);
+        setContentVisible(tableItem, false, true);
         return tableItem;
     }
 
@@ -103,18 +103,20 @@ final class ProvidersTable {
         }
         item.setChecked(selectProvider);
         if (!selectProvider) {
-            setContentVisible(item, false);
+            setContentVisible(item, false, true);
         }
     }
 
-    void setContentVisible(final TableItem tableItem, final boolean visible) {
+    void setContentVisible(final TableItem tableItem, final boolean visible, final boolean updateTableItem) {
         final Control control = (Control) tableItem.getData();
         ((GridData) control.getLayoutData()).exclude = !visible;
         control.setVisible(visible);
         control.getParent().layout(true);
 
-        tableItem.setGrayed(!visible);
-        tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
+        if (updateTableItem) {
+            tableItem.setGrayed(!visible);
+            tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
+        }
     }
 
     static String getPreferenceId(final IProvider provider, final JavaElementLocation location) {

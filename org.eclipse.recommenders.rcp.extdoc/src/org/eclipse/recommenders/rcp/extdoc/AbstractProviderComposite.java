@@ -18,15 +18,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IViewSite;
 
 public abstract class AbstractProviderComposite extends AbstractProvider {
 
-    private IWorkbenchPartSite partSite;
+    private IViewSite viewSite;
 
     @Override
-    public final Control createControl(final Composite parent, final IWorkbenchPartSite site) {
-        partSite = site;
+    public final Control createControl(final Composite parent, final IViewSite site) {
+        viewSite = site;
 
         final Composite container = SwtFactory.createGridComposite(parent, 1, 0, 3, 8, 8);
         createProviderTitle(container);
@@ -51,8 +51,8 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
-    public final IWorkbenchPartSite getPartSite() {
-        return partSite;
+    public final IViewSite getViewSite() {
+        return viewSite;
     }
 
     protected final void disposeChildren(final Composite composite) {

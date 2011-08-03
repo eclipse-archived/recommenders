@@ -51,7 +51,8 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     }
 
     @Override
-    public final IUserFeedback getUserFeedback(final IName javaElement, final IProvider provider) {
+    public final IUserFeedback getUserFeedback(final IName javaElement, final String keyAppendix,
+            final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
         // final String elementId = resolveNameIdentifier(javaElement);
         final String elementId = javaElement.getIdentifier();
@@ -63,8 +64,9 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     }
 
     @Override
-    public final IRating addRating(final int stars, final IName javaElement, final IProvider provider) {
-        final IUserFeedback feedback = getUserFeedback(javaElement, provider);
+    public final IRating addRating(final int stars, final IName javaElement, final String keyAppendix,
+            final IProvider provider) {
+        final IUserFeedback feedback = getUserFeedback(javaElement, keyAppendix, provider);
         final IRating rating = Rating.create(stars);
         feedback.addRating(rating);
         storeFeedback(feedback);
@@ -72,8 +74,9 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     }
 
     @Override
-    public final IComment addComment(final String text, final IName javaElement, final IProvider provider) {
-        final IUserFeedback feedback = getUserFeedback(javaElement, provider);
+    public final IComment addComment(final String text, final IName javaElement, final String keyAppendix,
+            final IProvider provider) {
+        final IUserFeedback feedback = getUserFeedback(javaElement, keyAppendix, provider);
         final IComment comment = Comment.create(text, username.getUsername());
         feedback.addComment(comment);
         storeFeedback(feedback);

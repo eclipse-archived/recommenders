@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Utils
-Bundle-SymbolicName: org.eclipse.recommenders.tests.fixtures.rcp.utils
-Bundle-Version: 1.0.0.qualifier
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.ui
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.recommenders.tests.fixtures.rcp.utils

@@ -85,7 +85,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                 + " we created the following statistics. Subclassers may consider to override the following methods.";
         final String text2 = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
-        final CommunityFeatures features = CommunityFeatures.create(type, this, server);
+        final CommunityFeatures features = CommunityFeatures.create(type, null, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override
@@ -117,7 +117,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
             return false;
         }
         final int definitions = selfcalls.getNumberOfDefinitions();
-        final CommunityFeatures features = CommunityFeatures.create(method, this, server);
+        final CommunityFeatures features = CommunityFeatures.create(method, null, this, server);
 
         new UIJob("Updating Subclassing Provider") {
             @Override

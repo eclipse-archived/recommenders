@@ -31,6 +31,7 @@ public final class StarsRatingComposite {
     private static final Image ICON_STAR_EMPTY = ExtDocPlugin.getIcon("eview16/star_empty.png");
 
     private final IName element;
+    private final String keyAppendix;
     private final IProvider provider;
     private final IUserFeedbackServer server;
 
@@ -38,9 +39,10 @@ public final class StarsRatingComposite {
 
     private final IRatingSummary ratingSummary;
 
-    public StarsRatingComposite(final IName element, final IProvider provider, final IUserFeedback feedback,
-            final IUserFeedbackServer server, final Composite parent) {
+    public StarsRatingComposite(final IName element, final String keyAppendix, final IProvider provider,
+            final IUserFeedback feedback, final IUserFeedbackServer server, final Composite parent) {
         this.element = element;
+        this.keyAppendix = keyAppendix;
         this.provider = provider;
         this.server = server;
         ratingSummary = feedback.getRatingSummary();
@@ -100,7 +102,7 @@ public final class StarsRatingComposite {
     }
 
     void addRating(final int stars, final IRatingSummary ratingSummary) {
-        final IRating userRating = server.addRating(stars, element, provider);
+        final IRating userRating = server.addRating(stars, element, keyAppendix, provider);
         for (final Control child : composite.getChildren()) {
             child.dispose();
         }

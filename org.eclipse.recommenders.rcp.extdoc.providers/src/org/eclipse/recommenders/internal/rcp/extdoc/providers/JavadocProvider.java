@@ -30,12 +30,11 @@ import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
@@ -44,7 +43,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
     private Composite composite;
     private ExtendedJavadocView javadoc;
     private final GenericServer server;
-    private CommunityFeatures features;
+    private Composite feedbackComposite;
 
     @Inject
     public JavadocProvider(final GenericServer server) {
@@ -54,7 +53,8 @@ public final class JavadocProvider extends AbstractProviderComposite {
     @Override
     protected Control createContentControl(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
-        javadoc = new ExtendedJavadocView(composite, getPartSite());
+        javadoc = new ExtendedJavadocView(composite, getViewSite());
+        feedbackComposite = SwtFactory.createGridComposite(parent, 2, 0, 0, 0, 0);
 
         if (javadoc.getControl() instanceof Browser) {
             new BrowserSizeWorkaround((Browser) javadoc.getControl());
@@ -85,23 +85,24 @@ public final class JavadocProvider extends AbstractProviderComposite {
 
     private static IJavaElement getJavaElement(final IJavaElement javaElement) {
         if (javaElement instanceof ILocalVariable) {
-            return VariableResolver.resolveTypeSignature((ILocalVariable) javaElement);
+            return ElementResolver.toJdtType(VariableResolver.resolveTypeSignature((ILocalVariable) javaElement));
         }
         return javaElement;
     }
 
     private void displayComments(final IJavaElement javaElement) {
-        final CommunityFeatures oldComments = features;
-        features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), this, server);
+        final CommunityFeatures features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), null,
+                this, server);
         new UIJob("Updating JavaDoc Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
-                    if (oldComments != null) {
-                        oldComments.dispose();
+                    disposeChildren(feedbackComposite);
+                    if (features != null) {
+                        features.loadCommentsComposite(feedbackComposite);
+                        features.loadStarsRatingComposite(feedbackComposite);
                     }
-                    features.loadCommentsComposite(composite);
-                    composite.layout(true);
+                    feedbackComposite.layout(true);
                     composite.getParent().getParent().layout(true);
                 }
                 return Status.OK_STATUS;
@@ -114,8 +115,8 @@ public final class JavadocProvider extends AbstractProviderComposite {
      */
     private static final class ExtendedJavadocView extends JavadocView {
 
-        ExtendedJavadocView(final Composite parent, final IWorkbenchPartSite partSite) {
-            setSite(partSite);
+        ExtendedJavadocView(final Composite parent, final IViewSite viewSite) {
+            setSite(viewSite);
             createPartControl(parent);
         }
 

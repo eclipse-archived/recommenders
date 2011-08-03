@@ -62,7 +62,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     public boolean selectionChanged(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
-            return displayContentForType((IType) element);
+            return displayContentForType(ElementResolver.toRecType((IType) element));
         } else if (element instanceof IMethod) {
             return displayContentForMethod((IMethod) element);
         } else if (element instanceof ILocalVariable) {
@@ -76,7 +76,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     private boolean displayContentForMethod(final IMethod method) {
         try {
             if (method.isConstructor()) {
-                return displayContentForType(method.getDeclaringType());
+                return displayContentForType(ElementResolver.toRecType(method.getDeclaringType()));
             }
             final MethodOverrideTester overrideTester = SuperTypeHierarchyCache.getMethodOverrideTester(method
                     .getDeclaringType());
@@ -91,16 +91,12 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         }
     }
 
-    private boolean displayContentForType(final IType type) {
-        if (type == null) {
-            return false;
-        }
-        final ITypeName name = ElementResolver.toRecType(type);
-        return displayCodeSnippets(name, server.getTypeCodeExamples(name));
+    private boolean displayContentForType(final ITypeName type) {
+        return displayCodeSnippets(type, server.getTypeCodeExamples(type));
     }
 
     private boolean displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
-        final CommunityFeatures features = CommunityFeatures.create(element, this, server);
+        final CommunityFeatures features = CommunityFeatures.create(element, null, this, server);
         new UIJob("Updating Examples Provider") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {

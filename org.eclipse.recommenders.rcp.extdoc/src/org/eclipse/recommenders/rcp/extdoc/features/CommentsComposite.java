@@ -35,18 +35,20 @@ public final class CommentsComposite {
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 
     private IName element;
+    private String keyAppendix;
     private IProvider provider;
     private IUserFeedbackServer server;
     private List<IComment> comments;
 
     private Composite composite;
 
-    static CommentsComposite create(final IName element, final IProvider provider, final IUserFeedback feedback,
-            final IUserFeedbackServer server, final Composite parent) {
+    static CommentsComposite create(final IName element, final String keyAppendix, final IProvider provider,
+            final IUserFeedback feedback, final IUserFeedbackServer server, final Composite parent) {
         final CommentsComposite comments = new CommentsComposite();
         comments.provider = provider;
         comments.server = Preconditions.checkNotNull(server);
         comments.element = element;
+        comments.keyAppendix = keyAppendix;
         comments.comments = new LinkedList<IComment>(feedback.getComments());
         comments.createContents(parent);
         return comments;
@@ -119,7 +121,7 @@ public final class CommentsComposite {
     }
 
     void addComment(final String text) {
-        final IComment comment = server.addComment(text, element, provider);
+        final IComment comment = server.addComment(text, element, keyAppendix, provider);
         comments.add(comment);
         displayComments();
     }

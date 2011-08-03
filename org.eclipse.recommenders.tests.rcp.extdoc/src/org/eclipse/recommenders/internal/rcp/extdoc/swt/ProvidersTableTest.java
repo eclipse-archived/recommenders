@@ -36,7 +36,7 @@ public final class ProvidersTableTest {
         Assert.assertEquals(ExtDocUtils.getSelection(), lastSelection);
 
         for (final TableItem item : table.getItems()) {
-            table.setContentVisible(item, true);
+            table.setContentVisible(item, true, true);
         }
     }
 

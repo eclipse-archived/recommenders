@@ -11,24 +11,20 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
 import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 
-@SuppressWarnings("restriction")
 public final class ContextFactory {
 
     private ContextFactory() {
     }
 
-    public static MockedIntelligentCompletionContext setNullVariableContext(final IJavaElementSelection selection) {
+    public static MockedIntelligentCompletionContext createNullVariableContext(final IJavaElementSelection selection) {
         return new MockedIntelligentCompletionContext(selection) {
             @Override
             public Variable getVariable() {
@@ -37,7 +33,7 @@ public final class ContextFactory {
         };
     }
 
-    public static MockedIntelligentCompletionContext setThisVariableContext(final IJavaElementSelection selection,
+    public static MockedIntelligentCompletionContext createThisVariableContext(final IJavaElementSelection selection,
             final IMethod enclosingMethod) {
         final IMethodName ctxEnclosingMethod = ElementResolver.toRecMethod(enclosingMethod);
         final IMethodName ctxFirstDeclaration = ElementResolver.toRecMethod(JdtUtils
@@ -62,36 +58,31 @@ public final class ContextFactory {
         };
     }
 
-    public static MockedIntelligentCompletionContext setFieldVariableContext(final IJavaElementSelection selection,
+    public static MockedIntelligentCompletionContext createFieldVariableContext(final IJavaElementSelection selection,
             final IField field) {
-        final IType declaringType = field.getDeclaringType();
-        try {
-            final String typeSignature = field.getTypeSignature();
-            final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
-            final IJavaProject javaProject = field.getJavaProject();
-            final IType fieldType = javaProject.findType(resolvedTypeName);
-            return setMockedContext(selection, field.getElementName(), fieldType, false);
-        } catch (final JavaModelException e) {
-            throw new IllegalStateException(e);
-        }
+        return createMockedContext(selection, field.getElementName(), VariableResolver.resolveTypeSignature(field), null);
     }
 
-    public static MockedIntelligentCompletionContext setLocalVariableContext(final IJavaElementSelection selection,
-            final ILocalVariable var) {
-        final String name = var.getElementName();
-        final IType variableType = VariableResolver.resolveTypeSignature(var);
-        return setMockedContext(selection, name, variableType, false);
+    public static MockedIntelligentCompletionContext createLocalVariableContext(final IJavaElementSelection selection,
+            final ILocalVariable local) {
+        return createMockedContext(selection, local.getElementName(), VariableResolver.resolveTypeSignature(local), null);
     }
 
-    private static MockedIntelligentCompletionContext setMockedContext(final IJavaElementSelection selection,
-            final String variableName, final IType variableType, final boolean isArgument) {
+    public static MockedIntelligentCompletionContext createLocalVariableContext(final IJavaElementSelection selection,
+            final String variableName, final ITypeName variableType, final IMethodName enclosingMethod) {
+        return createMockedContext(selection, variableName, variableType, enclosingMethod);
+    }
+
+    private static MockedIntelligentCompletionContext createMockedContext(final IJavaElementSelection selection,
+            final String variableName, final ITypeName variableType, final IMethodName enclosingMethod) {
         if (variableType == null) {
             return null;
         }
         return new MockedIntelligentCompletionContext(selection) {
             @Override
             public Variable getVariable() {
-                return Variable.create(variableName, ElementResolver.toRecType(variableType), getEnclosingMethod());
+                return Variable.create(variableName, variableType, enclosingMethod == null ? getEnclosingMethod()
+                        : enclosingMethod);
             };
         };
     }
