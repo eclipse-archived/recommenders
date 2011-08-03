@@ -38,8 +38,6 @@ public class DependencyDetailsSection {
     private Text versionText;
     private Text fingerprintText;
     private Button openDirectoryButton;
-    private Button openFileButton;
-    private SelectionListener selectionListener;
     private File file;
 
     public DependencyDetailsSection(final Composite parent, final ClasspathDependencyStore dependencyStore) {
@@ -77,11 +75,10 @@ public class DependencyDetailsSection {
 
         createSelectionListener();
         openDirectoryButton = createButton(container, "Open directory", ISharedImages.IMG_OBJ_FOLDER);
-        openFileButton = createButton(container, "Open file", ISharedImages.IMG_OBJ_FILE);
     }
 
-    private void createSelectionListener() {
-        selectionListener = new SelectionListener() {
+    private SelectionListener createSelectionListener() {
+        return new SelectionListener() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 if (file != null) {
@@ -106,7 +103,7 @@ public class DependencyDetailsSection {
         button.setEnabled(false);
         button.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(imageName));
         button.setToolTipText(toolTip);
-        button.addSelectionListener(selectionListener);
+        button.addSelectionListener(createSelectionListener());
         return button;
     }
 
@@ -130,14 +127,12 @@ public class DependencyDetailsSection {
             versionText.setText("");
             fingerprintText.setText("");
             openDirectoryButton.setEnabled(false);
-            openFileButton.setEnabled(false);
         } else {
             final ClasspathDependencyInformation dependencyInfo = dependencyStore.getClasspathDependencyInfo(file);
             nameText.setText(dependencyInfo.symbolicName);
             versionText.setText(getVersionText(dependencyInfo.version));
             fingerprintText.setText(dependencyInfo.jarFileFingerprint);
             openDirectoryButton.setEnabled(true);
-            openFileButton.setEnabled(true);
         }
     }
 

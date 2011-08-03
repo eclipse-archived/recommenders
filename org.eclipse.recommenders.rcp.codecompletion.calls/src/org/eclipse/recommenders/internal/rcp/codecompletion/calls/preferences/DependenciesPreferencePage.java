@@ -56,6 +56,9 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
     public DependenciesPreferencePage(final ClasspathDependencyStore dependencyStore) {
         this.dependencyStore = dependencyStore;
         noDefaultAndApplyButton();
+        setDescription("All dependencies of your open and Recommenders enabled projects are listed below. "
+                + "Select an entry to edit the name and version of a dependency. "
+                + "Models will be selected by these details.");
     }
 
     @Override
