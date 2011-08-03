@@ -10,7 +10,11 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
-import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.ui.text.java.hover.IJavaEditorTextHover;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControl;
@@ -20,16 +24,33 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextHoverExtension2;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.recommenders.commons.selection.SelectionResolver;
-import org.eclipse.swt.SWT;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementSelectionResolver;
+import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.progress.UIJob;
 
+import com.google.inject.Inject;
+
+@SuppressWarnings("restriction")
 public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtension, ITextHoverExtension2 {
 
+    private final IViewSite viewSite;
+    private final ProviderStore providerStore;
+
     private IEditorPart editor;
+
+    @Inject
+    ExtDocHover(final ExtDocView view, final ProviderStore providerStore) {
+        viewSite = view.getViewSite();
+        this.providerStore = providerStore;
+    }
 
     @Override
     public String getHoverInfo(final ITextViewer textViewer, final IRegion hoverRegion) {
@@ -38,9 +59,7 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
 
     @Override
     public Object getHoverInfo2(final ITextViewer textViewer, final IRegion hoverRegion) {
-        final IJavaElement element = SelectionResolver.resolveJavaElement(editor.getEditorInput(),
-                hoverRegion.getOffset());
-        return element;
+        return JavaElementSelectionResolver.resolveFromEditor((JavaEditor) editor, hoverRegion.getOffset());
     }
 
     @Override
@@ -58,7 +77,7 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
         return new IInformationControlCreator() {
             @Override
             public IInformationControl createInformationControl(final Shell parent) {
-                return new InformationControl(parent);
+                return new InformationControl(parent, providerStore, viewSite);
             }
         };
     }
@@ -66,10 +85,14 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
     private static final class InformationControl extends AbstractInformationControl implements
             IInformationControlExtension2 {
 
-        private Label label;
+        private ProvidersComposite composite;
+        private final ProviderStore providerStore;
+        private final IViewSite viewSite;
 
-        public InformationControl(final Shell parentShell) {
+        public InformationControl(final Shell parentShell, final ProviderStore providerStore, final IViewSite viewSite) {
             super(parentShell, true);
+            this.providerStore = providerStore;
+            this.viewSite = viewSite;
             create();
         }
 
@@ -80,14 +103,34 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
 
         @Override
         protected void createContent(final Composite parent) {
-            label = new Label(parent, SWT.NONE);
+            composite = new ProvidersComposite(parent, false);
+            for (final IProvider provider : providerStore.getProviders()) {
+                composite.addProvider(provider, viewSite);
+            }
         }
 
         @Override
         public void setInput(final Object input) {
-            label.setText(input.toString());
+            for (final Control control : composite.getProviders()) {
+                final IProvider provider = (IProvider) control.getData();
+                ((GridData) control.getLayoutData()).exclude = true;
+                new Job("Updating Hover Provider") {
+                    @Override
+                    public IStatus run(final IProgressMonitor monitor) {
+                        if (provider.selectionChanged((IJavaElementSelection) input)) {
+                            new UIJob("") {
+                                @Override
+                                public IStatus runInUIThread(final IProgressMonitor monitor) {
+                                    ((GridData) control.getLayoutData()).exclude = false;
+                                    return Status.OK_STATUS;
+                                }
+                            }.schedule();
+                        }
+                        return Status.OK_STATUS;
+                    }
+                }.schedule();
+            }
         }
-
     }
 
 }

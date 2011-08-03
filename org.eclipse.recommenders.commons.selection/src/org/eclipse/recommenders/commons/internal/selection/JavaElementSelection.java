@@ -28,7 +28,7 @@ import com.google.common.base.Objects.ToStringHelper;
  * element in the perspective (e.g. Editor, Package Explorer, Outline, ...).
  */
 @SuppressWarnings("restriction")
-final class JavaElementSelection implements IJavaElementSelection {
+public final class JavaElementSelection implements IJavaElementSelection {
 
     private final IJavaElement javaElement;
     private final int invocationOffset;
@@ -42,7 +42,7 @@ final class JavaElementSelection implements IJavaElementSelection {
      * @param javaElement
      *            The selected Java element.
      */
-    protected JavaElementSelection(final IJavaElement javaElement) {
+    public JavaElementSelection(final IJavaElement javaElement) {
         this.javaElement = Checks.ensureIsNotNull(javaElement);
         invocationOffset = -1;
     }
@@ -55,7 +55,7 @@ final class JavaElementSelection implements IJavaElementSelection {
      * @param editor
      *            The Java editor in which the selection took place.
      */
-    protected JavaElementSelection(final IJavaElement javaElement, final int invocationOffset, final JavaEditor editor) {
+    public JavaElementSelection(final IJavaElement javaElement, final int invocationOffset, final JavaEditor editor) {
         this.javaElement = Checks.ensureIsNotNull(javaElement);
         this.invocationOffset = invocationOffset;
         this.editor = Checks.ensureIsNotNull(editor);

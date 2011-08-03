@@ -10,25 +10,45 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IViewSite;
 
 final class ProvidersComposite extends Composite {
 
-    private final ScrolledComposite scrolledParent;
+    private final ScrolledComposite scrolled;
+    private final List<Control> providers = new LinkedList<Control>();
 
-    ProvidersComposite(final ScrolledComposite parent, final int style) {
-        super(parent, style);
-        scrolledParent = parent;
+    ProvidersComposite(final Composite parent, final boolean setGridData) {
+        super(createScrolledComposite(parent), SWT.NONE);
+        scrolled = (ScrolledComposite) getParent();
+        if (setGridData) {
+            scrolled.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        }
         setLayout();
-        setBackgroundColor(parent.getShell().getDisplay());
+        setBackgroundColor(scrolled.getShell().getDisplay());
+        scrolled.setContent(this);
+    }
+
+    private static ScrolledComposite createScrolledComposite(final Composite parent) {
+        final ScrolledComposite composite = new ScrolledComposite(parent, SWT.V_SCROLL);
+        composite.setExpandVertical(true);
+        composite.setExpandHorizontal(true);
+        composite.getVerticalBar().setIncrement(20);
+        return composite;
     }
 
     private void setLayout() {
@@ -51,15 +71,30 @@ final class ProvidersComposite extends Composite {
         setBackgroundMode(SWT.INHERIT_FORCE);
     }
 
+    Control addProvider(final IProvider provider, final IViewSite viewSite) {
+        final Control control = provider.createControl(this, viewSite);
+        control.setData(provider);
+        providers.add(control);
+        return control;
+    }
+
+    List<Control> getProviders() {
+        return providers;
+    }
+
     @Override
     public void layout(final boolean changed) {
         super.layout(changed);
-        scrolledParent.setMinHeight(computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y + 15);
+        scrolled.setMinHeight(computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y + 15);
     }
 
     @Override
     public boolean setFocus() {
-        return scrolledParent.forceFocus();
+        return scrolled.forceFocus();
+    }
+
+    public void scrollToTop() {
+        scrolled.setOrigin(0, 0);
     }
 
 }

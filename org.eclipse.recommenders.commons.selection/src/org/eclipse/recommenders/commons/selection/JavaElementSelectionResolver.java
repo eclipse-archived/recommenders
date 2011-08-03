@@ -8,23 +8,26 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.internal.selection;
+package org.eclipse.recommenders.commons.selection;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
-import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.commons.selection.SelectionResolver;
+import org.eclipse.recommenders.commons.internal.selection.JavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
 
 /**
  * Resolves the required information for a Java element selection.
  */
 @SuppressWarnings("restriction")
-final class JavaElementSelectionResolver {
+public final class JavaElementSelectionResolver {
 
     /**
      * Private constructor to avoid instantiation of helper class.
@@ -45,7 +48,8 @@ final class JavaElementSelectionResolver {
         if (selection instanceof ITreeSelection) {
             selectionContext = resolveFromTreeSelection((ITreeSelection) selection);
         } else if (part instanceof JavaEditor && selection instanceof ITextSelection) {
-            selectionContext = resolveFromEditor((JavaEditor) part, (ITextSelection) selection);
+            final int offset = ((ITextSelection) selection).getOffset();
+            selectionContext = resolveFromEditor((JavaEditor) part, offset);
         }
         return selectionContext;
     }
@@ -71,9 +75,19 @@ final class JavaElementSelectionResolver {
      *            The text selection event information.
      * @return The selection context resolved from the editor selection.
      */
-    private static IJavaElementSelection resolveFromEditor(final JavaEditor editor, final ITextSelection selection) {
-        final IJavaElement javaElement = SelectionResolver.resolveJavaElement(editor.getEditorInput(),
-                selection.getOffset());
-        return javaElement == null ? null : new JavaElementSelection(javaElement, selection.getOffset(), editor);
+    public static IJavaElementSelection resolveFromEditor(final JavaEditor editor, final int offset) {
+        final IJavaElement javaElement = JavaElementSelectionResolver.resolveJavaElement(editor.getEditorInput(),
+                offset);
+        return javaElement == null ? null : new JavaElementSelection(javaElement, offset, editor);
+    }
+
+    public static IJavaElement resolveJavaElement(final IEditorInput editorInput, final int offset) {
+        final ITypeRoot root = (ITypeRoot) JavaUI.getEditorInputJavaElement(editorInput);
+        try {
+            final IJavaElement[] elements = root.codeSelect(offset, 0);
+            return elements.length > 0 ? elements[0] : root.getElementAt(offset);
+        } catch (final JavaModelException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

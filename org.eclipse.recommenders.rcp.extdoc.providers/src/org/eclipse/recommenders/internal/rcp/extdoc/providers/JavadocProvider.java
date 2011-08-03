@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -31,11 +30,12 @@ import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends AbstractProviderComposite {
@@ -53,7 +53,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
     @Override
     protected Control createContentControl(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
-        javadoc = new ExtendedJavadocView(composite, getPartSite());
+        javadoc = new ExtendedJavadocView(composite, getViewSite());
         feedbackComposite = SwtFactory.createGridComposite(parent, 2, 0, 0, 0, 0);
 
         if (javadoc.getControl() instanceof Browser) {
@@ -115,8 +115,8 @@ public final class JavadocProvider extends AbstractProviderComposite {
      */
     private static final class ExtendedJavadocView extends JavadocView {
 
-        ExtendedJavadocView(final Composite parent, final IWorkbenchPartSite partSite) {
-            setSite(partSite);
+        ExtendedJavadocView(final Composite parent, final IViewSite viewSite) {
+            setSite(viewSite);
             createPartControl(parent);
         }
 
