@@ -100,6 +100,24 @@ public final class JavaElementSelection implements IJavaElementSelection {
         return editor;
     }
 
+    @Override
+    public boolean equals(final Object object) {
+        if (!(object instanceof IJavaElementSelection)) {
+            return false;
+        }
+        final IJavaElementSelection selection = (IJavaElementSelection) object;
+        if (getElementLocation() != selection.getElementLocation()) {
+            return false;
+        }
+        if (!getJavaElement().equals(selection.getJavaElement())) {
+            return false;
+        }
+        if (getEditor() == null) {
+            return selection.getEditor() == null;
+        }
+        return getEditor().equals(selection.getEditor());
+    }
+
     @Testing
     @Override
     public String toString() {

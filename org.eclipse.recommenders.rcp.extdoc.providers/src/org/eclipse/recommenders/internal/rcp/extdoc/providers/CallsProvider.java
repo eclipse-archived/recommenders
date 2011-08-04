@@ -237,6 +237,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
                     }
                     composite.layout(true);
                     composite.getParent().getParent().layout(true);
+                    composite.getParent().getParent().getParent().layout(true);
                 }
                 return Status.OK_STATUS;
             }

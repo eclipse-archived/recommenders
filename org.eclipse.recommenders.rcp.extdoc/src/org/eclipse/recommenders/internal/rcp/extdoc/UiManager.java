@@ -49,19 +49,7 @@ final class UiManager implements IExtendedSelectionListener {
     }
 
     private static boolean isEqualToLastSelection(final IJavaElementSelection selection) {
-        if (lastSelection == null) {
-            return false;
-        }
-        if (lastSelection.getElementLocation() != selection.getElementLocation()) {
-            return false;
-        }
-        if (!lastSelection.getJavaElement().equals(selection.getJavaElement())) {
-            return false;
-        }
-        if (lastSelection.getEditor() == null) {
-            return selection.getEditor() == null;
-        }
-        return lastSelection.getEditor().equals(selection.getEditor());
+        return selection.equals(lastSelection);
     }
 
     private void initViewListener() {

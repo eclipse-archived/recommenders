@@ -77,22 +77,19 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
         return new IInformationControlCreator() {
             @Override
             public IInformationControl createInformationControl(final Shell parent) {
-                return new InformationControl(parent, providerStore, viewSite);
+                return new InformationControl(parent, null);
             }
         };
     }
 
-    private static final class InformationControl extends AbstractInformationControl implements
-            IInformationControlExtension2 {
+    private final class InformationControl extends AbstractInformationControl implements IInformationControlExtension2 {
 
         private ProvidersComposite composite;
-        private final ProviderStore providerStore;
-        private final IViewSite viewSite;
+        private IJavaElementSelection lastSelection;
 
-        public InformationControl(final Shell parentShell, final ProviderStore providerStore, final IViewSite viewSite) {
+        public InformationControl(final Shell parentShell, final IJavaElementSelection lastSelection) {
             super(parentShell, true);
-            this.providerStore = providerStore;
-            this.viewSite = viewSite;
+            this.lastSelection = lastSelection;
             create();
         }
 
@@ -111,17 +108,26 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
 
         @Override
         public void setInput(final Object input) {
+            final IJavaElementSelection selection = (IJavaElementSelection) input;
+            if (selection.equals(lastSelection)) {
+                updateProviders(selection);
+                lastSelection = selection;
+            }
+        }
+
+        private void updateProviders(final IJavaElementSelection selection) {
             for (final Control control : composite.getProviders()) {
                 final IProvider provider = (IProvider) control.getData();
                 ((GridData) control.getLayoutData()).exclude = true;
                 new Job("Updating Hover Provider") {
                     @Override
                     public IStatus run(final IProgressMonitor monitor) {
-                        if (provider.selectionChanged((IJavaElementSelection) input)) {
+                        if (provider.selectionChanged(selection)) {
                             new UIJob("") {
                                 @Override
                                 public IStatus runInUIThread(final IProgressMonitor monitor) {
                                     ((GridData) control.getLayoutData()).exclude = false;
+                                    control.getParent().layout(true);
                                     return Status.OK_STATUS;
                                 }
                             }.schedule();
@@ -130,6 +136,17 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
                     }
                 }.schedule();
             }
+        }
+
+        @Override
+        public IInformationControlCreator getInformationPresenterControlCreator() {
+            return new IInformationControlCreator() {
+                @Override
+                public IInformationControl createInformationControl(final Shell parent) {
+                    // TODO: give lastSelection to prevent rebuilt.
+                    return new InformationControl(parent, null);
+                }
+            };
         }
     }
 
