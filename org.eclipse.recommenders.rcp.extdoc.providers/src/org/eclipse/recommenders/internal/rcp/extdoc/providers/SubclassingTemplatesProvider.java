@@ -16,9 +16,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
@@ -27,6 +24,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
@@ -34,8 +32,6 @@ import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.MethodPattern;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -52,7 +48,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
+    protected Composite createContentComposite(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
         return composite;
     }
@@ -75,9 +71,9 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                         numberOfSubclasses);
         final CommunityFeatures ratings = CommunityFeatures.create(type, null, this, server);
 
-        new UIJob("Updating Subclassing Templates Provider") {
+        new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
+            public Composite run() {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
                     SwtFactory.createStyledText(composite, text);
@@ -107,9 +103,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                     }
 
                     ratings.loadCommentsComposite(composite);
-                    composite.layout(true);
                 }
-                return Status.OK_STATUS;
+                return composite;
             }
         }.schedule();
 

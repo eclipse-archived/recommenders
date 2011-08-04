@@ -10,21 +10,18 @@
  */
 package org.eclipse.recommenders.tests.commons.extdoc;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.progress.UIJob;
 
 public final class TestProvider extends AbstractProviderComposite {
 
     private Label text;
+    private Composite composite;
 
     @Override
     public String getProviderName() {
@@ -38,20 +35,21 @@ public final class TestProvider extends AbstractProviderComposite {
 
     @Override
     public boolean selectionChanged(final IJavaElementSelection context) {
-        new UIJob("") {
+        new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
+            public Composite run() {
                 text.setText(context.toString());
-                return Status.OK_STATUS;
+                return composite;
             }
         }.schedule();
         return true;
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
+    protected Composite createContentComposite(final Composite parent) {
+        composite = parent;
         text = SwtFactory.createLabel(parent, "");
-        return text;
+        return parent;
     }
 
 }

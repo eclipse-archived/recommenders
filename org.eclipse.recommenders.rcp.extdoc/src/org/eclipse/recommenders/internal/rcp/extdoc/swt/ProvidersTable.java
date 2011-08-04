@@ -69,10 +69,10 @@ final class ProvidersTable {
         enableDragAndDrop(providerStore);
     }
 
-    TableItem addProvider(final Control providerControl, final String text, final Image image, final boolean checked) {
+    TableItem addProvider(final Composite provider, final String text, final Image image, final boolean checked) {
         final TableItem tableItem = new TableItem(table, SWT.NONE);
         tableItem.setText(text);
-        tableItem.setData(providerControl);
+        tableItem.setData(provider);
         tableItem.setChecked(false);
         tableItem.setImage(image);
         tableItem.setData("image", image);
@@ -108,10 +108,10 @@ final class ProvidersTable {
     }
 
     void setContentVisible(final TableItem tableItem, final boolean visible, final boolean updateTableItem) {
-        final Control control = (Control) tableItem.getData();
+        final Composite control = (Composite) tableItem.getData();
         ((GridData) control.getLayoutData()).exclude = !visible;
         control.setVisible(visible);
-        control.getParent().layout(true);
+        control.getParent().layout(true, false);
 
         if (updateTableItem) {
             tableItem.setGrayed(!visible);

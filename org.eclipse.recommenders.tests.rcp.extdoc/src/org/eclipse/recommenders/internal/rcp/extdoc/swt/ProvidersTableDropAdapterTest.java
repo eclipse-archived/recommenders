@@ -21,7 +21,7 @@ public final class ProvidersTableDropAdapterTest {
     @Test
     public void testProvidersTableDropAdapter() {
         final ProvidersTable table = new ProvidersTable(ExtDocUtils.getShell(), new ProviderStore());
-        final TableItem item = table.addProvider(ProvidersTableTest.mockProviderControl(), "Test", null, true);
+        final TableItem item = table.addProvider(ProvidersTableTest.mockProviderComposite(), "Test", null, true);
 
         final ProvidersTableDropAdapter adapter = new ProvidersTableDropAdapter(table.getTable(), null,
                 new ProviderStore());

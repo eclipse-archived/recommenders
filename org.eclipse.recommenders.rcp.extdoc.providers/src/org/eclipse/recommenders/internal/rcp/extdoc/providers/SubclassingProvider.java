@@ -15,9 +15,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -28,6 +25,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -38,8 +36,6 @@ import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 
@@ -55,7 +51,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
+    protected Composite createContentComposite(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 12, 0, 0);
         return composite;
     }
@@ -87,9 +83,9 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
         final CommunityFeatures features = CommunityFeatures.create(type, null, this, server);
 
-        new UIJob("Updating Subclassing Provider") {
+        new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
+            public Composite run() {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
@@ -100,9 +96,8 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                         displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses());
                     }
                     features.loadCommentsComposite(composite);
-                    composite.layout(true);
                 }
-                return Status.OK_STATUS;
+                return composite;
             }
         }.schedule();
 
@@ -119,9 +114,9 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         final int definitions = selfcalls.getNumberOfDefinitions();
         final CommunityFeatures features = CommunityFeatures.create(method, null, this, server);
 
-        new UIJob("Updating Subclassing Provider") {
+        new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
+            public Composite run() {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
                     // displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(),
@@ -134,9 +129,8 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                             true);
                     displayDirectives(selfcalls.getCalls(), "call", definitions);
                     features.loadCommentsComposite(composite);
-                    composite.layout(true);
                 }
-                return Status.OK_STATUS;
+                return composite;
             }
         }.schedule();
 

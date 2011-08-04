@@ -10,9 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
@@ -28,6 +25,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeature
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
@@ -35,9 +33,7 @@ import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 import org.eclipse.recommenders.server.extdoc.types.CodeSnippet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 
@@ -53,7 +49,7 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
+    protected Composite createContentComposite(final Composite parent) {
         container = SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
         return container;
     }
@@ -97,9 +93,9 @@ public final class ExamplesProvider extends AbstractProviderComposite {
 
     private boolean displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
         final CommunityFeatures features = CommunityFeatures.create(element, null, this, server);
-        new UIJob("Updating Examples Provider") {
+        new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
+            public Composite run() {
                 if (!container.isDisposed()) {
                     disposeChildren(container);
                     if (codeExamples == null) {
@@ -111,9 +107,8 @@ public final class ExamplesProvider extends AbstractProviderComposite {
                             createSnippetVisualization(i, features, snippets[i].getCode());
                         }
                     }
-                    container.layout(true);
                 }
-                return Status.OK_STATUS;
+                return container;
             }
         }.schedule();
         return true;

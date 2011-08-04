@@ -23,6 +23,7 @@ import org.eclipse.ui.IViewSite;
 public abstract class AbstractProviderComposite extends AbstractProvider {
 
     private IViewSite viewSite;
+    private Composite provider;
 
     @Override
     public final Composite createComposite(final Composite parent, final IViewSite site) {
@@ -31,8 +32,8 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         final Composite container = SwtFactory.createGridComposite(parent, 1, 0, 3, 8, 8);
         createProviderTitle(container);
         SwtFactory.createSeparator(container);
-        final Control control = createContentControl(container);
-        Checks.ensureIsNotNull(control);
+        provider = createContentComposite(container);
+        Checks.ensureIsNotNull(provider);
         return container;
     }
 
@@ -44,7 +45,7 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         titleLabel.setLeftMargin(0);
     }
 
-    protected abstract Control createContentControl(Composite parent);
+    protected abstract Composite createContentComposite(Composite parent);
 
     @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {

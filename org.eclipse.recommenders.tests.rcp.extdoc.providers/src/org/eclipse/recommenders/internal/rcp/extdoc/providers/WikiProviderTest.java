@@ -24,7 +24,7 @@ public final class WikiProviderTest {
     public void testWikiProvider() {
         final WikiServer server = new WikiServer(ServerUtils.getServer(), ServerUtils.getUsernameListener());
         final WikiProvider provider = new WikiProvider(server);
-        provider.createContentControl(new Shell());
+        provider.createContentComposite(new Shell());
 
         provider.createComposite(ExtDocUtils.getShell(), null);
         Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection()));

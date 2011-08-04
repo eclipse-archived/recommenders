@@ -15,7 +15,6 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +24,7 @@ public final class AbstractProviderCompositeTest {
     @Test
     public void testCreateControl() {
         final AbstractProviderComposite composite = new ProviderComposite();
-        final Composite control = (Composite) composite.createComposite(ExtDocUtils.getShell(), null);
+        final Composite control = composite.createComposite(ExtDocUtils.getShell(), null);
 
         Assert.assertEquals(3, control.getChildren().length);
         composite.disposeChildren(control);
@@ -45,7 +44,7 @@ public final class AbstractProviderCompositeTest {
         }
 
         @Override
-        protected Control createContentControl(final Composite parent) {
+        protected Composite createContentComposite(final Composite parent) {
             return new Composite(parent, SWT.NONE);
         }
 

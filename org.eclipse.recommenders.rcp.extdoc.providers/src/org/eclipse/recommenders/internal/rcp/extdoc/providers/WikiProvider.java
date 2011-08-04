@@ -10,9 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
@@ -23,6 +20,7 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
@@ -33,9 +31,7 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 
@@ -53,7 +49,7 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
+    protected Composite createContentComposite(final Composite parent) {
         parentComposite = SwtFactory.createGridComposite(parent, 1, 0, 0, 0, 0);
         return parentComposite;
     }
@@ -74,9 +70,9 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     private void updateDisplay(final IJavaElement element, final String markup) {
-        new UIJob("Updating Wiki provider") {
+        new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
+            public Composite run() {
                 if (!parentComposite.isDisposed()) {
                     initComposite();
                     if (markup == null) {
@@ -84,9 +80,8 @@ public final class WikiProvider extends AbstractProviderComposite {
                     } else {
                         displayText(element, markup);
                     }
-                    parentComposite.layout(true);
                 }
-                return Status.OK_STATUS;
+                return parentComposite;
             }
         }.schedule();
     }

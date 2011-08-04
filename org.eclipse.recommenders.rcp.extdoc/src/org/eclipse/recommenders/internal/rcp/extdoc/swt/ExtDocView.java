@@ -31,7 +31,6 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ViewPart;
@@ -109,8 +108,8 @@ public class ExtDocView extends ViewPart {
 
     private void addProviders() {
         for (final IProvider provider : providerStore.getProviders()) {
-            final Control control = providersComposite.addProvider(provider, getViewSite());
-            table.addProvider(control, provider.getProviderName(), provider.getIcon(), true);
+            final Composite composite = providersComposite.addProvider(provider, getViewSite());
+            table.addProvider(composite, provider.getProviderName(), provider.getIcon(), true);
         }
     }
 

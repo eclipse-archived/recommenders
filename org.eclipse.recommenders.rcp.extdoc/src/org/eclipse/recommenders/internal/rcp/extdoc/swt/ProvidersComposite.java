@@ -82,8 +82,8 @@ final class ProvidersComposite extends Composite {
     }
 
     @Override
-    public void layout(final boolean changed) {
-        super.layout(changed);
+    public void layout(final boolean changed, final boolean all) {
+        super.layout(changed, all);
         scrolled.setMinHeight(computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y + 15);
     }
 

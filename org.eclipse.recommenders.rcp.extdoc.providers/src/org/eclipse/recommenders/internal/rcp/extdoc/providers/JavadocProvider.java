@@ -11,8 +11,6 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.JavaModelException;
@@ -24,6 +22,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.BrowserSizeWor
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
@@ -32,7 +31,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +49,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
+    protected Composite createContentComposite(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
         javadoc = new ExtendedJavadocView(composite, getViewSite());
         feedbackComposite = SwtFactory.createGridComposite(parent, 2, 0, 0, 0, 0);
@@ -59,7 +57,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
         if (javadoc.getControl() instanceof Browser) {
             new BrowserSizeWorkaround((Browser) javadoc.getControl());
         }
-        return javadoc.getControl();
+        return composite;
     }
 
     @Override
@@ -93,19 +91,17 @@ public final class JavadocProvider extends AbstractProviderComposite {
     private void displayComments(final IJavaElement javaElement) {
         final CommunityFeatures features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), null,
                 this, server);
-        new UIJob("Updating JavaDoc Provider") {
+        new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
+            public Composite run() {
                 if (!composite.isDisposed()) {
                     disposeChildren(feedbackComposite);
                     if (features != null) {
                         features.loadCommentsComposite(feedbackComposite);
                         features.loadStarsRatingComposite(feedbackComposite);
                     }
-                    feedbackComposite.layout(true);
-                    composite.getParent().getParent().layout(true);
                 }
-                return Status.OK_STATUS;
+                return composite;
             }
         }.schedule();
     }

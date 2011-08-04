@@ -25,7 +25,7 @@ public final class CallsProviderTest {
         final CallsProvider provider = new CallsProvider(CallsAdapterTest.createProjectServices(), null,
                 ServerUtils.getGenericServer());
 
-        provider.createContentControl(ExtDocUtils.getShell());
+        provider.createContentComposite(ExtDocUtils.getShell());
         Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection()));
     }
 }

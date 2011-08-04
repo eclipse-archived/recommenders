@@ -24,7 +24,7 @@ public final class ProvidersTableSelectionListenerTest {
     public void testHandleEvent() {
         final Event event = new Event();
         final ProvidersTable table = new ProvidersTable(ExtDocUtils.getShell(), new ProviderStore());
-        final TableItem item = table.addProvider(ProvidersTableTest.mockProviderControl(), "Test", null, true);
+        final TableItem item = table.addProvider(ProvidersTableTest.mockProviderComposite(), "Test", null, true);
         table.setContext(ExtDocUtils.getSelection());
         event.item = item;
         final ProvidersTableSelectionListener listener = new ProvidersTableSelectionListener(table);

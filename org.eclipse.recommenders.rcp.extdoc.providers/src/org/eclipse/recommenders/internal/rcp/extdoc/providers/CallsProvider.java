@@ -15,9 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
@@ -39,6 +36,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResol
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -46,8 +44,6 @@ import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
@@ -59,18 +55,16 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     private final GenericServer server;
     private final CallsAdapter adapter;
     private Composite composite;
-    private final ProjectServices projectServices;
 
     @Inject
     CallsProvider(final ProjectServices projectServices,
             final Provider<Set<IVariableUsageResolver>> usageResolversProvider, final GenericServer server) {
-        this.projectServices = projectServices;
         this.server = Preconditions.checkNotNull(server);
         adapter = new CallsAdapter(projectServices, usageResolversProvider);
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
+    protected Composite createContentComposite(final Composite parent) {
         composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
         return composite;
     }
@@ -211,9 +205,9 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
         final String text2 = "When accessed from single methods, probabilites for this field's methods might be different:";
         final CommunityFeatures features = CommunityFeatures.create(elementId, null, this, server);
 
-        new UIJob("Updating Calls Provider") {
+        new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
+            public Composite run() {
                 if (!composite.isDisposed()) {
                     disposeChildren(composite);
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
@@ -235,11 +229,8 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
                             SwtFactory.createStyleRange(styled, 3, origin.length(), SWT.NORMAL, false, true);
                         }
                     }
-                    composite.layout(true);
-                    composite.getParent().getParent().layout(true);
-                    composite.getParent().getParent().getParent().layout(true);
                 }
-                return Status.OK_STATUS;
+                return composite;
             }
         }.schedule();
 
