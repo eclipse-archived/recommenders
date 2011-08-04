@@ -28,7 +28,7 @@ public final class SubclassingTemplatesProviderTest {
                 ServerUtils.getUsernameListener());
         final SubclassingTemplatesProvider provider = new SubclassingTemplatesProvider(server);
 
-        provider.createControl(ExtDocUtils.getShell(), null);
+        provider.createComposite(ExtDocUtils.getShell(), null);
 
         final TestJavaElementSelection selection = new TestJavaElementSelection(
                 JavaElementLocation.EXTENDS_DECLARATION, TestTypeUtils.getDefaultJavaType());

@@ -25,7 +25,7 @@ public final class AbstractProviderCompositeTest {
     @Test
     public void testCreateControl() {
         final AbstractProviderComposite composite = new ProviderComposite();
-        final Composite control = (Composite) composite.createControl(ExtDocUtils.getShell(), null);
+        final Composite control = (Composite) composite.createComposite(ExtDocUtils.getShell(), null);
 
         Assert.assertEquals(3, control.getChildren().length);
         composite.disposeChildren(control);

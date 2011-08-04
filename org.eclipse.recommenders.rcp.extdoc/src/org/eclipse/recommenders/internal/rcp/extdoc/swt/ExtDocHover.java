@@ -109,7 +109,7 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
         @Override
         public void setInput(final Object input) {
             final IJavaElementSelection selection = (IJavaElementSelection) input;
-            if (selection.equals(lastSelection)) {
+            if (!selection.equals(lastSelection)) {
                 updateProviders(selection);
                 lastSelection = selection;
             }

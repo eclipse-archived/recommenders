@@ -25,7 +25,7 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
     private IViewSite viewSite;
 
     @Override
-    public final Control createControl(final Composite parent, final IViewSite site) {
+    public final Composite createComposite(final Composite parent, final IViewSite site) {
         viewSite = site;
 
         final Composite container = SwtFactory.createGridComposite(parent, 1, 0, 3, 8, 8);

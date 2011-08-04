@@ -27,7 +27,7 @@ public final class StarsRatingCompositeTest {
         final Shell shell = ExtDocUtils.getShell();
         final IProvider provider = ExtDocUtils.getTestProvider();
 
-        provider.createControl(shell, null);
+        provider.createComposite(shell, null);
 
         final GenericServer server = ServerUtils.getGenericServer();
         for (final IName name : TestTypeUtils.getDefaultNames()) {

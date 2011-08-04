@@ -25,7 +25,7 @@ public final class ExamplesProviderTest {
                 ServerUtils.getUsernameListener());
         final ExamplesProvider provider = new ExamplesProvider(server);
 
-        provider.createControl(ExtDocUtils.getShell(), null);
+        provider.createComposite(ExtDocUtils.getShell(), null);
         Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection()));
     }
 

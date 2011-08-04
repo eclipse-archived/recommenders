@@ -23,14 +23,13 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewSite;
 
 final class ProvidersComposite extends Composite {
 
     private final ScrolledComposite scrolled;
-    private final List<Control> providers = new LinkedList<Control>();
+    private final List<Composite> providers = new LinkedList<Composite>();
 
     ProvidersComposite(final Composite parent, final boolean setGridData) {
         super(createScrolledComposite(parent), SWT.NONE);
@@ -71,14 +70,14 @@ final class ProvidersComposite extends Composite {
         setBackgroundMode(SWT.INHERIT_FORCE);
     }
 
-    Control addProvider(final IProvider provider, final IViewSite viewSite) {
-        final Control control = provider.createControl(this, viewSite);
+    Composite addProvider(final IProvider provider, final IViewSite viewSite) {
+        final Composite control = provider.createComposite(this, viewSite);
         control.setData(provider);
         providers.add(control);
         return control;
     }
 
-    List<Control> getProviders() {
+    List<Composite> getProviders() {
         return providers;
     }
 
