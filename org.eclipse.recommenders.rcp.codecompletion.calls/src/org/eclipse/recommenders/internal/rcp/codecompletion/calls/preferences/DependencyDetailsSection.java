@@ -66,10 +66,10 @@ public class DependencyDetailsSection {
 
     private void createDetails(final Composite parent) {
         createLabel(parent, "Name:");
-        nameText = createText(parent, SWT.NONE);
+        nameText = createText(parent, SWT.NONE | SWT.BORDER);
 
         createLabel(parent, "Version:");
-        versionText = createText(parent, SWT.NONE);
+        versionText = createText(parent, SWT.NONE | SWT.BORDER);
 
         createLabel(parent, "Fingerprint:");
         fingerprintText = createText(parent, SWT.READ_ONLY);

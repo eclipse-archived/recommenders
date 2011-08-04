@@ -13,6 +13,11 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences;
 import java.io.File;
 import java.util.Set;
 
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
@@ -26,7 +31,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class CommandSection {
@@ -45,7 +49,7 @@ public class CommandSection {
     }
 
     private Composite createGroup(final Composite parent) {
-        final Group section = new Group(parent, SWT.NONE);
+        final Composite section = new Composite(parent, SWT.NONE);
         section.setLayout(new GridLayout(2, false));
         section.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.END).create());
         return section;
@@ -57,8 +61,7 @@ public class CommandSection {
                 .create());
         container.setLayout(new RowLayout());
 
-        reresolveButton = createButton(container, "Update models of all dependencies",
-                loadImage("/icons/obj16/refresh.gif"));
+        reresolveButton = createButton(container, "Update all models", loadImage("/icons/obj16/refresh.gif"));
     }
 
     private Image loadImage(final String name) {
@@ -71,12 +74,8 @@ public class CommandSection {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 reresolveButton.setEnabled(false);
-                final Set<File> files = dependencyStore.getFiles();
-                for (final File file : files) {
-                    dependencyStore.invalidateClasspathDependencyInfo(file);
-                    final SearchManifestJob job = jobFactory.create(file);
-                    job.schedule();
-                }
+                final UpdateAllModelsJob job = new UpdateAllModelsJob();
+                job.schedule();
             }
 
             @Override
@@ -85,11 +84,31 @@ public class CommandSection {
         };
     }
 
-    private Button createButton(final Composite container, final String toolTip, final Image image) {
+    private Button createButton(final Composite container, final String text, final Image image) {
         final Button button = new Button(container, SWT.PUSH);
         button.setImage(image);
-        button.setToolTipText(toolTip);
+        button.setText(text);
         button.addSelectionListener(createSelectionListener());
         return button;
+    }
+
+    private class UpdateAllModelsJob extends WorkspaceJob {
+
+        public UpdateAllModelsJob() {
+            super("Updating all dependencies");
+            setSystem(true);
+        }
+
+        @Override
+        public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
+            final Set<File> files = dependencyStore.getFiles();
+            for (final File file : files) {
+                dependencyStore.invalidateClasspathDependencyInfo(file);
+                final SearchManifestJob job = jobFactory.create(file);
+                job.schedule();
+            }
+            return Status.OK_STATUS;
+        }
+
     }
 }

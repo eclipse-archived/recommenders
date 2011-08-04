@@ -47,6 +47,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class DependenciesPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
+    private static final int MIN_WIDTH_DETAILS_SECTION = 100;
     private static final int MIN_WIDTH_TABLE = 200;
 
     private final ClasspathDependencyStore dependencyStore;
@@ -217,7 +218,7 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
 
     private void createDetailsSection(final Composite container) {
         final Composite detailsSection = new Composite(container, SWT.NONE);
-        setGridData(detailsSection, 100);
+        setGridData(detailsSection, MIN_WIDTH_DETAILS_SECTION);
         detailsSection.setLayout(new GridLayout(1, true));
 
         dependencyDetailsSection = new DependencyDetailsSection(detailsSection, dependencyStore, jobFactory);
