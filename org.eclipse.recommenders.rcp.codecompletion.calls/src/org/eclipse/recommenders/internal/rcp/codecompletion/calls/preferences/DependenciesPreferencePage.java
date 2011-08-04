@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
 import org.eclipse.recommenders.rcp.utils.ScaleOneDimensionLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -51,10 +52,14 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
     private final ClasspathDependencyStore dependencyStore;
     private DependencyDetailsSection dependencyDetailsSection;
     private ModelDetailsSection modelDetailsSection;
+    private CommandSection commandSection;
+    private final RemoteResolverJobFactory jobFactory;
 
     @Inject
-    public DependenciesPreferencePage(final ClasspathDependencyStore dependencyStore) {
+    public DependenciesPreferencePage(final ClasspathDependencyStore dependencyStore,
+            final RemoteResolverJobFactory jobFactory) {
         this.dependencyStore = dependencyStore;
+        this.jobFactory = jobFactory;
         noDefaultAndApplyButton();
         setDescription("All dependencies of your open and Recommenders enabled projects are listed below. "
                 + "Select an entry to edit the name and version of a dependency. "
@@ -215,8 +220,9 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
         setGridData(detailsSection, 100);
         detailsSection.setLayout(new GridLayout(1, true));
 
-        dependencyDetailsSection = new DependencyDetailsSection(detailsSection, dependencyStore);
+        dependencyDetailsSection = new DependencyDetailsSection(detailsSection, dependencyStore, jobFactory);
         modelDetailsSection = new ModelDetailsSection(detailsSection, dependencyStore);
+        commandSection = new CommandSection(detailsSection, dependencyStore, jobFactory);
     }
 
     private void setGridData(final Control control, final int minimumWidth) {

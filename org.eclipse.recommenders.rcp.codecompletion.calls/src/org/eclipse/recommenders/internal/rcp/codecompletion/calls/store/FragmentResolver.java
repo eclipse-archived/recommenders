@@ -16,9 +16,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.eclipse.core.resources.WorkspaceJob;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-
 import com.google.common.collect.Sets;
 
 @Singleton
@@ -34,29 +31,21 @@ public class FragmentResolver {
         this.jobFactory = jobFactory;
     }
 
-    public void resolve(final IPackageFragmentRoot[] packageFragmentRoots) {
-        for (final IPackageFragmentRoot packageRoot : packageFragmentRoots) {
-            final File file = getLocation(packageRoot);
+    public void resolve(final File[] files) {
+        for (final File file : files) {
             if (inProgress.contains(file)) {
                 continue;
             }
-            if (!dependencyStore.containsClasspathDependencyInfo(packageRoot)
-                    || !dependencyStore.containsManifest(packageRoot)) {
+            if (!dependencyStore.containsClasspathDependencyInfo(file) || !dependencyStore.containsManifest(file)) {
                 inProgress.add(file);
-                scheduleJob(packageRoot);
+                scheduleJob(file);
             }
         }
     }
 
-    private void scheduleJob(final IPackageFragmentRoot packageRoot) {
-        final SearchManifestJob job = jobFactory.create(packageRoot);
-        job.setPriority(WorkspaceJob.DECORATE);
+    private void scheduleJob(final File file) {
+        final SearchManifestJob job = jobFactory.create(file);
         job.schedule();
-    }
-
-    private File getLocation(final IPackageFragmentRoot packageRoot) {
-        final File location = packageRoot.getPath().toFile();
-        return location;
     }
 
 }

@@ -16,9 +16,12 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.SearchManifestJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -30,6 +33,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class DependencyDetailsSection {
 
@@ -39,9 +43,13 @@ public class DependencyDetailsSection {
     private Text fingerprintText;
     private Button openDirectoryButton;
     private File file;
+    private Button reresolveButton;
+    private final RemoteResolverJobFactory jobFactory;
 
-    public DependencyDetailsSection(final Composite parent, final ClasspathDependencyStore dependencyStore) {
+    public DependencyDetailsSection(final Composite parent, final ClasspathDependencyStore dependencyStore,
+            final RemoteResolverJobFactory jobFactory) {
         this.dependencyStore = dependencyStore;
+        this.jobFactory = jobFactory;
 
         final Composite group = createGroup(parent);
         createDetails(group);
@@ -73,8 +81,15 @@ public class DependencyDetailsSection {
                 .create());
         container.setLayout(new RowLayout());
 
-        createSelectionListener();
-        openDirectoryButton = createButton(container, "Open directory", ISharedImages.IMG_OBJ_FOLDER);
+        reresolveButton = createButton(container, "Automatically extract details",
+                loadImage("/icons/obj16/refresh.gif"));
+        openDirectoryButton = createButton(container, "Open directory", PlatformUI.getWorkbench().getSharedImages()
+                .getImage(ISharedImages.IMG_OBJ_FOLDER));
+    }
+
+    private Image loadImage(final String name) {
+        return AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.recommenders.rcp.codecompletion.calls", name)
+                .createImage();
     }
 
     private SelectionListener createSelectionListener() {
@@ -82,13 +97,15 @@ public class DependencyDetailsSection {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 if (file != null) {
-                    File openFile;
                     if (e.getSource() == openDirectoryButton) {
-                        openFile = file.getParentFile();
-                    } else {
-                        openFile = file;
+                        final File openFile = file.getParentFile();
+                        Program.launch(openFile.getAbsolutePath());
+                    } else if (e.getSource() == reresolveButton) {
+                        dependencyStore.invalidateClasspathDependencyInfo(file);
+                        final SearchManifestJob job = jobFactory.create(file);
+                        job.schedule();
+                        reresolveButton.setEnabled(false);
                     }
-                    Program.launch(openFile.getAbsolutePath());
                 }
             }
 
@@ -98,10 +115,10 @@ public class DependencyDetailsSection {
         };
     }
 
-    private Button createButton(final Composite container, final String toolTip, final String imageName) {
+    private Button createButton(final Composite container, final String toolTip, final Image image) {
         final Button button = new Button(container, SWT.PUSH);
         button.setEnabled(false);
-        button.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(imageName));
+        button.setImage(image);
         button.setToolTipText(toolTip);
         button.addSelectionListener(createSelectionListener());
         return button;
@@ -127,12 +144,14 @@ public class DependencyDetailsSection {
             versionText.setText("");
             fingerprintText.setText("");
             openDirectoryButton.setEnabled(false);
+            reresolveButton.setEnabled(false);
         } else {
             final ClasspathDependencyInformation dependencyInfo = dependencyStore.getClasspathDependencyInfo(file);
             nameText.setText(dependencyInfo.symbolicName);
             versionText.setText(getVersionText(dependencyInfo.version));
             fingerprintText.setText(dependencyInfo.jarFileFingerprint);
             openDirectoryButton.setEnabled(true);
+            reresolveButton.setEnabled(true);
         }
     }
 

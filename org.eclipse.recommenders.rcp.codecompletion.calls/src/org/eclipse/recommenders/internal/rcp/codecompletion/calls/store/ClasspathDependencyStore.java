@@ -21,7 +21,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
@@ -71,11 +70,6 @@ public class ClasspathDependencyStore {
         GsonUtil.serialize(resource2manifestId, manifestIdFile);
     }
 
-    public boolean containsClasspathDependencyInfo(final IPackageFragmentRoot packageRoot) {
-        final File file = getLocation(packageRoot);
-        return containsClasspathDependencyInfo(file);
-    }
-
     public boolean containsClasspathDependencyInfo(final File file) {
         final ClasspathDependencyInformation dependencyInformation = resource2dependencyInfo.get(file);
         if (dependencyInformation == null) {
@@ -90,11 +84,6 @@ public class ClasspathDependencyStore {
         }
     }
 
-    public boolean containsManifest(final IPackageFragmentRoot packageRoot) {
-        final File file = getLocation(packageRoot);
-        return containsManifest(file);
-    }
-
     public boolean containsManifest(final File file) {
         if (containsClasspathDependencyInfo(file)) {
             return resource2manifestId.containsKey(file);
@@ -104,20 +93,10 @@ public class ClasspathDependencyStore {
         }
     }
 
-    public ClasspathDependencyInformation getClasspathDependencyInfo(final IPackageFragmentRoot packageRoot) {
-        final File file = getLocation(packageRoot);
-        return getClasspathDependencyInfo(file);
-    }
-
     public ClasspathDependencyInformation getClasspathDependencyInfo(final File file) {
         ensureIsTrue(containsClasspathDependencyInfo(file),
                 "PackageRoot not contained  in mapping. Call containsClasspathDependencyInfo() before getClasspathDependencyInfo().");
         return resource2dependencyInfo.get(file);
-    }
-
-    public Manifest getManifest(final IPackageFragmentRoot packageRoot) {
-        final File file = getLocation(packageRoot);
-        return getManifest(file);
     }
 
     public Manifest getManifest(final File file) {
@@ -126,25 +105,21 @@ public class ClasspathDependencyStore {
         return resource2manifestId.get(file);
     }
 
-    public void putClasspathDependencyInfo(final IPackageFragmentRoot packageRoot,
-            final ClasspathDependencyInformation dependencyInformation) {
-        final File file = getLocation(packageRoot);
+    public void putClasspathDependencyInfo(final File file, final ClasspathDependencyInformation dependencyInformation) {
         resource2dependencyInfo.put(file, dependencyInformation);
     }
 
-    public void putManifest(final IPackageFragmentRoot packageRoot, final Manifest manifest) {
-        final File file = getLocation(packageRoot);
+    public void putManifest(final File file, final Manifest manifest) {
         resource2manifestId.put(file, manifest);
     }
 
-    public void invalidateManifest(final IPackageFragmentRoot packageFragmentRoot) {
-        final File file = getLocation(packageFragmentRoot);
-        resource2manifestId.remove(file);
+    public void invalidateClasspathDependencyInfo(final File file) {
+        resource2dependencyInfo.remove(file);
+        invalidateManifest(file);
     }
 
-    private File getLocation(final IPackageFragmentRoot packageRoot) {
-        final File location = packageRoot.getPath().toFile();
-        return location;
+    public void invalidateManifest(final File file) {
+        resource2manifestId.remove(file);
     }
 
     private boolean isFileChanged(final File file, final ClasspathDependencyInformation dependencyInformation) {
@@ -154,4 +129,5 @@ public class ClasspathDependencyStore {
     public Set<File> getFiles() {
         return new HashSet<File>(resource2dependencyInfo.keySet());
     }
+
 }

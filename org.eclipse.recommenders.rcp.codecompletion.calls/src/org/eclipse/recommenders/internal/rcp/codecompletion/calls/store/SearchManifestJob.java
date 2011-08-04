@@ -26,8 +26,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.InvalidRequestException;
 import org.eclipse.recommenders.commons.client.ServerCommunicationException;
@@ -45,7 +43,7 @@ import com.google.inject.assistedinject.Assisted;
 @SuppressWarnings("restriction")
 public class SearchManifestJob extends WorkspaceJob {
 
-    private final IPackageFragmentRoot packageRoot;
+    private final File file;
     private final WebServiceClient client;
     private final ClasspathDependencyStore dependencyStore;
     private final ModelArchiveStore modelStore;
@@ -53,20 +51,15 @@ public class SearchManifestJob extends WorkspaceJob {
     private Manifest manifest;
 
     @Inject
-    public SearchManifestJob(@Assisted final IPackageFragmentRoot packageRoot,
-            final ClasspathDependencyStore dependencyStore, final ModelArchiveStore modelStore,
-            @UdcServer final ClientConfiguration config) {
-        super(getJobName(packageRoot));
-        this.packageRoot = packageRoot;
+    public SearchManifestJob(@Assisted final File file, final ClasspathDependencyStore dependencyStore,
+            final ModelArchiveStore modelStore, @UdcServer final ClientConfiguration config) {
+        super(file.getName());
+        this.file = file;
         this.dependencyStore = dependencyStore;
         this.modelStore = modelStore;
         client = new WebServiceClient(config);
         setRule(new PackageRootSchedulingRule());
-    }
-
-    private static String getJobName(final IPackageFragmentRoot packageRoot) {
-        final String filename = packageRoot.getPath().toFile().getName();
-        return "Searching recommender models for " + filename;
+        setPriority(WorkspaceJob.DECORATE);
     }
 
     @Override
@@ -87,21 +80,21 @@ public class SearchManifestJob extends WorkspaceJob {
             downloadAndRegisterArchive(manifest);
         }
         monitor.worked(90);
-        dependencyStore.putManifest(packageRoot, manifest);
+        dependencyStore.putManifest(file, manifest);
     }
 
     private void findClasspathDependencyInformation() {
-        if (dependencyStore.containsClasspathDependencyInfo(packageRoot)) {
-            dependencyInfo = dependencyStore.getClasspathDependencyInfo(packageRoot);
+        if (dependencyStore.containsClasspathDependencyInfo(file)) {
+            dependencyInfo = dependencyStore.getClasspathDependencyInfo(file);
         } else {
             try {
                 dependencyInfo = extractClasspathDependencyInformation();
                 if (dependencyInfo != null) {
-                    dependencyStore.putClasspathDependencyInfo(packageRoot, dependencyInfo);
+                    dependencyStore.putClasspathDependencyInfo(file, dependencyInfo);
                 }
             } catch (final IOException e) {
                 throw Throws.throwUnhandledException(e,
-                        "Unable to extract ClasspathDependencyInformation from package root '%s'", packageRoot);
+                        "Unable to extract ClasspathDependencyInformation from package root '%s'", file);
             }
         }
     }
@@ -147,8 +140,7 @@ public class SearchManifestJob extends WorkspaceJob {
     }
 
     private ClasspathDependencyInformation extractClasspathDependencyInformation() throws IOException {
-        if (packageRoot instanceof JarPackageFragmentRoot) {
-            final File file = packageRoot.getPath().toFile();
+        if (isJarFile()) {
             final ArchiveDetailsExtractor extractor = new ArchiveDetailsExtractor(file);
             final ClasspathDependencyInformation dependencyInformation = new ClasspathDependencyInformation();
             dependencyInformation.symbolicName = extractor.extractName();
@@ -161,6 +153,10 @@ public class SearchManifestJob extends WorkspaceJob {
         }
     }
 
+    private boolean isJarFile() {
+        return file.getName().endsWith(".jar");
+    }
+
     private class PackageRootSchedulingRule implements ISchedulingRule {
 
         @Override
@@ -171,14 +167,14 @@ public class SearchManifestJob extends WorkspaceJob {
         @Override
         public boolean isConflicting(final ISchedulingRule rule) {
             if (rule instanceof PackageRootSchedulingRule) {
-                final IPackageFragmentRoot otherPackageRoot = ((PackageRootSchedulingRule) rule).getPackageRoot();
-                return (otherPackageRoot.equals(packageRoot));
+                final File otherFile = ((PackageRootSchedulingRule) rule).getFile();
+                return (otherFile.equals(file));
             }
             return false;
         }
 
-        private IPackageFragmentRoot getPackageRoot() {
-            return packageRoot;
+        private File getFile() {
+            return file;
         }
 
     }

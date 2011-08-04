@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
-import org.eclipse.jdt.core.IPackageFragmentRoot;
+import java.io.File;
 
 public interface RemoteResolverJobFactory {
 
-    SearchManifestJob create(IPackageFragmentRoot packageRoot);
+    SearchManifestJob create(File file);
 }
