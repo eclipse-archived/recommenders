@@ -52,9 +52,6 @@ public class ScaleOneDimensionLayout extends Layout {
         final Rectangle bounds = composite.getClientArea();
         for (final Control child : children) {
             child.setBounds(bounds);
-           
-            final Point size = child.computeSize(bounds.width, SWT.DEFAULT, true);
-            System.out.println(bounds + " child size: " + size);
         }
     }
 }

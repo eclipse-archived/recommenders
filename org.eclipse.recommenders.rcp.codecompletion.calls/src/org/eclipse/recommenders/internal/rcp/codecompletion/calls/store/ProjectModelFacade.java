@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import java.io.File;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -64,7 +65,7 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
     private void readClasspathDependencies() {
         try {
             packageFragmentRoots = project.getAllPackageFragmentRoots();
-            fragmentResolver.resolve(packageFragmentRoots);
+            fragmentResolver.resolve(getLocations(packageFragmentRoots));
         } catch (final JavaModelException e) {
             Throws.throwUnhandledException(e, "Unable to resolve classpath dependencies for project %s", project);
         }
@@ -92,11 +93,12 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
                 return ModelArchive.NULL;
             }
             final IPackageFragmentRoot packageFragmentRoot = getPackageRoot(type);
-            if (dependencyStore.containsManifest(packageFragmentRoot)) {
-                final Manifest manifest = dependencyStore.getManifest(packageFragmentRoot);
+            final File file = getLocation(packageFragmentRoot);
+            if (dependencyStore.containsManifest(file)) {
+                final Manifest manifest = dependencyStore.getManifest(file);
                 final IModelArchive archive = archiveStore.getModelArchive(manifest);
                 if (archive == IModelArchive.NULL) {
-                    dependencyStore.invalidateManifest(packageFragmentRoot);
+                    dependencyStore.invalidateManifest(file);
                 }
                 return archive;
             } else {
@@ -105,6 +107,19 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
         } catch (final JavaModelException e) {
             throw Throws.throwUnhandledException(e, "Unable to load model for type name: %s", name);
         }
+    }
+
+    private File[] getLocations(final IPackageFragmentRoot[] packageRoots) {
+        final File[] result = new File[packageRoots.length];
+        for (int i = 0; i < packageRoots.length; i++) {
+            result[i] = getLocation(packageRoots[i]);
+        }
+        return result;
+    }
+
+    private File getLocation(final IPackageFragmentRoot packageRoot) {
+        final File location = packageRoot.getPath().toFile();
+        return location;
     }
 
     private IPackageFragmentRoot getPackageRoot(final IType type) {
