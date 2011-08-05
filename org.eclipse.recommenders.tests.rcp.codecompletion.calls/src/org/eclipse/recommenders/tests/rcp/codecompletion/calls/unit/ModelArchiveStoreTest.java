@@ -92,7 +92,7 @@ public class ModelArchiveStoreTest {
         }
     }
 
-    private static interface RenameVerificationMock {
+    public static interface RenameVerificationMock {
         void rename(File file);
     }
 }
