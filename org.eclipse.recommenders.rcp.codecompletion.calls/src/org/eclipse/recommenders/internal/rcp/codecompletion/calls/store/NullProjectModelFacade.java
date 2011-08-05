@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import java.io.File;
 import java.util.Set;
 
 import org.eclipse.recommenders.commons.utils.Throws;
@@ -38,6 +39,11 @@ public class NullProjectModelFacade implements IProjectModelFacade {
     @Override
     public Set<ITypeName> findTypesBySimpleName(final ITypeName receiverType) {
         return Sets.newHashSet();
+    }
+
+    @Override
+    public File[] getDependencyLocations() {
+        return new File[0];
     }
 
 }

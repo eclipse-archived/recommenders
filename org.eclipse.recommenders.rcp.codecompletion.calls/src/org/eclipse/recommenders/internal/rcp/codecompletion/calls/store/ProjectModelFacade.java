@@ -51,6 +51,7 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
     private final FragmentResolver fragmentResolver;
     private final ClasspathDependencyStore dependencyStore;
     private final ModelArchiveStore archiveStore;
+    private File[] dependencyLocations;
 
     @Inject
     public ProjectModelFacade(final ModelArchiveStore archiveStore, final FragmentResolver fragmentResolver,
@@ -66,10 +67,16 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
     private void readClasspathDependencies() {
         try {
             packageFragmentRoots = project.getAllPackageFragmentRoots();
-            fragmentResolver.resolve(getLocations(packageFragmentRoots));
+            dependencyLocations = getLocations(packageFragmentRoots);
+            fragmentResolver.resolve(dependencyLocations);
         } catch (final JavaModelException e) {
             Throws.throwUnhandledException(e, "Unable to resolve classpath dependencies for project %s", project);
         }
+    }
+
+    @Override
+    public File[] getDependencyLocations() {
+        return dependencyLocations;
     }
 
     @Override
