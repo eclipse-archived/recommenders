@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders Development Environment" sequenceNumber="1">
+<target name="Code Recommenders Development Environment" sequenceNumber="2">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtbot.forms.feature.group" version="2.0.4.20110304_0338-e5aff47-dev-e36"/>
@@ -36,7 +36,7 @@
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.bayes.feature.feature.group" version="0.2.0.v20110727-2134-b72"/>
+<unit id="org.eclipse.recommenders.bayes.feature.feature.group" version="0.2.0.v20110805-1315-b76"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/students/th/michael-bayes/org.eclipse.recommenders.bayes.repository/target/site/"/>
 </location>
 </locations>
