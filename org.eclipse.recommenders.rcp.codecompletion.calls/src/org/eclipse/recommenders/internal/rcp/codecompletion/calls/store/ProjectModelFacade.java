@@ -15,7 +15,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElement;
@@ -126,11 +126,12 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
     }
 
     private File getLocation(final IPackageFragmentRoot packageRoot) {
-        final IResource resource = packageRoot.getResource();
-        if (resource == null) {
-            return packageRoot.getPath().toFile();
+        final File dependencyFile = packageRoot.getPath().toFile();
+        if (dependencyFile.isAbsolute()) {
+            return dependencyFile;
         } else {
-            return resource.getLocation().toFile();
+            final File workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
+            return new File(workspace, dependencyFile.getPath());
         }
     }
 
