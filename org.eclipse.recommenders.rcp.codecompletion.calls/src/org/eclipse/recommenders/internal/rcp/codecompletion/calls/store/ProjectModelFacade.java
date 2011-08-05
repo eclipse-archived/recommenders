@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElement;
@@ -118,8 +119,12 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
     }
 
     private File getLocation(final IPackageFragmentRoot packageRoot) {
-        final File location = packageRoot.getPath().toFile();
-        return location;
+        final IResource resource = packageRoot.getResource();
+        if (resource == null) {
+            return packageRoot.getPath().toFile();
+        } else {
+            return resource.getLocation().toFile();
+        }
     }
 
     private IPackageFragmentRoot getPackageRoot(final IType type) {
