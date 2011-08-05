@@ -221,7 +221,7 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
         detailsSection.setLayout(new GridLayout(1, true));
 
         dependencyDetailsSection = new DependencyDetailsSection(this, detailsSection, dependencyStore, jobFactory);
-        modelDetailsSection = new ModelDetailsSection(this, detailsSection, dependencyStore);
+        modelDetailsSection = new ModelDetailsSection(this, detailsSection, dependencyStore, jobFactory);
         commandSection = new CommandSection(detailsSection, dependencyStore, jobFactory);
     }
 

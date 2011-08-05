@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences;
 
+import java.io.File;
 import java.util.List;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -37,6 +38,7 @@ public abstract class AbstractDependencySection {
     private final List<Text> texts = Lists.newLinkedList();
     private final List<Button> buttons = Lists.newLinkedList();
     private final PreferencePage preferencePage;
+    protected File file;
 
     public AbstractDependencySection(final PreferencePage preferencePage, final Composite parent, final String title) {
         this.preferencePage = preferencePage;
