@@ -35,21 +35,21 @@ public class ModelArchiveStoreTest {
     private static File storeLocation = new File("/test/store/location");
     private static File expectedDestinationFile = new File(storeLocation, manifest.getIdentifier() + ".zip")
             .getAbsoluteFile();
-    private File renameDestination;
 
     @Test
     public void testOffer() throws IOException {
         // setup:
-        final ModelArchiveStore sut = new MockModelArchiveStore(storeLocation);
+        final RenameVerificationMock renameVerificationMock = mock(RenameVerificationMock.class);
+        final ModelArchiveStore sut = new MockModelArchiveStore(storeLocation, renameVerificationMock);
         final File file = mockFile();
         final ModelArchive archive = mockArchive(file);
         // exercise:
         sut.register(archive);
         // verify:
-        final InOrder inOrder = inOrder(archive, file);
+        final InOrder inOrder = inOrder(archive, file, renameVerificationMock);
         inOrder.verify(archive).close();
+        inOrder.verify(renameVerificationMock).rename(expectedDestinationFile);
         inOrder.verify(archive).open();
-        assertEquals(expectedDestinationFile, renameDestination);
         assertEquals(archive, sut.getModelArchive(manifest));
     }
 
@@ -77,14 +77,22 @@ public class ModelArchiveStoreTest {
         return manifest;
     }
 
-    private class MockModelArchiveStore extends ModelArchiveStore {
-        public MockModelArchiveStore(final File modelArchivesLocation) {
+    private static class MockModelArchiveStore extends ModelArchiveStore {
+        private final RenameVerificationMock renameVerificationMock;
+
+        public MockModelArchiveStore(final File modelArchivesLocation,
+                final RenameVerificationMock renameVerificationMock) {
             super(modelArchivesLocation);
+            this.renameVerificationMock = renameVerificationMock;
         }
 
         @Override
         protected void move(final File source, final File destination) throws IOException {
-            renameDestination = destination;
+            renameVerificationMock.rename(destination);
         }
+    }
+
+    private static interface RenameVerificationMock {
+        void rename(File file);
     }
 }
