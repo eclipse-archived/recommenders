@@ -27,8 +27,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.InvalidRequestException;
-import org.eclipse.recommenders.commons.client.ServerCommunicationException;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
@@ -39,6 +37,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletio
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 import com.google.inject.assistedinject.Assisted;
+import com.sun.jersey.api.client.UniformInterfaceException;
 
 @SuppressWarnings("restriction")
 public class SearchManifestJob extends WorkspaceJob {
@@ -130,10 +129,8 @@ public class SearchManifestJob extends WorkspaceJob {
             IOUtils.closeQuietly(is);
             IOUtils.closeQuietly(fos);
             modelStore.register(temp);
-        } catch (final ServerCommunicationException e) {
-            RecommendersPlugin.logWarning(e, "Server unreachable");
-        } catch (final InvalidRequestException e) {
-            RecommendersPlugin.logError(e, "Exception while contacting server to search for matching Manifest");
+        } catch (final UniformInterfaceException e) {
+            RecommendersPlugin.logError(e, "Error while downloading model for manifest '%s'", manifest.getIdentifier());
         } catch (final IOException e) {
             throw Throws.throwUnhandledException(e);
         }
