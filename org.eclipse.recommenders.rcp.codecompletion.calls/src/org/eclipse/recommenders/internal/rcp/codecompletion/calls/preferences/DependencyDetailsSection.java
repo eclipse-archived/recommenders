@@ -12,30 +12,23 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences;
 
 import java.io.File;
 
-import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.utils.Version;
+import org.eclipse.recommenders.commons.utils.parser.VersionParserFactory;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.SearchManifestJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-public class DependencyDetailsSection {
+public class DependencyDetailsSection extends AbstractDependencySection {
 
     private final ClasspathDependencyStore dependencyStore;
     private Text nameText;
@@ -45,26 +38,18 @@ public class DependencyDetailsSection {
     private File file;
     private Button reresolveButton;
     private final RemoteResolverJobFactory jobFactory;
+    private Button saveButton;
 
-    public DependencyDetailsSection(final Composite parent, final ClasspathDependencyStore dependencyStore,
-            final RemoteResolverJobFactory jobFactory) {
+    public DependencyDetailsSection(final PreferencePage preferencePage, final Composite parent,
+            final ClasspathDependencyStore dependencyStore, final RemoteResolverJobFactory jobFactory) {
+        super(preferencePage, parent, "Dependency details");
+
         this.dependencyStore = dependencyStore;
         this.jobFactory = jobFactory;
-
-        final Composite group = createGroup(parent);
-        createDetails(group);
-        createButtons(group);
     }
 
-    private Composite createGroup(final Composite parent) {
-        final Group section = new Group(parent, SWT.NONE);
-        section.setText("Dependency details");
-        section.setLayout(new GridLayout(2, false));
-        section.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        return section;
-    }
-
-    private void createDetails(final Composite parent) {
+    @Override
+    protected void createDetailsContainer(final Composite parent) {
         createLabel(parent, "Name:");
         nameText = createText(parent, SWT.NONE | SWT.BORDER);
 
@@ -75,21 +60,18 @@ public class DependencyDetailsSection {
         fingerprintText = createText(parent, SWT.READ_ONLY);
     }
 
-    private void createButtons(final Composite group) {
-        final Composite container = new Composite(group, SWT.NONE);
-        container.setLayoutData(GridDataFactory.swtDefaults().span(2, 1).align(GridData.END, GridData.BEGINNING)
-                .create());
-        container.setLayout(new RowLayout());
+    @Override
+    protected void createButtons(final Composite container) {
+        reresolveButton = createButton(container, loadImage("/icons/obj16/refresh.gif"), createSelectionListener());
+        reresolveButton.setToolTipText("Automatically extract details");
 
-        reresolveButton = createButton(container, "Automatically extract details",
-                loadImage("/icons/obj16/refresh.gif"));
-        openDirectoryButton = createButton(container, "Open directory", PlatformUI.getWorkbench().getSharedImages()
-                .getImage(ISharedImages.IMG_OBJ_FOLDER));
-    }
+        openDirectoryButton = createButton(container, loadSharedImage(ISharedImages.IMG_OBJ_FOLDER),
+                createSelectionListener());
+        openDirectoryButton.setToolTipText("Open directory");
 
-    private Image loadImage(final String name) {
-        return AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.recommenders.rcp.codecompletion.calls", name)
-                .createImage();
+        saveButton = createButton(container, loadSharedImage(ISharedImages.IMG_ETOOL_SAVE_EDIT),
+                createSelectionListener());
+        saveButton.setToolTipText("Save details");
     }
 
     private SelectionListener createSelectionListener() {
@@ -98,13 +80,11 @@ public class DependencyDetailsSection {
             public void widgetSelected(final SelectionEvent e) {
                 if (file != null) {
                     if (e.getSource() == openDirectoryButton) {
-                        final File openFile = file.getParentFile();
-                        Program.launch(openFile.getAbsolutePath());
+                        openDirectory();
                     } else if (e.getSource() == reresolveButton) {
-                        dependencyStore.invalidateClasspathDependencyInfo(file);
-                        final SearchManifestJob job = jobFactory.create(file);
-                        job.schedule();
-                        reresolveButton.setEnabled(false);
+                        reresolveDependency();
+                    } else if (e.getSource() == saveButton) {
+                        save();
                     }
                 }
             }
@@ -115,43 +95,17 @@ public class DependencyDetailsSection {
         };
     }
 
-    private Button createButton(final Composite container, final String toolTip, final Image image) {
-        final Button button = new Button(container, SWT.PUSH);
-        button.setEnabled(false);
-        button.setImage(image);
-        button.setToolTipText(toolTip);
-        button.addSelectionListener(createSelectionListener());
-        return button;
-    }
-
-    private Label createLabel(final Composite parent, final String text) {
-        final Label label = new Label(parent, SWT.NONE);
-        label.setText(text);
-        return label;
-    }
-
-    private Text createText(final Composite parent, final int style) {
-        final Text text = new Text(parent, style);
-        text.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).hint(150, SWT.DEFAULT)
-                .align(GridData.FILL, GridData.BEGINNING).create());
-        return text;
-    }
-
     public void selectFile(final File file) {
         this.file = file;
         if (file == null || !dependencyStore.containsClasspathDependencyInfo(file)) {
-            nameText.setText("");
-            versionText.setText("");
-            fingerprintText.setText("");
-            openDirectoryButton.setEnabled(false);
-            reresolveButton.setEnabled(false);
+            resetTexts();
+            setButtonsEnabled(false);
         } else {
             final ClasspathDependencyInformation dependencyInfo = dependencyStore.getClasspathDependencyInfo(file);
             nameText.setText(dependencyInfo.symbolicName);
             versionText.setText(getVersionText(dependencyInfo.version));
             fingerprintText.setText(dependencyInfo.jarFileFingerprint);
-            openDirectoryButton.setEnabled(true);
-            reresolveButton.setEnabled(true);
+            setButtonsEnabled(true);
         }
     }
 
@@ -161,5 +115,62 @@ public class DependencyDetailsSection {
         } else {
             return version.toString();
         }
+    }
+
+    private void openDirectory() {
+        final File openFile = file.getParentFile();
+        Program.launch(openFile.getAbsolutePath());
+    }
+
+    private void reresolveDependency() {
+        dependencyStore.invalidateClasspathDependencyInfo(file);
+        scheduleResolvingJob();
+        reresolveButton.setEnabled(false);
+    }
+
+    private void scheduleResolvingJob() {
+        final SearchManifestJob job = jobFactory.create(file);
+        job.schedule();
+    }
+
+    @Override
+    protected void validate(final PreferencePage preferencePage) {
+        final String versionString = versionText.getText().trim();
+        try {
+            parseVersion(versionString);
+            preferencePage.setErrorMessage(null);
+            saveButton.setEnabled(true);
+        } catch (final RuntimeException e) {
+            preferencePage.setErrorMessage(String.format("Cannot parse '%s' as version.", versionString));
+            saveButton.setEnabled(false);
+        }
+    }
+
+    private void save() {
+        final ClasspathDependencyInformation dependencyInfo = dependencyStore.getClasspathDependencyInfo(file);
+        if (dependencyInfo != null) {
+            final String name = nameText.getText().trim();
+            final String versionString = versionText.getText().trim();
+            try {
+                final Version version = parseVersion(versionString);
+                dependencyInfo.symbolicName = name;
+                dependencyInfo.version = version;
+                dependencyStore.putClasspathDependencyInfo(file, dependencyInfo);
+                dependencyStore.invalidateManifest(file);
+                scheduleResolvingJob();
+                selectFile(file);
+            } catch (final RuntimeException e) {
+            }
+        }
+    }
+
+    private Version parseVersion(final String versionString) {
+        if (versionString.length() != 0) {
+            final Version version = VersionParserFactory.getCompatibleParser(versionString).parse(versionString);
+            if (version != null) {
+                return version;
+            }
+        }
+        return Version.UNKNOWN;
     }
 }

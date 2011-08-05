@@ -69,7 +69,6 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
 
     @Override
     public void init(final IWorkbench workbench) {
-
     }
 
     @Override
@@ -221,8 +220,8 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
         setGridData(detailsSection, MIN_WIDTH_DETAILS_SECTION);
         detailsSection.setLayout(new GridLayout(1, true));
 
-        dependencyDetailsSection = new DependencyDetailsSection(detailsSection, dependencyStore, jobFactory);
-        modelDetailsSection = new ModelDetailsSection(detailsSection, dependencyStore);
+        dependencyDetailsSection = new DependencyDetailsSection(this, detailsSection, dependencyStore, jobFactory);
+        modelDetailsSection = new ModelDetailsSection(this, detailsSection, dependencyStore);
         commandSection = new CommandSection(detailsSection, dependencyStore, jobFactory);
     }
 
