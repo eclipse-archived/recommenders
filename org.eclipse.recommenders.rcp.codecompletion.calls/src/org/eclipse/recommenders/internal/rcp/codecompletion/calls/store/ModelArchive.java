@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,6 +64,7 @@ public class ModelArchive implements IModelArchive {
     private void readManifest() {
         try {
             final ZipEntry manifestEntry = zipFile.getEntry(MANIFEST_FILENAME);
+            ensureIsNotNull(manifestEntry, "Archive '%s' does not contain manifest file.", file.getAbsolutePath());
             final InputStream inputStream = zipFile.getInputStream(manifestEntry);
             manifest = GsonUtil.deserialize(inputStream, Manifest.class);
         } catch (final IOException e) {

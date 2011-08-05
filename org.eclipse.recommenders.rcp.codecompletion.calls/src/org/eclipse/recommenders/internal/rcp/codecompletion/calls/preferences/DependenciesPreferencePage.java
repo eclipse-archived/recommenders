@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
 import org.eclipse.recommenders.rcp.utils.ScaleOneDimensionLayout;
 import org.eclipse.swt.SWT;
@@ -55,12 +56,14 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
     private ModelDetailsSection modelDetailsSection;
     private CommandSection commandSection;
     private final RemoteResolverJobFactory jobFactory;
+    private final ModelArchiveStore archiveStore;
 
     @Inject
     public DependenciesPreferencePage(final ClasspathDependencyStore dependencyStore,
-            final RemoteResolverJobFactory jobFactory) {
+            final RemoteResolverJobFactory jobFactory, final ModelArchiveStore archiveStore) {
         this.dependencyStore = dependencyStore;
         this.jobFactory = jobFactory;
+        this.archiveStore = archiveStore;
         noDefaultAndApplyButton();
         setDescription("All dependencies of your open and Recommenders enabled projects are listed below. "
                 + "Select an entry to edit the name and version of a dependency. "
@@ -221,7 +224,7 @@ public class DependenciesPreferencePage extends PreferencePage implements IWorkb
         detailsSection.setLayout(new GridLayout(1, true));
 
         dependencyDetailsSection = new DependencyDetailsSection(this, detailsSection, dependencyStore, jobFactory);
-        modelDetailsSection = new ModelDetailsSection(this, detailsSection, dependencyStore, jobFactory);
+        modelDetailsSection = new ModelDetailsSection(this, detailsSection, dependencyStore, archiveStore, jobFactory);
         commandSection = new CommandSection(detailsSection, dependencyStore, jobFactory);
     }
 

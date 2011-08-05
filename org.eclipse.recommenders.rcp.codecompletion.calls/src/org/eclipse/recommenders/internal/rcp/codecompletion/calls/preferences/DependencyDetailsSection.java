@@ -61,17 +61,15 @@ public class DependencyDetailsSection extends AbstractDependencySection {
     }
 
     @Override
-    protected void createButtons(final Composite container) {
-        reresolveButton = createButton(container, loadImage("/icons/obj16/refresh.gif"), createSelectionListener());
+    protected void createButtons(final Composite parent) {
+        reresolveButton = createButton(parent, loadImage("/icons/obj16/refresh.gif"), createSelectionListener());
         reresolveButton.setToolTipText("Automatically extract details");
 
-        openDirectoryButton = createButton(container, loadSharedImage(ISharedImages.IMG_OBJ_FOLDER),
-                createSelectionListener());
-        openDirectoryButton.setToolTipText("Open directory");
-
-        saveButton = createButton(container, loadSharedImage(ISharedImages.IMG_ETOOL_SAVE_EDIT),
-                createSelectionListener());
+        saveButton = createButton(parent, loadSharedImage(ISharedImages.IMG_ETOOL_SAVE_EDIT), createSelectionListener());
         saveButton.setToolTipText("Save details");
+
+        openDirectoryButton = createButton(parent, loadImage("/icons/obj16/goto_folder.gif"), createSelectionListener());
+        openDirectoryButton.setToolTipText("Open directory");
     }
 
     private SelectionListener createSelectionListener() {
