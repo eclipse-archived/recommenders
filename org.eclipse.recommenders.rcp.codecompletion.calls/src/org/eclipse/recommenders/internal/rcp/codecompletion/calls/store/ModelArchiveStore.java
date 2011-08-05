@@ -71,8 +71,13 @@ public class ModelArchiveStore implements IModelArchiveStore {
     private void moveArchive(final ModelArchive archive, final File destination) throws IOException {
         archive.close();
         final File source = archive.getFile();
-        FileUtils.moveFile(source, destination);
+        move(source, destination);
         archive.setFile(destination);
         archive.open();
     }
+
+    protected void move(final File source, final File destination) throws IOException {
+        FileUtils.moveFile(source, destination);
+    }
+
 }

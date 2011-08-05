@@ -35,12 +35,12 @@ public class ModelArchiveStoreTest {
     private static File storeLocation = new File("/test/store/location");
     private static File expectedDestinationFile = new File(storeLocation, manifest.getIdentifier() + ".zip")
             .getAbsoluteFile();
+    private File renameDestination;
 
     @Test
     public void testOffer() throws IOException {
         // setup:
-
-        final ModelArchiveStore sut = new ModelArchiveStore(storeLocation);
+        final ModelArchiveStore sut = new MockModelArchiveStore(storeLocation);
         final File file = mockFile();
         final ModelArchive archive = mockArchive(file);
         // exercise:
@@ -48,8 +48,8 @@ public class ModelArchiveStoreTest {
         // verify:
         final InOrder inOrder = inOrder(archive, file);
         inOrder.verify(archive).close();
-        inOrder.verify(file).renameTo(expectedDestinationFile);
         inOrder.verify(archive).open();
+        assertEquals(expectedDestinationFile, renameDestination);
         assertEquals(archive, sut.getModelArchive(manifest));
     }
 
@@ -75,5 +75,16 @@ public class ModelArchiveStoreTest {
         final GregorianCalendar calendar = new GregorianCalendar(2011, 5, 12, 12, 30);
         final Manifest manifest = new Manifest("org.eclipse.test", range, calendar.getTime());
         return manifest;
+    }
+
+    private class MockModelArchiveStore extends ModelArchiveStore {
+        public MockModelArchiveStore(final File modelArchivesLocation) {
+            super(modelArchivesLocation);
+        }
+
+        @Override
+        protected void move(final File source, final File destination) throws IOException {
+            renameDestination = destination;
+        }
     }
 }
