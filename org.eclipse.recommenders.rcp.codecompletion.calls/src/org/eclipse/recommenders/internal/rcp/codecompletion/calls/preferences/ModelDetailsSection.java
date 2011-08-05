@@ -12,11 +12,13 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ManifestResolvementInformation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchive;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
@@ -43,6 +45,8 @@ public class ModelDetailsSection extends AbstractDependencySection {
     private Button selectModelButton;
     private final PreferencePage preferencePage;
     private final ModelArchiveStore archiveStore;
+    private Text resolvedTimestampText;
+    private Text resolvingStrategyText;
 
     public ModelDetailsSection(final PreferencePage preferencePage, final Composite parent,
             final ClasspathDependencyStore dependencyStore, final ModelArchiveStore archiveStore,
@@ -64,6 +68,14 @@ public class ModelDetailsSection extends AbstractDependencySection {
 
         createLabel(parent, "Built at:");
         timestampText = createText(parent, SWT.READ_ONLY);
+
+        createLabel(parent, "Resolved at:");
+        resolvedTimestampText = createText(parent, SWT.READ_ONLY);
+
+        createLabel(parent, "Resolving strategy:");
+        resolvingStrategyText = createText(parent, SWT.READ_ONLY);
+        resolvingStrategyText
+                .setToolTipText("Use reresolve model button for automatic resolvement or select a model file on your own.");
     }
 
     @Override
@@ -82,12 +94,19 @@ public class ModelDetailsSection extends AbstractDependencySection {
             resetTexts();
             setButtonsEnabled(false);
         } else {
-            final Manifest manifest = dependencyStore.getManifest(file);
+            final ManifestResolvementInformation resolvementInfo = dependencyStore.getManifestResolvementInfo(file);
+            final Manifest manifest = resolvementInfo.getManifest();
             nameText.setText(manifest.getName());
             versionsText.setText(manifest.getVersionRange().toString());
-            timestampText.setText(DateFormat.getInstance().format(manifest.getTimestamp()));
+            timestampText.setText(formatDate(manifest.getTimestamp()));
+            resolvedTimestampText.setText(formatDate(resolvementInfo.getResolvingTimestamp()));
+            resolvingStrategyText.setText(resolvementInfo.isResolvedManual() ? "manual" : "automatic");
             setButtonsEnabled(true);
         }
+    }
+
+    private String formatDate(final Date date) {
+        return DateFormat.getInstance().format(date);
     }
 
     private SelectionListener createSelectionListener() {
@@ -137,7 +156,7 @@ public class ModelDetailsSection extends AbstractDependencySection {
             final ModelArchive modelArchive = new ModelArchive(temp);
             final Manifest manifest = modelArchive.getManifest();
             archiveStore.register(modelArchive);
-            dependencyStore.putManifest(file, manifest);
+            dependencyStore.putManifest(file, manifest, true);
         } catch (final Exception e) {
             preferencePage.setErrorMessage("Selected file could not be used as model.");
             RecommendersPlugin.logError(e, "Selected file could not be used as model.");

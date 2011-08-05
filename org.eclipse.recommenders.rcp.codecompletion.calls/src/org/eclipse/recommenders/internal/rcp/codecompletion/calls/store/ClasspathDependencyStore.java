@@ -37,7 +37,7 @@ public class ClasspathDependencyStore {
     private final File manifestIdFile;
 
     private final Map<File, ClasspathDependencyInformation> resource2dependencyInfo = Maps.newConcurrentMap();
-    private final Map<File, Manifest> resource2manifestId = Maps.newConcurrentMap();
+    private final Map<File, ManifestResolvementInformation> resource2manifestInfo = Maps.newConcurrentMap();
 
     @Inject
     public ClasspathDependencyStore(@ClasspathDependencyStoreLocation final File persistanceLocation) {
@@ -51,8 +51,9 @@ public class ClasspathDependencyStore {
         initializeMap(dependencyInfoFile, resource2dependencyInfo,
                 new TypeToken<Map<File, ClasspathDependencyInformation>>() {
                 });
-        initializeMap(manifestIdFile, resource2manifestId, new TypeToken<Map<File, Manifest>>() {
-        });
+        initializeMap(manifestIdFile, resource2manifestInfo,
+                new TypeToken<Map<File, ManifestResolvementInformation>>() {
+                });
     }
 
     private <T> void initializeMap(final File f, final Map<File, T> map, final TypeToken<?> token) {
@@ -67,7 +68,7 @@ public class ClasspathDependencyStore {
                 "ClasspathDependencyStore was initialized as in memory index. Storing not allowed!");
         persistanceLocation.mkdirs();
         GsonUtil.serialize(resource2dependencyInfo, dependencyInfoFile);
-        GsonUtil.serialize(resource2manifestId, manifestIdFile);
+        GsonUtil.serialize(resource2manifestInfo, manifestIdFile);
     }
 
     public boolean containsClasspathDependencyInfo(final File file) {
@@ -86,23 +87,27 @@ public class ClasspathDependencyStore {
 
     public boolean containsManifest(final File file) {
         if (containsClasspathDependencyInfo(file)) {
-            return resource2manifestId.containsKey(file);
+            return resource2manifestInfo.containsKey(file);
         } else {
-            resource2manifestId.remove(file);
+            resource2manifestInfo.remove(file);
             return false;
         }
     }
 
     public ClasspathDependencyInformation getClasspathDependencyInfo(final File file) {
         ensureIsTrue(containsClasspathDependencyInfo(file),
-                "PackageRoot not contained  in mapping. Call containsClasspathDependencyInfo() before getClasspathDependencyInfo().");
+                "File not contained in mapping. Call containsClasspathDependencyInfo() before getClasspathDependencyInfo().");
         return resource2dependencyInfo.get(file);
     }
 
     public Manifest getManifest(final File file) {
+        return getManifestResolvementInfo(file).getManifest();
+    }
+
+    public ManifestResolvementInformation getManifestResolvementInfo(final File file) {
         ensureIsTrue(containsManifest(file),
-                "PackageRoot not contained  in mapping. Call containsManifestIdentifier() before getManifestIdentifier().");
-        return resource2manifestId.get(file);
+                "File not contained in mapping. Call containsManifestIdentifier() before getManifestResolvementInfo().");
+        return resource2manifestInfo.get(file);
     }
 
     public void putClasspathDependencyInfo(final File file, final ClasspathDependencyInformation dependencyInformation) {
@@ -110,7 +115,13 @@ public class ClasspathDependencyStore {
     }
 
     public void putManifest(final File file, final Manifest manifest) {
-        resource2manifestId.put(file, manifest);
+        putManifest(file, manifest, false);
+    }
+
+    public void putManifest(final File file, final Manifest manifest, final boolean manualResolved) {
+        final ManifestResolvementInformation resolvementInfo = new ManifestResolvementInformation(manifest,
+                manualResolved);
+        resource2manifestInfo.put(file, resolvementInfo);
     }
 
     public void invalidateClasspathDependencyInfo(final File file) {
@@ -119,7 +130,7 @@ public class ClasspathDependencyStore {
     }
 
     public void invalidateManifest(final File file) {
-        resource2manifestId.remove(file);
+        resource2manifestInfo.remove(file);
     }
 
     private boolean isFileChanged(final File file, final ClasspathDependencyInformation dependencyInformation) {

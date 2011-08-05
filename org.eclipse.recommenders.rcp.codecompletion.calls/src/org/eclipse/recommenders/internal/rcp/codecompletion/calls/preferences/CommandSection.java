@@ -103,6 +103,11 @@ public class CommandSection {
         public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
             final Set<File> files = dependencyStore.getFiles();
             for (final File file : files) {
+                if (dependencyStore.containsManifest(file)
+                        && dependencyStore.getManifestResolvementInfo(file).isResolvedManual()) {
+                    continue;
+                }
+
                 dependencyStore.invalidateClasspathDependencyInfo(file);
                 final SearchManifestJob job = jobFactory.create(file);
                 job.schedule();
