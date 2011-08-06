@@ -16,7 +16,8 @@ public final class VariableResolverTest {
 
     @Test
     public void testResolveTypeSignatureFromVariable() {
-
+        // final ITypeName name =
+        // VariableResolver.resolveTypeSignature(TestTypeUtils.getDefaultVariable());
     }
 
     @Test

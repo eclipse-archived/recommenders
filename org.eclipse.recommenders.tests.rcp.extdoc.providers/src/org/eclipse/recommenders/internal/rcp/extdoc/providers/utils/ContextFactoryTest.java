@@ -31,8 +31,8 @@ public final class ContextFactoryTest {
     public void testcreateThisVariableContext() {
         final MockedIntelligentCompletionContext context = ContextFactory.createThisVariableContext(selection,
                 TestTypeUtils.getDefaultJavaMethod());
-        // Assert.assertNotNull(context.getEnclosingMethod());
-        // Assert.assertNotNull(context.getEnclosingMethodsFirstDeclaration());
+        Assert.assertNotNull(context.getEnclosingMethod());
+        Assert.assertNotNull(context.getEnclosingMethodsFirstDeclaration());
         Assert.assertTrue(context.getVariable().isThis());
     }
 

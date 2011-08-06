@@ -15,7 +15,6 @@ import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledExcept
 
 import java.util.HashSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -44,6 +43,7 @@ import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
 public class JavaElementResolver {
@@ -222,6 +222,7 @@ public class JavaElementResolver {
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
             } catch (final Exception e) {
+                e.printStackTrace();
                 RecommendersUtilsPlugin.logError(e, "failed to resolve jdt method '%s'.", jdtMethod);
                 return null;
             }
