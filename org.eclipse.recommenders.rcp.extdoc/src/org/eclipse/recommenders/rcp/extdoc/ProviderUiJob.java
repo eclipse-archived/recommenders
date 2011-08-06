@@ -24,7 +24,10 @@ public abstract class ProviderUiJob extends UIJob {
 
     @Override
     public final IStatus runInUIThread(final IProgressMonitor monitor) {
-        run().layout(true);
+        final Composite composite = run();
+        if (!composite.isDisposed()) {
+            composite.getParent().layout(true, true);
+        }
         return Status.OK_STATUS;
     }
 

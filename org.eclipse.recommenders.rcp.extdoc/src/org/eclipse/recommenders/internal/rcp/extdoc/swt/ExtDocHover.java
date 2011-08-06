@@ -10,53 +10,61 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
-import org.eclipse.jdt.internal.ui.text.JavaWordFinder;
-import org.eclipse.jdt.ui.text.java.hover.IJavaEditorTextHover;
+import org.eclipse.jdt.internal.ui.text.java.hover.AbstractJavaEditorTextHover;
+import org.eclipse.jdt.internal.ui.text.java.hover.ProblemHover;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IInformationControlExtension2;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextHoverExtension;
-import org.eclipse.jface.text.ITextHoverExtension2;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementSelectionResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IViewSite;
 
 import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
-public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtension, ITextHoverExtension2 {
+public final class ExtDocHover extends AbstractJavaEditorTextHover {
 
-    private final IViewSite viewSite;
+    private final ExtDocView view;
     private final ProviderStore providerStore;
 
-    private IEditorPart editor;
+    // TODO: Currently this seems to be the only way to avoid problem hovers to
+    // be overriden by the ExtDoc hover.
+    private final ProblemHover problemHover = new ProblemHover();
+    private boolean isProblemHoverActive;
 
     private final IInformationControlCreator creator = new IInformationControlCreator() {
         @Override
         public IInformationControl createInformationControl(final Shell parent) {
-            return new InformationControl(parent, null, null);
+            return new InformationControl(parent);
         }
     };
 
     @Inject
     ExtDocHover(final ExtDocView view, final ProviderStore providerStore) {
-        viewSite = view.getViewSite();
+        this.view = view;
         this.providerStore = providerStore;
     }
 
@@ -67,34 +75,25 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
 
     @Override
     public Object getHoverInfo2(final ITextViewer textViewer, final IRegion hoverRegion) {
-        return JavaElementSelectionResolver.resolveFromEditor((JavaEditor) editor, hoverRegion.getOffset());
-    }
-
-    @Override
-    public IRegion getHoverRegion(final ITextViewer textViewer, final int offset) {
-        return JavaWordFinder.findWord(textViewer.getDocument(), offset);
-    }
-
-    @Override
-    public void setEditor(final IEditorPart editor) {
-        this.editor = editor;
+        final Object problemInfo = problemHover.getHoverInfo2(textViewer, hoverRegion);
+        isProblemHoverActive = problemInfo != null;
+        return isProblemHoverActive ? problemInfo : JavaElementSelectionResolver.resolveFromEditor(
+                (JavaEditor) getEditor(), hoverRegion.getOffset());
     }
 
     @Override
     public IInformationControlCreator getHoverControlCreator() {
-        return creator;
+        return isProblemHoverActive ? problemHover.getHoverControlCreator() : creator;
     }
 
     private final class InformationControl extends AbstractInformationControl implements IInformationControlExtension2 {
 
         private ProvidersComposite composite;
         private IJavaElementSelection lastSelection;
+        private final Map<Composite, IAction> actions = new HashMap<Composite, IAction>();
 
-        public InformationControl(final Shell parentShell, final ProvidersComposite composite,
-                final IJavaElementSelection lastSelection) {
-            super(parentShell, new ToolBarManager());
-            // this.composite = composite;
-            // this.lastSelection = lastSelection;
+        public InformationControl(final Shell parentShell) {
+            super(parentShell, new ToolBarManager(SWT.FLAT));
             create();
         }
 
@@ -105,29 +104,41 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
 
         @Override
         protected void createContent(final Composite parent) {
-            if (composite == null) {
-                composite = new ProvidersComposite(parent, false);
-                for (final IProvider provider : providerStore.getProviders()) {
-                    composite.addProvider(provider, viewSite);
-                }
-            } else {
-                composite.setParent(parent);
+            composite = new ProvidersComposite(parent, false);
+            final ToolBarManager toolbar = getToolBarManager();
+            for (final IProvider provider : providerStore.getProviders()) {
+                final Composite providerComposite = composite.addProvider(provider, view.getViewSite());
+                final IAction action = new AbstractAction("Scroll to " + provider.getProviderFullName(),
+                        provider.getIcon()) {
+                    @Override
+                    public void run() {
+                        composite.scrollToProvider(providerComposite);
+                    }
+                };
+                toolbar.add(action);
+                actions.put(providerComposite, action);
             }
+            toolbar.add(new AbstractAction("Show in ExtDoc View", ExtDocPlugin.getIcon("eview16/extdoc.png")) {
+                @Override
+                public void run() {
+                    view.selectionChanged(getLastSelection());
+                }
+            });
+            toolbar.update(true);
         }
 
         @Override
         public void setInput(final Object input) {
             final IJavaElementSelection selection = (IJavaElementSelection) input;
-            if (!selection.equals(lastSelection)) {
-                updateProviders(selection);
-                lastSelection = selection;
-            }
+            lastSelection = selection;
+            updateProviders(selection);
         }
 
         private void updateProviders(final IJavaElementSelection selection) {
             for (final Composite control : composite.getProviders()) {
                 final IProvider provider = (IProvider) control.getData();
                 ((GridData) control.getLayoutData()).exclude = true;
+                actions.get(control).setEnabled(false);
                 new Job("Updating Hover Provider") {
                     @Override
                     public IStatus run(final IProgressMonitor monitor) {
@@ -135,8 +146,10 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
                             new ProviderUiJob() {
                                 @Override
                                 public Composite run() {
-                                    ((GridData) control.getLayoutData()).exclude = false;
-                                    control.getParent().layout(true);
+                                    if (!control.isDisposed()) {
+                                        ((GridData) control.getLayoutData()).exclude = false;
+                                        actions.get(control).setEnabled(true);
+                                    }
                                     return control;
                                 }
                             }.schedule();
@@ -149,13 +162,20 @@ public final class ExtDocHover implements IJavaEditorTextHover, ITextHoverExtens
 
         @Override
         public IInformationControlCreator getInformationPresenterControlCreator() {
-            return new IInformationControlCreator() {
-                @Override
-                public IInformationControl createInformationControl(final Shell parent) {
-                    return new InformationControl(parent, composite, lastSelection);
-                }
-            };
+            return creator;
         }
+
+        private IJavaElementSelection getLastSelection() {
+            return lastSelection;
+        }
+    }
+
+    private abstract class AbstractAction extends Action {
+
+        public AbstractAction(final String text, final Image icon) {
+            super(text, ImageDescriptor.createFromImage(icon));
+        }
+
     }
 
 }

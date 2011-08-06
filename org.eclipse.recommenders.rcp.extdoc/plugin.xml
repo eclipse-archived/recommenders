@@ -29,9 +29,8 @@
      <extension
            point="org.eclipse.jdt.ui.javaEditorTextHovers">
         <hover
-              activate="true"
               class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocHover"
-              id="org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocHove">
+              id="org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocHover">
         </hover>
      </extension>
 	<extension

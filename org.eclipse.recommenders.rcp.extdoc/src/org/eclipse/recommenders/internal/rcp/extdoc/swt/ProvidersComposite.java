@@ -96,4 +96,8 @@ final class ProvidersComposite extends Composite {
         scrolled.setOrigin(0, 0);
     }
 
+    public void scrollToProvider(final Composite providerComposite) {
+        scrolled.setOrigin(providerComposite.getLocation());
+    }
+
 }

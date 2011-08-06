@@ -37,6 +37,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 
+import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
 public final class SubclassingProvider extends AbstractProviderComposite {
@@ -105,6 +106,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
     }
 
     private boolean displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration) {
+        Preconditions.checkNotNull(firstDeclaration);
         // TODO first is not correct in all cases. this needs to be fixed soon
         // after the demo
         final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(firstDeclaration);
