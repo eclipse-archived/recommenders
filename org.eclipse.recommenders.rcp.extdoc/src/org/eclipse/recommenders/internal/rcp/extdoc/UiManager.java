@@ -10,8 +10,10 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocCodeAssistantHover;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
@@ -21,17 +23,20 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.google.inject.Inject;
 
+@SuppressWarnings("restriction")
 public final class UiManager implements IExtendedSelectionListener {
 
     private static ExtDocView extDocView;
     private static boolean isViewVisible = true;
     private static IJavaElementSelection lastSelection;
 
+    private final ProviderStore providerStore;
     private boolean hasViewListener;
 
     @Inject
-    UiManager(final ExtDocView extDocView) {
+    UiManager(final ExtDocView extDocView, final ProviderStore providerStore) {
         UiManager.extDocView = extDocView;
+        this.providerStore = providerStore;
     }
 
     @Override
@@ -63,6 +68,15 @@ public final class UiManager implements IExtendedSelectionListener {
 
     public IViewSite getViewSite() {
         return extDocView.getViewSite();
+    }
+
+    public IJavaElementSelection getLastSelection() {
+        return lastSelection;
+    }
+
+    @Override
+    public void javaEditorCreated(final JavaEditor editor) {
+        ExtDocCodeAssistantHover.install(editor, this, providerStore);
     }
 
     private static final class ViewListener implements IPartListener2 {

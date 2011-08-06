@@ -44,4 +44,6 @@ public interface IJavaElementSelection {
 
     IEditorPart getEditor();
 
+    IJavaElementSelection copy(IJavaElement element);
+
 }

@@ -95,4 +95,9 @@ public class TestJavaElementSelection implements IJavaElementSelection {
         return editorPart;
     }
 
+    @Override
+    public IJavaElementSelection copy(final IJavaElement element) {
+        return null;
+    }
+
 }

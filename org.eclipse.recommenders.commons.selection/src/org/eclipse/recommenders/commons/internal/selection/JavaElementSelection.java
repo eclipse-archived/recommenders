@@ -101,6 +101,11 @@ public final class JavaElementSelection implements IJavaElementSelection {
     }
 
     @Override
+    public IJavaElementSelection copy(final IJavaElement element) {
+        return new JavaElementSelection(element, invocationOffset, editor);
+    }
+
+    @Override
     public boolean equals(final Object object) {
         if (!(object instanceof IJavaElementSelection)) {
             return false;

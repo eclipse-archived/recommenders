@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
@@ -38,10 +41,9 @@ import org.apache.commons.lang3.StringUtils;
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends AbstractTitledProvider {
 
-    // TODO: javadoc and feedback have to be mapped through composite
-    private ExtendedJavadocView javadoc;
     private final GenericServer server;
-    private Composite feedbackComposite;
+    private final Map<Composite, ExtendedJavadocView> javadocs = new HashMap<Composite, ExtendedJavadocView>();
+    private final Map<Composite, Composite> feedbackComposites = new HashMap<Composite, Composite>();
 
     @Inject
     public JavadocProvider(final GenericServer server) {
@@ -51,8 +53,9 @@ public final class JavadocProvider extends AbstractTitledProvider {
     @Override
     protected Composite createContentComposite(final Composite parent) {
         final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
-        javadoc = new ExtendedJavadocView(composite, getViewSite());
-        feedbackComposite = SwtFactory.createGridComposite(parent, 2, 0, 0, 0, 0);
+        final ExtendedJavadocView javadoc = new ExtendedJavadocView(composite, getViewSite());
+        javadocs.put(composite, javadoc);
+        feedbackComposites.put(composite, SwtFactory.createGridComposite(parent, 2, 0, 0, 0, 0));
 
         if (javadoc.getControl() instanceof Browser) {
             new BrowserSizeWorkaround((Browser) javadoc.getControl());
@@ -68,7 +71,7 @@ public final class JavadocProvider extends AbstractTitledProvider {
                 return false;
             }
             selection.getJavaElement().getAttachedJavadoc(null);
-            javadoc.setInput(javaElement);
+            javadocs.get(composite).setInput(javaElement);
             displayComments(selection.getJavaElement(), composite);
             return true;
         } catch (final JavaModelException e) {
@@ -95,6 +98,7 @@ public final class JavadocProvider extends AbstractTitledProvider {
             @Override
             public Composite run() {
                 if (!composite.isDisposed()) {
+                    final Composite feedbackComposite = feedbackComposites.get(composite);
                     disposeChildren(feedbackComposite);
                     if (features != null) {
                         features.loadCommentsComposite(feedbackComposite);

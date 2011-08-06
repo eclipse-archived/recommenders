@@ -66,11 +66,17 @@ final class InternalSelectionListener implements ISelectionListener {
         }
     }
 
+    protected void javaEditorCreated(final JavaEditor editor) {
+        for (final IExtendedSelectionListener externalListener : externalListeners) {
+            externalListener.javaEditorCreated(editor);
+        }
+    }
+
     /**
      * @param listener
      *            External listener to be notified about element selection.
      */
-    public void addExternalListener(final IExtendedSelectionListener listener) {
+    protected void addExternalListener(final IExtendedSelectionListener listener) {
         externalListeners.add(listener);
     }
 }

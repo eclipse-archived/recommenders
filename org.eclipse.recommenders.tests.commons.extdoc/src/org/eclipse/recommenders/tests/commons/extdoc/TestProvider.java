@@ -37,7 +37,9 @@ public final class TestProvider extends AbstractTitledProvider {
         new ProviderUiJob() {
             @Override
             public Composite run() {
-                text.setText(context.toString());
+                if (!text.isDisposed()) {
+                    text.setText(context.toString());
+                }
                 return composite;
             }
         }.schedule();

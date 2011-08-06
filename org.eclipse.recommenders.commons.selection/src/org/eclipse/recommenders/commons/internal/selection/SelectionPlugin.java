@@ -27,6 +27,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
+
 import org.osgi.framework.BundleContext;
 
 /**
@@ -74,13 +75,13 @@ public final class SelectionPlugin extends AbstractUIPlugin {
         }
 
         SelectionPlugin.internalListener = new InternalSelectionListener();
+        loadExternalListeners();
         SelectionPlugin.partListener = new PartListener(internalListener);
         workbenchWindow.getSelectionService().addPostSelectionListener(internalListener);
 
         SelectionPlugin.page = workbenchWindow.getActivePage();
         addListenersForExistentEditors(page);
         page.addPartListener(partListener);
-        loadExternalListeners();
 
         if (page.getSelection() != null) {
             internalListener.update(page.getActivePart(), page.getSelection());
