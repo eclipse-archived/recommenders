@@ -39,16 +39,16 @@ public class ModelArchiveStoreTest {
     @Test
     public void testOffer() throws IOException {
         // setup:
-
-        final ModelArchiveStore sut = new ModelArchiveStore(storeLocation);
+        final RenameVerificationMock renameVerificationMock = mock(RenameVerificationMock.class);
+        final ModelArchiveStore sut = new MockModelArchiveStore(storeLocation, renameVerificationMock);
         final File file = mockFile();
         final ModelArchive archive = mockArchive(file);
         // exercise:
         sut.register(archive);
         // verify:
-        final InOrder inOrder = inOrder(archive, file);
+        final InOrder inOrder = inOrder(archive, file, renameVerificationMock);
         inOrder.verify(archive).close();
-        inOrder.verify(file).renameTo(expectedDestinationFile);
+        inOrder.verify(renameVerificationMock).rename(expectedDestinationFile);
         inOrder.verify(archive).open();
         assertEquals(archive, sut.getModelArchive(manifest));
     }
@@ -75,5 +75,24 @@ public class ModelArchiveStoreTest {
         final GregorianCalendar calendar = new GregorianCalendar(2011, 5, 12, 12, 30);
         final Manifest manifest = new Manifest("org.eclipse.test", range, calendar.getTime());
         return manifest;
+    }
+
+    private static class MockModelArchiveStore extends ModelArchiveStore {
+        private final RenameVerificationMock renameVerificationMock;
+
+        public MockModelArchiveStore(final File modelArchivesLocation,
+                final RenameVerificationMock renameVerificationMock) {
+            super(modelArchivesLocation);
+            this.renameVerificationMock = renameVerificationMock;
+        }
+
+        @Override
+        protected void move(final File source, final File destination) throws IOException {
+            renameVerificationMock.rename(destination);
+        }
+    }
+
+    public static interface RenameVerificationMock {
+        void rename(File file);
     }
 }

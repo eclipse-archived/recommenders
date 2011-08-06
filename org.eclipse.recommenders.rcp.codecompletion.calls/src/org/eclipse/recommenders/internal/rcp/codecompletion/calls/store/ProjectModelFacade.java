@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElement;
@@ -50,6 +51,7 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
     private final FragmentResolver fragmentResolver;
     private final ClasspathDependencyStore dependencyStore;
     private final ModelArchiveStore archiveStore;
+    private File[] dependencyLocations;
 
     @Inject
     public ProjectModelFacade(final ModelArchiveStore archiveStore, final FragmentResolver fragmentResolver,
@@ -65,10 +67,16 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
     private void readClasspathDependencies() {
         try {
             packageFragmentRoots = project.getAllPackageFragmentRoots();
-            fragmentResolver.resolve(getLocations(packageFragmentRoots));
+            dependencyLocations = getLocations(packageFragmentRoots);
+            fragmentResolver.resolve(dependencyLocations);
         } catch (final JavaModelException e) {
             Throws.throwUnhandledException(e, "Unable to resolve classpath dependencies for project %s", project);
         }
+    }
+
+    @Override
+    public File[] getDependencyLocations() {
+        return dependencyLocations;
     }
 
     @Override
@@ -118,8 +126,13 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
     }
 
     private File getLocation(final IPackageFragmentRoot packageRoot) {
-        final File location = packageRoot.getPath().toFile();
-        return location;
+        final File dependencyFile = packageRoot.getPath().toFile();
+        if (dependencyFile.isAbsolute()) {
+            return dependencyFile;
+        } else {
+            final File workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
+            return new File(workspace, dependencyFile.getPath());
+        }
     }
 
     private IPackageFragmentRoot getPackageRoot(final IType type) {

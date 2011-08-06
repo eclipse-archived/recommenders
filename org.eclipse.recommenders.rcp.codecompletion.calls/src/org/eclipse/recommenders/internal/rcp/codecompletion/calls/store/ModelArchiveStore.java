@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.recommenders.commons.udc.Manifest;
 
 import com.google.common.collect.Maps;
@@ -70,12 +71,13 @@ public class ModelArchiveStore implements IModelArchiveStore {
     private void moveArchive(final ModelArchive archive, final File destination) throws IOException {
         archive.close();
         final File source = archive.getFile();
-        final boolean successfullyMoved = source.renameTo(destination);
-        if (!successfullyMoved) {
-            throw new IOException(String.format("Unable to move ModelArchive file from '%s' to '%s'",
-                    source.getAbsolutePath(), destination.getAbsolutePath()));
-        }
+        move(source, destination);
         archive.setFile(destination);
         archive.open();
     }
+
+    protected void move(final File source, final File destination) throws IOException {
+        FileUtils.moveFile(source, destination);
+    }
+
 }

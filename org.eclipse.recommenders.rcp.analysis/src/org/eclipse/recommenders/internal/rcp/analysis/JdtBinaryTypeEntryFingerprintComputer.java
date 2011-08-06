@@ -19,7 +19,6 @@ import org.eclipse.recommenders.commons.utils.Fingerprints;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IDependencyFingerprintComputer;
 
 import com.google.common.collect.Maps;
-import com.ibm.wala.classLoader.ArrayClass;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.ModuleEntry;
 import com.ibm.wala.classLoader.ShrikeClass;
@@ -29,9 +28,12 @@ public class JdtBinaryTypeEntryFingerprintComputer implements IDependencyFingerp
     Map<File, String/* fingerprint */> fingerprints = Maps.newHashMap();
 
     @Override
-    public String computeContainerFingerprint(IClass clazz) {
+    public String computeContainerFingerprint(final IClass clazz) {
         if (clazz.isArrayClass()) {
-            clazz = ((ArrayClass) clazz).getElementClass();
+            // clazz = ((ArrayClass) clazz).getElementClass();
+            // if(clazz == null)
+            return null; // We do not learn for arrays, so we do not need the
+                         // fingerprint
         }
 
         final ShrikeClass shrikeClazz = ensureIsInstanceOf(clazz, ShrikeClass.class);

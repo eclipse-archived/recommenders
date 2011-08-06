@@ -122,6 +122,7 @@ public class Checks {
     @SuppressWarnings("unchecked")
     public static <T> T ensureIsInstanceOf(final Object obj, final Class<T> clazz) {
         ensureIsNotNull(clazz);
+        ensureIsNotNull(obj, "null is not an instance of type '%s'", clazz.getName());
         final boolean instanceOf = clazz.isInstance(obj);
         if (!instanceOf) {
             throwIllegalArgumentException("object of type '%s' is not a (sub-)type of '%s'", obj.getClass().getName(),

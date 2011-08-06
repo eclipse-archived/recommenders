@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import java.io.File;
 import java.util.Set;
 
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -26,5 +27,7 @@ public interface IProjectModelFacade {
     public abstract void releaseModel(final IObjectMethodCallsNet model);
 
     public abstract Set<ITypeName> findTypesBySimpleName(final ITypeName receiverType);
+
+    public abstract File[] getDependencyLocations();
 
 }
