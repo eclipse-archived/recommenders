@@ -17,6 +17,7 @@ import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
 import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
+import org.eclipse.swt.widgets.Composite;
 
 import org.junit.Test;
 
@@ -28,12 +29,12 @@ public final class SubclassingProviderTest {
                 ServerUtils.getUsernameListener());
         final SubclassingProvider provider = new SubclassingProvider(server);
 
-        provider.createComposite(ExtDocUtils.getShell(), null);
+        final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
 
         for (final IJavaElement element : TestTypeUtils.getDefaultElements()) {
             final TestJavaElementSelection selection = new TestJavaElementSelection(JavaElementLocation.METHOD_BODY,
                     element);
-            provider.selectionChanged(selection);
+            provider.selectionChanged(selection, composite);
         }
     }
 

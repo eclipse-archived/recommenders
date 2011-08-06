@@ -33,6 +33,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementSelectionResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.internal.rcp.extdoc.UiManager;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
@@ -47,7 +48,7 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public final class ExtDocHover extends AbstractJavaEditorTextHover {
 
-    private final ExtDocView view;
+    private final UiManager uiManager;
     private final ProviderStore providerStore;
 
     // TODO: Currently this seems to be the only way to avoid problem hovers to
@@ -63,8 +64,8 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
     };
 
     @Inject
-    ExtDocHover(final ExtDocView view, final ProviderStore providerStore) {
-        this.view = view;
+    ExtDocHover(final UiManager uiManager, final ProviderStore providerStore) {
+        this.uiManager = uiManager;
         this.providerStore = providerStore;
     }
 
@@ -107,7 +108,7 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
             composite = new ProvidersComposite(parent, false);
             final ToolBarManager toolbar = getToolBarManager();
             for (final IProvider provider : providerStore.getProviders()) {
-                final Composite providerComposite = composite.addProvider(provider, view.getViewSite());
+                final Composite providerComposite = composite.addProvider(provider, uiManager.getViewSite());
                 final IAction action = new AbstractAction("Scroll to " + provider.getProviderFullName(),
                         provider.getIcon()) {
                     @Override
@@ -121,7 +122,7 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
             toolbar.add(new AbstractAction("Show in ExtDoc View", ExtDocPlugin.getIcon("eview16/extdoc.png")) {
                 @Override
                 public void run() {
-                    view.selectionChanged(getLastSelection());
+                    uiManager.selectionChanged(getLastSelection());
                 }
             });
             toolbar.update(true);
@@ -142,7 +143,7 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
                 new Job("Updating Hover Provider") {
                     @Override
                     public IStatus run(final IProgressMonitor monitor) {
-                        if (provider.selectionChanged(selection)) {
+                        if (provider.selectionChanged(selection, control)) {
                             new ProviderUiJob() {
                                 @Override
                                 public Composite run() {

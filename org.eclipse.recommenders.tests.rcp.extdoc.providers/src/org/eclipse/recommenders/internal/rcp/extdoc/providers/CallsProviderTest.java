@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CallsAdapterTest;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+import org.eclipse.swt.widgets.Composite;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public final class CallsProviderTest {
         final CallsProvider provider = new CallsProvider(CallsAdapterTest.createProjectServices(), null,
                 ServerUtils.getGenericServer());
 
-        provider.createContentComposite(ExtDocUtils.getShell());
-        Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection()));
+        final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
+        Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection(), composite));
     }
 }

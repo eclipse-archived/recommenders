@@ -21,7 +21,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.progress.UIJob;
 
@@ -33,17 +33,19 @@ class ProviderUpdateJob extends Job {
 
     private final ProvidersTable table;
     private final TableItem item;
+    private final Composite composite;
     private final IProvider provider;
     private final IJavaElementSelection selection;
 
     ProviderUpdateJob(final ProvidersTable table, final TableItem item, final IJavaElementSelection selection) {
-        super(String.format("Updating %s", ((IProvider) ((Control) item.getData()).getData()).getProviderFullName()));
+        super(String.format("Updating %s", ((IProvider) ((Composite) item.getData()).getData()).getProviderFullName()));
         super.setPriority(LONG);
         active.add(this);
 
         this.table = table;
         this.item = item;
-        provider = (IProvider) ((Control) item.getData()).getData();
+        composite = (Composite) item.getData();
+        provider = (IProvider) composite.getData();
         this.selection = selection;
 
         item.setImage(ICON_LOADING);
@@ -75,7 +77,7 @@ class ProviderUpdateJob extends Job {
                 return Status.OK_STATUS;
             }
         }.schedule();
-        final boolean hasContent = provider.selectionChanged(selection);
+        final boolean hasContent = provider.selectionChanged(selection, composite);
         new UIJob("Update provider table") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {

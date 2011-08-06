@@ -23,7 +23,7 @@ public final class AbstractProviderCompositeTest {
 
     @Test
     public void testCreateControl() {
-        final AbstractProviderComposite composite = new ProviderComposite();
+        final AbstractTitledProvider composite = new ProviderComposite();
         final Composite control = composite.createComposite(ExtDocUtils.getShell(), null);
 
         Assert.assertEquals(3, control.getChildren().length);
@@ -31,7 +31,7 @@ public final class AbstractProviderCompositeTest {
         Assert.assertEquals(0, control.getChildren().length);
     }
 
-    private static final class ProviderComposite extends AbstractProviderComposite {
+    private static final class ProviderComposite extends AbstractTitledProvider {
 
         @Override
         public boolean isAvailableForLocation(final JavaElementLocation location) {
@@ -39,7 +39,7 @@ public final class AbstractProviderCompositeTest {
         }
 
         @Override
-        public boolean selectionChanged(final IJavaElementSelection context) {
+        public boolean updateSelection(final IJavaElementSelection context, final Composite composite) {
             return false;
         }
 

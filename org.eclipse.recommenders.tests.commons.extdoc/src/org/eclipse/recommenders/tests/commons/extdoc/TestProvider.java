@@ -12,16 +12,15 @@ package org.eclipse.recommenders.tests.commons.extdoc;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
-import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-public final class TestProvider extends AbstractProviderComposite {
+public final class TestProvider extends AbstractTitledProvider {
 
     private Label text;
-    private Composite composite;
 
     @Override
     public String getProviderName() {
@@ -34,7 +33,7 @@ public final class TestProvider extends AbstractProviderComposite {
     }
 
     @Override
-    public boolean selectionChanged(final IJavaElementSelection context) {
+    public boolean updateSelection(final IJavaElementSelection context, final Composite composite) {
         new ProviderUiJob() {
             @Override
             public Composite run() {
@@ -47,7 +46,6 @@ public final class TestProvider extends AbstractProviderComposite {
 
     @Override
     protected Composite createContentComposite(final Composite parent) {
-        composite = parent;
         text = SwtFactory.createLabel(parent, "");
         return parent;
     }

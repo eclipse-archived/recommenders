@@ -18,7 +18,7 @@ import org.eclipse.mylyn.wikitext.mediawiki.core.MediaWikiLanguage;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.google.inject.Inject;
 
-public final class WikiProvider extends AbstractProviderComposite {
+public final class WikiProvider extends AbstractTitledProvider {
 
     private final WikiServer server;
     private final MarkupParser parser = new MarkupParser(new MediaWikiLanguage());
@@ -60,7 +60,7 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     @Override
-    public boolean selectionChanged(final IJavaElementSelection selection) {
+    public boolean updateSelection(final IJavaElementSelection selection, final Composite composite) {
         final IJavaElement element = selection.getJavaElement();
         if (element == null || element instanceof ILocalVariable || element.getElementName().isEmpty()) {
             return false;

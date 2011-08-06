@@ -24,7 +24,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
@@ -39,11 +39,9 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.google.inject.Inject;
 
-public final class SubclassingProvider extends AbstractProviderComposite {
+public final class SubclassingProvider extends AbstractTitledProvider {
 
     private final SubclassingServer server;
-
-    private Composite composite;
 
     @Inject
     SubclassingProvider(final SubclassingServer server) {
@@ -52,24 +50,23 @@ public final class SubclassingProvider extends AbstractProviderComposite {
 
     @Override
     protected Composite createContentComposite(final Composite parent) {
-        composite = SwtFactory.createGridComposite(parent, 1, 0, 12, 0, 0);
-        return composite;
+        return SwtFactory.createGridComposite(parent, 1, 0, 12, 0, 0);
     }
 
     @Override
-    public boolean selectionChanged(final IJavaElementSelection selection) {
+    public boolean updateSelection(final IJavaElementSelection selection, final Composite composite) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
-            return displayContentForType(ElementResolver.toRecType((IType) element));
+            return displayContentForType(ElementResolver.toRecType((IType) element), composite);
         } else if (element instanceof IMethod) {
             final IMethod firstDeclaration = JdtUtils.findFirstDeclaration((IMethod) element);
             return displayContentForMethod(ElementResolver.toRecMethod((IMethod) element),
-                    ElementResolver.toRecMethod(firstDeclaration));
+                    ElementResolver.toRecMethod(firstDeclaration), composite);
         }
         return false;
     }
 
-    private boolean displayContentForType(final ITypeName type) {
+    private boolean displayContentForType(final ITypeName type, final Composite composite) {
         final ClassOverrideDirectives overrides = server.getClassOverrideDirectives(type);
         if (overrides == null) {
             return false;
@@ -90,10 +87,10 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                     disposeChildren(composite);
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
                     line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
-                    displayDirectives(overrides.getOverrides(), "override", subclasses);
+                    displayDirectives(overrides.getOverrides(), "override", subclasses, composite);
                     if (calls != null) {
                         new TextAndFeaturesLine(composite, text2, features);
-                        displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses());
+                        displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses(), composite);
                     }
                     features.loadCommentsComposite(composite);
                 }
@@ -104,7 +101,8 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         return true;
     }
 
-    private boolean displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration) {
+    private boolean displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration,
+            final Composite composite) {
         // TODO first is not correct in all cases. this needs to be fixed soon
         // after the demo
         final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(firstDeclaration);
@@ -127,7 +125,7 @@ public final class SubclassingProvider extends AbstractProviderComposite {
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
                     line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false,
                             true);
-                    displayDirectives(selfcalls.getCalls(), "call", definitions);
+                    displayDirectives(selfcalls.getCalls(), "call", definitions, composite);
                     features.loadCommentsComposite(composite);
                 }
                 return composite;
@@ -137,8 +135,8 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         return true;
     }
 
-    private void displayMethodOverrideInformation(final String subclassedTypeName, final int methodOverrides,
-            final int superCalls) {
+    private static void displayMethodOverrideInformation(final String subclassedTypeName, final int methodOverrides,
+            final int superCalls, final Composite composite) {
         final String text = "Subclasses of " + subclassedTypeName + " typically should override this method ("
                 + methodOverrides + " times). When overriding subclasses may call the super implementation ("
                 + superCalls + " times).";
@@ -151,8 +149,8 @@ public final class SubclassingProvider extends AbstractProviderComposite {
         SwtFactory.createStyleRange(styledText, length + 103 + length2, 5, SWT.NORMAL, false, true);
     }
 
-    private void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
-            final int definitions) {
+    private static void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
+            final int definitions, final Composite composite) {
         final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 2, 15, 0);
         for (final Entry<IMethodName, Integer> directive : orderDirectives(directives).entrySet()) {
             final int percent = (int) Math.round(directive.getValue().doubleValue() * 100.0 / definitions);

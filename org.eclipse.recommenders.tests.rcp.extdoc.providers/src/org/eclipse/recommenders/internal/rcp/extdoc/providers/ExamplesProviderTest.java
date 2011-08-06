@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+import org.eclipse.swt.widgets.Composite;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,8 +26,8 @@ public final class ExamplesProviderTest {
                 ServerUtils.getUsernameListener());
         final ExamplesProvider provider = new ExamplesProvider(server);
 
-        provider.createComposite(ExtDocUtils.getShell(), null);
-        Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection()));
+        final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
+        Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection(), composite));
     }
 
 }

@@ -21,7 +21,7 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.BrowserSizeWorkaround;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
@@ -36,9 +36,9 @@ import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
-public final class JavadocProvider extends AbstractProviderComposite {
+public final class JavadocProvider extends AbstractTitledProvider {
 
-    private Composite composite;
+    // TODO: javadoc and feedback have to be mapped through composite
     private ExtendedJavadocView javadoc;
     private final GenericServer server;
     private Composite feedbackComposite;
@@ -50,7 +50,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
 
     @Override
     protected Composite createContentComposite(final Composite parent) {
-        composite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
+        final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
         javadoc = new ExtendedJavadocView(composite, getViewSite());
         feedbackComposite = SwtFactory.createGridComposite(parent, 2, 0, 0, 0, 0);
 
@@ -61,7 +61,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
     }
 
     @Override
-    public boolean selectionChanged(final IJavaElementSelection selection) {
+    public boolean updateSelection(final IJavaElementSelection selection, final Composite composite) {
         try {
             final IJavaElement javaElement = getJavaElement(selection.getJavaElement());
             if (javaElement == null) {
@@ -69,7 +69,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
             }
             selection.getJavaElement().getAttachedJavadoc(null);
             javadoc.setInput(javaElement);
-            displayComments(selection.getJavaElement());
+            displayComments(selection.getJavaElement(), composite);
             return true;
         } catch (final JavaModelException e) {
             return false;
@@ -88,7 +88,7 @@ public final class JavadocProvider extends AbstractProviderComposite {
         return javaElement;
     }
 
-    private void displayComments(final IJavaElement javaElement) {
+    private void displayComments(final IJavaElement javaElement, final Composite composite) {
         final CommunityFeatures features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), null,
                 this, server);
         new ProviderUiJob() {

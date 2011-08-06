@@ -29,6 +29,6 @@ public interface IProvider extends IExecutableExtension {
 
     Composite createComposite(Composite parent, IViewSite viewSite);
 
-    boolean selectionChanged(IJavaElementSelection context);
+    boolean selectionChanged(IJavaElementSelection context, Composite composite);
 
 }

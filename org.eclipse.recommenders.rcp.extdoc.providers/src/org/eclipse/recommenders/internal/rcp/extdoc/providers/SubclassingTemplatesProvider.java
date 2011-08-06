@@ -23,7 +23,7 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
@@ -36,11 +36,9 @@ import org.eclipse.swt.widgets.Composite;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveProviderComposite {
+public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveTitledProvider {
 
     private final SubclassingServer server;
-
-    private Composite composite;
 
     @Inject
     SubclassingTemplatesProvider(final SubclassingServer server) {
@@ -49,16 +47,16 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
 
     @Override
     protected Composite createContentComposite(final Composite parent) {
-        composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
-        return composite;
+        return SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
     }
 
     @Override
-    protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return printProposals(ElementResolver.toRecType(type));
+    protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type,
+            final Composite composite) {
+        return printProposals(ElementResolver.toRecType(type), composite);
     }
 
-    private boolean printProposals(final ITypeName type) {
+    private boolean printProposals(final ITypeName type, final Composite composite) {
         final ClassOverridePatterns directive = server.getClassOverridePatterns(type);
         if (directive == null) {
             return false;

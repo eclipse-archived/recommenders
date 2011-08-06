@@ -11,29 +11,30 @@
 package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.rcp.extdoc.AbstractProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IViewSite;
 
-public abstract class AbstractProviderComposite extends AbstractProvider {
+public abstract class AbstractTitledProvider extends AbstractProvider {
 
     private IViewSite viewSite;
-    private Composite provider;
 
     @Override
     public final Composite createComposite(final Composite parent, final IViewSite site) {
         viewSite = site;
 
-        final Composite container = SwtFactory.createGridComposite(parent, 1, 0, 3, 8, 8);
+        final ProviderComposite container = new ProviderComposite(parent);
         createProviderTitle(container);
         SwtFactory.createSeparator(container);
-        provider = createContentComposite(container);
-        Checks.ensureIsNotNull(provider);
+        container.contentComposite = Checks.ensureIsNotNull(createContentComposite(container));
         return container;
     }
 
@@ -52,6 +53,13 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
+    @Override
+    public final boolean selectionChanged(final IJavaElementSelection selection, final Composite composite) {
+        return updateSelection(selection, ((ProviderComposite) composite).contentComposite);
+    }
+
+    protected abstract boolean updateSelection(IJavaElementSelection selection, Composite composite);
+
     public final IViewSite getViewSite() {
         return viewSite;
     }
@@ -60,6 +68,23 @@ public abstract class AbstractProviderComposite extends AbstractProvider {
         for (final Control child : composite.getChildren()) {
             child.dispose();
         }
+    }
+
+    private static final class ProviderComposite extends Composite {
+
+        private Composite contentComposite;
+
+        public ProviderComposite(final Composite parent) {
+            super(parent, SWT.NONE);
+            final GridLayout grid = new GridLayout(1, false);
+            grid.horizontalSpacing = 0;
+            grid.verticalSpacing = 3;
+            grid.marginHeight = 8;
+            grid.marginWidth = 8;
+            setLayout(grid);
+            setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        }
+
     }
 
 }

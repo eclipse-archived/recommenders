@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import org.junit.Assert;
@@ -26,7 +27,7 @@ public final class WikiProviderTest {
         final WikiProvider provider = new WikiProvider(server);
         provider.createContentComposite(new Shell());
 
-        provider.createComposite(ExtDocUtils.getShell(), null);
-        Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection()));
+        final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
+        Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection(), composite));
     }
 }

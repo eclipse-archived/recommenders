@@ -15,12 +15,13 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.google.inject.Inject;
 
-final class UiManager implements IExtendedSelectionListener {
+public final class UiManager implements IExtendedSelectionListener {
 
     private static ExtDocView extDocView;
     private static boolean isViewVisible = true;
@@ -58,6 +59,10 @@ final class UiManager implements IExtendedSelectionListener {
             site.getPage().addPartListener(new ViewListener());
             hasViewListener = true;
         }
+    }
+
+    public IViewSite getViewSite() {
+        return extDocView.getViewSite();
     }
 
     private static final class ViewListener implements IPartListener2 {

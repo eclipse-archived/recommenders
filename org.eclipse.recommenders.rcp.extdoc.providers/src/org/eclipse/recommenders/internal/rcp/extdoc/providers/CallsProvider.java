@@ -35,7 +35,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFacto
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
@@ -50,11 +50,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public final class CallsProvider extends AbstractLocationSensitiveProviderComposite {
+public final class CallsProvider extends AbstractLocationSensitiveTitledProvider {
 
     private final GenericServer server;
     private final CallsAdapter adapter;
-    private Composite composite;
 
     @Inject
     CallsProvider(final ProjectServices projectServices,
@@ -65,88 +64,97 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
 
     @Override
     protected Composite createContentComposite(final Composite parent) {
-        composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
-        return composite;
+        return SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
     }
 
     @Override
-    protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
     }
 
     @Override
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
+    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
         if (context == null) {
             return false;
         }
         return displayProposalsForVariable(field, false,
-                adapter.getProposalsFromSingleMethods(selection, field, context), context);
+                adapter.getProposalsFromSingleMethods(selection, field, context), context, composite);
     }
 
     @Override
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
     }
 
     @Override
-    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
+    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createThisVariableContext(selection, method);
-        return displayProposalsForMethod(method, true, context);
+        return displayProposalsForMethod(method, true, context, composite);
     }
 
     @Override
-    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
     }
 
     @Override
-    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
     }
 
     @Override
     protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
-            final ILocalVariable local) {
+            final ILocalVariable local, final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
-        return context == null ? false : displayProposalsForVariable(local, true, null, context);
+        return context == null ? false : displayProposalsForVariable(local, true, null, context, composite);
     }
 
     @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
-        return context == null ? false : displayProposalsForVariable(local, false, null, context);
+        return context == null ? false : displayProposalsForVariable(local, false, null, context, composite);
     }
 
     @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
-        return context == null ? false : displayProposalsForVariable(field, false, null, context);
+        return context == null ? false : displayProposalsForVariable(field, false, null, context, composite);
     }
 
     @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
         final Set<IMethodName> invokedMethods = ImmutableSet.of(ElementResolver.toRecMethod(method));
         final ITypeName receiverType = context.getReceiverType();
         return displayProposalsForType(
                 receiverType == null ? method.getDeclaringType() : ElementResolver.toJdtType(receiverType),
-                invokedMethods, method.getElementName(), context);
+                invokedMethods, method.getElementName(), context, composite);
     }
 
     @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
+    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type,
+            final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
     }
 
     private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors,
             final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilityFromMethods,
-            final MockedIntelligentCompletionContext context) {
+            final MockedIntelligentCompletionContext context, final Composite composite) {
         final Variable variable = context.getVariable();
         final IProjectModelFacade facade = adapter.getModelFacade(element);
         if (variable != null && facade.hasModel(variable.type)) {
@@ -156,25 +164,26 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             final IName name = element instanceof IField ? ElementResolver.toRecField((IField) element, variable.type)
                     : variable.getName();
             return displayProposals(element, element.getElementName(), name, false, recommendedMethodCalls,
-                    resolveCalledMethods, maxProbabilityFromMethods);
+                    resolveCalledMethods, maxProbabilityFromMethods, composite);
         }
         return false;
     }
 
     private boolean displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods,
-            final String elementName, final MockedIntelligentCompletionContext context) {
+            final String elementName, final MockedIntelligentCompletionContext context, final Composite composite) {
         final ITypeName typeName = ElementResolver.toRecType(type);
         final IProjectModelFacade facade = adapter.getModelFacade(type);
         if (facade.hasModel(typeName)) {
             final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(typeName,
                     invokedMethods, false, context, facade);
-            return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>(), null);
+            return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>(), null,
+                    composite);
         }
         return false;
     }
 
     private boolean displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration,
-            final MockedIntelligentCompletionContext context) {
+            final MockedIntelligentCompletionContext context, final Composite composite) {
         final ITypeName type = adapter.getMethodsDeclaringType(method, context);
         final IProjectModelFacade facade = adapter.getModelFacade(method);
         if (type != null && facade.hasModel(type)) {
@@ -182,19 +191,21 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
             final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(type, calledMethods,
                     true, context, facade);
             return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
-                    isMethodDeclaration, calls, calledMethods, null);
+                    isMethodDeclaration, calls, calledMethods, null, composite);
         } else {
             // TODO: first is not correct in all cases. this needs to be
             // fixed
             final IMethod first = JdtUtils.findFirstDeclaration(method);
-            return first.equals(method) ? false : displayProposalsForMethod(first, isMethodDeclaration, context);
+            return first.equals(method) ? false : displayProposalsForMethod(first, isMethodDeclaration, context,
+                    composite);
         }
     }
 
     private boolean displayProposals(final IJavaElement element, final String elementName, final IName elementId,
             final boolean isMethodDeclaration, final SortedSet<Tuple<IMethodName, Double>> proposals,
             final Set<IMethodName> calledMethods,
-            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilitiesFromMethods) {
+            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilitiesFromMethods,
+            final Composite composite) {
         if (proposals.isEmpty()) {
             return false;
         }
@@ -212,7 +223,7 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
                     disposeChildren(composite);
                     final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
                     line.createStyleRange(12 + action.length(), elementName.length(), SWT.NORMAL, false, true);
-                    displayProposals(element, isMethodDeclaration, proposals, calledMethods);
+                    displayProposals(element, isMethodDeclaration, proposals, calledMethods, composite);
 
                     if (maxProbabilitiesFromMethods != null) {
                         new TextAndFeaturesLine(composite, text2, features);
@@ -238,7 +249,8 @@ public final class CallsProvider extends AbstractLocationSensitiveProviderCompos
     }
 
     private void displayProposals(final IJavaElement element, final boolean isMethodDeclaration,
-            final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods) {
+            final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods,
+            final Composite composite) {
         final Composite calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
         for (final IMethodName method : calledMethods) {
             SwtFactory.createSquare(calls);
