@@ -28,8 +28,7 @@ class TestCouchDbServer implements ICouchDbServer {
     @Override
     public <T> List<T> getRows(final String view, final Map<String, String> keyParts,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        final List<T> rows = new ArrayList<T>();
-        return rows;
+        return new ArrayList<T>();
     }
 
     @Override
@@ -44,6 +43,7 @@ class TestCouchDbServer implements ICouchDbServer {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getProviderContent(final String providerId, final IName element,
             final GenericType<GenericResultObjectView<T>> resultType) {

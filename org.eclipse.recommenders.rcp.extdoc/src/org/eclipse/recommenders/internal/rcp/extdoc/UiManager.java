@@ -55,7 +55,7 @@ public final class UiManager implements IExtendedSelectionListener {
     }
 
     private static boolean isEqualToLastSelection(final IJavaElementSelection selection) {
-        return selection.equals(lastSelection);
+        return selection == null ? lastSelection == null : selection.equals(lastSelection);
     }
 
     private void initViewListener() {

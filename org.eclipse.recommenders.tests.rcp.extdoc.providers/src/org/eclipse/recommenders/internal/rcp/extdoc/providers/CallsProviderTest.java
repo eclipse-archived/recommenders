@@ -50,6 +50,13 @@ public final class CallsProviderTest {
         }
     }
 
+    @Test
+    public void testTypeDeclaration() {
+        for (final IJavaElement element : TestTypeUtils.getDefaultElements()) {
+            testSelection(JavaElementLocation.TYPE_DECLARATION, element);
+        }
+    }
+
     private void testSelection(final JavaElementLocation location, final IJavaElement element) {
         final TestJavaElementSelection selection = ExtDocUtils.getSelection(JavaElementLocation.METHOD_BODY,
                 TestTypeUtils.getDefaultJavaMethod());

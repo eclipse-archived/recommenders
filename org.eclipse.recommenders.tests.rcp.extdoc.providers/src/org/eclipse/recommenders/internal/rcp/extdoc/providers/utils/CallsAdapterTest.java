@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -35,12 +36,10 @@ public final class CallsAdapterTest {
 
     @Test
     public void testGetProposalsFromSingleMethods() {
-        /*
-         * final MockedIntelligentCompletionContext context =
-         * ContextFactory.createFieldVariableContext(selection, field); final
-         * SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> proposals =
-         * adapter .getProposalsFromSingleMethods(selection, field, context);
-         */
+        final IField field = TestTypeUtils.getDefaultField();
+        final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
+        final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> proposals = adapter
+                .getProposalsFromSingleMethods(selection, field, context);
     }
 
     @Test

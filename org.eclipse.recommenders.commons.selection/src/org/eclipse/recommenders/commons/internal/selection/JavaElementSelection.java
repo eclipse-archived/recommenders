@@ -80,7 +80,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
     }
 
     @Override
-    public final ITypeRoot getCompilationUnit() {
+    public ITypeRoot getCompilationUnit() {
         if (compilationUnit == null && editor != null) {
             compilationUnit = Checks.cast(EditorUtility.getEditorInputJavaElement(editor, false));
         }

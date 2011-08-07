@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.google.common.base.Preconditions;
 
-public final class CommentsComposite {
+final class CommentsComposite {
 
     private static Image commentsIcon = ExtDocPlugin.getIcon("eview16/comments.png");
     private static DateFormat dateFormat = DateFormat.getDateInstance();

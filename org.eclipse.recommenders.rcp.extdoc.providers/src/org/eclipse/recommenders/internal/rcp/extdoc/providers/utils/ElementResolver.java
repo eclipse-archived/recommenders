@@ -19,6 +19,11 @@ import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.ImportContainer;
+import org.eclipse.jdt.internal.core.ImportDeclaration;
+import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
+import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.jdt.internal.core.PackageFragmentRoot;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.names.IFieldName;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -31,6 +36,7 @@ import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 import com.google.inject.Inject;
 
+@SuppressWarnings("restriction")
 public final class ElementResolver {
 
     @Inject
@@ -59,6 +65,10 @@ public final class ElementResolver {
             } catch (final JavaModelException e) {
                 throw new IllegalStateException(e);
             }
+        } else if (javaElement instanceof ImportContainer || javaElement instanceof ImportDeclaration
+                || javaElement instanceof JavaProject || javaElement instanceof PackageFragmentRoot
+                || javaElement instanceof JarPackageFragmentRoot) {
+            return null;
         }
         throw new IllegalArgumentException(javaElement.getClass().toString());
     }

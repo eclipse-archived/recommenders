@@ -34,7 +34,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 @SuppressWarnings("restriction")
-public class ExtDocCodeAssistantHover {
+public final class ExtDocCodeAssistantHover {
+
+    private ExtDocCodeAssistantHover() {
+    }
 
     public static void install(final JavaEditor editor, final UiManager uiManager, final ProviderStore providerStore) {
         final JavaSourceViewer viewer = (JavaSourceViewer) editor.getViewer();

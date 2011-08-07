@@ -36,7 +36,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
-public abstract class AbstractExtDocInformationControl extends AbstractInformationControl implements
+abstract class AbstractExtDocInformationControl extends AbstractInformationControl implements
         IInformationControlExtension2 {
 
     private ProvidersComposite composite;
@@ -47,7 +47,7 @@ public abstract class AbstractExtDocInformationControl extends AbstractInformati
     private final ProviderStore providerStore;
     private final IInformationControlCreator creator;
 
-    public AbstractExtDocInformationControl(final Shell parentShell, final UiManager uiManager,
+    AbstractExtDocInformationControl(final Shell parentShell, final UiManager uiManager,
             final ProviderStore providerStore, final IInformationControlCreator creator) {
         super(parentShell, new ToolBarManager(SWT.FLAT));
         this.uiManager = uiManager;

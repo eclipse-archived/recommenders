@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -167,6 +168,9 @@ public final class SubclassingProvider extends AbstractTitledProvider {
     }
 
     private static Map<IMethodName, Integer> orderDirectives(final Map<IMethodName, Integer> directives) {
+        if (directives == null) {
+            return Collections.emptyMap();
+        }
         final Map<IMethodName, Integer> orderedMap = new TreeMap<IMethodName, Integer>(new Comparator<IMethodName>() {
             @Override
             public int compare(final IMethodName directive1, final IMethodName directive2) {

@@ -29,6 +29,7 @@ import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
+@SuppressWarnings("restriction")
 public final class TestTypeUtils {
 
     private static ITypeName defaultType;
@@ -85,6 +86,7 @@ public final class TestTypeUtils {
             Mockito.when(defaultJavaType.getFullyQualifiedName()).thenReturn("org/eclipse/swt/widgets/Button");
             Mockito.when(defaultJavaType.getJavaProject()).thenReturn(getDefaultProject());
             try {
+                Mockito.when(defaultJavaType.getMethods()).thenReturn(new IMethod[] {});
                 final ITypeHierarchy hierarchy = Mockito.mock(ITypeHierarchy.class);
                 Mockito.when(hierarchy.getSuperInterfaces(Matchers.any(IType.class))).thenReturn(new IType[0]);
                 Mockito.when(defaultJavaType.newSupertypeHierarchy(Matchers.any(IProgressMonitor.class))).thenReturn(
@@ -113,16 +115,13 @@ public final class TestTypeUtils {
         return defaultJavaMethod;
     }
 
-    public static IJavaElement[] getDefaultElements() {
-        return new IJavaElement[] { getDefaultJavaType(), getDefaultJavaMethod(), getDefaultField(),
-                getDefaultVariable() };
-    }
-
     public static IField getDefaultField() {
         if (defaultField == null) {
             defaultField = Mockito.mock(IField.class);
             Mockito.when(defaultField.getDeclaringType()).thenReturn(TestTypeUtils.getDefaultJavaType());
             Mockito.when(defaultField.getParent()).thenReturn(TestTypeUtils.getDefaultJavaType());
+            Mockito.when(defaultField.getElementName()).thenReturn("Field");
+            Mockito.when(defaultField.getHandleIdentifier()).thenReturn("");
             try {
                 Mockito.when(defaultField.getTypeSignature()).thenReturn("Lorg/eclipse/swt/widgets/Button;");
             } catch (final JavaModelException e) {
@@ -137,8 +136,15 @@ public final class TestTypeUtils {
             defaultVariable = Mockito.mock(ILocalVariable.class);
             Mockito.when(defaultVariable.getAncestor(IJavaElement.TYPE)).thenReturn(TestTypeUtils.getDefaultJavaType());
             Mockito.when(defaultVariable.getTypeSignature()).thenReturn("Lorg/eclipse/swt/widgets/Button;");
+            Mockito.when(defaultVariable.getElementName()).thenReturn("LocalVariable");
+            Mockito.when(defaultVariable.getHandleIdentifier()).thenReturn("");
         }
         return defaultVariable;
+    }
+
+    public static IJavaElement[] getDefaultElements() {
+        return new IJavaElement[] { getDefaultJavaType(), getDefaultJavaMethod(), getDefaultField(),
+                getDefaultVariable() };
     }
 
     public static IJavaProject getDefaultProject() {

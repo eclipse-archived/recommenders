@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-public final class StarsRatingComposite {
+final class StarsRatingComposite {
 
     private static final Image ICON_STAR = ExtDocPlugin.getIcon("eview16/star.png");
     private static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
@@ -39,7 +39,7 @@ public final class StarsRatingComposite {
 
     private final IRatingSummary ratingSummary;
 
-    public StarsRatingComposite(final IName element, final String keyAppendix, final IProvider provider,
+    StarsRatingComposite(final IName element, final String keyAppendix, final IProvider provider,
             final IUserFeedback feedback, final IUserFeedbackServer server, final Composite parent) {
         this.element = element;
         this.keyAppendix = keyAppendix;
@@ -111,7 +111,7 @@ public final class StarsRatingComposite {
         composite.layout(true);
     }
 
-    public void dispose() {
+    void dispose() {
         composite.dispose();
     }
 

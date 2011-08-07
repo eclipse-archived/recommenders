@@ -166,7 +166,7 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         } else if (javaElement instanceof IType) {
             return updatePackageDeclarationSelection(selection, (IType) javaElement, composite);
         }
-        throw new IllegalArgumentException(javaElement.toString());
+        throw new IllegalArgumentException(javaElement.getClass().toString());
     }
 
     protected boolean updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type,

@@ -10,13 +10,15 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public final class WikiProviderTest {
@@ -28,6 +30,11 @@ public final class WikiProviderTest {
         provider.createContentComposite(new Shell());
 
         final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
-        Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection(), composite));
+
+        for (final IJavaElement element : TestTypeUtils.getDefaultElements()) {
+            for (final JavaElementLocation location : JavaElementLocation.values()) {
+                provider.selectionChanged(ExtDocUtils.getSelection(location, element), composite);
+            }
+        }
     }
 }

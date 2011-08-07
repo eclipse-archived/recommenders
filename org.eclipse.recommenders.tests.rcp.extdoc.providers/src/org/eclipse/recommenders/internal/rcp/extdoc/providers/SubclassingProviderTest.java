@@ -15,7 +15,6 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
-import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
 import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 import org.eclipse.swt.widgets.Composite;
 
@@ -32,9 +31,9 @@ public final class SubclassingProviderTest {
         final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
 
         for (final IJavaElement element : TestTypeUtils.getDefaultElements()) {
-            final TestJavaElementSelection selection = new TestJavaElementSelection(JavaElementLocation.METHOD_BODY,
-                    element);
-            provider.selectionChanged(selection, composite);
+            for (final JavaElementLocation location : JavaElementLocation.values()) {
+                provider.selectionChanged(ExtDocUtils.getSelection(location, element), composite);
+            }
         }
     }
 

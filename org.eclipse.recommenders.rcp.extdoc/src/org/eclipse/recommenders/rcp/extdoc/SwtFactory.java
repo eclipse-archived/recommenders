@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Text;
 
 public final class SwtFactory {
 
-    public static final Font CODEFONT = JFaceResources.getTextFont();
+    static final Font CODEFONT = JFaceResources.getTextFont();
     private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 
     private static final Map<Integer, Color> COLORCACHE = new HashMap<Integer, Color>();
@@ -163,13 +163,6 @@ public final class SwtFactory {
         final Button button = new Button(parent, SWT.NONE);
         button.setText(text);
         button.addSelectionListener(selectionListener);
-        return button;
-    }
-
-    public static Button createCheck(final Composite area, final String text, final boolean selected) {
-        final Button button = new Button(area, SWT.CHECK);
-        button.setText(text);
-        button.setSelection(selected);
         return button;
     }
 

@@ -81,7 +81,7 @@ public final class JavaElementSelectionResolver {
         return javaElement == null ? null : new JavaElementSelection(javaElement, offset, editor);
     }
 
-    public static IJavaElement resolveJavaElement(final IEditorInput editorInput, final int offset) {
+    private static IJavaElement resolveJavaElement(final IEditorInput editorInput, final int offset) {
         final ITypeRoot root = (ITypeRoot) JavaUI.getEditorInputJavaElement(editorInput);
         try {
             final IJavaElement[] elements = root.codeSelect(offset, 0);

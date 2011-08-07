@@ -12,7 +12,6 @@ package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
-import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
 import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -33,8 +32,7 @@ public final class AbstractLocationSensitiveProviderCompositeTest {
     public void testProvidersComposite() {
         final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
         for (final JavaElementLocation location : JavaElementLocation.values()) {
-            provider.selectionChanged(new TestJavaElementSelection(location, TestTypeUtils.getDefaultJavaType()),
-                    composite);
+            provider.selectionChanged(ExtDocUtils.getSelection(location, TestTypeUtils.getDefaultJavaType()), composite);
             Assert.assertTrue(location == JavaElementLocation.PACKAGE_DECLARATION
                     || provider.isAvailableForLocation(location));
         }
@@ -42,7 +40,7 @@ public final class AbstractLocationSensitiveProviderCompositeTest {
 
     public void testNullLocation() {
         final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
-        Assert.assertFalse(provider.selectionChanged(new TestJavaElementSelection(null, null), composite));
+        Assert.assertFalse(provider.selectionChanged(ExtDocUtils.getSelection(null, null), composite));
     }
 
 }

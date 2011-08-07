@@ -29,6 +29,7 @@ public enum JavaElementLocation {
         return displayName;
     }
 
+    // TODO: Only called from tests.
     public static boolean isInTypeDeclaration(final JavaElementLocation location) {
         return location == TYPE_DECLARATION || location == EXTENDS_DECLARATION || location == IMPLEMENTS_DECLARATION;
     }

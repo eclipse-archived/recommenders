@@ -60,15 +60,17 @@ public final class ContextFactory {
 
     public static MockedIntelligentCompletionContext createFieldVariableContext(final IJavaElementSelection selection,
             final IField field) {
-        return createMockedContext(selection, field.getElementName(), VariableResolver.resolveTypeSignature(field), null);
+        return createMockedContext(selection, field.getElementName(), VariableResolver.resolveTypeSignature(field),
+                null);
     }
 
     public static MockedIntelligentCompletionContext createLocalVariableContext(final IJavaElementSelection selection,
             final ILocalVariable local) {
-        return createMockedContext(selection, local.getElementName(), VariableResolver.resolveTypeSignature(local), null);
+        return createMockedContext(selection, local.getElementName(), VariableResolver.resolveTypeSignature(local),
+                null);
     }
 
-    public static MockedIntelligentCompletionContext createLocalVariableContext(final IJavaElementSelection selection,
+    static MockedIntelligentCompletionContext createLocalVariableContext(final IJavaElementSelection selection,
             final String variableName, final ITypeName variableType, final IMethodName enclosingMethod) {
         return createMockedContext(selection, variableName, variableType, enclosingMethod);
     }
