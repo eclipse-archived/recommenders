@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.tests.commons.extdoc;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +28,8 @@ class TestCouchDbServer implements ICouchDbServer {
     @Override
     public <T> List<T> getRows(final String view, final Map<String, String> keyParts,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        // TODO Auto-generated method stub
-        return null;
+        final List<T> rows = new ArrayList<T>();
+        return rows;
     }
 
     @Override

@@ -8,6 +8,7 @@ Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.jdt.core,
  org.mockito,
  org.eclipse.core.runtime,
+ org.eclipse.core.resources,
  org.eclipse.recommenders.rcp.extdoc,
  org.eclipse.recommenders.server.extdoc,
  org.eclipse.ui.workbench,

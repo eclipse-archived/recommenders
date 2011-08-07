@@ -10,10 +10,14 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CallsAdapterTest;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 import org.eclipse.swt.widgets.Composite;
 
 import org.junit.Assert;
@@ -21,12 +25,34 @@ import org.junit.Test;
 
 public final class CallsProviderTest {
 
-    @Test
-    public void testCallsProvider() throws JavaModelException {
-        final CallsProvider provider = new CallsProvider(CallsAdapterTest.createProjectServices(), null,
-                ServerUtils.getGenericServer());
+    private final CallsProvider provider = new CallsProvider(CallsAdapterTest.createProjectServices(), null,
+            ServerUtils.getGenericServer());
+    private final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
 
-        final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
-        Assert.assertTrue(provider.selectionChanged(ExtDocUtils.getSelection(), composite));
+    @Test
+    public void testMethodBody() throws JavaModelException {
+        for (final IJavaElement element : TestTypeUtils.getDefaultElements()) {
+            testSelection(JavaElementLocation.METHOD_BODY, element);
+        }
+    }
+
+    @Test
+    public void testFieldDeclaration() {
+        for (final IJavaElement element : TestTypeUtils.getDefaultElements()) {
+            testSelection(JavaElementLocation.FIELD_DECLARATION, element);
+        }
+    }
+
+    @Test
+    public void testMethodDeclaration() {
+        for (final IJavaElement element : TestTypeUtils.getDefaultElements()) {
+            testSelection(JavaElementLocation.METHOD_DECLARATION, element);
+        }
+    }
+
+    private void testSelection(final JavaElementLocation location, final IJavaElement element) {
+        final TestJavaElementSelection selection = ExtDocUtils.getSelection(JavaElementLocation.METHOD_BODY,
+                TestTypeUtils.getDefaultJavaMethod());
+        Assert.assertTrue(provider.selectionChanged(selection, composite));
     }
 }

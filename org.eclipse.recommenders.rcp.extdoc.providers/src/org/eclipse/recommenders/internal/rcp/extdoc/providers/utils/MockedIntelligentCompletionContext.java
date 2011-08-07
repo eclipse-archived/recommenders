@@ -100,6 +100,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     private void initializeCompletionEngine() {
         try {
+            Checks.ensureIsNotNull(getCompilationUnit());
             final JavaProject project = (JavaProject) getCompilationUnit().getJavaProject();
             final WorkingCopyOwner owner = getCompilationUnit().getOwner();
             final SearchableEnvironment s = project.newSearchableNameEnvironment(owner);

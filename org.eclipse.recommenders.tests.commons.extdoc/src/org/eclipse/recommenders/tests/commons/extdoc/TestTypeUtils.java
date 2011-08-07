@@ -13,11 +13,13 @@ package org.eclipse.recommenders.tests.commons.extdoc;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -39,11 +41,20 @@ public final class TestTypeUtils {
     private static IField defaultField;
     private static ILocalVariable defaultVariable;
 
+    private static JavaProject defaultProject = Mockito.mock(JavaProject.class);
+
     static {
         defaultType = VmTypeName.get("Lorg/eclipse/swt/widgets/Button");
         defaultMethod = VmMethodName.get("Lorg/eclipse/swt/widgets/Button.getText()Ljava/lang/String;");
         defaultConstructor = VmMethodName
                 .get("Lorg/eclipse/swt/widgets/Button.<init>(Lorg/eclipse/swt/widgets/Composite;I)V");
+
+        getDefaultJavaType();
+        try {
+            Mockito.when(defaultProject.findType(Matchers.anyString())).thenReturn(defaultJavaType);
+        } catch (final JavaModelException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private TestTypeUtils() {
@@ -72,6 +83,7 @@ public final class TestTypeUtils {
             Mockito.when(defaultJavaType.getElementName()).thenReturn("Composite");
             Mockito.when(defaultJavaType.getHandleIdentifier()).thenReturn("TestIdentifier");
             Mockito.when(defaultJavaType.getFullyQualifiedName()).thenReturn("org/eclipse/swt/widgets/Button");
+            Mockito.when(defaultJavaType.getJavaProject()).thenReturn(getDefaultProject());
             try {
                 final ITypeHierarchy hierarchy = Mockito.mock(ITypeHierarchy.class);
                 Mockito.when(hierarchy.getSuperInterfaces(Matchers.any(IType.class))).thenReturn(new IType[0]);
@@ -102,15 +114,17 @@ public final class TestTypeUtils {
     }
 
     public static IJavaElement[] getDefaultElements() {
-        return new IJavaElement[] { getDefaultJavaType(), getDefaultJavaMethod() };
+        return new IJavaElement[] { getDefaultJavaType(), getDefaultJavaMethod(), getDefaultField(),
+                getDefaultVariable() };
     }
 
     public static IField getDefaultField() {
         if (defaultField == null) {
             defaultField = Mockito.mock(IField.class);
             Mockito.when(defaultField.getDeclaringType()).thenReturn(TestTypeUtils.getDefaultJavaType());
+            Mockito.when(defaultField.getParent()).thenReturn(TestTypeUtils.getDefaultJavaType());
             try {
-                Mockito.when(defaultField.getTypeSignature()).thenReturn("QButton;");
+                Mockito.when(defaultField.getTypeSignature()).thenReturn("Lorg/eclipse/swt/widgets/Button;");
             } catch (final JavaModelException e) {
                 throw new IllegalStateException(e);
             }
@@ -122,9 +136,13 @@ public final class TestTypeUtils {
         if (defaultVariable == null) {
             defaultVariable = Mockito.mock(ILocalVariable.class);
             Mockito.when(defaultVariable.getAncestor(IJavaElement.TYPE)).thenReturn(TestTypeUtils.getDefaultJavaType());
-            Mockito.when(defaultVariable.getTypeSignature()).thenReturn("QButton;");
+            Mockito.when(defaultVariable.getTypeSignature()).thenReturn("Lorg/eclipse/swt/widgets/Button;");
         }
         return defaultVariable;
+    }
+
+    public static IJavaProject getDefaultProject() {
+        return defaultProject;
     }
 
 }

@@ -11,11 +11,12 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
 import org.eclipse.jdt.core.IType;
+import org.eclipse.recommenders.commons.utils.names.IFieldName;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 public final class ElementResolverTest {
@@ -48,7 +49,9 @@ public final class ElementResolverTest {
 
     @Test
     public void testToRecField() {
-
+        final IFieldName field = ElementResolver.toRecField(TestTypeUtils.getDefaultField(),
+                TestTypeUtils.getDefaultType());
+        Assert.assertEquals(TestTypeUtils.getDefaultType(), field.getFieldType());
     }
 
 }

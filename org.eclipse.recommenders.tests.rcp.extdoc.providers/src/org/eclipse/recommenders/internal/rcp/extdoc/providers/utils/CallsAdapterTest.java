@@ -61,13 +61,18 @@ public final class CallsAdapterTest {
 
     }
 
+    @Test
+    public void testGetModelFacade() {
+
+    }
+
     public static ProjectServices createProjectServices() {
         final IProjectModelFacade store = Mockito.mock(IProjectModelFacade.class);
         Mockito.when(store.hasModel(Matchers.any(ITypeName.class))).thenReturn(true);
         final IObjectMethodCallsNet model = Mockito.mock(IObjectMethodCallsNet.class);
         Mockito.when(store.acquireModel(Matchers.any(ITypeName.class))).thenReturn(model);
 
-        final Tuple<IMethodName, Double> call = Tuple.create(null, 0.0);
+        final Tuple<IMethodName, Double> call = Tuple.create(TestTypeUtils.getDefaultMethod(), 0.0);
         final SortedSet<Tuple<IMethodName, Double>> calls = new TreeSet<Tuple<IMethodName, Double>>();
         calls.add(call);
         Mockito.when(model.getRecommendedMethodCalls(Matchers.anyDouble(), Matchers.anyInt())).thenReturn(calls);
