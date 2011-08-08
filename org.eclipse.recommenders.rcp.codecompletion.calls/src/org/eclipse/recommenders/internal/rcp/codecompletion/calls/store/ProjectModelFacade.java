@@ -128,7 +128,11 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
     private File getLocation(final IPackageFragmentRoot packageRoot) {
         final IResource resource = packageRoot.getResource();
         if (resource != null) {
-            return resource.getLocation().toFile().getAbsoluteFile();
+            if (resource.getLocation() == null) {
+                return resource.getRawLocation().toFile().getAbsoluteFile();
+            } else {
+                return resource.getLocation().toFile().getAbsoluteFile();
+            }
         }
         if (packageRoot.isExternal()) {
             return packageRoot.getPath().toFile().getAbsoluteFile();
