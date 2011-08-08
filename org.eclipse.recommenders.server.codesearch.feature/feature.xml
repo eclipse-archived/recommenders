@@ -44,13 +44,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.recommenders.commons.utils.gson.jaxrs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.commons.lang3"
          download-size="0"
          install-size="0"
@@ -190,13 +183,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.google.guice"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.equinox.preferences"
          download-size="0"
          install-size="0"
@@ -296,13 +282,6 @@
 
    <plugin
          id="org.eclipse.equinox.common"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.google.guice.multibindings"
          download-size="0"
          install-size="0"
          version="0.0.0"
