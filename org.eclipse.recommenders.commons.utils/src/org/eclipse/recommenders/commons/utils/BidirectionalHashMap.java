@@ -13,6 +13,10 @@ package org.eclipse.recommenders.commons.utils;
 import java.util.HashMap;
 import java.util.Set;
 
+/**
+ * @deprecated use guava Bimaps instead.
+ */
+@Deprecated
 public class BidirectionalHashMap<K, V> {
 
     private final HashMap<K, V> keyToValue;
