@@ -31,8 +31,13 @@
    <features>
       <feature id="org.eclipse.recommenders.3rd.feature"/>
       <feature id="org.eclipse.recommenders.server.codesearch.feature"/>
-      <feature id="org.eclipse.recommenders.server.udc.feature"/>
+      <feature id="org.eclipse.recommenders.server.udc.feature" version="0.1.0.qualifier"/>
    </features>
 
+   <configurations>
+      <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.recommenders.server.codesearch" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.recommenders.server.udc" autoStart="true" startLevel="3" />
+   </configurations>
 
 </product>
