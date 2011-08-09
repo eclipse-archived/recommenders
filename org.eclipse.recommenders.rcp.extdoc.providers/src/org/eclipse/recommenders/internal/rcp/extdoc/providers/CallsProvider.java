@@ -138,11 +138,11 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
     protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method,
             final Composite composite) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
-        final Set<IMethodName> invokedMethods = ImmutableSet.of(ElementResolver.toRecMethod(method));
+        final IMethodName invokedMethod = Preconditions.checkNotNull(ElementResolver.toRecMethod(method), method);
         final ITypeName receiverType = context.getReceiverType();
         return displayProposalsForType(
                 receiverType == null ? method.getDeclaringType() : ElementResolver.toJdtType(receiverType),
-                invokedMethods, method.getElementName(), context, composite);
+                ImmutableSet.of(invokedMethod), method.getElementName(), context, composite);
     }
 
     @Override

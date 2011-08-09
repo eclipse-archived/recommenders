@@ -22,6 +22,7 @@ import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
 import org.eclipse.jdt.ui.text.JavaTextTools;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
@@ -30,6 +31,10 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.internal.rcp.extdoc.UiManager;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.texteditor.ITextEditor;
 
@@ -88,18 +93,62 @@ public final class ExtDocCodeAssistantHover {
 
         private final class InformationControl extends AbstractExtDocInformationControl {
 
-            public InformationControl(final Shell parentShell) {
-                super(parentShell, uiManager, providerStore, creator);
+            private StyledText text;
+            private Composite parent;
+            private boolean lastWasExtDoc = true;
+
+            public InformationControl(final Shell parent) {
+                super(parent, uiManager, providerStore, creator);
+            }
+
+            @Override
+            protected void createContent(final Composite parentComposite) {
+                super.createContent(parentComposite);
+                parent = parentComposite;
+            }
+
+            @Override
+            public void setInput(final Object input) {
+                if (input instanceof JavadocBrowserInformationControlInput) {
+                    displayExtDocContent(input);
+                } else {
+                    displayTextContent(input);
+                }
+            }
+
+            private void displayExtDocContent(final Object input) {
+                if (!lastWasExtDoc) {
+                    for (final Control child : parent.getChildren()) {
+                        child.dispose();
+                    }
+                    super.createContent(parent);
+                    super.setInput(input);
+                    parent.layout(true);
+                    lastWasExtDoc = true;
+                } else {
+                    super.setInput(input);
+                }
+            }
+
+            private void displayTextContent(final Object input) {
+                if (lastWasExtDoc) {
+                    for (final Control child : parent.getChildren()) {
+                        child.dispose();
+                    }
+                    text = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY);
+                    text.setForeground(parent.getForeground());
+                    text.setBackground(parent.getBackground());
+                    text.setFont(JFaceResources.getDialogFont());
+                    text.setWordWrap(true);
+                    text.setIndent(1);
+                    lastWasExtDoc = false;
+                }
+                text.setText(input.toString());
+                parent.layout(true);
             }
 
             @Override
             protected IJavaElementSelection getSelection(final Object input) {
-                if (!(input instanceof JavadocBrowserInformationControlInput)) {
-                    System.err.println("Unsupported input: " + input.getClass());
-                    // TODO: Provide alternate information control when it's not
-                    // javadoc.
-                    return null;
-                }
                 final JavadocBrowserInformationControlInput in = (JavadocBrowserInformationControlInput) input;
                 final IJavaElement element = in.getElement();
                 return uiManager.getLastSelection().copy(element);

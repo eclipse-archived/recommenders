@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.WorkingCopyOwner;
 import org.eclipse.jdt.internal.codeassist.CompletionEngine;
@@ -100,7 +101,6 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     private void initializeCompletionEngine() {
         try {
-            Checks.ensureIsNotNull(getCompilationUnit());
             final JavaProject project = (JavaProject) getCompilationUnit().getJavaProject();
             final WorkingCopyOwner owner = getCompilationUnit().getOwner();
             final SearchableEnvironment s = project.newSearchableNameEnvironment(owner);
@@ -158,10 +158,11 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
     @Override
     public final ICompilationUnit getCompilationUnit() {
         if (compilationUnit == null) {
-            if (selection.getCompilationUnit() instanceof ClassFile) {
-                compilationUnit = Checks.cast(((ClassFile) selection.getCompilationUnit()).getCompilationUnit());
+            final ITypeRoot unit = Checks.ensureIsNotNull(selection.getCompilationUnit());
+            if (unit instanceof ClassFile) {
+                compilationUnit = Checks.cast(((ClassFile) unit).getCompilationUnit());
             } else {
-                compilationUnit = Checks.cast(selection.getCompilationUnit());
+                compilationUnit = Checks.cast(unit);
             }
         }
         return compilationUnit;

@@ -62,8 +62,8 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
     }
 
     @Override
-    protected final void createContent(final Composite parent) {
-        composite = new ProvidersComposite(parent, false);
+    protected void createContent(final Composite parent) {
+        createContentControl(parent);
         final ToolBarManager toolbar = getToolBarManager();
         for (final IProvider provider : providerStore.getProviders()) {
             final Composite providerComposite = composite.addProvider(provider, uiManager.getViewSite());
@@ -85,8 +85,12 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
         toolbar.update(true);
     }
 
+    protected void createContentControl(final Composite parent) {
+        composite = new ProvidersComposite(parent, false);
+    }
+
     @Override
-    public final void setInput(final Object input) {
+    public void setInput(final Object input) {
         lastSelection = getSelection(input);
 
         for (final Composite control : composite.getProviders()) {
