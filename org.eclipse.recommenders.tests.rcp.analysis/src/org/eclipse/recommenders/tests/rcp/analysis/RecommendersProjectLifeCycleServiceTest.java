@@ -20,14 +20,13 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.core.internal.resources.ProjectDescription;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.internal.rcp.analysis.IDs;
 import org.eclipse.recommenders.internal.rcp.analysis.IRecommendersProjectLifeCycleListener;
 import org.eclipse.recommenders.internal.rcp.analysis.RecommendersProjectLifeCycleService;
@@ -88,10 +87,9 @@ public class RecommendersProjectLifeCycleServiceTest {
 
     private IProject createRecommendersProjectMock() {
         final IProject project = mock(IProject.class);
-        final ProjectDescription description = new ProjectDescription();
-        description.setNatureIds(ArrayUtils.toArray(IDs.NATURE_ID));
         try {
-            when(project.getDescription()).thenReturn(description);
+            when(project.hasNature(IDs.NATURE_ID)).thenReturn(true);
+            when(project.hasNature(JavaCore.NATURE_ID)).thenReturn(true);
         } catch (final CoreException e) {
             Assert.fail();
         }
