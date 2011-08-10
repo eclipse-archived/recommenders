@@ -29,6 +29,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IProjectModelFacade;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.ListingTable;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CallsAdapter;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFactory;
@@ -227,15 +228,14 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
 
                     if (maxProbabilitiesFromMethods != null) {
                         new TextAndFeaturesLine(composite, text2, features);
-                        final Composite calls = SwtFactory.createGridComposite(composite, 4, 12, 2, 12, 0);
+                        final ListingTable calls = new ListingTable(composite, 4);
                         for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
-                            SwtFactory.createSquare(calls);
-                            SwtFactory.createLabel(calls,
-                                    formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true,
-                                    SWT.COLOR_BLACK);
+                            calls.startNewRow();
+                            calls.addLabelItem(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration),
+                                    false, true, SWT.COLOR_BLACK);
                             final int probability = (int) Math.round(proposal.getSecond().getSecond() * 100);
                             final String origin = Names.vm2srcSimpleMethod(proposal.getSecond().getFirst());
-                            SwtFactory.createLabel(calls, probability + "%", false, false, SWT.COLOR_BLUE);
+                            calls.addLabelItem(probability + "%", false, false, SWT.COLOR_BLUE);
                             final StyledText styled = SwtFactory.createStyledText(calls, "in " + origin);
                             SwtFactory.createStyleRange(styled, 3, origin.length(), SWT.NORMAL, false, true);
                         }
@@ -251,24 +251,23 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
     private void displayProposals(final IJavaElement element, final boolean isMethodDeclaration,
             final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods,
             final Composite composite) {
-        final Composite calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
+        final ListingTable table = new ListingTable(composite, 3);
         for (final IMethodName method : calledMethods) {
-            SwtFactory.createSquare(calls);
-            SwtFactory.createLabel(calls, formatMethodCall(element, method, isMethodDeclaration), false, true,
-                    SWT.COLOR_DARK_GRAY);
-            SwtFactory.createLabel(calls, "(called)", false, false, SWT.COLOR_DARK_GRAY);
+            table.startNewRow();
+            table.addLabelItem(formatMethodCall(element, method, isMethodDeclaration), false, true, SWT.COLOR_DARK_GRAY);
+            table.addLabelItem("(called)", false, false, SWT.COLOR_DARK_GRAY);
         }
         for (final Tuple<IMethodName, Double> proposal : proposals) {
-            displayProposal(proposal, calls, element, isMethodDeclaration);
+            displayProposal(proposal, table, element, isMethodDeclaration);
         }
     }
 
-    private void displayProposal(final Tuple<IMethodName, Double> proposal, final Composite parent,
+    private void displayProposal(final Tuple<IMethodName, Double> proposal, final ListingTable table,
             final IJavaElement element, final boolean isMethodDeclaration) {
-        SwtFactory.createSquare(parent);
-        SwtFactory.createLabel(parent, formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false,
-                true, SWT.COLOR_BLACK);
-        SwtFactory.createLabel(parent, Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
+        table.startNewRow();
+        table.addLabelItem(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true,
+                SWT.COLOR_BLACK);
+        table.addLabelItem(Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
     }
 
     private String formatMethodCall(final IJavaElement element, final IMethodName method,

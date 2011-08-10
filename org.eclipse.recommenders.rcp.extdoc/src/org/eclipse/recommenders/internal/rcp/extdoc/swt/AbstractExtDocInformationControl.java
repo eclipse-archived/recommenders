@@ -64,6 +64,16 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
     protected void createContent(final Composite parent) {
         createContentControl(parent);
         final ToolBarManager toolbar = getToolBarManager();
+        if (toolbar.isEmpty()) {
+            fillToolbar(toolbar);
+        }
+    }
+
+    protected void createContentControl(final Composite parent) {
+        composite = new ProvidersComposite(parent, false);
+    }
+
+    private void fillToolbar(final ToolBarManager toolbar) {
         for (final IProvider provider : providerStore.getProviders()) {
             final Composite providerComposite = composite.addProvider(provider, uiManager.getViewSite());
             final IAction action = new AbstractAction("Scroll to " + provider.getProviderFullName(),
@@ -90,10 +100,6 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
             }
         });
         toolbar.update(true);
-    }
-
-    protected void createContentControl(final Composite parent) {
-        composite = new ProvidersComposite(parent, false);
     }
 
     @Override

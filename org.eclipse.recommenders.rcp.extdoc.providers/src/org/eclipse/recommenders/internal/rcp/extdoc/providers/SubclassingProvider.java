@@ -23,6 +23,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.ListingTable;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
@@ -152,16 +153,15 @@ public final class SubclassingProvider extends AbstractTitledProvider {
 
     private static void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
             final int definitions, final Composite composite) {
-        final Composite directiveComposite = SwtFactory.createGridComposite(composite, 4, 12, 2, 15, 0);
+        final ListingTable table = new ListingTable(composite, 4);
         for (final Entry<IMethodName, Integer> directive : orderDirectives(directives).entrySet()) {
             final int percent = (int) Math.round(directive.getValue().doubleValue() * 100.0 / definitions);
-
-            SwtFactory.createSquare(directiveComposite);
-            SwtFactory.createLabel(directiveComposite, getLabel(percent), true, false, SWT.COLOR_BLACK);
-            SwtFactory.createLabel(directiveComposite,
-                    actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, true, SWT.COLOR_BLACK);
-            final StyledText text = SwtFactory.createStyledText(directiveComposite, "(" + directive.getValue()
-                    + " times - " + percent + "%)");
+            table.startNewRow();
+            table.addLabelItem(getLabel(percent), true, false, SWT.COLOR_BLACK);
+            table.addLabelItem(actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, true,
+                    SWT.COLOR_BLACK);
+            final StyledText text = SwtFactory.createStyledText(table, "(" + directive.getValue() + " times - "
+                    + percent + "%)");
             SwtFactory.createStyleRange(text, 10 + getLength(directive.getValue()), getLength(percent) + 1, SWT.NORMAL,
                     true, false);
         }

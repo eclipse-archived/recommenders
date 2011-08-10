@@ -129,7 +129,7 @@ public final class WikiProvider extends AbstractTitledProvider {
 
     private void displayEditArea(final IJavaElement element) {
         initComposite();
-        final Text text = SwtFactory.createText(composite, "", 100, 0);
+        final Text text = SwtFactory.createTextArea(composite, "", 100, 0);
         SwtFactory.createButton(composite, "Save Changes", new SelectionListener() {
             @Override
             public void widgetSelected(final SelectionEvent e) {

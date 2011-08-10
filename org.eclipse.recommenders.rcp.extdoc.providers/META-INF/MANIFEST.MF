@@ -31,3 +31,4 @@ Export-Package: org.eclipse.recommenders.internal.rcp.extdoc.providers;x-interna
  org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;x-internal:=true
 Bundle-Activator: org.eclipse.recommenders.internal.rcp.extdoc.providers.ExtDocProvidersPlugin
 Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.ui.forms.widgets

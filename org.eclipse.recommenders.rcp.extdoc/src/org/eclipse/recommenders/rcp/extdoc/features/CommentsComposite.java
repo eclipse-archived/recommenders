@@ -60,7 +60,7 @@ final class CommentsComposite {
     }
 
     private void createCommentsArea() {
-        SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", commentsIcon,
+        SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", commentsIcon, true,
                 new MouseListener() {
                     @Override
                     public void mouseUp(final MouseEvent e) {
@@ -95,7 +95,7 @@ final class CommentsComposite {
     }
 
     private void displayAddComment() {
-        final Text text = SwtFactory.createText(composite, "", 45, 0);
+        final Text text = SwtFactory.createTextArea(composite, "", 45, 0);
 
         final Composite buttons = SwtFactory.createGridComposite(composite, 2, 5, 0, 0, 0);
         SwtFactory.createButton(buttons, "Add Comment", new SelectionListener() {
@@ -145,7 +145,7 @@ final class CommentsComposite {
         }
     }
 
-    public void dispose() {
+    void dispose() {
         composite.dispose();
     }
 }

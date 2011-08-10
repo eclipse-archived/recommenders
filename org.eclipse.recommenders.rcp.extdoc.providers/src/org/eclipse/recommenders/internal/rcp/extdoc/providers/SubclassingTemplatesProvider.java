@@ -21,6 +21,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.ListingTable;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
@@ -86,17 +87,17 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                                 i + 1, patternProbability, pattern.getNumberOfObservations());
                         new TextAndFeaturesLine(templates, text2, ratings);
 
-                        final Composite template = SwtFactory.createGridComposite(templates, 4, 12, 2, 12, 0);
+                        final ListingTable table = new ListingTable(composite, 4);
                         final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
                         for (final Entry<IMethodName, Double> entry : entries) {
-                            SwtFactory.createSquare(template);
+                            table.startNewRow();
                             final IMethodName method = entry.getKey();
                             text2 = "override " + method.getDeclaringType().getClassName() + "."
                                     + Names.vm2srcSimpleMethod(method);
-                            SwtFactory.createLabel(template, text2, false, true, SWT.COLOR_BLACK);
-                            SwtFactory.createLabel(template, "-");
-                            SwtFactory.createLabel(template, String.format("~ %3.0f%%", entry.getValue() * 100), false,
-                                    false, SWT.COLOR_BLUE);
+                            table.addLabelItem(text2, false, true, SWT.COLOR_BLACK);
+                            table.addLabelItem("-", false, false, SWT.COLOR_BLACK);
+                            table.addLabelItem(String.format("~ %3.0f%%", entry.getValue() * 100), false, false,
+                                    SWT.COLOR_BLUE);
                         }
                     }
 
