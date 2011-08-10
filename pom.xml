@@ -89,7 +89,6 @@
 
 		<module>org.eclipse.recommenders.server.feature</module>
 		<module>org.eclipse.recommenders.server.update-site</module>
-		<module>org.eclipse.recommenders.server.product</module>
 		
 		<!-- Tools -->
 		<module>org.eclipse.recommenders.tools</module>
