@@ -17,10 +17,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.action.Action;
+import org.eclipse.jdt.ui.actions.OpenAction;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IInformationControlExtension2;
@@ -31,7 +31,6 @@ import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -67,7 +66,8 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
         final ToolBarManager toolbar = getToolBarManager();
         for (final IProvider provider : providerStore.getProviders()) {
             final Composite providerComposite = composite.addProvider(provider, uiManager.getViewSite());
-            final IAction action = new AbstractAction("Scroll to " + provider.getProviderFullName(), provider.getIcon()) {
+            final IAction action = new AbstractAction("Scroll to " + provider.getProviderFullName(),
+                    provider.getIcon(), SWT.NONE) {
                 @Override
                 public void run() {
                     composite.scrollToProvider(providerComposite);
@@ -76,10 +76,17 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
             toolbar.add(action);
             actions.put(providerComposite, action);
         }
-        toolbar.add(new AbstractAction("Show in ExtDoc View", ExtDocPlugin.getIcon("eview16/extdoc.png")) {
+        toolbar.add(new Separator());
+        toolbar.add(new AbstractAction("Open Input", ExtDocPlugin.getIcon("lcl16/goto_input.png"), SWT.NONE) {
             @Override
             public void run() {
-                uiManager.selectionChanged(getLastSelection());
+                new OpenAction(uiManager.getViewSite()).run(new Object[] { lastSelection.getJavaElement() });
+            }
+        });
+        toolbar.add(new AbstractAction("Show in ExtDoc View", ExtDocPlugin.getIcon("lcl16/extdoc_open.png"), SWT.NONE) {
+            @Override
+            public void run() {
+                uiManager.selectionChanged(lastSelection);
             }
         });
         toolbar.update(true);
@@ -124,17 +131,5 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
     }
 
     protected abstract IJavaElementSelection getSelection(Object object);
-
-    private IJavaElementSelection getLastSelection() {
-        return lastSelection;
-    }
-
-    private abstract class AbstractAction extends Action {
-
-        public AbstractAction(final String text, final Image icon) {
-            super(text, ImageDescriptor.createFromImage(icon));
-        }
-
-    }
 
 }

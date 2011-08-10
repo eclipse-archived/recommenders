@@ -10,13 +10,10 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
-import java.net.URL;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
-import org.eclipse.jface.action.Action;
+import org.eclipse.jdt.ui.actions.OpenAction;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
@@ -118,6 +115,7 @@ public class ExtDocView extends ViewPart {
         if (viewSite != null) {
             final IToolBarManager toolbar = viewSite.getActionBars().getToolBarManager();
             toolbar.removeAll();
+            toolbar.add(new OpenInputAction());
             toolbar.add(new LinkWithEditorAction());
         }
     }
@@ -159,13 +157,23 @@ public class ExtDocView extends ViewPart {
         return linkingEnabled;
     }
 
-    private static final class LinkWithEditorAction extends Action {
+    private final class OpenInputAction extends AbstractAction {
 
-        private LinkWithEditorAction() {
-            super("Link with Selection", SWT.TOGGLE);
-            final URL entry = ExtDocPlugin.getDefault().getBundle().getEntry("icons/full/lcl16/link.gif");
-            setImageDescriptor(ImageDescriptor.createFromURL(entry));
-            setToolTipText("Link with Selection");
+        OpenInputAction() {
+            super("Link with Selection", "lcl16/goto_input.png", SWT.TOGGLE);
+        }
+
+        @Override
+        public void run() {
+            final IJavaElement inputElement = table.getLastSelection().getJavaElement();
+            new OpenAction(getViewSite()).run(new Object[] { inputElement });
+        }
+    }
+
+    private static final class LinkWithEditorAction extends AbstractAction {
+
+        LinkWithEditorAction() {
+            super("Link with Selection", "lcl16/link.gif", SWT.TOGGLE);
             setChecked(true);
         }
 
