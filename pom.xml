@@ -32,15 +32,15 @@
 		<module>org.eclipse.recommenders.rcp.codecompletion.calls</module>
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.calls</module>
 
-<!--
+
 		<module>org.eclipse.recommenders.rcp.codecompletion.overrides</module>
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.overrides</module>
--->
+
 		<module>org.eclipse.recommenders.rcp.codecompletion.chain</module>
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.chain</module>
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.templates</module>
-		<!--module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module-->
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module>
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.subwords</module>
 		<!-- <module>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</module> -->
