@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.BinaryType;
@@ -77,8 +78,15 @@ public class JDTBinaryTypeEntry implements ModuleEntry, IJarFileProvider {
 
     @Override
     public File getJarFile() {
-        final IPath fullPath = b.getPath();
-        final File file = fullPath.toFile();
-        return file;
+        File res = null;
+        final IResource resource = b.getResource();
+        if (resource != null) {
+            IPath location = resource.getLocation();
+            res = location.toFile();
+        } else {
+            final IPath path = b.getPath();
+            res = path.toFile();
+        }
+        return res;
     }
 }

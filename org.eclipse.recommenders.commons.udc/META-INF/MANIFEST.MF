@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Commons for lfm
+Bundle-Name: Code Recommenders: Commons for Usage Data Collector (Incubator)
 Bundle-SymbolicName: org.eclipse.recommenders.commons.udc
 Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders

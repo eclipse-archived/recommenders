@@ -21,7 +21,6 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Compilati
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.internal.rcp.codecompletion.overrides.net.ClassOverridesNetwork;
-import org.eclipse.recommenders.internal.rcp.codecompletion.overrides.net.MethodNode;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.eclipse.recommenders.rcp.IRecommendation;
 
@@ -66,12 +65,8 @@ public class InstantOverridesRecommender implements IRecommendationsViewContentP
 
     private void computeRecommendations() {
         model.clearEvidence();
-        for (final MethodNode node : model.getMethodNodes()) {
-            for (final MethodDeclaration method : type.methods) {
-                if (method.superDeclaration == node.getMethod()) {
-                    node.setEvidence(true);
-                }
-            }
+        for (final MethodDeclaration method : type.methods) {
+            model.observeMethodNode(method.superDeclaration);
         }
         model.updateBeliefs();
     };

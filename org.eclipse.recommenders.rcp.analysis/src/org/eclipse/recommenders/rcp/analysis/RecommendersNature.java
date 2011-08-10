@@ -59,10 +59,7 @@ public class RecommendersNature implements IProjectNature {
 
     public static boolean hasNature(final IProject project) {
         try {
-            final IProjectDescription description = project.getDescription();
-            final String[] natures = description.getNatureIds();
-            final int index = ArrayUtils.indexOf(natures, IDs.NATURE_ID);
-            return hasRecommendersNature(index);
+            return project.hasNature(IDs.NATURE_ID);
         } catch (final CoreException x) {
             throw throwUnhandledException(x);
         }

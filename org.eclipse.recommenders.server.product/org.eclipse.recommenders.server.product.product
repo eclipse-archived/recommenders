@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Recommenders Server Product" uid="org.eclipse.recommenders.server.product" id="org.eclipse.recommenders.server.product.product" version="0.1.0" useFeatures="true" includeLaunchers="false">
+<product name="Recommenders Server Product" uid="org.eclipse.recommenders.server" id="org.eclipse.recommenders.server.product.testProduct" version="0.1.3" useFeatures="true" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -29,24 +29,15 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.recommenders.server.codesearch.feature"/>
       <feature id="org.eclipse.recommenders.3rd.feature"/>
-      <feature id="org.eclipse.recommenders.server.udc.feature"/>
-      <feature id="org.eclipse.equinox.core.sdk"/>
-      <feature id="org.eclipse.equinox.sdk"/>
-      <feature id="org.eclipse.equinox.compendium.sdk" version="3.6.1.R36x_v20101014-7V7RFiwFLSgEt4Pctn77c7J"/>
-      <feature id="org.eclipse.equinox.executable" version="3.4.2.R36x_v20110125-7N7K7bF8zk1BAKMh0iz0t94miBLY"/>
-      <feature id="org.eclipse.equinox.p2.discovery.feature" version="1.0.1.R36x_v20110210-4-09oB5865H6L02434"/>
-      <feature id="org.eclipse.equinox.p2.sdk" version="3.6.2.R36x_v20110120-9I7VGEAG438GhnfSLuLz0FXP9NYJ"/>
-      <feature id="org.eclipse.equinox.p2.user.ui" version="2.0.1.r361_v20100903-897HFa-FX0z-z-ntoaavz0JPX628"/>
-      <feature id="org.eclipse.equinox.p2.user.ui.source" version="2.0.1.r361_v20100903-897HFa-FX0z-z-ntoaavz0JPX628"/>
-      <feature id="org.eclipse.equinox.server.jetty" version="1.0.0.v20100510-7I777iBgJ9DIARGH8IIQ"/>
-      <feature id="org.eclipse.equinox.server.p2" version="1.0.1.R36x_v20101007-7x7IFI3FOf7yk63X6z0kz-Z2T158"/>
-      <feature id="org.eclipse.equinox.server.servletbridge" version="1.0.0.v20100510-42A79oB5855K5E"/>
-      <feature id="org.eclipse.equinox.server.simple" version="1.0.0.v20100510-44DF8s734C48662444"/>
-      <feature id="org.eclipse.equinox.serverside.sdk" version="3.6.1.R36x_v20101014-7u7NFVmFL9O33b1CgDPjCI2jWYYn"/>
-      <feature id="org.eclipse.equinox.weaving.sdk" version="1.0.0.v20100421-79--EVVFNFFsFc"/>
+      <feature id="org.eclipse.recommenders.server.codesearch.feature"/>
+      <feature id="org.eclipse.recommenders.server.udc.feature" version="0.1.0.qualifier"/>
    </features>
 
+   <configurations>
+      <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.recommenders.server.codesearch" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.recommenders.server.udc" autoStart="true" startLevel="3" />
+   </configurations>
 
 </product>

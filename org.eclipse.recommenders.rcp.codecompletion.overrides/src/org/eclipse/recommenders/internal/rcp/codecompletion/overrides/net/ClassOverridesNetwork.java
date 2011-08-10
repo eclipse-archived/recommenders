@@ -14,43 +14,50 @@ import static java.lang.String.format;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureEquals;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
-import java.io.File;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.eclipse.recommenders.bayes.BayesNet;
+import org.eclipse.recommenders.bayes.BayesNode;
+import org.eclipse.recommenders.bayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-
-import smile.Network;
+import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class ClassOverridesNetwork {
-    public static String escape(final IMethodName ref) {
-        return ref.toString().replaceAll("[^\\w]", "_");
-    }
-
-    private final Network network;
-
-    private final List<MethodNode> methodNodes;
-
-    private final PatternNode patternsNode;
 
     private HashMap<String, IMethodName> escapedMethodReferences;
 
     private final ITypeName typeName;
 
-    protected ClassOverridesNetwork(final ITypeName typeName, final Network network) {
+    private final List<BayesNode> methodNodes;
+
+    private final JunctionTreeAlgorithm junctionTreeAlgorithm;
+
+    private HashMap<IMethodName, BayesNode> methodNameMapping;
+
+    protected ClassOverridesNetwork(final ITypeName typeName, final BayesNet network, final BayesNode patternNode,
+            final List<BayesNode> methodNodes) {
         this.typeName = typeName;
-        this.network = network;
-        patternsNode = new PatternNode(network);
-        methodNodes = findMethodNodes();
+        this.methodNodes = methodNodes;
+        junctionTreeAlgorithm = new JunctionTreeAlgorithm();
+        junctionTreeAlgorithm.setNetwork(network);
+        createMethodNameMapping();
+    }
+
+    private void createMethodNameMapping() {
+        methodNameMapping = Maps.newHashMap();
+        for (final BayesNode methodNode : methodNodes) {
+            methodNameMapping.put(VmMethodName.get(methodNode.getName()), methodNode);
+        }
     }
 
     public IMethodName getMethodReferenceFromEscapedName(final String escapedName) {
@@ -59,33 +66,12 @@ public class ClassOverridesNetwork {
         return res;
     }
 
-    private List<MethodNode> findMethodNodes() {
-        final LinkedList<MethodNode> res = new LinkedList<MethodNode>();
-        for (final String methodNodeId : network.getChildIds(patternsNode.getNodeId())) {
-            final MethodNode methodNode = new MethodNode(network, methodNodeId);
-            res.add(methodNode);
-        }
-        return res;
-    }
-
-    public PatternNode getPatternsNode() {
-        return patternsNode;
-    }
-
-    public List<MethodNode> getMethodNodes() {
-        return methodNodes;
-    }
-
     public void updateBeliefs() {
-        network.updateBeliefs();
-    }
-
-    protected Network getNetwork() {
-        return network;
+        junctionTreeAlgorithm.updateBeliefs();
     }
 
     public void clearEvidence() {
-        network.clearAllEvidence();
+        junctionTreeAlgorithm.setEvidence(new HashMap<BayesNode, String>());
     }
 
     @Override
@@ -93,23 +79,24 @@ public class ClassOverridesNetwork {
         return format("Model for '%s'", typeName);
     }
 
-    public void saveNetwork() {
-        final File out = new File("debug.xdsl").getAbsoluteFile();
-        System.out.println("wrote file to " + out);
-        network.writeFile(out.getAbsolutePath());
+    public void observeMethodNode(final IMethodName methodName) {
+        final BayesNode methodNode = methodNameMapping.get(methodName);
+        if (methodNode != null) {
+            junctionTreeAlgorithm.addEvidence(methodNode, "true");
+        }
     }
 
     public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodOverrides(final double minProbability) {
         final TreeSet<Tuple<IMethodName, Double>> recommendations = createSortedSetForMethodRecommendations();
-        for (final MethodNode node : getMethodNodes()) {
-            if (node.isEvidence()) {
+        for (final BayesNode node : methodNodes) {
+            if (junctionTreeAlgorithm.getEvidence().containsKey(node.getId())) {
                 continue;
             }
-            final double probability = node.getProbability();
+            final double probability = junctionTreeAlgorithm.getBeliefs(node)[0];
             if (probability < minProbability) {
                 continue;
             }
-            final IMethodName method = node.getMethod();
+            final IMethodName method = VmMethodName.get(node.getName());
             final Tuple<IMethodName, Double> item = Tuple.create(method, probability);
             recommendations.add(item);
         }
@@ -142,4 +129,5 @@ public class ClassOverridesNetwork {
         });
         return res;
     }
+
 }
