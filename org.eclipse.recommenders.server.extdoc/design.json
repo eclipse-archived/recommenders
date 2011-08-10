@@ -1,13 +1,16 @@
 {
    "_id": "_design/providers",
-   "_rev": "46-d689ed25d71d8e5d3e4e4e9bb5828e76",
+   "_rev": "52-ccf688467186638fced037cf5651c0f1",
    "language": "javascript",
    "views": {
        "providers": {
            "map": "function(doc) {\n  var key = {};\n  key['providerId'] = doc.providerId;\n  if(doc.method) {\n    key['method'] = doc.method;\n  } else {\n    key['type'] = doc.type;\n  }\n  emit(key, doc);\n}"
        },
        "feedback": {
-           "map": "function(doc) {\n  if(doc.element) {\n    var key = {};\n    key['providerId'] = doc.providerId;\n    key['element'] = doc.element;\n\n    emit(key, doc);\n  }\n}"
+           "map": "function(doc) {\n  if(doc.element && doc.providerId) {\n    var key = {};\n    key['providerId'] = doc.providerId;\n    key['element'] = doc.element;\n\n    emit(key, doc);\n  }\n}"
+       },
+       "bookmarks": {
+           "map": "function(doc) {\n  if(doc.element && !doc.providerId) {\n    var key = {};\n    key['element'] = doc.element;\n    emit(key, doc);\n  }\n}"
        },
        "comments": {
            "map": "function(doc) {\n  if(doc.comments) {\n    for(var i = 0; i < doc.comments.length; i++) {\n      var entry = {};\n      entry['date'] = doc.comments[i].date;\n      entry['text'] = doc.comments[i].text;\n      entry['username'] = doc.comments[i].username;\n      entry['providerId'] = doc.providerId;\n      entry['element'] = doc.element;\n      emit(entry.date, entry);\n    }\n  }\n}"

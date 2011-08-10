@@ -54,7 +54,6 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     public final IUserFeedback getUserFeedback(final IName javaElement, final String keyAppendix,
             final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
-        // final String elementId = resolveNameIdentifier(javaElement);
         final String elementId = javaElement.getIdentifier();
         final List<UserFeedback> feedbacks = server.getRows("feedback",
                 ImmutableMap.of("providerId", providerId, "element", elementId),
