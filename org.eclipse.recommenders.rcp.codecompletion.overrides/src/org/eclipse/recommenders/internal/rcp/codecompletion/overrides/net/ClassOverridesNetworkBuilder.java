@@ -15,19 +15,18 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsGreaterOrEqu
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.collections.primitives.ArrayDoubleList;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math.stat.StatUtils;
+import org.eclipse.recommenders.bayes.BayesNet;
+import org.eclipse.recommenders.bayes.BayesNode;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 
-import smile.DocItemInfo;
-import smile.Network;
-import smile.Network.NodeType;
+import com.google.common.collect.Lists;
 
 public class ClassOverridesNetworkBuilder {
     private static final double MIN = 0.0001;
@@ -36,11 +35,15 @@ public class ClassOverridesNetworkBuilder {
 
     private final ITypeName typeName;
 
-    private final Network network;
+    private final BayesNet network;
 
     private final Collection<ClassOverridesObservation> overriddenMethods;
 
     private int totalNumberOfSubtypesFound;
+
+    private BayesNode patternNode;
+
+    private LinkedList<BayesNode> methodNodes;
 
     public ClassOverridesNetworkBuilder(final ITypeName typeName,
             final Collection<ClassOverridesObservation> overriddenMethods) {
@@ -49,7 +52,7 @@ public class ClassOverridesNetworkBuilder {
         // filterInfrequentOverridingPatterns();
         ensureIsGreaterOrEqualTo(overriddenMethods.size(), 1, "at least one observation is required");
         computeTotalNumberOfSubtypes();
-        network = new Network();
+        network = new BayesNet();
     }
 
     private void filterInfrequentOverridingPatterns() {
@@ -68,18 +71,17 @@ public class ClassOverridesNetworkBuilder {
     }
 
     public ClassOverridesNetwork build() {
-        return new ClassOverridesNetwork(typeName, network);
+        return new ClassOverridesNetwork(typeName, network, patternNode, methodNodes);
     }
 
-    public PatternNode createPatternsNode() {
+    public void createPatternsNode() {
         createPatternNodeInNetwork();
-        return new PatternNode(network);
     }
 
     private void createPatternNodeInNetwork() {
-        network.addNode(Network.NodeType.Cpt, PatternNode.ID);
-        network.setNodeName(PatternNode.ID, "Patterns  ");
-        network.addOutcome(PatternNode.ID, "none");
+        patternNode = new BayesNode("patternNode");
+        network.addNode(patternNode);
+        patternNode.addOutcome("none");
         //
         final ArrayDoubleList def = new ArrayDoubleList();
         def.add(MIN);
@@ -87,14 +89,12 @@ public class ClassOverridesNetworkBuilder {
         for (final ClassOverridesObservation obs : overriddenMethods) {
             i++;
             final String name = "observation_" + String.valueOf(i);
-            network.addOutcome(PatternNode.ID, name);
+            patternNode.addOutcome(name);
             final double priorPatternProbability = obs.frequency / (double) totalNumberOfSubtypesFound;
             def.add(priorPatternProbability);
         }
-        network.deleteOutcome(PatternNode.ID, 0);
-        network.deleteOutcome(PatternNode.ID, 0);
         scaleMaximalValue(def);
-        network.setNodeDefinition(PatternNode.ID, def.toArray());
+        patternNode.setProbabilities(def.toArray());
     }
 
     private void scaleMaximalValue(final ArrayDoubleList subDefinition) {
@@ -105,34 +105,22 @@ public class ClassOverridesNetworkBuilder {
         subDefinition.set(indexOf, values[indexOf] - diff);
     }
 
-    public void saveNetwork() {
-        network.writeFile("debug.xdsl");
-    }
-
-    public List<MethodNode> createMethodNodes() {
+    public void createMethodNodes() {
         final Set<IMethodName> methods = collectInvokedMethodsFromPatterns();
-        final LinkedList<MethodNode> res = new LinkedList<MethodNode>();
-        int i = 1;
+        methodNodes = Lists.newLinkedList();
+        final int i = 1;
         for (final IMethodName ref : methods) {
-            final String nodeId = "m" + i++;
-            network.addNode(NodeType.Cpt, nodeId);
-            network.setNodeName(nodeId, ref.toString());
-            network.addArc(PatternNode.ID, nodeId);
-            network.setOutcomeId(nodeId, 0, "true");
-            network.setOutcomeId(nodeId, 1, "false");
-            createMethodNodeDefinition(ref, nodeId);
-            createMethodNodeDocumentation(ref, nodeId);
-            res.add(new MethodNode(network, nodeId));
+            final BayesNode methodNode = new BayesNode(ref.getIdentifier());
+            network.addNode(methodNode);
+            methodNode.setParents(Lists.newArrayList(patternNode));
+            methodNode.addOutcome("true");
+            methodNode.addOutcome("false");
+            methodNode.setProbabilities(createMethodNodeDefinition(ref));
+            methodNodes.add(methodNode);
         }
-        return res;
     }
 
-    private void createMethodNodeDocumentation(final IMethodName ref, final String nodeId) {
-        final DocItemInfo IMethodNameInfo = new DocItemInfo("IMethodName", ref.getIdentifier());
-        network.setNodeDocumentation(nodeId, new DocItemInfo[] { IMethodNameInfo });
-    }
-
-    private void createMethodNodeDefinition(final IMethodName ref, final String nodeId) {
+    private double[] createMethodNodeDefinition(final IMethodName ref) {
         final ArrayDoubleList definition = new ArrayDoubleList();
         definition.add(0.0);
         definition.add(1.0);
@@ -147,7 +135,7 @@ public class ClassOverridesNetworkBuilder {
                 definition.add(MAX);
             }
         }
-        network.setNodeDefinition(nodeId, definition.toArray());
+        return definition.toArray();
     }
 
     private TreeSet<IMethodName> collectInvokedMethodsFromPatterns() {
