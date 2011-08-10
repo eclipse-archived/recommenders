@@ -134,10 +134,13 @@ public final class SwtFactory {
     }
 
     // TODO: Use link and put together with a image into a grid.
-    public static CLabel createLink(final Composite parent, final String text, final Image image,
+    public static CLabel createLink(final Composite parent, final String text, final String tooltip, final Image image,
             final boolean blueColor, final MouseListener listener) {
         final CLabel link = new CLabel(parent, SWT.NONE);
         link.setText(text);
+        if (tooltip != null) {
+            link.setToolTipText(tooltip);
+        }
         if (blueColor) {
             link.setForeground(createColor(SWT.COLOR_BLUE));
         }

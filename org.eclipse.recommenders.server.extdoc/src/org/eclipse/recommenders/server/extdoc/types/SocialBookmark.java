@@ -13,6 +13,8 @@ package org.eclipse.recommenders.server.extdoc.types;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
+import com.google.common.base.Preconditions;
+
 public final class SocialBookmark implements IServerType, Comparable<SocialBookmark> {
 
     private String userId;
@@ -27,6 +29,10 @@ public final class SocialBookmark implements IServerType, Comparable<SocialBookm
         bookmark.title = title;
         bookmark.description = description;
         bookmark.url = url;
+        // TODO: let some sophisticated library do things like that.
+        if (!url.startsWith("http://")) {
+            bookmark.url = "http://" + url;
+        }
         bookmark.validate();
         return bookmark;
     }
@@ -50,7 +56,13 @@ public final class SocialBookmark implements IServerType, Comparable<SocialBookm
 
     @Override
     public void validate() {
-        Checks.ensureIsTrue(!userId.isEmpty() && !title.isEmpty() && !description.isEmpty() && !url.isEmpty());
+        Checks.ensureIsTrue(!userId.isEmpty());
+        Preconditions.checkArgument(title.length() >= 3 && !"Link Title".equals("title"),
+                "The title has to be at least 3 characters long.");
+        Preconditions.checkArgument(description.length() >= 5 && !"Link Description".equals(description),
+                "The description has to be at least 5 characters long.");
+        // TODO: use external library, also has to do security checks.
+        Preconditions.checkArgument(url.length() > 10 && url.contains("."), "This doens't seems to be a valid url: "
+                + url);
     }
-
 }

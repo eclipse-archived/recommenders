@@ -60,7 +60,7 @@ final class CommentsComposite {
     }
 
     private void createCommentsArea() {
-        SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", commentsIcon, true,
+        SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", null, commentsIcon, true,
                 new MouseListener() {
                     @Override
                     public void mouseUp(final MouseEvent e) {

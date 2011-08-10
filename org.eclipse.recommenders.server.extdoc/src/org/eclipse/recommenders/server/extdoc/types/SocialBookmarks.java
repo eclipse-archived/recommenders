@@ -23,6 +23,8 @@ public final class SocialBookmarks implements IServerType {
 
     @SerializedName("_id")
     private String documentId;
+    @SerializedName("_rev")
+    private String rev;
 
     private String element;
 
