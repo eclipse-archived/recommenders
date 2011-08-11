@@ -145,6 +145,9 @@ public class LocalNamesCollector {
             return;
         }
         for (final ISSABasicBlock block : basicBlocks) {
+            if (Thread.interrupted()) {
+                Throws.throwCancelationException();
+            }
             final int last = block.getLastInstructionIndex();
             final String[] localNames = ir.getLocalNames(last, valueNumber);
             storeLocalNamesForValueNumber(valueNumber, localNames);

@@ -10,20 +10,40 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.rcp.utils.CountingProgressMonitor;
 
 public class InterruptingProgressMonitor implements IProgressMonitor {
 
     private final CountingProgressMonitor delegate;
+    private boolean done;
 
     @Override
     public void beginTask(final String name, final int plannedTotalWork) {
         delegate.beginTask(name, plannedTotalWork);
+        final Thread currentThread = Thread.currentThread();
+
+        final WorkspaceJob hob = new WorkspaceJob("Timout Job") {
+
+            @Override
+            public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
+                if (!done) {
+                    currentThread.interrupt();
+                }
+                return Status.OK_STATUS;
+            }
+        };
+        hob.setSystem(true);
+        hob.schedule(2000);
     }
 
     @Override
     public void done() {
+        this.done = true;
         delegate.done();
     }
 

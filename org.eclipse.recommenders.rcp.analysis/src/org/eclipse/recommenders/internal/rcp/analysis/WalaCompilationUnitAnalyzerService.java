@@ -38,6 +38,7 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
     public CompilationUnit analyze(final ICompilationUnit jdtCompilationUnit, final IProgressMonitor monitor) {
         final StopWatch w = new StopWatch();
         w.start();
+
         final IType jdtType = jdtCompilationUnit.findPrimaryType();
         if (jdtType == null) {
             return null;
@@ -53,11 +54,14 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         final WalaCompiliationUnitAnalzyer r = injector.getInstance(WalaCompiliationUnitAnalzyer.class);
         r.init(jdtCompilationUnit, walaClass, recCompilationUnit);
         try {
+            monitor.beginTask("analyzing " + jdtCompilationUnit.getElementName(), 10);
             r.run(monitor);
         } catch (final Exception x) {
             RcpAnalysisPlugin.logError(x, "error during analysis if '%s'", walaClass.getName());
         } catch (final UnimplementedError x) {
             RcpAnalysisPlugin.logError(x, "error during analysis if '%s'", walaClass.getName());
+        } finally {
+            monitor.done();
         }
         w.stop();
         System.out.printf("Analyzing %s took '%s'\n", jdtCompilationUnit.getElementName(), w);
