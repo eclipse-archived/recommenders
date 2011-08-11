@@ -56,19 +56,19 @@ public final class SubclassingProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
-            return displayContentForType(ElementResolver.toRecType((IType) element), composite);
+            return displayContentForType(ElementResolver.toRecType((IType) element));
         } else if (element instanceof IMethod) {
             final IMethod firstDeclaration = JdtUtils.findFirstDeclaration((IMethod) element);
             return displayContentForMethod(ElementResolver.toRecMethod((IMethod) element),
-                    ElementResolver.toRecMethod(firstDeclaration), composite);
+                    ElementResolver.toRecMethod(firstDeclaration));
         }
         return null;
     }
 
-    private ProviderUiJob displayContentForType(final ITypeName type, final Composite composite) {
+    private ProviderUiJob displayContentForType(final ITypeName type) {
         final ClassOverrideDirectives overrides = server.getClassOverrideDirectives(type);
         if (overrides == null) {
             return null;
@@ -84,25 +84,21 @@ public final class SubclassingProvider extends AbstractTitledProvider {
 
         return new ProviderUiJob() {
             @Override
-            public Composite run() {
-                if (!composite.isDisposed()) {
-                    disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
-                    line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
-                    displayDirectives(overrides.getOverrides(), "override", subclasses, composite);
-                    if (calls != null) {
-                        new TextAndFeaturesLine(composite, text2, features);
-                        displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses(), composite);
-                    }
-                    features.loadCommentsComposite(composite);
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
+                displayDirectives(overrides.getOverrides(), "override", subclasses, composite);
+                if (calls != null) {
+                    new TextAndFeaturesLine(composite, text2, features);
+                    displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses(), composite);
                 }
-                return composite;
+                features.loadCommentsComposite(composite);
             }
         };
     }
 
-    private ProviderUiJob displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration,
-            final Composite composite) {
+    private ProviderUiJob displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration) {
         // TODO first is not correct in all cases. this needs to be fixed soon
         // after the demo
         final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(firstDeclaration);
@@ -114,21 +110,17 @@ public final class SubclassingProvider extends AbstractTitledProvider {
 
         return new ProviderUiJob() {
             @Override
-            public Composite run() {
-                if (!composite.isDisposed()) {
-                    disposeChildren(composite);
-                    // displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(),
-                    // definitions, 25);
-                    final String text = String
-                            .format("Based on %d implementations of %s we created the following statistics. Implementors may consider to call the following methods.",
-                                    definitions, method.getName());
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
-                    line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false,
-                            true);
-                    displayDirectives(selfcalls.getCalls(), "call", definitions, composite);
-                    features.loadCommentsComposite(composite);
-                }
-                return composite;
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                // displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(),
+                // definitions, 25);
+                final String text = String
+                        .format("Based on %d implementations of %s we created the following statistics. Implementors may consider to call the following methods.",
+                                definitions, method.getName());
+                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false, true);
+                displayDirectives(selfcalls.getCalls(), "call", definitions, composite);
+                features.loadCommentsComposite(composite);
             }
         };
     }

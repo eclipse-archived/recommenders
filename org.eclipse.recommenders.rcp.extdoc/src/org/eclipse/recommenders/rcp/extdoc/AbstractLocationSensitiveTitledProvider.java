@@ -22,7 +22,6 @@ import org.eclipse.jdt.internal.core.PackageDeclaration;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Throws;
-import org.eclipse.swt.widgets.Composite;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTitledProvider {
@@ -33,188 +32,173 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
     }
 
     @Override
-    public final ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public final ProviderUiJob updateSelection(final IJavaElementSelection selection) {
         if (selection.getElementLocation() == null) {
             return null;
         }
 
         switch (selection.getElementLocation()) {
         case METHOD_BODY:
-            return updateMethodBodySelection(selection, composite);
+            return updateMethodBodySelection(selection);
         case FIELD_DECLARATION:
-            return updateFieldDeclarationSelection(selection, composite);
+            return updateFieldDeclarationSelection(selection);
         case IMPORT_DECLARATION:
-            return updateImportDeclarationSelection(selection, composite);
+            return updateImportDeclarationSelection(selection);
         case METHOD_DECLARATION:
-            return updateMethodDeclarationSelection(selection, composite);
+            return updateMethodDeclarationSelection(selection);
         case PARAMETER_DECLARATION:
-            return updateParameterDeclarationSelection(selection, composite);
+            return updateParameterDeclarationSelection(selection);
         case PACKAGE_DECLARATION:
-            return updatePackageDeclarationSelection(selection, composite);
+            return updatePackageDeclarationSelection(selection);
         case TYPE_DECLARATION:
-            return updateTypeDeclarationSelection(selection, composite);
+            return updateTypeDeclarationSelection(selection);
         case EXTENDS_DECLARATION:
-            return updateExtendsDeclarationSelection(selection, composite);
+            return updateExtendsDeclarationSelection(selection);
         case IMPLEMENTS_DECLARATION:
-            return updateImplementsDeclarationSelection(selection, composite);
+            return updateImplementsDeclarationSelection(selection);
         default:
             throw Throws.throwUnreachable("invalid element location observed: '%s'. %s",
                     selection.getElementLocation(), selection);
         }
     }
 
-    private ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection,
-            final Composite composite) {
+    private ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IPackageFragment) {
-            return updateImportDeclarationSelection(selection, (IPackageFragment) javaElement, composite);
+            return updateImportDeclarationSelection(selection, (IPackageFragment) javaElement);
         } else if (javaElement instanceof IType) {
-            return updateImportDeclarationSelection(selection, (IType) javaElement, composite);
+            return updateImportDeclarationSelection(selection, (IType) javaElement);
         } else if (javaElement instanceof ImportDeclaration) {
             return null;
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return null;
     }
 
     protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection,
-            final IPackageFragment javaElement, final Composite composite) {
+            final IPackageFragment javaElement) {
         return null;
     }
 
-    private ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
-            final Composite composite) {
+    private ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
-            return updateParameterDeclarationSelection(selection, (ILocalVariable) javaElement, composite);
+            return updateParameterDeclarationSelection(selection, (ILocalVariable) javaElement);
         } else if (javaElement instanceof IType) {
-            return updateParameterDeclarationSelection(selection, (IType) javaElement, composite);
+            return updateParameterDeclarationSelection(selection, (IType) javaElement);
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
-            final IType type, final Composite composite) {
+    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return null;
     }
 
     protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
-            final ILocalVariable local, final Composite composite) {
+            final ILocalVariable local) {
         return null;
     }
 
-    private ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection,
-            final Composite composite) {
+    private ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
-            return updateImplementsDeclarationSelection(selection, (ILocalVariable) javaElement, composite);
+            return updateImplementsDeclarationSelection(selection, (ILocalVariable) javaElement);
         } else if (javaElement instanceof IType) {
-            return updateImplementsDeclarationSelection(selection, (IType) javaElement, composite);
+            return updateImplementsDeclarationSelection(selection, (IType) javaElement);
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection,
-            final IType type, final Composite composite) {
+    protected ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return null;
     }
 
     protected ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection,
-            final ILocalVariable local, final Composite composite) {
+            final ILocalVariable local) {
         return null;
     }
 
-    private ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection,
-            final Composite composite) {
+    private ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IType) {
-            return updateExtendsDeclarationSelection(selection, (IType) javaElement, composite);
+            return updateExtendsDeclarationSelection(selection, (IType) javaElement);
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return null;
     }
 
-    private ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection,
-            final Composite composite) {
+    private ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
-            return updateTypeDeclarationSelection(selection, (ILocalVariable) javaElement, composite);
+            return updateTypeDeclarationSelection(selection, (ILocalVariable) javaElement);
         } else if (javaElement instanceof IType) {
-            return updateTypeDeclarationSelection(selection, (IType) javaElement, composite);
+            return updateTypeDeclarationSelection(selection, (IType) javaElement);
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return null;
     }
 
     protected ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection,
-            final ILocalVariable local, final Composite composite) {
+            final ILocalVariable local) {
         return null;
     }
 
-    private ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection,
-            final Composite composite) {
+    private ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
-            return updatePackageDeclarationSelection(selection, (IPackageFragment) javaElement, composite);
+            return updatePackageDeclarationSelection(selection, (IPackageFragment) javaElement);
         } else if (javaElement instanceof IType) {
-            return updatePackageDeclarationSelection(selection, (IType) javaElement, composite);
+            return updatePackageDeclarationSelection(selection, (IType) javaElement);
         }
         throw new IllegalArgumentException(javaElement.getClass().toString());
     }
 
-    protected ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return null;
     }
 
     protected ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection,
-            final IPackageFragment pkg, final Composite composite) {
+            final IPackageFragment pkg) {
         return null;
     }
 
-    private ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection,
-            final Composite composite) {
+    private ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IMethod) {
-            return updateMethodDeclarationSelection(selection, (IMethod) javaElement, composite);
+            return updateMethodDeclarationSelection(selection, (IMethod) javaElement);
         } else if (javaElement instanceof IType) {
-            return updateMethodDeclarationSelection(selection, (IType) javaElement, composite);
+            return updateMethodDeclarationSelection(selection, (IType) javaElement);
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection,
-            final IMethod method, final Composite composite) {
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
         return null;
     }
 
-    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return null;
     }
 
-    private ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final Composite composite) {
+    private ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
-            return updateMethodBodySelection(selection, (ILocalVariable) javaElement, composite);
+            return updateMethodBodySelection(selection, (ILocalVariable) javaElement);
         } else if (javaElement instanceof IField) {
-            return updateMethodBodySelection(selection, (IField) javaElement, composite);
+            return updateMethodBodySelection(selection, (IField) javaElement);
         } else if (javaElement instanceof IType) {
-            return updateMethodBodySelection(selection, (IType) javaElement, composite);
+            return updateMethodBodySelection(selection, (IType) javaElement);
         } else if (javaElement instanceof IMethod) {
-            return updateMethodBodySelection(selection, (IMethod) javaElement, composite);
+            return updateMethodBodySelection(selection, (IMethod) javaElement);
         } else if (javaElement instanceof PackageDeclaration) {
             return null;
         } else if (javaElement instanceof ImportContainer) {
@@ -223,51 +207,43 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection,
-            final ILocalVariable local, final Composite composite) {
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
         return null;
     }
 
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IField field,
-            final Composite composite) {
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
         return null;
     }
 
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method,
-            final Composite composite) {
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
         return null;
     }
 
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
         return null;
     }
 
-    private ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection,
-            final Composite composite) {
+    private ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IField) {
-            return updateFieldDeclarationSelection(selection, (IField) javaElement, composite);
+            return updateFieldDeclarationSelection(selection, (IField) javaElement);
         } else if (javaElement instanceof IType) {
-            return updateFieldDeclarationSelection(selection, (IType) javaElement, composite);
+            return updateFieldDeclarationSelection(selection, (IType) javaElement);
         } else if (javaElement instanceof IMethod) {
-            return updateFieldDeclarationSelection(selection, (IMethod) javaElement, composite);
+            return updateFieldDeclarationSelection(selection, (IMethod) javaElement);
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return null;
     }
 
-    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field,
-            final Composite composite) {
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
         return null;
     }
 
-    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection,
-            final IMethod method, final Composite composite) {
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
         return null;
     }
 }

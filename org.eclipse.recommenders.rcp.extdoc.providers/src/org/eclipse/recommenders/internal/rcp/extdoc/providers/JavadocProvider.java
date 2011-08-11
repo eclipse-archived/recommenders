@@ -65,15 +65,14 @@ public final class JavadocProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
         try {
             final IJavaElement javaElement = getJavaElement(selection.getJavaElement());
             if (javaElement == null) {
                 return null;
             }
             selection.getJavaElement().getAttachedJavadoc(null);
-            javadocs.get(composite).setInput(javaElement);
-            return displayComments(selection.getJavaElement(), composite);
+            return displayComments(selection.getJavaElement());
         } catch (final JavaModelException e) {
             return null;
         }
@@ -91,21 +90,19 @@ public final class JavadocProvider extends AbstractTitledProvider {
         return javaElement;
     }
 
-    private ProviderUiJob displayComments(final IJavaElement javaElement, final Composite composite) {
+    private ProviderUiJob displayComments(final IJavaElement javaElement) {
         final CommunityFeatures features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), null,
                 this, server);
         return new ProviderUiJob() {
             @Override
-            public Composite run() {
-                if (!composite.isDisposed()) {
-                    final Composite feedbackComposite = feedbackComposites.get(composite);
-                    disposeChildren(feedbackComposite);
-                    if (features != null) {
-                        features.loadCommentsComposite(feedbackComposite);
-                        features.loadStarsRatingComposite(feedbackComposite);
-                    }
+            public void run(final Composite composite) {
+                javadocs.get(composite).setInput(javaElement);
+                final Composite feedbackComposite = feedbackComposites.get(composite);
+                disposeChildren(feedbackComposite);
+                if (features != null) {
+                    features.loadCommentsComposite(feedbackComposite);
+                    features.loadStarsRatingComposite(feedbackComposite);
                 }
-                return composite;
             }
         };
     }

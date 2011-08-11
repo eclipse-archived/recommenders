@@ -33,14 +33,13 @@ public final class TestProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection context, final Composite composite) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection context) {
         return new ProviderUiJob() {
             @Override
-            public Composite run() {
+            public void run(final Composite composite) {
                 if (!text.isDisposed()) {
                     text.setText(context.toString());
                 }
-                return composite;
             }
         };
     }

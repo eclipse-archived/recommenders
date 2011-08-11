@@ -53,24 +53,24 @@ public final class ExamplesProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
-            return displayContentForType(ElementResolver.toRecType((IType) element), composite);
+            return displayContentForType(ElementResolver.toRecType((IType) element));
         } else if (element instanceof IMethod) {
-            return displayContentForMethod((IMethod) element, composite);
+            return displayContentForMethod((IMethod) element);
         } else if (element instanceof ILocalVariable) {
-            return displayContentForType(VariableResolver.resolveTypeSignature((ILocalVariable) element), composite);
+            return displayContentForType(VariableResolver.resolveTypeSignature((ILocalVariable) element));
         } else if (element instanceof SourceField) {
-            return displayContentForType(VariableResolver.resolveTypeSignature((SourceField) element), composite);
+            return displayContentForType(VariableResolver.resolveTypeSignature((SourceField) element));
         }
         return null;
     }
 
-    private ProviderUiJob displayContentForMethod(final IMethod method, final Composite composite) {
+    private ProviderUiJob displayContentForMethod(final IMethod method) {
         try {
             if (method.isConstructor()) {
-                return displayContentForType(ElementResolver.toRecType(method.getDeclaringType()), composite);
+                return displayContentForType(ElementResolver.toRecType(method.getDeclaringType()));
             }
             final MethodOverrideTester overrideTester = SuperTypeHierarchyCache.getMethodOverrideTester(method
                     .getDeclaringType());
@@ -79,35 +79,31 @@ public final class ExamplesProvider extends AbstractTitledProvider {
                 return null;
             }
             return displayCodeSnippets(ElementResolver.toRecMethod(method),
-                    server.getOverridenMethodCodeExamples(ElementResolver.toRecMethod(overriddenMethod)), composite);
+                    server.getOverridenMethodCodeExamples(ElementResolver.toRecMethod(overriddenMethod)));
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private ProviderUiJob displayContentForType(final ITypeName type, final Composite composite) {
-        return displayCodeSnippets(type, server.getTypeCodeExamples(type), composite);
+    private ProviderUiJob displayContentForType(final ITypeName type) {
+        return displayCodeSnippets(type, server.getTypeCodeExamples(type));
     }
 
-    private ProviderUiJob displayCodeSnippets(final IName element, final CodeExamples codeExamples,
-            final Composite composite) {
+    private ProviderUiJob displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
         final CommunityFeatures features = CommunityFeatures.create(element, null, this, server);
         return new ProviderUiJob() {
             @Override
-            public Composite run() {
-                if (!composite.isDisposed()) {
-                    disposeChildren(composite);
-                    if (codeExamples == null) {
-                        final Label label = new Label(composite, SWT.NONE);
-                        label.setText("Sorry, this feature is currently under development. It will follow soon when ready.");
-                    } else {
-                        final CodeSnippet[] snippets = codeExamples.getExamples();
-                        for (int i = 0; i < snippets.length; ++i) {
-                            createSnippetVisualization(i, features, snippets[i].getCode(), composite);
-                        }
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                if (codeExamples == null) {
+                    final Label label = new Label(composite, SWT.NONE);
+                    label.setText("Sorry, this feature is currently under development. It will follow soon when ready.");
+                } else {
+                    final CodeSnippet[] snippets = codeExamples.getExamples();
+                    for (int i = 0; i < snippets.length; ++i) {
+                        createSnippetVisualization(i, features, snippets[i].getCode(), composite);
                     }
                 }
-                return composite;
             }
         };
     }

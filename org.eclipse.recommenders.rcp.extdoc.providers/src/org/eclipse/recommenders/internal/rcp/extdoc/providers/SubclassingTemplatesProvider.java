@@ -52,12 +52,11 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
     }
 
     @Override
-    protected ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
-        return printProposals(ElementResolver.toRecType(type), composite);
+    protected ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return printProposals(ElementResolver.toRecType(type));
     }
 
-    private ProviderUiJob printProposals(final ITypeName type, final Composite composite) {
+    private ProviderUiJob printProposals(final ITypeName type) {
         final ClassOverridePatterns directive = server.getClassOverridePatterns(type);
         if (directive == null) {
             return null;
@@ -72,38 +71,35 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
 
         return new ProviderUiJob() {
             @Override
-            public Composite run() {
-                if (!composite.isDisposed()) {
-                    disposeChildren(composite);
-                    SwtFactory.createStyledText(composite, text);
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                SwtFactory.createStyledText(composite, text);
 
-                    final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
-                    for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
-                        final MethodPattern pattern = patterns[i];
-                        final int patternProbability = (int) (pattern.getNumberOfObservations()
-                                / numberOfSubclasses.doubleValue() * 100);
-                        String text2 = String.format(
-                                "Pattern #%d - covers approximately %d%% of the examined subclasses (%d subclasses).",
-                                i + 1, patternProbability, pattern.getNumberOfObservations());
-                        new TextAndFeaturesLine(templates, text2, ratings);
+                final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
+                for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
+                    final MethodPattern pattern = patterns[i];
+                    final int patternProbability = (int) (pattern.getNumberOfObservations()
+                            / numberOfSubclasses.doubleValue() * 100);
+                    String text2 = String.format(
+                            "Pattern #%d - covers approximately %d%% of the examined subclasses (%d subclasses).",
+                            i + 1, patternProbability, pattern.getNumberOfObservations());
+                    new TextAndFeaturesLine(templates, text2, ratings);
 
-                        final ListingTable table = new ListingTable(composite, 4);
-                        final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
-                        for (final Entry<IMethodName, Double> entry : entries) {
-                            table.startNewRow();
-                            final IMethodName method = entry.getKey();
-                            text2 = "override " + method.getDeclaringType().getClassName() + "."
-                                    + Names.vm2srcSimpleMethod(method);
-                            table.addLabelItem(text2, false, true, SWT.COLOR_BLACK);
-                            table.addLabelItem("-", false, false, SWT.COLOR_BLACK);
-                            table.addLabelItem(String.format("~ %3.0f%%", entry.getValue() * 100), false, false,
-                                    SWT.COLOR_BLUE);
-                        }
+                    final ListingTable table = new ListingTable(composite, 4);
+                    final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
+                    for (final Entry<IMethodName, Double> entry : entries) {
+                        table.startNewRow();
+                        final IMethodName method = entry.getKey();
+                        text2 = "override " + method.getDeclaringType().getClassName() + "."
+                                + Names.vm2srcSimpleMethod(method);
+                        table.addLabelItem(text2, false, true, SWT.COLOR_BLACK);
+                        table.addLabelItem("-", false, false, SWT.COLOR_BLACK);
+                        table.addLabelItem(String.format("~ %3.0f%%", entry.getValue() * 100), false, false,
+                                SWT.COLOR_BLUE);
                     }
-
-                    ratings.loadCommentsComposite(composite);
                 }
-                return composite;
+
+                ratings.loadCommentsComposite(composite);
             }
         };
     }

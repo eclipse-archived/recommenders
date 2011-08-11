@@ -55,15 +55,15 @@ public abstract class AbstractTitledProvider extends AbstractProvider {
 
     @Override
     public final boolean selectionChanged(final IJavaElementSelection selection, final Composite composite) {
-        final ProviderUiJob job = updateSelection(selection, ((ProviderComposite) composite).contentComposite);
+        final ProviderUiJob job = updateSelection(selection);
         if (job == null) {
             return false;
         }
-        ProviderUiJob.run(job);
+        ProviderUiJob.run(job, ((ProviderComposite) composite).contentComposite);
         return true;
     }
 
-    protected abstract ProviderUiJob updateSelection(IJavaElementSelection selection, Composite composite);
+    protected abstract ProviderUiJob updateSelection(IJavaElementSelection selection);
 
     public final IWorkbenchWindow getWorkbenchWindow() {
         return window;

@@ -118,14 +118,11 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
                     if (lastSelection != null && provider.selectionChanged(lastSelection, control)) {
                         ProviderUiJob.run(new ProviderUiJob() {
                             @Override
-                            public Composite run() {
-                                if (!control.isDisposed()) {
-                                    ((GridData) control.getLayoutData()).exclude = false;
-                                    actions.get(control).setEnabled(true);
-                                }
-                                return control;
+                            public void run(final Composite composite) {
+                                ((GridData) composite.getLayoutData()).exclude = false;
+                                actions.get(composite).setEnabled(true);
                             }
-                        });
+                        }, control);
                     }
                     return Status.OK_STATUS;
                 }

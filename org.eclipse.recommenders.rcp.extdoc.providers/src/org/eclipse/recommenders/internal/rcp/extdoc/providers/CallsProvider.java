@@ -69,93 +69,83 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
     }
 
     @Override
-    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field,
-            final Composite composite) {
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
         final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
         if (context == null) {
             return null;
         }
         return displayProposalsForVariable(field, false,
-                adapter.getProposalsFromSingleMethods(selection, field, context), context, composite);
+                adapter.getProposalsFromSingleMethods(selection, field, context), context);
     }
 
     @Override
-    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection,
-            final IMethod method, final Composite composite) {
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
         final MockedIntelligentCompletionContext context = ContextFactory.createThisVariableContext(selection, method);
-        return displayProposalsForMethod(method, true, context, composite);
+        return displayProposalsForMethod(method, true, context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
+    }
+
+    @Override
+    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
     protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
-            final IType type, final Composite composite) {
-        final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
-    }
-
-    @Override
-    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
-            final ILocalVariable local, final Composite composite) {
+            final ILocalVariable local) {
         final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
-        return context == null ? null : displayProposalsForVariable(local, true, null, context, composite);
+        return context == null ? null : displayProposalsForVariable(local, true, null, context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection,
-            final ILocalVariable local, final Composite composite) {
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
         final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
-        return context == null ? null : displayProposalsForVariable(local, false, null, context, composite);
+        return context == null ? null : displayProposalsForVariable(local, false, null, context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IField field,
-            final Composite composite) {
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
         final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
-        return context == null ? null : displayProposalsForVariable(field, false, null, context, composite);
+        return context == null ? null : displayProposalsForVariable(field, false, null, context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method,
-            final Composite composite) {
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
         final IMethodName invokedMethod = Preconditions.checkNotNull(ElementResolver.toRecMethod(method), method);
         final ITypeName receiverType = context.getReceiverType();
         return displayProposalsForType(
                 receiverType == null ? method.getDeclaringType() : ElementResolver.toJdtType(receiverType),
-                ImmutableSet.of(invokedMethod), method.getElementName(), context, composite);
+                ImmutableSet.of(invokedMethod), method.getElementName(), context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context, composite);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     private ProviderUiJob displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors,
             final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilityFromMethods,
-            final MockedIntelligentCompletionContext context, final Composite composite) {
+            final MockedIntelligentCompletionContext context) {
         final Variable variable = context.getVariable();
         final IProjectModelFacade facade = adapter.getModelFacade(element);
         if (variable != null && facade.hasModel(variable.type)) {
@@ -165,26 +155,25 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
             final IName name = element instanceof IField ? ElementResolver.toRecField((IField) element, variable.type)
                     : variable.getName();
             return displayProposals(element, element.getElementName(), name, false, recommendedMethodCalls,
-                    resolveCalledMethods, maxProbabilityFromMethods, composite);
+                    resolveCalledMethods, maxProbabilityFromMethods);
         }
         return null;
     }
 
     private ProviderUiJob displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods,
-            final String elementName, final MockedIntelligentCompletionContext context, final Composite composite) {
+            final String elementName, final MockedIntelligentCompletionContext context) {
         final ITypeName typeName = ElementResolver.toRecType(type);
         final IProjectModelFacade facade = adapter.getModelFacade(type);
         if (facade.hasModel(typeName)) {
             final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(typeName,
                     invokedMethods, false, context, facade);
-            return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>(), null,
-                    composite);
+            return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>(), null);
         }
         return null;
     }
 
     private ProviderUiJob displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration,
-            final MockedIntelligentCompletionContext context, final Composite composite) {
+            final MockedIntelligentCompletionContext context) {
         final ITypeName type = adapter.getMethodsDeclaringType(method, context);
         final IProjectModelFacade facade = adapter.getModelFacade(method);
         if (type != null && facade.hasModel(type)) {
@@ -192,21 +181,19 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
             final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(type, calledMethods,
                     true, context, facade);
             return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
-                    isMethodDeclaration, calls, calledMethods, null, composite);
+                    isMethodDeclaration, calls, calledMethods, null);
         } else {
             // TODO: first is not correct in all cases. this needs to be
             // fixed
             final IMethod first = JdtUtils.findFirstDeclaration(method);
-            return first.equals(method) ? null : displayProposalsForMethod(first, isMethodDeclaration, context,
-                    composite);
+            return first.equals(method) ? null : displayProposalsForMethod(first, isMethodDeclaration, context);
         }
     }
 
     private ProviderUiJob displayProposals(final IJavaElement element, final String elementName, final IName elementId,
             final boolean isMethodDeclaration, final SortedSet<Tuple<IMethodName, Double>> proposals,
             final Set<IMethodName> calledMethods,
-            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilitiesFromMethods,
-            final Composite composite) {
+            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilitiesFromMethods) {
         if (proposals.isEmpty()) {
             return null;
         }
@@ -219,29 +206,26 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
 
         return new ProviderUiJob() {
             @Override
-            public Composite run() {
-                if (!composite.isDisposed()) {
-                    disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
-                    line.createStyleRange(12 + action.length(), elementName.length(), SWT.NORMAL, false, true);
-                    displayProposals(element, isMethodDeclaration, proposals, calledMethods, composite);
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                line.createStyleRange(12 + action.length(), elementName.length(), SWT.NORMAL, false, true);
+                displayProposals(element, isMethodDeclaration, proposals, calledMethods, composite);
 
-                    if (maxProbabilitiesFromMethods != null) {
-                        new TextAndFeaturesLine(composite, text2, features);
-                        final ListingTable calls = new ListingTable(composite, 4);
-                        for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
-                            calls.startNewRow();
-                            calls.addLabelItem(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration),
-                                    false, true, SWT.COLOR_BLACK);
-                            final int probability = (int) Math.round(proposal.getSecond().getSecond() * 100);
-                            final String origin = Names.vm2srcSimpleMethod(proposal.getSecond().getFirst());
-                            calls.addLabelItem(probability + "%", false, false, SWT.COLOR_BLUE);
-                            final StyledText styled = SwtFactory.createStyledText(calls, "in " + origin);
-                            SwtFactory.createStyleRange(styled, 3, origin.length(), SWT.NORMAL, false, true);
-                        }
+                if (maxProbabilitiesFromMethods != null) {
+                    new TextAndFeaturesLine(composite, text2, features);
+                    final ListingTable calls = new ListingTable(composite, 4);
+                    for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
+                        calls.startNewRow();
+                        calls.addLabelItem(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false,
+                                true, SWT.COLOR_BLACK);
+                        final int probability = (int) Math.round(proposal.getSecond().getSecond() * 100);
+                        final String origin = Names.vm2srcSimpleMethod(proposal.getSecond().getFirst());
+                        calls.addLabelItem(probability + "%", false, false, SWT.COLOR_BLUE);
+                        final StyledText styled = SwtFactory.createStyledText(calls, "in " + origin);
+                        SwtFactory.createStyleRange(styled, 3, origin.length(), SWT.NORMAL, false, true);
                     }
                 }
-                return composite;
             }
         };
     }

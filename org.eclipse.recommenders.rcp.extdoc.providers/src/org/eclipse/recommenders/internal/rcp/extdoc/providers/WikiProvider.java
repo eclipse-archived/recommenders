@@ -40,9 +40,6 @@ public final class WikiProvider extends AbstractTitledProvider {
     private final WikiServer server;
     private final MarkupParser parser = new MarkupParser(new MediaWikiLanguage());
 
-    private Composite parentComposite;
-    private Composite composite;
-
     @Inject
     WikiProvider(final WikiServer server) {
         this.server = server;
@@ -50,8 +47,7 @@ public final class WikiProvider extends AbstractTitledProvider {
 
     @Override
     protected Composite createContentComposite(final Composite parent) {
-        parentComposite = SwtFactory.createGridComposite(parent, 1, 0, 0, 0, 0);
-        return parentComposite;
+        return SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
     }
 
     @Override
@@ -60,7 +56,7 @@ public final class WikiProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element == null || element instanceof ILocalVariable || element.getElementName().isEmpty()) {
             return null;
@@ -71,26 +67,18 @@ public final class WikiProvider extends AbstractTitledProvider {
     private ProviderUiJob updateDisplay(final IJavaElement element, final String markup) {
         return new ProviderUiJob() {
             @Override
-            public Composite run() {
-                if (!parentComposite.isDisposed()) {
-                    initComposite();
-                    if (markup == null) {
-                        displayNoText(element);
-                    } else {
-                        displayText(element, markup);
-                    }
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                if (markup == null) {
+                    displayNoText(element, composite);
+                } else {
+                    displayText(element, markup, composite);
                 }
-                return parentComposite;
             }
         };
     }
 
-    private void initComposite() {
-        disposeChildren(parentComposite);
-        composite = SwtFactory.createGridComposite(parentComposite, 1, 0, 11, 0, 0);
-    }
-
-    private void displayText(final IJavaElement element, final String markup) {
+    private void displayText(final IJavaElement element, final String markup, final Composite composite) {
         CommunityFeatures.create(ElementResolver.resolveName(element), null, this, server).loadStarsRatingComposite(
                 composite);
         // TODO: Add editing option.
@@ -100,7 +88,7 @@ public final class WikiProvider extends AbstractTitledProvider {
         text.setText(markup);
     }
 
-    private void displayNoText(final IJavaElement element) {
+    private void displayNoText(final IJavaElement element, final Composite composite) {
         String elementName = element.getElementName();
         if (element instanceof IMethod) {
             elementName = String.format("%s.%s", ((IMethod) element).getDeclaringType().getElementName(), elementName);
@@ -121,39 +109,38 @@ public final class WikiProvider extends AbstractTitledProvider {
 
             @Override
             public void mouseUp(final MouseEvent e) {
-                displayEditArea(element);
+                displayEditArea(element, composite);
             }
         });
     }
 
-    private void displayEditArea(final IJavaElement element) {
-        initComposite();
+    private void displayEditArea(final IJavaElement element, final Composite composite) {
+        disposeChildren(composite);
         final Text text = SwtFactory.createTextArea(composite, "", 100, 0);
         SwtFactory.createButton(composite, "Save Changes", new SelectionListener() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                update(element, text.getText());
+                update(element, text.getText(), composite);
             }
 
             @Override
             public void widgetDefaultSelected(final SelectionEvent e) {
             }
         });
-        layout();
+        layout(composite);
     }
 
-    private void update(final IJavaElement javaElement, final String text) {
+    private void update(final IJavaElement javaElement, final String text, final Composite composite) {
         server.setText(javaElement, text);
-        initComposite();
-        displayText(javaElement, text);
-        layout();
+        disposeChildren(composite);
+        displayText(javaElement, text, composite);
+        layout(composite);
     }
 
-    private void layout() {
+    private void layout(final Composite composite) {
         composite.layout(true);
-        parentComposite.layout(true);
-        if (parentComposite.getParent() != null) {
-            parentComposite.getParent().getParent().layout(true);
+        if (composite.getParent() != null) {
+            composite.getParent().getParent().layout(true);
         }
     }
 
