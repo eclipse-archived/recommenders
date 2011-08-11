@@ -27,7 +27,6 @@ public abstract class ProviderUiJob extends UIJob {
         final Composite composite = run();
         if (!composite.isDisposed()) {
             composite.getParent().layout(true, true);
-            composite.getParent().getParent().layout(true);
         }
         return Status.OK_STATUS;
     }

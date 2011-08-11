@@ -240,6 +240,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
                             SwtFactory.createStyleRange(styled, 3, origin.length(), SWT.NORMAL, false, true);
                         }
                     }
+                    composite.getParent().getParent().layout(true);
                 }
                 return composite;
             }
