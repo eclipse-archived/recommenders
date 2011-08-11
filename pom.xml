@@ -32,15 +32,15 @@
 		<module>org.eclipse.recommenders.rcp.codecompletion.calls</module>
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.calls</module>
 
-<!--
+
 		<module>org.eclipse.recommenders.rcp.codecompletion.overrides</module>
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.overrides</module>
--->
+
 		<module>org.eclipse.recommenders.rcp.codecompletion.chain</module>
 		<module>org.eclipse.recommenders.tests.rcp.codecompletion.chain</module>
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.templates</module>
-		<!--module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module-->
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module>
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.subwords</module>
 		<!-- <module>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</module> -->
@@ -56,6 +56,7 @@
 		<module>org.eclipse.recommenders.commons.codesearch</module>
 		<module>org.eclipse.recommenders.commons.client</module>
 		<module>org.eclipse.recommenders.rcp.codesearch</module>
+
 		<module>org.eclipse.recommenders.server.codesearch</module>
 		<module>org.eclipse.recommenders.server.commons</module>
 		
@@ -69,7 +70,7 @@
 		<module>org.eclipse.recommenders.server.extdoc</module>
 		<module>org.eclipse.recommenders.tests.commons.extdoc</module>
 		<module>org.eclipse.recommenders.tests.commons.selection</module>
-		<module>org.eclipse.recommenders.tests.rcp.extdoc</module>
+		<!--<module>org.eclipse.recommenders.tests.rcp.extdoc</module>-->
 
 
 		<!-- features 'n update sites -->
@@ -84,6 +85,8 @@
 
 		<module>org.eclipse.recommenders.rcp.update-site</module>
 		
+		<module>org.eclipse.recommenders.server.codesearch.feature</module>
+
 		<module>org.eclipse.recommenders.server.feature</module>
 		<module>org.eclipse.recommenders.server.update-site</module>
 		

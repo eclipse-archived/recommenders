@@ -82,6 +82,7 @@
 						<artifactId>tycho-surefire-plugin</artifactId>
 						<version>${tycho-version}</version>
 						<configuration>
+					<skipTests>true</skipTests>
 							<systemProperties combine.children="append">
 								<eclemma.help>true</eclemma.help>
 								<emma.session.out.file>${emma.session.out.file}</emma.session.out.file>
@@ -218,7 +219,7 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!-- plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.6</version>
@@ -261,11 +262,11 @@
 	        <execution>
 	          <goals>
 	            <goal>check</goal>
-	            <!--goal>cpd-check</goal-->
+	            
 	          </goals>
 	        </execution>
 	      </executions>
-      </plugin>
+      </plugin-->
 		</plugins>
 	</build>
 
