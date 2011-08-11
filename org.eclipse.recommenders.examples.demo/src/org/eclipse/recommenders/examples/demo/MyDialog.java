@@ -34,12 +34,10 @@ public class MyDialog extends Dialog {
 
     @Override
     protected Control createDialogArea(final Composite parent) {
-        final Composite container = createContainer(parent);
-
-        final Text text = new Text(container, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
-        text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        CheckboxTableViewer v = new CheckboxTableViewer(null);
-
+        final Composite container = (Composite) super.createDialogArea(parent);
+ 
+        swtTextWidget = new Text(container, SWT.BORDER);
+        final swtTextWidget.
         return container;
     }
 
