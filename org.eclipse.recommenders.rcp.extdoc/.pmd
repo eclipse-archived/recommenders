@@ -348,10 +348,6 @@
             <ruleset>Design Rules</ruleset>
         </rule>
         <rule>
-            <name>EmptyMethodInAbstractClassShouldBeAbstract</name>
-            <ruleset>Design Rules</ruleset>
-        </rule>
-        <rule>
             <name>EqualsNull</name>
             <ruleset>Design Rules</ruleset>
         </rule>

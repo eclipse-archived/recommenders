@@ -21,9 +21,6 @@ import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.UsernameProvider;
-import org.eclipse.recommenders.server.extdoc.types.Comment;
-import org.eclipse.recommenders.server.extdoc.types.Rating;
-import org.eclipse.recommenders.server.extdoc.types.UserFeedback;
 
 import com.google.common.collect.ImmutableMap;
 import com.sun.jersey.api.client.GenericType;

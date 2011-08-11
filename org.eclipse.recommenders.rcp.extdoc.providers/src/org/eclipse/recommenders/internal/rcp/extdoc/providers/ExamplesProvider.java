@@ -53,7 +53,7 @@ public final class ExamplesProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public boolean updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             return displayContentForType(ElementResolver.toRecType((IType) element), composite);
@@ -64,10 +64,10 @@ public final class ExamplesProvider extends AbstractTitledProvider {
         } else if (element instanceof SourceField) {
             return displayContentForType(VariableResolver.resolveTypeSignature((SourceField) element), composite);
         }
-        return false;
+        return null;
     }
 
-    private boolean displayContentForMethod(final IMethod method, final Composite composite) {
+    private ProviderUiJob displayContentForMethod(final IMethod method, final Composite composite) {
         try {
             if (method.isConstructor()) {
                 return displayContentForType(ElementResolver.toRecType(method.getDeclaringType()), composite);
@@ -76,7 +76,7 @@ public final class ExamplesProvider extends AbstractTitledProvider {
                     .getDeclaringType());
             final IMethod overriddenMethod = overrideTester.findOverriddenMethod(method, true);
             if (overriddenMethod == null) {
-                return false;
+                return null;
             }
             return displayCodeSnippets(ElementResolver.toRecMethod(method),
                     server.getOverridenMethodCodeExamples(ElementResolver.toRecMethod(overriddenMethod)), composite);
@@ -85,13 +85,14 @@ public final class ExamplesProvider extends AbstractTitledProvider {
         }
     }
 
-    private boolean displayContentForType(final ITypeName type, final Composite composite) {
+    private ProviderUiJob displayContentForType(final ITypeName type, final Composite composite) {
         return displayCodeSnippets(type, server.getTypeCodeExamples(type), composite);
     }
 
-    private boolean displayCodeSnippets(final IName element, final CodeExamples codeExamples, final Composite composite) {
+    private ProviderUiJob displayCodeSnippets(final IName element, final CodeExamples codeExamples,
+            final Composite composite) {
         final CommunityFeatures features = CommunityFeatures.create(element, null, this, server);
-        new ProviderUiJob() {
+        return new ProviderUiJob() {
             @Override
             public Composite run() {
                 if (!composite.isDisposed()) {
@@ -108,8 +109,7 @@ public final class ExamplesProvider extends AbstractTitledProvider {
                 }
                 return composite;
             }
-        }.schedule();
-        return true;
+        };
     }
 
     private void createSnippetVisualization(final int snippetIndex, final CommunityFeatures features,

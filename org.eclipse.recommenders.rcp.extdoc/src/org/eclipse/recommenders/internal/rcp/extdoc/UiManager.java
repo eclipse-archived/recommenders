@@ -17,9 +17,9 @@ import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocCodeAssistantHover
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchSite;
 
 import com.google.inject.Inject;
 
@@ -66,7 +66,7 @@ public final class UiManager implements IExtendedSelectionListener {
         }
     }
 
-    public IViewSite getViewSite() {
+    public IWorkbenchSite getWorkbenchSite() {
         return extDocView.getViewSite();
     }
 

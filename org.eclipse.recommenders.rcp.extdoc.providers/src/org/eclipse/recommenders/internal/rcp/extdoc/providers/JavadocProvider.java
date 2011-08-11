@@ -23,6 +23,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.BrowserSizeWorkaround;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedViewSite;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
@@ -32,8 +33,8 @@ import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +54,7 @@ public final class JavadocProvider extends AbstractTitledProvider {
     @Override
     protected Composite createContentComposite(final Composite parent) {
         final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 8, 0, 0);
-        final ExtendedJavadocView javadoc = new ExtendedJavadocView(composite, getViewSite());
+        final ExtendedJavadocView javadoc = new ExtendedJavadocView(composite, getWorkbenchWindow());
         javadocs.put(composite, javadoc);
         feedbackComposites.put(composite, SwtFactory.createGridComposite(parent, 2, 0, 0, 0, 0));
 
@@ -64,18 +65,17 @@ public final class JavadocProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public boolean updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
         try {
             final IJavaElement javaElement = getJavaElement(selection.getJavaElement());
             if (javaElement == null) {
-                return false;
+                return null;
             }
             selection.getJavaElement().getAttachedJavadoc(null);
             javadocs.get(composite).setInput(javaElement);
-            displayComments(selection.getJavaElement(), composite);
-            return true;
+            return displayComments(selection.getJavaElement(), composite);
         } catch (final JavaModelException e) {
-            return false;
+            return null;
         }
     }
 
@@ -91,10 +91,10 @@ public final class JavadocProvider extends AbstractTitledProvider {
         return javaElement;
     }
 
-    private void displayComments(final IJavaElement javaElement, final Composite composite) {
+    private ProviderUiJob displayComments(final IJavaElement javaElement, final Composite composite) {
         final CommunityFeatures features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), null,
                 this, server);
-        new ProviderUiJob() {
+        return new ProviderUiJob() {
             @Override
             public Composite run() {
                 if (!composite.isDisposed()) {
@@ -107,7 +107,7 @@ public final class JavadocProvider extends AbstractTitledProvider {
                 }
                 return composite;
             }
-        }.schedule();
+        };
     }
 
     /**
@@ -115,8 +115,8 @@ public final class JavadocProvider extends AbstractTitledProvider {
      */
     private static final class ExtendedJavadocView extends JavadocView {
 
-        ExtendedJavadocView(final Composite parent, final IViewSite viewSite) {
-            setSite(viewSite);
+        ExtendedJavadocView(final Composite parent, final IWorkbenchWindow window) {
+            setSite(new MockedViewSite(window));
             createPartControl(parent);
         }
 

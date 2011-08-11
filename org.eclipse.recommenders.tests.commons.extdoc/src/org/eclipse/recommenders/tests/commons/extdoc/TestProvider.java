@@ -33,8 +33,8 @@ public final class TestProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public boolean updateSelection(final IJavaElementSelection context, final Composite composite) {
-        new ProviderUiJob() {
+    public ProviderUiJob updateSelection(final IJavaElementSelection context, final Composite composite) {
+        return new ProviderUiJob() {
             @Override
             public Composite run() {
                 if (!text.isDisposed()) {
@@ -42,8 +42,7 @@ public final class TestProvider extends AbstractTitledProvider {
                 }
                 return composite;
             }
-        }.schedule();
-        return true;
+        };
     }
 
     @Override

@@ -34,6 +34,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
 
 abstract class AbstractExtDocInformationControl extends AbstractInformationControl implements
         IInformationControlExtension2 {
@@ -74,8 +75,9 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
     }
 
     private void fillToolbar(final ToolBarManager toolbar) {
+        final IWorkbenchWindow window = uiManager.getWorkbenchSite().getWorkbenchWindow();
         for (final IProvider provider : providerStore.getProviders()) {
-            final Composite providerComposite = composite.addProvider(provider, uiManager.getViewSite());
+            final Composite providerComposite = composite.addProvider(provider, window);
             final IAction action = new AbstractAction("Scroll to " + provider.getProviderFullName(),
                     provider.getIcon(), SWT.NONE) {
                 @Override
@@ -90,7 +92,7 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
         toolbar.add(new AbstractAction("Open Input", ExtDocPlugin.getIcon("lcl16/goto_input.png"), SWT.NONE) {
             @Override
             public void run() {
-                new OpenAction(uiManager.getViewSite()).run(new Object[] { lastSelection.getJavaElement() });
+                new OpenAction(uiManager.getWorkbenchSite()).run(new Object[] { lastSelection.getJavaElement() });
             }
         });
         toolbar.add(new AbstractAction("Show in ExtDoc View", ExtDocPlugin.getIcon("lcl16/extdoc_open.png"), SWT.NONE) {
@@ -114,7 +116,7 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
                 @Override
                 public IStatus run(final IProgressMonitor monitor) {
                     if (lastSelection != null && provider.selectionChanged(lastSelection, control)) {
-                        new ProviderUiJob() {
+                        ProviderUiJob.run(new ProviderUiJob() {
                             @Override
                             public Composite run() {
                                 if (!control.isDisposed()) {
@@ -123,7 +125,7 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
                                 }
                                 return control;
                             }
-                        }.schedule();
+                        });
                     }
                     return Status.OK_STATUS;
                 }

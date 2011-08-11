@@ -56,7 +56,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public boolean updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             return displayContentForType(ElementResolver.toRecType((IType) element), composite);
@@ -65,13 +65,13 @@ public final class SubclassingProvider extends AbstractTitledProvider {
             return displayContentForMethod(ElementResolver.toRecMethod((IMethod) element),
                     ElementResolver.toRecMethod(firstDeclaration), composite);
         }
-        return false;
+        return null;
     }
 
-    private boolean displayContentForType(final ITypeName type, final Composite composite) {
+    private ProviderUiJob displayContentForType(final ITypeName type, final Composite composite) {
         final ClassOverrideDirectives overrides = server.getClassOverrideDirectives(type);
         if (overrides == null) {
-            return false;
+            return null;
         }
         final String elementName = type.getClassName();
         final int subclasses = overrides.getNumberOfSubclasses();
@@ -82,7 +82,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
         final CommunityFeatures features = CommunityFeatures.create(type, null, this, server);
 
-        new ProviderUiJob() {
+        return new ProviderUiJob() {
             @Override
             public Composite run() {
                 if (!composite.isDisposed()) {
@@ -98,23 +98,21 @@ public final class SubclassingProvider extends AbstractTitledProvider {
                 }
                 return composite;
             }
-        }.schedule();
-
-        return true;
+        };
     }
 
-    private boolean displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration,
+    private ProviderUiJob displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration,
             final Composite composite) {
         // TODO first is not correct in all cases. this needs to be fixed soon
         // after the demo
         final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(firstDeclaration);
         if (selfcalls == null || method == null) {
-            return false;
+            return null;
         }
         final int definitions = selfcalls.getNumberOfDefinitions();
         final CommunityFeatures features = CommunityFeatures.create(method, null, this, server);
 
-        new ProviderUiJob() {
+        return new ProviderUiJob() {
             @Override
             public Composite run() {
                 if (!composite.isDisposed()) {
@@ -132,9 +130,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
                 }
                 return composite;
             }
-        }.schedule();
-
-        return true;
+        };
     }
 
     private static void displayMethodOverrideInformation(final String subclassedTypeName, final int methodOverrides,

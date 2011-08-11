@@ -24,7 +24,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchWindow;
 
 final class ProvidersComposite extends Composite {
 
@@ -70,8 +70,8 @@ final class ProvidersComposite extends Composite {
         setBackgroundMode(SWT.INHERIT_FORCE);
     }
 
-    Composite addProvider(final IProvider provider, final IViewSite viewSite) {
-        final Composite control = provider.createComposite(this, viewSite);
+    Composite addProvider(final IProvider provider, final IWorkbenchWindow workenchWindow) {
+        final Composite control = provider.createComposite(this, workenchWindow);
         control.setData(provider);
         providers.add(control);
         return control;

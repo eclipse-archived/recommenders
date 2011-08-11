@@ -33,9 +33,9 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
     }
 
     @Override
-    public final boolean updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public final ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
         if (selection.getElementLocation() == null) {
-            return false;
+            return null;
         }
 
         switch (selection.getElementLocation()) {
@@ -63,29 +63,31 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         }
     }
 
-    private boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final Composite composite) {
+    private ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection,
+            final Composite composite) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IPackageFragment) {
             return updateImportDeclarationSelection(selection, (IPackageFragment) javaElement, composite);
         } else if (javaElement instanceof IType) {
             return updateImportDeclarationSelection(selection, (IType) javaElement, composite);
         } else if (javaElement instanceof ImportDeclaration) {
-            return false;
+            return null;
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type,
+    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection,
             final IPackageFragment javaElement, final Composite composite) {
-        return false;
+        return null;
     }
 
-    private boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final Composite composite) {
+    private ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
+            final Composite composite) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateParameterDeclarationSelection(selection, (ILocalVariable) javaElement, composite);
@@ -95,17 +97,17 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
-        return false;
+    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
+            final IType type, final Composite composite) {
+        return null;
     }
 
-    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local, final Composite composite) {
-        return false;
+        return null;
     }
 
-    private boolean updateImplementsDeclarationSelection(final IJavaElementSelection selection,
+    private ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection,
             final Composite composite) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
@@ -116,17 +118,18 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateImplementsDeclarationSelection(final IJavaElementSelection selection, final IType type,
-            final Composite composite) {
-        return false;
+    protected ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection,
+            final IType type, final Composite composite) {
+        return null;
     }
 
-    protected boolean updateImplementsDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local, final Composite composite) {
-        return false;
+        return null;
     }
 
-    private boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final Composite composite) {
+    private ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection,
+            final Composite composite) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IType) {
             return updateExtendsDeclarationSelection(selection, (IType) javaElement, composite);
@@ -134,12 +137,13 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type,
+    protected ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    private boolean updateTypeDeclarationSelection(final IJavaElementSelection selection, final Composite composite) {
+    private ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection,
+            final Composite composite) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateTypeDeclarationSelection(selection, (ILocalVariable) javaElement, composite);
@@ -149,17 +153,18 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateTypeDeclarationSelection(final IJavaElementSelection selection, final IType type,
+    protected ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection, final IType type,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    protected boolean updateTypeDeclarationSelection(final IJavaElementSelection selection, final ILocalVariable local,
-            final Composite composite) {
-        return false;
+    protected ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection,
+            final ILocalVariable local, final Composite composite) {
+        return null;
     }
 
-    private boolean updatePackageDeclarationSelection(final IJavaElementSelection selection, final Composite composite) {
+    private ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection,
+            final Composite composite) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updatePackageDeclarationSelection(selection, (IPackageFragment) javaElement, composite);
@@ -169,17 +174,18 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         throw new IllegalArgumentException(javaElement.getClass().toString());
     }
 
-    protected boolean updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type,
+    protected ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    protected boolean updatePackageDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection,
             final IPackageFragment pkg, final Composite composite) {
-        return false;
+        return null;
     }
 
-    private boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final Composite composite) {
+    private ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection,
+            final Composite composite) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IMethod) {
             return updateMethodDeclarationSelection(selection, (IMethod) javaElement, composite);
@@ -189,17 +195,17 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method,
-            final Composite composite) {
-        return false;
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection,
+            final IMethod method, final Composite composite) {
+        return null;
     }
 
-    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type,
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    private boolean updateMethodBodySelection(final IJavaElementSelection selection, final Composite composite) {
+    private ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final Composite composite) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateMethodBodySelection(selection, (ILocalVariable) javaElement, composite);
@@ -210,34 +216,35 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         } else if (javaElement instanceof IMethod) {
             return updateMethodBodySelection(selection, (IMethod) javaElement, composite);
         } else if (javaElement instanceof PackageDeclaration) {
-            return false;
+            return null;
         } else if (javaElement instanceof ImportContainer) {
-            return false;
+            return null;
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local,
-            final Composite composite) {
-        return false;
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection,
+            final ILocalVariable local, final Composite composite) {
+        return null;
     }
 
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field,
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IField field,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method,
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type,
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IType type,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    private boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final Composite composite) {
+    private ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection,
+            final Composite composite) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IField) {
             return updateFieldDeclarationSelection(selection, (IField) javaElement, composite);
@@ -249,18 +256,18 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type,
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field,
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field,
             final Composite composite) {
-        return false;
+        return null;
     }
 
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IMethod method,
-            final Composite composite) {
-        return false;
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection,
+            final IMethod method, final Composite composite) {
+        return null;
     }
 }

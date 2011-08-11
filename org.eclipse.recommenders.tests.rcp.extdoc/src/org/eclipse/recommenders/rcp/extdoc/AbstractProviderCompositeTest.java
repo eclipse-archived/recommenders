@@ -39,8 +39,8 @@ public final class AbstractProviderCompositeTest {
         }
 
         @Override
-        public boolean updateSelection(final IJavaElementSelection context, final Composite composite) {
-            return false;
+        public ProviderUiJob updateSelection(final IJavaElementSelection context, final Composite composite) {
+            return null;
         }
 
         @Override

@@ -50,13 +50,13 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
     }
 
     @Override
-    protected boolean updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    protected ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
         final IName name = ElementResolver.resolveName(selection.getJavaElement());
         if (name == null) {
-            return false;
+            return null;
         }
         final List<SocialBookmark> bookmarks = server.getBookmarks(name).getBookmarks();
-        new ProviderUiJob() {
+        return new ProviderUiJob() {
             @Override
             public Composite run() {
                 if (!composite.isDisposed()) {
@@ -64,8 +64,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
                 }
                 return composite;
             }
-        }.schedule();
-        return true;
+        };
     }
 
     private void updateDisplay(final IJavaElementSelection selection, final Composite composite,

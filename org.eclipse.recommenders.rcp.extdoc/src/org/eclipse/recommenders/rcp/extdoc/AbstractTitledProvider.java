@@ -21,15 +21,15 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchWindow;
 
 public abstract class AbstractTitledProvider extends AbstractProvider {
 
-    private IViewSite viewSite;
+    private IWorkbenchWindow window;
 
     @Override
-    public final Composite createComposite(final Composite parent, final IViewSite site) {
-        viewSite = site;
+    public final Composite createComposite(final Composite parent, final IWorkbenchWindow workbenchWindow) {
+        window = workbenchWindow;
 
         final ProviderComposite container = new ProviderComposite(parent);
         createProviderTitle(container);
@@ -55,13 +55,18 @@ public abstract class AbstractTitledProvider extends AbstractProvider {
 
     @Override
     public final boolean selectionChanged(final IJavaElementSelection selection, final Composite composite) {
-        return updateSelection(selection, ((ProviderComposite) composite).contentComposite);
+        final ProviderUiJob job = updateSelection(selection, ((ProviderComposite) composite).contentComposite);
+        if (job == null) {
+            return false;
+        }
+        ProviderUiJob.run(job);
+        return true;
     }
 
-    protected abstract boolean updateSelection(IJavaElementSelection selection, Composite composite);
+    protected abstract ProviderUiJob updateSelection(IJavaElementSelection selection, Composite composite);
 
-    public final IViewSite getViewSite() {
-        return viewSite;
+    public final IWorkbenchWindow getWorkbenchWindow() {
+        return window;
     }
 
     protected final void disposeChildren(final Composite composite) {

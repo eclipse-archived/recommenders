@@ -60,17 +60,16 @@ public final class WikiProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public boolean updateSelection(final IJavaElementSelection selection, final Composite composite) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection, final Composite composite) {
         final IJavaElement element = selection.getJavaElement();
         if (element == null || element instanceof ILocalVariable || element.getElementName().isEmpty()) {
-            return false;
+            return null;
         }
-        updateDisplay(element, server.getText(element));
-        return true;
+        return updateDisplay(element, server.getText(element));
     }
 
-    private void updateDisplay(final IJavaElement element, final String markup) {
-        new ProviderUiJob() {
+    private ProviderUiJob updateDisplay(final IJavaElement element, final String markup) {
+        return new ProviderUiJob() {
             @Override
             public Composite run() {
                 if (!parentComposite.isDisposed()) {
@@ -83,7 +82,7 @@ public final class WikiProvider extends AbstractTitledProvider {
                 }
                 return parentComposite;
             }
-        }.schedule();
+        };
     }
 
     private void initComposite() {

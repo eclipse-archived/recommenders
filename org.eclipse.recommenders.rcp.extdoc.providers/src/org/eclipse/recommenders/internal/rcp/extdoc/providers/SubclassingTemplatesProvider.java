@@ -52,15 +52,15 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
     }
 
     @Override
-    protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type,
+    protected ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type,
             final Composite composite) {
         return printProposals(ElementResolver.toRecType(type), composite);
     }
 
-    private boolean printProposals(final ITypeName type, final Composite composite) {
+    private ProviderUiJob printProposals(final ITypeName type, final Composite composite) {
         final ClassOverridePatterns directive = server.getClassOverridePatterns(type);
         if (directive == null) {
-            return false;
+            return null;
         }
         final MethodPattern[] patterns = getPatternsSortedByFrequency(directive);
         final Integer numberOfSubclasses = computeTotalNumberOfSubclasses(patterns);
@@ -70,7 +70,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                         numberOfSubclasses);
         final CommunityFeatures ratings = CommunityFeatures.create(type, null, this, server);
 
-        new ProviderUiJob() {
+        return new ProviderUiJob() {
             @Override
             public Composite run() {
                 if (!composite.isDisposed()) {
@@ -105,9 +105,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                 }
                 return composite;
             }
-        }.schedule();
-
-        return true;
+        };
     }
 
     private static List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(
