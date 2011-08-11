@@ -29,7 +29,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IProjectModelFacade;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.ListingTable;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TableListing;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CallsAdapter;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFactory;
@@ -214,7 +214,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
 
                 if (maxProbabilitiesFromMethods != null) {
                     new TextAndFeaturesLine(composite, text2, features);
-                    final ListingTable calls = new ListingTable(composite, 4);
+                    final TableListing calls = new TableListing(composite, 4);
                     for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
                         calls.startNewRow();
                         calls.addLabelItem(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false,
@@ -222,7 +222,8 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
                         final int probability = (int) Math.round(proposal.getSecond().getSecond() * 100);
                         final String origin = Names.vm2srcSimpleMethod(proposal.getSecond().getFirst());
                         calls.addLabelItem(probability + "%", false, false, SWT.COLOR_BLUE);
-                        final StyledText styled = SwtFactory.createStyledText(calls, "in " + origin);
+                        final StyledText styled = SwtFactory.createStyledText(calls, "in " + origin, SWT.COLOR_BLACK,
+                                true);
                         SwtFactory.createStyleRange(styled, 3, origin.length(), SWT.NORMAL, false, true);
                     }
                 }
@@ -233,7 +234,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
     private void displayProposals(final IJavaElement element, final boolean isMethodDeclaration,
             final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods,
             final Composite composite) {
-        final ListingTable table = new ListingTable(composite, 3);
+        final TableListing table = new TableListing(composite, 3);
         for (final IMethodName method : calledMethods) {
             table.startNewRow();
             table.addLabelItem(formatMethodCall(element, method, isMethodDeclaration), false, true, SWT.COLOR_DARK_GRAY);
@@ -244,7 +245,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         }
     }
 
-    private void displayProposal(final Tuple<IMethodName, Double> proposal, final ListingTable table,
+    private void displayProposal(final Tuple<IMethodName, Double> proposal, final TableListing table,
             final IJavaElement element, final boolean isMethodDeclaration) {
         table.startNewRow();
         table.addLabelItem(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true,

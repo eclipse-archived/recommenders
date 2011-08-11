@@ -25,7 +25,8 @@ public abstract class ProviderUiJob {
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
                     job.run(composite);
-                    composite.getParent().getParent().layout(true, true);
+                    composite.getParent().layout(true, true);
+                    composite.getParent().getParent().layout(true);
                 }
                 return Status.OK_STATUS;
             }

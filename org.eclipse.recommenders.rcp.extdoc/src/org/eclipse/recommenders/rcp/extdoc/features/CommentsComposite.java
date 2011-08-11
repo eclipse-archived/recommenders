@@ -18,10 +18,10 @@ import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -61,18 +61,10 @@ final class CommentsComposite {
 
     private void createCommentsArea() {
         SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", null, commentsIcon, true,
-                new MouseListener() {
+                new MouseAdapter() {
                     @Override
                     public void mouseUp(final MouseEvent e) {
                         displayComments();
-                    }
-
-                    @Override
-                    public void mouseDown(final MouseEvent e) {
-                    }
-
-                    @Override
-                    public void mouseDoubleClick(final MouseEvent e) {
                     }
                 });
     }
@@ -98,24 +90,16 @@ final class CommentsComposite {
         final Text text = SwtFactory.createTextArea(composite, "", 45, 0);
 
         final Composite buttons = SwtFactory.createGridComposite(composite, 2, 5, 0, 0, 0);
-        SwtFactory.createButton(buttons, "Add Comment", new SelectionListener() {
+        SwtFactory.createButton(buttons, "Add Comment", new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 addComment(text.getText());
             }
-
-            @Override
-            public void widgetDefaultSelected(final SelectionEvent e) {
-            }
         });
-        SwtFactory.createButton(buttons, "Hide Comments", new SelectionListener() {
+        SwtFactory.createButton(buttons, "Hide Comments", new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 hideComments();
-            }
-
-            @Override
-            public void widgetDefaultSelected(final SelectionEvent e) {
             }
         });
     }

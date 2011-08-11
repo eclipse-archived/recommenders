@@ -23,7 +23,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.ListingTable;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TableListing;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
@@ -130,7 +130,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
         final String text = "Subclasses of " + subclassedTypeName + " typically should override this method ("
                 + methodOverrides + " times). When overriding subclasses may call the super implementation ("
                 + superCalls + " times).";
-        final StyledText styledText = SwtFactory.createStyledText(composite, text);
+        final StyledText styledText = SwtFactory.createStyledText(composite, text, SWT.COLOR_BLACK, true);
         final int length = subclassedTypeName.length();
         final int length2 = getLength(methodOverrides);
         SwtFactory.createStyleRange(styledText, 14, length, SWT.NORMAL, false, true);
@@ -141,7 +141,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
 
     private static void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
             final int definitions, final Composite composite) {
-        final ListingTable table = new ListingTable(composite, 4);
+        final TableListing table = new TableListing(composite, 4);
         for (final Entry<IMethodName, Integer> directive : orderDirectives(directives).entrySet()) {
             final int percent = (int) Math.round(directive.getValue().doubleValue() * 100.0 / definitions);
             table.startNewRow();
@@ -149,7 +149,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
             table.addLabelItem(actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, true,
                     SWT.COLOR_BLACK);
             final StyledText text = SwtFactory.createStyledText(table, "(" + directive.getValue() + " times - "
-                    + percent + "%)");
+                    + percent + "%)", SWT.COLOR_BLACK, true);
             SwtFactory.createStyleRange(text, 10 + getLength(directive.getValue()), getLength(percent) + 1, SWT.NORMAL,
                     true, false);
         }

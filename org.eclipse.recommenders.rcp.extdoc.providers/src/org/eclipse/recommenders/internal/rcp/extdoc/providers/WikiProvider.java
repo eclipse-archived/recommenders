@@ -26,10 +26,10 @@ import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
@@ -94,19 +94,11 @@ public final class WikiProvider extends AbstractTitledProvider {
             elementName = String.format("%s.%s", ((IMethod) element).getDeclaringType().getElementName(), elementName);
         }
         final StyledText text = SwtFactory.createStyledText(composite,
-                String.format("Currently there is no Wiki available for %s.", elementName));
+                String.format("Currently there is no Wiki available for %s.", elementName), SWT.COLOR_BLACK, true);
         SwtFactory.createStyleRange(text, 41, elementName.length(), SWT.NORMAL, false, true);
 
         SwtFactory.createCLabel(composite, "Click here to start writing.", false,
-                ExtDocPlugin.getIcon("eview16/edit.png")).addMouseListener(new MouseListener() {
-            @Override
-            public void mouseDoubleClick(final MouseEvent e) {
-            }
-
-            @Override
-            public void mouseDown(final MouseEvent e) {
-            }
-
+                ExtDocPlugin.getIcon("eview16/edit.png")).addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(final MouseEvent e) {
                 displayEditArea(element, composite);
@@ -117,14 +109,10 @@ public final class WikiProvider extends AbstractTitledProvider {
     private void displayEditArea(final IJavaElement element, final Composite composite) {
         disposeChildren(composite);
         final Text text = SwtFactory.createTextArea(composite, "", 100, 0);
-        SwtFactory.createButton(composite, "Save Changes", new SelectionListener() {
+        SwtFactory.createButton(composite, "Save Changes", new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 update(element, text.getText(), composite);
-            }
-
-            @Override
-            public void widgetDefaultSelected(final SelectionEvent e) {
             }
         });
         layout(composite);

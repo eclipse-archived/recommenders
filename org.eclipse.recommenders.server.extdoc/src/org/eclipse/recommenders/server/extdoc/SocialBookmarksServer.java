@@ -29,18 +29,17 @@ public final class SocialBookmarksServer extends AbstractFeedbackServer {
         super(server, usernameProvider);
     }
 
-    public SocialBookmarks getBookmarks(final IName javaElement) {
-        final String elementId = javaElement.getIdentifier();
+    public SocialBookmarks getBookmarks(final IName element) {
+        final String elementId = element.getIdentifier();
         final List<SocialBookmarks> bookmarks = getServer().getRows("bookmarks", ImmutableMap.of("element", elementId),
                 new GenericType<GenericResultObjectView<SocialBookmarks>>() {
                 });
         return bookmarks == null || bookmarks.isEmpty() ? SocialBookmarks.create(elementId) : bookmarks.get(0);
     }
 
-    public SocialBookmark addBookmark(final IName javaElement, final String text, final String description,
-            final String url) {
-        final SocialBookmarks bookmarks = getBookmarks(javaElement);
-        final SocialBookmark bookmark = bookmarks.addBookmark(text, description, url);
+    public SocialBookmark addBookmark(final IName element, final String title, final String url) {
+        final SocialBookmarks bookmarks = getBookmarks(element);
+        final SocialBookmark bookmark = bookmarks.addBookmark(title, url);
         if (bookmarks.getDocumentId() == null) {
             getServer().post(bookmarks);
         } else {

@@ -16,9 +16,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
-public final class ListingTable extends Composite {
+public final class TableListing extends Composite {
 
-    public ListingTable(final Composite parent, final int columns) {
+    public TableListing(final Composite parent, final int columns) {
         super(parent, SWT.NONE);
         final GridLayout grid = new GridLayout(columns, false);
         grid.horizontalSpacing = 12;
@@ -30,7 +30,7 @@ public final class ListingTable extends Composite {
     }
 
     public void startNewRow() {
-        SwtFactory.createLabel(this, "▪", true, false, SWT.COLOR_BLACK);
+        SwtFactory.createLabel(this, "\u25AA", true, false, SWT.COLOR_BLACK);
     }
 
     public void addLabelItem(final String text, final boolean bold, final boolean code, final int color) {

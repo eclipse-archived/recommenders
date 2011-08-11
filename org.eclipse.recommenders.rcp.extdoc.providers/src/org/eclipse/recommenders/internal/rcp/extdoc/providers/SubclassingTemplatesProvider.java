@@ -21,7 +21,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.ListingTable;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TableListing;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
@@ -73,7 +73,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
             @Override
             public void run(final Composite composite) {
                 disposeChildren(composite);
-                SwtFactory.createStyledText(composite, text);
+                SwtFactory.createStyledText(composite, text, SWT.COLOR_BLACK, true);
 
                 final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
                 for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
@@ -85,7 +85,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                             i + 1, patternProbability, pattern.getNumberOfObservations());
                     new TextAndFeaturesLine(templates, text2, ratings);
 
-                    final ListingTable table = new ListingTable(composite, 4);
+                    final TableListing table = new TableListing(composite, 4);
                     final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
                     for (final Entry<IMethodName, Double> entry : entries) {
                         table.startNewRow();

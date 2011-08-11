@@ -108,13 +108,15 @@ public final class SwtFactory {
         return textComponent;
     }
 
-    public static StyledText createStyledText(final Composite parent, final String text) {
+    public static StyledText createStyledText(final Composite parent, final String text, final int color,
+            final boolean grabExcessHorizontalSpace) {
         final StyledText styledText = new StyledText(parent, SWT.WRAP);
         styledText.setEnabled(false);
         styledText.setDoubleClickEnabled(false);
-        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, grabExcessHorizontalSpace, false));
         styledText.setEditable(false);
         styledText.setText(text);
+        styledText.setForeground(createColor(color));
         return styledText;
     }
 

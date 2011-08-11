@@ -37,9 +37,9 @@ public final class SocialBookmarks implements IServerType {
         return bookmarks;
     }
 
-    public SocialBookmark addBookmark(final String text, final String description, final String url) {
+    public SocialBookmark addBookmark(final String text, final String url) {
         final String userId = UUIDHelper.getUUID();
-        final SocialBookmark bookmark = SocialBookmark.create(userId, text, description, url);
+        final SocialBookmark bookmark = SocialBookmark.create(userId, text, url);
         bookmarks.add(bookmark);
         return bookmark;
     }

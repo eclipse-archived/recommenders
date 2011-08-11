@@ -15,7 +15,7 @@ import java.util.List;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.names.IName;
-import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.ListingTable;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TableListing;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
@@ -25,15 +25,17 @@ import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.SocialBookmarksServer;
 import org.eclipse.recommenders.server.extdoc.types.SocialBookmark;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 public final class SocialBookmarksProvider extends AbstractTitledProvider {
 
@@ -59,101 +61,91 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         return new ProviderUiJob() {
             @Override
             public void run(final Composite composite) {
-                updateDisplay(selection, composite, bookmarks);
+                updateDisplay(selection.getJavaElement(), composite, bookmarks);
             }
         };
     }
 
-    private void updateDisplay(final IJavaElementSelection selection, final Composite composite,
+    private void updateDisplay(final IJavaElement element, final Composite composite,
             final List<SocialBookmark> bookmarks) {
         disposeChildren(composite);
-        displayItems(selection, composite, bookmarks);
-        displayAddControl(selection, composite, bookmarks);
+        displayItems(element, composite, bookmarks);
+        displayAddControl(element, composite, bookmarks);
     }
 
-    private void displayItems(final IJavaElementSelection selection, final Composite composite,
+    private void displayItems(final IJavaElement element, final Composite composite,
             final List<SocialBookmark> bookmarks) {
-        final IJavaElement element = selection.getJavaElement();
         if (bookmarks.isEmpty()) {
-            SwtFactory
-                    .createLabel(
-                            composite,
-                            "Social bookmarks are collections of web resources for specific Java elements, shared by all users. You can add the first bookmark for "
-                                    + element.getElementName() + " by clicking on the link below.");
+            final String text = "Social bookmarks are collections of web resources for specific Java elements, shared by all users. You can add the first bookmark for "
+                    + element.getElementName() + " by clicking on the link below.";
+            SwtFactory.createLabel(composite, text);
         } else {
             SwtFactory.createLabel(composite, "The following resources on " + element.getElementName()
-                    + " have been provided by the community. You are welcome to add you own.");
+                    + " have been provided by the community. You are welcome to add your own.");
 
-            final ListingTable table = new ListingTable(composite, 4);
+            final TableListing table = new TableListing(composite, 4);
             final IName elementName = ElementResolver.resolveName(element);
             for (final SocialBookmark bookmark : bookmarks) {
-                table.startNewRow();
-                SwtFactory.createLink(table, bookmark.getTitle(), bookmark.getUrl(), null, true, new MouseListener() {
-                    @Override
-                    public void mouseUp(final MouseEvent e) {
-                        Program.launch(bookmark.getUrl());
-                    }
-
-                    @Override
-                    public void mouseDown(final MouseEvent e) {
-                    }
-
-                    @Override
-                    public void mouseDoubleClick(final MouseEvent e) {
-                    }
-                });
-                table.addLabelItem(bookmark.getDescription(), false, false, SWT.COLOR_BLACK);
-                CommunityFeatures.create(elementName, bookmark.getUrl(), this, server).loadStarsRatingComposite(table);
+                displayBookmark(table, bookmark, elementName);
             }
         }
     }
 
-    private void displayAddControl(final IJavaElementSelection selection, final Composite composite,
+    private void displayBookmark(final TableListing table, final SocialBookmark bookmark, final IName elementName) {
+        table.startNewRow();
+        SwtFactory.createLink(table, bookmark.getTitle(), bookmark.getUrl(), null, true, new MouseAdapter() {
+            @Override
+            public void mouseUp(final MouseEvent e) {
+                Program.launch(bookmark.getUrl());
+            }
+        });
+        final String url = StringUtils.abbreviate(bookmark.getUrl().replaceFirst("http://(www.)?", ""), 40);
+        final StyledText urlText = SwtFactory.createStyledText(table, url, SWT.COLOR_DARK_GRAY, false);
+        SwtFactory.createStyleRange(urlText, 0, url.indexOf('/'), SWT.BOLD, false, false);
+        CommunityFeatures.create(elementName, bookmark.getUrl(), this, server).loadStarsRatingComposite(table);
+    }
+
+    private void displayAddControl(final IJavaElement element, final Composite composite,
             final List<SocialBookmark> bookmarks) {
         final Composite addComposite = SwtFactory.createGridComposite(composite, 4, 6, 0, 0, 0);
         SwtFactory.createLink(addComposite, "Click here to add a new bookmark.", null,
-                ExtDocPlugin.getIcon("eview16/add.gif"), false, new MouseListener() {
+                ExtDocPlugin.getIcon("eview16/add.gif"), false, new MouseAdapter() {
                     @Override
                     public void mouseUp(final MouseEvent e) {
-                        displayAddArea(selection, composite, addComposite, bookmarks);
-                    }
-
-                    @Override
-                    public void mouseDown(final MouseEvent e) {
-                    }
-
-                    @Override
-                    public void mouseDoubleClick(final MouseEvent e) {
+                        displayAddArea(element, composite, addComposite, bookmarks);
                     }
                 });
     }
 
-    private void displayAddArea(final IJavaElementSelection selection, final Composite composite,
-            final Composite addComposite, final List<SocialBookmark> bookmarks) {
+    private void displayAddArea(final IJavaElement element, final Composite composite, final Composite addComposite,
+            final List<SocialBookmark> bookmarks) {
         disposeChildren(addComposite);
-        final Text title = SwtFactory.createText(addComposite, "Link Title", 180);
-        final Text description = SwtFactory.createText(addComposite, "Link Description", 256);
-        final Text url = SwtFactory.createText(addComposite, "URL", 128);
-        SwtFactory.createButton(addComposite, "Add", new SelectionListener() {
+        final Text title = SwtFactory.createText(addComposite, "Link Title", 300);
+        final Text url = SwtFactory.createText(addComposite, "URL", 200);
+        SwtFactory.createButton(addComposite, "Add", new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                addBookmark(title.getText(), description.getText(), url.getText(), selection, composite, bookmarks);
+                addBookmark(title.getText(), url.getText(), element, composite, bookmarks);
             }
-
+        });
+        SwtFactory.createButton(addComposite, "Cancel", new SelectionAdapter() {
             @Override
-            public void widgetDefaultSelected(final SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent e) {
+                disposeChildren(addComposite);
+                displayAddControl(element, composite, bookmarks);
+                layout(composite);
             }
         });
         layout(composite);
     }
 
-    private void addBookmark(final String text, final String description, final String url,
-            final IJavaElementSelection selection, final Composite composite, final List<SocialBookmark> bookmarks) {
+    private void addBookmark(final String text, final String url, final IJavaElement element,
+            final Composite composite, final List<SocialBookmark> bookmarks) {
         try {
-            final SocialBookmark bookmark = server.addBookmark(ElementResolver.resolveName(selection.getJavaElement()),
-                    text, description, url);
+            final IName name = ElementResolver.resolveName(element);
+            final SocialBookmark bookmark = server.addBookmark(name, text, url);
             bookmarks.add(bookmark);
-            updateDisplay(selection, composite, bookmarks);
+            updateDisplay(element, composite, bookmarks);
         } catch (final IllegalArgumentException e) {
             SwtFactory.createLabel(composite, e.getMessage(), false, false, SWT.COLOR_RED);
         }

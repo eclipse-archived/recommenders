@@ -19,15 +19,12 @@ public final class SocialBookmark implements IServerType, Comparable<SocialBookm
 
     private String userId;
     private String title;
-    private String description;
     private String url;
 
-    public static SocialBookmark create(final String userId, final String title, final String description,
-            final String url) {
+    public static SocialBookmark create(final String userId, final String title, final String url) {
         final SocialBookmark bookmark = new SocialBookmark();
         bookmark.userId = userId;
         bookmark.title = title;
-        bookmark.description = description;
         bookmark.url = url;
         // TODO: let some sophisticated library do things like that.
         if (!url.startsWith("http://")) {
@@ -39,10 +36,6 @@ public final class SocialBookmark implements IServerType, Comparable<SocialBookm
 
     public String getTitle() {
         return title;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public String getUrl() {
@@ -57,10 +50,8 @@ public final class SocialBookmark implements IServerType, Comparable<SocialBookm
     @Override
     public void validate() {
         Checks.ensureIsTrue(!userId.isEmpty());
-        Preconditions.checkArgument(title.length() >= 3 && !"Link Title".equals("title"),
-                "The title has to be at least 3 characters long.");
-        Preconditions.checkArgument(description.length() >= 5 && !"Link Description".equals(description),
-                "The description has to be at least 5 characters long.");
+        Preconditions.checkArgument(title.length() >= 5 && !"Link Title".equals("title"),
+                "The title has to be at least 5 characters long.");
         // TODO: use external library, also has to do security checks.
         Preconditions.checkArgument(url.length() > 10 && url.contains("."), "This doens't seems to be a valid url: "
                 + url);
