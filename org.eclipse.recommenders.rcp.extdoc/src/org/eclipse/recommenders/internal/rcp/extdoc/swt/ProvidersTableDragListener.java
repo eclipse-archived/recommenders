@@ -29,7 +29,7 @@ final class ProvidersTableDragListener implements DragSourceListener {
     public void dragStart(final DragSourceEvent event) {
         event.doit = true;
         dragSourceItem = table.getSelection()[0];
-    };
+    }
 
     @Override
     public void dragSetData(final DragSourceEvent event) {

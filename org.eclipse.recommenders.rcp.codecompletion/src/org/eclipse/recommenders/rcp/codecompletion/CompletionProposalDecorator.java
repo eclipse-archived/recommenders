@@ -12,9 +12,11 @@ package org.eclipse.recommenders.rcp.codecompletion;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension5;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension6;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.viewers.StyledString;
@@ -27,7 +29,8 @@ import org.eclipse.swt.graphics.Point;
  * displays the likelihood of the proposal.
  */
 @SuppressWarnings("restriction")
-public class CompletionProposalDecorator implements IJavaCompletionProposal, ICompletionProposalExtension6 {
+public class CompletionProposalDecorator implements IJavaCompletionProposal, ICompletionProposalExtension5,
+        ICompletionProposalExtension6 {
 
     private final AbstractJavaCompletionProposal delegate;
 
@@ -48,6 +51,11 @@ public class CompletionProposalDecorator implements IJavaCompletionProposal, ICo
     @Override
     public String getAdditionalProposalInfo() {
         return delegate.getAdditionalProposalInfo();
+    }
+
+    @Override
+    public Object getAdditionalProposalInfo(final IProgressMonitor monitor) {
+        return delegate.getAdditionalProposalInfo(monitor);
     }
 
     @Override

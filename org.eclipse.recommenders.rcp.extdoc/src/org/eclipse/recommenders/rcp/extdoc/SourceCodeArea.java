@@ -30,7 +30,7 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
 @SuppressWarnings({ "restriction", "unchecked" })
-public final class SourceCodeArea extends JavaSourceViewer {
+final class SourceCodeArea extends JavaSourceViewer {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -48,7 +48,7 @@ public final class SourceCodeArea extends JavaSourceViewer {
         formatter = ToolFactory.createCodeFormatter(options);
     }
 
-    public SourceCodeArea(final Composite parent) {
+    SourceCodeArea(final Composite parent) {
         super(parent, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
 
         configure(configuration);
@@ -57,13 +57,13 @@ public final class SourceCodeArea extends JavaSourceViewer {
         getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 0).create());
     }
 
-    public void setCode(final String code) {
+    void setCode(final String code) {
         final IDocument document = new Document(code);
         format(document);
         setInput(document);
     }
 
-    private void format(final IDocument document) {
+    private static void format(final IDocument document) {
         final String sourceCode = document.get();
         final int length = document.getLength();
         final TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, sourceCode, 0, length, 0, LINE_SEPARATOR);
@@ -72,7 +72,7 @@ public final class SourceCodeArea extends JavaSourceViewer {
         }
     }
 
-    private void applyTextFormattings(final IDocument document, final TextEdit edit) {
+    private static void applyTextFormattings(final IDocument document, final TextEdit edit) {
         try {
             edit.apply(document);
         } catch (final MalformedTreeException e) {

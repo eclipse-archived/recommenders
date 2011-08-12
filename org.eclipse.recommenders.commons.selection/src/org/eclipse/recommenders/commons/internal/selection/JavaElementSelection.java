@@ -28,7 +28,7 @@ import com.google.common.base.Objects.ToStringHelper;
  * element in the perspective (e.g. Editor, Package Explorer, Outline, ...).
  */
 @SuppressWarnings("restriction")
-final class JavaElementSelection implements IJavaElementSelection {
+public final class JavaElementSelection implements IJavaElementSelection {
 
     private final IJavaElement javaElement;
     private final int invocationOffset;
@@ -42,7 +42,7 @@ final class JavaElementSelection implements IJavaElementSelection {
      * @param javaElement
      *            The selected Java element.
      */
-    protected JavaElementSelection(final IJavaElement javaElement) {
+    public JavaElementSelection(final IJavaElement javaElement) {
         this.javaElement = Checks.ensureIsNotNull(javaElement);
         invocationOffset = -1;
     }
@@ -55,7 +55,7 @@ final class JavaElementSelection implements IJavaElementSelection {
      * @param editor
      *            The Java editor in which the selection took place.
      */
-    protected JavaElementSelection(final IJavaElement javaElement, final int invocationOffset, final JavaEditor editor) {
+    public JavaElementSelection(final IJavaElement javaElement, final int invocationOffset, final JavaEditor editor) {
         this.javaElement = Checks.ensureIsNotNull(javaElement);
         this.invocationOffset = invocationOffset;
         this.editor = Checks.ensureIsNotNull(editor);
@@ -80,7 +80,7 @@ final class JavaElementSelection implements IJavaElementSelection {
     }
 
     @Override
-    public final ITypeRoot getCompilationUnit() {
+    public ITypeRoot getCompilationUnit() {
         if (compilationUnit == null && editor != null) {
             compilationUnit = Checks.cast(EditorUtility.getEditorInputJavaElement(editor, false));
         }
@@ -98,6 +98,29 @@ final class JavaElementSelection implements IJavaElementSelection {
     @Override
     public JavaEditor getEditor() {
         return editor;
+    }
+
+    @Override
+    public IJavaElementSelection copy(final IJavaElement element) {
+        return new JavaElementSelection(element, invocationOffset, editor);
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (!(object instanceof IJavaElementSelection)) {
+            return false;
+        }
+        final IJavaElementSelection selection = (IJavaElementSelection) object;
+        if (getElementLocation() != selection.getElementLocation()) {
+            return false;
+        }
+        if (!getJavaElement().equals(selection.getJavaElement())) {
+            return false;
+        }
+        if (getEditor() == null) {
+            return selection.getEditor() == null;
+        }
+        return getEditor().equals(selection.getEditor());
     }
 
     @Testing

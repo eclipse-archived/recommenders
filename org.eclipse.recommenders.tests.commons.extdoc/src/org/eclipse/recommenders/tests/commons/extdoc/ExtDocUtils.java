@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.tests.commons.extdoc;
 
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -20,8 +21,8 @@ import org.eclipse.swt.widgets.Shell;
 public final class ExtDocUtils {
 
     private static TestProvider provider = new TestProvider();
-    private static TestJavaElementSelection selection = new TestJavaElementSelection(JavaElementLocation.METHOD_BODY,
-            TestUtils.getDefaultJavaType());
+    private static TestJavaElementSelection selection = getSelection(JavaElementLocation.METHOD_BODY,
+            TestTypeUtils.getDefaultJavaType());
     private static Shell shell = new Shell();
 
     static {
@@ -37,6 +38,10 @@ public final class ExtDocUtils {
 
     public static TestJavaElementSelection getSelection() {
         return selection;
+    }
+
+    public static TestJavaElementSelection getSelection(final JavaElementLocation location, final IJavaElement element) {
+        return new TestJavaElementSelection(location, element);
     }
 
     public static Shell getShell() {

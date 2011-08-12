@@ -52,7 +52,7 @@ public final class BrowserSizeWorkaround {
         browser.setLayoutData(gridData);
     }
 
-    private void recalculateAndSetHeight() {
+    void recalculateAndSetHeight() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -66,7 +66,7 @@ public final class BrowserSizeWorkaround {
         }).start();
     }
 
-    private void setHeightAndTriggerLayout(final int height) {
+    void setHeightAndTriggerLayout(final int height) {
         gridData.heightHint = height;
         gridData.minimumHeight = height;
         browser.getParent().getParent().getParent().layout(true);
@@ -111,7 +111,7 @@ public final class BrowserSizeWorkaround {
                     // compute its size
                     return;
                 }
-                final int height = (int) Math.ceil((Double) result);
+                final int height = (int) Math.ceil(((Double) result).doubleValue());
                 setHeightAndTriggerLayout(height);
             }
         }

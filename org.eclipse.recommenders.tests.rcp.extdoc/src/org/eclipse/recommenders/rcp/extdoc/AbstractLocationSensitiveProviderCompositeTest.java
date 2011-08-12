@@ -11,34 +11,36 @@
 package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
-import org.eclipse.recommenders.tests.commons.extdoc.TestJavaElementSelection;
-import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public final class AbstractLocationSensitiveProviderCompositeTest {
 
-    private final AbstractLocationSensitiveProviderComposite composite = new AbstractLocationSensitiveProviderComposite() {
+    private final IProvider provider = new AbstractLocationSensitiveTitledProvider() {
         @Override
-        protected Control createContentControl(final Composite parent) {
-            return null;
+        protected Composite createContentComposite(final Composite parent) {
+            return new Composite(ExtDocUtils.getShell(), SWT.NONE);
         }
     };
 
     @Test
     public void testProvidersComposite() {
+        final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
         for (final JavaElementLocation location : JavaElementLocation.values()) {
-            composite.selectionChanged(new TestJavaElementSelection(location, TestUtils.getDefaultJavaType()));
+            provider.selectionChanged(ExtDocUtils.getSelection(location, TestTypeUtils.getDefaultJavaType()), composite);
             Assert.assertTrue(location == JavaElementLocation.PACKAGE_DECLARATION
-                    || composite.isAvailableForLocation(location));
+                    || provider.isAvailableForLocation(location));
         }
     }
 
     public void testNullLocation() {
-        Assert.assertFalse(composite.selectionChanged(new TestJavaElementSelection(null, null)));
+        final Composite composite = provider.createComposite(ExtDocUtils.getShell(), null);
+        Assert.assertFalse(provider.selectionChanged(ExtDocUtils.getSelection(null, null), composite));
     }
 
 }

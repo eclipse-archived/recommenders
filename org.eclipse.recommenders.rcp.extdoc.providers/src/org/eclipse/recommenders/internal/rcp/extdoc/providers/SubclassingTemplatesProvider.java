@@ -16,17 +16,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TableListing;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
@@ -34,17 +33,13 @@ import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.MethodPattern;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveProviderComposite {
+public final class SubclassingTemplatesProvider extends AbstractLocationSensitiveTitledProvider {
 
     private final SubclassingServer server;
-
-    private Composite composite;
 
     @Inject
     SubclassingTemplatesProvider(final SubclassingServer server) {
@@ -52,77 +47,68 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
-        composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
-        return composite;
+    protected Composite createContentComposite(final Composite parent) {
+        return SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
     }
 
     @Override
-    protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return printProposals(ElementResolver.toRecType(type));
     }
 
-    private boolean printProposals(final ITypeName type) {
+    private ProviderUiJob printProposals(final ITypeName type) {
         final ClassOverridePatterns directive = server.getClassOverridePatterns(type);
         if (directive == null) {
-            return false;
+            return null;
         }
         final MethodPattern[] patterns = getPatternsSortedByFrequency(directive);
-        final Integer numberOfSubclasses = computeTotalNumberOfSubclasses(patterns);
+        final Integer numberOfSubclasses = Integer.valueOf(computeTotalNumberOfSubclasses(patterns));
 
         final String text = String
                 .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
                         numberOfSubclasses);
-        final CommunityFeatures ratings = CommunityFeatures.create(type, this, server);
+        final CommunityFeatures ratings = CommunityFeatures.create(type, null, this, server);
 
-        new UIJob("Updating Subclassing Templates Provider") {
+        return new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
-                if (!composite.isDisposed()) {
-                    disposeChildren(composite);
-                    SwtFactory.createStyledText(composite, text);
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                SwtFactory.createStyledText(composite, text, SWT.COLOR_BLACK, true);
 
-                    final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
-                    for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
-                        final MethodPattern pattern = patterns[i];
-                        final int patternProbability = (int) (pattern.getNumberOfObservations()
-                                / numberOfSubclasses.doubleValue() * 100);
-                        String text2 = String.format(
-                                "Pattern #%d - covers approximately %d%% of the examined subclasses (%d subclasses).",
-                                i + 1, patternProbability, pattern.getNumberOfObservations());
-                        new TextAndFeaturesLine(templates, text2, ratings);
+                final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);
+                for (int i = 0; i < Math.min(patterns.length, 3); ++i) {
+                    final MethodPattern pattern = patterns[i];
+                    final int patternProbability = (int) (pattern.getNumberOfObservations()
+                            / numberOfSubclasses.doubleValue() * 100);
+                    String text2 = String.format(
+                            "Pattern #%d - covers approximately %d%% of the examined subclasses (%d subclasses).",
+                            i + 1, patternProbability, pattern.getNumberOfObservations());
+                    new TextAndFeaturesLine(templates, text2, ratings);
 
-                        final Composite template = SwtFactory.createGridComposite(templates, 4, 12, 2, 12, 0);
-                        final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
-                        for (final Entry<IMethodName, Double> entry : entries) {
-                            SwtFactory.createSquare(template);
-                            final IMethodName method = entry.getKey();
-                            text2 = "override " + method.getDeclaringType().getClassName() + "."
-                                    + Names.vm2srcSimpleMethod(method);
-                            SwtFactory.createLabel(template, text2, false, true, SWT.COLOR_BLACK);
-                            SwtFactory.createLabel(template, "-");
-                            SwtFactory.createLabel(template, String.format("~ %3.0f%%", entry.getValue() * 100), false,
-                                    false, SWT.COLOR_BLUE);
-                        }
+                    final TableListing table = new TableListing(templates, 4);
+                    final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
+                    for (final Entry<IMethodName, Double> entry : entries) {
+                        table.startNewRow();
+                        final IMethodName method = entry.getKey();
+                        text2 = "override " + method.getDeclaringType().getClassName() + "."
+                                + Names.vm2srcSimpleMethod(method);
+                        table.addCell(text2, false, true, SWT.COLOR_BLACK);
+                        table.addCell("-", false, false, SWT.COLOR_BLACK);
+                        table.addCell(String.format("%3.0f%%", entry.getValue() * 100), false, false, SWT.COLOR_BLUE);
                     }
-
-                    ratings.loadCommentsComposite(composite);
-                    composite.layout(true);
                 }
-                return Status.OK_STATUS;
-            }
-        }.schedule();
 
-        return true;
+                ratings.loadCommentsComposite(composite);
+            }
+        };
     }
 
-    private static List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(
-            final MethodPattern pattern) {
+    static List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(final MethodPattern pattern) {
         final List<Entry<IMethodName, Double>> entries = Lists.newArrayList(pattern.getMethods().entrySet());
         Collections.sort(entries, new Comparator<Entry<IMethodName, Double>>() {
             @Override
             public int compare(final Entry<IMethodName, Double> o1, final Entry<IMethodName, Double> o2) {
-                return Double.compare(o2.getValue(), o1.getValue());
+                return o2.getValue().compareTo(o1.getValue());
             }
         });
         return entries;

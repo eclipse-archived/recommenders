@@ -15,17 +15,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Tuple;
@@ -33,270 +27,242 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IProjectModelFacade;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TableListing;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
+import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.CallsAdapter;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ContextFactory;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.internal.util.Sets;
 
-@SuppressWarnings("restriction")
-public final class CallsProvider extends AbstractLocationSensitiveProviderComposite {
+public final class CallsProvider extends AbstractLocationSensitiveTitledProvider {
 
-    private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;
     private final GenericServer server;
-
-    private Composite composite;
-    private IIntelligentCompletionContext context;
-    private final ProjectServices projectServices;
-    private IProjectModelFacade modelFacade;
+    private final CallsAdapter adapter;
 
     @Inject
     CallsProvider(final ProjectServices projectServices,
             final Provider<Set<IVariableUsageResolver>> usageResolversProvider, final GenericServer server) {
-        this.projectServices = projectServices;
-        this.usageResolversProvider = usageResolversProvider;
         this.server = Preconditions.checkNotNull(server);
+        adapter = new CallsAdapter(projectServices, usageResolversProvider);
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
-        composite = SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
-        return composite;
+    protected Composite createContentComposite(final Composite parent) {
+        return SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
     }
 
     @Override
-    protected void hookInitalize(final IJavaElementSelection selection) {
-        context = new MockedIntelligentCompletionContext(selection);
-        final IJavaProject javaProject = selection.getJavaElement().getJavaProject();
-        modelFacade = projectServices.getModelFacade(javaProject);
+    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
-    }
-
-    @Override
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
-        context = ContextFactory.setFieldVariableContext(selection, field);
-        if (context == null || !displayProposalsForVariable(field, false)) {
-            return false;
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
+        final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
+        if (context == null) {
+            return null;
         }
-        // displayProposalsForAllMethods(selection, field);
-        return true;
+        return displayProposalsForVariable(field, false,
+                adapter.getProposalsFromSingleMethods(selection, field, context), context);
     }
 
     @Override
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
-        context = ContextFactory.setThisVariableContext(selection, method);
-        return displayProposalsForMethod(method);
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
+        final MockedIntelligentCompletionContext context = ContextFactory.createThisVariableContext(selection, method);
+        return displayProposalsForMethod(method, true, context);
     }
 
     @Override
-    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
+    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local) {
-        context = ContextFactory.setLocalVariableContext(selection, local);
-        return context == null ? false : displayProposalsForVariable(local, true);
+        final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
+        return context == null ? null : displayProposalsForVariable(local, true, null, context);
     }
 
     @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
-        context = ContextFactory.setLocalVariableContext(selection, local);
-        return context == null ? false : displayProposalsForVariable(local, false);
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
+        final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
+        return context == null ? null : displayProposalsForVariable(local, false, null, context);
     }
 
     @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
-        context = ContextFactory.setFieldVariableContext(selection, field);
-        return context == null ? false : displayProposalsForVariable(field, false);
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
+        final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
+        return context == null ? null : displayProposalsForVariable(field, false, null, context);
     }
 
     @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
-        context = ContextFactory.setNullVariableContext(selection);
-        final Set<IMethodName> invokedMethods = ImmutableSet.of(ElementResolver.toRecMethod(method));
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
+        final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
+        final IMethodName invokedMethod = Preconditions.checkNotNull(ElementResolver.toRecMethod(method), method);
         final ITypeName receiverType = context.getReceiverType();
         return displayProposalsForType(
                 receiverType == null ? method.getDeclaringType() : ElementResolver.toJdtType(receiverType),
-                invokedMethods, method.getElementName());
+                ImmutableSet.of(invokedMethod), method.getElementName(), context);
     }
 
     @Override
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
-        context = ContextFactory.setNullVariableContext(selection);
-        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName());
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
+        final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
+        return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
-    private boolean displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors) {
+    private ProviderUiJob displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors,
+            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilityFromMethods,
+            final MockedIntelligentCompletionContext context) {
         final Variable variable = context.getVariable();
-
-        if (variable != null && modelFacade.hasModel(variable.type)) {
-            final Set<IMethodName> resolveCalledMethods = resolveCalledMethods();
-            final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = computeRecommendations(variable.type,
-                    resolveCalledMethods, negateConstructors);
+        final IProjectModelFacade facade = adapter.getModelFacade(element);
+        if (variable != null && facade.hasModel(variable.type)) {
+            final Set<IMethodName> resolveCalledMethods = adapter.resolveCalledMethods(context);
+            final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = adapter.computeRecommendations(
+                    variable.type, resolveCalledMethods, negateConstructors, context, facade);
             final IName name = element instanceof IField ? ElementResolver.toRecField((IField) element, variable.type)
                     : variable.getName();
-            return displayProposals(element.getElementName(), name, recommendedMethodCalls, resolveCalledMethods);
+            return displayProposals(element, element.getElementName(), name, false, recommendedMethodCalls,
+                    resolveCalledMethods, maxProbabilityFromMethods);
         }
-        return false;
+        return null;
     }
 
-    private boolean displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods,
-            final String elementName) {
+    private ProviderUiJob displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods,
+            final String elementName, final MockedIntelligentCompletionContext context) {
         final ITypeName typeName = ElementResolver.toRecType(type);
-        if (modelFacade.hasModel(typeName)) {
-            final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(typeName, invokedMethods, false);
-            return displayProposals(elementName, typeName, calls, new HashSet<IMethodName>());
+        final IProjectModelFacade facade = adapter.getModelFacade(type);
+        if (facade.hasModel(typeName)) {
+            final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(typeName,
+                    invokedMethods, false, context, facade);
+            return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>(), null);
         }
-        return false;
+        return null;
     }
 
-    private boolean displayProposalsForMethod(final IMethod method) {
-        try {
-            final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
-            if (superclassTypeSignature == null) {
-                return false;
-            }
-            final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
-                    method.getDeclaringType());
-            final IType supertype = method.getJavaProject().findType(superclassTypeName);
-            final ITypeName type = ElementResolver.toRecType(supertype);
-            if (type != null && modelFacade.hasModel(type)) {
-                final Set<IMethodName> calledMethods = resolveCalledMethods();
-                final SortedSet<Tuple<IMethodName, Double>> calls = computeRecommendations(type, calledMethods, true);
-                return displayProposals(method.getElementName(), ElementResolver.toRecMethod(method), calls,
-                        calledMethods);
-            } else {
-                // TODO: first is not correct in all cases. this needs to be
-                // fixed
-                final IMethod first = JdtUtils.findFirstDeclaration(method);
-                return first.equals(method) ? false : displayProposalsForMethod(first);
-            }
-        } catch (final JavaModelException e) {
-            throw new IllegalStateException(e);
+    private ProviderUiJob displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration,
+            final MockedIntelligentCompletionContext context) {
+        final ITypeName type = adapter.getMethodsDeclaringType(method, context);
+        final IProjectModelFacade facade = adapter.getModelFacade(method);
+        if (type != null && facade.hasModel(type)) {
+            final Set<IMethodName> calledMethods = adapter.resolveCalledMethods(context);
+            final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(type, calledMethods,
+                    true, context, facade);
+            return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
+                    isMethodDeclaration, calls, calledMethods, null);
+        } else {
+            // TODO: first is not correct in all cases. this needs to be
+            // fixed
+            final IMethod first = JdtUtils.findFirstDeclaration(method);
+            return first.equals(method) ? null : displayProposalsForMethod(first, isMethodDeclaration, context);
         }
     }
 
-    private void displayProposalsForAllMethods(final IJavaElementSelection selection, final IField field) {
-        try {
-            final ITypeName fieldType = context.getVariable().type;
-            for (final IMethod method : field.getDeclaringType().getMethods()) {
-                context = new MockedIntelligentCompletionContext(selection) {
-                    @Override
-                    public Variable getVariable() {
-                        return Variable.create(field.getElementName(), fieldType, ElementResolver.toRecMethod(method));
-                    };
-                };
-                displayProposalsForMethod(method);
-            }
-        } catch (final JavaModelException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private Set<IMethodName> resolveCalledMethods() {
-        for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
-            if (resolver.canResolve(context)) {
-                return resolver.getReceiverMethodInvocations();
-            }
-        }
-        return Sets.newHashSet();
-    }
-
-    private SortedSet<Tuple<IMethodName, Double>> computeRecommendations(final ITypeName typeName,
-            final Set<IMethodName> invokedMethods, final boolean negateConstructors) {
-        final IObjectMethodCallsNet model = modelFacade.acquireModel(typeName);
-        model.clearEvidence();
-        model.setMethodContext(context == null ? null : context.getEnclosingMethodsFirstDeclaration());
-        model.setObservedMethodCalls(typeName, invokedMethods);
-        if (negateConstructors) {
-            model.negateConstructors();
-        }
-        model.updateBeliefs();
-        final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model.getRecommendedMethodCalls(0.01, 5);
-        modelFacade.releaseModel(model);
-        return recommendedMethodCalls;
-    }
-
-    private boolean displayProposals(final String elementName, final IName element,
-            final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods) {
+    private ProviderUiJob displayProposals(final IJavaElement element, final String elementName, final IName elementId,
+            final boolean isMethodDeclaration, final SortedSet<Tuple<IMethodName, Double>> proposals,
+            final Set<IMethodName> calledMethods,
+            final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilitiesFromMethods) {
         if (proposals.isEmpty()) {
-            return false;
+            return null;
         }
 
-        final String text = "People who use " + elementName + " usually also call the following methods:";
-        final CommunityFeatures features = CommunityFeatures.create(element, this, server);
-        new UIJob("Updating Calls Provider") {
-            @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
-                if (!composite.isDisposed()) {
-                    disposeChildren(composite);
-                    final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
-                    line.createStyleRange(15, elementName.length(), SWT.NORMAL, false, true);
-                    displayProposals(proposals, calledMethods);
-                    composite.layout(true);
-                }
-                return Status.OK_STATUS;
-            }
-        }.schedule();
+        final String action = isMethodDeclaration ? "declare" : "use";
+        final String text = "People who " + action + " " + elementName + " usually also call the following methods"
+                + (isMethodDeclaration ? " inside" : "") + ":";
+        final String text2 = "When accessed from single methods, probabilites for this field's methods might be different:";
+        final CommunityFeatures features = CommunityFeatures.create(elementId, null, this, server);
 
-        return true;
+        return new ProviderUiJob() {
+            @Override
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                line.createStyleRange(12 + action.length(), elementName.length(), SWT.NORMAL, false, true);
+                displayProposals(element, isMethodDeclaration, proposals, calledMethods, composite);
+
+                if (maxProbabilitiesFromMethods != null) {
+                    new TextAndFeaturesLine(composite, text2, features);
+                    final TableListing calls = new TableListing(composite, 4);
+                    for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
+                        calls.startNewRow();
+                        calls.addCell(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true,
+                                SWT.COLOR_BLACK);
+                        final String origin = Names.vm2srcSimpleMethod(proposal.getSecond().getFirst());
+                        final int probability = (int) Math.round(proposal.getSecond().getSecond() * 100);
+                        calls.addCell(probability + "%", false, false, SWT.COLOR_BLUE);
+                        final StyledText styled = SwtFactory.createStyledText(calls, "in " + origin, SWT.COLOR_BLACK,
+                                true);
+                        SwtFactory.createStyleRange(styled, 3, origin.length(), SWT.NORMAL, false, true);
+                    }
+                }
+            }
+        };
     }
 
-    private void displayProposals(final SortedSet<Tuple<IMethodName, Double>> proposals,
-            final Set<IMethodName> calledMethods) {
-        final Composite calls = SwtFactory.createGridComposite(composite, 3, 12, 2, 12, 0);
+    static void displayProposals(final IJavaElement element, final boolean isMethodDeclaration,
+            final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods,
+            final Composite composite) {
+        final TableListing table = new TableListing(composite, 3);
         for (final IMethodName method : calledMethods) {
-            SwtFactory.createSquare(calls);
-            final String prefix = method.isInit() ? "new " : method.getDeclaringType().getClassName() + ".";
-            SwtFactory.createLabel(calls, String.format("%s%s", prefix, Names.vm2srcSimpleMethod(method)), false, true,
-                    SWT.COLOR_DARK_GRAY);
-            SwtFactory.createLabel(calls, "(called)", false, false, SWT.COLOR_DARK_GRAY);
+            table.startNewRow();
+            table.addCell(formatMethodCall(element, method, isMethodDeclaration), false, true, SWT.COLOR_DARK_GRAY);
+            table.addCell("(called)", false, false, SWT.COLOR_DARK_GRAY);
         }
         for (final Tuple<IMethodName, Double> proposal : proposals) {
-            SwtFactory.createSquare(calls);
-            final IMethodName method = proposal.getFirst();
-            final String prefix = method.isInit() ? "new " : method.getDeclaringType().getClassName() + ".";
-            SwtFactory.createLabel(calls, String.format("%s%s", prefix, Names.vm2srcSimpleMethod(method)), false, true,
-                    SWT.COLOR_BLACK);
-            SwtFactory.createLabel(calls, Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
+            displayProposal(proposal, table, element, isMethodDeclaration);
         }
     }
 
+    private static void displayProposal(final Tuple<IMethodName, Double> proposal, final TableListing table,
+            final IJavaElement element, final boolean isMethodDeclaration) {
+        table.startNewRow();
+        table.addCell(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true, SWT.COLOR_BLACK);
+        table.addCell(Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
+    }
+
+    static String formatMethodCall(final IJavaElement element, final IMethodName method,
+            final boolean isMethodDeclaration) {
+        final String prefix;
+        final boolean isVariable = element instanceof ILocalVariable || element instanceof IField;
+        if (isMethodDeclaration) {
+            prefix = "this.";
+        } else if (method.isInit()) {
+            prefix = (isVariable ? element.getElementName() + " = " : "") + "new ";
+        } else {
+            prefix = (isVariable ? element.getElementName() : method.getDeclaringType().getClassName()) + ".";
+        }
+        return String.format("%s%s", prefix, Names.vm2srcSimpleMethod(method));
+    }
 }

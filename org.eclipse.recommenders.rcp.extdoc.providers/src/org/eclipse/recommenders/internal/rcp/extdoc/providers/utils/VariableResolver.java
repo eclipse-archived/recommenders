@@ -10,13 +10,17 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.core.SourceField;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
+import org.eclipse.recommenders.commons.utils.Names;
+import org.eclipse.recommenders.commons.utils.Names.PrimitiveType;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 
 @SuppressWarnings("restriction")
 public final class VariableResolver {
@@ -24,31 +28,35 @@ public final class VariableResolver {
     private VariableResolver() {
     }
 
-    public static IType resolveTypeSignature(final ILocalVariable var) {
+    public static ITypeName resolveTypeSignature(final ILocalVariable var) {
         try {
-            return resolveTypeSignature(var, var.getTypeSignature());
+            final IType declaringType = (IType) var.getAncestor(IJavaElement.TYPE);
+            return resolveTypeSignature(declaringType, var.getTypeSignature());
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    public static IType resolveTypeSignature(final SourceField var) {
+    public static ITypeName resolveTypeSignature(final IField var) {
         try {
-            return resolveTypeSignature(var, var.getTypeSignature());
+            return resolveTypeSignature(var.getDeclaringType(), var.getTypeSignature());
         } catch (final JavaModelException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private static IType resolveTypeSignature(final IJavaElement element, final String typeSignature)
+    private static ITypeName resolveTypeSignature(final IType declaringType, final String typeSignature)
             throws JavaModelException {
-        final IType declaringType = (IType) element.getAncestor(IJavaElement.TYPE);
         final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
-        if (resolvedTypeName == null) {
-            return null;
+        if (PrimitiveType.fromSrc(resolvedTypeName) != null) {
+            return resolvePrimitive(resolvedTypeName);
         }
-        final IJavaProject javaProject = element.getJavaProject();
-        return javaProject.findType(resolvedTypeName);
+        final IJavaProject javaProject = declaringType.getJavaProject();
+        return ElementResolver.toRecType(javaProject.findType(resolvedTypeName));
+    }
+
+    private static ITypeName resolvePrimitive(final String primitiveTypeName) {
+        return VmTypeName.get(Names.src2vmType(primitiveTypeName));
     }
 
 }

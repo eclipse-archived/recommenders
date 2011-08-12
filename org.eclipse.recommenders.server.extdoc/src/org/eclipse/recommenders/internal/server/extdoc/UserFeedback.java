@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc.types;
+package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -27,7 +27,7 @@ import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import com.google.gson.annotations.SerializedName;
 
 @SuppressWarnings("unused")
-public final class UserFeedback implements IUserFeedback {
+final class UserFeedback implements IUserFeedback {
 
     @SerializedName("_id")
     private String documentId;
@@ -36,14 +36,16 @@ public final class UserFeedback implements IUserFeedback {
 
     private String providerId;
     private String element;
+    private String item;
 
     private final Set<Rating> ratings = new HashSet<Rating>();
     private final List<Comment> comments = new LinkedList<Comment>();
 
-    public static UserFeedback create(final IProvider provider, final String element) {
+    static UserFeedback create(final IProvider provider, final String element, final String item) {
         final UserFeedback feedback = new UserFeedback();
         feedback.providerId = provider.getClass().getSimpleName();
         feedback.element = element;
+        feedback.item = item;
         feedback.validate();
         return feedback;
     }

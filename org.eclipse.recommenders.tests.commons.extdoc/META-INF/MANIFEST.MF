@@ -5,34 +5,30 @@ Bundle-SymbolicName: org.eclipse.recommenders.tests.commons.extdoc;singleton:=tr
 Bundle-Version: 0.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Eclipse Code Recommenders
-Import-Package: com.sun.jersey.api.client,
- com.sun.jersey.client.urlconnection,
- org.eclipse.core.commands.common,
- org.eclipse.jdt.core,
- org.eclipse.jface.preference,
- org.eclipse.recommenders.commons.client,
- org.eclipse.recommenders.commons.selection,
- org.eclipse.recommenders.commons.utils.names,
- org.eclipse.recommenders.internal.rcp.extdoc.providers.utils,
- org.eclipse.recommenders.rcp.extdoc,
- org.eclipse.recommenders.rcp.utils,
- org.eclipse.recommenders.tests.commons.analysis.utils,
- org.eclipse.swt.widgets,
- org.eclipse.ui,
- org.eclipse.ui.progress
-Export-Package: org.eclipse.recommenders.tests.commons.extdoc;
-  uses:="org.eclipse.jdt.core.dom,
-   org.eclipse.jdt.core,
-   org.eclipse.recommenders.server.extdoc,
-   org.eclipse.ui,
-   org.eclipse.recommenders.rcp.extdoc,
-   org.eclipse.recommenders.commons.selection,
-   org.eclipse.swt.widgets,
-   com.sun.jersey.api.client"
 Require-Bundle: org.eclipse.jdt.core,
  org.mockito,
  org.eclipse.core.runtime,
  org.eclipse.recommenders.rcp.extdoc,
  org.eclipse.recommenders.server.extdoc,
- org.eclipse.ui.workbench,
- com.sun.jersey.client
+ com.sun.jersey.client,
+ org.eclipse.jdt.core,
+ org.eclipse.recommenders.commons.client,
+ org.eclipse.recommenders.commons.selection,
+ org.eclipse.recommenders.commons.utils,
+ org.eclipse.recommenders.rcp.extdoc.providers,
+ org.eclipse.recommenders.rcp.extdoc,
+ org.eclipse.recommenders.rcp.utils,
+ org.eclipse.ui,
+ org.eclipse.core.resources
+Import-Package: com.sun.jersey.api.client
+Export-Package: org.eclipse.recommenders.tests.commons.extdoc;
+  uses:="org.eclipse.ui,
+   org.eclipse.recommenders.rcp.extdoc,
+   org.eclipse.jdt.core.dom,
+   org.eclipse.jdt.core,
+   org.eclipse.recommenders.server.extdoc,
+   org.eclipse.recommenders.commons.client,
+   org.eclipse.recommenders.commons.utils.names,
+   org.eclipse.recommenders.commons.selection,
+   org.eclipse.swt.widgets,
+   com.sun.jersey.api.client"

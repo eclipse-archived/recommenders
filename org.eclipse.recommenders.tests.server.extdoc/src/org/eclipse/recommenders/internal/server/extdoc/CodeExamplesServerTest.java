@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.server.extdoc;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
-import org.eclipse.recommenders.tests.commons.extdoc.TestUtils;
+import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 
 import org.junit.Test;
 
@@ -24,13 +24,13 @@ public final class CodeExamplesServerTest {
 
     @Test
     public void testGetOverridenMethodCodeExamples() {
-        final CodeExamples examples = server.getOverridenMethodCodeExamples(TestUtils.getDefaultMethod());
+        final CodeExamples examples = server.getOverridenMethodCodeExamples(TestTypeUtils.getDefaultMethod());
         examples.getExamples();
     }
 
     @Test
     public void testGetTypeCodeExamples() {
-        final CodeExamples examples = server.getTypeCodeExamples(TestUtils.getDefaultType());
+        final CodeExamples examples = server.getTypeCodeExamples(TestTypeUtils.getDefaultType());
         examples.getExamples();
     }
 }

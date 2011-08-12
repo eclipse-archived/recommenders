@@ -10,13 +10,10 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 
-import java.net.URL;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
-import org.eclipse.jface.action.Action;
+import org.eclipse.jdt.ui.actions.OpenAction;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
@@ -26,15 +23,14 @@ import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Inject;
@@ -43,15 +39,13 @@ public class ExtDocView extends ViewPart {
 
     static final int HEAD_LABEL_HEIGHT = 20;
     private static final String SASH_POSITION_KEY = "extDocSashPosition";
-    private static boolean linkingEnabled = true;
 
     private final ProviderStore providerStore;
-
-    private ScrolledComposite scrolled;
     private ProvidersComposite providersComposite;
     private ProvidersTable table;
     private CLabel selectionLabel;
     private JavaElementLabelProvider labelProvider;
+    private boolean linkingEnabled = true;
 
     @Inject
     ExtDocView(final ProviderStore providerStore) {
@@ -87,15 +81,10 @@ public class ExtDocView extends ViewPart {
     private void createRightSashSide(final SashForm sashForm) {
         final Composite container = SwtFactory.createGridComposite(sashForm, 1, 0, 0, 0, 0);
         createSelectionLabel(container);
-
-        scrolled = createScrolledComposite(container);
-        scrolled.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        providersComposite = new ProvidersComposite(scrolled, SWT.NONE);
-        scrolled.setContent(providersComposite);
-        providersComposite.layout();
+        providersComposite = new ProvidersComposite(container, true);
     }
 
-    private void handleSashWeights(final SashForm sashForm) {
+    private static void handleSashWeights(final SashForm sashForm) {
         final int sashWeight = ExtDocPlugin.getPreferences().getInt(SASH_POSITION_KEY, 150);
         sashForm.setWeights(new int[] { sashWeight, 1000 - sashWeight });
         sashForm.addDisposeListener(new DisposeListener() {
@@ -114,19 +103,11 @@ public class ExtDocView extends ViewPart {
         selectionLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
     }
 
-    private static ScrolledComposite createScrolledComposite(final Composite parent) {
-        final ScrolledComposite composite = new ScrolledComposite(parent, SWT.V_SCROLL);
-        composite.setExpandVertical(true);
-        composite.setExpandHorizontal(true);
-        composite.getVerticalBar().setIncrement(20);
-        return composite;
-    }
-
     private void addProviders() {
+        final IWorkbenchWindow window = getViewSite().getWorkbenchWindow();
         for (final IProvider provider : providerStore.getProviders()) {
-            final Control control = provider.createControl(providersComposite, getViewSite());
-            control.setData(provider);
-            table.addProvider(control, provider.getProviderName(), provider.getIcon(), true);
+            final Composite composite = providersComposite.addProvider(provider, window);
+            table.addProvider(composite, provider.getProviderName(), provider.getIcon());
         }
     }
 
@@ -135,6 +116,7 @@ public class ExtDocView extends ViewPart {
         if (viewSite != null) {
             final IToolBarManager toolbar = viewSite.getActionBars().getToolBarManager();
             toolbar.removeAll();
+            toolbar.add(new OpenInputAction());
             toolbar.add(new LinkWithEditorAction());
         }
     }
@@ -143,7 +125,7 @@ public class ExtDocView extends ViewPart {
         if (selection != null && table != null) {
             table.setContext(selection);
             updateProviders(selection);
-            scrolled.setOrigin(0, 0);
+            providersComposite.scrollToTop();
             updateSelectionLabel(selection.getJavaElement());
             return true;
         }
@@ -154,7 +136,7 @@ public class ExtDocView extends ViewPart {
         ProviderUpdateJob.cancelActiveJobs();
         for (final TableItem item : table.getItems()) {
             if (item.getChecked()) {
-                final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
+                final ProviderUpdateJob job = new ProviderUpdateJob(item, selection);
                 job.setSystem(true);
                 job.schedule();
             }
@@ -169,20 +151,30 @@ public class ExtDocView extends ViewPart {
 
     @Override
     public final void setFocus() {
-        scrolled.forceFocus();
+        providersComposite.setFocus();
     }
 
     public final boolean isLinkingEnabled() {
         return linkingEnabled;
     }
 
-    private static final class LinkWithEditorAction extends Action {
+    private final class OpenInputAction extends AbstractAction {
 
-        private LinkWithEditorAction() {
-            super("Link with Selection", SWT.TOGGLE);
-            final URL entry = ExtDocPlugin.getDefault().getBundle().getEntry("icons/full/lcl16/link.gif");
-            setImageDescriptor(ImageDescriptor.createFromURL(entry));
-            setToolTipText("Link with Selection");
+        OpenInputAction() {
+            super("Link with Selection", "lcl16/goto_input.png", SWT.TOGGLE);
+        }
+
+        @Override
+        public void run() {
+            final IJavaElement inputElement = table.getLastSelection().getJavaElement();
+            new OpenAction(getViewSite()).run(new Object[] { inputElement });
+        }
+    }
+
+    private final class LinkWithEditorAction extends AbstractAction {
+
+        LinkWithEditorAction() {
+            super("Link with Selection", "lcl16/link.gif", SWT.TOGGLE);
             setChecked(true);
         }
 

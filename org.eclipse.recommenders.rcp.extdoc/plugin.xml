@@ -8,6 +8,12 @@
             class="org.eclipse.recommenders.internal.rcp.extdoc.ExtDocModule">
       </module>
    </extension>
+     <extension
+           point="org.eclipse.recommenders.commons.selection.listener">
+        <listener
+              class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.UiManager">
+        </listener>
+     </extension>
 	<extension
 	      point="org.eclipse.ui.views">
 	   <view
@@ -20,6 +26,13 @@
 	         restorable="true">
 	   </view>
 	</extension>
+     <extension
+           point="org.eclipse.jdt.ui.javaEditorTextHovers">
+        <hover
+              class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocHover"
+              id="org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocHover">
+        </hover>
+     </extension>
 	<extension
            point="org.eclipse.ui.preferencePages">
         <page
@@ -35,10 +48,4 @@
             class="org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceInitializer">
       </initializer>
    </extension>
-     <extension
-           point="org.eclipse.recommenders.commons.selection.listener">
-        <listener
-              class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.UiManager">
-        </listener>
-     </extension>
 </plugin>

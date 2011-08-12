@@ -10,9 +10,12 @@
  */
 package org.eclipse.recommenders.commons.selection;
 
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+
 /**
  * Listener for Java element selections.
  */
+@SuppressWarnings("restriction")
 public interface IExtendedSelectionListener {
 
     /**
@@ -20,5 +23,7 @@ public interface IExtendedSelectionListener {
      *            The context information for a new Java element selection.
      */
     void selectionChanged(IJavaElementSelection selection);
+
+    void javaEditorCreated(JavaEditor editor);
 
 }

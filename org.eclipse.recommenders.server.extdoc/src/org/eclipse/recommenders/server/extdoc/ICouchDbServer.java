@@ -26,7 +26,7 @@ public interface ICouchDbServer {
 
     void post(IServerType object);
 
-    TransactionResult put(String view, String documentId, IServerType object);
+    TransactionResult put(String documentId, IServerType object);
 
     <T> T getProviderContent(String providerId, IName element, GenericType<GenericResultObjectView<T>> resultType);
 

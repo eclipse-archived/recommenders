@@ -10,9 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
@@ -21,31 +18,27 @@ import org.eclipse.mylyn.wikitext.mediawiki.core.MediaWikiLanguage;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 
-public final class WikiProvider extends AbstractProviderComposite {
+public final class WikiProvider extends AbstractTitledProvider {
 
     private final WikiServer server;
     private final MarkupParser parser = new MarkupParser(new MediaWikiLanguage());
-
-    private Composite parentComposite;
-    private Composite composite;
 
     @Inject
     WikiProvider(final WikiServer server) {
@@ -53,9 +46,8 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
-        parentComposite = SwtFactory.createGridComposite(parent, 1, 0, 0, 0, 0);
-        return parentComposite;
+    protected Composite createContentComposite(final Composite parent) {
+        return SwtFactory.createGridComposite(parent, 1, 0, 11, 0, 0);
     }
 
     @Override
@@ -64,41 +56,31 @@ public final class WikiProvider extends AbstractProviderComposite {
     }
 
     @Override
-    public boolean selectionChanged(final IJavaElementSelection selection) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element == null || element instanceof ILocalVariable || element.getElementName().isEmpty()) {
-            return false;
+            return null;
         }
-        updateDisplay(element, server.getText(element));
-        return true;
+        return updateDisplay(element, server.getText(element));
     }
 
-    private void updateDisplay(final IJavaElement element, final String markup) {
-        new UIJob("Updating Wiki provider") {
+    private ProviderUiJob updateDisplay(final IJavaElement element, final String markup) {
+        return new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
-                if (!parentComposite.isDisposed()) {
-                    initComposite();
-                    if (markup == null) {
-                        displayNoText(element);
-                    } else {
-                        displayText(element, markup);
-                    }
-                    parentComposite.layout(true);
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                if (markup == null) {
+                    displayNoText(element, composite);
+                } else {
+                    displayText(element, markup, composite);
                 }
-                return Status.OK_STATUS;
             }
-        }.schedule();
+        };
     }
 
-    private void initComposite() {
-        disposeChildren(parentComposite);
-        composite = SwtFactory.createGridComposite(parentComposite, 1, 0, 11, 0, 0);
-    }
-
-    private void displayText(final IJavaElement element, final String markup) {
-        CommunityFeatures.create(ElementResolver.resolveName(element), this, server)
-                .loadStarsRatingComposite(composite);
+    void displayText(final IJavaElement element, final String markup, final Composite composite) {
+        CommunityFeatures.create(ElementResolver.resolveName(element), null, this, server).loadStarsRatingComposite(
+                composite);
         // TODO: Add editing option.
 
         final StyledText text = new StyledText(composite, SWT.NONE);
@@ -106,60 +88,47 @@ public final class WikiProvider extends AbstractProviderComposite {
         text.setText(markup);
     }
 
-    private void displayNoText(final IJavaElement element) {
+    void displayNoText(final IJavaElement element, final Composite composite) {
         String elementName = element.getElementName();
         if (element instanceof IMethod) {
             elementName = String.format("%s.%s", ((IMethod) element).getDeclaringType().getElementName(), elementName);
         }
         final StyledText text = SwtFactory.createStyledText(composite,
-                String.format("Currently there is no Wiki available for %s.", elementName));
+                String.format("Currently there is no Wiki available for %s.", elementName), SWT.COLOR_BLACK, true);
         SwtFactory.createStyleRange(text, 41, elementName.length(), SWT.NORMAL, false, true);
 
         SwtFactory.createCLabel(composite, "Click here to start writing.", false,
-                ExtDocPlugin.getIcon("eview16/edit.png")).addMouseListener(new MouseListener() {
+                ExtDocPlugin.getIcon("eview16/edit.png")).addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseDoubleClick(final MouseEvent e) {
-            }
-
-            @Override
-            public void mouseDown(final MouseEvent e) {
-            }
-
-            @Override
-            public void mouseUp(final MouseEvent e) {
-                displayEditArea(element);
+            public void mouseUp(final MouseEvent event) {
+                displayEditArea(element, composite);
             }
         });
     }
 
-    private void displayEditArea(final IJavaElement element) {
-        initComposite();
-        final Text text = SwtFactory.createText(composite, "", 100, 0);
-        SwtFactory.createButton(composite, "Save Changes", new SelectionListener() {
+    void displayEditArea(final IJavaElement element, final Composite composite) {
+        disposeChildren(composite);
+        final Text text = SwtFactory.createTextArea(composite, "", 100, 0);
+        SwtFactory.createButton(composite, "Save Changes", new SelectionAdapter() {
             @Override
-            public void widgetSelected(final SelectionEvent e) {
-                update(element, text.getText());
-            }
-
-            @Override
-            public void widgetDefaultSelected(final SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent event) {
+                update(element, text.getText(), composite);
             }
         });
-        layout();
+        layout(composite);
     }
 
-    private void update(final IJavaElement javaElement, final String text) {
+    void update(final IJavaElement javaElement, final String text, final Composite composite) {
         server.setText(javaElement, text);
-        initComposite();
-        displayText(javaElement, text);
-        layout();
+        disposeChildren(composite);
+        displayText(javaElement, text, composite);
+        layout(composite);
     }
 
-    private void layout() {
+    private static void layout(final Composite composite) {
         composite.layout(true);
-        parentComposite.layout(true);
-        if (parentComposite.getParent() != null) {
-            parentComposite.getParent().getParent().layout(true);
+        if (composite.getParent() != null) {
+            composite.getParent().getParent().layout(true);
         }
     }
 

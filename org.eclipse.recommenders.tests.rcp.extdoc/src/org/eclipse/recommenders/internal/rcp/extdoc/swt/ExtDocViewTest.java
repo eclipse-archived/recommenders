@@ -16,10 +16,8 @@ import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-
 import org.junit.Test;
 
-@SuppressWarnings("restriction")
 public final class ExtDocViewTest {
 
     @Test

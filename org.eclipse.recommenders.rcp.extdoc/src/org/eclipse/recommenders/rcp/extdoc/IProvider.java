@@ -15,8 +15,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchWindow;
 
 public interface IProvider extends IExecutableExtension {
 
@@ -28,8 +27,8 @@ public interface IProvider extends IExecutableExtension {
 
     boolean isAvailableForLocation(JavaElementLocation location);
 
-    Control createControl(Composite parent, IWorkbenchPartSite partSite);
+    Composite createComposite(Composite parent, IWorkbenchWindow workbenchWindow);
 
-    boolean selectionChanged(IJavaElementSelection context);
+    boolean selectionChanged(IJavaElementSelection context, Composite composite);
 
 }

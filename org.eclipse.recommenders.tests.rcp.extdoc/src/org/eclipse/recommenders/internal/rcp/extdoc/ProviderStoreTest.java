@@ -14,9 +14,8 @@ import java.util.List;
 
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
+import org.junit.Assert;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 public final class ProviderStoreTest {
 

@@ -17,6 +17,7 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.selection.JavaElementSelectionResolver;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 
@@ -65,11 +66,17 @@ final class InternalSelectionListener implements ISelectionListener {
         }
     }
 
+    protected void javaEditorCreated(final JavaEditor editor) {
+        for (final IExtendedSelectionListener externalListener : externalListeners) {
+            externalListener.javaEditorCreated(editor);
+        }
+    }
+
     /**
      * @param listener
      *            External listener to be notified about element selection.
      */
-    public void addExternalListener(final IExtendedSelectionListener listener) {
+    protected void addExternalListener(final IExtendedSelectionListener listener) {
         externalListeners.add(listener);
     }
 }

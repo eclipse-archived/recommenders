@@ -16,7 +16,6 @@ import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 
 import org.junit.Assert;
@@ -28,7 +27,7 @@ public final class ProvidersTableTest {
 
     @Test
     public void testProvidersTable() {
-        table.addProvider(mockProviderControl(), "Test", null, true);
+        table.addProvider(mockProviderComposite(), "Test", null);
         Assert.assertEquals(1, table.getItems().length);
 
         table.setContext(ExtDocUtils.getSelection());
@@ -36,7 +35,7 @@ public final class ProvidersTableTest {
         Assert.assertEquals(ExtDocUtils.getSelection(), lastSelection);
 
         for (final TableItem item : table.getItems()) {
-            table.setContentVisible(item, true);
+            ProvidersTable.setContentVisible(item, true, true);
         }
     }
 
@@ -52,8 +51,8 @@ public final class ProvidersTableTest {
         // table.setChecked(preferenceId, isChecked);
     }
 
-    static Control mockProviderControl() {
-        final Control control = new Composite(ExtDocUtils.getShell(), SWT.NONE);
+    static Composite mockProviderComposite() {
+        final Composite control = new Composite(ExtDocUtils.getShell(), SWT.NONE);
         control.setLayoutData(new GridData());
         control.setData(ExtDocUtils.getTestProvider());
         return control;

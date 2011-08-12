@@ -18,10 +18,10 @@ import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -29,24 +29,26 @@ import org.eclipse.swt.widgets.Text;
 
 import com.google.common.base.Preconditions;
 
-public final class CommentsComposite {
+final class CommentsComposite {
 
     private static Image commentsIcon = ExtDocPlugin.getIcon("eview16/comments.png");
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 
     private IName element;
+    private String keyAppendix;
     private IProvider provider;
     private IUserFeedbackServer server;
     private List<IComment> comments;
 
     private Composite composite;
 
-    static CommentsComposite create(final IName element, final IProvider provider, final IUserFeedback feedback,
-            final IUserFeedbackServer server, final Composite parent) {
+    static CommentsComposite create(final IName element, final String keyAppendix, final IProvider provider,
+            final IUserFeedback feedback, final IUserFeedbackServer server, final Composite parent) {
         final CommentsComposite comments = new CommentsComposite();
         comments.provider = provider;
         comments.server = Preconditions.checkNotNull(server);
         comments.element = element;
+        comments.keyAppendix = keyAppendix;
         comments.comments = new LinkedList<IComment>(feedback.getComments());
         comments.createContents(parent);
         return comments;
@@ -58,24 +60,16 @@ public final class CommentsComposite {
     }
 
     private void createCommentsArea() {
-        SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", commentsIcon,
-                new MouseListener() {
+        SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", null, commentsIcon, true,
+                new MouseAdapter() {
                     @Override
-                    public void mouseUp(final MouseEvent e) {
+                    public void mouseUp(final MouseEvent event) {
                         displayComments();
-                    }
-
-                    @Override
-                    public void mouseDown(final MouseEvent e) {
-                    }
-
-                    @Override
-                    public void mouseDoubleClick(final MouseEvent e) {
                     }
                 });
     }
 
-    private void displayComments() {
+    void displayComments() {
         disposeChildren();
 
         if (!comments.isEmpty()) {
@@ -93,38 +87,30 @@ public final class CommentsComposite {
     }
 
     private void displayAddComment() {
-        final Text text = SwtFactory.createText(composite, "", 45, 0);
+        final Text text = SwtFactory.createTextArea(composite, "", 45, 0);
 
         final Composite buttons = SwtFactory.createGridComposite(composite, 2, 5, 0, 0, 0);
-        SwtFactory.createButton(buttons, "Add Comment", new SelectionListener() {
+        SwtFactory.createButton(buttons, "Add Comment", new SelectionAdapter() {
             @Override
-            public void widgetSelected(final SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent event) {
                 addComment(text.getText());
             }
-
-            @Override
-            public void widgetDefaultSelected(final SelectionEvent e) {
-            }
         });
-        SwtFactory.createButton(buttons, "Hide Comments", new SelectionListener() {
+        SwtFactory.createButton(buttons, "Hide Comments", new SelectionAdapter() {
             @Override
-            public void widgetSelected(final SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent event) {
                 hideComments();
-            }
-
-            @Override
-            public void widgetDefaultSelected(final SelectionEvent e) {
             }
         });
     }
 
     void addComment(final String text) {
-        final IComment comment = server.addComment(text, element, provider);
+        final IComment comment = server.addComment(text, element, keyAppendix, provider);
         comments.add(comment);
         displayComments();
     }
 
-    private void hideComments() {
+    void hideComments() {
         disposeChildren();
         createCommentsArea();
         layout();
@@ -143,7 +129,7 @@ public final class CommentsComposite {
         }
     }
 
-    public void dispose() {
+    void dispose() {
         composite.dispose();
     }
 }

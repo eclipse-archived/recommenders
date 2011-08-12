@@ -44,6 +44,7 @@ final class PartListener implements IPartListener {
             final JavaEditor editor = (JavaEditor) workbenchPart;
             final ViewerListener listener = new ViewerListener(workbenchPart);
             ((JavaSourceViewer) editor.getViewer()).addPostSelectionChangedListener(listener);
+            selectionListener.javaEditorCreated(editor);
         }
     }
 

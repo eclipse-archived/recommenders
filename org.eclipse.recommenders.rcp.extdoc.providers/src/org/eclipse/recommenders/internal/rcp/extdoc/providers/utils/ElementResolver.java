@@ -10,12 +10,20 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.ImportContainer;
+import org.eclipse.jdt.internal.core.ImportDeclaration;
+import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
+import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.jdt.internal.core.PackageFragmentRoot;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.names.IFieldName;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -28,6 +36,7 @@ import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 import com.google.inject.Inject;
 
+@SuppressWarnings("restriction")
 public final class ElementResolver {
 
     @Inject
@@ -45,9 +54,21 @@ public final class ElementResolver {
             final IMethodName declaringMethod = toRecMethod((IMethod) javaElement.getParent());
             return Variable.create(javaElement.getElementName(), null, declaringMethod).getName();
         } else if (javaElement instanceof IField) {
-            throw new IllegalArgumentException("Can't yet resolve fields!");
-        } else if (javaElement instanceof IPackageFragment) {
+            final ITypeName type = VariableResolver.resolveTypeSignature((IField) javaElement);
+            return type == null ? null : toRecField((IField) javaElement, type);
+        } else if (javaElement instanceof IPackageFragment || javaElement instanceof IPackageDeclaration) {
             return VmPackageName.get(javaElement.getElementName());
+        } else if (javaElement instanceof ICompilationUnit) {
+            try {
+                // TODO: This looks dangerous.
+                return toRecType(((ICompilationUnit) javaElement).getTypes()[0]);
+            } catch (final JavaModelException e) {
+                throw new IllegalStateException(e);
+            }
+        } else if (javaElement instanceof ImportContainer || javaElement instanceof ImportDeclaration
+                || javaElement instanceof JavaProject || javaElement instanceof PackageFragmentRoot
+                || javaElement instanceof JarPackageFragmentRoot) {
+            return null;
         }
         throw new IllegalArgumentException(javaElement.getClass().toString());
     }
