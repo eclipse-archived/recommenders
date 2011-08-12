@@ -60,7 +60,7 @@ public final class SocialBookmark implements IServerType, Comparable<SocialBookm
         } else if (feedback == null) {
             return 1;
         }
-        return Double.compare(feedback.getRatingSummary().getAverage(), arg0.feedback.getRatingSummary().getAverage());
+        return Double.compare(arg0.feedback.getRatingSummary().getAverage(), feedback.getRatingSummary().getAverage());
     }
 
     @Override

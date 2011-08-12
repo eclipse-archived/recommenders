@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +53,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
             final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
         final String elementId = javaElement.getIdentifier();
-        final Map<String, String> key = new HashMap<String, String>();
+        final Map<String, String> key = new LinkedHashMap<String, String>();
         key.put("providerId", providerId);
         key.put("element", elementId);
         if (keyAppendix != null) {
