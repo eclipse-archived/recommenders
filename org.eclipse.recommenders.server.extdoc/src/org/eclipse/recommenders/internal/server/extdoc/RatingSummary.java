@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc.types;
+package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
@@ -30,6 +30,11 @@ public final class RatingSummary implements IRatingSummary {
     @Override
     public int getAverage() {
         return count == 0 ? 0 : sum / count;
+    }
+
+    @Override
+    public int getAmountOfRatings() {
+        return count;
     }
 
     @Override

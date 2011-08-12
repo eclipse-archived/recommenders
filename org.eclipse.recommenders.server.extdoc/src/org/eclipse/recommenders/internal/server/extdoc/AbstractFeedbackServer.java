@@ -62,7 +62,8 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         final List<UserFeedback> feedbacks = server.getRows("feedback", key,
                 new GenericType<GenericResultObjectView<UserFeedback>>() {
                 });
-        return feedbacks == null || feedbacks.isEmpty() ? UserFeedback.create(provider, elementId) : feedbacks.get(0);
+        return feedbacks == null || feedbacks.isEmpty() ? UserFeedback.create(provider, elementId, keyAppendix)
+                : feedbacks.get(0);
     }
 
     @Override

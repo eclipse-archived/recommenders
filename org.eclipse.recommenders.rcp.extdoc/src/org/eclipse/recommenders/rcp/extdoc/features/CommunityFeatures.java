@@ -26,6 +26,11 @@ public final class CommunityFeatures {
 
     public static CommunityFeatures create(final IName element, final String keyAppendix, final IProvider provider,
             final IUserFeedbackServer server) {
+        return create(element, keyAppendix, provider, server, server.getUserFeedback(element, keyAppendix, provider));
+    }
+
+    public static CommunityFeatures create(final IName element, final String keyAppendix, final IProvider provider,
+            final IUserFeedbackServer server, final IUserFeedback feedback) {
         if (element == null) {
             return null;
         }
@@ -34,7 +39,7 @@ public final class CommunityFeatures {
         features.server = Preconditions.checkNotNull(server);
         features.element = element;
         features.keyAppendix = keyAppendix;
-        features.feedback = server.getUserFeedback(element, keyAppendix, provider);
+        features.feedback = feedback;
         return features;
     }
 

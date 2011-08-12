@@ -15,7 +15,6 @@ import java.util.List;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
-import org.eclipse.recommenders.server.extdoc.types.SocialBookmark;
 import org.eclipse.recommenders.server.extdoc.types.SocialBookmarks;
 
 import com.google.common.collect.ImmutableMap;
@@ -30,6 +29,10 @@ public final class SocialBookmarksServer extends AbstractFeedbackServer {
     }
 
     public SocialBookmarks getBookmarks(final IName element) {
+        return loadBookmarks(element);
+    }
+
+    private SocialBookmarks loadBookmarks(final IName element) {
         final String elementId = element.getIdentifier();
         final List<SocialBookmarks> bookmarks = getServer().getRows("bookmarks", ImmutableMap.of("element", elementId),
                 new GenericType<GenericResultObjectView<SocialBookmarks>>() {
@@ -37,15 +40,13 @@ public final class SocialBookmarksServer extends AbstractFeedbackServer {
         return bookmarks == null || bookmarks.isEmpty() ? SocialBookmarks.create(elementId) : bookmarks.get(0);
     }
 
-    public SocialBookmark addBookmark(final IName element, final String title, final String url) {
-        final SocialBookmarks bookmarks = getBookmarks(element);
-        final SocialBookmark bookmark = bookmarks.addBookmark(title, url);
+    public void addBookmark(final SocialBookmarks bookmarks, final String title, final String url) {
+        bookmarks.addBookmark(title, url);
         if (bookmarks.getDocumentId() == null) {
             getServer().post(bookmarks);
         } else {
             getServer().put(bookmarks.getDocumentId(), bookmarks);
         }
-        return bookmark;
     }
 
 }

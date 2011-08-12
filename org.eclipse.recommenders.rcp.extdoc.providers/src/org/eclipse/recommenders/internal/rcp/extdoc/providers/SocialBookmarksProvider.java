@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import java.util.List;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.names.IName;
@@ -24,6 +22,7 @@ import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.SocialBookmarksServer;
 import org.eclipse.recommenders.server.extdoc.types.SocialBookmark;
+import org.eclipse.recommenders.server.extdoc.types.SocialBookmarks;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.MouseAdapter;
@@ -57,7 +56,9 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         if (name == null) {
             return null;
         }
-        final List<SocialBookmark> bookmarks = server.getBookmarks(name).getBookmarks();
+        final SocialBookmarks bookmarks = server.getBookmarks(name);
+        // Prefetching of bookmarks and ratings before we enter the UI job.
+        bookmarks.getBookmarks(name, server, this);
         return new ProviderUiJob() {
             @Override
             public void run(final Composite composite) {
@@ -66,14 +67,13 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         };
     }
 
-    void updateDisplay(final IJavaElement element, final Composite composite, final List<SocialBookmark> bookmarks) {
+    void updateDisplay(final IJavaElement element, final Composite composite, final SocialBookmarks bookmarks) {
         disposeChildren(composite);
         displayItems(element, composite, bookmarks);
         displayAddControl(element, composite, bookmarks);
     }
 
-    private void displayItems(final IJavaElement element, final Composite composite,
-            final List<SocialBookmark> bookmarks) {
+    private void displayItems(final IJavaElement element, final Composite composite, final SocialBookmarks bookmarks) {
         if (bookmarks.isEmpty()) {
             final String text = "Social bookmarks are collections of web resources for specific Java elements, shared by all users. You can add the first bookmark for "
                     + element.getElementName() + " by clicking on the link below.";
@@ -84,7 +84,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
 
             final TableListing table = new TableListing(composite, 4);
             final IName elementName = ElementResolver.resolveName(element);
-            for (final SocialBookmark bookmark : bookmarks) {
+            for (final SocialBookmark bookmark : bookmarks.getBookmarks(elementName, server, this)) {
                 displayBookmark(table, bookmark, elementName);
             }
         }
@@ -100,11 +100,14 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         });
         final String url = StringUtils.abbreviate(bookmark.getUrl().replaceFirst("http://(www.)?", ""), 40);
         final StyledText urlText = SwtFactory.createStyledText(table, url, SWT.COLOR_DARK_GRAY, false);
-        SwtFactory.createStyleRange(urlText, 0, url.indexOf('/'), SWT.BOLD, false, false);
-        CommunityFeatures.create(elementName, bookmark.getUrl(), this, server).loadStarsRatingComposite(table);
+        final int indexOfSeparator = url.indexOf('/');
+        SwtFactory.createStyleRange(urlText, 0, indexOfSeparator > 0 ? indexOfSeparator : url.length(), SWT.BOLD,
+                false, false);
+        CommunityFeatures.create(elementName, bookmark.getUrl(), this, server, bookmark.getUserFeedback())
+                .loadStarsRatingComposite(table);
     }
 
-    void displayAddControl(final IJavaElement element, final Composite composite, final List<SocialBookmark> bookmarks) {
+    void displayAddControl(final IJavaElement element, final Composite composite, final SocialBookmarks bookmarks) {
         final Composite addComposite = SwtFactory.createGridComposite(composite, 4, 6, 0, 0, 0);
         SwtFactory.createLink(addComposite, "Click here to add a new bookmark.", null,
                 ExtDocPlugin.getIcon("eview16/add.gif"), false, new MouseAdapter() {
@@ -117,7 +120,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
     }
 
     void displayAddArea(final IJavaElement element, final Composite composite, final Composite addComposite,
-            final List<SocialBookmark> bookmarks) {
+            final SocialBookmarks bookmarks) {
         final Text title = SwtFactory.createText(addComposite, "Link Title", 300);
         final Text url = SwtFactory.createText(addComposite, "URL", 200);
         SwtFactory.createButton(addComposite, "Add", new SelectionAdapter() {
@@ -138,11 +141,9 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
     }
 
     void addBookmark(final String text, final String url, final IJavaElement element, final Composite composite,
-            final List<SocialBookmark> bookmarks) {
+            final SocialBookmarks bookmarks) {
         try {
-            final IName name = ElementResolver.resolveName(element);
-            final SocialBookmark bookmark = server.addBookmark(name, text, url);
-            bookmarks.add(bookmark);
+            server.addBookmark(bookmarks, text, url);
             updateDisplay(element, composite, bookmarks);
         } catch (final IllegalArgumentException e) {
             SwtFactory.createLabel(composite, e.getMessage(), false, false, SWT.COLOR_RED);

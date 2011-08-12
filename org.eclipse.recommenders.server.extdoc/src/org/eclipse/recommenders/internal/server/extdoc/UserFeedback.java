@@ -23,7 +23,6 @@ import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
-import org.eclipse.recommenders.server.extdoc.types.RatingSummary;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -37,14 +36,16 @@ final class UserFeedback implements IUserFeedback {
 
     private String providerId;
     private String element;
+    private String item;
 
     private final Set<Rating> ratings = new HashSet<Rating>();
     private final List<Comment> comments = new LinkedList<Comment>();
 
-    static UserFeedback create(final IProvider provider, final String element) {
+    static UserFeedback create(final IProvider provider, final String element, final String item) {
         final UserFeedback feedback = new UserFeedback();
         feedback.providerId = provider.getClass().getSimpleName();
         feedback.element = element;
+        feedback.item = item;
         feedback.validate();
         return feedback;
     }

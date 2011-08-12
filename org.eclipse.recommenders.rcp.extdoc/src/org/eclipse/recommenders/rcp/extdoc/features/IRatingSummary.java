@@ -14,6 +14,8 @@ public interface IRatingSummary {
 
     int getAverage();
 
+    int getAmountOfRatings();
+
     void addUserRating(final IRating userRating);
 
     IRating getUserRating();

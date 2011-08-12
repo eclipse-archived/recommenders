@@ -11,9 +11,9 @@
 package org.eclipse.recommenders.rcp.extdoc.features;
 
 import org.eclipse.recommenders.commons.utils.names.IName;
+import org.eclipse.recommenders.internal.server.extdoc.RatingSummary;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.server.extdoc.GenericServer;
-import org.eclipse.recommenders.server.extdoc.types.RatingSummary;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;

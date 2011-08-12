@@ -12,6 +12,7 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
+import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
 
 import com.google.common.base.Preconditions;
 
@@ -20,6 +21,8 @@ public final class SocialBookmark implements IServerType, Comparable<SocialBookm
     private String userId;
     private String title;
     private String url;
+
+    private transient IUserFeedback feedback;
 
     public static SocialBookmark create(final String userId, final String title, final String url) {
         final SocialBookmark bookmark = new SocialBookmark();
@@ -42,9 +45,22 @@ public final class SocialBookmark implements IServerType, Comparable<SocialBookm
         return url;
     }
 
+    public IUserFeedback getUserFeedback() {
+        return feedback;
+    }
+
+    void setUserFeedback(final IUserFeedback userFeedback) {
+        feedback = userFeedback;
+    }
+
     @Override
     public int compareTo(final SocialBookmark arg0) {
-        return 0;
+        if (arg0.feedback == null) {
+            return -1;
+        } else if (feedback == null) {
+            return 1;
+        }
+        return Double.compare(feedback.getRatingSummary().getAverage(), arg0.feedback.getRatingSummary().getAverage());
     }
 
     @Override

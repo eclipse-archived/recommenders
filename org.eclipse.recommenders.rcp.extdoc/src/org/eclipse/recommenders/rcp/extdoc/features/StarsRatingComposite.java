@@ -13,6 +13,7 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -73,6 +74,7 @@ final class StarsRatingComposite {
         for (int star = 1; star <= 5; ++star) {
             createStar(star, userStars, summary);
         }
+        SwtFactory.createLabel(composite, " " + summary.getAmountOfRatings() + "x", false, false, SWT.COLOR_DARK_GRAY);
     }
 
     private void createStar(final int star, final int userStars, final IRatingSummary summary) {

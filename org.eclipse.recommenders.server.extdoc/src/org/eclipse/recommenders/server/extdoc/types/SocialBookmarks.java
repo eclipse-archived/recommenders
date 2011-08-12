@@ -10,10 +10,14 @@
  */
 package org.eclipse.recommenders.server.extdoc.types;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.commons.utils.names.IName;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
+import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
@@ -30,6 +34,8 @@ public final class SocialBookmarks implements IServerType {
 
     private final List<SocialBookmark> bookmarks = new LinkedList<SocialBookmark>();
 
+    private transient boolean isDirty = true;
+
     public static SocialBookmarks create(final String element) {
         final SocialBookmarks bookmarks = new SocialBookmarks();
         bookmarks.element = element;
@@ -41,11 +47,26 @@ public final class SocialBookmarks implements IServerType {
         final String userId = UUIDHelper.getUUID();
         final SocialBookmark bookmark = SocialBookmark.create(userId, text, url);
         bookmarks.add(bookmark);
+        isDirty = true;
         return bookmark;
     }
 
-    public List<SocialBookmark> getBookmarks() {
+    // TODO: name is the same as the element field, although wrapped in an
+    // interface.
+    public List<SocialBookmark> getBookmarks(final IName name, final AbstractFeedbackServer server,
+            final IProvider provider) {
+        if (isDirty) {
+            for (final SocialBookmark bookmark : bookmarks) {
+                bookmark.setUserFeedback(server.getUserFeedback(name, bookmark.getUrl(), provider));
+            }
+            Collections.sort(bookmarks);
+            isDirty = false;
+        }
         return bookmarks;
+    }
+
+    public boolean isEmpty() {
+        return bookmarks.isEmpty();
     }
 
     public String getDocumentId() {
