@@ -71,7 +71,7 @@ final class CouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public TransactionResult put(final String view, final String documentId, final IServerType object) {
+    public TransactionResult put(final String documentId, final IServerType object) {
         return getClient().doPutRequest(documentId, object, TransactionResult.class);
     }
 

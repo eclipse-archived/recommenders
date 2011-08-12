@@ -66,8 +66,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         };
     }
 
-    private void updateDisplay(final IJavaElement element, final Composite composite,
-            final List<SocialBookmark> bookmarks) {
+    void updateDisplay(final IJavaElement element, final Composite composite, final List<SocialBookmark> bookmarks) {
         disposeChildren(composite);
         displayItems(element, composite, bookmarks);
         displayAddControl(element, composite, bookmarks);
@@ -95,7 +94,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         table.startNewRow();
         SwtFactory.createLink(table, bookmark.getTitle(), bookmark.getUrl(), null, true, new MouseAdapter() {
             @Override
-            public void mouseUp(final MouseEvent e) {
+            public void mouseUp(final MouseEvent event) {
                 Program.launch(bookmark.getUrl());
             }
         });
@@ -105,32 +104,31 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         CommunityFeatures.create(elementName, bookmark.getUrl(), this, server).loadStarsRatingComposite(table);
     }
 
-    private void displayAddControl(final IJavaElement element, final Composite composite,
-            final List<SocialBookmark> bookmarks) {
+    void displayAddControl(final IJavaElement element, final Composite composite, final List<SocialBookmark> bookmarks) {
         final Composite addComposite = SwtFactory.createGridComposite(composite, 4, 6, 0, 0, 0);
         SwtFactory.createLink(addComposite, "Click here to add a new bookmark.", null,
                 ExtDocPlugin.getIcon("eview16/add.gif"), false, new MouseAdapter() {
                     @Override
-                    public void mouseUp(final MouseEvent e) {
+                    public void mouseUp(final MouseEvent event) {
                         disposeChildren(addComposite);
                         displayAddArea(element, composite, addComposite, bookmarks);
                     }
                 });
     }
 
-    private void displayAddArea(final IJavaElement element, final Composite composite, final Composite addComposite,
+    void displayAddArea(final IJavaElement element, final Composite composite, final Composite addComposite,
             final List<SocialBookmark> bookmarks) {
         final Text title = SwtFactory.createText(addComposite, "Link Title", 300);
         final Text url = SwtFactory.createText(addComposite, "URL", 200);
         SwtFactory.createButton(addComposite, "Add", new SelectionAdapter() {
             @Override
-            public void widgetSelected(final SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent event) {
                 addBookmark(title.getText(), url.getText(), element, composite, bookmarks);
             }
         });
         SwtFactory.createButton(addComposite, "Cancel", new SelectionAdapter() {
             @Override
-            public void widgetSelected(final SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent event) {
                 disposeChildren(addComposite);
                 displayAddControl(element, composite, bookmarks);
                 layout(composite);
@@ -139,8 +137,8 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         layout(composite);
     }
 
-    private void addBookmark(final String text, final String url, final IJavaElement element,
-            final Composite composite, final List<SocialBookmark> bookmarks) {
+    void addBookmark(final String text, final String url, final IJavaElement element, final Composite composite,
+            final List<SocialBookmark> bookmarks) {
         try {
             final IName name = ElementResolver.resolveName(element);
             final SocialBookmark bookmark = server.addBookmark(name, text, url);
@@ -152,7 +150,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         layout(composite);
     }
 
-    private void layout(final Composite composite) {
+    static void layout(final Composite composite) {
         composite.layout(true);
         composite.getParent().getParent().layout(true);
     }

@@ -89,7 +89,7 @@ public final class CallsAdapter {
         }
     }
 
-    public ITypeName getMethodsDeclaringType(final IMethod method, final IIntelligentCompletionContext context) {
+    public static ITypeName getMethodsDeclaringType(final IMethod method, final IIntelligentCompletionContext context) {
         try {
             final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
             if (superclassTypeSignature == null) {
@@ -113,7 +113,7 @@ public final class CallsAdapter {
         return Sets.newHashSet();
     }
 
-    public SortedSet<Tuple<IMethodName, Double>> computeRecommendations(final ITypeName typeName,
+    public static SortedSet<Tuple<IMethodName, Double>> computeRecommendations(final ITypeName typeName,
             final Set<IMethodName> invokedMethods, final boolean negateConstructors,
             final IIntelligentCompletionContext context, final IProjectModelFacade facade) {
         final IObjectMethodCallsNet model = facade.acquireModel(typeName);

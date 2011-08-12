@@ -43,7 +43,7 @@ public final class SocialBookmarksServer extends AbstractFeedbackServer {
         if (bookmarks.getDocumentId() == null) {
             getServer().post(bookmarks);
         } else {
-            getServer().put("bookmarks", bookmarks.getDocumentId(), bookmarks);
+            getServer().put(bookmarks.getDocumentId(), bookmarks);
         }
         return bookmark;
     }

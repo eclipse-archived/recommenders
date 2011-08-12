@@ -28,16 +28,16 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public final class UiManager implements IExtendedSelectionListener {
 
-    private static ExtDocView extDocView;
-    private static boolean isViewVisible = true;
-    private static IJavaElementSelection lastSelection;
+    private final ExtDocView extDocView;
+    private boolean isViewVisible = true;
+    private IJavaElementSelection lastSelection;
 
     private final ProviderStore providerStore;
     private boolean hasViewListener;
 
     @Inject
     UiManager(final ExtDocView extDocView, final ProviderStore providerStore) {
-        UiManager.extDocView = extDocView;
+        this.extDocView = extDocView;
         this.providerStore = providerStore;
     }
 
@@ -60,7 +60,7 @@ public final class UiManager implements IExtendedSelectionListener {
         return Display.getCurrent() != null;
     }
 
-    private static boolean isEqualToLastSelection(final IJavaElementSelection selection) {
+    private boolean isEqualToLastSelection(final IJavaElementSelection selection) {
         return selection == null ? lastSelection == null : selection.equals(lastSelection);
     }
 
@@ -85,7 +85,7 @@ public final class UiManager implements IExtendedSelectionListener {
         ExtDocCodeAssistantHover.install(editor, this, providerStore);
     }
 
-    private static final class ViewListener implements IPartListener2 {
+    private final class ViewListener implements IPartListener2 {
 
         @Override
         public void partActivated(final IWorkbenchPartReference partRef) {

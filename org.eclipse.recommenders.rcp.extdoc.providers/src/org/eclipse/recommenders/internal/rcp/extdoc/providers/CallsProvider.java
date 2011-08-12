@@ -231,7 +231,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         };
     }
 
-    private void displayProposals(final IJavaElement element, final boolean isMethodDeclaration,
+    static void displayProposals(final IJavaElement element, final boolean isMethodDeclaration,
             final SortedSet<Tuple<IMethodName, Double>> proposals, final Set<IMethodName> calledMethods,
             final Composite composite) {
         final TableListing table = new TableListing(composite, 3);
@@ -245,14 +245,14 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         }
     }
 
-    private void displayProposal(final Tuple<IMethodName, Double> proposal, final TableListing table,
+    private static void displayProposal(final Tuple<IMethodName, Double> proposal, final TableListing table,
             final IJavaElement element, final boolean isMethodDeclaration) {
         table.startNewRow();
         table.addCell(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true, SWT.COLOR_BLACK);
         table.addCell(Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
     }
 
-    private String formatMethodCall(final IJavaElement element, final IMethodName method,
+    static String formatMethodCall(final IJavaElement element, final IMethodName method,
             final boolean isMethodDeclaration) {
         final String prefix;
         final boolean isVariable = element instanceof ILocalVariable || element instanceof IField;

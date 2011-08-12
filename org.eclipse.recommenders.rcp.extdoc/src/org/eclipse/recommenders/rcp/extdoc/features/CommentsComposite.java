@@ -63,13 +63,13 @@ final class CommentsComposite {
         SwtFactory.createLink(composite, "Show / Add Comments (" + comments.size() + ")", null, commentsIcon, true,
                 new MouseAdapter() {
                     @Override
-                    public void mouseUp(final MouseEvent e) {
+                    public void mouseUp(final MouseEvent event) {
                         displayComments();
                     }
                 });
     }
 
-    private void displayComments() {
+    void displayComments() {
         disposeChildren();
 
         if (!comments.isEmpty()) {
@@ -92,13 +92,13 @@ final class CommentsComposite {
         final Composite buttons = SwtFactory.createGridComposite(composite, 2, 5, 0, 0, 0);
         SwtFactory.createButton(buttons, "Add Comment", new SelectionAdapter() {
             @Override
-            public void widgetSelected(final SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent event) {
                 addComment(text.getText());
             }
         });
         SwtFactory.createButton(buttons, "Hide Comments", new SelectionAdapter() {
             @Override
-            public void widgetSelected(final SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent event) {
                 hideComments();
             }
         });
@@ -110,7 +110,7 @@ final class CommentsComposite {
         displayComments();
     }
 
-    private void hideComments() {
+    void hideComments() {
         disposeChildren();
         createCommentsArea();
         layout();

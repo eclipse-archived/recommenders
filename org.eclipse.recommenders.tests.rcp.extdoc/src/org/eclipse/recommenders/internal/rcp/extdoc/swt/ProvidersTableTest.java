@@ -27,7 +27,7 @@ public final class ProvidersTableTest {
 
     @Test
     public void testProvidersTable() {
-        table.addProvider(mockProviderComposite(), "Test", null, true);
+        table.addProvider(mockProviderComposite(), "Test", null);
         Assert.assertEquals(1, table.getItems().length);
 
         table.setContext(ExtDocUtils.getSelection());
@@ -35,7 +35,7 @@ public final class ProvidersTableTest {
         Assert.assertEquals(ExtDocUtils.getSelection(), lastSelection);
 
         for (final TableItem item : table.getItems()) {
-            table.setContentVisible(item, true, true);
+            ProvidersTable.setContentVisible(item, true, true);
         }
     }
 

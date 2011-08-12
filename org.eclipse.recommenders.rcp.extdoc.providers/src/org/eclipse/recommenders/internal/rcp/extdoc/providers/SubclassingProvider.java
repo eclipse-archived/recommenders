@@ -139,7 +139,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
         SwtFactory.createStyleRange(styledText, length + 103 + length2, 5, SWT.NORMAL, false, true);
     }
 
-    private static void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
+    static void displayDirectives(final Map<IMethodName, Integer> directives, final String actionKeyword,
             final int definitions, final Composite composite) {
         final TableListing table = new TableListing(composite, 4);
         for (final Entry<IMethodName, Integer> directive : orderDirectives(directives).entrySet()) {
@@ -183,7 +183,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
         return "rarely";
     }
 
-    private static int getLength(final int number) {
+    static int getLength(final int number) {
         return String.valueOf(number).length();
     }
 

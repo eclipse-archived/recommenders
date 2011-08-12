@@ -69,7 +69,7 @@ public abstract class AbstractTitledProvider extends AbstractProvider {
         return window;
     }
 
-    protected final void disposeChildren(final Composite composite) {
+    public static final void disposeChildren(final Composite composite) {
         for (final Control child : composite.getChildren()) {
             child.dispose();
         }

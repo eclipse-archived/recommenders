@@ -41,8 +41,8 @@ public final class ServerUtils {
 
     public static GenericServer getGenericServer() {
         if (genericServer == null) {
-            final UsernameProvider usernameListener = getUsernameListener();
-            genericServer = new GenericServer(getServer(), usernameListener);
+            final UsernameProvider listener = getUsernameListener();
+            genericServer = new GenericServer(getServer(), listener);
         }
         return genericServer;
     }

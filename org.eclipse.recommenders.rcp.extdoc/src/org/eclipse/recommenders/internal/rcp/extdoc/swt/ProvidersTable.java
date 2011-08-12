@@ -69,7 +69,7 @@ final class ProvidersTable {
         enableDragAndDrop(providerStore);
     }
 
-    TableItem addProvider(final Composite provider, final String text, final Image image, final boolean checked) {
+    TableItem addProvider(final Composite provider, final String text, final Image image) {
         final TableItem tableItem = new TableItem(table, SWT.NONE);
         tableItem.setText(text);
         tableItem.setData(provider);
@@ -107,7 +107,7 @@ final class ProvidersTable {
         }
     }
 
-    void setContentVisible(final TableItem tableItem, final boolean visible, final boolean updateTableItem) {
+    static void setContentVisible(final TableItem tableItem, final boolean visible, final boolean updateTableItem) {
         final Composite control = (Composite) tableItem.getData();
         ((GridData) control.getLayoutData()).exclude = !visible;
         control.setVisible(visible);

@@ -38,7 +38,7 @@ class TestCouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public TransactionResult put(final String view, final String documentId, final IServerType object) {
+    public TransactionResult put(final String documentId, final IServerType object) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -19,7 +19,6 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Preconditions;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 

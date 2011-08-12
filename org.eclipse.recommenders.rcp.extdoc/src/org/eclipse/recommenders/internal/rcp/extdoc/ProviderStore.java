@@ -38,7 +38,7 @@ public class ProviderStore {
         for (final IConfigurationElement element : reg.getConfigurationElementsFor(EXTENSION_ID)) {
             try {
                 final IProvider provider = (IProvider) element.createExecutableExtension("class");
-                providers.put(provider, Integer.parseInt(element.getAttribute("priority")));
+                providers.put(provider, Integer.valueOf(element.getAttribute("priority")));
             } catch (final CoreException e) {
                 throw new IllegalStateException(e);
             }
@@ -47,7 +47,7 @@ public class ProviderStore {
 
     public ImmutableList<IProvider> getProviders() {
         final List<IProvider> list = new ArrayList<IProvider>(providers.keySet());
-        Collections.sort(list, new ProviderComparator());
+        Collections.sort(list, new ProviderComparator(providers));
         return ImmutableList.copyOf(list);
     }
 
@@ -57,7 +57,7 @@ public class ProviderStore {
         ExtDocPlugin.getPreferences().putInt(getPreferenceId(provider), priority);
     }
 
-    private static int getPriorityFromPreferences(final IProvider provider) {
+    static int getPriorityFromPreferences(final IProvider provider) {
         return ExtDocPlugin.getPreferences().getInt(getPreferenceId(provider), -1);
     }
 
@@ -65,14 +65,20 @@ public class ProviderStore {
         return "priority" + provider.hashCode();
     }
 
-    private final class ProviderComparator implements Comparator<IProvider> {
+    private static final class ProviderComparator implements Comparator<IProvider> {
+
+        private final Map<IProvider, Integer> providers;
+
+        ProviderComparator(final Map<IProvider, Integer> providers) {
+            this.providers = providers;
+        }
 
         @Override
         public int compare(final IProvider provider1, final IProvider provider2) {
             final int priorityPreference1 = getPriorityFromPreferences(provider1);
-            final Integer priorityPreference2 = getPriorityFromPreferences(provider2);
+            final int priorityPreference2 = getPriorityFromPreferences(provider2);
             if (priorityPreference1 > -1 || priorityPreference2 > -1) {
-                return priorityPreference2.compareTo(priorityPreference1);
+                return Integer.valueOf(priorityPreference2).compareTo(Integer.valueOf(priorityPreference1));
             }
             return providers.get(provider2).compareTo(providers.get(provider1));
         }

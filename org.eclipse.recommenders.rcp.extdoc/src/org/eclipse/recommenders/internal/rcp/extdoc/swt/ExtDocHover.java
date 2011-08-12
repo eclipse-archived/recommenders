@@ -28,7 +28,6 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public final class ExtDocHover extends AbstractJavaEditorTextHover {
 
-    private final UiManager uiManager;
     private final ProviderStore providerStore;
 
     // TODO: Currently this seems to be the only way to avoid problem hovers to
@@ -36,17 +35,17 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
     private final ProblemHover problemHover = new ProblemHover();
     private boolean isProblemHoverActive;
 
-    private final IInformationControlCreator creator = new IInformationControlCreator() {
-        @Override
-        public IInformationControl createInformationControl(final Shell parent) {
-            return new InformationControl(parent);
-        }
-    };
+    private final IInformationControlCreator creator;
 
     @Inject
     ExtDocHover(final UiManager uiManager, final ProviderStore providerStore) {
-        this.uiManager = uiManager;
         this.providerStore = providerStore;
+        creator = new IInformationControlCreator() {
+            @Override
+            public IInformationControl createInformationControl(final Shell parent) {
+                return new InformationControl(parent, uiManager);
+            }
+        };
     }
 
     @Override
@@ -69,7 +68,7 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
 
     private final class InformationControl extends AbstractExtDocInformationControl {
 
-        public InformationControl(final Shell parentShell) {
+        public InformationControl(final Shell parentShell, final UiManager uiManager) {
             super(parentShell, uiManager, providerStore, creator);
         }
 

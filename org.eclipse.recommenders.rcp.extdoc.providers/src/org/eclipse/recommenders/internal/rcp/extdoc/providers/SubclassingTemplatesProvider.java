@@ -62,7 +62,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
             return null;
         }
         final MethodPattern[] patterns = getPatternsSortedByFrequency(directive);
-        final Integer numberOfSubclasses = computeTotalNumberOfSubclasses(patterns);
+        final Integer numberOfSubclasses = Integer.valueOf(computeTotalNumberOfSubclasses(patterns));
 
         final String text = String
                 .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
@@ -103,13 +103,12 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         };
     }
 
-    private static List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(
-            final MethodPattern pattern) {
+    static List<Entry<IMethodName, Double>> getRecommendedMethodOverridesSortedByLikelihood(final MethodPattern pattern) {
         final List<Entry<IMethodName, Double>> entries = Lists.newArrayList(pattern.getMethods().entrySet());
         Collections.sort(entries, new Comparator<Entry<IMethodName, Double>>() {
             @Override
             public int compare(final Entry<IMethodName, Double> o1, final Entry<IMethodName, Double> o2) {
-                return Double.compare(o2.getValue(), o1.getValue());
+                return o2.getValue().compareTo(o1.getValue());
             }
         });
         return entries;

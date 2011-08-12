@@ -78,7 +78,7 @@ public final class WikiProvider extends AbstractTitledProvider {
         };
     }
 
-    private void displayText(final IJavaElement element, final String markup, final Composite composite) {
+    void displayText(final IJavaElement element, final String markup, final Composite composite) {
         CommunityFeatures.create(ElementResolver.resolveName(element), null, this, server).loadStarsRatingComposite(
                 composite);
         // TODO: Add editing option.
@@ -88,7 +88,7 @@ public final class WikiProvider extends AbstractTitledProvider {
         text.setText(markup);
     }
 
-    private void displayNoText(final IJavaElement element, final Composite composite) {
+    void displayNoText(final IJavaElement element, final Composite composite) {
         String elementName = element.getElementName();
         if (element instanceof IMethod) {
             elementName = String.format("%s.%s", ((IMethod) element).getDeclaringType().getElementName(), elementName);
@@ -100,32 +100,32 @@ public final class WikiProvider extends AbstractTitledProvider {
         SwtFactory.createCLabel(composite, "Click here to start writing.", false,
                 ExtDocPlugin.getIcon("eview16/edit.png")).addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseUp(final MouseEvent e) {
+            public void mouseUp(final MouseEvent event) {
                 displayEditArea(element, composite);
             }
         });
     }
 
-    private void displayEditArea(final IJavaElement element, final Composite composite) {
+    void displayEditArea(final IJavaElement element, final Composite composite) {
         disposeChildren(composite);
         final Text text = SwtFactory.createTextArea(composite, "", 100, 0);
         SwtFactory.createButton(composite, "Save Changes", new SelectionAdapter() {
             @Override
-            public void widgetSelected(final SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent event) {
                 update(element, text.getText(), composite);
             }
         });
         layout(composite);
     }
 
-    private void update(final IJavaElement javaElement, final String text, final Composite composite) {
+    void update(final IJavaElement javaElement, final String text, final Composite composite) {
         server.setText(javaElement, text);
         disposeChildren(composite);
         displayText(javaElement, text, composite);
         layout(composite);
     }
 
-    private void layout(final Composite composite) {
+    private static void layout(final Composite composite) {
         composite.layout(true);
         if (composite.getParent() != null) {
             composite.getParent().getParent().layout(true);

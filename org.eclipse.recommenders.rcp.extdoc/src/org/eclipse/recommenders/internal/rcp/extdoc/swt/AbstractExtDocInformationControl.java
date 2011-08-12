@@ -30,6 +30,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.UiManager;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -115,14 +116,18 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
             new Job("Updating Hover Provider") {
                 @Override
                 public IStatus run(final IProgressMonitor monitor) {
-                    if (lastSelection != null && provider.selectionChanged(lastSelection, control)) {
-                        ProviderUiJob.run(new ProviderUiJob() {
-                            @Override
-                            public void run(final Composite composite) {
-                                ((GridData) composite.getLayoutData()).exclude = false;
-                                actions.get(composite).setEnabled(true);
-                            }
-                        }, control);
+                    try {
+                        if (lastSelection != null && provider.selectionChanged(lastSelection, control)) {
+                            ProviderUiJob.run(new ProviderUiJob() {
+                                @Override
+                                public void run(final Composite composite) {
+                                    ((GridData) composite.getLayoutData()).exclude = false;
+                                    actions.get(composite).setEnabled(true);
+                                }
+                            }, control);
+                        }
+                    } catch (final Exception e) {
+                        LoggingUtils.logError(e, ExtDocPlugin.getDefault(), null);
                     }
                     return Status.OK_STATUS;
                 }
@@ -135,6 +140,10 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
         return creator;
     }
 
-    protected abstract IJavaElementSelection getSelection(Object object);
+    UiManager getUiManager() {
+        return uiManager;
+    }
+
+    abstract IJavaElementSelection getSelection(Object object);
 
 }

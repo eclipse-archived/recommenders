@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.utils.names.IName;
@@ -22,7 +24,6 @@ import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.UsernameProvider;
 
-import com.google.common.collect.ImmutableMap;
 import com.sun.jersey.api.client.GenericType;
 
 /**
@@ -52,8 +53,13 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
             final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
         final String elementId = javaElement.getIdentifier();
-        final List<UserFeedback> feedbacks = server.getRows("feedback",
-                ImmutableMap.of("providerId", providerId, "element", elementId),
+        final Map<String, String> key = new HashMap<String, String>();
+        key.put("providerId", providerId);
+        key.put("element", elementId);
+        if (keyAppendix != null) {
+            key.put("item", keyAppendix);
+        }
+        final List<UserFeedback> feedbacks = server.getRows("feedback", key,
                 new GenericType<GenericResultObjectView<UserFeedback>>() {
                 });
         return feedbacks == null || feedbacks.isEmpty() ? UserFeedback.create(provider, elementId) : feedbacks.get(0);
@@ -94,7 +100,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         if (feedback.getDocumentId() == null) {
             server.post(feedback);
         } else {
-            server.put("feedback", feedback.getDocumentId(), feedback);
+            server.put(feedback.getDocumentId(), feedback);
         }
     }
 

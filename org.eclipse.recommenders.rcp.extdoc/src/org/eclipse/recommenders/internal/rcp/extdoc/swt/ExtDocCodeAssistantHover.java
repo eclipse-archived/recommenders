@@ -66,22 +66,20 @@ public final class ExtDocCodeAssistantHover {
 
     private static final class ViewerConfiguration extends JavaSourceViewerConfiguration {
 
-        private final UiManager uiManager;
         private final ProviderStore providerStore;
+        private final IInformationControlCreator creator;
 
-        private final IInformationControlCreator creator = new IInformationControlCreator() {
-            @Override
-            public IInformationControl createInformationControl(final Shell parent) {
-                return new InformationControl(parent);
-            }
-        };
-
-        private ViewerConfiguration(final UiManager uiManager, final ProviderStore providerStore,
+        ViewerConfiguration(final UiManager uiManager, final ProviderStore providerStore,
                 final IColorManager colorManager, final IPreferenceStore preferenceStore, final ITextEditor editor,
                 final String partitioning) {
             super(colorManager, preferenceStore, editor, partitioning);
-            this.uiManager = uiManager;
             this.providerStore = providerStore;
+            creator = new IInformationControlCreator() {
+                @Override
+                public IInformationControl createInformationControl(final Shell parent) {
+                    return new InformationControl(parent, uiManager);
+                }
+            };
         }
 
         @Override
@@ -97,7 +95,7 @@ public final class ExtDocCodeAssistantHover {
             private Composite parent;
             private boolean lastWasExtDoc = true;
 
-            public InformationControl(final Shell parent) {
+            public InformationControl(final Shell parent, final UiManager uiManager) {
                 super(parent, uiManager, providerStore, creator);
             }
 
@@ -151,7 +149,7 @@ public final class ExtDocCodeAssistantHover {
             protected IJavaElementSelection getSelection(final Object input) {
                 final JavadocBrowserInformationControlInput in = (JavadocBrowserInformationControlInput) input;
                 final IJavaElement element = in.getElement();
-                return uiManager.getLastSelection().copy(element);
+                return getUiManager().getLastSelection().copy(element);
             }
 
         }

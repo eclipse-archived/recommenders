@@ -63,7 +63,7 @@ final class SourceCodeArea extends JavaSourceViewer {
         setInput(document);
     }
 
-    private void format(final IDocument document) {
+    private static void format(final IDocument document) {
         final String sourceCode = document.get();
         final int length = document.getLength();
         final TextEdit edit = formatter.format(CodeFormatter.K_STATEMENTS, sourceCode, 0, length, 0, LINE_SEPARATOR);
@@ -72,7 +72,7 @@ final class SourceCodeArea extends JavaSourceViewer {
         }
     }
 
-    private void applyTextFormattings(final IDocument document, final TextEdit edit) {
+    private static void applyTextFormattings(final IDocument document, final TextEdit edit) {
         try {
             edit.apply(document);
         } catch (final MalformedTreeException e) {

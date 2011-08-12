@@ -185,10 +185,11 @@ public final class SwtFactory {
     }
 
     public static Color createColor(final int swtColor) {
-        if (!COLORCACHE.containsKey(swtColor)) {
-            COLORCACHE.put(swtColor, Display.getCurrent().getSystemColor(swtColor));
+        final Integer color = Integer.valueOf(swtColor);
+        if (!COLORCACHE.containsKey(color)) {
+            COLORCACHE.put(color, Display.getCurrent().getSystemColor(swtColor));
         }
-        return COLORCACHE.get(swtColor);
+        return COLORCACHE.get(color);
     }
 
 }

@@ -112,7 +112,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
         }
     }
 
-    private CompilationUnitDeclaration findCompilationUnit(final AbstractMethodDeclaration methodContext) {
+    private static CompilationUnitDeclaration findCompilationUnit(final AbstractMethodDeclaration methodContext) {
         Scope tmp = methodContext.scope;
         while (tmp != null) {
             tmp = tmp.parent;

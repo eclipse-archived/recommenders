@@ -108,13 +108,13 @@ public final class ExamplesProvider extends AbstractTitledProvider {
         };
     }
 
-    private void createSnippetVisualization(final int snippetIndex, final CommunityFeatures features,
+    static void createSnippetVisualization(final int snippetIndex, final CommunityFeatures features,
             final String snippet, final Composite composite) {
         createEditAndRatingHeader(snippetIndex, features, composite);
         SwtFactory.createSourceCodeArea(composite, snippet);
     }
 
-    private void createEditAndRatingHeader(final int snippetIndex, final CommunityFeatures features,
+    private static void createEditAndRatingHeader(final int snippetIndex, final CommunityFeatures features,
             final Composite composite) {
         final String text = "Example #" + (snippetIndex + 1) + ":";
         final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);

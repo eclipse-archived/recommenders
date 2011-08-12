@@ -30,7 +30,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.internal.WorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Inject;
@@ -39,14 +39,13 @@ public class ExtDocView extends ViewPart {
 
     static final int HEAD_LABEL_HEIGHT = 20;
     private static final String SASH_POSITION_KEY = "extDocSashPosition";
-    private static boolean linkingEnabled = true;
 
     private final ProviderStore providerStore;
-
     private ProvidersComposite providersComposite;
     private ProvidersTable table;
     private CLabel selectionLabel;
     private JavaElementLabelProvider labelProvider;
+    private boolean linkingEnabled = true;
 
     @Inject
     ExtDocView(final ProviderStore providerStore) {
@@ -85,7 +84,7 @@ public class ExtDocView extends ViewPart {
         providersComposite = new ProvidersComposite(container, true);
     }
 
-    private void handleSashWeights(final SashForm sashForm) {
+    private static void handleSashWeights(final SashForm sashForm) {
         final int sashWeight = ExtDocPlugin.getPreferences().getInt(SASH_POSITION_KEY, 150);
         sashForm.setWeights(new int[] { sashWeight, 1000 - sashWeight });
         sashForm.addDisposeListener(new DisposeListener() {
@@ -105,10 +104,10 @@ public class ExtDocView extends ViewPart {
     }
 
     private void addProviders() {
-        final WorkbenchWindow window = (WorkbenchWindow) getViewSite().getWorkbenchWindow();
+        final IWorkbenchWindow window = getViewSite().getWorkbenchWindow();
         for (final IProvider provider : providerStore.getProviders()) {
             final Composite composite = providersComposite.addProvider(provider, window);
-            table.addProvider(composite, provider.getProviderName(), provider.getIcon(), true);
+            table.addProvider(composite, provider.getProviderName(), provider.getIcon());
         }
     }
 
@@ -137,7 +136,7 @@ public class ExtDocView extends ViewPart {
         ProviderUpdateJob.cancelActiveJobs();
         for (final TableItem item : table.getItems()) {
             if (item.getChecked()) {
-                final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
+                final ProviderUpdateJob job = new ProviderUpdateJob(item, selection);
                 job.setSystem(true);
                 job.schedule();
             }
@@ -172,7 +171,7 @@ public class ExtDocView extends ViewPart {
         }
     }
 
-    private static final class LinkWithEditorAction extends AbstractAction {
+    private final class LinkWithEditorAction extends AbstractAction {
 
         LinkWithEditorAction() {
             super("Link with Selection", "lcl16/link.gif", SWT.TOGGLE);
