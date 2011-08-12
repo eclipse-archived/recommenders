@@ -217,11 +217,11 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
                     final TableListing calls = new TableListing(composite, 4);
                     for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
                         calls.startNewRow();
-                        calls.addLabelItem(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false,
-                                true, SWT.COLOR_BLACK);
-                        final int probability = (int) Math.round(proposal.getSecond().getSecond() * 100);
+                        calls.addCell(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true,
+                                SWT.COLOR_BLACK);
                         final String origin = Names.vm2srcSimpleMethod(proposal.getSecond().getFirst());
-                        calls.addLabelItem(probability + "%", false, false, SWT.COLOR_BLUE);
+                        final int probability = (int) Math.round(proposal.getSecond().getSecond() * 100);
+                        calls.addCell(probability + "%", false, false, SWT.COLOR_BLUE);
                         final StyledText styled = SwtFactory.createStyledText(calls, "in " + origin, SWT.COLOR_BLACK,
                                 true);
                         SwtFactory.createStyleRange(styled, 3, origin.length(), SWT.NORMAL, false, true);
@@ -237,8 +237,8 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         final TableListing table = new TableListing(composite, 3);
         for (final IMethodName method : calledMethods) {
             table.startNewRow();
-            table.addLabelItem(formatMethodCall(element, method, isMethodDeclaration), false, true, SWT.COLOR_DARK_GRAY);
-            table.addLabelItem("(called)", false, false, SWT.COLOR_DARK_GRAY);
+            table.addCell(formatMethodCall(element, method, isMethodDeclaration), false, true, SWT.COLOR_DARK_GRAY);
+            table.addCell("(called)", false, false, SWT.COLOR_DARK_GRAY);
         }
         for (final Tuple<IMethodName, Double> proposal : proposals) {
             displayProposal(proposal, table, element, isMethodDeclaration);
@@ -248,9 +248,8 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
     private void displayProposal(final Tuple<IMethodName, Double> proposal, final TableListing table,
             final IJavaElement element, final boolean isMethodDeclaration) {
         table.startNewRow();
-        table.addLabelItem(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true,
-                SWT.COLOR_BLACK);
-        table.addLabelItem(Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
+        table.addCell(formatMethodCall(element, proposal.getFirst(), isMethodDeclaration), false, true, SWT.COLOR_BLACK);
+        table.addCell(Math.round(proposal.getSecond() * 100) + "%", false, false, SWT.COLOR_BLUE);
     }
 
     private String formatMethodCall(final IJavaElement element, final IMethodName method,

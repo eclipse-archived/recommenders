@@ -33,7 +33,7 @@ public final class TableListing extends Composite {
         SwtFactory.createLabel(this, "\u25AA", true, false, SWT.COLOR_BLACK);
     }
 
-    public void addLabelItem(final String text, final boolean bold, final boolean code, final int color) {
+    public void addCell(final String text, final boolean bold, final boolean code, final int color) {
         SwtFactory.createLabel(this, text, bold, code, color);
     }
 

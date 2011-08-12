@@ -13,6 +13,7 @@ package org.eclipse.recommenders.rcp.extdoc;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.progress.UIJob;
 
@@ -24,7 +25,11 @@ public abstract class ProviderUiJob {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
-                    job.run(composite);
+                    try {
+                        job.run(composite);
+                    } catch (final Exception e) {
+                        LoggingUtils.logError(e, ExtDocPlugin.getDefault(), null);
+                    }
                     composite.getParent().layout(true, true);
                     composite.getParent().getParent().layout(true);
                 }

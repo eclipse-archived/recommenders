@@ -85,17 +85,16 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                             i + 1, patternProbability, pattern.getNumberOfObservations());
                     new TextAndFeaturesLine(templates, text2, ratings);
 
-                    final TableListing table = new TableListing(composite, 4);
+                    final TableListing table = new TableListing(templates, 4);
                     final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
                     for (final Entry<IMethodName, Double> entry : entries) {
                         table.startNewRow();
                         final IMethodName method = entry.getKey();
                         text2 = "override " + method.getDeclaringType().getClassName() + "."
                                 + Names.vm2srcSimpleMethod(method);
-                        table.addLabelItem(text2, false, true, SWT.COLOR_BLACK);
-                        table.addLabelItem("-", false, false, SWT.COLOR_BLACK);
-                        table.addLabelItem(String.format("~ %3.0f%%", entry.getValue() * 100), false, false,
-                                SWT.COLOR_BLUE);
+                        table.addCell(text2, false, true, SWT.COLOR_BLACK);
+                        table.addCell("-", false, false, SWT.COLOR_BLACK);
+                        table.addCell(String.format("%3.0f%%", entry.getValue() * 100), false, false, SWT.COLOR_BLUE);
                     }
                 }
 

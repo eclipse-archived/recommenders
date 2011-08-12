@@ -39,7 +39,7 @@ public class MyDialog extends Dialog {
         final Text text = new Text(container, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
         text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         CheckboxTableViewer v = new CheckboxTableViewer(null);
-
+ 
         return container;
     }
 

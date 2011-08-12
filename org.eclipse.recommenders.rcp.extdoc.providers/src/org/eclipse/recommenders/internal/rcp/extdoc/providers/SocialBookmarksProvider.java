@@ -112,6 +112,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
                 ExtDocPlugin.getIcon("eview16/add.gif"), false, new MouseAdapter() {
                     @Override
                     public void mouseUp(final MouseEvent e) {
+                        disposeChildren(addComposite);
                         displayAddArea(element, composite, addComposite, bookmarks);
                     }
                 });
@@ -119,7 +120,6 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
 
     private void displayAddArea(final IJavaElement element, final Composite composite, final Composite addComposite,
             final List<SocialBookmark> bookmarks) {
-        disposeChildren(addComposite);
         final Text title = SwtFactory.createText(addComposite, "Link Title", 300);
         final Text url = SwtFactory.createText(addComposite, "URL", 200);
         SwtFactory.createButton(addComposite, "Add", new SelectionAdapter() {

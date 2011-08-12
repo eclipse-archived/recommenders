@@ -6,16 +6,17 @@ Bundle-Version: 0.2.0.qualifier
 Implementation-Version: 0.2.0
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.ui,
- org.eclipse.jdt.ui,
  org.eclipse.core.runtime,
- com.google.inject,
- org.eclipse.recommenders.commons.selection,
  org.eclipse.jdt.core,
- org.eclipse.recommenders.commons.utils,
- com.google.guava,
- org.eclipse.jface.text,
+ org.eclipse.jdt.ui,
  org.eclipse.ui.editors,
- org.eclipse.recommenders.commons.injection
+ org.eclipse.recommenders.commons.injection,
+ org.eclipse.recommenders.commons.utils,
+ org.eclipse.recommenders.commons.selection,
+ org.eclipse.recommenders.rcp.utils,
+ com.google.guava,
+ com.google.inject,
+ org.eclipse.jface.text
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin
 Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
@@ -30,8 +31,8 @@ Export-Package: org.eclipse.recommenders.internal.rcp.extdoc;x-internal:=true,
    org.eclipse.core.runtime.preferences,
    org.eclipse.jdt.core,
    org.eclipse.recommenders.internal.rcp.extdoc,
-   org.eclipse.swt.graphics,
    org.eclipse.recommenders.commons.selection,
+   org.eclipse.swt.graphics,
    org.osgi.framework,
    org.eclipse.swt.widgets",
  org.eclipse.recommenders.rcp.extdoc.features;uses:="org.eclipse.recommenders.rcp.extdoc,org.eclipse.recommenders.commons.utils.names,org.eclipse.swt.widgets",

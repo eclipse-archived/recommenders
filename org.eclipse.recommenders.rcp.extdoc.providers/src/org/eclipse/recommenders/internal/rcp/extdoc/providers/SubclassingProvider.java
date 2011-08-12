@@ -145,8 +145,8 @@ public final class SubclassingProvider extends AbstractTitledProvider {
         for (final Entry<IMethodName, Integer> directive : orderDirectives(directives).entrySet()) {
             final int percent = (int) Math.round(directive.getValue().doubleValue() * 100.0 / definitions);
             table.startNewRow();
-            table.addLabelItem(getLabel(percent), true, false, SWT.COLOR_BLACK);
-            table.addLabelItem(actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, true,
+            table.addCell(getLabel(percent), true, false, SWT.COLOR_BLACK);
+            table.addCell(actionKeyword + " " + Names.vm2srcSimpleMethod(directive.getKey()), false, true,
                     SWT.COLOR_BLACK);
             final StyledText text = SwtFactory.createStyledText(table, "(" + directive.getValue() + " times - "
                     + percent + "%)", SWT.COLOR_BLACK, true);
