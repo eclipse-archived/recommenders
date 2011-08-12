@@ -18,6 +18,7 @@ import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.swt.graphics.Image;
 
 @SuppressWarnings("restriction")
 public class SubwordsOverrideCompletionProposal extends OverrideCompletionProposal {
@@ -29,9 +30,13 @@ public class SubwordsOverrideCompletionProposal extends OverrideCompletionPropos
         final String signature = String.valueOf(proposal.getSignature());
         final String completionText = String.valueOf(proposal.getCompletion());
         final String proposalName = String.valueOf(proposal.getName());
-        return new SubwordsOverrideCompletionProposal(context.getProject(), context.getCompilationUnit(), proposalName,
-                Signature.getParameterTypes(signature), proposal.getReplaceStart(), jdtProposal.getReplacementLength(),
-                jdtProposal.getStyledDisplayString(), completionText, subwordsContext);
+        final SubwordsOverrideCompletionProposal res = new SubwordsOverrideCompletionProposal(context.getProject(),
+                context.getCompilationUnit(), proposalName, Signature.getParameterTypes(signature),
+                proposal.getReplaceStart(), jdtProposal.getReplacementLength(), jdtProposal.getStyledDisplayString(),
+                completionText, subwordsContext);
+        Image image = jdtProposal.getImage();
+        res.setImage(image);
+        return res;
     }
 
     private final SubwordsProposalContext subwordsContext;
@@ -41,6 +46,7 @@ public class SubwordsOverrideCompletionProposal extends OverrideCompletionPropos
             final StyledString displayName, final String completionProposal,
             final SubwordsProposalContext subwordsContext) {
         super(jproject, cu, methodName, paramTypes, start, length, displayName, completionProposal);
+
         this.subwordsContext = subwordsContext;
     }
 
