@@ -82,14 +82,17 @@ final class ProvidersTableDropAdapter extends DropTargetAdapter {
         }
         newItemControl.getParent().layout();
 
-        final TableItem newItem = new TableItem(table, SWT.NONE, index);
-        newItem.setText(dragSourceItem.getText());
-        newItem.setData(newItemControl);
-        newItem.setImage(dragSourceItem.getImage());
-        newItem.setChecked(dragSourceItem.getChecked());
-        newItem.setGrayed(dragSourceItem.getGrayed());
-
+        createNewTableItem(newItemControl, index, dragSourceItem);
         updateProviderStore(dragSourceItem);
+    }
+
+    private void createNewTableItem(final Control newItemControl, final int index, final TableItem originalItem) {
+        final TableItem newItem = new TableItem(table, SWT.NONE, index);
+        newItem.setText(originalItem.getText());
+        newItem.setData(newItemControl);
+        newItem.setImage(originalItem.getImage());
+        newItem.setChecked(originalItem.getChecked());
+        newItem.setGrayed(originalItem.getGrayed());
     }
 
     private void updateProviderStore(final TableItem dragSourceItem) {
@@ -99,6 +102,10 @@ final class ProvidersTableDropAdapter extends DropTargetAdapter {
                 break;
             }
         }
+        updatePriorities();
+    }
+
+    private void updatePriorities() {
         final int itemCount = table.getItemCount();
         for (int i = 0; i < itemCount; ++i) {
             final TableItem item = table.getItem(i);

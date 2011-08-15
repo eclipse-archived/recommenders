@@ -22,6 +22,10 @@ import com.google.common.base.Preconditions;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+/**
+ * Supports instantiation of a provider from an extension declaration, allowing
+ * access to configuration parameters.
+ */
 public abstract class AbstractProvider implements IProvider {
 
     private static final BundleContext BUNDLECONTEXT = ExtDocPlugin.getDefault().getBundle().getBundleContext();
@@ -54,8 +58,8 @@ public abstract class AbstractProvider implements IProvider {
     }
 
     private void setProviderIcon(final IConfigurationElement config) {
-        final long bundleId = Long.parseLong(((RegistryContributor) config.getContributor()).getActualId());
-        final Bundle bundle = BUNDLECONTEXT.getBundle(bundleId);
+        final long declaringBundleId = Long.parseLong(((RegistryContributor) config.getContributor()).getActualId());
+        final Bundle bundle = BUNDLECONTEXT.getBundle(declaringBundleId);
         final String icon = config.getAttribute("icon");
         providerIcon = ImageDescriptor.createFromURL(bundle.getEntry(icon)).createImage();
     }

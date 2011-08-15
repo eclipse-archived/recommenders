@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 
-final class ProvidersComposite extends Composite {
+class ProvidersComposite extends Composite {
 
     private final ScrolledComposite scrolled;
     private final List<Composite> providers = new LinkedList<Composite>();
@@ -79,6 +79,11 @@ final class ProvidersComposite extends Composite {
 
     List<Composite> getProviders() {
         return providers;
+    }
+
+    @Override
+    public boolean setParent(final Composite parent) {
+        return scrolled.setParent(parent);
     }
 
     @Override

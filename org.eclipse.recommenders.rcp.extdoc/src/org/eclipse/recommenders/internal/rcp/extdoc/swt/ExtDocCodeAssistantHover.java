@@ -77,7 +77,7 @@ public final class ExtDocCodeAssistantHover {
             creator = new IInformationControlCreator() {
                 @Override
                 public IInformationControl createInformationControl(final Shell parent) {
-                    return new InformationControl(parent, uiManager);
+                    return new InformationControl(parent, uiManager, null);
                 }
             };
         }
@@ -95,8 +95,8 @@ public final class ExtDocCodeAssistantHover {
             private Composite parent;
             private boolean lastWasExtDoc = true;
 
-            public InformationControl(final Shell parent, final UiManager uiManager) {
-                super(parent, uiManager, providerStore, creator);
+            public InformationControl(final Shell parent, final UiManager uiManager, final ProvidersComposite composite) {
+                super(parent, uiManager, providerStore, composite);
             }
 
             @Override
@@ -152,6 +152,15 @@ public final class ExtDocCodeAssistantHover {
                 return getUiManager().getLastSelection().copy(element);
             }
 
+            @Override
+            public IInformationControlCreator getInformationPresenterControlCreator() {
+                return new IInformationControlCreator() {
+                    @Override
+                    public IInformationControl createInformationControl(final Shell parent) {
+                        return new InformationControl(parent, getUiManager(), null);
+                    }
+                };
+            }
         }
     }
 }

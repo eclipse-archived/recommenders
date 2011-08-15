@@ -28,8 +28,6 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public final class ExtDocHover extends AbstractJavaEditorTextHover {
 
-    private final ProviderStore providerStore;
-
     // TODO: Currently this seems to be the only way to avoid problem hovers to
     // be overriden by the ExtDoc hover.
     private final ProblemHover problemHover = new ProblemHover();
@@ -39,11 +37,10 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
 
     @Inject
     ExtDocHover(final UiManager uiManager, final ProviderStore providerStore) {
-        this.providerStore = providerStore;
         creator = new IInformationControlCreator() {
             @Override
             public IInformationControl createInformationControl(final Shell parent) {
-                return new InformationControl(parent, uiManager);
+                return new InformationControl(parent, uiManager, providerStore, null);
             }
         };
     }
@@ -66,15 +63,26 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
         return isProblemHoverActive ? problemHover.getHoverControlCreator() : creator;
     }
 
-    private final class InformationControl extends AbstractExtDocInformationControl {
+    private static final class InformationControl extends AbstractExtDocInformationControl {
 
-        public InformationControl(final Shell parentShell, final UiManager uiManager) {
-            super(parentShell, uiManager, providerStore, creator);
+        public InformationControl(final Shell parentShell, final UiManager uiManager,
+                final ProviderStore providerStore, final ProvidersComposite composite) {
+            super(parentShell, uiManager, providerStore, composite);
         }
 
         @Override
         protected IJavaElementSelection getSelection(final Object input) {
             return (IJavaElementSelection) input;
+        }
+
+        @Override
+        public IInformationControlCreator getInformationPresenterControlCreator() {
+            return new IInformationControlCreator() {
+                @Override
+                public IInformationControl createInformationControl(final Shell parent) {
+                    return new InformationControl(parent, getUiManager(), getProviderStore(), null);
+                }
+            };
         }
     }
 

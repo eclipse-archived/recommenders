@@ -20,16 +20,20 @@ import com.google.inject.Scopes;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
+/**
+ * Google injection configuration.
+ */
 public final class ExtDocModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(UiManager.class).in(Scopes.SINGLETON);
         bind(ProviderStore.class).in(Scopes.SINGLETON);
         bind(ExtDocView.class).in(Scopes.SINGLETON);
 
         final IPreferenceStore preferenceStore = ExtDocPlugin.getDefault().getPreferenceStore();
-        final Named name = Names.named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE);
-        bind(IPreferenceStore.class).annotatedWith(name).toInstance(preferenceStore);
+        final Named preferenceStoreName = Names.named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE);
+        bind(IPreferenceStore.class).annotatedWith(preferenceStoreName).toInstance(preferenceStore);
     }
 
 }

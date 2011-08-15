@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -27,6 +26,10 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Provides access to all providers registered with the extension point and
+ * manages their ordering.
+ */
 public class ProviderStore {
 
     private static final String EXTENSION_ID = "org.eclipse.recommenders.rcp.extdoc.provider";
@@ -34,8 +37,12 @@ public class ProviderStore {
     private final Map<IProvider, Integer> providers = new HashMap<IProvider, Integer>();
 
     public ProviderStore() {
-        final IExtensionRegistry reg = Platform.getExtensionRegistry();
-        for (final IConfigurationElement element : reg.getConfigurationElementsFor(EXTENSION_ID)) {
+        loadProviders();
+    }
+
+    private void loadProviders() {
+        for (final IConfigurationElement element : Platform.getExtensionRegistry().getConfigurationElementsFor(
+                EXTENSION_ID)) {
             try {
                 final IProvider provider = (IProvider) element.createExecutableExtension("class");
                 providers.put(provider, Integer.valueOf(element.getAttribute("priority")));
@@ -45,23 +52,29 @@ public class ProviderStore {
         }
     }
 
+    /**
+     * @return List of all providers in the order expressed through priorities.
+     */
     public ImmutableList<IProvider> getProviders() {
         final List<IProvider> list = new ArrayList<IProvider>(providers.keySet());
         Collections.sort(list, new ProviderComparator(providers));
         return ImmutableList.copyOf(list);
     }
 
+    /**
+     * @param provider
+     *            The provider for which priority is to be set.
+     * @param priority
+     *            The higher the priority, the earlier the provider is displayed
+     *            in views and pop-ups.
+     */
     public final void setProviderPriority(final IProvider provider, final int priority) {
         Preconditions.checkArgument(providers.containsKey(provider));
         Preconditions.checkArgument(priority > 0);
         ExtDocPlugin.getPreferences().putInt(getPreferenceId(provider), priority);
     }
 
-    static int getPriorityFromPreferences(final IProvider provider) {
-        return ExtDocPlugin.getPreferences().getInt(getPreferenceId(provider), -1);
-    }
-
-    private static String getPreferenceId(final IProvider provider) {
+    static String getPreferenceId(final IProvider provider) {
         return "priority" + provider.hashCode();
     }
 
@@ -81,6 +94,10 @@ public class ProviderStore {
                 return Integer.valueOf(priorityPreference2).compareTo(Integer.valueOf(priorityPreference1));
             }
             return providers.get(provider2).compareTo(providers.get(provider1));
+        }
+
+        private static int getPriorityFromPreferences(final IProvider provider) {
+            return ExtDocPlugin.getPreferences().getInt(getPreferenceId(provider), -1);
         }
     }
 
