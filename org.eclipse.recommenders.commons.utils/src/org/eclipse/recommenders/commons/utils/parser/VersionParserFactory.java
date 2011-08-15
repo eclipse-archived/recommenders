@@ -10,8 +10,12 @@
  */
 package org.eclipse.recommenders.commons.utils.parser;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
 import java.util.LinkedList;
 import java.util.List;
+
+import org.eclipse.recommenders.commons.utils.Version;
 
 public class VersionParserFactory {
 
@@ -32,5 +36,11 @@ public class VersionParserFactory {
         }
 
         return null;
+    }
+
+    public static Version parse(final String version) {
+        final VersionParser parser = getCompatibleParser(version);
+        ensureIsNotNull(parser, "Given version string '%s' has unknown format and can not be parsed.", version);
+        return parser.parse(version);
     }
 }
