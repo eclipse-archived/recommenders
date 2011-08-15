@@ -246,4 +246,18 @@ public class VersionRangeTest {
         final VersionRange range = new VersionRangeBuilder().minInclusive(v36).maxInclusive(v36).build();
         assertFalse(range.isEmpty());
     }
+
+    @Test
+    public void testStringParsing() {
+        final VersionRange range = VersionRange.create("[3.6.0,3.7.0)");
+        assertEquals(v36, range.getMinVersion());
+        assertEquals(v37, range.getMaxVersion());
+        assertTrue(range.isMinVersionInclusive());
+        assertFalse(range.isMaxVersionInclusive());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnparseableString() {
+        VersionRange.create("-3.6;3.7-");
+    }
 }

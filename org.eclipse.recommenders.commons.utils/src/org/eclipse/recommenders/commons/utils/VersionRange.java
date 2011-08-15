@@ -12,6 +12,8 @@ package org.eclipse.recommenders.commons.utils;
 
 import java.util.List;
 
+import org.eclipse.recommenders.commons.utils.parser.VersionParserFactory;
+
 import com.google.common.collect.Lists;
 
 public class VersionRange {
@@ -223,5 +225,26 @@ public class VersionRange {
     @Override
     public int hashCode() {
         return minVersion.hashCode() ^ maxVersion.hashCode();
+    }
+
+    public static VersionRange create(final String versionString) {
+        final VersionRange versionRange = new VersionRange();
+        final char firstChar = versionString.charAt(0);
+        final char lastChar = versionString.charAt(versionString.length() - 1);
+        versionRange.minVersionInclusive = firstChar == '[';
+        versionRange.maxVersionInclusive = lastChar == ']';
+
+        final String[] versions = versionString.substring(1, versionString.length() - 1).split(",");
+        if (versions.length != 2) {
+            throw new IllegalArgumentException(String.format("Given string '%s' is not a valid VersionRange.",
+                    versionString));
+        }
+
+        final String minVersionString = versions[0].trim();
+        final String maxVersionString = versions[1].trim();
+
+        versionRange.minVersion = VersionParserFactory.parse(minVersionString);
+        versionRange.maxVersion = VersionParserFactory.parse(maxVersionString);
+        return versionRange;
     }
 }
