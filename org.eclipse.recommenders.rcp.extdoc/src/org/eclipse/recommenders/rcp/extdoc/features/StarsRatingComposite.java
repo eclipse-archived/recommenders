@@ -74,7 +74,8 @@ final class StarsRatingComposite {
         for (int star = 1; star <= 5; ++star) {
             createStar(star, userStars, summary);
         }
-        SwtFactory.createLabel(composite, " " + summary.getAmountOfRatings() + "x", false, false, SWT.COLOR_DARK_GRAY);
+        SwtFactory.createLabel(composite, " " + summary.getAmountOfRatings() + "x", false, false, SWT.COLOR_DARK_GRAY,
+                false);
     }
 
     private void createStar(final int star, final int userStars, final IRatingSummary summary) {

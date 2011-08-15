@@ -77,10 +77,10 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         if (bookmarks.isEmpty()) {
             final String text = "Social bookmarks are collections of web resources for specific Java elements, shared by all users. You can add the first bookmark for "
                     + element.getElementName() + " by clicking on the link below.";
-            SwtFactory.createLabel(composite, text);
+            SwtFactory.createLabel(composite, text, true);
         } else {
             SwtFactory.createLabel(composite, "The following resources on " + element.getElementName()
-                    + " have been provided by the community. You are welcome to add your own.");
+                    + " have been provided by the community. You are welcome to add your own.", true);
 
             final TableListing table = new TableListing(composite, 4);
             final IName elementName = ElementResolver.resolveName(element);
@@ -146,7 +146,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
             server.addBookmark(bookmarks, text, url);
             updateDisplay(element, composite, bookmarks);
         } catch (final IllegalArgumentException e) {
-            SwtFactory.createLabel(composite, e.getMessage(), false, false, SWT.COLOR_RED);
+            SwtFactory.createLabel(composite, e.getMessage(), false, false, SWT.COLOR_RED, true);
         }
         layout(composite);
     }

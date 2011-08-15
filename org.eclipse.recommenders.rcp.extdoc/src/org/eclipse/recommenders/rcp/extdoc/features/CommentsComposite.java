@@ -77,9 +77,9 @@ final class CommentsComposite {
                 final String headLine = String.format("%s, %s", dateFormat.format(comment.getDate()),
                         comment.getUsername());
                 SwtFactory.createCLabel(composite, headLine, true, commentsIcon);
-                SwtFactory.createLabel(composite, comment.getText());
+                SwtFactory.createLabel(composite, comment.getText(), true);
             }
-            SwtFactory.createLabel(composite, "");
+            SwtFactory.createLabel(composite, "", false);
         }
 
         displayAddComment();

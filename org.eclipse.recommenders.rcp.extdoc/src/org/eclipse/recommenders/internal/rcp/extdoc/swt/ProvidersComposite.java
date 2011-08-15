@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.swt;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -21,7 +22,6 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -51,12 +51,7 @@ class ProvidersComposite extends Composite {
     }
 
     private void setLayout() {
-        final GridLayout grid = new GridLayout(1, false);
-        grid.verticalSpacing = 2;
-        grid.marginWidth = 0;
-        grid.marginHeight = 0;
-        grid.horizontalSpacing = 0;
-        setLayout(grid);
+        setLayout(GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 2).create());
     }
 
     private void setBackgroundColor(final Display display) {

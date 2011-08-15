@@ -62,13 +62,13 @@ public final class SwtFactory {
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     }
 
-    public static Label createLabel(final Composite parent, final String text) {
-        return createLabel(parent, text, false, false, SWT.COLOR_BLACK);
+    public static Label createLabel(final Composite parent, final String text, final boolean wrap) {
+        return createLabel(parent, text, false, false, SWT.COLOR_BLACK, wrap);
     }
 
     public static Label createLabel(final Composite parent, final String text, final boolean bold, final boolean code,
-            final int color) {
-        final Label label = new Label(parent, SWT.NONE);
+            final int color, final boolean wrap) {
+        final Label label = new Label(parent, SWT.WRAP);
         label.setText(text);
         if (code) {
             label.setFont(CODEFONT);
@@ -76,6 +76,9 @@ public final class SwtFactory {
             label.setFont(BOLDFONT);
         }
         label.setForeground(createColor(color));
+        if (wrap) {
+            label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        }
         return label;
     }
 

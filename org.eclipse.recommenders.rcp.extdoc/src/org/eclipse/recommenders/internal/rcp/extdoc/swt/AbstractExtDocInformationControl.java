@@ -18,7 +18,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.ui.actions.OpenAction;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.text.AbstractInformationControl;
@@ -44,15 +46,32 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
     private ProvidersComposite composite;
 
     private IJavaElementSelection lastSelection;
-    private final Map<Composite, IAction> actions = new HashMap<Composite, IAction>();
+    private Map<IProvider, IAction> actions;
 
     AbstractExtDocInformationControl(final Shell parentShell, final UiManager uiManager,
-            final ProviderStore providerStore, final ProvidersComposite composite) {
+            final ProviderStore providerStore, final AbstractExtDocInformationControl copy) {
         super(parentShell, new ToolBarManager(SWT.FLAT));
         this.uiManager = uiManager;
         this.providerStore = providerStore;
-        this.composite = composite;
+        if (copy != null) {
+            copyInformationControl(copy);
+        }
         create();
+    }
+
+    private void copyInformationControl(final AbstractExtDocInformationControl copy) {
+        composite = copy.composite;
+        lastSelection = copy.lastSelection;
+        actions = copy.actions;
+        final ToolBarManager manager = getToolBarManager();
+        for (final IContributionItem item : copy.getToolBarManager().getItems()) {
+            if (item instanceof ActionContributionItem) {
+                manager.add(((ActionContributionItem) item).getAction());
+            } else {
+                manager.add(item);
+            }
+        }
+        manager.update(true);
     }
 
     @Override
@@ -64,10 +83,11 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
     protected void createContent(final Composite parent) {
         if (composite == null) {
             createContentControl(parent);
+            actions = new HashMap<IProvider, IAction>();
+            fillToolbar(getToolBarManager());
         } else {
             composite.setParent(parent);
         }
-        fillToolbar(getToolBarManager());
     }
 
     protected void createContentControl(final Composite parent) {
@@ -104,17 +124,20 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
                 }
             };
             toolbar.add(action);
-            actions.put(providerComposite, action);
+            actions.put(provider, action);
         }
     }
 
     @Override
     public void setInput(final Object input) {
-        lastSelection = getSelection(input);
-        for (final Composite control : composite.getProviders()) {
-            ((GridData) control.getLayoutData()).exclude = true;
-            actions.get(control).setEnabled(false);
-            new ProviderJob(control).schedule();
+        final IJavaElementSelection selection = getSelection(input);
+        if (!selection.equals(lastSelection)) {
+            lastSelection = selection;
+            for (final Composite control : composite.getProviders()) {
+                ((GridData) control.getLayoutData()).exclude = true;
+                actions.get(control.getData()).setEnabled(false);
+                new ProviderJob(control).schedule();
+            }
         }
     }
 
@@ -124,10 +147,6 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
 
     ProviderStore getProviderStore() {
         return providerStore;
-    }
-
-    ProvidersComposite getProvidersComposite() {
-        return composite;
     }
 
     abstract IJavaElementSelection getSelection(Object object);
@@ -151,7 +170,7 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
                         @Override
                         public void run(final Composite composite) {
                             ((GridData) composite.getLayoutData()).exclude = false;
-                            actions.get(composite).setEnabled(true);
+                            actions.get(provider).setEnabled(true);
                         }
                     }, control);
                 }

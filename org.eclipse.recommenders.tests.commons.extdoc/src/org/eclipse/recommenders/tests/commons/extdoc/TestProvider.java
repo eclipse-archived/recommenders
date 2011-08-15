@@ -46,7 +46,7 @@ public final class TestProvider extends AbstractTitledProvider {
 
     @Override
     protected Composite createContentComposite(final Composite parent) {
-        text = SwtFactory.createLabel(parent, "");
+        text = SwtFactory.createLabel(parent, "", true);
         return parent;
     }
 

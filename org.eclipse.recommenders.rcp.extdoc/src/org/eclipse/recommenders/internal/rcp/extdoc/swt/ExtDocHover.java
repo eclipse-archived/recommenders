@@ -66,8 +66,8 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
     private static final class InformationControl extends AbstractExtDocInformationControl {
 
         public InformationControl(final Shell parentShell, final UiManager uiManager,
-                final ProviderStore providerStore, final ProvidersComposite composite) {
-            super(parentShell, uiManager, providerStore, composite);
+                final ProviderStore providerStore, final InformationControl copy) {
+            super(parentShell, uiManager, providerStore, copy);
         }
 
         @Override
@@ -80,7 +80,7 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
             return new IInformationControlCreator() {
                 @Override
                 public IInformationControl createInformationControl(final Shell parent) {
-                    return new InformationControl(parent, getUiManager(), getProviderStore(), null);
+                    return new InformationControl(parent, getUiManager(), getProviderStore(), InformationControl.this);
                 }
             };
         }

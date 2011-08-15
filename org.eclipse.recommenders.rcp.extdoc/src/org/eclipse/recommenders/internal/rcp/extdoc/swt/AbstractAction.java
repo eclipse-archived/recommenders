@@ -23,6 +23,7 @@ abstract class AbstractAction extends Action {
 
     public AbstractAction(final String text, final Image icon, final int style) {
         super(text, style);
+        setId(icon.toString());
         setImageDescriptor(ImageDescriptor.createFromImage(icon));
         setToolTipText(text);
     }
