@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Text;
 
 public final class SwtFactory {
 
-    public static final Font CODEFONT = JFaceResources.getTextFont();
+    static final Font CODEFONT = JFaceResources.getTextFont();
     private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 
     private static final Map<Integer, Color> COLORCACHE = new HashMap<Integer, Color>();
@@ -89,7 +89,16 @@ public final class SwtFactory {
         return label;
     }
 
-    public static Text createText(final Composite parent, final String text, final int height, final int width) {
+    public static Text createText(final Composite parent, final String text, final int width) {
+        final Text textComponent = new Text(parent, SWT.BORDER | SWT.SINGLE);
+        textComponent.setText(text);
+        final GridData gridData = new GridData(SWT.FILL, SWT.TOP, false, false);
+        gridData.widthHint = width;
+        textComponent.setLayoutData(gridData);
+        return textComponent;
+    }
+
+    public static Text createTextArea(final Composite parent, final String text, final int height, final int width) {
         final Text textComponent = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
         final GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
         gridData.heightHint = height;
@@ -99,13 +108,15 @@ public final class SwtFactory {
         return textComponent;
     }
 
-    public static StyledText createStyledText(final Composite parent, final String text) {
+    public static StyledText createStyledText(final Composite parent, final String text, final int color,
+            final boolean grabExcessHorizontalSpace) {
         final StyledText styledText = new StyledText(parent, SWT.WRAP);
         styledText.setEnabled(false);
         styledText.setDoubleClickEnabled(false);
-        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, grabExcessHorizontalSpace, false));
         styledText.setEditable(false);
         styledText.setText(text);
+        styledText.setForeground(createColor(color));
         return styledText;
     }
 
@@ -125,30 +136,37 @@ public final class SwtFactory {
     }
 
     // TODO: Use link and put together with a image into a grid.
-    public static CLabel createLink(final Composite parent, final String text, final Image image,
-            final MouseListener listener) {
+    public static CLabel createLink(final Composite parent, final String text, final String tooltip, final Image image,
+            final boolean blueColor, final MouseListener listener) {
         final CLabel link = new CLabel(parent, SWT.NONE);
         link.setText(text);
-        link.setForeground(createColor(SWT.COLOR_BLUE));
+        if (tooltip != null) {
+            link.setToolTipText(tooltip);
+        }
+        if (blueColor) {
+            link.setForeground(createColor(SWT.COLOR_BLUE));
+        }
         link.setImage(image);
         link.addMouseListener(listener);
         link.setCursor(new Cursor(parent.getDisplay(), SWT.CURSOR_HAND));
-        link.addMouseTrackListener(new MouseTrackListener() {
+        if (blueColor) {
+            link.addMouseTrackListener(new MouseTrackListener() {
 
-            @Override
-            public void mouseHover(final MouseEvent e) {
-            }
+                @Override
+                public void mouseHover(final MouseEvent e) {
+                }
 
-            @Override
-            public void mouseExit(final MouseEvent e) {
-                link.setForeground(createColor(SWT.COLOR_BLUE));
-            }
+                @Override
+                public void mouseExit(final MouseEvent e) {
+                    link.setForeground(createColor(SWT.COLOR_BLUE));
+                }
 
-            @Override
-            public void mouseEnter(final MouseEvent e) {
-                link.setForeground(createColor(SWT.COLOR_DARK_BLUE));
-            }
-        });
+                @Override
+                public void mouseEnter(final MouseEvent e) {
+                    link.setForeground(createColor(SWT.COLOR_DARK_BLUE));
+                }
+            });
+        }
         return link;
     }
 
@@ -166,22 +184,12 @@ public final class SwtFactory {
         return button;
     }
 
-    public static Button createCheck(final Composite area, final String text, final boolean selected) {
-        final Button button = new Button(area, SWT.CHECK);
-        button.setText(text);
-        button.setSelection(selected);
-        return button;
-    }
-
-    public static Label createSquare(final Composite parent) {
-        return createLabel(parent, "▪", true, false, SWT.COLOR_BLACK);
-    }
-
     public static Color createColor(final int swtColor) {
-        if (!COLORCACHE.containsKey(swtColor)) {
-            COLORCACHE.put(swtColor, Display.getCurrent().getSystemColor(swtColor));
+        final Integer color = Integer.valueOf(swtColor);
+        if (!COLORCACHE.containsKey(color)) {
+            COLORCACHE.put(color, Display.getCurrent().getSystemColor(swtColor));
         }
-        return COLORCACHE.get(swtColor);
+        return COLORCACHE.get(color);
     }
 
 }

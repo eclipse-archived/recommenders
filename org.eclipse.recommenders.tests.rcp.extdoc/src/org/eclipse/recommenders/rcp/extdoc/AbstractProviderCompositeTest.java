@@ -15,7 +15,6 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,15 +23,15 @@ public final class AbstractProviderCompositeTest {
 
     @Test
     public void testCreateControl() {
-        final AbstractProviderComposite composite = new ProviderComposite();
-        final Composite control = (Composite) composite.createControl(ExtDocUtils.getShell(), null);
+        final AbstractTitledProvider composite = new ProviderComposite();
+        final Composite control = composite.createComposite(ExtDocUtils.getShell(), null);
 
         Assert.assertEquals(3, control.getChildren().length);
         composite.disposeChildren(control);
         Assert.assertEquals(0, control.getChildren().length);
     }
 
-    private static final class ProviderComposite extends AbstractProviderComposite {
+    private static final class ProviderComposite extends AbstractTitledProvider {
 
         @Override
         public boolean isAvailableForLocation(final JavaElementLocation location) {
@@ -40,12 +39,12 @@ public final class AbstractProviderCompositeTest {
         }
 
         @Override
-        public boolean selectionChanged(final IJavaElementSelection context) {
-            return false;
+        public ProviderUiJob updateSelection(final IJavaElementSelection context) {
+            return null;
         }
 
         @Override
-        protected Control createContentControl(final Composite parent) {
+        protected Composite createContentComposite(final Composite parent) {
             return new Composite(parent, SWT.NONE);
         }
 

@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc.types;
+package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.util.Date;
 
@@ -16,13 +16,13 @@ import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
-public final class Rating implements IRating {
+final class Rating implements IRating {
 
     private Date date;
     private String user;
     private int rating;
 
-    public static Rating create(final int rating) {
+    static Rating create(final int rating) {
         final Rating instance = new Rating();
         instance.date = new Date();
         instance.user = UUIDHelper.getUUID();

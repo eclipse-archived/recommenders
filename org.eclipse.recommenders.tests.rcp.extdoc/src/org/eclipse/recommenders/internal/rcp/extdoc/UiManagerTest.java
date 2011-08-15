@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -25,7 +26,7 @@ public final class UiManagerTest {
 
         final IJavaElementSelection selection = ExtDocUtils.getSelection();
 
-        final UiManager manager = new UiManager(view);
+        final UiManager manager = new UiManager(view, null);
         manager.selectionChanged(selection);
         manager.selectionChanged(selection);
 

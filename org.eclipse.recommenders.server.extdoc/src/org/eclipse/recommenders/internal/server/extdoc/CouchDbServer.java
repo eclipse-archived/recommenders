@@ -29,6 +29,7 @@ import org.eclipse.recommenders.rcp.extdoc.IServerType;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -70,13 +71,14 @@ final class CouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public TransactionResult put(final String view, final String documentId, final IServerType object) {
+    public TransactionResult put(final String documentId, final IServerType object) {
         return getClient().doPutRequest(documentId, object, TransactionResult.class);
     }
 
     @Override
     public <T> T getProviderContent(final String providerId, final IName element,
             final GenericType<GenericResultObjectView<T>> resultType) {
+        Preconditions.checkNotNull(element);
         final String key = element instanceof IMethodName ? S_METHOD : S_TYPE;
         final List<T> rows = getRows("providers",
                 ImmutableMap.of("providerId", providerId, key, element.getIdentifier()), resultType);

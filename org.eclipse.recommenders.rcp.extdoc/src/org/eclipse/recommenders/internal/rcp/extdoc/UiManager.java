@@ -10,36 +10,48 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocCodeAssistantHover;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
+import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchSite;
 
 import com.google.inject.Inject;
 
-final class UiManager implements IExtendedSelectionListener {
+@SuppressWarnings("restriction")
+public final class UiManager implements IExtendedSelectionListener {
 
-    private static ExtDocView extDocView;
-    private static boolean isViewVisible = true;
-    private static IJavaElementSelection lastSelection;
+    private final ExtDocView extDocView;
+    private boolean isViewVisible = true;
+    private IJavaElementSelection lastSelection;
 
+    private final ProviderStore providerStore;
     private boolean hasViewListener;
 
     @Inject
-    UiManager(final ExtDocView extDocView) {
-        UiManager.extDocView = extDocView;
+    UiManager(final ExtDocView extDocView, final ProviderStore providerStore) {
+        this.extDocView = extDocView;
+        this.providerStore = providerStore;
     }
 
     @Override
     public void selectionChanged(final IJavaElementSelection selection) {
-        if (!hasViewListener) {
-            initViewListener();
-        }
-        if (isViewVisible && extDocView.isLinkingEnabled() && isUiThread() && !isEqualToLastSelection(selection)) {
-            extDocView.selectionChanged(selection);
+        try {
+            if (!hasViewListener) {
+                initViewListener();
+            }
+            if (isViewVisible && extDocView.isLinkingEnabled() && isUiThread() && !isEqualToLastSelection(selection)) {
+                extDocView.selectionChanged(selection);
+            }
+        } catch (final Exception e) {
+            LoggingUtils.logError(e, ExtDocPlugin.getDefault(), null);
         }
         lastSelection = selection;
     }
@@ -48,20 +60,8 @@ final class UiManager implements IExtendedSelectionListener {
         return Display.getCurrent() != null;
     }
 
-    private static boolean isEqualToLastSelection(final IJavaElementSelection selection) {
-        if (lastSelection == null) {
-            return false;
-        }
-        if (lastSelection.getElementLocation() != selection.getElementLocation()) {
-            return false;
-        }
-        if (!lastSelection.getJavaElement().equals(selection.getJavaElement())) {
-            return false;
-        }
-        if (lastSelection.getEditor() == null) {
-            return selection.getEditor() == null;
-        }
-        return lastSelection.getEditor().equals(selection.getEditor());
+    private boolean isEqualToLastSelection(final IJavaElementSelection selection) {
+        return selection == null ? lastSelection == null : selection.equals(lastSelection);
     }
 
     private void initViewListener() {
@@ -72,7 +72,20 @@ final class UiManager implements IExtendedSelectionListener {
         }
     }
 
-    private static final class ViewListener implements IPartListener2 {
+    public IWorkbenchSite getWorkbenchSite() {
+        return extDocView.getViewSite();
+    }
+
+    public IJavaElementSelection getLastSelection() {
+        return lastSelection;
+    }
+
+    @Override
+    public void javaEditorCreated(final JavaEditor editor) {
+        ExtDocCodeAssistantHover.install(editor, this, providerStore);
+    }
+
+    private final class ViewListener implements IPartListener2 {
 
         @Override
         public void partActivated(final IWorkbenchPartReference partRef) {

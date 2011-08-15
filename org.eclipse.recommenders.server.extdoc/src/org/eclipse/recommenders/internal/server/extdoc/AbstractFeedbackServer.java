@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.utils.names.IName;
@@ -21,11 +23,7 @@ import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.UsernameProvider;
-import org.eclipse.recommenders.server.extdoc.types.Comment;
-import org.eclipse.recommenders.server.extdoc.types.Rating;
-import org.eclipse.recommenders.server.extdoc.types.UserFeedback;
 
-import com.google.common.collect.ImmutableMap;
 import com.sun.jersey.api.client.GenericType;
 
 /**
@@ -51,20 +49,27 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     }
 
     @Override
-    public final IUserFeedback getUserFeedback(final IName javaElement, final IProvider provider) {
+    public final IUserFeedback getUserFeedback(final IName javaElement, final String keyAppendix,
+            final IProvider provider) {
         final String providerId = provider.getClass().getSimpleName();
-        // final String elementId = resolveNameIdentifier(javaElement);
         final String elementId = javaElement.getIdentifier();
-        final List<UserFeedback> feedbacks = server.getRows("feedback",
-                ImmutableMap.of("providerId", providerId, "element", elementId),
+        final Map<String, String> key = new LinkedHashMap<String, String>();
+        key.put("providerId", providerId);
+        key.put("element", elementId);
+        if (keyAppendix != null) {
+            key.put("item", keyAppendix);
+        }
+        final List<UserFeedback> feedbacks = server.getRows("feedback", key,
                 new GenericType<GenericResultObjectView<UserFeedback>>() {
                 });
-        return feedbacks == null || feedbacks.isEmpty() ? UserFeedback.create(provider, elementId) : feedbacks.get(0);
+        return feedbacks == null || feedbacks.isEmpty() ? UserFeedback.create(provider, elementId, keyAppendix)
+                : feedbacks.get(0);
     }
 
     @Override
-    public final IRating addRating(final int stars, final IName javaElement, final IProvider provider) {
-        final IUserFeedback feedback = getUserFeedback(javaElement, provider);
+    public final IRating addRating(final int stars, final IName javaElement, final String keyAppendix,
+            final IProvider provider) {
+        final IUserFeedback feedback = getUserFeedback(javaElement, keyAppendix, provider);
         final IRating rating = Rating.create(stars);
         feedback.addRating(rating);
         storeFeedback(feedback);
@@ -72,8 +77,9 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
     }
 
     @Override
-    public final IComment addComment(final String text, final IName javaElement, final IProvider provider) {
-        final IUserFeedback feedback = getUserFeedback(javaElement, provider);
+    public final IComment addComment(final String text, final IName javaElement, final String keyAppendix,
+            final IProvider provider) {
+        final IUserFeedback feedback = getUserFeedback(javaElement, keyAppendix, provider);
         final IComment comment = Comment.create(text, username.getUsername());
         feedback.addComment(comment);
         storeFeedback(feedback);
@@ -95,7 +101,7 @@ public abstract class AbstractFeedbackServer implements IUserFeedbackServer {
         if (feedback.getDocumentId() == null) {
             server.post(feedback);
         } else {
-            server.put("feedback", feedback.getDocumentId(), feedback);
+            server.put(feedback.getDocumentId(), feedback);
         }
     }
 

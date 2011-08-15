@@ -24,7 +24,7 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Throws;
 
 @SuppressWarnings("restriction")
-public abstract class AbstractLocationSensitiveProviderComposite extends AbstractProviderComposite {
+public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTitledProvider {
 
     @Override
     public final boolean isAvailableForLocation(final JavaElementLocation location) {
@@ -32,11 +32,10 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
     }
 
     @Override
-    public final boolean selectionChanged(final IJavaElementSelection selection) {
+    public final ProviderUiJob updateSelection(final IJavaElementSelection selection) {
         if (selection.getElementLocation() == null) {
-            return false;
+            return null;
         }
-        hookInitalize(selection);
 
         switch (selection.getElementLocation()) {
         case METHOD_BODY:
@@ -63,31 +62,28 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         }
     }
 
-    protected void hookInitalize(final IJavaElementSelection selection) {
-    }
-
-    private boolean updateImportDeclarationSelection(final IJavaElementSelection selection) {
+    private ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IPackageFragment) {
             return updateImportDeclarationSelection(selection, (IPackageFragment) javaElement);
         } else if (javaElement instanceof IType) {
             return updateImportDeclarationSelection(selection, (IType) javaElement);
         } else if (javaElement instanceof ImportDeclaration) {
-            return false;
+            return null;
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return false;
+    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return null;
     }
 
-    protected boolean updateImportDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection,
             final IPackageFragment javaElement) {
-        return false;
+        return null;
     }
 
-    private boolean updateParameterDeclarationSelection(final IJavaElementSelection selection) {
+    private ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateParameterDeclarationSelection(selection, (ILocalVariable) javaElement);
@@ -97,16 +93,16 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return false;
+    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return null;
     }
 
-    protected boolean updateParameterDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local) {
-        return false;
+        return null;
     }
 
-    private boolean updateImplementsDeclarationSelection(final IJavaElementSelection selection) {
+    private ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateImplementsDeclarationSelection(selection, (ILocalVariable) javaElement);
@@ -116,16 +112,16 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateImplementsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return false;
+    protected ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return null;
     }
 
-    protected boolean updateImplementsDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local) {
-        return false;
+        return null;
     }
 
-    private boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection) {
+    private ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IType) {
             return updateExtendsDeclarationSelection(selection, (IType) javaElement);
@@ -133,11 +129,11 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return false;
+    protected ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return null;
     }
 
-    private boolean updateTypeDeclarationSelection(final IJavaElementSelection selection) {
+    private ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateTypeDeclarationSelection(selection, (ILocalVariable) javaElement);
@@ -147,34 +143,35 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateTypeDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return false;
+    protected ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return null;
     }
 
-    protected boolean updateTypeDeclarationSelection(final IJavaElementSelection selection, final ILocalVariable local) {
-        return false;
+    protected ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection,
+            final ILocalVariable local) {
+        return null;
     }
 
-    private boolean updatePackageDeclarationSelection(final IJavaElementSelection selection) {
+    private ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updatePackageDeclarationSelection(selection, (IPackageFragment) javaElement);
         } else if (javaElement instanceof IType) {
             return updatePackageDeclarationSelection(selection, (IType) javaElement);
         }
-        throw new IllegalArgumentException(javaElement.toString());
+        throw new IllegalArgumentException(javaElement.getClass().toString());
     }
 
-    protected boolean updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return false;
+    protected ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return null;
     }
 
-    protected boolean updatePackageDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection,
             final IPackageFragment pkg) {
-        return false;
+        return null;
     }
 
-    private boolean updateMethodDeclarationSelection(final IJavaElementSelection selection) {
+    private ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IMethod) {
             return updateMethodDeclarationSelection(selection, (IMethod) javaElement);
@@ -184,15 +181,15 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
-        return false;
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
+        return null;
     }
 
-    protected boolean updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return false;
+    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return null;
     }
 
-    private boolean updateMethodBodySelection(final IJavaElementSelection selection) {
+    private ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof ILocalVariable) {
             return updateMethodBodySelection(selection, (ILocalVariable) javaElement);
@@ -203,30 +200,30 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         } else if (javaElement instanceof IMethod) {
             return updateMethodBodySelection(selection, (IMethod) javaElement);
         } else if (javaElement instanceof PackageDeclaration) {
-            return false;
+            return null;
         } else if (javaElement instanceof ImportContainer) {
-            return false;
+            return null;
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
-        return false;
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
+        return null;
     }
 
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
-        return false;
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
+        return null;
     }
 
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
-        return false;
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
+        return null;
     }
 
-    protected boolean updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
-        return false;
+    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
+        return null;
     }
 
-    private boolean updateFieldDeclarationSelection(final IJavaElementSelection selection) {
+    private ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
         if (javaElement instanceof IField) {
             return updateFieldDeclarationSelection(selection, (IField) javaElement);
@@ -238,15 +235,15 @@ public abstract class AbstractLocationSensitiveProviderComposite extends Abstrac
         throw new IllegalArgumentException(selection.toString());
     }
 
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return false;
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+        return null;
     }
 
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
-        return false;
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
+        return null;
     }
 
-    protected boolean updateFieldDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
-        return false;
+    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
+        return null;
     }
 }

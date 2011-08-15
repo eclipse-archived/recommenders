@@ -69,14 +69,14 @@ final class ProvidersTable {
         enableDragAndDrop(providerStore);
     }
 
-    TableItem addProvider(final Control providerControl, final String text, final Image image, final boolean checked) {
+    TableItem addProvider(final Composite provider, final String text, final Image image) {
         final TableItem tableItem = new TableItem(table, SWT.NONE);
         tableItem.setText(text);
-        tableItem.setData(providerControl);
+        tableItem.setData(provider);
         tableItem.setChecked(false);
         tableItem.setImage(image);
         tableItem.setData("image", image);
-        setContentVisible(tableItem, false);
+        setContentVisible(tableItem, false, true);
         return tableItem;
     }
 
@@ -103,18 +103,20 @@ final class ProvidersTable {
         }
         item.setChecked(selectProvider);
         if (!selectProvider) {
-            setContentVisible(item, false);
+            setContentVisible(item, false, true);
         }
     }
 
-    void setContentVisible(final TableItem tableItem, final boolean visible) {
-        final Control control = (Control) tableItem.getData();
+    static void setContentVisible(final TableItem tableItem, final boolean visible, final boolean updateTableItem) {
+        final Composite control = (Composite) tableItem.getData();
         ((GridData) control.getLayoutData()).exclude = !visible;
         control.setVisible(visible);
-        control.getParent().layout(true);
+        control.getParent().layout(true, false);
 
-        tableItem.setGrayed(!visible);
-        tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
+        if (updateTableItem) {
+            tableItem.setGrayed(!visible);
+            tableItem.setForeground(visible ? COLOR_BLACK : COLOR_GRAY);
+        }
     }
 
     static String getPreferenceId(final IProvider provider, final JavaElementLocation location) {

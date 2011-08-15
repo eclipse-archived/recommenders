@@ -45,14 +45,14 @@ final class ProvidersTableSelectionListener implements Listener {
         table.setChecked(preferenceId, tableItem.getChecked());
         if (tableItem.getGrayed()) {
             if (tableItem.getChecked()) {
-                new ProviderUpdateJob(table, tableItem, lastSelection).schedule();
+                new ProviderUpdateJob(tableItem, lastSelection).schedule();
             }
         } else {
-            table.setContentVisible(tableItem, tableItem.getChecked());
+            ProvidersTable.setContentVisible(tableItem, tableItem.getChecked(), true);
         }
     }
 
-    private void scrollToProvider(final Control control) {
+    private static void scrollToProvider(final Control control) {
         ((ScrolledComposite) control.getParent().getParent()).setOrigin(control.getLocation());
     }
 

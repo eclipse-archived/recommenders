@@ -10,9 +10,11 @@
  */
 package org.eclipse.recommenders.tests.commons.selection;
 
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 
+@SuppressWarnings("restriction")
 public final class TestSelectionListener implements IExtendedSelectionListener {
 
     private static IJavaElementSelection lastSelection;
@@ -26,6 +28,10 @@ public final class TestSelectionListener implements IExtendedSelectionListener {
 
     public static IJavaElementSelection getLastSelection() {
         return lastSelection;
+    }
+
+    @Override
+    public void javaEditorCreated(final JavaEditor editor) {
     }
 
 }

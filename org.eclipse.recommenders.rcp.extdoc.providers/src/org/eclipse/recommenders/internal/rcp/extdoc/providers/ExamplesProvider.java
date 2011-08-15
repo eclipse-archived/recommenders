@@ -10,9 +10,6 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
@@ -27,7 +24,8 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
-import org.eclipse.recommenders.rcp.extdoc.AbstractProviderComposite;
+import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
@@ -35,16 +33,13 @@ import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 import org.eclipse.recommenders.server.extdoc.types.CodeSnippet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.progress.UIJob;
 
 import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
-public final class ExamplesProvider extends AbstractProviderComposite {
+public final class ExamplesProvider extends AbstractTitledProvider {
 
-    private Composite container;
     private final CodeExamplesServer server;
 
     @Inject
@@ -53,16 +48,15 @@ public final class ExamplesProvider extends AbstractProviderComposite {
     }
 
     @Override
-    protected Control createContentControl(final Composite parent) {
-        container = SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
-        return container;
+    protected Composite createContentComposite(final Composite parent) {
+        return SwtFactory.createGridComposite(parent, 1, 0, 5, 0, 0);
     }
 
     @Override
-    public boolean selectionChanged(final IJavaElementSelection selection) {
+    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
-            return displayContentForType((IType) element);
+            return displayContentForType(ElementResolver.toRecType((IType) element));
         } else if (element instanceof IMethod) {
             return displayContentForMethod((IMethod) element);
         } else if (element instanceof ILocalVariable) {
@@ -70,19 +64,19 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         } else if (element instanceof SourceField) {
             return displayContentForType(VariableResolver.resolveTypeSignature((SourceField) element));
         }
-        return false;
+        return null;
     }
 
-    private boolean displayContentForMethod(final IMethod method) {
+    private ProviderUiJob displayContentForMethod(final IMethod method) {
         try {
             if (method.isConstructor()) {
-                return displayContentForType(method.getDeclaringType());
+                return displayContentForType(ElementResolver.toRecType(method.getDeclaringType()));
             }
             final MethodOverrideTester overrideTester = SuperTypeHierarchyCache.getMethodOverrideTester(method
                     .getDeclaringType());
             final IMethod overriddenMethod = overrideTester.findOverriddenMethod(method, true);
             if (overriddenMethod == null) {
-                return false;
+                return null;
             }
             return displayCodeSnippets(ElementResolver.toRecMethod(method),
                     server.getOverridenMethodCodeExamples(ElementResolver.toRecMethod(overriddenMethod)));
@@ -91,47 +85,39 @@ public final class ExamplesProvider extends AbstractProviderComposite {
         }
     }
 
-    private boolean displayContentForType(final IType type) {
-        if (type == null) {
-            return false;
-        }
-        final ITypeName name = ElementResolver.toRecType(type);
-        return displayCodeSnippets(name, server.getTypeCodeExamples(name));
+    private ProviderUiJob displayContentForType(final ITypeName type) {
+        return displayCodeSnippets(type, server.getTypeCodeExamples(type));
     }
 
-    private boolean displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
-        final CommunityFeatures features = CommunityFeatures.create(element, this, server);
-        new UIJob("Updating Examples Provider") {
+    private ProviderUiJob displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
+        final CommunityFeatures features = CommunityFeatures.create(element, null, this, server);
+        return new ProviderUiJob() {
             @Override
-            public IStatus runInUIThread(final IProgressMonitor monitor) {
-                if (!container.isDisposed()) {
-                    disposeChildren(container);
-                    if (codeExamples == null) {
-                        final Label label = new Label(container, SWT.NONE);
-                        label.setText("Sorry, this feature is currently under development. It will follow soon when ready.");
-                    } else {
-                        final CodeSnippet[] snippets = codeExamples.getExamples();
-                        for (int i = 0; i < snippets.length; ++i) {
-                            createSnippetVisualization(i, features, snippets[i].getCode());
-                        }
+            public void run(final Composite composite) {
+                disposeChildren(composite);
+                if (codeExamples == null) {
+                    final Label label = new Label(composite, SWT.NONE);
+                    label.setText("Sorry, this feature is currently under development. It will follow soon when ready.");
+                } else {
+                    final CodeSnippet[] snippets = codeExamples.getExamples();
+                    for (int i = 0; i < snippets.length; ++i) {
+                        createSnippetVisualization(i, features, snippets[i].getCode(), composite);
                     }
-                    container.layout(true);
                 }
-                return Status.OK_STATUS;
             }
-        }.schedule();
-        return true;
+        };
     }
 
-    private void createSnippetVisualization(final int snippetIndex, final CommunityFeatures features,
-            final String snippet) {
-        createEditAndRatingHeader(snippetIndex, features);
-        SwtFactory.createSourceCodeArea(container, snippet);
+    static void createSnippetVisualization(final int snippetIndex, final CommunityFeatures features,
+            final String snippet, final Composite composite) {
+        createEditAndRatingHeader(snippetIndex, features, composite);
+        SwtFactory.createSourceCodeArea(composite, snippet);
     }
 
-    private void createEditAndRatingHeader(final int snippetIndex, final CommunityFeatures features) {
+    private static void createEditAndRatingHeader(final int snippetIndex, final CommunityFeatures features,
+            final Composite composite) {
         final String text = "Example #" + (snippetIndex + 1) + ":";
-        final TextAndFeaturesLine line = new TextAndFeaturesLine(container, text, features);
+        final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
         line.createStyleRange(0, text.length(), SWT.BOLD, false, false);
     }
 }

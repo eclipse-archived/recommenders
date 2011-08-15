@@ -13,9 +13,10 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -24,13 +25,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-public final class StarsRatingComposite {
+final class StarsRatingComposite {
 
+    static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
     private static final Image ICON_STAR = ExtDocPlugin.getIcon("eview16/star.png");
-    private static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
     private static final Image ICON_STAR_EMPTY = ExtDocPlugin.getIcon("eview16/star_empty.png");
 
     private final IName element;
+    private final String keyAppendix;
     private final IProvider provider;
     private final IUserFeedbackServer server;
 
@@ -38,9 +40,10 @@ public final class StarsRatingComposite {
 
     private final IRatingSummary ratingSummary;
 
-    public StarsRatingComposite(final IName element, final IProvider provider, final IUserFeedback feedback,
-            final IUserFeedbackServer server, final Composite parent) {
+    StarsRatingComposite(final IName element, final String keyAppendix, final IProvider provider,
+            final IUserFeedback feedback, final IUserFeedbackServer server, final Composite parent) {
         this.element = element;
+        this.keyAppendix = keyAppendix;
         this.provider = provider;
         this.server = server;
         ratingSummary = feedback.getRatingSummary();
@@ -66,50 +69,42 @@ public final class StarsRatingComposite {
         composite.setLayout(layout);
     }
 
-    private void printStars(final IRatingSummary ratingSummary) {
-        final int userStars = ratingSummary.getUserRating() == null ? -1 : ratingSummary.getUserRating().getRating();
+    private void printStars(final IRatingSummary summary) {
+        final int userStars = summary.getUserRating() == null ? -1 : summary.getUserRating().getRating();
         for (int star = 1; star <= 5; ++star) {
-            createStar(star, userStars, ratingSummary);
+            createStar(star, userStars, summary);
         }
+        SwtFactory.createLabel(composite, " " + summary.getAmountOfRatings() + "x", false, false, SWT.COLOR_DARK_GRAY);
     }
 
-    private void createStar(final int star, final int userStars, final IRatingSummary ratingSummary) {
+    private void createStar(final int star, final int userStars, final IRatingSummary summary) {
         final Label label = new Label(composite, SWT.NONE);
-        label.setImage(userStars == star ? ICON_STAR_ACTIVE : ratingSummary.getAverage() < star ? ICON_STAR_EMPTY
-                : ICON_STAR);
+        label.setImage(userStars == star ? ICON_STAR_ACTIVE : summary.getAverage() < star ? ICON_STAR_EMPTY : ICON_STAR);
         if (userStars < 1) {
-            label.addMouseListener(new MouseListener() {
+            label.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseDoubleClick(final MouseEvent e) {
-                }
-
-                @Override
-                public void mouseDown(final MouseEvent e) {
-                }
-
-                @Override
-                public void mouseUp(final MouseEvent e) {
-                    addRating(star, ratingSummary);
+                public void mouseUp(final MouseEvent event) {
+                    addRating(star, summary);
                 }
             });
             label.addMouseTrackListener(new HoverListener());
             label.setToolTipText("Add " + star + " Stars");
         } else {
-            label.setToolTipText("Average Rating: " + ratingSummary.getAverage() + " Stars");
+            label.setToolTipText("Average Rating: " + summary.getAverage() + " Stars");
         }
     }
 
-    void addRating(final int stars, final IRatingSummary ratingSummary) {
-        final IRating userRating = server.addRating(stars, element, provider);
+    void addRating(final int stars, final IRatingSummary summary) {
+        final IRating userRating = server.addRating(stars, element, keyAppendix, provider);
         for (final Control child : composite.getChildren()) {
             child.dispose();
         }
-        ratingSummary.addUserRating(userRating);
-        printStars(ratingSummary);
+        summary.addUserRating(userRating);
+        printStars(summary);
         composite.layout(true);
     }
 
-    public void dispose() {
+    void dispose() {
         composite.dispose();
     }
 
@@ -118,18 +113,18 @@ public final class StarsRatingComposite {
         private Image oldImage;
 
         @Override
-        public void mouseEnter(final MouseEvent e) {
-            oldImage = ((Label) e.widget).getImage();
-            ((Label) e.widget).setImage(ICON_STAR_ACTIVE);
+        public void mouseEnter(final MouseEvent event) {
+            oldImage = ((Label) event.widget).getImage();
+            ((Label) event.widget).setImage(ICON_STAR_ACTIVE);
         }
 
         @Override
-        public void mouseExit(final MouseEvent e) {
-            ((Label) e.widget).setImage(oldImage);
+        public void mouseExit(final MouseEvent event) {
+            ((Label) event.widget).setImage(oldImage);
         }
 
         @Override
-        public void mouseHover(final MouseEvent e) {
+        public void mouseHover(final MouseEvent event) {
         }
 
     }

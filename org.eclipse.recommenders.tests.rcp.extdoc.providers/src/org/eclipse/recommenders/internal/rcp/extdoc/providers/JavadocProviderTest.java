@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.swt.widgets.Shell;
@@ -30,12 +31,15 @@ public final class JavadocProviderTest {
         final IViewSite viewSite = Mockito.mock(IViewSite.class);
         Mockito.when(viewSite.getShell()).thenReturn(shell);
 
+        final ISelectionProvider selectionProvider = Mockito.mock(ISelectionProvider.class);
+        // Mockito.when(viewSite.getSelectionProvider()).thenReturn(selectionProvider);
+
         final IWorkbenchWindow workbenchWindow = Mockito.mock(IWorkbenchWindow.class);
         Mockito.when(viewSite.getWorkbenchWindow()).thenReturn(workbenchWindow);
         final IPartService partService = Mockito.mock(IPartService.class);
         Mockito.when(workbenchWindow.getPartService()).thenReturn(partService);
 
-        // provider.createControl(shell, viewSite);
+        // provider.createComposite(shell, viewSite);
     }
 
 }

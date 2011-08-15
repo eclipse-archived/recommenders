@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc.types;
+package org.eclipse.recommenders.internal.server.extdoc;
 
 import java.util.Date;
 
@@ -19,7 +19,7 @@ import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 /**
  * A comment submitted by a user to a provider.
  */
-public final class Comment implements IComment {
+final class Comment implements IComment {
 
     private Date date;
     private String user;
@@ -33,7 +33,7 @@ public final class Comment implements IComment {
      *            The displayed user name set by the user.
      * @return The created comment object.
      */
-    public static Comment create(final String text, final String username) {
+    static Comment create(final String text, final String username) {
         final Comment comment = new Comment();
         comment.date = new Date();
         comment.text = text;

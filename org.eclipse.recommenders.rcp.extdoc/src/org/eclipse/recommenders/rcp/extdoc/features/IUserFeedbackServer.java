@@ -15,10 +15,10 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 
 public interface IUserFeedbackServer {
 
-    IUserFeedback getUserFeedback(IName javaElement, IProvider provider);
+    IUserFeedback getUserFeedback(IName javaElement, String keyAppendix, IProvider provider);
 
-    IRating addRating(int stars, IName javaElement, IProvider provider);
+    IRating addRating(int stars, IName javaElement, String keyAppendix, IProvider provider);
 
-    IComment addComment(String text, IName javaElement, IProvider provider);
+    IComment addComment(String text, IName javaElement, String keyAppendix, IProvider provider);
 
 }

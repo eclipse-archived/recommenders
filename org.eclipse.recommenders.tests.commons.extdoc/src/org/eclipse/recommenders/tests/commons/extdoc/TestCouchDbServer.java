@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.tests.commons.extdoc;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +28,7 @@ class TestCouchDbServer implements ICouchDbServer {
     @Override
     public <T> List<T> getRows(final String view, final Map<String, String> keyParts,
             final GenericType<GenericResultObjectView<T>> resultType) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArrayList<T>();
     }
 
     @Override
@@ -38,11 +38,12 @@ class TestCouchDbServer implements ICouchDbServer {
     }
 
     @Override
-    public TransactionResult put(final String view, final String documentId, final IServerType object) {
+    public TransactionResult put(final String documentId, final IServerType object) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getProviderContent(final String providerId, final IName element,
             final GenericType<GenericResultObjectView<T>> resultType) {

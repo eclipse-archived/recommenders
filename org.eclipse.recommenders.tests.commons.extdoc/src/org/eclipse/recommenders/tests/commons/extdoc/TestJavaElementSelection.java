@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.internal.core.CompilationUnit;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.swt.widgets.Composite;
@@ -23,7 +24,15 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
+import org.mockito.Mockito;
+
+@SuppressWarnings("restriction")
 public class TestJavaElementSelection implements IJavaElementSelection {
+
+    private static final CompilationUnit compilationUnit = Mockito.mock(CompilationUnit.class);
+    static {
+        Mockito.when(compilationUnit.getJavaProject()).thenReturn(TestTypeUtils.getDefaultProject());
+    }
 
     private final IJavaElement javaElement;
     private final JavaElementLocation location;
@@ -82,7 +91,7 @@ public class TestJavaElementSelection implements IJavaElementSelection {
 
     @Override
     public ITypeRoot getCompilationUnit() {
-        return null;
+        return compilationUnit;
     }
 
     @Override
@@ -93,6 +102,11 @@ public class TestJavaElementSelection implements IJavaElementSelection {
     @Override
     public IEditorPart getEditor() {
         return editorPart;
+    }
+
+    @Override
+    public IJavaElementSelection copy(final IJavaElement element) {
+        return null;
     }
 
 }
