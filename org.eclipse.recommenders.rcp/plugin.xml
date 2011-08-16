@@ -139,4 +139,11 @@
               name="Code Recommenders">
         </page>
      </extension>
+     <extension
+         point="org.eclipse.ui.exportWizards">
+      <category
+            id="org.eclipse.recommenders.rcp.category.export"
+            name="Code Recommenders">
+      </category>
+      </extension>
 </plugin>
