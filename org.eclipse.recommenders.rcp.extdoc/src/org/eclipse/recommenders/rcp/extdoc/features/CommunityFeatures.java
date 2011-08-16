@@ -26,7 +26,8 @@ public final class CommunityFeatures {
 
     public static CommunityFeatures create(final IName element, final String keyAppendix, final IProvider provider,
             final IUserFeedbackServer server) {
-        return create(element, keyAppendix, provider, server, server.getUserFeedback(element, keyAppendix, provider));
+        return element == null ? null : create(element, keyAppendix, provider, server,
+                server.getUserFeedback(element, keyAppendix, provider));
     }
 
     public static CommunityFeatures create(final IName element, final String keyAppendix, final IProvider provider,

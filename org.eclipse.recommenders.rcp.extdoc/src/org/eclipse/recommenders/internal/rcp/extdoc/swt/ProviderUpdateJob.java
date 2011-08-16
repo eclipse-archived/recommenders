@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
+import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
@@ -56,7 +57,7 @@ class ProviderUpdateJob extends Job {
             try {
                 updateProvider();
             } catch (final Exception e) {
-                e.printStackTrace();
+                LoggingUtils.logError(e, ExtDocPlugin.getDefault(), null);
             }
             return Status.OK_STATUS;
         } finally {

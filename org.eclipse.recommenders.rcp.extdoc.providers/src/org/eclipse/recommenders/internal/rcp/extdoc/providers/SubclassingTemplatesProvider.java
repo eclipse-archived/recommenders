@@ -65,7 +65,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         final Integer numberOfSubclasses = Integer.valueOf(computeTotalNumberOfSubclasses(patterns));
 
         final String text = String
-                .format("By analysing %d subclasses subclasses that override at least one method, the following subclassing patterns have been identified.",
+                .format("By analyzing %d subclasses that override at least one method, the following subclassing patterns have been identified.",
                         numberOfSubclasses);
         final CommunityFeatures ratings = CommunityFeatures.create(type, null, this, server);
 

@@ -23,8 +23,6 @@ import com.google.common.base.Preconditions;
  */
 final class AstNodeResolver {
 
-    private static final ASTParser PARSER = ASTParser.newParser(AST.JLS3);
-
     /**
      * Private constructor to avoid instantiation of helper class.
      */
@@ -45,9 +43,10 @@ final class AstNodeResolver {
      * @return The compilation unit's AST.
      */
     private static ASTNode resolveAst(final ITypeRoot compilationUnit) {
-        PARSER.setResolveBindings(true);
-        PARSER.setSource(Preconditions.checkNotNull(compilationUnit));
-        return PARSER.createAST(null);
+        final ASTParser parser = ASTParser.newParser(AST.JLS3);
+        parser.setResolveBindings(true);
+        parser.setSource(Preconditions.checkNotNull(compilationUnit));
+        return parser.createAST(null);
     }
 
 }

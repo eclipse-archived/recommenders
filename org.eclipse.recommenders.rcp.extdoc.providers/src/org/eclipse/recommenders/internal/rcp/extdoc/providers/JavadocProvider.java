@@ -21,6 +21,7 @@ import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
+import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.BrowserSizeWorkaround;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedViewSite;
@@ -91,8 +92,8 @@ public final class JavadocProvider extends AbstractTitledProvider {
     }
 
     private ProviderUiJob displayComments(final IJavaElement javaElement) {
-        final CommunityFeatures features = CommunityFeatures.create(ElementResolver.resolveName(javaElement), null,
-                this, server);
+        final IName name = ElementResolver.resolveName(javaElement);
+        final CommunityFeatures features = CommunityFeatures.create(name, null, this, server);
         return new ProviderUiJob() {
             @Override
             public void run(final Composite composite) {

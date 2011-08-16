@@ -71,13 +71,10 @@ public final class JavaElementSelectionResolver {
     /**
      * @param editor
      *            The editor in which the selection took place.
-     * @param selection
-     *            The text selection event information.
      * @return The selection context resolved from the editor selection.
      */
     public static IJavaElementSelection resolveFromEditor(final JavaEditor editor, final int offset) {
-        final IJavaElement javaElement = JavaElementSelectionResolver.resolveJavaElement(editor.getEditorInput(),
-                offset);
+        final IJavaElement javaElement = editor == null ? null : resolveJavaElement(editor.getEditorInput(), offset);
         return javaElement == null ? null : new JavaElementSelection(javaElement, offset, editor);
     }
 
