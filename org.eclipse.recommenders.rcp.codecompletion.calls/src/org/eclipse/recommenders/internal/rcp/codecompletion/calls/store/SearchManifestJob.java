@@ -102,11 +102,16 @@ public class SearchManifestJob extends WorkspaceJob {
         if (dependencyInfo == null) {
             return false;
         }
-
-        final ManifestMatchResult matchResult = client.doPostRequest("manifest", dependencyInfo,
-                ManifestMatchResult.class);
-        manifest = matchResult.bestMatch;
-        return manifest != null;
+        try {
+            final ManifestMatchResult matchResult = client.doPostRequest("manifest", dependencyInfo,
+                    ManifestMatchResult.class);
+            manifest = matchResult.bestMatch;
+            return manifest != null;
+        } catch (final RuntimeException e) {
+            RecommendersPlugin.logError(e, "Error while requesting manifest for classpath dependency '%s'",
+                    dependencyInfo);
+            return false;
+        }
     }
 
     private boolean storeContainsModel() {
