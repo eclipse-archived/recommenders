@@ -10,18 +10,10 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences;
 
-import java.io.File;
-import java.util.Set;
-
-import org.eclipse.core.resources.WorkspaceJob;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.SearchManifestJob;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.UpdateAllModelsJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -74,7 +66,7 @@ public class CommandSection {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 reresolveButton.setEnabled(false);
-                final UpdateAllModelsJob job = new UpdateAllModelsJob();
+                final UpdateAllModelsJob job = new UpdateAllModelsJob(dependencyStore, jobFactory);
                 job.schedule();
             }
 
@@ -90,30 +82,5 @@ public class CommandSection {
         button.setText(text);
         button.addSelectionListener(createSelectionListener());
         return button;
-    }
-
-    private class UpdateAllModelsJob extends WorkspaceJob {
-
-        public UpdateAllModelsJob() {
-            super("Updating all dependencies");
-            setSystem(true);
-        }
-
-        @Override
-        public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
-            final Set<File> files = dependencyStore.getFiles();
-            for (final File file : files) {
-                if (dependencyStore.containsManifest(file)
-                        && dependencyStore.getManifestResolvementInfo(file).isResolvedManual()) {
-                    continue;
-                }
-
-                dependencyStore.invalidateClasspathDependencyInfo(file);
-                final SearchManifestJob job = jobFactory.create(file);
-                job.schedule();
-            }
-            return Status.OK_STATUS;
-        }
-
     }
 }
