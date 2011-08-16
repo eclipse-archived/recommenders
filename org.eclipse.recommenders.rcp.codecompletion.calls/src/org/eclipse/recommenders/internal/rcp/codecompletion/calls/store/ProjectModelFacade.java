@@ -81,6 +81,9 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
 
     @Override
     public boolean hasModel(final ITypeName name) {
+        if (name == null) {
+            return false;
+        }
         return getModelArchive(name).hasModel(name);
     }
 
