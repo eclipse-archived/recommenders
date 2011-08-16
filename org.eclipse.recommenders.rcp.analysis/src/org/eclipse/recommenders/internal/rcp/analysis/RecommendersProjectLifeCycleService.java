@@ -15,6 +15,11 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElementDelta;
@@ -45,12 +50,21 @@ public class RecommendersProjectLifeCycleService implements IElementChangedListe
 
     @SuppressWarnings("restriction")
     private void simulateProjectOpenEvents() {
-        for (final IProject project : getAllOpenProjects()) {
-            if (RecommendersNature.hasNature(project) && JavaProject.hasJavaNature(project)) {
-                final IJavaProject javaProject = toJavaProject(project);
-                fireOpenEvent(javaProject);
+        new WorkspaceJob("Initializing projects with recommenders nature") {
+            @Override
+            public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
+                final Set<IProject> openProjects = getAllOpenProjects();
+                monitor.beginTask("", openProjects.size());
+                for (final IProject project : openProjects) {
+                    if (RecommendersNature.hasNature(project) && JavaProject.hasJavaNature(project)) {
+                        final IJavaProject javaProject = toJavaProject(project);
+                        fireOpenEvent(javaProject);
+                    }
+                    monitor.worked(1);
+                }
+                return Status.OK_STATUS;
             }
-        }
+        }.schedule();
     }
 
     protected Set<IProject> getAllOpenProjects() {

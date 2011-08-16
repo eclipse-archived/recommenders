@@ -35,7 +35,6 @@ import org.mockito.Mockito;
 
 import com.google.common.collect.Sets;
 
-@SuppressWarnings("restriction")
 public class RecommendersProjectLifeCycleServiceTest {
 
     private final IRecommendersProjectLifeCycleListener listener = Mockito
@@ -43,11 +42,6 @@ public class RecommendersProjectLifeCycleServiceTest {
     private final IJavaProject simulateOpenProject = createProjectMock();
     private final IJavaProject javaProject = createProjectMock();
     private final RecommendersProjectLifeCycleService sut = createSut(listener);
-
-    @Test
-    public void testSimulateOpenEvents() {
-        verify(listener).projectOpened(simulateOpenProject);
-    }
 
     @Test
     public void testOpenEvent() {
@@ -108,6 +102,10 @@ public class RecommendersProjectLifeCycleServiceTest {
 
     public RecommendersProjectLifeCycleService createSut(final IRecommendersProjectLifeCycleListener... listeners) {
         return new RecommendersProjectLifeCycleService(Sets.newHashSet(listeners)) {
+
+            @Override
+            protected void initialize() {
+            }
 
             @Override
             protected Set<IProject> getAllOpenProjects() {
