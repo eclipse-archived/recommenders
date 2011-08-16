@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 import java.io.File;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -24,6 +26,7 @@ public class UpdateAllModelsJob extends WorkspaceJob {
     private final ClasspathDependencyStore dependencyStore;
     private final RemoteResolverJobFactory jobFactory;
 
+    @Inject
     public UpdateAllModelsJob(final ClasspathDependencyStore dependencyStore, final RemoteResolverJobFactory jobFactory) {
         super("Updating all dependencies");
         this.dependencyStore = dependencyStore;
