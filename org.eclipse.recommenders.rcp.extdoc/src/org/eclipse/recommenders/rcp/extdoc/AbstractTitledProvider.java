@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
@@ -18,7 +19,6 @@ import org.eclipse.recommenders.internal.rcp.extdoc.AbstractProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -81,12 +81,7 @@ public abstract class AbstractTitledProvider extends AbstractProvider {
 
         public ProviderComposite(final Composite parent) {
             super(parent, SWT.NONE);
-            final GridLayout grid = new GridLayout(1, false);
-            grid.horizontalSpacing = 0;
-            grid.verticalSpacing = 3;
-            grid.marginHeight = 8;
-            grid.marginWidth = 8;
-            setLayout(grid);
+            setLayout(GridLayoutFactory.swtDefaults().numColumns(1).margins(8, 8).spacing(0, 3).create());
             setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         }
 

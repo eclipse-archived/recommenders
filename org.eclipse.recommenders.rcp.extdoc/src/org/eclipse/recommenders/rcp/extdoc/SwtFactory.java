@@ -13,6 +13,8 @@ package org.eclipse.recommenders.rcp.extdoc;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -20,14 +22,13 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -47,12 +48,8 @@ public final class SwtFactory {
     public static Composite createGridComposite(final Composite parent, final int columns, final int hSpacing,
             final int vSpacing, final int hMargin, final int vMargin) {
         final Composite composite = new Composite(parent, SWT.NONE);
-        final GridLayout grid = new GridLayout(columns, false);
-        grid.horizontalSpacing = hSpacing;
-        grid.verticalSpacing = vSpacing;
-        grid.marginHeight = vMargin;
-        grid.marginWidth = hMargin;
-        composite.setLayout(grid);
+        composite.setLayout(GridLayoutFactory.swtDefaults().numColumns(columns).margins(hMargin, vMargin)
+                .spacing(hSpacing, vSpacing).create());
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         return composite;
     }
@@ -103,10 +100,7 @@ public final class SwtFactory {
 
     public static Text createTextArea(final Composite parent, final String text, final int height, final int width) {
         final Text textComponent = new Text(parent, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
-        final GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, false);
-        gridData.heightHint = height;
-        gridData.widthHint = width;
-        textComponent.setLayoutData(gridData);
+        textComponent.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).hint(width, height).create());
         textComponent.setText(text);
         return textComponent;
     }
@@ -153,19 +147,15 @@ public final class SwtFactory {
         link.addMouseListener(listener);
         link.setCursor(new Cursor(parent.getDisplay(), SWT.CURSOR_HAND));
         if (blueColor) {
-            link.addMouseTrackListener(new MouseTrackListener() {
+            link.addMouseTrackListener(new MouseTrackAdapter() {
 
                 @Override
-                public void mouseHover(final MouseEvent e) {
-                }
-
-                @Override
-                public void mouseExit(final MouseEvent e) {
+                public void mouseExit(final MouseEvent event) {
                     link.setForeground(createColor(SWT.COLOR_BLUE));
                 }
 
                 @Override
-                public void mouseEnter(final MouseEvent e) {
+                public void mouseEnter(final MouseEvent event) {
                     link.setForeground(createColor(SWT.COLOR_DARK_BLUE));
                 }
             });

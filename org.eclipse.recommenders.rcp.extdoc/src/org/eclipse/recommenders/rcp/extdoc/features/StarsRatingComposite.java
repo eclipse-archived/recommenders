@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.rcp.extdoc.features;
 
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -17,15 +19,13 @@ import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-final class StarsRatingComposite {
+final class StarsRatingComposite extends Composite {
 
     static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
     private static final Image ICON_STAR = ExtDocPlugin.getIcon("eview16/star.png");
@@ -36,37 +36,21 @@ final class StarsRatingComposite {
     private final IProvider provider;
     private final IUserFeedbackServer server;
 
-    private Composite composite;
-
     private final IRatingSummary ratingSummary;
 
     StarsRatingComposite(final IName element, final String keyAppendix, final IProvider provider,
             final IUserFeedback feedback, final IUserFeedbackServer server, final Composite parent) {
+        super(parent, SWT.NONE);
+        setLayout(RowLayoutFactory.swtDefaults().spacing(0).create());
+        setLayoutData(GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.TOP).create());
+
         this.element = element;
         this.keyAppendix = keyAppendix;
         this.provider = provider;
         this.server = server;
         ratingSummary = feedback.getRatingSummary();
-        createContents(parent);
-    }
 
-    private void createContents(final Composite parent) {
-        final Composite parentComposite = new Composite(parent, SWT.NONE);
-        parentComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-
-        createStarsComposite(parentComposite);
         printStars(ratingSummary);
-    }
-
-    private void createStarsComposite(final Composite parent) {
-        composite = new Composite(parent, SWT.NONE);
-        final RowLayout layout = new RowLayout(SWT.HORIZONTAL);
-        layout.spacing = 0;
-        layout.marginBottom = 0;
-        layout.marginRight = 0;
-        layout.marginLeft = 0;
-        layout.marginTop = 0;
-        composite.setLayout(layout);
     }
 
     private void printStars(final IRatingSummary summary) {
@@ -74,12 +58,12 @@ final class StarsRatingComposite {
         for (int star = 1; star <= 5; ++star) {
             createStar(star, userStars, summary);
         }
-        SwtFactory.createLabel(composite, " " + summary.getAmountOfRatings() + "x", false, false, SWT.COLOR_DARK_GRAY,
-                false);
+        SwtFactory
+                .createLabel(this, " " + summary.getAmountOfRatings() + "x", false, false, SWT.COLOR_DARK_GRAY, false);
     }
 
     private void createStar(final int star, final int userStars, final IRatingSummary summary) {
-        final Label label = new Label(composite, SWT.NONE);
+        final Label label = new Label(this, SWT.NONE);
         label.setImage(userStars == star ? ICON_STAR_ACTIVE : summary.getAverage() < star ? ICON_STAR_EMPTY : ICON_STAR);
         if (userStars < 1) {
             label.addMouseListener(new MouseAdapter() {
@@ -97,19 +81,15 @@ final class StarsRatingComposite {
 
     void addRating(final int stars, final IRatingSummary summary) {
         final IRating userRating = server.addRating(stars, element, keyAppendix, provider);
-        for (final Control child : composite.getChildren()) {
+        for (final Control child : getChildren()) {
             child.dispose();
         }
         summary.addUserRating(userRating);
         printStars(summary);
-        composite.layout(true);
+        layout(true);
     }
 
-    void dispose() {
-        composite.dispose();
-    }
-
-    private static final class HoverListener implements MouseTrackListener {
+    static final class HoverListener extends MouseTrackAdapter {
 
         private Image oldImage;
 
@@ -122,10 +102,6 @@ final class StarsRatingComposite {
         @Override
         public void mouseExit(final MouseEvent event) {
             ((Label) event.widget).setImage(oldImage);
-        }
-
-        @Override
-        public void mouseHover(final MouseEvent event) {
         }
 
     }

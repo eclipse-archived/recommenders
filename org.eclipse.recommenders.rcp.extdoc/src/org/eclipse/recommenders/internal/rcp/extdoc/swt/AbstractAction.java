@@ -21,7 +21,7 @@ abstract class AbstractAction extends Action {
         this(text, ExtDocPlugin.getIcon(icon), style);
     }
 
-    public AbstractAction(final String text, final Image icon, final int style) {
+    AbstractAction(final String text, final Image icon, final int style) {
         super(text, style);
         setId(icon.toString());
         setImageDescriptor(ImageDescriptor.createFromImage(icon));

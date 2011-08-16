@@ -21,7 +21,6 @@ public abstract class ProviderUiJob {
 
     public static void run(final ProviderUiJob job, final Composite composite) {
         new UIJob("Updating Provider View") {
-
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {

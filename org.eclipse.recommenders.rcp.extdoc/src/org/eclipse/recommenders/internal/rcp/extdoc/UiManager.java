@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocCodeAssistantHover;
 import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
@@ -72,7 +71,7 @@ public final class UiManager implements IExtendedSelectionListener {
     }
 
     public IWorkbenchPartSite getWorkbenchSite() {
-        return Checks.ensureIsNotNull(partSite);
+        return partSite;
     }
 
     /**
