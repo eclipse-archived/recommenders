@@ -73,6 +73,7 @@ public final class CompletionTargetVariableBuilder {
         } else if (context.getVariable().isThis()) {
             receiverType = Checks.ensureIsNotNull(context.getVariable().getType());
             isCallOnThis = true;
+            receiverName = context.getPrefixToken();
         } else {
             // REVIEW: Example? No idea why this is needed?
             // Button b<^Space>
@@ -89,7 +90,7 @@ public final class CompletionTargetVariableBuilder {
      */
     private void handleUnresolvedType(final IIntelligentCompletionContext context) {
         if (receiverName.isEmpty()) {
-            receiverType = context.getVariable().getType();
+            receiverType = context.getVariable() == null ? null : context.getVariable().getType();
             isCallOnThis = true;
         } else {
             resolveTypeFromReceiverName(context);
