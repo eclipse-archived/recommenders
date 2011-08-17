@@ -90,9 +90,10 @@ public class ModelDetailsSection extends AbstractDependencySection {
 
     public void selectFile(final File file) {
         this.file = file;
+        selectModelButton.setEnabled(file != null);
         if (file == null || !dependencyStore.containsManifest(file)) {
             resetTexts();
-            setButtonsEnabled(false);
+            reresolveButton.setEnabled(false);
         } else {
             final ManifestResolvementInformation resolvementInfo = dependencyStore.getManifestResolvementInfo(file);
             final Manifest manifest = resolvementInfo.getManifest();
@@ -101,7 +102,7 @@ public class ModelDetailsSection extends AbstractDependencySection {
             timestampText.setText(formatDate(manifest.getTimestamp()));
             resolvedTimestampText.setText(formatDate(resolvementInfo.getResolvingTimestamp()));
             resolvingStrategyText.setText(resolvementInfo.isResolvedManual() ? "manual" : "automatic");
-            setButtonsEnabled(true);
+            reresolveButton.setEnabled(true);
         }
     }
 

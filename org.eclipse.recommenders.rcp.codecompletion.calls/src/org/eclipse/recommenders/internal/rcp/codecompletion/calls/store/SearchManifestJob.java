@@ -78,8 +78,6 @@ public class SearchManifestJob extends WorkspaceJob {
         if (!storeContainsModel()) {
             downloadAndRegisterArchive(manifest);
         }
-        monitor.worked(90);
-        dependencyStore.putManifest(file, manifest);
     }
 
     private void findClasspathDependencyInformation() {
@@ -134,6 +132,7 @@ public class SearchManifestJob extends WorkspaceJob {
             IOUtils.closeQuietly(is);
             IOUtils.closeQuietly(fos);
             modelStore.register(temp);
+            dependencyStore.putManifest(file, manifest);
         } catch (final UniformInterfaceException e) {
             RecommendersPlugin.logError(e, "Error while downloading model for manifest '%s'", manifest.getIdentifier());
         } catch (final IOException e) {
