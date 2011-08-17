@@ -43,7 +43,11 @@ public class ScaleOneDimensionLayout extends Layout {
             final Point childSize = child.computeSize(wHint, hHint);
             max = Math.max(max, dimension == SWT.HORIZONTAL ? childSize.x : childSize.y);
         }
-        return new Point(max, 0);
+        if (dimension == SWT.HORIZONTAL) {
+            return new Point(max, 0);
+        } else {
+            return new Point(0, max);
+        }
     }
 
     @Override
