@@ -12,12 +12,13 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
 import java.util.List;
 
-import com.google.inject.Inject;
-
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
+
+import com.google.inject.Inject;
 
 /**
  * Builds an Eclipse templates code from a list of method calls on a given
@@ -42,17 +43,17 @@ public final class CodeBuilder {
     /**
      * @param methods
      *            The pattern's method to be included in the template.
-     * @param targetVariableName
-     *            The name of the variable on which the proposed methods shall
-     *            be invoked.
+     * @param targetVariable
+     *            The variable on which the proposed methods shall be invoked.
      * @return The code to be inserted into the document, built from the
      *         recommended method calls and the given target variable.
      */
-    public String buildCode(final List<IMethodName> methods, final String targetVariableName) throws JavaModelException {
+    public String buildCode(final List<IMethodName> methods, final CompletionTargetVariable targetVariable)
+            throws JavaModelException {
         Checks.ensureIsNotEmpty(methods, "Methods must not be empty.");
         final StringBuilder code = new StringBuilder(methods.size() * 16);
         for (final IMethodName method : methods) {
-            final MethodCall methodCall = new MethodCall(targetVariableName, method);
+            final MethodCall methodCall = new MethodCall(targetVariable, method);
             final String statement = methodCallFormatter.format(methodCall);
             code.append(statement);
             code.append(lineSeparator);

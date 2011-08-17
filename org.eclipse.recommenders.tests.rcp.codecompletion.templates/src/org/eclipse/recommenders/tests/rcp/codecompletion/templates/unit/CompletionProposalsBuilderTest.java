@@ -12,14 +12,14 @@ package org.eclipse.recommenders.tests.rcp.codecompletion.templates.unit;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.Position;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.CompletionProposalsBuilder;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
+
+import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,9 +28,6 @@ import org.junit.Test;
  */
 @SuppressWarnings("restriction")
 public final class CompletionProposalsBuilderTest {
-
-    private final CompletionProposalsBuilder builder = new CompletionProposalsBuilder(null,
-            UnitTestSuite.getCodeBuilderMock());
 
     /**
      * Tests the {@link CompletionProposalsBuilder} using a constructor
@@ -44,7 +41,9 @@ public final class CompletionProposalsBuilderTest {
         patterns.add(new PatternRecommendation("Pattern 1", methodCall.getInvokedMethod().getDeclaringType(), Lists
                 .newArrayList(methodCall.getInvokedMethod()), 50));
 
+        final CompletionProposalsBuilder builder = new CompletionProposalsBuilder(null,
+                UnitTestSuite.getCodeBuilderMock());
         final JavaContext javaContext = new JavaContext(null, new Document(), new Position(0), null);
-        Assert.assertEquals(1, builder.computeProposals(patterns, javaContext, methodCall.getVariableName()).size());
+        Assert.assertEquals(1, builder.computeProposals(patterns, javaContext, methodCall.getVariable()).size());
     }
 }

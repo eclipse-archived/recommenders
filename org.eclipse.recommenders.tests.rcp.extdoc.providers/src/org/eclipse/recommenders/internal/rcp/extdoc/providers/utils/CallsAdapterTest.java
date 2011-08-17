@@ -44,7 +44,7 @@ public final class CallsAdapterTest {
 
     @Test
     public void testGetMethodsDeclaringType() {
-        final ITypeName declaringType = adapter.getMethodsDeclaringType(TestTypeUtils.getDefaultJavaMethod(), null);
+        final ITypeName declaringType = CallsAdapter.getMethodsDeclaringType(TestTypeUtils.getDefaultJavaMethod());
         // Assert.assertNotNull(declaringType);
     }
 

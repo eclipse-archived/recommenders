@@ -19,26 +19,26 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
  */
 public final class MethodCall {
 
-    private final String variableName;
+    private final CompletionTargetVariable variable;
     private final IMethodName invokedMethod;
 
     /**
-     * @param variableName
-     *            The name of the variable on which the method shall be invoked.
+     * @param variable
+     *            The variable on which the method shall be invoked.
      * @param invokedMethod
      *            A handler containing information about the method which shall
      *            be invoked on the given variable name.
      */
-    public MethodCall(final String variableName, final IMethodName invokedMethod) {
-        this.variableName = Checks.ensureIsNotNull(variableName);
+    public MethodCall(final CompletionTargetVariable variable, final IMethodName invokedMethod) {
+        this.variable = Checks.ensureIsNotNull(variable);
         this.invokedMethod = Checks.ensureIsNotNull(invokedMethod);
     }
 
     /**
-     * @return The name of the variable on which the method shall be invoked.
+     * @return The variable on which the method shall be invoked.
      */
-    public String getVariableName() {
-        return variableName;
+    public CompletionTargetVariable getVariable() {
+        return variable;
     }
 
     /**

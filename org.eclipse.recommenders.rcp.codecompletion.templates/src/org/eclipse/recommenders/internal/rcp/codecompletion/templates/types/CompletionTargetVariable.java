@@ -12,13 +12,14 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.types;
 
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
-
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Models the variable on which the completion was triggered.
@@ -29,6 +30,7 @@ public final class CompletionTargetVariable {
     private final ITypeName typeName;
     private final ImmutableSet<IMethodName> receiverCalls;
     private final Region documentRegion;
+    private final boolean isThis;
     private final boolean needsConstructor;
     private final IIntelligentCompletionContext context;
 
@@ -52,11 +54,14 @@ public final class CompletionTargetVariable {
      *            The context from which the target variable was extracted.
      */
     public CompletionTargetVariable(final String name, final ITypeName typeName, final Set<IMethodName> receiverCalls,
-            final Region documentRegion, final boolean needsConstructor, final IIntelligentCompletionContext context) {
+            final Region documentRegion, final boolean isThis, final boolean needsConstructor,
+            final IIntelligentCompletionContext context) {
+        Checks.ensureIsTrue(!(isThis && needsConstructor));
         this.name = Checks.ensureIsNotNull(name);
         this.typeName = Checks.ensureIsNotNull(typeName);
         this.receiverCalls = ImmutableSet.copyOf(receiverCalls);
         this.documentRegion = Checks.ensureIsNotNull(documentRegion);
+        this.isThis = isThis;
         this.needsConstructor = needsConstructor;
         this.context = Checks.ensureIsNotNull(context);
     }
@@ -73,6 +78,10 @@ public final class CompletionTargetVariable {
      */
     public ITypeName getType() {
         return typeName;
+    }
+
+    public boolean isThis() {
+        return isThis;
     }
 
     /**
@@ -95,7 +104,7 @@ public final class CompletionTargetVariable {
      * @return True, if the templates proposals definitely have to contain
      *         constructors, e.g. in "<code>Button b<^Space></code>".
      */
-    public boolean isNeedsConstructor() {
+    public boolean needsConstructor() {
         return needsConstructor;
     }
 
@@ -104,5 +113,10 @@ public final class CompletionTargetVariable {
      */
     public IIntelligentCompletionContext getContext() {
         return context;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this).addValue(name).addValue(typeName).addValue(isThis()).toString();
     }
 }

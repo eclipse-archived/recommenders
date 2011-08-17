@@ -58,7 +58,7 @@ public final class JavaElementSelection implements IJavaElementSelection {
     public JavaElementSelection(final IJavaElement javaElement, final int invocationOffset, final JavaEditor editor) {
         this.javaElement = Checks.ensureIsNotNull(javaElement);
         this.invocationOffset = invocationOffset;
-        this.editor = Checks.ensureIsNotNull(editor);
+        this.editor = editor;
     }
 
     @Override
