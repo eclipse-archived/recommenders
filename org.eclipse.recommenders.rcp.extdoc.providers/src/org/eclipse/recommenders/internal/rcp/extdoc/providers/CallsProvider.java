@@ -150,7 +150,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         final IProjectModelFacade facade = adapter.getModelFacade(element);
         if (variable != null && facade.hasModel(variable.type)) {
             final Set<IMethodName> resolveCalledMethods = adapter.resolveCalledMethods(context);
-            final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = adapter.computeRecommendations(
+            final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = CallsAdapter.computeRecommendations(
                     variable.type, resolveCalledMethods, negateConstructors, context, facade);
             final IName name = element instanceof IField ? ElementResolver.toRecField((IField) element, variable.type)
                     : variable.getName();
@@ -165,7 +165,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         final ITypeName typeName = ElementResolver.toRecType(type);
         final IProjectModelFacade facade = adapter.getModelFacade(type);
         if (facade.hasModel(typeName)) {
-            final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(typeName,
+            final SortedSet<Tuple<IMethodName, Double>> calls = CallsAdapter.computeRecommendations(typeName,
                     invokedMethods, false, context, facade);
             return displayProposals(type, elementName, typeName, false, calls, new HashSet<IMethodName>(), null);
         }
@@ -174,12 +174,12 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
 
     private ProviderUiJob displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration,
             final MockedIntelligentCompletionContext context) {
-        final ITypeName type = adapter.getMethodsDeclaringType(method, context);
+        final ITypeName type = CallsAdapter.getMethodsDeclaringType(method);
         final IProjectModelFacade facade = adapter.getModelFacade(method);
         if (type != null && facade.hasModel(type)) {
             final Set<IMethodName> calledMethods = adapter.resolveCalledMethods(context);
-            final SortedSet<Tuple<IMethodName, Double>> calls = adapter.computeRecommendations(type, calledMethods,
-                    true, context, facade);
+            final SortedSet<Tuple<IMethodName, Double>> calls = CallsAdapter.computeRecommendations(type,
+                    calledMethods, true, context, facade);
             return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
                     isMethodDeclaration, calls, calledMethods, null);
         } else {

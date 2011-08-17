@@ -14,9 +14,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnLocalName;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
@@ -29,6 +26,7 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
@@ -40,6 +38,9 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import com.google.common.collect.ImmutableList;
+import com.google.inject.Inject;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -59,8 +60,8 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      *            Computes and returns patterns suitable for the active
      *            completion request.
      * @param codeBuilder
-     *            The {@link CodeBuilder} will turn {@link MethodCall}s into the
-     *            code to be used by the eclipse template engine.
+     *            The {@link CodeBuilder} will turn MethodCalls into the code to
+     *            be used by the eclipse template engine.
      * @param contextResolver
      *            Responsible for computing an
      *            {@link IIntelligentCompletionContext} from a
@@ -128,7 +129,8 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             return false;
         }
         if (!context.expectsReturnValue()) {
-            return !(context.getCompletionNode() instanceof CompletionOnMemberAccess);
+            return !(context.getCompletionNode() instanceof CompletionOnMemberAccess) || context.getVariable() != null
+                    && context.getVariable().isThis();
         }
         return context.getCompletionNode() instanceof CompletionOnLocalName
                 || context.getCompletionNode() instanceof CompletionOnSingleNameReference;
@@ -143,10 +145,10 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             final IIntelligentCompletionContext completionContext) {
         final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                 .createInvokedVariable(completionContext);
-        if (completionTargetVariable != null) {
-            return computeCompletionProposalsForTargetVariable(completionTargetVariable);
+        if (completionTargetVariable == null) {
+            return ImmutableList.of();
         }
-        return ImmutableList.of();
+        return computeCompletionProposalsForTargetVariable(completionTargetVariable);
     }
 
     /**
@@ -159,13 +161,13 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             final CompletionTargetVariable completionTargetVariable) {
         final Collection<PatternRecommendation> patternRecommendations = patternRecommender
                 .computeRecommendations(completionTargetVariable);
-        if (!patternRecommendations.isEmpty()) {
-            final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable);
-            final ImmutableList<IJavaCompletionProposal> res = completionProposalsBuilder.computeProposals(
-                    patternRecommendations, templateContext, completionTargetVariable.getName());
-            return res;
+        if (patternRecommendations.isEmpty()) {
+            return ImmutableList.of();
         }
-        return ImmutableList.of();
+        final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable);
+        return completionProposalsBuilder.computeProposals(patternRecommendations, templateContext,
+                completionTargetVariable);
+
     }
 
     /**
@@ -176,8 +178,9 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     private DocumentTemplateContext getTemplateContext(final CompletionTargetVariable completionTargetVariable) {
         final Region region = completionTargetVariable.getDocumentRegion();
         final IIntelligentCompletionContext completionContext = completionTargetVariable.getContext();
-        final JavaContext templateContext = new JavaContext(templateContextType, completionContext.getOriginalContext()
-                .getDocument(), region.getOffset(), region.getLength(), completionContext.getCompilationUnit());
+        final IDocument document = completionContext.getOriginalContext().getDocument();
+        final JavaContext templateContext = new JavaContext(templateContextType, document, region.getOffset(),
+                region.getLength(), completionContext.getCompilationUnit());
         templateContext.setForceEvaluation(true);
         return templateContext;
     }

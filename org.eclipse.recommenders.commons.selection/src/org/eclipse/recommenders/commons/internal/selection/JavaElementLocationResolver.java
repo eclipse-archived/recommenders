@@ -17,7 +17,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 
 /**
@@ -69,7 +68,7 @@ final class JavaElementLocationResolver {
      */
     private static ASTNode getLocationNode(final ASTNode astNode) {
         ASTNode node = astNode;
-        Integer nodeType = node.getNodeType();
+        int nodeType = node.getNodeType();
         while (ignoredNodeTypes.contains(nodeType)) {
             node = node.getParent();
             nodeType = node.getNodeType();
@@ -124,7 +123,7 @@ final class JavaElementLocationResolver {
      *         element type.
      */
     private static JavaElementLocation getTypeDeclarationLocation(final IJavaElement javaElement) {
-        if (javaElement == null || javaElement instanceof SourceType) {
+        if (!(javaElement instanceof IType)) {
             return JavaElementLocation.TYPE_DECLARATION;
         } else {
             try {

@@ -10,15 +10,15 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
-import com.google.inject.Inject;
-
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
+
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Generates the <code>String</code> representation of a {@link MethodCall}.
@@ -47,16 +47,18 @@ public final class MethodCallFormatter {
      *         <code>String text = button.getText()</code>".
      */
     public String format(final MethodCall methodCall) throws JavaModelException {
-        String invocationPrefix;
+        String invocationPrefix = "";
         final IMethodName invokedMethod = methodCall.getInvokedMethod();
         if (invokedMethod.isInit()) {
             invocationPrefix = "new ";
         } else {
-            String variableName = methodCall.getVariableName();
-            if (variableName.isEmpty()) {
+            String variableName = methodCall.getVariable().getName();
+            if (variableName.isEmpty() && !methodCall.getVariable().isThis()) {
                 variableName = "${unconstructed}";
             }
-            invocationPrefix = String.format("%s.", variableName);
+            if (!variableName.isEmpty()) {
+                invocationPrefix = String.format("%s.", variableName);
+            }
         }
         return String.format("%s%s%s;", getNewVariableString(methodCall), invocationPrefix,
                 methodFormatter.format(invokedMethod));
@@ -107,7 +109,7 @@ public final class MethodCallFormatter {
     private static String getNewVariableName(final MethodCall methodCall) {
         String variableName = null;
         if (methodCall.getInvokedMethod().isInit()) {
-            variableName = methodCall.getVariableName();
+            variableName = methodCall.getVariable().getName();
         }
         if (variableName == null || variableName.isEmpty()) {
             variableName = getNewVariableNameFromMethod(methodCall);
@@ -136,7 +138,7 @@ public final class MethodCallFormatter {
             } else {
                 variableName = StringUtils.uncapitalize(invokedMethod.getReturnType().getClassName());
             }
-            if (variableName.equals(methodCall.getVariableName())) {
+            if (variableName.equals(methodCall.getVariable().getName())) {
                 variableName = getNewVariableNameFromReturnType(invokedMethod.getReturnType());
             }
         }

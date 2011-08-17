@@ -14,11 +14,11 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-public class CompletionOnThisInOverriddenMethod extends Button {
+public class CompletionOnSuperInOverriddenMethod extends Button {
 
-	public CompletionOnThisInOverriddenMethod(final Composite parent, final int style) {
+	public CompletionOnSuperInOverriddenMethod(final Composite parent, final int style) {
 		super(parent, style);
 		// Should consider Button as reference for templates.
-		<^Space>
+		super.<^Space>
 	}
 }

@@ -154,7 +154,7 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
 
     private ProviderUiJob updatePackageDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
-        if (javaElement instanceof ILocalVariable) {
+        if (javaElement instanceof IPackageFragment) {
             return updatePackageDeclarationSelection(selection, (IPackageFragment) javaElement);
         } else if (javaElement instanceof IType) {
             return updatePackageDeclarationSelection(selection, (IType) javaElement);

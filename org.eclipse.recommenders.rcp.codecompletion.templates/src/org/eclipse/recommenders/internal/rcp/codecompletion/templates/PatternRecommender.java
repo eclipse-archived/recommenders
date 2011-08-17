@@ -10,12 +10,12 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -39,10 +39,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * Computes context-sensitive {@link PatternRecommendation}s from the
- * {@link CallsModelStore}.
+ * Computes context-sensitive {@link PatternRecommendation}s.
  */
 public final class PatternRecommender {
 
@@ -54,13 +54,9 @@ public final class PatternRecommender {
 
     private IIntelligentCompletionContext context;
     private Set<IMethodName> receiverMethodInvocations;
-    private IObjectMethodCallsNet model;
     private final ProjectServices projectServices;
 
     /**
-     * @param callsModelStore
-     *            The place where all patterns for all available classes are
-     *            stored.
      * @param usageResolvers
      *            A set of resolvers which are able to compute a variable's type
      *            and preceding method invocations from a given context.
@@ -84,10 +80,9 @@ public final class PatternRecommender {
         context = targetVariable.getContext();
         if (canFindVariableUsage(targetVariable)) {
             final ImmutableSet<IObjectMethodCallsNet> modelsForType = findModelsForType(targetVariable.getType());
-            for (final IObjectMethodCallsNet typeModel : modelsForType) {
-                model = typeModel;
-                updateModel();
-                recommendations.addAll(computeRecommendationsForModel(targetVariable.isNeedsConstructor()));
+            for (final IObjectMethodCallsNet model : modelsForType) {
+                updateModel(model, targetVariable.needsConstructor());
+                recommendations.addAll(computeRecommendationsForModel(targetVariable.needsConstructor(), model));
             }
             releaseModels(modelsForType);
         }
@@ -100,7 +95,6 @@ public final class PatternRecommender {
         for (final IObjectMethodCallsNet model : models) {
             modelFacade.releaseModel(model);
         }
-        this.model = null;
     }
 
     /**
@@ -110,13 +104,11 @@ public final class PatternRecommender {
      *         usage could be resolved.
      */
     private boolean canFindVariableUsage(final CompletionTargetVariable targetVariable) {
-        boolean result = true;
         if (context.getVariable() == null) {
             receiverMethodInvocations = targetVariable.getReceiverCalls();
-        } else {
-            result = canResolveVariableUsage();
+            return true;
         }
-        return result;
+        return canResolveVariableUsage();
     }
 
     /**
@@ -135,7 +127,7 @@ public final class PatternRecommender {
 
     /**
      * @param receiverType
-     *            The type for which suiteable models should be found. Can be
+     *            The type for which suitable models should be found. Can be
      *            fully qualified and simple.
      * @return Empty set when no model could be found. One-element set when the
      *         type is fully qualified. Multiple elements when the type is
@@ -154,7 +146,7 @@ public final class PatternRecommender {
         return models.build();
     }
 
-    private Iterable<? extends IObjectMethodCallsNet> acquireModels(final IProjectModelFacade modelFacade,
+    private static Iterable<? extends IObjectMethodCallsNet> acquireModels(final IProjectModelFacade modelFacade,
             final Set<ITypeName> typeNames) {
         final Set<IObjectMethodCallsNet> models = Sets.newHashSet();
         for (final ITypeName typeName : typeNames) {
@@ -169,11 +161,11 @@ public final class PatternRecommender {
      * Updates the model with respect to the context and the observed method
      * invocations on the target variable.
      */
-    private void updateModel() {
+    private void updateModel(final IObjectMethodCallsNet model, final boolean needsConstructor) {
         model.clearEvidence();
         model.setMethodContext(context.getEnclosingMethodsFirstDeclaration());
         model.setObservedMethodCalls(model.getType(), receiverMethodInvocations);
-        if (shallNegateConstructors(context.getVariable())) {
+        if (!needsConstructor && shallNegateConstructors(context.getVariable())) {
             model.negateConstructors();
         }
         model.updateBeliefs();
@@ -185,8 +177,11 @@ public final class PatternRecommender {
      * @return True, if the patterns should definitely contain no constructors.
      */
     private static boolean shallNegateConstructors(final Variable contextVariable) {
-        return contextVariable != null
-                && (contextVariable.fuzzyIsParameter() || contextVariable.fuzzyIsDefinedByMethodReturn());
+        if (contextVariable == null) {
+            return false;
+        }
+        return contextVariable.fuzzyIsParameter() || contextVariable.fuzzyIsDefinedByMethodReturn()
+                || contextVariable.isThis();
     }
 
     /**
@@ -195,11 +190,12 @@ public final class PatternRecommender {
      * @return The most probable patterns regarding the updated model, limited
      *         to the size of <code>MAX_PATTERNS</code>.
      */
-    private ImmutableSet<PatternRecommendation> computeRecommendationsForModel(final boolean constructorRequired) {
+    private ImmutableSet<PatternRecommendation> computeRecommendationsForModel(final boolean constructorRequired,
+            final IObjectMethodCallsNet model) {
         final Set<PatternRecommendation> typeRecs = Sets.newTreeSet();
-        for (final Tuple<String, Double> patternWithProbablity : findMostLikelyPatterns()) {
+        for (final Tuple<String, Double> patternWithProbablity : findMostLikelyPatterns(model)) {
             final String patternName = patternWithProbablity.getFirst();
-            final List<IMethodName> patternMethods = getMethodCallsForPattern(patternName);
+            final List<IMethodName> patternMethods = getMethodCallsForPattern(patternName, model);
             if (shouldKeepPattern(patternMethods, constructorRequired)) {
                 final int percentage = (int) (patternWithProbablity.getSecond().doubleValue() * 100);
                 typeRecs.add(new PatternRecommendation(patternName, model.getType(), patternMethods, percentage));
@@ -212,7 +208,7 @@ public final class PatternRecommender {
      * @return Most probable pattern names and their probabilities, trimmed to
      *         the size of <code>MAX_PATTERNS</code>.
      */
-    private ImmutableList<Tuple<String, Double>> findMostLikelyPatterns() {
+    private static ImmutableList<Tuple<String, Double>> findMostLikelyPatterns(final IObjectMethodCallsNet model) {
         List<Tuple<String, Double>> patterns = model.getPatternsWithProbability();
         patterns = Lists.newArrayList(Iterators.filter(patterns.iterator(), new PatternProbabilityFilter()));
         Collections.sort(patterns, new PatternSorter());
@@ -227,7 +223,8 @@ public final class PatternRecommender {
      * @return The methods which shall be invoked by the template built from the
      *         given pattern.
      */
-    private ImmutableList<IMethodName> getMethodCallsForPattern(final String patternName) {
+    private static ImmutableList<IMethodName> getMethodCallsForPattern(final String patternName,
+            final IObjectMethodCallsNet model) {
         final com.google.common.collect.ImmutableList.Builder<IMethodName> recommendedMethods = ImmutableList.builder();
         model.setPattern(patternName);
         model.updateBeliefs();
@@ -253,8 +250,7 @@ public final class PatternRecommender {
         if (constructorRequired || context.getReceiverType() == null) {
             return true;
         }
-        final String prefixToken = context.getPrefixToken();
-        Preconditions.checkNotNull(prefixToken);
+        final String prefixToken = Preconditions.checkNotNull(context.getPrefixToken());
         for (final IMethodName method : patternMethods) {
             if (StringUtils.startsWithIgnoreCase(method.getName(), prefixToken)) {
                 return true;
@@ -278,7 +274,10 @@ public final class PatternRecommender {
      * A {@link Comparator} sorting patterns in their probabilities descending
      * order or by their name in case of same probabilities.
      */
-    static final class PatternSorter implements Comparator<Tuple<String, Double>> {
+    static final class PatternSorter implements Comparator<Tuple<String, Double>>, Serializable {
+
+        private static final long serialVersionUID = -5090432510479153630L;
+
         @Override
         public int compare(final Tuple<String, Double> pattern1, final Tuple<String, Double> pattern2) {
             int probabilityOrder = pattern2.getSecond().compareTo(pattern1.getSecond());

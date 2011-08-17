@@ -12,9 +12,8 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
 import org.eclipse.jface.text.Region;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
@@ -22,13 +21,14 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 
+import com.google.common.collect.Sets;
+
 /**
  * Extracts the {@link CompletionTargetVariable} from a given
  * {@link IIntelligentCompletionContext}.
  */
 public final class CompletionTargetVariableBuilder {
 
-    private IIntelligentCompletionContext context;
     private ITypeName receiverType;
     private String receiverName;
     private int replacementOffset;
@@ -57,27 +57,30 @@ public final class CompletionTargetVariableBuilder {
     }
 
     /**
-     * @param completionContext
+     * @param context
      *            The context from which the completion request was invoked.
      * @return The {@link CompletionTargetVariable} representing the variable on
      *         which the request is invoked or which shall be constructed in
      *         case it is invoked while defining a new variable, e.g. using
      *         <code>Button b<^Space></code>.
      */
-    private CompletionTargetVariable buildInvokedVariable(final IIntelligentCompletionContext completionContext) {
-        context = completionContext;
+    private CompletionTargetVariable buildInvokedVariable(final IIntelligentCompletionContext context) {
         receiverType = context.getReceiverType();
         receiverName = context.getReceiverName() == null ? "" : context.getReceiverName();
         replacementOffset = context.getReplacementRegion().getOffset();
         if (receiverType == null) {
-            handleUnresolvedType();
+            handleUnresolvedType(context);
+        } else if (context.getVariable().isThis()) {
+            receiverType = Checks.ensureIsNotNull(context.getVariable().getType());
+            isCallOnThis = true;
+            receiverName = context.getPrefixToken();
         } else {
             // REVIEW: Example? No idea why this is needed?
             // Button b<^Space>
             // Button x = b. --> new test case? StringBuilder.append("")
             needsConstructor = receiverType.equals(context.getExpectedType());
         }
-        return receiverType == null ? null : buildCompletionTargetVariable();
+        return receiverType == null ? null : buildCompletionTargetVariable(context);
     }
 
     /**
@@ -85,13 +88,12 @@ public final class CompletionTargetVariableBuilder {
      * fully declared in the context, i.e. its type is missing, and stores them
      * in the attributes of the builder.
      */
-    private void handleUnresolvedType() {
+    private void handleUnresolvedType(final IIntelligentCompletionContext context) {
         if (receiverName.isEmpty()) {
-            receiverName = "this";
-            receiverType = context.getEnclosingType();
+            receiverType = context.getVariable() == null ? null : context.getVariable().getType();
             isCallOnThis = true;
         } else {
-            resolveTypeFromReceiverName();
+            resolveTypeFromReceiverName(context);
         }
     }
 
@@ -99,7 +101,7 @@ public final class CompletionTargetVariableBuilder {
      * Either finds a variable declaration matching the receiver name or assumes
      * the given name indicates a new type, e.g. in <code>Button<^Space></code>.
      */
-    private void resolveTypeFromReceiverName() {
+    private void resolveTypeFromReceiverName(final IIntelligentCompletionContext context) {
         final Variable resolvedVariable = context.findMatchingVariable(receiverName);
         if (resolvedVariable == null) {
             receiverType = VmTypeName.get(String.format("L%s", receiverName));
@@ -120,11 +122,11 @@ public final class CompletionTargetVariableBuilder {
      *         variable on which the request was invoked or which shall be
      *         constructed in case it was invoked while defining a new variable.
      */
-    private CompletionTargetVariable buildCompletionTargetVariable() {
-        final int variableNameLength = getVariableNameLength();
+    private CompletionTargetVariable buildCompletionTargetVariable(final IIntelligentCompletionContext context) {
+        final int variableNameLength = getVariableNameLength(context);
         final Region region = new Region(replacementOffset - variableNameLength, variableNameLength);
-        return new CompletionTargetVariable(receiverName, receiverType, receiverCalls, region, needsConstructor,
-                context);
+        return new CompletionTargetVariable(receiverName, receiverType, receiverCalls, region, isCallOnThis,
+                needsConstructor, context);
     }
 
     /**
@@ -133,7 +135,7 @@ public final class CompletionTargetVariableBuilder {
      *         the template code.
      */
     @SuppressWarnings("restriction")
-    private int getVariableNameLength() {
+    private int getVariableNameLength(final IIntelligentCompletionContext context) {
         int variableNameLength = 0;
         if (needsConstructor) {
             // TODO: Gets the token to be replaced from the completion node,

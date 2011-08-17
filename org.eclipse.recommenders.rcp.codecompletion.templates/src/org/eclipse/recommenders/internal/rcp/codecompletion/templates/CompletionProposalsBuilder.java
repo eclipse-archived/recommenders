@@ -12,9 +12,6 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import java.util.Collection;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
-
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -23,9 +20,13 @@ import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.CodeBuilder;
+import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.JavaTemplateProposal;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.swt.graphics.Image;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 /**
  * Transforms {@link PatternRecommendation}s into
@@ -55,17 +56,17 @@ public final class CompletionProposalsBuilder {
      *            The patterns which shall be turned into completion proposals.
      * @param context
      *            The context from which the completion request was invoked.
-     * @param targetVariableName
-     *            The name of the variable on which the methods proposed by the
-     *            patterns shall be invoked.
+     * @param targetVariable
+     *            The variable on which the methods proposed by the patterns
+     *            shall be invoked.
      * @return A list of completion proposals for the given patterns.
      */
     public ImmutableList<IJavaCompletionProposal> computeProposals(final Collection<PatternRecommendation> patterns,
-            final DocumentTemplateContext context, final String targetVariableName) {
+            final DocumentTemplateContext context, final CompletionTargetVariable targetVariable) {
         final Builder<IJavaCompletionProposal> proposals = ImmutableList.builder();
         for (final PatternRecommendation pattern : patterns) {
             try {
-                final TemplateProposal template = buildTemplateProposal(pattern, context, targetVariableName);
+                final TemplateProposal template = buildTemplateProposal(pattern, context, targetVariable);
                 proposals.add(template);
             } catch (final JavaModelException e) {
                 continue;
@@ -85,8 +86,9 @@ public final class CompletionProposalsBuilder {
      * @return The given pattern turned into a proposal object.
      */
     private TemplateProposal buildTemplateProposal(final PatternRecommendation patternRecommendation,
-            final DocumentTemplateContext context, final String targetVariableName) throws JavaModelException {
-        final String code = codeBuilder.buildCode(patternRecommendation.getMethods(), targetVariableName);
+            final DocumentTemplateContext context, final CompletionTargetVariable targetVariable)
+            throws JavaModelException {
+        final String code = codeBuilder.buildCode(patternRecommendation.getMethods(), targetVariable);
         final String templateName = patternRecommendation.getName();
         final String templateDescription = patternRecommendation.getType().getClassName();
         final Template template = new Template(templateName, templateDescription, "java", code, false);

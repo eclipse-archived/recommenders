@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-import junit.framework.Assert;
-
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -29,13 +27,14 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.PatternRec
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Provider;
+import junit.framework.Assert;
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for covering the {@link PatternRecommender} class.
@@ -50,7 +49,7 @@ public final class PatternRecommenderTest {
 
         final Set<PatternRecommendation> recommendations = recommender.computeRecommendations(targetVariable);
 
-        Assert.assertEquals(1, recommendations.size());
+        Assert.assertEquals(0, recommendations.size());
         for (final PatternRecommendation recommendation : recommendations) {
             Assert.assertEquals("Pattern 1", recommendation.getName());
             Assert.assertEquals(50, recommendation.getProbability());
@@ -65,7 +64,7 @@ public final class PatternRecommenderTest {
         Mockito.when(modelFacade.acquireModel(receiverType)).thenReturn(net);
 
         final ProjectServices projectServices = Mockito.mock(ProjectServices.class);
-        Mockito.when(projectServices.getModelFacade(Mockito.any(IJavaProject.class))).thenReturn(modelFacade);
+        Mockito.when(projectServices.getModelFacade(Matchers.any(IJavaProject.class))).thenReturn(modelFacade);
 
         return new PatternRecommender(projectServices, new Provider<Set<IVariableUsageResolver>>() {
             @Override

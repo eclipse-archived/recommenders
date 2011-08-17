@@ -15,11 +15,11 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.MethodFormatter;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+
+import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-
-import junit.framework.Assert;
 
 /**
  * Unit tests for covering the {@link MethodFormatter} class.

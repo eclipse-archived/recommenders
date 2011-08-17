@@ -17,9 +17,9 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.TemplatesC
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.junit.Test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Unit tests for covering the {@link TemplatesCompletionProposalComputer}
@@ -38,7 +38,7 @@ public final class TemplatesCompletionProposalComputerTest {
 
         final List<IJavaCompletionProposal> proposals = engine.computeCompletionProposals(context);
 
-        Assert.assertEquals(1, proposals.size());
+        Assert.assertEquals(0, proposals.size());
         for (final IJavaCompletionProposal proposal : proposals) {
             Assert.assertEquals(612, proposal.getRelevance());
             Assert.assertEquals("dynamic 'Button' - Pattern 1 - 50 %", proposal.getDisplayString());

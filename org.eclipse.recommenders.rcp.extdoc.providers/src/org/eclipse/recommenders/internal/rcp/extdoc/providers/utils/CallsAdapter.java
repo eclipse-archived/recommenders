@@ -89,7 +89,7 @@ public final class CallsAdapter {
         }
     }
 
-    public static ITypeName getMethodsDeclaringType(final IMethod method, final IIntelligentCompletionContext context) {
+    public static ITypeName getMethodsDeclaringType(final IMethod method) {
         try {
             final String superclassTypeSignature = method.getDeclaringType().getSuperclassTypeSignature();
             if (superclassTypeSignature == null) {
@@ -97,6 +97,9 @@ public final class CallsAdapter {
             }
             final String superclassTypeName = JavaModelUtil.getResolvedTypeName(superclassTypeSignature,
                     method.getDeclaringType());
+            if (superclassTypeName == null) {
+                return null;
+            }
             final IType supertype = method.getJavaProject().findType(superclassTypeName);
             return ElementResolver.toRecType(supertype);
         } catch (final JavaModelException e) {
