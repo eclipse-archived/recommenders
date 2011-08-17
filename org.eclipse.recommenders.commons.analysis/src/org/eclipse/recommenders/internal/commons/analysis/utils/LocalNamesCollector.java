@@ -31,6 +31,8 @@ import com.ibm.wala.ssa.SSAPutInstruction;
  * Collects the name for all local variables - if available.
  */
 public class LocalNamesCollector {
+    private static final String NOT_FOUND = "not-found";
+
     public static final String UNKNOWN = "unnamed";
 
     // private static final Logger log =
@@ -152,6 +154,10 @@ public class LocalNamesCollector {
             final String[] localNames = ir.getLocalNames(last, valueNumber);
             storeLocalNamesForValueNumber(valueNumber, localNames);
         }
+        if (!names.containsKey(valueNumber)) {
+            names.put(valueNumber, UNKNOWN);
+            return;
+        }
     }
 
     /**
@@ -165,6 +171,7 @@ public class LocalNamesCollector {
             return UNKNOWN;
         }
         final Collection<String> knownNamesForValue = names.get(valueNumber);
+
         // if (knownNamesForValue.size() > 1) {
         // logMoreThanOneNameFoundWarning(valueNumber);
         // }

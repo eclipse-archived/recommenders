@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledExcept
 
 import java.util.HashSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -43,7 +44,6 @@ import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
-import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
 public class JavaElementResolver {
@@ -174,8 +174,10 @@ public class JavaElementResolver {
         if (jdtMethod == null) {
             jdtMethod = resolveMethod(recMethod);
             if (jdtMethod == null) {
-                System.err.printf("resolving %s failed. Is it an compiler generated constructor?\n.",
-                        recMethod.getIdentifier());
+                // if (!recMethod.isSynthetic()) {
+                // System.err.printf("resolving %s failed. Is it an compiler generated constructor?\n.",
+                // recMethod.getIdentifier());
+                // }
                 failedRecMethods.add(recMethod);
                 return null;
             }

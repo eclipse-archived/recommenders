@@ -48,6 +48,7 @@ public class SearchManifestJob extends WorkspaceJob {
     private final ModelArchiveStore modelStore;
     private ClasspathDependencyInformation dependencyInfo;
     private Manifest manifest;
+    private IProgressMonitor monitor;
 
     @Inject
     public SearchManifestJob(@Assisted final File file, final ClasspathDependencyStore dependencyStore,
@@ -63,12 +64,13 @@ public class SearchManifestJob extends WorkspaceJob {
 
     @Override
     public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
-        resolve(monitor);
+        this.monitor = monitor;
+        resolve();
         return Status.OK_STATUS;
     }
 
-    private void resolve(final IProgressMonitor monitor) {
-        monitor.beginTask(null, 100);
+    private void resolve() {
+        monitor.beginTask("Begin model lookup for " + file.getPath(), 100);
         findClasspathDependencyInformation();
         monitor.worked(10);
         if (!findManifest()) {
@@ -76,8 +78,12 @@ public class SearchManifestJob extends WorkspaceJob {
         }
         monitor.worked(15);
         if (!storeContainsModel()) {
+            monitor.subTask("Downloading model...");
             downloadAndRegisterArchive(manifest);
         }
+        monitor.worked(75);
+        dependencyStore.putManifest(file, manifest);
+        monitor.done();
     }
 
     private void findClasspathDependencyInformation() {
@@ -85,6 +91,7 @@ public class SearchManifestJob extends WorkspaceJob {
             dependencyInfo = dependencyStore.getClasspathDependencyInfo(file);
         } else {
             try {
+                monitor.subTask("Extracting classpath dependecy information...");
                 dependencyInfo = extractClasspathDependencyInformation();
                 if (dependencyInfo != null) {
                     dependencyStore.putClasspathDependencyInfo(file, dependencyInfo);
@@ -97,9 +104,12 @@ public class SearchManifestJob extends WorkspaceJob {
     }
 
     private boolean findManifest() {
+
         if (dependencyInfo == null) {
             return false;
         }
+        monitor.subTask("Looking up manifest using " + client.getBaseUrl() + ".");
+
         try {
             final ManifestMatchResult matchResult = client.doPostRequest("manifest", dependencyInfo,
                     ManifestMatchResult.class);
@@ -169,7 +179,7 @@ public class SearchManifestJob extends WorkspaceJob {
         public boolean isConflicting(final ISchedulingRule rule) {
             if (rule instanceof PackageRootSchedulingRule) {
                 final File otherFile = ((PackageRootSchedulingRule) rule).getFile();
-                return (otherFile.equals(file));
+                return otherFile.equals(file);
             }
             return false;
         }

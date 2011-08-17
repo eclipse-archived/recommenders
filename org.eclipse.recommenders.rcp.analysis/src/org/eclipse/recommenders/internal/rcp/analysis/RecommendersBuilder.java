@@ -177,6 +177,10 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
     }
 
     private void analyzeCompilationUnit(final ICompilationUnit cu) throws CoreException {
+        if (monitor.isCanceled()) {
+            return;
+        }
+
         final IClassHierarchy cha = chaService.getClassHierachy(cu);
         if (cha instanceof LazyClassHierarchy) {
             final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
