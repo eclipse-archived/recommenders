@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
+import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.ui.IStartup;
 
@@ -28,5 +29,9 @@ public class EclipseStartupHook implements IStartup {
      */
     @Override
     public void earlyStartup() {
+        // XXX: initialize the injection service. This may need an too early
+        // startup of code recommenders but this seems acceptable due to
+        // parallelization issues.
+        InjectionService.getInstance().getInjector();
     }
 }
