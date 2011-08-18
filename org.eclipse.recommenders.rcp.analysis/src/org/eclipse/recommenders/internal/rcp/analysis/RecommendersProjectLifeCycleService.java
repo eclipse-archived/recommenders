@@ -73,18 +73,27 @@ public class RecommendersProjectLifeCycleService implements IElementChangedListe
 
     @Override
     public void elementChanged(final ElementChangedEvent event) {
-        final IJavaProject javaProject = event.getDelta().getElement().getJavaProject();
-        if (javaProject == null || !RecommendersNature.hasNature(javaProject.getProject())) {
+        final IJavaElementDelta delta = event.getDelta();
+        process(delta);
+    }
+
+    private void process(final IJavaElementDelta delta) {
+        if ((delta.getFlags() & IJavaElementDelta.F_CHILDREN) != 0) {
+            for (final IJavaElementDelta child : delta.getAffectedChildren()) {
+                process(child);
+            }
+        }
+
+        final IJavaProject javaProject = delta.getElement().getJavaProject();
+        if (javaProject == null) {
             return;
         }
 
-        switch (event.getDelta().getKind()) {
-        case IJavaElementDelta.F_OPENED:
-            fireOpenEvent(event.getDelta().getElement().getJavaProject());
-            break;
-        case IJavaElementDelta.F_CLOSED:
-            fireCloseEvent(event.getDelta().getElement().getJavaProject());
-            break;
+        if ((delta.getFlags() & IJavaElementDelta.F_OPENED) != 0
+                && RecommendersNature.hasNature(javaProject.getProject())) {
+            fireOpenEvent(javaProject);
+        } else if ((delta.getFlags() & IJavaElementDelta.F_CLOSED) != 0) {
+            fireCloseEvent(javaProject);
         }
     }
 
