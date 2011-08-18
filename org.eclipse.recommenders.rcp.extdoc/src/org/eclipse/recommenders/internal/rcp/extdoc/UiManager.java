@@ -83,7 +83,10 @@ public final class UiManager implements IExtendedSelectionListener {
 
     @Override
     public void javaEditorCreated(final JavaEditor editor) {
-        partSite = editor.getSite();
+        final IWorkbenchPartSite site = editor.getSite();
+        if (site != null) {
+            partSite = site;
+        }
         ExtDocCodeAssistantHover.install(editor, this, providerStore);
     }
 

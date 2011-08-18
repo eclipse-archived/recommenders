@@ -70,7 +70,9 @@ public final class ElementResolver {
                 || javaElement instanceof JarPackageFragmentRoot) {
             return null;
         }
-        throw new IllegalArgumentException(javaElement.getClass().toString());
+        return null;
+        // throw new
+        // IllegalArgumentException(javaElement.getClass().toString());
     }
 
     public static IMethodName toRecMethod(final IMethod jdtMethod) {
