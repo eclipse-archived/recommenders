@@ -48,6 +48,9 @@ public final class VariableResolver {
     private static ITypeName resolveTypeSignature(final IType declaringType, final String typeSignature)
             throws JavaModelException {
         final String resolvedTypeName = JavaModelUtil.getResolvedTypeName(typeSignature, declaringType);
+        if (resolvedTypeName == null) {
+            return null;
+        }
         if (PrimitiveType.fromSrc(resolvedTypeName) != null) {
             return resolvePrimitive(resolvedTypeName);
         }

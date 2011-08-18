@@ -12,7 +12,10 @@ package org.eclipse.recommenders.commons.internal.selection;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
@@ -22,6 +25,7 @@ import org.eclipse.recommenders.commons.utils.annotations.Testing;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
+import com.google.common.base.Preconditions;
 
 /**
  * Contains all required information about the user's selection of a java
@@ -90,7 +94,11 @@ public final class JavaElementSelection implements IJavaElementSelection {
     @Override
     public ASTNode getAstNode() {
         if (cachedAstNode == null && getCompilationUnit() != null) {
-            cachedAstNode = AstNodeResolver.resolveNode(getCompilationUnit(), invocationOffset);
+            final ASTParser parser = ASTParser.newParser(AST.JLS3);
+            parser.setResolveBindings(true);
+            parser.setSource(Preconditions.checkNotNull(compilationUnit));
+            final ASTNode astRoot = parser.createAST(null);
+            cachedAstNode = NodeFinder.perform(astRoot, invocationOffset, 0);
         }
         return cachedAstNode;
     }

@@ -86,6 +86,9 @@ public final class ExamplesProvider extends AbstractTitledProvider {
     }
 
     private ProviderUiJob displayContentForType(final ITypeName type) {
+        if (type == null) {
+            return null;
+        }
         return displayCodeSnippets(type, server.getTypeCodeExamples(type));
     }
 

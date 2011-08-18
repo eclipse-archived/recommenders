@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -29,6 +30,7 @@ final class JavaElementLocationResolver {
     static {
         ignoredNodeTypes.add(ASTNode.SIMPLE_NAME);
         ignoredNodeTypes.add(ASTNode.SIMPLE_TYPE);
+        ignoredNodeTypes.add(ASTNode.PARAMETERIZED_TYPE);
         ignoredNodeTypes.add(ASTNode.FIELD_ACCESS);
         ignoredNodeTypes.add(ASTNode.QUALIFIED_NAME);
         ignoredNodeTypes.add(ASTNode.METHOD_INVOCATION);
@@ -57,7 +59,7 @@ final class JavaElementLocationResolver {
             return null;
         }
         final ASTNode locationNode = getLocationNode(astNode);
-        return getLocationForNodeType(locationNode, javaElement);
+        return getLocationForNodeType(javaElement, astNode, locationNode);
     }
 
     /**
@@ -84,7 +86,8 @@ final class JavaElementLocationResolver {
      * @return The {@link JavaElementLocation} for the given Java element and
      *         its location node type.
      */
-    private static JavaElementLocation getLocationForNodeType(final ASTNode locationNode, final IJavaElement javaElement) {
+    private static JavaElementLocation getLocationForNodeType(final IJavaElement javaElement, final ASTNode astNode,
+            final ASTNode locationNode) {
         switch (locationNode.getNodeType()) {
         case ASTNode.BLOCK:
         case ASTNode.SUPER_CONSTRUCTOR_INVOCATION:
@@ -97,7 +100,7 @@ final class JavaElementLocationResolver {
         case ASTNode.FIELD_DECLARATION:
             return JavaElementLocation.FIELD_DECLARATION;
         case ASTNode.TYPE_DECLARATION:
-            return getTypeDeclarationLocation(javaElement);
+            return getTypeDeclarationLocation(javaElement, astNode);
         case ASTNode.IMPORT_DECLARATION:
             return JavaElementLocation.IMPORT_DECLARATION;
         case ASTNode.PACKAGE_DECLARATION:
@@ -122,18 +125,22 @@ final class JavaElementLocationResolver {
      *         "extends" or part of "implements" - as identified from the Java
      *         element type.
      */
-    private static JavaElementLocation getTypeDeclarationLocation(final IJavaElement javaElement) {
+    private static JavaElementLocation getTypeDeclarationLocation(final IJavaElement javaElement, final ASTNode astNode) {
         if (!(javaElement instanceof IType)) {
             return JavaElementLocation.TYPE_DECLARATION;
-        } else {
-            try {
-                if (!((IType) javaElement).isInterface()) {
-                    return JavaElementLocation.EXTENDS_DECLARATION;
-                }
-            } catch (final JavaModelException e) {
-                throw new IllegalStateException(e);
-            }
         }
-        return JavaElementLocation.IMPLEMENTS_DECLARATION;
+        try {
+            if (((IType) javaElement).isInterface()) {
+                return JavaElementLocation.IMPLEMENTS_DECLARATION;
+            }
+        } catch (final JavaModelException e) {
+            throw new IllegalStateException(e);
+        }
+        if (astNode.getNodeType() == ASTNode.TYPE_DECLARATION
+                || astNode.getParent().getNodeType() == ASTNode.TYPE_DECLARATION
+                && !(javaElement instanceof IPackageFragment)) {
+            return JavaElementLocation.TYPE_DECLARATION;
+        }
+        return JavaElementLocation.EXTENDS_DECLARATION;
     }
 }

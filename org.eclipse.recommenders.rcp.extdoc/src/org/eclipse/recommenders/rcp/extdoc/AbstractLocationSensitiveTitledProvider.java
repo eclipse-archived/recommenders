@@ -11,14 +11,14 @@
 package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IImportContainer;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.internal.core.ImportContainer;
 import org.eclipse.jdt.internal.core.ImportDeclaration;
-import org.eclipse.jdt.internal.core.PackageDeclaration;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Throws;
@@ -104,20 +104,13 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
 
     private ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
-        if (javaElement instanceof ILocalVariable) {
-            return updateImplementsDeclarationSelection(selection, (ILocalVariable) javaElement);
-        } else if (javaElement instanceof IType) {
+        if (javaElement instanceof IType) {
             return updateImplementsDeclarationSelection(selection, (IType) javaElement);
         }
         throw new IllegalArgumentException(selection.toString());
     }
 
     protected ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return null;
-    }
-
-    protected ProviderUiJob updateImplementsDeclarationSelection(final IJavaElementSelection selection,
-            final ILocalVariable local) {
         return null;
     }
 
@@ -135,20 +128,17 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
 
     private ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = selection.getJavaElement();
-        if (javaElement instanceof ILocalVariable) {
-            return updateTypeDeclarationSelection(selection, (ILocalVariable) javaElement);
-        } else if (javaElement instanceof IType) {
+        if (javaElement instanceof IType) {
             return updateTypeDeclarationSelection(selection, (IType) javaElement);
         }
-        throw new IllegalArgumentException(selection.toString());
+        // TODO: Quick fix, in some cases the AST seems to be broken while
+        // defining new fields and methods, so assume "method body" as default
+        // location since it tolerates almost any element.
+        return updateMethodBodySelection(selection);
+        // throw new IllegalArgumentException(selection.toString());
     }
 
     protected ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection, final IType type) {
-        return null;
-    }
-
-    protected ProviderUiJob updateTypeDeclarationSelection(final IJavaElementSelection selection,
-            final ILocalVariable local) {
         return null;
     }
 
@@ -199,9 +189,9 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
             return updateMethodBodySelection(selection, (IType) javaElement);
         } else if (javaElement instanceof IMethod) {
             return updateMethodBodySelection(selection, (IMethod) javaElement);
-        } else if (javaElement instanceof PackageDeclaration) {
+        } else if (javaElement instanceof IPackageDeclaration || javaElement instanceof IPackageFragment) {
             return null;
-        } else if (javaElement instanceof ImportContainer) {
+        } else if (javaElement instanceof IImportContainer) {
             return null;
         }
         throw new IllegalArgumentException(selection.toString());
