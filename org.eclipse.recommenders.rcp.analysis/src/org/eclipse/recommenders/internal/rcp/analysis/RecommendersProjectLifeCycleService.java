@@ -89,12 +89,19 @@ public class RecommendersProjectLifeCycleService implements IElementChangedListe
             return;
         }
 
-        if ((delta.getFlags() & IJavaElementDelta.F_OPENED) != 0
-                && RecommendersNature.hasNature(javaProject.getProject())) {
+        if (isOpenEvent(delta) && RecommendersNature.hasNature(javaProject.getProject())) {
             fireOpenEvent(javaProject);
-        } else if ((delta.getFlags() & IJavaElementDelta.F_CLOSED) != 0) {
+        } else if (isCloseEvent(delta)) {
             fireCloseEvent(javaProject);
         }
+    }
+
+    private boolean isCloseEvent(final IJavaElementDelta delta) {
+        return (delta.getFlags() & IJavaElementDelta.F_CLOSED) != 0;
+    }
+
+    private boolean isOpenEvent(final IJavaElementDelta delta) {
+        return (delta.getFlags() & IJavaElementDelta.F_OPENED) != 0;
     }
 
     public IJavaProject toJavaProject(final IProject project) {

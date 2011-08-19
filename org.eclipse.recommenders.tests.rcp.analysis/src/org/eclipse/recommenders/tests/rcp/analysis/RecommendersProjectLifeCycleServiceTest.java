@@ -30,13 +30,11 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.internal.rcp.analysis.IDs;
 import org.eclipse.recommenders.internal.rcp.analysis.IRecommendersProjectLifeCycleListener;
 import org.eclipse.recommenders.internal.rcp.analysis.RecommendersProjectLifeCycleService;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Sets;
 
-@Ignore
 public class RecommendersProjectLifeCycleServiceTest {
 
     private final IRecommendersProjectLifeCycleListener listener = Mockito
@@ -72,10 +70,10 @@ public class RecommendersProjectLifeCycleServiceTest {
         verify(listener, never()).projectClosed(any(IJavaProject.class));
     }
 
-    private ElementChangedEvent createEvent(final int kind) {
+    private ElementChangedEvent createEvent(final int flags) {
         final IJavaElement element = mock(IJavaElement.class);
         final IJavaElementDelta delta = mock(IJavaElementDelta.class);
-        when(delta.getKind()).thenReturn(kind);
+        when(delta.getFlags()).thenReturn(flags);
         when(delta.getElement()).thenReturn(element);
         when(element.getJavaProject()).thenReturn(javaProject);
         return new ElementChangedEvent(delta, 0);
