@@ -8,33 +8,26 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersTable;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersTableDropAdapter;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TableItem;
 
 import org.junit.Test;
 
-public final class ProvidersTableSelectionListenerTest {
+public final class ProvidersTableDropAdapterTest {
 
     @Test
-    public void testHandleEvent() {
-        final Event event = new Event();
+    public void testProvidersTableDropAdapter() {
         final ProvidersTable table = new ProvidersTable(ExtDocUtils.getShell(), new ProviderStore());
         final TableItem item = table.addProvider(ProvidersTableTest.mockProviderComposite(), "Test", null);
-        table.setContext(ExtDocUtils.getSelection());
-        event.item = item;
-        final ProvidersTableSelectionListener listener = new ProvidersTableSelectionListener(table);
 
-        listener.handleEvent(event);
+        final ProvidersTableDropAdapter adapter = new ProvidersTableDropAdapter(table.getTable(), null,
+                new ProviderStore());
 
-        event.detail = SWT.CHECK;
-        listener.handleEvent(event);
-        item.setGrayed(false);
-        listener.handleEvent(event);
+        adapter.dropTableItem(item, 0);
     }
-
 }

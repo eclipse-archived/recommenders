@@ -12,6 +12,7 @@ package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -47,8 +48,12 @@ public final class ExtDocPlugin extends AbstractUIPlugin {
     }
 
     public static Image getIcon(final String filename) {
+        return getIconDescriptor(filename).createImage();
+    }
+
+    public static ImageDescriptor getIconDescriptor(final String filename) {
         final String uri = String.format("icons/full/%s", filename);
-        return imageDescriptorFromPlugin(BUNDLENAME, uri).createImage();
+        return imageDescriptorFromPlugin(BUNDLENAME, uri);
     }
 
 }

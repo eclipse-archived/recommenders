@@ -182,12 +182,10 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
                     calledMethods, true, context, facade);
             return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
                     isMethodDeclaration, calls, calledMethods, null);
-        } else {
-            // TODO: first is not correct in all cases. this needs to be
-            // fixed
-            final IMethod first = JdtUtils.findFirstDeclaration(method);
-            return first.equals(method) ? null : displayProposalsForMethod(first, isMethodDeclaration, context);
         }
+        // TODO: first is not correct in all cases. this needs to be fixed
+        final IMethod first = JdtUtils.findFirstDeclaration(method);
+        return first.equals(method) ? null : displayProposalsForMethod(first, isMethodDeclaration, context);
     }
 
     private ProviderUiJob displayProposals(final IJavaElement element, final String elementName, final IName elementId,
@@ -208,12 +206,12 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
             @Override
             public void run(final Composite composite) {
                 disposeChildren(composite);
-                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);
                 line.createStyleRange(12 + action.length(), elementName.length(), SWT.NORMAL, false, true);
                 displayProposals(element, isMethodDeclaration, proposals, calledMethods, composite);
 
                 if (maxProbabilitiesFromMethods != null) {
-                    new TextAndFeaturesLine(composite, text2, features);
+                    TextAndFeaturesLine.create(composite, text2, features);
                     final TableListing calls = new TableListing(composite, 4);
                     for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
                         calls.startNewRow();

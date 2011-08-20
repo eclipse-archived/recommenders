@@ -19,12 +19,28 @@ import org.eclipse.ui.IWorkbenchWindow;
 
 public interface IProvider extends IExecutableExtension {
 
+    /**
+     * @return The provider's short name for locations where space is rare, e.g.
+     *         the view's table.
+     */
     String getProviderName();
 
+    /**
+     * @return The provider's full name, e.g. to be displayed in a provider
+     *         headline.
+     */
     String getProviderFullName();
 
+    /**
+     * @return An 16x15 icon representing the provider.
+     */
     Image getIcon();
 
+    /**
+     * @param location
+     * @return True, if the provider generally offers information for this
+     *         location, i.e. a further request for an update will be issued.
+     */
     boolean isAvailableForLocation(JavaElementLocation location);
 
     Composite createComposite(Composite parent, IWorkbenchWindow workbenchWindow);

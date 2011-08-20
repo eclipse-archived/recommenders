@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,16 +18,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.ui.actions.OpenAction;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControlExtension2;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
-import org.eclipse.recommenders.internal.rcp.extdoc.UiManager;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
@@ -36,7 +36,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchWindow;
 
 abstract class AbstractExtDocInformationControl extends AbstractInformationControl implements
         IInformationControlExtension2 {
@@ -90,20 +89,21 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
         }
     }
 
-    protected void createContentControl(final Composite parent) {
-        composite = new ProvidersComposite(parent, false);
+    private void createContentControl(final Composite parent) {
+        composite = new ProvidersComposite(parent, uiManager.getWorkbenchSite().getWorkbenchWindow());
     }
 
     private void fillToolbar(final ToolBarManager toolbar) {
         addProviderActions(toolbar);
         toolbar.add(new Separator());
-        toolbar.add(new AbstractAction("Open Input", ExtDocPlugin.getIcon("lcl16/goto_input.png"), SWT.NONE) {
+        toolbar.add(new Action("Open Input", ImageDescriptor.createFromImage(ExtDocPlugin
+                .getIcon("lcl16/goto_input.png"))) {
             @Override
             public void run() {
                 new OpenAction(uiManager.getWorkbenchSite()).run(new Object[] { lastSelection.getJavaElement() });
             }
         });
-        toolbar.add(new AbstractAction("Show in ExtDoc View", ExtDocPlugin.getIcon("lcl16/extdoc_open.png"), SWT.NONE) {
+        toolbar.add(new Action("Show in ExtDoc View", ExtDocPlugin.getIconDescriptor("lcl16/extdoc_open.png")) {
             @Override
             public void run() {
                 uiManager.selectionChanged(lastSelection);
@@ -113,11 +113,10 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
     }
 
     private void addProviderActions(final ToolBarManager toolbar) {
-        final IWorkbenchWindow window = uiManager.getWorkbenchSite().getWorkbenchWindow();
         for (final IProvider provider : providerStore.getProviders()) {
-            final Composite providerComposite = composite.addProvider(provider, window);
-            final IAction action = new AbstractAction("Scroll to " + provider.getProviderFullName(),
-                    provider.getIcon(), SWT.NONE) {
+            final Composite providerComposite = composite.addProvider(provider);
+            final IAction action = new Action("Scroll to " + provider.getProviderFullName(),
+                    ImageDescriptor.createFromImage(provider.getIcon())) {
                 @Override
                 public void run() {
                     composite.scrollToProvider(providerComposite);

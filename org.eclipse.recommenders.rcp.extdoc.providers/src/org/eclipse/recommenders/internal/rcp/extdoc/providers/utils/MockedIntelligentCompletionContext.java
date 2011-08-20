@@ -91,9 +91,9 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     private void performCodeCompletion() {
         initializeCompletionEngine();
-        org.eclipse.jdt.internal.compiler.env.ICompilationUnit compilerCu = compilationUnit;
-        if (compilationUnit.isWorkingCopy()) {
-            compilerCu = Checks.cast(compilationUnit.getOriginalElement());
+        org.eclipse.jdt.internal.compiler.env.ICompilationUnit compilerCu = (CompilationUnit) getCompilationUnit();
+        if (getCompilationUnit().isWorkingCopy()) {
+            compilerCu = Checks.cast(getCompilationUnit().getOriginalElement());
         }
         completionEngine.complete(compilerCu, getInvocationOffset(), 0, getCompilationUnit().getPrimary());
         completionParser = Checks.cast(completionEngine.getParser());
@@ -164,6 +164,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
             } else {
                 compilationUnit = Checks.cast(unit);
             }
+            Checks.ensureIsNotNull(compilationUnit);
         }
         return compilationUnit;
     }

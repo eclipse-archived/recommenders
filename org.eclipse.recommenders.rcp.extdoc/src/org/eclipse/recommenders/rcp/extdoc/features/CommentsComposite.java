@@ -71,7 +71,7 @@ final class CommentsComposite extends Composite {
                 });
     }
 
-    void displayComments() {
+    private void displayComments() {
         disposeChildren();
 
         if (!comments.isEmpty()) {
@@ -112,7 +112,7 @@ final class CommentsComposite extends Composite {
         displayComments();
     }
 
-    void hideComments() {
+    private void hideComments() {
         disposeChildren();
         createCommentsArea();
         layout();

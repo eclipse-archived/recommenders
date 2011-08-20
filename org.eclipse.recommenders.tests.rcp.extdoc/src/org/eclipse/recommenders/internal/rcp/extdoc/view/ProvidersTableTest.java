@@ -8,10 +8,11 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersTable;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

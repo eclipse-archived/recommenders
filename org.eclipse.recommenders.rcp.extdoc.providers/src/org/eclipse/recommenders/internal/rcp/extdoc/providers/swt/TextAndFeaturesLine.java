@@ -22,7 +22,11 @@ public final class TextAndFeaturesLine extends Composite {
 
     private final StyledText styledText;
 
-    public TextAndFeaturesLine(final Composite parent, final String text, final CommunityFeatures features) {
+    public static TextAndFeaturesLine create(final Composite parent, final String text, final CommunityFeatures features) {
+        return new TextAndFeaturesLine(parent, text, features);
+    }
+
+    private TextAndFeaturesLine(final Composite parent, final String text, final CommunityFeatures features) {
         super(parent, SWT.NONE);
         setLayout(GridLayoutFactory.swtDefaults().numColumns(2).margins(0, 0).spacing(10, 0).create());
         setLayoutData(GridDataFactory.swtDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).create());

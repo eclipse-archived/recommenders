@@ -20,7 +20,7 @@ import org.eclipse.ui.progress.UIJob;
 public abstract class ProviderUiJob {
 
     public static void run(final ProviderUiJob job, final Composite composite) {
-        new UIJob("Updating Provider View") {
+        final UIJob uiJob = new UIJob("Updating Provider View") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!composite.isDisposed()) {
@@ -34,7 +34,8 @@ public abstract class ProviderUiJob {
                 }
                 return Status.OK_STATUS;
             }
-        }.schedule();
+        };
+        uiJob.schedule();
     }
 
     public abstract void run(Composite composite);

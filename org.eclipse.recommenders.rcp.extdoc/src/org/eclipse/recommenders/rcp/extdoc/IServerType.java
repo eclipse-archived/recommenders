@@ -10,6 +10,10 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
+/**
+ * General interface to all data, which is received from a server, e.g. a
+ * comment.
+ */
 public interface IServerType {
 
     /**

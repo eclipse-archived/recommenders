@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,30 +16,44 @@ import java.util.List;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 
-class ProvidersComposite extends Composite {
+/**
+ * Displays all provider content in a vertical layout.
+ */
+public final class ProvidersComposite extends Composite {
 
     private final ScrolledComposite scrolled;
     private final List<Composite> providers = new LinkedList<Composite>();
+    private final IWorkbenchWindow workbenchWindow;
 
-    ProvidersComposite(final Composite parent, final boolean setGridData) {
+    /**
+     * @param parent
+     *            The SWT composite which will host the providers composite.
+     * @param workbenchWindow
+     *            Some providers may require access to the current workbench
+     *            window.
+     */
+    public ProvidersComposite(final Composite parent, final IWorkbenchWindow workbenchWindow) {
         super(createScrolledComposite(parent), SWT.NONE);
         scrolled = (ScrolledComposite) getParent();
-        if (setGridData) {
+        if (scrolled.getParent().getLayout() instanceof GridLayout) {
             scrolled.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         }
         setLayout();
         setBackgroundColor(scrolled.getShell().getDisplay());
         scrolled.setContent(this);
+        this.workbenchWindow = Checks.ensureIsNotNull(workbenchWindow);
     }
 
     private static ScrolledComposite createScrolledComposite(final Composite parent) {
@@ -65,8 +79,13 @@ class ProvidersComposite extends Composite {
         setBackgroundMode(SWT.INHERIT_FORCE);
     }
 
-    Composite addProvider(final IProvider provider, final IWorkbenchWindow workenchWindow) {
-        final Composite control = provider.createComposite(this, workenchWindow);
+    /**
+     * @param provider
+     *            The provider which shall be registered with the composite.
+     * @return The composite in which the provider will fill his content.
+     */
+    public Composite addProvider(final IProvider provider) {
+        final Composite control = provider.createComposite(this, workbenchWindow);
         control.setData(provider);
         providers.add(control);
         return control;
@@ -92,11 +111,14 @@ class ProvidersComposite extends Composite {
         return scrolled.forceFocus();
     }
 
+    /**
+     * Resets scroll bar position to the top of the composite.
+     */
     public void scrollToTop() {
         scrolled.setOrigin(0, 0);
     }
 
-    public void scrollToProvider(final Composite providerComposite) {
+    void scrollToProvider(final Composite providerComposite) {
         scrolled.setOrigin(providerComposite.getLocation());
     }
 

@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.resource.JFaceResources;

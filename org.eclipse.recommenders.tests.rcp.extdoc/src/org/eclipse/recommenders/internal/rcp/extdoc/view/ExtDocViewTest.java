@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;

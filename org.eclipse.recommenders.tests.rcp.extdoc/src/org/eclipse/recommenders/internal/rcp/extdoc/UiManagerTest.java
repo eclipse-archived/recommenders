@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 
 import org.junit.Test;

@@ -120,7 +120,7 @@ public final class ExamplesProvider extends AbstractTitledProvider {
     private static void createEditAndRatingHeader(final int snippetIndex, final CommunityFeatures features,
             final Composite composite) {
         final String text = "Example #" + (snippetIndex + 1) + ":";
-        final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+        final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);
         line.createStyleRange(0, text.length(), SWT.BOLD, false, false);
     }
 }

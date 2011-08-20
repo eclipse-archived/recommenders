@@ -8,14 +8,12 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc;
+package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.spi.RegistryContributor;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Preconditions;
@@ -26,7 +24,7 @@ import org.osgi.framework.BundleContext;
  * Supports instantiation of a provider from an extension declaration, allowing
  * access to configuration parameters.
  */
-public abstract class AbstractProvider implements IProvider {
+abstract class AbstractProvider implements IProvider {
 
     private static final BundleContext BUNDLECONTEXT = ExtDocPlugin.getDefault().getBundle().getBundleContext();
 

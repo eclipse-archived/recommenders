@@ -83,7 +83,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                     String text2 = String.format(
                             "Pattern #%d - covers approximately %d%% of the examined subclasses (%d subclasses).",
                             i + 1, patternProbability, pattern.getNumberOfObservations());
-                    new TextAndFeaturesLine(templates, text2, ratings);
+                    TextAndFeaturesLine.create(templates, text2, ratings);
 
                     final TableListing table = new TableListing(templates, 4);
                     final List<Entry<IMethodName, Double>> entries = getRecommendedMethodOverridesSortedByLikelihood(pattern);
@@ -107,8 +107,8 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         final List<Entry<IMethodName, Double>> entries = Lists.newArrayList(pattern.getMethods().entrySet());
         Collections.sort(entries, new Comparator<Entry<IMethodName, Double>>() {
             @Override
-            public int compare(final Entry<IMethodName, Double> o1, final Entry<IMethodName, Double> o2) {
-                return o2.getValue().compareTo(o1.getValue());
+            public int compare(final Entry<IMethodName, Double> method1, final Entry<IMethodName, Double> method2) {
+                return method2.getValue().compareTo(method1.getValue());
             }
         });
         return entries;

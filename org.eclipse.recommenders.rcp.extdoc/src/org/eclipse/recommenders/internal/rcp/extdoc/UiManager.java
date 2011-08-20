@@ -13,8 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocCodeAssistantHover;
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.swt.widgets.Display;
@@ -24,6 +23,11 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 import com.google.inject.Inject;
 
+/**
+ * Delegates update requests to the ExtDoc views, registers ExtDoc with the
+ * editor's content assistant and stores the current {@link IWorkbenchPartSite}
+ * as well as the last {@link IJavaElementSelection}.
+ */
 @SuppressWarnings("restriction")
 public final class UiManager implements IExtendedSelectionListener {
 
@@ -31,9 +35,9 @@ public final class UiManager implements IExtendedSelectionListener {
     private final ProviderStore providerStore;
 
     private boolean isViewVisible = true;
-    private boolean viewHasListener;
+    private boolean viewHasVisibilityListener;
 
-    private IWorkbenchPartSite partSite;
+    private IWorkbenchPartSite currentPartSite;
     private IJavaElementSelection lastSelection;
 
     @Inject
@@ -45,8 +49,8 @@ public final class UiManager implements IExtendedSelectionListener {
     @Override
     public void selectionChanged(final IJavaElementSelection selection) {
         try {
-            if (!viewHasListener) {
-                initViewListener();
+            if (!viewHasVisibilityListener) {
+                initViewVisibilityListener();
             }
             if (isViewVisible && extDocView.isLinkingEnabled() && isUiThread() && !isEqualToLastSelection(selection)) {
                 extDocView.selectionChanged(selection);
@@ -57,6 +61,11 @@ public final class UiManager implements IExtendedSelectionListener {
         lastSelection = selection;
     }
 
+    private void initViewVisibilityListener() {
+        getWorkbenchSite().getPage().addPartListener(new ViewVisibilityListener());
+        viewHasVisibilityListener = true;
+    }
+
     private static boolean isUiThread() {
         return Display.getCurrent() != null;
     }
@@ -65,17 +74,15 @@ public final class UiManager implements IExtendedSelectionListener {
         return selection == null ? lastSelection == null : selection.equals(lastSelection);
     }
 
-    private void initViewListener() {
-        getWorkbenchSite().getPage().addPartListener(new ViewListener());
-        viewHasListener = true;
-    }
-
+    /**
+     * @return The default ExtDoc interface to the current workbench page.
+     */
     public IWorkbenchPartSite getWorkbenchSite() {
-        return partSite;
+        return currentPartSite;
     }
 
     /**
-     * @return The last user selection that has been registered by ExtDoc.
+     * @return The last user selection that has been observed by ExtDoc.
      */
     public IJavaElementSelection getLastSelection() {
         return lastSelection;
@@ -85,12 +92,12 @@ public final class UiManager implements IExtendedSelectionListener {
     public void javaEditorCreated(final JavaEditor editor) {
         final IWorkbenchPartSite site = editor.getSite();
         if (site != null) {
-            partSite = site;
+            currentPartSite = site;
         }
-        ExtDocCodeAssistantHover.install(editor, this, providerStore);
+        ExtDocCodeAssistantHover.installToEditor(editor, this, providerStore);
     }
 
-    final class ViewListener implements IPartListener2 {
+    private final class ViewVisibilityListener implements IPartListener2 {
 
         @Override
         public void partActivated(final IWorkbenchPartReference partRef) {

@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -55,6 +55,7 @@ class ProviderUpdateJob extends Job {
         try {
             monitor.beginTask("Updating Extended Javadocs", 1);
             try {
+                hideProvider();
                 updateProvider();
             } catch (final Exception e) {
                 LoggingUtils.logError(e, ExtDocPlugin.getDefault(), null);
@@ -66,8 +67,8 @@ class ProviderUpdateJob extends Job {
         }
     }
 
-    private void updateProvider() {
-        new UIJob("Update provider table") {
+    private void hideProvider() {
+        final UIJob job = new UIJob("Update provider table") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!item.isDisposed()) {
@@ -75,9 +76,13 @@ class ProviderUpdateJob extends Job {
                 }
                 return Status.OK_STATUS;
             }
-        }.schedule();
+        };
+        job.schedule();
+    }
+
+    private void updateProvider() {
         final boolean hasContent = provider.selectionChanged(selection, composite);
-        new UIJob("Update provider table") {
+        final UIJob job = new UIJob("Update provider table") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!item.isDisposed()) {
@@ -86,7 +91,8 @@ class ProviderUpdateJob extends Job {
                 }
                 return Status.OK_STATUS;
             }
-        }.schedule();
+        };
+        job.schedule();
     }
 
     public static void cancelActiveJobs() {

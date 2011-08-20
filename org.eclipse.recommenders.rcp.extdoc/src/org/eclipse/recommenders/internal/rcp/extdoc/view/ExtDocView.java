@@ -8,15 +8,17 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jdt.ui.actions.OpenAction;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.internal.rcp.extdoc.ProvidersComposite;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -30,7 +32,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Inject;
@@ -81,7 +82,7 @@ public class ExtDocView extends ViewPart {
     private void createRightSashSide(final SashForm sashForm) {
         final Composite container = SwtFactory.createGridComposite(sashForm, 1, 0, 0, 0, 0);
         createSelectionLabel(container);
-        providersComposite = new ProvidersComposite(container, true);
+        providersComposite = new ProvidersComposite(container, getViewSite().getWorkbenchWindow());
     }
 
     private static void handleSashWeights(final SashForm sashForm) {
@@ -104,9 +105,8 @@ public class ExtDocView extends ViewPart {
     }
 
     private void addProviders() {
-        final IWorkbenchWindow window = getViewSite().getWorkbenchWindow();
         for (final IProvider provider : providerStore.getProviders()) {
-            final Composite composite = providersComposite.addProvider(provider, window);
+            final Composite composite = providersComposite.addProvider(provider);
             table.addProvider(composite, provider.getProviderName(), provider.getIcon());
         }
     }
@@ -158,10 +158,11 @@ public class ExtDocView extends ViewPart {
         return linkingEnabled;
     }
 
-    private final class OpenInputAction extends AbstractAction {
+    private final class OpenInputAction extends Action {
 
         OpenInputAction() {
-            super("Link with Selection", "lcl16/goto_input.png", SWT.TOGGLE);
+            super("Link with Selection", SWT.TOGGLE);
+            setImageDescriptor(ExtDocPlugin.getIconDescriptor("lcl16/goto_input.png"));
         }
 
         @Override
@@ -171,10 +172,11 @@ public class ExtDocView extends ViewPart {
         }
     }
 
-    private final class LinkWithEditorAction extends AbstractAction {
+    private final class LinkWithEditorAction extends Action {
 
         LinkWithEditorAction() {
-            super("Link with Selection", "lcl16/link.gif", SWT.TOGGLE);
+            super("Link with Selection", SWT.TOGGLE);
+            setImageDescriptor(ExtDocPlugin.getIconDescriptor("lcl16/link.gif"));
             setChecked(true);
         }
 

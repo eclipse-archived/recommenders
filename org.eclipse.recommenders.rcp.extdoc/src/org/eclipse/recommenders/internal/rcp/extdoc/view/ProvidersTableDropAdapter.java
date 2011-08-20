@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -59,11 +59,10 @@ final class ProvidersTableDropAdapter extends DropTargetAdapter {
         if (item == null) {
             return table.getItemCount();
         }
-        int index;
         final Point point = table.getShell().getDisplay().map(null, table, event.x, event.y);
         final Rectangle bounds = item.getBounds();
         final TableItem[] items = table.getItems();
-        index = point.y < bounds.y + bounds.height >> 1 ? 0 : 1;
+        int index = point.y < bounds.y + bounds.height >> 1 ? 0 : 1;
         for (int i = 0; i < items.length; ++i) {
             if (items[i].equals(item)) {
                 index += i;

@@ -86,11 +86,11 @@ public final class SubclassingProvider extends AbstractTitledProvider {
             @Override
             public void run(final Composite composite) {
                 disposeChildren(composite);
-                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);
                 line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
                 displayDirectives(overrides.getOverrides(), "override", subclasses, composite);
                 if (calls != null) {
-                    new TextAndFeaturesLine(composite, text2, features);
+                    TextAndFeaturesLine.create(composite, text2, features);
                     displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses(), composite);
                 }
                 features.loadCommentsComposite(composite);
@@ -117,7 +117,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
                 final String text = String
                         .format("Based on %d implementations of %s we created the following statistics. Implementors may consider to call the following methods.",
                                 definitions, method.getName());
-                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);
                 line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false, true);
                 displayDirectives(selfcalls.getCalls(), "call", definitions, composite);
                 features.loadCommentsComposite(composite);

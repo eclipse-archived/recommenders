@@ -44,10 +44,21 @@ public final class CommunityFeatures {
         return features;
     }
 
+    /**
+     * @param parent
+     *            The composite to which the comments shall be appended.
+     * @return A composite displaying comments and allowing to add new ones.
+     */
     public CommentsComposite loadCommentsComposite(final Composite parent) {
         return CommentsComposite.create(element, keyAppendix, provider, feedback, server, parent);
     }
 
+    /**
+     * @param parent
+     *            The composite to which the stars rating widget shall be
+     *            appended.
+     * @return A composite displaying a 5-star rating widget.
+     */
     public StarsRatingComposite loadStarsRatingComposite(final Composite parent) {
         return new StarsRatingComposite(element, keyAppendix, provider, feedback, server, parent);
     }

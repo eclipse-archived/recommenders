@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Label;
 
 final class StarsRatingComposite extends Composite {
 
-    static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
+    private static final Image ICON_STAR_ACTIVE = ExtDocPlugin.getIcon("eview16/star_active.png");
     private static final Image ICON_STAR = ExtDocPlugin.getIcon("eview16/star.png");
     private static final Image ICON_STAR_EMPTY = ExtDocPlugin.getIcon("eview16/star_empty.png");
 
@@ -89,7 +89,7 @@ final class StarsRatingComposite extends Composite {
         layout(true);
     }
 
-    static final class HoverListener extends MouseTrackAdapter {
+    private static final class HoverListener extends MouseTrackAdapter {
 
         private Image oldImage;
 

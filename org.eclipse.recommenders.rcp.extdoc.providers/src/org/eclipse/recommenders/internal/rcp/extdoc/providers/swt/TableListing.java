@@ -24,6 +24,9 @@ public final class TableListing extends Composite {
         setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
     }
 
+    /**
+     * Begins a new line starting with a black block symbol.
+     */
     public void startNewRow() {
         SwtFactory.createLabel(this, "\u25AA", true, false, SWT.COLOR_BLACK, false);
     }

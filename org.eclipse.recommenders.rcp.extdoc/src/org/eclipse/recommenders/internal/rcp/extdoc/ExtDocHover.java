@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.internal.ui.text.java.hover.AbstractJavaEditorTextHover;
@@ -19,12 +19,14 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementSelectionResolver;
-import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
-import org.eclipse.recommenders.internal.rcp.extdoc.UiManager;
 import org.eclipse.swt.widgets.Shell;
 
 import com.google.inject.Inject;
 
+/**
+ * Displays provider content in a pop-up when hovering a Java element in the
+ * editor.
+ */
 @SuppressWarnings("restriction")
 public final class ExtDocHover extends AbstractJavaEditorTextHover {
 
