@@ -40,8 +40,8 @@ import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvid
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
+import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
-import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
@@ -53,12 +53,12 @@ import com.google.inject.Provider;
 
 public final class CallsProvider extends AbstractLocationSensitiveTitledProvider {
 
-    private final GenericServer server;
+    private final IUserFeedbackServer server;
     private final CallsAdapter adapter;
 
     @Inject
     CallsProvider(final ProjectServices projectServices,
-            final Provider<Set<IVariableUsageResolver>> usageResolversProvider, final GenericServer server) {
+            final Provider<Set<IVariableUsageResolver>> usageResolversProvider, final IUserFeedbackServer server) {
         this.server = Preconditions.checkNotNull(server);
         adapter = new CallsAdapter(projectServices, usageResolversProvider);
     }

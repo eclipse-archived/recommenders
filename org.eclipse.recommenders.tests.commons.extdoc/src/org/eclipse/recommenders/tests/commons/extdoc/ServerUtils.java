@@ -10,14 +10,15 @@
  */
 package org.eclipse.recommenders.tests.commons.extdoc;
 
-import org.eclipse.recommenders.server.extdoc.GenericServer;
+import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
+import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.UsernameProvider;
 
 public final class ServerUtils {
 
     private static ICouchDbServer server = new TestCouchDbServer();
-    private static GenericServer genericServer;
+    private static IUserFeedbackServer genericServer;
     private static UsernameProvider usernameListener;
 
     private ServerUtils() {
@@ -39,10 +40,11 @@ public final class ServerUtils {
         return usernameListener;
     }
 
-    public static GenericServer getGenericServer() {
+    public static IUserFeedbackServer getGenericServer() {
         if (genericServer == null) {
             final UsernameProvider listener = getUsernameListener();
-            genericServer = new GenericServer(getServer(), listener);
+            genericServer = new AbstractFeedbackServer(getServer(), listener) {
+            };
         }
         return genericServer;
     }
