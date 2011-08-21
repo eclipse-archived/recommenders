@@ -15,7 +15,6 @@ import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
-import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -56,7 +55,7 @@ public final class UiManager implements IExtendedSelectionListener {
                 extDocView.selectionChanged(selection);
             }
         } catch (final Exception e) {
-            LoggingUtils.logError(e, ExtDocPlugin.getDefault(), null);
+            ExtDocPlugin.logException(e);
         }
         lastSelection = selection;
     }

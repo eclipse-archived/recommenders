@@ -35,6 +35,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * Several shortcuts for creating SWT components in the ExtDoc default way.
+ */
 public final class SwtFactory {
 
     static final Font CODEFONT = JFaceResources.getTextFont();
@@ -59,6 +62,16 @@ public final class SwtFactory {
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     }
 
+    /**
+     * @param parent
+     *            The composite to which the label shall be appended.
+     * @param text
+     *            The label's text.
+     * @param wrap
+     *            True, if the label should set GridData in order to be wrapped
+     *            when it exceeds the parent's width.
+     * @return The label created with the specified parameters.
+     */
     public static Label createLabel(final Composite parent, final String text, final boolean wrap) {
         return createLabel(parent, text, false, false, SWT.COLOR_BLACK, wrap);
     }
@@ -89,6 +102,15 @@ public final class SwtFactory {
         return label;
     }
 
+    /**
+     * @param parent
+     *            The composite to which the text shall be appended.
+     * @param text
+     *            The default text of the text widget.
+     * @param width
+     *            The width of the text widget.
+     * @return The text widget created with the specified parameters.
+     */
     public static Text createText(final Composite parent, final String text, final int width) {
         final Text textComponent = new Text(parent, SWT.BORDER | SWT.SINGLE);
         textComponent.setText(text);
@@ -163,10 +185,8 @@ public final class SwtFactory {
         return link;
     }
 
-    public static SourceCodeArea createSourceCodeArea(final Composite parent, final String snippet) {
-        final SourceCodeArea codeArea = new SourceCodeArea(parent);
-        codeArea.setCode(snippet);
-        return codeArea;
+    public static void createSourceCodeArea(final Composite parent, final String snippet) {
+        new SourceCodeArea(parent).setCode(snippet);
     }
 
     public static Button createButton(final Composite parent, final String text,

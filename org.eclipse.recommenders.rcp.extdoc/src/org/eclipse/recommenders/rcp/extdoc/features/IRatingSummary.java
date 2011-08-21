@@ -12,8 +12,14 @@ package org.eclipse.recommenders.rcp.extdoc.features;
 
 public interface IRatingSummary {
 
+    /**
+     * @return The average rating received from all users.
+     */
     int getAverage();
 
+    /**
+     * @return The total amount of ratings given by users.
+     */
     int getAmountOfRatings();
 
     void addUserRating(final IRating userRating);

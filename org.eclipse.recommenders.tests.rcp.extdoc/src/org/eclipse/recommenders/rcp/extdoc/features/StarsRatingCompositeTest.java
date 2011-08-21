@@ -30,7 +30,7 @@ public final class StarsRatingCompositeTest {
 
         final IUserFeedbackServer server = ServerUtils.getGenericServer();
         for (final IName name : TestTypeUtils.getDefaultNames()) {
-            final StarsRatingComposite composite = CommunityFeatures.create(name, "test", provider, server)
+            final StarsRatingComposite composite = CommunityFeedback.create(name, "test", provider, server)
                     .loadStarsRatingComposite(shell);
             // composite.addRating(4, summary);
         }

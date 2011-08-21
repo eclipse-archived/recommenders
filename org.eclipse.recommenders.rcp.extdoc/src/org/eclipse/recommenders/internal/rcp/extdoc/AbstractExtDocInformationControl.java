@@ -31,7 +31,6 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
-import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -174,7 +173,7 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
                     }, control);
                 }
             } catch (final Exception e) {
-                LoggingUtils.logError(e, ExtDocPlugin.getDefault(), null);
+                ExtDocPlugin.logException(e);
             }
             return Status.OK_STATUS;
         }

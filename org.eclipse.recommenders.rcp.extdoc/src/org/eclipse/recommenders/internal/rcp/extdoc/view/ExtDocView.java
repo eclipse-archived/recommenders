@@ -36,6 +36,10 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.inject.Inject;
 
+/**
+ * Displays provider content as well as table for selecting and ordering
+ * providers in a view.
+ */
 public class ExtDocView extends ViewPart {
 
     static final int HEAD_LABEL_HEIGHT = 20;
@@ -121,15 +125,18 @@ public class ExtDocView extends ViewPart {
         }
     }
 
-    public final boolean selectionChanged(final IJavaElementSelection selection) {
+    /**
+     * @param selection
+     *            The current user selection which shall be passed to the
+     *            providers.
+     */
+    public final void selectionChanged(final IJavaElementSelection selection) {
         if (selection != null && table != null) {
             table.setContext(selection);
             updateProviders(selection);
             providersComposite.scrollToTop();
             updateSelectionLabel(selection.getJavaElement());
-            return true;
         }
-        return false;
     }
 
     private void updateProviders(final IJavaElementSelection selection) {
@@ -154,6 +161,9 @@ public class ExtDocView extends ViewPart {
         providersComposite.setFocus();
     }
 
+    /**
+     * @return True, if the view should be updated on new selections.
+     */
     public final boolean isLinkingEnabled() {
         return linkingEnabled;
     }
@@ -182,7 +192,7 @@ public class ExtDocView extends ViewPart {
 
         @Override
         public void run() {
-            linkingEnabled = !linkingEnabled;
+            linkingEnabled ^= true;
         }
     }
 }

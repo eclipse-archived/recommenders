@@ -30,8 +30,6 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public final class ExtDocHover extends AbstractJavaEditorTextHover {
 
-    // TODO: Currently this seems to be the only way to avoid problem hovers to
-    // be overriden by the ExtDoc hover.
     private final ProblemHover problemHover = new ProblemHover();
     private boolean isProblemHoverActive;
 

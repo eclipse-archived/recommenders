@@ -27,7 +27,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResol
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 import org.eclipse.recommenders.server.extdoc.types.MethodPattern;
@@ -67,7 +67,7 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
         final String text = String
                 .format("By analyzing %d subclasses that override at least one method, the following subclassing patterns have been identified.",
                         numberOfSubclasses);
-        final CommunityFeatures ratings = CommunityFeatures.create(type, null, this, server);
+        final CommunityFeedback ratings = CommunityFeedback.create(type, null, this, server);
 
         return new ProviderUiJob() {
             @Override

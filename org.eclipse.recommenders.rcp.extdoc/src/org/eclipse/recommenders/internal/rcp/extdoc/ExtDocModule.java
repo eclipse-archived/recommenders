@@ -31,9 +31,8 @@ public final class ExtDocModule extends AbstractModule {
         bind(ProviderStore.class).in(Scopes.SINGLETON);
         bind(ExtDocView.class).in(Scopes.SINGLETON);
 
-        final IPreferenceStore preferenceStore = ExtDocPlugin.getDefault().getPreferenceStore();
         final Named preferenceStoreName = Names.named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE);
-        bind(IPreferenceStore.class).annotatedWith(preferenceStoreName).toInstance(preferenceStore);
+        bind(IPreferenceStore.class).annotatedWith(preferenceStoreName).toInstance(ExtDocPlugin.preferenceStore());
     }
 
 }

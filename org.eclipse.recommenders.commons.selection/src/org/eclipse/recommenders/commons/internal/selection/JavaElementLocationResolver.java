@@ -23,7 +23,6 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 /**
  * Resolves a Java element's code location type from an AST.
  */
-@SuppressWarnings("restriction")
 final class JavaElementLocationResolver {
 
     private static Set<Integer> ignoredNodeTypes = new HashSet<Integer>();

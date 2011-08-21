@@ -45,10 +45,9 @@ final class ExtDocCodeAssistantHover {
     static void installToEditor(final JavaEditor editor, final UiManager uiManager, final ProviderStore providerStore) {
         final JavaSourceViewer viewer = (JavaSourceViewer) editor.getViewer();
         final JavaTextTools textTools = JavaPlugin.getDefault().getJavaTextTools();
-        final IPreferenceStore store = ExtDocCodeAssistantHover.stealPreferenceStore(viewer);
         viewer.unconfigure();
-        viewer.configure(new ViewerConfiguration(uiManager, providerStore, textTools.getColorManager(), store, editor,
-                IJavaPartitions.JAVA_PARTITIONING));
+        viewer.configure(new ViewerConfiguration(uiManager, providerStore, textTools.getColorManager(),
+                stealPreferenceStore(viewer), editor, IJavaPartitions.JAVA_PARTITIONING));
     }
 
     // TODO: Find another way to get the right preference store!
@@ -64,18 +63,16 @@ final class ExtDocCodeAssistantHover {
 
     private static final class ViewerConfiguration extends JavaSourceViewerConfiguration {
 
-        private final ProviderStore providerStore;
         private final IInformationControlCreator creator;
 
         ViewerConfiguration(final UiManager uiManager, final ProviderStore providerStore,
                 final IColorManager colorManager, final IPreferenceStore preferenceStore, final ITextEditor editor,
                 final String partitioning) {
             super(colorManager, preferenceStore, editor, partitioning);
-            this.providerStore = providerStore;
             creator = new IInformationControlCreator() {
                 @Override
                 public IInformationControl createInformationControl(final Shell parent) {
-                    return new InformationControl(parent, uiManager, null);
+                    return new InformationControl(parent, uiManager, providerStore, null);
                 }
             };
         }
@@ -93,7 +90,8 @@ final class ExtDocCodeAssistantHover {
             private Composite hoverComposite;
             private boolean lastWasExtDoc = true;
 
-            public InformationControl(final Shell parent, final UiManager uiManager, final InformationControl copy) {
+            public InformationControl(final Shell parent, final UiManager uiManager, final ProviderStore providerStore,
+                    final InformationControl copy) {
                 super(parent, uiManager, providerStore, copy);
             }
 
@@ -113,7 +111,9 @@ final class ExtDocCodeAssistantHover {
             }
 
             private void displayExtDocContent(final Object input) {
-                if (!lastWasExtDoc) {
+                if (lastWasExtDoc) {
+                    super.setInput(input);
+                } else {
                     for (final Control child : hoverComposite.getChildren()) {
                         child.dispose();
                     }
@@ -121,8 +121,6 @@ final class ExtDocCodeAssistantHover {
                     super.setInput(input);
                     hoverComposite.layout(true);
                     lastWasExtDoc = true;
-                } else {
-                    super.setInput(input);
                 }
             }
 
@@ -145,8 +143,7 @@ final class ExtDocCodeAssistantHover {
 
             @Override
             protected IJavaElementSelection getSelection(final Object input) {
-                final JavadocBrowserInformationControlInput in = (JavadocBrowserInformationControlInput) input;
-                final IJavaElement element = in.getElement();
+                final IJavaElement element = ((JavadocBrowserInformationControlInput) input).getElement();
                 return getUiManager().getLastSelection().copy(element);
             }
 
@@ -155,7 +152,8 @@ final class ExtDocCodeAssistantHover {
                 return new IInformationControlCreator() {
                     @Override
                     public IInformationControl createInformationControl(final Shell parent) {
-                        return new InformationControl(parent, getUiManager(), InformationControl.this);
+                        return new InformationControl(parent, getUiManager(), getProviderStore(),
+                                InformationControl.this);
                     }
                 };
             }

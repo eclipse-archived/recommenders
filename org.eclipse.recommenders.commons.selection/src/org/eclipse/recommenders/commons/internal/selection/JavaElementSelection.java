@@ -21,10 +21,7 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.recommenders.commons.utils.annotations.Testing;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Objects.ToStringHelper;
 import com.google.common.base.Preconditions;
 
 /**
@@ -35,12 +32,12 @@ import com.google.common.base.Preconditions;
 public final class JavaElementSelection implements IJavaElementSelection {
 
     private final IJavaElement javaElement;
-    private final int invocationOffset;
+    private JavaElementLocation location;
     private JavaEditor editor;
+    private final int invocationOffset;
 
-    private JavaElementLocation cachedLocation;
     private ITypeRoot compilationUnit;
-    private ASTNode cachedAstNode;
+    private ASTNode astNode;
 
     /**
      * @param javaElement
@@ -72,10 +69,15 @@ public final class JavaElementSelection implements IJavaElementSelection {
 
     @Override
     public JavaElementLocation getElementLocation() {
-        if (cachedLocation == null) {
-            cachedLocation = JavaElementLocationResolver.resolveLocation(javaElement, getAstNode());
+        if (location == null) {
+            location = JavaElementLocationResolver.resolveLocation(javaElement, getAstNode());
         }
-        return cachedLocation;
+        return location;
+    }
+
+    @Override
+    public JavaEditor getEditor() {
+        return editor;
     }
 
     @Override
@@ -93,19 +95,14 @@ public final class JavaElementSelection implements IJavaElementSelection {
 
     @Override
     public ASTNode getAstNode() {
-        if (cachedAstNode == null && getCompilationUnit() != null) {
+        if (astNode == null && getCompilationUnit() != null) {
             final ASTParser parser = ASTParser.newParser(AST.JLS3);
             parser.setResolveBindings(true);
             parser.setSource(Preconditions.checkNotNull(compilationUnit));
             final ASTNode astRoot = parser.createAST(null);
-            cachedAstNode = NodeFinder.perform(astRoot, invocationOffset, 0);
+            astNode = NodeFinder.perform(astRoot, invocationOffset, 0);
         }
-        return cachedAstNode;
-    }
-
-    @Override
-    public JavaEditor getEditor() {
-        return editor;
+        return astNode;
     }
 
     @Override
@@ -131,18 +128,9 @@ public final class JavaElementSelection implements IJavaElementSelection {
         return getEditor().equals(selection.getEditor());
     }
 
-    @Testing
     @Override
-    public String toString() {
-        final ToStringHelper string = Objects.toStringHelper(this).add("\n\nJavaElementClass",
-                javaElement == null ? null : javaElement.getClass() + " / " + javaElement.getHandleIdentifier());
-        string.add("\nElementLocation", getElementLocation());
-        if (getAstNode() != null) {
-            final ASTNode astNode = getAstNode();
-            string.add("\nAstNode", astNode.getNodeType() + " ("
-                    + ASTNode.nodeClassForType(astNode.getNodeType()).getSimpleName() + ")");
-        }
-        string.add("\n\nInvocationOffset", invocationOffset + "\n\n");
-        return string.toString();
+    public int hashCode() {
+        return getJavaElement().hashCode() + getElementLocation().hashCode()
+                + (getEditor() == null ? 0 : getEditor().hashCode());
     }
 }

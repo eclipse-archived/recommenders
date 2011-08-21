@@ -27,7 +27,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableReso
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
 import org.eclipse.recommenders.server.extdoc.types.CodeSnippet;
@@ -93,7 +93,7 @@ public final class ExamplesProvider extends AbstractTitledProvider {
     }
 
     private ProviderUiJob displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
-        final CommunityFeatures features = CommunityFeatures.create(element, null, this, server);
+        final CommunityFeedback features = CommunityFeedback.create(element, null, this, server);
         return new ProviderUiJob() {
             @Override
             public void run(final Composite composite) {
@@ -111,13 +111,13 @@ public final class ExamplesProvider extends AbstractTitledProvider {
         };
     }
 
-    static void createSnippetVisualization(final int snippetIndex, final CommunityFeatures features,
+    static void createSnippetVisualization(final int snippetIndex, final CommunityFeedback features,
             final String snippet, final Composite composite) {
         createEditAndRatingHeader(snippetIndex, features, composite);
         SwtFactory.createSourceCodeArea(composite, snippet);
     }
 
-    private static void createEditAndRatingHeader(final int snippetIndex, final CommunityFeatures features,
+    private static void createEditAndRatingHeader(final int snippetIndex, final CommunityFeedback features,
             final Composite composite) {
         final String text = "Example #" + (snippetIndex + 1) + ":";
         final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);

@@ -43,6 +43,12 @@ final class CommentsComposite extends Composite {
     private IUserFeedbackServer server;
     private List<IComment> comments;
 
+    private CommentsComposite(final Composite parent) {
+        super(parent, SWT.NONE);
+        setLayout(GridLayoutFactory.swtDefaults().margins(0, 5).spacing(0, 0).create());
+        setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+    }
+
     static CommentsComposite create(final IName element, final String keyAppendix, final IProvider provider,
             final IUserFeedback feedback, final IUserFeedbackServer server, final Composite parent) {
         final CommentsComposite comments = new CommentsComposite(parent);
@@ -53,12 +59,6 @@ final class CommentsComposite extends Composite {
         comments.comments = new LinkedList<IComment>(feedback.getComments());
         comments.createCommentsArea();
         return comments;
-    }
-
-    private CommentsComposite(final Composite parent) {
-        super(parent, SWT.NONE);
-        setLayout(GridLayoutFactory.swtDefaults().margins(0, 5).spacing(0, 0).create());
-        setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
     }
 
     private void createCommentsArea() {
@@ -76,8 +76,8 @@ final class CommentsComposite extends Composite {
 
         if (!comments.isEmpty()) {
             for (final IComment comment : comments) {
-                final String headLine = String.format("%s, %s", dateFormat.format(comment.getDate()),
-                        comment.getUsername());
+                final String formattedDate = dateFormat.format(comment.getDate());
+                final String headLine = String.format("%s, %s", formattedDate, comment.getUsername());
                 SwtFactory.createCLabel(this, headLine, true, commentsIcon);
                 SwtFactory.createLabel(this, comment.getText(), true);
             }

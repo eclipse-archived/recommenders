@@ -36,8 +36,6 @@ final class StarsRatingComposite extends Composite {
     private final IProvider provider;
     private final IUserFeedbackServer server;
 
-    private final IRatingSummary ratingSummary;
-
     StarsRatingComposite(final IName element, final String keyAppendix, final IProvider provider,
             final IUserFeedback feedback, final IUserFeedbackServer server, final Composite parent) {
         super(parent, SWT.NONE);
@@ -48,9 +46,8 @@ final class StarsRatingComposite extends Composite {
         this.keyAppendix = keyAppendix;
         this.provider = provider;
         this.server = server;
-        ratingSummary = feedback.getRatingSummary();
 
-        printStars(ratingSummary);
+        printStars(feedback.getRatingSummary());
     }
 
     private void printStars(final IRatingSummary summary) {
@@ -58,8 +55,8 @@ final class StarsRatingComposite extends Composite {
         for (int star = 1; star <= 5; ++star) {
             createStar(star, userStars, summary);
         }
-        SwtFactory
-                .createLabel(this, " " + summary.getAmountOfRatings() + "x", false, false, SWT.COLOR_DARK_GRAY, false);
+        final int amountOfRatings = summary.getAmountOfRatings();
+        SwtFactory.createLabel(this, " " + amountOfRatings + "x", false, false, SWT.COLOR_DARK_GRAY, false);
     }
 
     private void createStar(final int star, final int userStars, final IRatingSummary summary) {

@@ -24,6 +24,10 @@ public interface IExtendedSelectionListener {
      */
     void selectionChanged(IJavaElementSelection selection);
 
+    /**
+     * @param editor
+     *            The {@link JavaEditor} which just has been created.
+     */
     void javaEditorCreated(JavaEditor editor);
 
 }

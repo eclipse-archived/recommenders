@@ -55,7 +55,7 @@ public class ProviderStore {
     /**
      * @return List of all providers in the order expressed through priorities.
      */
-    public ImmutableList<IProvider> getProviders() {
+    public final ImmutableList<IProvider> getProviders() {
         final List<IProvider> list = new ArrayList<IProvider>(lazyGetProviders().keySet());
         Collections.sort(list, new ProviderComparator(providers));
         return ImmutableList.copyOf(list);

@@ -17,6 +17,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchWindow;
 
+/**
+ * A provider contributes selection-specific information to the ExtDoc framework
+ * and will be displayed in the ExtDoc view and editor hovers.
+ */
 public interface IProvider extends IExecutableExtension {
 
     /**
@@ -43,8 +47,23 @@ public interface IProvider extends IExecutableExtension {
      */
     boolean isAvailableForLocation(JavaElementLocation location);
 
+    /**
+     * @param parent
+     *            The composite hosting the provider.
+     * @param workbenchWindow
+     *            The workbench window in which the provider will be displayed.
+     * @return The composite which will be filled with the provider's content.
+     */
     Composite createComposite(Composite parent, IWorkbenchWindow workbenchWindow);
 
-    boolean selectionChanged(IJavaElementSelection context, Composite composite);
+    /**
+     * @param selection
+     *            The current user selection.
+     * @param composite
+     *            The composite which has been created by the provider earlier
+     *            in shall now be filled.
+     * @return True, if provider was able to display content for the selection.
+     */
+    boolean selectionChanged(IJavaElementSelection selection, Composite composite);
 
 }

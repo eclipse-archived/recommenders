@@ -20,7 +20,7 @@ public final class ExtDocPreferencePage extends FieldEditorPreferencePage implem
 
     public ExtDocPreferencePage() {
         super(GRID);
-        setPreferenceStore(ExtDocPlugin.getDefault().getPreferenceStore());
+        setPreferenceStore(ExtDocPlugin.preferenceStore());
     }
 
     @Override

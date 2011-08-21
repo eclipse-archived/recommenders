@@ -10,30 +10,24 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
-import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
-import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import org.junit.Test;
 
 public final class ExtDocViewTest {
 
     @Test
     public void testExtDocView() {
-        final ProviderStore store = new ProviderStore() {
-            @Override
-            public ImmutableList<IProvider> getProviders() {
-                final Builder<IProvider> builder = ImmutableList.builder();
-                builder.add(ExtDocUtils.getTestProvider());
-                return builder.build();
-            }
-        };
-
-        // final ExtDocView view = new ExtDocView(store);
-        // view.createPartControl(ExtDocUtils.getShell());
-        // view.selectionChanged(ExtDocUtils.getSelection());
+        /*
+         * final ProviderStore store = new ProviderStore() {
+         * 
+         * @Override public ImmutableList<IProvider> getProviders() { final
+         * Builder<IProvider> builder = ImmutableList.builder();
+         * builder.add(ExtDocUtils.getTestProvider()); return builder.build(); }
+         * };
+         * 
+         * final ExtDocView view = new ExtDocView(store);
+         * view.createPartControl(ExtDocUtils.getShell());
+         * view.selectionChanged(ExtDocUtils.getSelection());
+         */
     }
 
 }

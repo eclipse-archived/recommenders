@@ -21,7 +21,7 @@ public final class CommentsCompositeTest {
     @Test
     public void testCommentsComposite() {
         for (final IName name : TestTypeUtils.getDefaultNames()) {
-            final CommentsComposite composite = CommunityFeatures.create(name, "test", ExtDocUtils.getTestProvider(),
+            final CommentsComposite composite = CommunityFeedback.create(name, "test", ExtDocUtils.getTestProvider(),
                     ServerUtils.getGenericServer()).loadCommentsComposite(ExtDocUtils.getShell());
             composite.addComment("Test");
         }

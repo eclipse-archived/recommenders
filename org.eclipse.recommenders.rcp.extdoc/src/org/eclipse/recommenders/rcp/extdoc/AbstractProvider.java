@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
+import java.net.URL;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.spi.RegistryContributor;
@@ -17,16 +19,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Preconditions;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 
 /**
  * Supports instantiation of a provider from an extension declaration, allowing
  * access to configuration parameters.
  */
 abstract class AbstractProvider implements IProvider {
-
-    private static final BundleContext BUNDLECONTEXT = ExtDocPlugin.getDefault().getBundle().getBundleContext();
 
     private String providerName;
     private String providerFullName;
@@ -57,9 +55,8 @@ abstract class AbstractProvider implements IProvider {
 
     private void setProviderIcon(final IConfigurationElement config) {
         final long declaringBundleId = Long.parseLong(((RegistryContributor) config.getContributor()).getActualId());
-        final Bundle bundle = BUNDLECONTEXT.getBundle(declaringBundleId);
-        final String icon = config.getAttribute("icon");
-        providerIcon = ImageDescriptor.createFromURL(bundle.getEntry(icon)).createImage();
+        final URL icon = ExtDocPlugin.getBundleEntry(declaringBundleId, config.getAttribute("icon"));
+        providerIcon = ImageDescriptor.createFromURL(icon).createImage();
     }
 
     @Override

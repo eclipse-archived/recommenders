@@ -39,7 +39,7 @@ import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.swt.SWT;
@@ -200,7 +200,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         final String text = "People who " + action + " " + elementName + " usually also call the following methods"
                 + (isMethodDeclaration ? " inside" : "") + ":";
         final String text2 = "When accessed from single methods, probabilites for this field's methods might be different:";
-        final CommunityFeatures features = CommunityFeatures.create(elementId, null, this, server);
+        final CommunityFeedback features = CommunityFeedback.create(elementId, null, this, server);
 
         return new ProviderUiJob() {
             @Override
