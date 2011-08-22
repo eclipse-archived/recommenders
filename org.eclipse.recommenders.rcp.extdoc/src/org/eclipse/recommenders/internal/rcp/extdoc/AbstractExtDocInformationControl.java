@@ -136,6 +136,7 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
                 actions.get(control.getData()).setEnabled(false);
                 new ProviderJob(control).schedule();
             }
+            composite.updateSelectionLabel(selection.getJavaElement());
         }
     }
 

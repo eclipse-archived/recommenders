@@ -45,10 +45,10 @@ final class ProvidersTableSelectionListener implements Listener {
         table.setChecked(preferenceId, tableItem.getChecked());
         if (tableItem.getGrayed()) {
             if (tableItem.getChecked()) {
-                new ProviderUpdateJob(tableItem, lastSelection).schedule();
+                new ProviderUpdateJob(table, tableItem, lastSelection).schedule();
             }
         } else {
-            ProvidersTable.setContentVisible(tableItem, tableItem.getChecked(), true);
+            table.setContentVisible(tableItem, tableItem.getChecked(), true);
         }
     }
 

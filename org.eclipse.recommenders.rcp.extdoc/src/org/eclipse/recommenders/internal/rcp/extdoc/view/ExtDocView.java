@@ -11,24 +11,19 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jdt.ui.actions.OpenAction;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProvidersComposite;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewSite;
@@ -42,26 +37,17 @@ import com.google.inject.Inject;
  */
 public class ExtDocView extends ViewPart {
 
-    static final int HEAD_LABEL_HEIGHT = 20;
+    public static final int HEAD_LABEL_HEIGHT = 20;
     private static final String SASH_POSITION_KEY = "extDocSashPosition";
 
     private final ProviderStore providerStore;
     private ProvidersComposite providersComposite;
     private ProvidersTable table;
-    private CLabel selectionLabel;
-    private JavaElementLabelProvider labelProvider;
     private boolean linkingEnabled = true;
 
     @Inject
     ExtDocView(final ProviderStore providerStore) {
         this.providerStore = providerStore;
-        initializeLabelProvider();
-    }
-
-    private void initializeLabelProvider() {
-        labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_QUALIFIED
-                | JavaElementLabelProvider.SHOW_OVERLAY_ICONS | JavaElementLabelProvider.SHOW_RETURN_TYPE
-                | JavaElementLabelProvider.SHOW_PARAMETERS);
     }
 
     @Override
@@ -74,19 +60,10 @@ public class ExtDocView extends ViewPart {
     private void createSash(final Composite parent) {
         final SashForm sashForm = new SashForm(parent, SWT.SMOOTH);
         sashForm.setLayout(new FillLayout());
-        createLeftSashSide(sashForm);
-        createRightSashSide(sashForm);
-        handleSashWeights(sashForm);
-    }
-
-    private void createLeftSashSide(final SashForm sashForm) {
         table = new ProvidersTable(sashForm, providerStore);
-    }
-
-    private void createRightSashSide(final SashForm sashForm) {
-        final Composite container = SwtFactory.createGridComposite(sashForm, 1, 0, 0, 0, 0);
-        createSelectionLabel(container);
-        providersComposite = new ProvidersComposite(container, getViewSite().getWorkbenchWindow());
+        providersComposite = new ProvidersComposite(sashForm, getViewSite().getWorkbenchWindow());
+        table.setProvidersComposite(providersComposite);
+        handleSashWeights(sashForm);
     }
 
     private static void handleSashWeights(final SashForm sashForm) {
@@ -98,14 +75,6 @@ public class ExtDocView extends ViewPart {
                 ExtDocPlugin.getPreferences().putInt(SASH_POSITION_KEY, sashForm.getWeights()[0]);
             }
         });
-    }
-
-    private void createSelectionLabel(final Composite container) {
-        selectionLabel = new CLabel(container, SWT.NONE);
-        final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gridData.heightHint = HEAD_LABEL_HEIGHT;
-        selectionLabel.setLayoutData(gridData);
-        selectionLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
     }
 
     private void addProviders() {
@@ -135,7 +104,7 @@ public class ExtDocView extends ViewPart {
             table.setContext(selection);
             updateProviders(selection);
             providersComposite.scrollToTop();
-            updateSelectionLabel(selection.getJavaElement());
+            providersComposite.updateSelectionLabel(selection.getJavaElement());
         }
     }
 
@@ -143,17 +112,11 @@ public class ExtDocView extends ViewPart {
         ProviderUpdateJob.cancelActiveJobs();
         for (final TableItem item : table.getItems()) {
             if (item.getChecked()) {
-                final ProviderUpdateJob job = new ProviderUpdateJob(item, selection);
+                final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
                 job.setSystem(true);
                 job.schedule();
             }
         }
-    }
-
-    private void updateSelectionLabel(final IJavaElement javaElement) {
-        selectionLabel.setText(labelProvider.getText(javaElement));
-        selectionLabel.setImage(labelProvider.getImage(javaElement));
-        selectionLabel.getParent().layout();
     }
 
     @Override

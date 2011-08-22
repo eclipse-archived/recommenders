@@ -31,7 +31,7 @@ import com.google.common.collect.ImmutableList.Builder;
 /**
  * Transforms {@link PatternRecommendation}s into
  * {@link IJavaCompletionProposal}s which are applied on the editor content when
- * the propoals is selected from the completion proposals menu.
+ * the proposal is selected from the completion proposals menu.
  */
 @SuppressWarnings("restriction")
 public final class CompletionProposalsBuilder {
@@ -43,8 +43,8 @@ public final class CompletionProposalsBuilder {
      * @param templateIcon
      *            The icon to be shown along with the completion proposals.
      * @param codeBuilder
-     *            The {@link CodeBuilder} will turn {@link MethodCall}s into the
-     *            code to be used by the Eclipse template engine.
+     *            The {@link CodeBuilder} will turn MethodCalls into the code to
+     *            be used by the Eclipse template engine.
      */
     public CompletionProposalsBuilder(final Image templateIcon, final CodeBuilder codeBuilder) {
         this.templateIcon = templateIcon;

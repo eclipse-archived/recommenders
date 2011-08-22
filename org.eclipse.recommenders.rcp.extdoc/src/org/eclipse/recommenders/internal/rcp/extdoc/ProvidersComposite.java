@@ -13,17 +13,20 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.utils.Checks;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -33,9 +36,13 @@ import org.eclipse.ui.IWorkbenchWindow;
  */
 public final class ProvidersComposite extends Composite {
 
-    private final ScrolledComposite scrolled;
+    private ScrolledComposite scrolled;
+    private Composite contentComposite;
     private final List<Composite> providers = new LinkedList<Composite>();
     private final IWorkbenchWindow workbenchWindow;
+
+    private JavaElementLabelProvider labelProvider;
+    private CLabel selectionLabel;
 
     /**
      * @param parent
@@ -45,38 +52,46 @@ public final class ProvidersComposite extends Composite {
      *            window.
      */
     public ProvidersComposite(final Composite parent, final IWorkbenchWindow workbenchWindow) {
-        super(createScrolledComposite(parent), SWT.NONE);
-        scrolled = (ScrolledComposite) getParent();
-        if (scrolled.getParent().getLayout() instanceof GridLayout) {
-            scrolled.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        }
-        setLayout();
+        super(parent, SWT.NONE);
+        setLayout(GridLayoutFactory.fillDefaults().spacing(0, 0).create());
+        createSelectionLabel();
+        createScrolledComposite();
         setBackgroundColor(scrolled.getShell().getDisplay());
-        scrolled.setContent(this);
         this.workbenchWindow = Checks.ensureIsNotNull(workbenchWindow);
     }
 
-    private static ScrolledComposite createScrolledComposite(final Composite parent) {
-        final ScrolledComposite composite = new ScrolledComposite(parent, SWT.V_SCROLL);
-        composite.setExpandVertical(true);
-        composite.setExpandHorizontal(true);
-        composite.getVerticalBar().setIncrement(20);
-        return composite;
+    private void createSelectionLabel() {
+        labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_QUALIFIED
+                | JavaElementLabelProvider.SHOW_OVERLAY_ICONS | JavaElementLabelProvider.SHOW_RETURN_TYPE
+                | JavaElementLabelProvider.SHOW_PARAMETERS);
+        selectionLabel = new CLabel(this, SWT.NONE);
+        final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gridData.heightHint = ExtDocView.HEAD_LABEL_HEIGHT;
+        selectionLabel.setLayoutData(gridData);
+        selectionLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
     }
 
-    private void setLayout() {
-        setLayout(GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 2).create());
+    private void createScrolledComposite() {
+        scrolled = new ScrolledComposite(this, SWT.V_SCROLL);
+        scrolled.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        scrolled.setExpandVertical(true);
+        scrolled.setExpandHorizontal(true);
+        scrolled.getVerticalBar().setIncrement(20);
+
+        contentComposite = new Composite(scrolled, SWT.NONE);
+        contentComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 2).create());
+        scrolled.setContent(contentComposite);
     }
 
     private void setBackgroundColor(final Display display) {
         final ColorRegistry registry = JFaceResources.getColorRegistry();
         final RGB backgroundColor = registry.getRGB("org.eclipse.jdt.ui.JavadocView.backgroundColor");
         if (backgroundColor == null) {
-            setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+            contentComposite.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
         } else {
-            setBackground(new Color(display, backgroundColor));
+            contentComposite.setBackground(new Color(display, backgroundColor));
         }
-        setBackgroundMode(SWT.INHERIT_FORCE);
+        contentComposite.setBackgroundMode(SWT.INHERIT_FORCE);
     }
 
     /**
@@ -85,7 +100,7 @@ public final class ProvidersComposite extends Composite {
      * @return The composite in which the provider will fill his content.
      */
     public Composite addProvider(final IProvider provider) {
-        final Composite control = provider.createComposite(this, workbenchWindow);
+        final Composite control = provider.createComposite(contentComposite, workbenchWindow);
         control.setData(provider);
         providers.add(control);
         return control;
@@ -95,15 +110,16 @@ public final class ProvidersComposite extends Composite {
         return providers;
     }
 
-    @Override
-    public boolean setParent(final Composite parent) {
-        return scrolled.setParent(parent);
+    public void updateSelectionLabel(final IJavaElement javaElement) {
+        selectionLabel.setText(labelProvider.getText(javaElement));
+        selectionLabel.setImage(labelProvider.getImage(javaElement));
+        selectionLabel.getParent().layout();
     }
 
     @Override
     public void layout(final boolean changed, final boolean all) {
-        super.layout(changed, all);
-        scrolled.setMinHeight(computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y + 15);
+        contentComposite.layout(changed, all);
+        scrolled.setMinHeight(contentComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y + 15);
     }
 
     @Override

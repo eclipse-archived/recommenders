@@ -11,8 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
-import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersTable;
-import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersTableDropAdapter;
+import org.eclipse.recommenders.internal.rcp.extdoc.ProvidersComposite;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.widgets.TableItem;
 
@@ -23,6 +22,7 @@ public final class ProvidersTableDropAdapterTest {
     @Test
     public void testProvidersTableDropAdapter() {
         final ProvidersTable table = new ProvidersTable(ExtDocUtils.getShell(), new ProviderStore());
+        table.setProvidersComposite(new ProvidersComposite(ExtDocUtils.getShell(), ExtDocUtils.getWorkbenchWindow()));
         final TableItem item = table.addProvider(ProvidersTableTest.mockProviderComposite(), "Test", null);
 
         final ProvidersTableDropAdapter adapter = new ProvidersTableDropAdapter(table.getTable(), null,

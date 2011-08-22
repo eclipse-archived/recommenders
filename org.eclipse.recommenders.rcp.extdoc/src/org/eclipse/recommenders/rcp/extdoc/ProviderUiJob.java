@@ -40,8 +40,7 @@ public abstract class ProviderUiJob {
                     } catch (final Exception e) {
                         ExtDocPlugin.logException(e);
                     }
-                    composite.getParent().layout(true, true);
-                    composite.getParent().getParent().layout(true);
+                    composite.getParent().getParent().getParent().getParent().layout(true, true);
                 }
                 return Status.OK_STATUS;
             }
