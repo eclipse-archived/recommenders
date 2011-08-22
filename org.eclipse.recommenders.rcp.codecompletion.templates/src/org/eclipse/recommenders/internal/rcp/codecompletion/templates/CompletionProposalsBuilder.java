@@ -11,11 +11,11 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.recommenders.commons.utils.Checks;
@@ -26,7 +26,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.Patt
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.Lists;
 
 /**
  * Transforms {@link PatternRecommendation}s into
@@ -36,6 +36,7 @@ import com.google.common.collect.ImmutableList.Builder;
 @SuppressWarnings("restriction")
 public final class CompletionProposalsBuilder {
 
+    private static final int RELEVANCE_OFFSET = 562;
     private final Image templateIcon;
     private final CodeBuilder codeBuilder;
 
@@ -61,18 +62,29 @@ public final class CompletionProposalsBuilder {
      *            shall be invoked.
      * @return A list of completion proposals for the given patterns.
      */
-    public ImmutableList<IJavaCompletionProposal> computeProposals(final Collection<PatternRecommendation> patterns,
-            final DocumentTemplateContext context, final CompletionTargetVariable targetVariable) {
-        final Builder<IJavaCompletionProposal> proposals = ImmutableList.builder();
+    public ImmutableList<? extends IJavaCompletionProposal> computeProposals(
+            final Collection<PatternRecommendation> patterns, final DocumentTemplateContext context,
+            final CompletionTargetVariable targetVariable) {
+        final List<JavaTemplateProposal> proposals = Lists.newLinkedList();
         for (final PatternRecommendation pattern : patterns) {
             try {
-                final TemplateProposal template = buildTemplateProposal(pattern, context, targetVariable);
+                final JavaTemplateProposal template = buildTemplateProposal(pattern, context, targetVariable);
                 proposals.add(template);
             } catch (final JavaModelException e) {
                 continue;
             }
         }
-        return proposals.build();
+        sortProposals(proposals);
+        return ImmutableList.copyOf(proposals);
+    }
+
+    private void sortProposals(final List<JavaTemplateProposal> proposals) {
+        Collections.sort(proposals);
+        int i = RELEVANCE_OFFSET;
+        for (final JavaTemplateProposal proposal : proposals) {
+            proposal.setRelevance(RELEVANCE_OFFSET + i);
+            i++;
+        }
     }
 
     /**
@@ -85,16 +97,19 @@ public final class CompletionProposalsBuilder {
      *            pattern shall be invoked.
      * @return The given pattern turned into a proposal object.
      */
-    private TemplateProposal buildTemplateProposal(final PatternRecommendation patternRecommendation,
+    private JavaTemplateProposal buildTemplateProposal(final PatternRecommendation patternRecommendation,
             final DocumentTemplateContext context, final CompletionTargetVariable targetVariable)
             throws JavaModelException {
+        final Template template = createTemplate(patternRecommendation, targetVariable);
+        return new JavaTemplateProposal(template, context, templateIcon, patternRecommendation);
+    }
+
+    private Template createTemplate(final PatternRecommendation patternRecommendation,
+            final CompletionTargetVariable targetVariable) throws JavaModelException {
         final String code = codeBuilder.buildCode(patternRecommendation.getMethods(), targetVariable);
         final String templateName = patternRecommendation.getName();
         final String templateDescription = patternRecommendation.getType().getClassName();
         final Template template = new Template(templateName, templateDescription, "java", code, false);
-
-        final Region replacementRegion = new Region(context.getCompletionOffset(), context.getCompletionLength());
-        final int probability = patternRecommendation.getProbability();
-        return new JavaTemplateProposal(template, context, replacementRegion, templateIcon, probability);
+        return template;
     }
 }
