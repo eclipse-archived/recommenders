@@ -12,8 +12,9 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.templates.types;
 
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
-import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
@@ -22,9 +23,9 @@ import org.eclipse.swt.graphics.Image;
  * entry in the completion popup.
  */
 @SuppressWarnings("restriction")
-public final class JavaTemplateProposal extends TemplateProposal {
+public final class JavaTemplateProposal extends TemplateProposal implements Comparable<JavaTemplateProposal> {
 
-    private static final int RELEVANCE_OFFSET = 562;
+    private final PatternRecommendation patternRecommendation;
 
     /**
      * Creates a template proposal with a template and its context.
@@ -37,15 +38,22 @@ public final class JavaTemplateProposal extends TemplateProposal {
      *            the region this proposal is applied to
      * @param image
      *            the icon of the proposal.
+     * @param patternRecommendation
+     * @param targetVariable
      * @param probability
      *            the probability that the represented pattern is applied in the
      *            given context.
+     * @param isExactNameMatch
      */
-    public JavaTemplateProposal(final Template template, final TemplateContext context, final IRegion region,
-            final Image image, final int probability) {
-        super(template, context, region, image);
-        setRelevance(RELEVANCE_OFFSET + probability);
+    public JavaTemplateProposal(final Template template, final DocumentTemplateContext context, final Image image,
+            final PatternRecommendation patternRecommendation) {
+        super(template, context, calculateReplacementRegion(context), image);
+        this.patternRecommendation = patternRecommendation;
         computeStyledDisplayString();
+    }
+
+    private static IRegion calculateReplacementRegion(final DocumentTemplateContext context) {
+        return new Region(context.getCompletionOffset(), context.getCompletionLength());
     }
 
     /**
@@ -53,12 +61,32 @@ public final class JavaTemplateProposal extends TemplateProposal {
      * contains the template's name and its probability.
      */
     private void computeStyledDisplayString() {
-        final Integer relevance = Integer.valueOf(getRelevance() - RELEVANCE_OFFSET);
         final StyledString styledString = new StyledString();
         styledString.append(String.format("dynamic '%s'", getTemplate().getDescription()));
         styledString.append(" - ", StyledString.QUALIFIER_STYLER);
         styledString.append(getTemplate().getName().replace("pattern", "Pattern #"), StyledString.QUALIFIER_STYLER);
-        styledString.append(String.format(" - %d %%", relevance), StyledString.COUNTER_STYLER);
+        styledString.append(String.format(" - %d %%", patternRecommendation.getProbability()),
+                StyledString.COUNTER_STYLER);
         setDisplayString(styledString);
+    }
+
+    @Override
+    public int compareTo(final JavaTemplateProposal o) {
+        final int compareClassName = compareByClassName(o);
+        if (compareClassName == 0) {
+            return compareByProbability(o);
+        } else {
+            return -compareClassName;
+        }
+    }
+
+    private int compareByProbability(final JavaTemplateProposal o) {
+        return Integer.valueOf(patternRecommendation.getProbability()).compareTo(
+                o.patternRecommendation.getProbability());
+    }
+
+    private int compareByClassName(final JavaTemplateProposal o) {
+        return patternRecommendation.getType().getClassName()
+                .compareTo(o.patternRecommendation.getType().getClassName());
     }
 }

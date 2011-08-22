@@ -38,11 +38,11 @@ import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
 /**
  * Controls the process of template recommendations.
@@ -106,8 +106,8 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     }
 
     @Override
-    public List<IJavaCompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context,
-            final IProgressMonitor monitor) {
+    public List<? extends IJavaCompletionProposal> computeCompletionProposals(
+            final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
         if (contextResolver.hasProjectRecommendersNature(jCtx)) {
             final IIntelligentCompletionContext completionContext = contextResolver.resolveContext(jCtx);
@@ -141,7 +141,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      *            The context from where the completion request was invoked.
      * @return The completion proposals to be displayed in the editor.
      */
-    public ImmutableList<IJavaCompletionProposal> computeCompletionProposals(
+    public ImmutableList<? extends IJavaCompletionProposal> computeCompletionProposals(
             final IIntelligentCompletionContext completionContext) {
         final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
                 .createInvokedVariable(completionContext);
@@ -157,7 +157,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      *            created.
      * @return The completion proposals to be displayed in the editor.
      */
-    private ImmutableList<IJavaCompletionProposal> computeCompletionProposalsForTargetVariable(
+    private ImmutableList<? extends IJavaCompletionProposal> computeCompletionProposalsForTargetVariable(
             final CompletionTargetVariable completionTargetVariable) {
         final Collection<PatternRecommendation> patternRecommendations = patternRecommender
                 .computeRecommendations(completionTargetVariable);
