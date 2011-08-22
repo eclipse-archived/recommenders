@@ -10,7 +10,11 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.types;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DocumentEvent;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
@@ -89,4 +93,21 @@ public final class JavaTemplateProposal extends TemplateProposal implements Comp
         return patternRecommendation.getType().getClassName()
                 .compareTo(o.patternRecommendation.getType().getClassName());
     }
+
+    @Override
+    public boolean validate(final IDocument document, final int offset, final DocumentEvent event) {
+        try {
+            final int replaceOffset = getReplaceOffset();
+            if (offset >= replaceOffset) {
+                final String content = document.get(replaceOffset, offset - replaceOffset);
+                final String className = patternRecommendation.getType().getClassName();
+
+                return StringUtils.startsWithIgnoreCase(className, content);
+            }
+        } catch (final BadLocationException e) {
+            // concurrent modification - ignore
+        }
+        return false;
+    }
+
 }
