@@ -15,8 +15,8 @@ import static org.eclipse.recommenders.commons.utils.Throws.throwUnreachable;
 
 public abstract class Option<T> {
 
-    public static <T> Option<T> wrap(final T value) {
-        return value == null ? new None<T>() : new Some<T>(value);
+    public static <S, T extends S> Option<S> wrap(final T value) {
+        return value == null ? new None<S>() : new Some<S>(value);
     }
 
     public abstract boolean hasValue();
@@ -93,5 +93,9 @@ public abstract class Option<T> {
         public String toString() {
             return "None()";
         }
+    }
+
+    public static <T> Option<T> none() {
+        return new None<T>();
     }
 }

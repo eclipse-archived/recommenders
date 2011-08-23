@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion;
 
+import static org.eclipse.recommenders.commons.utils.Option.none;
+import static org.eclipse.recommenders.commons.utils.Option.wrap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -19,6 +22,7 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.corext.template.java.SignatureUtil;
+import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -32,39 +36,59 @@ public class CompilerBindings {
      * TODO nested anonymous types are not resolved correctly. JDT uses line
      * numbers for inner types instead of $1,..,$n
      */
-    public static ITypeName toTypeName(@Nullable TypeBinding binding) {
+    public static Option<ITypeName> toTypeName(@Nullable TypeBinding binding) {
+        // XXX generics fail
         if (binding == null) {
-            return null;
+            return none();
         }
+        //
+        final boolean boundParameterizedType = binding.isBoundParameterizedType();
+        final boolean parameterizedType = binding.isParameterizedType();
+
+        // if (binding.isBoundParameterizedType()) {
+        // return null;
+        // }
+
         if (binding.isArrayType()) {
             final int dimensions = binding.dimensions();
             final TypeBinding leafComponentType = binding.leafComponentType();
-            return VmTypeName.get(StringUtils.repeat("[", dimensions) + toTypeName(leafComponentType));
+            final String arrayDimensions = StringUtils.repeat("[", dimensions);
+            final VmTypeName res = VmTypeName.get(arrayDimensions + toTypeName(leafComponentType));
+            return wrap(res);
         }
         // TODO: handling of generics is bogus!
         if (binding instanceof TypeVariableBinding) {
             final TypeVariableBinding generic = (TypeVariableBinding) binding;
             if (generic.declaringElement instanceof TypeBinding) {
+                // XXX: for this?
                 binding = (TypeBinding) generic.declaringElement;
+            } else if (generic.superclass != null) {
+                // example Tuple<T1 extends List, T2 extends Number) --> for
+                // generic.superclass (T2)=Number
+                // we replace the generic by its superclass
+                binding = generic.superclass;
             }
-
         }
+
         String signature = String.valueOf(binding.computeUniqueKey());
-        if (signature.length() == 1) {
-            return VmTypeName.get(signature);
-        }
+        // if (binding instanceof BinaryTypeBinding) {
+        // signature = StringUtils.substringBeforeLast(signature, ";");
+        // }
 
-        if (signature.endsWith(";")) {
+        if (signature.length() == 1) {
+            // no handling needed. primitives always look the same.
+        } else if (signature.endsWith(";")) {
             signature = StringUtils.substringBeforeLast(signature, ";");
         } else {
             signature = "L" + SignatureUtil.stripSignatureToFQN(signature);
         }
-        return VmTypeName.get(signature);
+        final VmTypeName res = VmTypeName.get(signature);
+        return wrap(res);
     }
 
-    public static IMethodName toMethodName(final @Nullable MethodBinding binding) {
+    public static Option<IMethodName> toMethodName(final @Nullable MethodBinding binding) {
         if (binding == null) {
-            return null;
+            return none();
         }
         toTypeName(binding.declaringClass);
         final String uniqueKey = String.valueOf(binding.computeUniqueKey());
@@ -77,7 +101,8 @@ public class CompilerBindings {
             sb.append(parameter);
         }
         sb.append(")").append(returnType);
-        return VmMethodName.get(sb.toString());
+        final VmMethodName res = VmMethodName.get(sb.toString());
+        return wrap(res);
     }
 
     @Override
@@ -85,7 +110,7 @@ public class CompilerBindings {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
-    public static ITypeName toTypeName(final TypeReference type) {
-        return type == null ? null : toTypeName(type.resolvedType);
+    public static Option<ITypeName> toTypeName(final TypeReference type) {
+        return (Option<ITypeName>) (type == null ? Option.none() : toTypeName(type.resolvedType));
     }
 }

@@ -131,7 +131,7 @@ public class ChainCompletionContext {
     final ITypeName expectedTypeName = ctx.getExpectedType();
     if (expectedTypeName == null) {
       if (ctx.getCompletionNode() instanceof CompletionOnMessageSend) {
-        CompletionOnMessageSend completiononMessageSend = (CompletionOnMessageSend) ctx.getCompletionNode();
+        final CompletionOnMessageSend completiononMessageSend = (CompletionOnMessageSend) ctx.getCompletionNode();
         computeExpectedMethodTypes(completiononMessageSend);
         return expectedTypeList.size() > 0;
       }
@@ -146,7 +146,7 @@ public class ChainCompletionContext {
     if (expectedType != null && expectedType.getReference().getName().getClassName().toString().equals("Object")) {
       expectedType = null;
     }
-    int expectedTypeArrayDimension = expectedTypeName.getArrayDimensions();
+    final int expectedTypeArrayDimension = expectedTypeName.getArrayDimensions();
     expectedTypeList.add(Tuple.create(expectedType, expectedTypeArrayDimension));
     return expectedType != null;
   }
@@ -260,11 +260,11 @@ public class ChainCompletionContext {
     }
 
     if (ctx.getCompletionNodeParent() instanceof AbstractVariableDeclaration) {
-      AbstractVariableDeclaration decl = (AbstractVariableDeclaration) ctx.getCompletionNodeParent();
+      final AbstractVariableDeclaration decl = (AbstractVariableDeclaration) ctx.getCompletionNodeParent();
       localNames.add(new String(decl.name));
     }
     for (final LocalDeclaration local : ctx.getLocalDeclarations()) {
-      final ITypeName typeName = CompilerBindings.toTypeName(local.type);
+      final ITypeName typeName = CompilerBindings.toTypeName(local.type).get();
       IClass localType = toWalaClass(typeName);
       boolean isPrimitive = false;
       if (localType == null) {
@@ -296,46 +296,46 @@ public class ChainCompletionContext {
     }
   }
 
-  private void computeExpectedMethodTypes(CompletionOnMessageSend completionOnMessageSend) {
-    String methodName = new String(completionOnMessageSend.selector);
-    List<ITypeName> methodArguments = new LinkedList<ITypeName>();
+  private void computeExpectedMethodTypes(final CompletionOnMessageSend completionOnMessageSend) {
+    final String methodName = new String(completionOnMessageSend.selector);
+    final List<ITypeName> methodArguments = new LinkedList<ITypeName>();
     if (completionOnMessageSend.arguments != null) {
-      for (Expression exp : completionOnMessageSend.arguments) {
-        methodArguments.add(CompilerBindings.toTypeName(exp.resolvedType));
+      for (final Expression exp : completionOnMessageSend.arguments) {
+        methodArguments.add(CompilerBindings.toTypeName(exp.resolvedType).get());
       }
     }
-    List<IMethod> possibleMethods = findMethodInContext(methodArguments, methodName);
+    final List<IMethod> possibleMethods = findMethodInContext(methodArguments, methodName);
     expectedTypeList = new ArrayList<Tuple<IClass, Integer>>();
-    for (IMethod method : possibleMethods) {
+    for (final IMethod method : possibleMethods) {
       oneMethod(method, methodArguments);
     }
   }
 
-  private void oneMethod(IMethod method, List<ITypeName> methodArguments) {
+  private void oneMethod(final IMethod method, final List<ITypeName> methodArguments) {
     int usedParameters = methodArguments.size();
     if (!method.isStatic()) {
       usedParameters++;
     }
-    TypeReference expectedTypeReference = method.getParameterType(usedParameters);
+    final TypeReference expectedTypeReference = method.getParameterType(usedParameters);
     if (expectedTypeReference.isPrimitiveType()) {
       return;
     }
     storeToExpectedTypeList(method, expectedTypeReference);
   }
 
-  private void storeToExpectedTypeList(IMethod method, TypeReference expectedTypeReference) {
-    IClass expectedType = method.getClassHierarchy().lookupClass(expectedTypeReference);
+  private void storeToExpectedTypeList(final IMethod method, final TypeReference expectedTypeReference) {
+    final IClass expectedType = method.getClassHierarchy().lookupClass(expectedTypeReference);
     if (expectedType == null || expectedType.getReference().getName().getClassName().toString().equals("Object")) {
       return;
     }
-    int expectedTypeArrayDimension = expectedType.getReference().getDimensionality();
+    final int expectedTypeArrayDimension = expectedType.getReference().getDimensionality();
     expectedTypeList.add(Tuple.create(expectedType, expectedTypeArrayDimension));
   }
 
-  private List<IMethod> findMethodInContext(List<ITypeName> methodArguments, String methodName) {
-    List<IMethod> possibleMethods = Lists.newArrayList();
-    for (IChainElement e : accessibleMethods) {
-      MethodChainElement element = (MethodChainElement) e;
+  private List<IMethod> findMethodInContext(final List<ITypeName> methodArguments, final String methodName) {
+    final List<IMethod> possibleMethods = Lists.newArrayList();
+    for (final IChainElement e : accessibleMethods) {
+      final MethodChainElement element = (MethodChainElement) e;
       if (!checkMethodRelevance(element, methodArguments, methodName)) {
         continue;
       }
@@ -344,8 +344,9 @@ public class ChainCompletionContext {
     return possibleMethods;
   }
 
-  private boolean checkMethodRelevance(MethodChainElement element, List<ITypeName> methodArguments, String methodName) {
-    int numberOfParameters = element.getMethod().getNumberOfParameters();
+  private boolean checkMethodRelevance(final MethodChainElement element, final List<ITypeName> methodArguments,
+      final String methodName) {
+    final int numberOfParameters = element.getMethod().getNumberOfParameters();
     int usedParameters = methodArguments.size();
     if (!element.getMethod().isStatic()) {
       usedParameters++;
@@ -354,7 +355,7 @@ public class ChainCompletionContext {
       return false;
     }
     for (int i = 0; i < methodArguments.size(); i++) {
-      IClass typeClass = toWalaClass(methodArguments.get(i));
+      final IClass typeClass = toWalaClass(methodArguments.get(i));
       if (!typeClass.getName().equals(
           element.getMethod().getParameterType(i + (element.getMethod().isStatic() ? 0 : 1)).getName())) {
         return false;
@@ -383,7 +384,7 @@ public class ChainCompletionContext {
     return accessibleLocals;
   }
 
-  public static IClass boxPrimitive(String primitiveName) {
+  public static IClass boxPrimitive(final String primitiveName) {
     if (primitiveName.equals("boolean") || primitiveName.equals("Z")) {
       return loader.lookupClass(TypeName.findOrCreateClassName("java/lang", "Boolean"));
     } else if (primitiveName.equals("byte") || primitiveName.equals("B")) {
@@ -406,13 +407,13 @@ public class ChainCompletionContext {
     return null;
   }
 
-  public static boolean unwantedMethodNames(String name) {
-    boolean toString = name.equals("toString");
-    boolean hashCode = name.equals("hashCode");
+  public static boolean unwantedMethodNames(final String name) {
+    final boolean toString = name.equals("toString");
+    final boolean hashCode = name.equals("hashCode");
     return toString || hashCode;
   }
 
-  public static boolean unwantedFieldNames(String name) {
+  public static boolean unwantedFieldNames(final String name) {
     return false;
   }
 }

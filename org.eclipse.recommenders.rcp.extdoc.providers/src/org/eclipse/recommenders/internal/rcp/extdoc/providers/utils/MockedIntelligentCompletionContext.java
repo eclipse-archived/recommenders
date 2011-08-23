@@ -190,7 +190,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final ITypeName getReceiverType() {
-        return CompilerBindings.toTypeName(getNodeFinder().receiverType);
+        return CompilerBindings.toTypeName(getNodeFinder().receiverType).getOrElse(null);
     }
 
     @Override
