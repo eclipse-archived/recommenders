@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.resource.JFaceResources;
@@ -16,6 +16,7 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.internal.rcp.extdoc.ProvidersComposite;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -41,6 +42,7 @@ final class ProvidersTable {
 
     private CLabel locationLabel;
     private Table table;
+    private ProvidersComposite providersComposite;
     private final IEclipsePreferences preferences;
     private IJavaElementSelection lastSelection;
 
@@ -67,6 +69,10 @@ final class ProvidersTable {
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         table.addListener(SWT.Selection, new ProvidersTableSelectionListener(this));
         enableDragAndDrop(providerStore);
+    }
+
+    void setProvidersComposite(final ProvidersComposite providersComposite) {
+        this.providersComposite = providersComposite;
     }
 
     TableItem addProvider(final Composite provider, final String text, final Image image) {
@@ -107,11 +113,11 @@ final class ProvidersTable {
         }
     }
 
-    static void setContentVisible(final TableItem tableItem, final boolean visible, final boolean updateTableItem) {
+    void setContentVisible(final TableItem tableItem, final boolean visible, final boolean updateTableItem) {
         final Composite control = (Composite) tableItem.getData();
         ((GridData) control.getLayoutData()).exclude = !visible;
         control.setVisible(visible);
-        control.getParent().layout(true, false);
+        providersComposite.layout(true, false);
 
         if (updateTableItem) {
             tableItem.setGrayed(!visible);

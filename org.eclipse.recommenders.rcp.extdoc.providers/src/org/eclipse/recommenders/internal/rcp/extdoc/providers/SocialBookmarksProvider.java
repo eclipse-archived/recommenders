@@ -19,7 +19,7 @@ import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.server.extdoc.SocialBookmarksServer;
 import org.eclipse.recommenders.server.extdoc.types.SocialBookmark;
 import org.eclipse.recommenders.server.extdoc.types.SocialBookmarks;
@@ -103,7 +103,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         final int indexOfSeparator = url.indexOf('/');
         SwtFactory.createStyleRange(urlText, 0, indexOfSeparator > 0 ? indexOfSeparator : url.length(), SWT.BOLD,
                 false, false);
-        CommunityFeatures.create(elementName, bookmark.getUrl(), this, server, bookmark.getUserFeedback())
+        CommunityFeedback.create(elementName, bookmark.getUrl(), this, server, bookmark.getUserFeedback())
                 .loadStarsRatingComposite(table);
     }
 

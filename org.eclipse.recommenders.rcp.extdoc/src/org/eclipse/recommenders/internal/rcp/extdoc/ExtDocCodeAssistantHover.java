@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import java.lang.reflect.Field;
 
@@ -29,8 +29,6 @@ import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
-import org.eclipse.recommenders.internal.rcp.extdoc.UiManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
@@ -39,18 +37,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 @SuppressWarnings("restriction")
-public final class ExtDocCodeAssistantHover {
+final class ExtDocCodeAssistantHover {
 
     private ExtDocCodeAssistantHover() {
     }
 
-    public static void install(final JavaEditor editor, final UiManager uiManager, final ProviderStore providerStore) {
+    static void installToEditor(final JavaEditor editor, final UiManager uiManager, final ProviderStore providerStore) {
         final JavaSourceViewer viewer = (JavaSourceViewer) editor.getViewer();
         final JavaTextTools textTools = JavaPlugin.getDefault().getJavaTextTools();
-        final IPreferenceStore store = ExtDocCodeAssistantHover.stealPreferenceStore(viewer);
         viewer.unconfigure();
-        viewer.configure(new ViewerConfiguration(uiManager, providerStore, textTools.getColorManager(), store, editor,
-                IJavaPartitions.JAVA_PARTITIONING));
+        viewer.configure(new ViewerConfiguration(uiManager, providerStore, textTools.getColorManager(),
+                stealPreferenceStore(viewer), editor, IJavaPartitions.JAVA_PARTITIONING));
     }
 
     // TODO: Find another way to get the right preference store!
@@ -66,18 +63,16 @@ public final class ExtDocCodeAssistantHover {
 
     private static final class ViewerConfiguration extends JavaSourceViewerConfiguration {
 
-        private final ProviderStore providerStore;
         private final IInformationControlCreator creator;
 
         ViewerConfiguration(final UiManager uiManager, final ProviderStore providerStore,
                 final IColorManager colorManager, final IPreferenceStore preferenceStore, final ITextEditor editor,
                 final String partitioning) {
             super(colorManager, preferenceStore, editor, partitioning);
-            this.providerStore = providerStore;
             creator = new IInformationControlCreator() {
                 @Override
                 public IInformationControl createInformationControl(final Shell parent) {
-                    return new InformationControl(parent, uiManager, null);
+                    return new InformationControl(parent, uiManager, providerStore, null);
                 }
             };
         }
@@ -92,17 +87,18 @@ public final class ExtDocCodeAssistantHover {
         private final class InformationControl extends AbstractExtDocInformationControl {
 
             private StyledText text;
-            private Composite parent;
+            private Composite hoverComposite;
             private boolean lastWasExtDoc = true;
 
-            public InformationControl(final Shell parent, final UiManager uiManager, final InformationControl copy) {
+            public InformationControl(final Shell parent, final UiManager uiManager, final ProviderStore providerStore,
+                    final InformationControl copy) {
                 super(parent, uiManager, providerStore, copy);
             }
 
             @Override
             protected void createContent(final Composite parentComposite) {
                 super.createContent(parentComposite);
-                parent = parentComposite;
+                hoverComposite = parentComposite;
             }
 
             @Override
@@ -115,40 +111,39 @@ public final class ExtDocCodeAssistantHover {
             }
 
             private void displayExtDocContent(final Object input) {
-                if (!lastWasExtDoc) {
-                    for (final Control child : parent.getChildren()) {
+                if (lastWasExtDoc) {
+                    super.setInput(input);
+                } else {
+                    for (final Control child : hoverComposite.getChildren()) {
                         child.dispose();
                     }
-                    super.createContent(parent);
+                    super.createContent(hoverComposite);
                     super.setInput(input);
-                    parent.layout(true);
+                    hoverComposite.layout(true);
                     lastWasExtDoc = true;
-                } else {
-                    super.setInput(input);
                 }
             }
 
             private void displayTextContent(final Object input) {
                 if (lastWasExtDoc) {
-                    for (final Control child : parent.getChildren()) {
+                    for (final Control child : hoverComposite.getChildren()) {
                         child.dispose();
                     }
-                    text = new StyledText(parent, SWT.MULTI | SWT.READ_ONLY);
-                    text.setForeground(parent.getForeground());
-                    text.setBackground(parent.getBackground());
+                    text = new StyledText(hoverComposite, SWT.MULTI | SWT.READ_ONLY);
+                    text.setForeground(hoverComposite.getForeground());
+                    text.setBackground(hoverComposite.getBackground());
                     text.setFont(JFaceResources.getDialogFont());
                     text.setWordWrap(true);
                     text.setIndent(1);
                     lastWasExtDoc = false;
                 }
                 text.setText(input.toString());
-                parent.layout(true);
+                hoverComposite.layout(true);
             }
 
             @Override
             protected IJavaElementSelection getSelection(final Object input) {
-                final JavadocBrowserInformationControlInput in = (JavadocBrowserInformationControlInput) input;
-                final IJavaElement element = in.getElement();
+                final IJavaElement element = ((JavadocBrowserInformationControlInput) input).getElement();
                 return getUiManager().getLastSelection().copy(element);
             }
 
@@ -157,7 +152,8 @@ public final class ExtDocCodeAssistantHover {
                 return new IInformationControlCreator() {
                     @Override
                     public IInformationControl createInformationControl(final Shell parent) {
-                        return new InformationControl(parent, getUiManager(), InformationControl.this);
+                        return new InformationControl(parent, getUiManager(), getProviderStore(),
+                                InformationControl.this);
                     }
                 };
             }

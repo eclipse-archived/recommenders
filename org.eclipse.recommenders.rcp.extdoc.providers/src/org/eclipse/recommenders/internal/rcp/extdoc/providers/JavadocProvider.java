@@ -29,8 +29,8 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableReso
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
-import org.eclipse.recommenders.server.extdoc.GenericServer;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
+import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -43,12 +43,12 @@ import org.apache.commons.lang3.StringUtils;
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends AbstractTitledProvider {
 
-    private final GenericServer server;
+    private final IUserFeedbackServer server;
     private final Map<Composite, ExtendedJavadocView> javadocs = new HashMap<Composite, ExtendedJavadocView>();
     private final Map<Composite, Composite> feedbackComposites = new HashMap<Composite, Composite>();
 
     @Inject
-    public JavadocProvider(final GenericServer server) {
+    public JavadocProvider(final IUserFeedbackServer server) {
         this.server = server;
     }
 
@@ -93,7 +93,7 @@ public final class JavadocProvider extends AbstractTitledProvider {
 
     private ProviderUiJob displayComments(final IJavaElement javaElement) {
         final IName name = ElementResolver.resolveName(javaElement);
-        final CommunityFeatures features = CommunityFeatures.create(name, null, this, server);
+        final CommunityFeedback features = CommunityFeedback.create(name, null, this, server);
         return new ProviderUiJob() {
             @Override
             public void run(final Composite composite) {

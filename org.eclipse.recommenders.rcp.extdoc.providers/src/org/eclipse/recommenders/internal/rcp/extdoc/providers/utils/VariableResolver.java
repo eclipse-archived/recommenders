@@ -28,6 +28,9 @@ public final class VariableResolver {
     private VariableResolver() {
     }
 
+    /**
+     * @return The local variable's type.
+     */
     public static ITypeName resolveTypeSignature(final ILocalVariable var) {
         try {
             final IType declaringType = (IType) var.getAncestor(IJavaElement.TYPE);
@@ -37,6 +40,9 @@ public final class VariableResolver {
         }
     }
 
+    /**
+     * @return The local variable's type.
+     */
     public static ITypeName resolveTypeSignature(final IField var) {
         try {
             return resolveTypeSignature(var.getDeclaringType(), var.getTypeSignature());
@@ -61,5 +67,4 @@ public final class VariableResolver {
     private static ITypeName resolvePrimitive(final String primitiveTypeName) {
         return VmTypeName.get(Names.src2vmType(primitiveTypeName));
     }
-
 }

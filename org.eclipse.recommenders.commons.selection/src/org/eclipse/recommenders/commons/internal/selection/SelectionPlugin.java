@@ -50,7 +50,7 @@ public final class SelectionPlugin extends AbstractUIPlugin {
                 start();
                 return Status.OK_STATUS;
             }
-        }.schedule(1000);
+        }.schedule();
     }
 
     @Override
@@ -80,7 +80,7 @@ public final class SelectionPlugin extends AbstractUIPlugin {
         workbenchWindow.getSelectionService().addPostSelectionListener(internalListener);
 
         SelectionPlugin.page = workbenchWindow.getActivePage();
-        addListenersForExistentEditors(page);
+        addListenersForExistentEditors();
         page.addPartListener(partListener);
 
         if (page.getSelection() != null) {
@@ -88,17 +88,11 @@ public final class SelectionPlugin extends AbstractUIPlugin {
         }
     }
 
-    /**
-     * @param page
-     *            The {@link IWorkbenchPage} for which all already opened
-     *            editors should have the internal mouse/keyboard listeners
-     *            assigned to.
-     */
-    private static void addListenersForExistentEditors(final IWorkbenchPage page) {
+    private static void addListenersForExistentEditors() {
         for (final IEditorReference editor : page.getEditorReferences()) {
             final IWorkbenchPart part = editor.getPart(false);
             if (part != null) {
-                partListener.addViewerListener(part);
+                partListener.addEditorListener(part);
             }
         }
     }

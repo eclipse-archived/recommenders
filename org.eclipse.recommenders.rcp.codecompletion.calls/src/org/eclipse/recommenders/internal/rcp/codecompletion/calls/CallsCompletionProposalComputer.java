@@ -173,7 +173,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         model.clearEvidence();
         model.setMethodContext(firstMethodDeclaration);
         model.setObservedMethodCalls(receiverType, receiverMethodInvocations);
-        if (receiver.fuzzyIsParameter() || receiver.fuzzyIsDefinedByMethodReturn()) {
+        if ((receiver.fuzzyIsParameter() || receiver.fuzzyIsDefinedByMethodReturn())
+                && !(receiver.isThis() && ctx.getEnclosingMethod().isInit())) {
             model.negateConstructors();
         }
         model.updateBeliefs();
@@ -204,16 +205,16 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private void createCallProposalIfRecommended(final CompletionProposal proposal) {
-        final String signature = String.valueOf(proposal.getSignature()).replace('.', '/');
-        final String name = String.valueOf(proposal.getName());
-        final String propSignature = (name + signature).replaceAll("<\\.>", "");
+
+        final ProposalMatcher matcher = new ProposalMatcher(proposal);
+
         for (final CallsRecommendation call : recommendations) {
-            final String recSignature = call.method.getSignature();
-            if (recSignature.equals(propSignature)) {
+            if (matcher.matches(call.method)) {
                 final IJavaCompletionProposal javaProposal = ctx.toJavaCompletionProposal(proposal);
                 final CompletionProposalDecorator decoratedProposal = new CompletionProposalDecorator(javaProposal,
                         call);
                 proposals.add(decoratedProposal);
+                return;
             }
         }
     }

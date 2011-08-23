@@ -8,9 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
-
-import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.junit.Test;
 
@@ -18,9 +16,10 @@ public final class ProvidersCompositeTest {
 
     @Test
     public void testExtDocView() {
-        final ProvidersComposite composite = new ProvidersComposite(ExtDocUtils.getShell(), true);
+        // final ProvidersComposite composite = new
+        // ProvidersComposite(ExtDocUtils.getShell(), null);
 
-        composite.layout(true);
+        // composite.layout(true);
 
         // Assert.assertTrue(composite.setFocus());
     }

@@ -16,6 +16,9 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResol
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
+
+import org.mockito.Mockito;
 
 @SuppressWarnings("restriction")
 public final class ExtDocUtils {
@@ -24,6 +27,7 @@ public final class ExtDocUtils {
     private static TestJavaElementSelection selection = getSelection(JavaElementLocation.METHOD_BODY,
             TestTypeUtils.getDefaultJavaType());
     private static Shell shell = new Shell();
+    private static IWorkbenchWindow workbenchWindow = Mockito.mock(IWorkbenchWindow.class);
 
     static {
         ElementResolver.setJavaElementResolver(new JavaElementResolver());
@@ -46,6 +50,10 @@ public final class ExtDocUtils {
 
     public static Shell getShell() {
         return shell;
+    }
+
+    public static IWorkbenchWindow getWorkbenchWindow() {
+        return workbenchWindow;
     }
 
 }

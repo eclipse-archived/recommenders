@@ -33,10 +33,10 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEclipseEditor;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import junit.framework.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @SuppressWarnings({ "restriction", "rawtypes" })
 @RunWith(SWTBotJunit4ClassRunner.class)
@@ -105,7 +105,9 @@ public final class EditorTest extends AbstractUiTest {
                 ASTNode.nodeClassForType(selection.getAstNode().getParent().getNodeType()).getSimpleName());
         Assert.assertTrue(!("Type Declaration".equals(expectedLocation)
                 || "Extends Declaration".equals(expectedLocation) || "Implements Declaration".equals(expectedLocation))
-                || JavaElementLocation.isInTypeDeclaration(location));
+                || location == JavaElementLocation.TYPE_DECLARATION
+                || location == JavaElementLocation.EXTENDS_DECLARATION
+                || location == JavaElementLocation.IMPLEMENTS_DECLARATION);
         Assert.assertNotNull(selection.getCompilationUnit());
 
         // TODO ...

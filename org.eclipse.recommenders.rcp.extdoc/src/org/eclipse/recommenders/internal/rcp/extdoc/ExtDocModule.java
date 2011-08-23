@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 
@@ -31,9 +31,8 @@ public final class ExtDocModule extends AbstractModule {
         bind(ProviderStore.class).in(Scopes.SINGLETON);
         bind(ExtDocView.class).in(Scopes.SINGLETON);
 
-        final IPreferenceStore preferenceStore = ExtDocPlugin.getDefault().getPreferenceStore();
         final Named preferenceStoreName = Names.named(PreferenceConstants.NAME_EXTDOC_PREFERENCE_STORE);
-        bind(IPreferenceStore.class).annotatedWith(preferenceStoreName).toInstance(preferenceStore);
+        bind(IPreferenceStore.class).annotatedWith(preferenceStoreName).toInstance(ExtDocPlugin.preferenceStore());
     }
 
 }

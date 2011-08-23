@@ -24,22 +24,23 @@ import org.eclipse.ui.IWorkbenchPart;
 @SuppressWarnings("restriction")
 final class PartListener implements IPartListener {
 
-    private static InternalSelectionListener selectionListener;
+    private final InternalSelectionListener selectionListener;
 
     /**
-     * @param cursorListener
-     *            The {@link ViewerListener} to register with Java editors.
+     * @param selectionListener
+     *            The listener will be notified on selection changes in any Java
+     *            editor.
      */
-    public PartListener(final InternalSelectionListener selectionListener) {
-        PartListener.selectionListener = selectionListener;
+    PartListener(final InternalSelectionListener selectionListener) {
+        this.selectionListener = selectionListener;
     }
 
     /**
      * @param workbenchPart
-     *            Workbench part to append the listener to in case it is a Java
+     *            Will register the selection listener with in case it is a Java
      *            editor.
      */
-    protected void addViewerListener(final IWorkbenchPart workbenchPart) {
+    protected void addEditorListener(final IWorkbenchPart workbenchPart) {
         if (workbenchPart instanceof JavaEditor) {
             final JavaEditor editor = (JavaEditor) workbenchPart;
             final ViewerListener listener = new ViewerListener(workbenchPart);
@@ -70,10 +71,10 @@ final class PartListener implements IPartListener {
 
     @Override
     public void partOpened(final IWorkbenchPart part) {
-        addViewerListener(part);
+        addEditorListener(part);
     }
 
-    private final static class ViewerListener implements ISelectionChangedListener {
+    private final class ViewerListener implements ISelectionChangedListener {
 
         private final IWorkbenchPart part;
 

@@ -25,12 +25,11 @@ public enum JavaElementLocation {
         displayName = WordUtils.capitalizeFully(name().replace("_", " "));
     }
 
+    /**
+     * @return The name of the location as it will be displayed in the provider
+     *         table.
+     */
     public String getDisplayName() {
         return displayName;
-    }
-
-    // TODO: Only called from tests.
-    public static boolean isInTypeDeclaration(final JavaElementLocation location) {
-        return location == TYPE_DECLARATION || location == EXTENDS_DECLARATION || location == IMPLEMENTS_DECLARATION;
     }
 }

@@ -19,7 +19,7 @@
 	   <view
 	         allowMultiple="false"
 	         category="org.eclipse.recommenders.rcp.category.views"
-	         class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocView"
+	         class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView"
 	         icon="icons/full/eview16/extdoc.png"
 	         id="org.eclipse.recommenders.internal.rcp.extdoc.views.ExtDocView"
 	         name="ExtDoc"
@@ -29,7 +29,7 @@
      <extension
            point="org.eclipse.jdt.ui.javaEditorTextHovers">
         <hover
-              class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocHover"
+              class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.extdoc.ExtDocHover"
               id="org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocHover">
         </hover>
      </extension>

@@ -39,9 +39,9 @@ import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
+import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
-import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
@@ -53,12 +53,12 @@ import com.google.inject.Provider;
 
 public final class CallsProvider extends AbstractLocationSensitiveTitledProvider {
 
-    private final GenericServer server;
+    private final IUserFeedbackServer server;
     private final CallsAdapter adapter;
 
     @Inject
     CallsProvider(final ProjectServices projectServices,
-            final Provider<Set<IVariableUsageResolver>> usageResolversProvider, final GenericServer server) {
+            final Provider<Set<IVariableUsageResolver>> usageResolversProvider, final IUserFeedbackServer server) {
         this.server = Preconditions.checkNotNull(server);
         adapter = new CallsAdapter(projectServices, usageResolversProvider);
     }
@@ -182,12 +182,10 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
                     calledMethods, true, context, facade);
             return displayProposals(method, method.getElementName(), ElementResolver.toRecMethod(method),
                     isMethodDeclaration, calls, calledMethods, null);
-        } else {
-            // TODO: first is not correct in all cases. this needs to be
-            // fixed
-            final IMethod first = JdtUtils.findFirstDeclaration(method);
-            return first.equals(method) ? null : displayProposalsForMethod(first, isMethodDeclaration, context);
         }
+        // TODO: first is not correct in all cases. this needs to be fixed
+        final IMethod first = JdtUtils.findFirstDeclaration(method);
+        return first.equals(method) ? null : displayProposalsForMethod(first, isMethodDeclaration, context);
     }
 
     private ProviderUiJob displayProposals(final IJavaElement element, final String elementName, final IName elementId,
@@ -202,18 +200,18 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         final String text = "People who " + action + " " + elementName + " usually also call the following methods"
                 + (isMethodDeclaration ? " inside" : "") + ":";
         final String text2 = "When accessed from single methods, probabilites for this field's methods might be different:";
-        final CommunityFeatures features = CommunityFeatures.create(elementId, null, this, server);
+        final CommunityFeedback features = CommunityFeedback.create(elementId, null, this, server);
 
         return new ProviderUiJob() {
             @Override
             public void run(final Composite composite) {
                 disposeChildren(composite);
-                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);
                 line.createStyleRange(12 + action.length(), elementName.length(), SWT.NORMAL, false, true);
                 displayProposals(element, isMethodDeclaration, proposals, calledMethods, composite);
 
                 if (maxProbabilitiesFromMethods != null) {
-                    new TextAndFeaturesLine(composite, text2, features);
+                    TextAndFeaturesLine.create(composite, text2, features);
                     final TableListing calls = new TableListing(composite, 4);
                     for (final Tuple<IMethodName, Tuple<IMethodName, Double>> proposal : maxProbabilitiesFromMethods) {
                         calls.startNewRow();

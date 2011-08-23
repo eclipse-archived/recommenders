@@ -34,29 +34,29 @@ public class ProviderStore {
 
     private static final String EXTENSION_ID = "org.eclipse.recommenders.rcp.extdoc.provider";
 
-    private final Map<IProvider, Integer> providers = new HashMap<IProvider, Integer>();
+    private Map<IProvider, Integer> providers;
 
-    public ProviderStore() {
-        loadProviders();
-    }
-
-    private void loadProviders() {
-        for (final IConfigurationElement element : Platform.getExtensionRegistry().getConfigurationElementsFor(
-                EXTENSION_ID)) {
-            try {
-                final IProvider provider = (IProvider) element.createExecutableExtension("class");
-                providers.put(provider, Integer.valueOf(element.getAttribute("priority")));
-            } catch (final CoreException e) {
-                throw new IllegalStateException(e);
+    private Map<IProvider, Integer> lazyGetProviders() {
+        if (providers == null) {
+            providers = new HashMap<IProvider, Integer>();
+            for (final IConfigurationElement element : Platform.getExtensionRegistry().getConfigurationElementsFor(
+                    EXTENSION_ID)) {
+                try {
+                    final IProvider provider = (IProvider) element.createExecutableExtension("class");
+                    providers.put(provider, Integer.valueOf(element.getAttribute("priority")));
+                } catch (final CoreException e) {
+                    throw new IllegalStateException(e);
+                }
             }
         }
+        return providers;
     }
 
     /**
      * @return List of all providers in the order expressed through priorities.
      */
-    public ImmutableList<IProvider> getProviders() {
-        final List<IProvider> list = new ArrayList<IProvider>(providers.keySet());
+    public final ImmutableList<IProvider> getProviders() {
+        final List<IProvider> list = new ArrayList<IProvider>(lazyGetProviders().keySet());
         Collections.sort(list, new ProviderComparator(providers));
         return ImmutableList.copyOf(list);
     }
@@ -69,12 +69,12 @@ public class ProviderStore {
      *            in views and pop-ups.
      */
     public final void setProviderPriority(final IProvider provider, final int priority) {
-        Preconditions.checkArgument(providers.containsKey(provider));
+        Preconditions.checkArgument(lazyGetProviders().containsKey(provider));
         Preconditions.checkArgument(priority > 0);
         ExtDocPlugin.getPreferences().putInt(getPreferenceId(provider), priority);
     }
 
-    static String getPreferenceId(final IProvider provider) {
+    private static String getPreferenceId(final IProvider provider) {
         return "priority" + provider.hashCode();
     }
 

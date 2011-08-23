@@ -11,13 +11,12 @@
 package org.eclipse.recommenders.rcp.extdoc.features;
 
 import org.eclipse.recommenders.commons.utils.names.IName;
-import org.eclipse.recommenders.internal.server.extdoc.RatingSummary;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.server.extdoc.GenericServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
 import org.eclipse.swt.widgets.Shell;
+
 import org.junit.Test;
 
 public final class StarsRatingCompositeTest {
@@ -29,11 +28,11 @@ public final class StarsRatingCompositeTest {
 
         provider.createComposite(shell, null);
 
-        final GenericServer server = ServerUtils.getGenericServer();
+        final IUserFeedbackServer server = ServerUtils.getGenericServer();
         for (final IName name : TestTypeUtils.getDefaultNames()) {
-            final StarsRatingComposite composite = CommunityFeatures.create(name, "test", provider, server)
+            final StarsRatingComposite composite = CommunityFeedback.create(name, "test", provider, server)
                     .loadStarsRatingComposite(shell);
-            composite.addRating(4, RatingSummary.create(0, 0, null));
+            // composite.addRating(4, summary);
         }
     }
 }

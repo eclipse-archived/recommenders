@@ -33,8 +33,14 @@ public interface IJavaElementSelection {
      */
     JavaElementLocation getElementLocation();
 
+    /**
+     * @return The character offset of the selection inside the editor.
+     */
     int getInvocationOffset();
 
+    /**
+     * @return The compilation unit associated with the Java element.
+     */
     ITypeRoot getCompilationUnit();
 
     /**
@@ -42,8 +48,16 @@ public interface IJavaElementSelection {
      */
     ASTNode getAstNode();
 
+    /**
+     * @return The Java Editor in which the selection was made.
+     */
     IEditorPart getEditor();
 
+    /**
+     * @param element
+     *            The {@link IJavaElement} of the newly created selection.
+     * @return A full copy of the selection with the new element set.
+     */
     IJavaElementSelection copy(IJavaElement element);
 
 }

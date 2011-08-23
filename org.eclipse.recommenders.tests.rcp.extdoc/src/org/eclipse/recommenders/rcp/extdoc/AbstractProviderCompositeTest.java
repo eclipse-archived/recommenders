@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.rcp.extdoc;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -27,16 +26,11 @@ public final class AbstractProviderCompositeTest {
         final Composite control = composite.createComposite(ExtDocUtils.getShell(), null);
 
         Assert.assertEquals(3, control.getChildren().length);
-        composite.disposeChildren(control);
+        AbstractTitledProvider.disposeChildren(control);
         Assert.assertEquals(0, control.getChildren().length);
     }
 
     private static final class ProviderComposite extends AbstractTitledProvider {
-
-        @Override
-        public boolean isAvailableForLocation(final JavaElementLocation location) {
-            return false;
-        }
 
         @Override
         public ProviderUiJob updateSelection(final IJavaElementSelection context) {

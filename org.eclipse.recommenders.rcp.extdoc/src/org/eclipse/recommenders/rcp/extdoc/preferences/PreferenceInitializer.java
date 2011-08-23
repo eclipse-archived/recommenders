@@ -20,7 +20,7 @@ public final class PreferenceInitializer extends AbstractPreferenceInitializer {
 
     @Override
     public void initializeDefaultPreferences() {
-        final IPreferenceStore preferenceStore = ExtDocPlugin.getDefault().getPreferenceStore();
+        final IPreferenceStore preferenceStore = ExtDocPlugin.preferenceStore();
 
         preferenceStore.setDefault(PreferenceConstants.WEBSERVICE_HOST, SERVER_URL);
         preferenceStore.setDefault(PreferenceConstants.USERNAME, "Anonymous");

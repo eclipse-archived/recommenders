@@ -15,7 +15,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Checks;
-import org.eclipse.recommenders.internal.rcp.extdoc.AbstractProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.GridData;
@@ -23,6 +22,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchWindow;
 
+/**
+ * Adds a title line containing provider's icon and name above the composite
+ * created by the subclass.
+ */
 public abstract class AbstractTitledProvider extends AbstractProvider {
 
     private IWorkbenchWindow window;
@@ -65,10 +68,17 @@ public abstract class AbstractTitledProvider extends AbstractProvider {
 
     protected abstract ProviderUiJob updateSelection(IJavaElementSelection selection);
 
+    /**
+     * @return The currently active {@link IWorkbenchWindow}.
+     */
     public final IWorkbenchWindow getWorkbenchWindow() {
         return window;
     }
 
+    /**
+     * @param composite
+     *            The composite for which all children will be disposed.
+     */
     public static final void disposeChildren(final Composite composite) {
         for (final Control child : composite.getChildren()) {
             child.dispose();

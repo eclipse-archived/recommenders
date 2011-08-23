@@ -8,16 +8,20 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.server.extdoc;
+package org.eclipse.recommenders.internal.server.extdoc;
 
-import org.eclipse.recommenders.internal.server.extdoc.AbstractFeedbackServer;
+import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
+import org.eclipse.recommenders.server.extdoc.UsernameProvider;
 
 import com.google.inject.Inject;
 
-public final class GenericServer extends AbstractFeedbackServer {
+/**
+ * A provider server only containing community feedback support.
+ */
+final class FeedbackServer extends AbstractFeedbackServer {
 
     @Inject
-    public GenericServer(final ICouchDbServer server, final UsernameProvider usernameListener) {
+    FeedbackServer(final ICouchDbServer server, final UsernameProvider usernameListener) {
         super(server, usernameListener);
     }
 

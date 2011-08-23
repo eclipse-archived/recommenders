@@ -71,6 +71,8 @@ public final class JavaElementSelectionResolver {
     /**
      * @param editor
      *            The editor in which the selection took place.
+     * @param offset
+     *            The offset of the selection in the editor.
      * @return The selection context resolved from the editor selection.
      */
     public static IJavaElementSelection resolveFromEditor(final JavaEditor editor, final int offset) {

@@ -29,7 +29,7 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResol
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
@@ -80,17 +80,17 @@ public final class SubclassingProvider extends AbstractTitledProvider {
                 + " we created the following statistics. Subclassers may consider to override the following methods.";
         final String text2 = "Subclassers may consider to call the following methods to configure instances of this class via self calls.";
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
-        final CommunityFeatures features = CommunityFeatures.create(type, null, this, server);
+        final CommunityFeedback features = CommunityFeedback.create(type, null, this, server);
 
         return new ProviderUiJob() {
             @Override
             public void run(final Composite composite) {
                 disposeChildren(composite);
-                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);
                 line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
                 displayDirectives(overrides.getOverrides(), "override", subclasses, composite);
                 if (calls != null) {
-                    new TextAndFeaturesLine(composite, text2, features);
+                    TextAndFeaturesLine.create(composite, text2, features);
                     displayDirectives(calls.getCalls(), "call", calls.getNumberOfSubclasses(), composite);
                 }
                 features.loadCommentsComposite(composite);
@@ -106,7 +106,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
             return null;
         }
         final int definitions = selfcalls.getNumberOfDefinitions();
-        final CommunityFeatures features = CommunityFeatures.create(method, null, this, server);
+        final CommunityFeedback features = CommunityFeedback.create(method, null, this, server);
 
         return new ProviderUiJob() {
             @Override
@@ -117,7 +117,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
                 final String text = String
                         .format("Based on %d implementations of %s we created the following statistics. Implementors may consider to call the following methods.",
                                 definitions, method.getName());
-                final TextAndFeaturesLine line = new TextAndFeaturesLine(composite, text, features);
+                final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);
                 line.createStyleRange(29 + getLength(definitions), method.getName().length(), SWT.NORMAL, false, true);
                 displayDirectives(selfcalls.getCalls(), "call", definitions, composite);
                 features.loadCommentsComposite(composite);

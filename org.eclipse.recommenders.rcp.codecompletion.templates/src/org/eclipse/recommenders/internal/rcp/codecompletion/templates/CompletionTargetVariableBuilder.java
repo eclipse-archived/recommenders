@@ -70,7 +70,7 @@ public final class CompletionTargetVariableBuilder {
         replacementOffset = context.getReplacementRegion().getOffset();
         if (receiverType == null) {
             handleUnresolvedType(context);
-        } else if (context.getVariable().isThis()) {
+        } else if (context.getVariable() != null && context.getVariable().isThis()) {
             receiverType = Checks.ensureIsNotNull(context.getVariable().getType());
             isCallOnThis = true;
             receiverName = context.getPrefixToken();

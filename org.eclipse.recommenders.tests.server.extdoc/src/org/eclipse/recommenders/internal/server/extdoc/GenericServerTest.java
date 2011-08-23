@@ -17,16 +17,17 @@ import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.features.IComment;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
-import org.eclipse.recommenders.server.extdoc.GenericServer;
+import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 public final class GenericServerTest {
 
-    private final GenericServer server = ServerUtils.getGenericServer();
+    private final IUserFeedbackServer server = ServerUtils.getGenericServer();
     private final IProvider provider = ExtDocUtils.getTestProvider();
 
     @Test

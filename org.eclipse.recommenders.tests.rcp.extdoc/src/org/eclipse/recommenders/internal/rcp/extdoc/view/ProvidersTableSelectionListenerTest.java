@@ -8,9 +8,10 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
+import org.eclipse.recommenders.internal.rcp.extdoc.ProvidersComposite;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -24,6 +25,7 @@ public final class ProvidersTableSelectionListenerTest {
     public void testHandleEvent() {
         final Event event = new Event();
         final ProvidersTable table = new ProvidersTable(ExtDocUtils.getShell(), new ProviderStore());
+        table.setProvidersComposite(new ProvidersComposite(ExtDocUtils.getShell(), ExtDocUtils.getWorkbenchWindow()));
         final TableItem item = table.addProvider(ProvidersTableTest.mockProviderComposite(), "Test", null);
         table.setContext(ExtDocUtils.getSelection());
         event.item = item;

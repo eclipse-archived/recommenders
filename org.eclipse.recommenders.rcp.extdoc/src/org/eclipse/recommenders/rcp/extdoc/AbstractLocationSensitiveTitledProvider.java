@@ -23,6 +23,10 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.Throws;
 
+/**
+ * Allos subclasses to implement methods for all possible combinations of
+ * element types (e.g. field or method) and element locations.
+ */
 @SuppressWarnings("restriction")
 public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTitledProvider {
 

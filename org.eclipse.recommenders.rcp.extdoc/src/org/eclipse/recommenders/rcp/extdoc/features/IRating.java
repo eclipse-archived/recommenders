@@ -16,10 +16,20 @@ import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public interface IRating extends IServerType {
 
+    /**
+     * @return A value from 1 to 5 where 5 is the best rating.
+     */
     int getRating();
 
+    /**
+     * @return An internal unique user ID allowing to associate ratings with
+     *         users.
+     */
     String getUserId();
 
+    /**
+     * @return The date the rating was submitted.
+     */
     Date getDate();
 
 }

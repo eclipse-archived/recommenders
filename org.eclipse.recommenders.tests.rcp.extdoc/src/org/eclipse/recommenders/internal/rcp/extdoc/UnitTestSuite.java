@@ -10,11 +10,11 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocViewTest;
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersCompositeTest;
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersTableDropAdapterTest;
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersTableSelectionListenerTest;
-import org.eclipse.recommenders.internal.rcp.extdoc.swt.ProvidersTableTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocViewTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersCompositeTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersTableDropAdapterTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersTableSelectionListenerTest;
+import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersTableTest;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderCompositeTest;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderCompositeTest;
 import org.eclipse.recommenders.rcp.extdoc.SourceCodeAreaTest;

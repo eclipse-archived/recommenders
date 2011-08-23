@@ -13,13 +13,13 @@ package org.eclipse.recommenders.internal.server.extdoc;
 import org.eclipse.recommenders.rcp.extdoc.features.IRating;
 import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
 
-public final class RatingSummary implements IRatingSummary {
+final class RatingSummary implements IRatingSummary {
 
     private int sum;
     private int count;
     private IRating userRating;
 
-    public static IRatingSummary create(final int sum, final int count, final IRating userRating) {
+    static IRatingSummary create(final int sum, final int count, final IRating userRating) {
         final RatingSummary summary = new RatingSummary();
         summary.sum = sum;
         summary.count = count;

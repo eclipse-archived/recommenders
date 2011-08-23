@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp.extdoc.swt;
+package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
@@ -45,10 +45,10 @@ final class ProvidersTableSelectionListener implements Listener {
         table.setChecked(preferenceId, tableItem.getChecked());
         if (tableItem.getGrayed()) {
             if (tableItem.getChecked()) {
-                new ProviderUpdateJob(tableItem, lastSelection).schedule();
+                new ProviderUpdateJob(table, tableItem, lastSelection).schedule();
             }
         } else {
-            ProvidersTable.setContentVisible(tableItem, tableItem.getChecked(), true);
+            table.setContentVisible(tableItem, tableItem.getChecked(), true);
         }
     }
 

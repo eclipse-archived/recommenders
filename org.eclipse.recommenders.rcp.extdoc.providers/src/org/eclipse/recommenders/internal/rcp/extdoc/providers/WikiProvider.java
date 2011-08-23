@@ -22,7 +22,7 @@ import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeatures;
+import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -79,7 +79,7 @@ public final class WikiProvider extends AbstractTitledProvider {
     }
 
     void displayText(final IJavaElement element, final String markup, final Composite composite) {
-        CommunityFeatures.create(ElementResolver.resolveName(element), null, this, server).loadStarsRatingComposite(
+        CommunityFeedback.create(ElementResolver.resolveName(element), null, this, server).loadStarsRatingComposite(
                 composite);
         // TODO: Add editing option.
 
