@@ -12,40 +12,24 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
-import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 
 public class ProposalMatcher {
 
     private final String jdtMethodName;
-    private Pattern[] jdtParameterTypePatterns;
+    private final String[] jdtParameterTypes;
     private final String[] jdtGenericTypeArguments;
 
     public ProposalMatcher(final CompletionProposal proposal) {
         ensureIsNotNull(proposal);
         jdtMethodName = String.valueOf(proposal.getName());
-        final String jdtVariableTypeDeclarationSignature = String.valueOf(proposal.getDeclarationSignature());
-        jdtGenericTypeArguments = Signature.getTypeArguments(jdtVariableTypeDeclarationSignature);
         final String jdtMethodSignature = String.valueOf(proposal.getSignature());
-        initializeGenericTypeArgumentPatterns(jdtMethodSignature);
-    }
-
-    private void initializeGenericTypeArgumentPatterns(final String jdtMethodSignature) {
-        final String[] jdtParameterTypes = Signature.getParameterTypes(jdtMethodSignature);
-        jdtParameterTypePatterns = new Pattern[jdtParameterTypes.length];
-        for (int i = 0; i < jdtParameterTypes.length; i++) {
-            for (final String genericTypeArgument : jdtGenericTypeArguments) {
-                // fuzzy match to get List<T> matches too;
-                jdtParameterTypes[i] = StringUtils.replace(jdtParameterTypes[i], genericTypeArgument, ".*");
-            }
-            jdtParameterTypePatterns[i] = Pattern.compile(jdtParameterTypes[i]);
-        }
+        final String jdtVariableTypeDeclarationSignature = String.valueOf(proposal.getDeclarationSignature());
+        jdtParameterTypes = Signature.getParameterTypes(jdtMethodSignature);
+        jdtGenericTypeArguments = Signature.getTypeArguments(jdtVariableTypeDeclarationSignature);
     }
 
     public boolean matches(final IMethodName crMethod) {
@@ -66,16 +50,34 @@ public class ProposalMatcher {
     }
 
     private boolean hasSameParameterCount(final ITypeName[] crParameterTypes) {
-        return crParameterTypes.length != jdtParameterTypePatterns.length;
+        return crParameterTypes.length != jdtParameterTypes.length;
     }
 
     private boolean hasSameParameterTypes(final ITypeName[] crParameterTypes) {
         for (int i = 0; i < crParameterTypes.length; i++) {
-            final String srcTypeName = Names.vm2srcQualifiedType(crParameterTypes[i]);
-            if (!jdtParameterTypePatterns[i].matcher(srcTypeName).matches()) {
+            if (isArgumentTypeAPotentialGenericReplacement(jdtParameterTypes[i])) {
+                continue;
+            }
+            // if I'm here than the parameter type MUST match
+            if (!isSameTypeIdentifier(crParameterTypes[i], jdtParameterTypes[i])) {
                 return false;
             }
         }
         return true;
     }
+
+    private boolean isArgumentTypeAPotentialGenericReplacement(final String jdtParameterType) {
+        for (final String genericTypeArgument : jdtGenericTypeArguments) {
+            // fuzzy match to get List<T> matches too;
+            if (jdtParameterType.contains(genericTypeArgument)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isSameTypeIdentifier(final ITypeName crParameterType, final String jdtParameterType) {
+        return jdtParameterType.equals(crParameterType.getIdentifier().replace('/', '.'));
+    }
+
 }
