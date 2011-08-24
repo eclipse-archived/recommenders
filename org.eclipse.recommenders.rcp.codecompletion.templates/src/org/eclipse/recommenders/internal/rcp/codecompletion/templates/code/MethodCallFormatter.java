@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.templates.code;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Names;
@@ -18,7 +19,6 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Generates the <code>String</code> representation of a {@link MethodCall}.
@@ -94,7 +94,9 @@ public final class MethodCallFormatter {
         if (returnType.isPrimitiveType()) {
             return Names.vm2srcSimpleTypeName(returnType);
         } else {
-            return String.format("${returnedType:newType(%s)}%s", getTypeIdentifier(returnType),
+            final String typeIdentifier = getTypeIdentifier(returnType);
+            final String returnTypeTemplateVariable = typeIdentifier.replaceAll("\\W", "_");
+            return String.format("${%s:newType(%s)}%s", returnTypeTemplateVariable, typeIdentifier,
                     returnType.isArrayType() ? StringUtils.repeat("[]", returnType.getArrayDimensions()) : "");
         }
     }

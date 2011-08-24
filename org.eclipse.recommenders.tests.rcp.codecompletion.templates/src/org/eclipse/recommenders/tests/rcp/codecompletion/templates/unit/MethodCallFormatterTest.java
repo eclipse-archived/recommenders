@@ -13,7 +13,6 @@ package org.eclipse.recommenders.tests.rcp.codecompletion.templates.unit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.code.MethodCallFormatter;
 import org.eclipse.recommenders.internal.rcp.codecompletion.templates.types.MethodCall;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +33,7 @@ public final class MethodCallFormatterTest {
                 "${constructedType:newType(org.eclipse.swt.widgets.Button)} ${unconstructed:newName(org.eclipse.swt.widgets.Button)} = new ${constructedType}(${intTest2:link(0)}, ${arg4:link(false, true)}, ${arg5}, ${arg6:var(org.eclipse.swt.widgets.Button)});");
 
         check(UnitTestSuite.getDefaultReturningMethodCall(),
-                "${returnedType:newType(java.lang.String)} text = button456.getText(${intTest3:link(0)}, ${arg7:link(false, true)}, ${arg8}, ${arg9:var(org.eclipse.swt.widgets.Button)});");
+                "${java_lang_String:newType(java.lang.String)} text = button456.getText(${intTest3:link(0)}, ${arg7:link(false, true)}, ${arg8}, ${arg9:var(org.eclipse.swt.widgets.Button)});");
     }
 
     /**
