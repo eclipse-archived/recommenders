@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -76,7 +77,8 @@ public class ProposalMatcher {
         return false;
     }
 
-    private boolean isSameTypeIdentifier(final ITypeName crParameterType, final String jdtParameterType) {
+    private boolean isSameTypeIdentifier(final ITypeName crParameterType, String jdtParameterType) {
+        jdtParameterType = StringUtils.remove(jdtParameterType, ";");
         return jdtParameterType.equals(crParameterType.getIdentifier().replace('/', '.'));
     }
 

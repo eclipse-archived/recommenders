@@ -44,6 +44,13 @@ public class ProposalMatcherTest {
     }
 
     @Test
+    public void testNonPrimitiveParameter() {
+        final ProposalMatcher matcher = createMatcher("test", "(Ljava.lang.String;)V", "LTestClass;");
+        final VmMethodName method = VmMethodName.get("LTestClass", "test(Ljava/lang/String;)V");
+        assertTrue(matcher.matches(method));
+    }
+
+    @Test
     public void testMultipleGenericParameters() {
         final ProposalMatcher matcher = createMatcher("test", "(LGenericType;LOtherGeneric;)V",
                 "LTestClass<LGenericType;LOtherGeneric;>;");
