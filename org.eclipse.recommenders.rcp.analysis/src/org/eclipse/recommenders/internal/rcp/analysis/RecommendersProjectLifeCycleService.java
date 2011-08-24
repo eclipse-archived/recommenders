@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -84,8 +85,9 @@ public class RecommendersProjectLifeCycleService implements IElementChangedListe
             }
         }
 
+        final IJavaElement changedElement = delta.getElement();
         final IJavaProject javaProject = delta.getElement().getJavaProject();
-        if (javaProject == null) {
+        if (javaProject == null || changedElement != javaProject) {
             return;
         }
 
@@ -97,11 +99,15 @@ public class RecommendersProjectLifeCycleService implements IElementChangedListe
     }
 
     private boolean isCloseEvent(final IJavaElementDelta delta) {
-        return (delta.getFlags() & IJavaElementDelta.F_CLOSED) != 0;
+        final boolean removed = (delta.getKind() & IJavaElementDelta.REMOVED) != 0;
+        final boolean closed = (delta.getFlags() & IJavaElementDelta.F_CLOSED) != 0;
+        return removed || closed;
     }
 
     private boolean isOpenEvent(final IJavaElementDelta delta) {
-        return (delta.getFlags() & IJavaElementDelta.F_OPENED) != 0;
+        final boolean added = (delta.getKind() & IJavaElementDelta.ADDED) != 0;
+        final boolean opened = (delta.getFlags() & IJavaElementDelta.F_OPENED) != 0;
+        return added || opened;
     }
 
     public IJavaProject toJavaProject(final IProject project) {

@@ -23,7 +23,6 @@ import junit.framework.Assert;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ElementChangedEvent;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -71,11 +70,10 @@ public class RecommendersProjectLifeCycleServiceTest {
     }
 
     private ElementChangedEvent createEvent(final int flags) {
-        final IJavaElement element = mock(IJavaElement.class);
         final IJavaElementDelta delta = mock(IJavaElementDelta.class);
         when(delta.getFlags()).thenReturn(flags);
-        when(delta.getElement()).thenReturn(element);
-        when(element.getJavaProject()).thenReturn(javaProject);
+        when(delta.getElement()).thenReturn(javaProject);
+        when(javaProject.getJavaProject()).thenReturn(javaProject);
         return new ElementChangedEvent(delta, 0);
     }
 
