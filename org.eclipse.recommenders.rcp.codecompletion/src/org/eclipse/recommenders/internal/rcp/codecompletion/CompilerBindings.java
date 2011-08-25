@@ -53,7 +53,11 @@ public class CompilerBindings {
             final int dimensions = binding.dimensions();
             final TypeBinding leafComponentType = binding.leafComponentType();
             final String arrayDimensions = StringUtils.repeat("[", dimensions);
-            final VmTypeName res = VmTypeName.get(arrayDimensions + toTypeName(leafComponentType));
+            final Option<ITypeName> typeName = toTypeName(leafComponentType);
+            if (!typeName.hasValue()) {
+                return none();
+            }
+            final VmTypeName res = VmTypeName.get(arrayDimensions + typeName.get().getIdentifier());
             return wrap(res);
         }
         // TODO: handling of generics is bogus!
@@ -90,7 +94,6 @@ public class CompilerBindings {
         if (binding == null) {
             return none();
         }
-        toTypeName(binding.declaringClass);
         final String uniqueKey = String.valueOf(binding.computeUniqueKey());
         final String qualifiedMethodName = StringUtils.substringBefore(uniqueKey, "(").replace(";.", ".");
         final String[] parameterTypes = Signature.getParameterTypes(uniqueKey);
