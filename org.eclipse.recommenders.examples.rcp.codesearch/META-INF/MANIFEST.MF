@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Codesearch Sample Scenarios
 Bundle-SymbolicName: org.eclipse.recommenders.examples.rcp.codesearch
-Bundle-Version: 0.1.0.qualifier
+Bundle-Version: 0.3.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.ui;bundle-version="3.6.2",

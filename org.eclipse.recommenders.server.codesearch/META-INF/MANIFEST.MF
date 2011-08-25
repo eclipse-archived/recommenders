@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Codesearch Server
 Bundle-SymbolicName: org.eclipse.recommenders.server.codesearch
-Bundle-Version: 0.2.0.qualifier
+Bundle-Version: 0.3.0.qualifier
 Bundle-Activator: org.eclipse.recommenders.internal.server.codesearch.Activator
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.recommenders.commons.utils;bundle-version="0.1.0",

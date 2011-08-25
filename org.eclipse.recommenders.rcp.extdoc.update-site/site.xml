@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.recommenders.rcp.extdoc_0.2.0.qualifier.jar" id="org.eclipse.recommenders.rcp.extdoc" version="0.2.0.qualifier">
+   <feature url="features/org.eclipse.recommenders.rcp.extdoc_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.extdoc" version="0.3.0.qualifier">
       <category name="code-recommenders-extdoc"/>
    </feature>
    <category-def name="code-recommenders-extdoc" label="Eclipse Code Recommenders - ExtDoc"/>

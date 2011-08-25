@@ -5,12 +5,10 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.extdoc.parent</artifactId>
-		<version>0.2.0-SNAPSHOT</version>
+		<version>0.3.0-SNAPSHOT</version>
 		<relativePath>../org.eclipse.recommenders.rcp.extdoc.parent</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders.rcp.extdoc.update-site</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
 	<packaging>eclipse-update-site</packaging>
 </project>

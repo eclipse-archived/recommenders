@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Commons Test Utils (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.commons.unit
-Bundle-Version: 0.2.0.qualifier
+Bundle-Version: 0.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.recommenders.commons.utils.gson;bundle-version="0.0.0",
