@@ -21,10 +21,12 @@ import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.internal.rcp.analysis.IDs;
 import org.eclipse.recommenders.internal.rcp.analysis.RecommendersProjectLifeCycleService;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 public class RecommendersNature implements IProjectNature {
     public static void addNature(final IProject project) {
@@ -111,6 +113,7 @@ public class RecommendersNature implements IProjectNature {
     public void deconfigure() throws CoreException {
         removeRecommendersBuilder();
         fireEventNatureRemoved();
+        deleteRecommendersDirectory();
     }
 
     private void removeRecommendersBuilder() throws CoreException {
@@ -122,6 +125,18 @@ public class RecommendersNature implements IProjectNature {
                 description.setBuildSpec(commands);
                 project.setDescription(description, null);
                 return;
+            }
+        }
+    }
+
+    private void deleteRecommendersDirectory() {
+        final IResource dir = project.findMember(".recommenders");
+        if (dir.exists()) {
+            try {
+                dir.delete(true, null);
+            } catch (final CoreException e) {
+                RecommendersPlugin.logWarning(e,
+                        "Exception while trying to delete .recommenders folder in project '%s'", project);
             }
         }
     }
