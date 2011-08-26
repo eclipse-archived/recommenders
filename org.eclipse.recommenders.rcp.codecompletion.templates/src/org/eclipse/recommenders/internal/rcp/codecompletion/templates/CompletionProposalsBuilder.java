@@ -36,7 +36,7 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("restriction")
 public final class CompletionProposalsBuilder {
 
-    private static final int RELEVANCE_OFFSET = 562;
+    private static final int RELEVANCE_OFFSET = 570;
     private final Image templateIcon;
     private final CodeBuilder codeBuilder;
 
@@ -82,7 +82,7 @@ public final class CompletionProposalsBuilder {
         Collections.sort(proposals);
         int i = RELEVANCE_OFFSET;
         for (final JavaTemplateProposal proposal : proposals) {
-            proposal.setRelevance(RELEVANCE_OFFSET + i);
+            proposal.setRelevance(i);
             i++;
         }
     }
