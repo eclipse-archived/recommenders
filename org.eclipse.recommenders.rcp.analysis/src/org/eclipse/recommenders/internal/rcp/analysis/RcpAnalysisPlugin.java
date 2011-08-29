@@ -32,7 +32,7 @@ public class RcpAnalysisPlugin extends Plugin {
     }
 
     public static void logWarning(final Throwable e, final String format, final Object... args) {
-        LoggingUtils.logError(e, getDefault(), format, args);
+        LoggingUtils.logWarning(e, getDefault(), format, args);
     }
 
     public static void logWarning(final String format, final Object... args) {

@@ -13,6 +13,9 @@ package org.eclipse.recommenders.internal.rcp.analysis;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -49,6 +52,7 @@ import com.ibm.wala.ipa.cha.IClassHierarchy;
 public class RecommendersBuilder extends IncrementalProjectBuilder {
     private static int ticksLastFullBuild = 100;
 
+    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static int ticksLastIncrBuild = 2;
 
     private CountingProgressMonitor monitor;
@@ -181,29 +185,53 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
             return;
         }
 
-        final IClassHierarchy cha = chaService.getClassHierachy(cu);
-        if (cha instanceof LazyClassHierarchy) {
-            final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
-            final IType primaryType = cu.findPrimaryType();
-            if (primaryType != null) {
-                lcha.remove(javaElementResolver.toRecType(primaryType));
-            }
-        }
-        if (!cu.isStructureKnown()) {
-            monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
-            return;
-        }
-        monitor.subTask("Recommenders Analyzing " + cu.getElementName());
-        final List<Object> artifacts = Lists.newLinkedList();
-        for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
+        final Future<?> f = executor.submit(new Runnable() {
 
-            final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer, new InterruptingProgressMonitor(monitor));
-            if (artifact != null) {
-                artifacts.add(artifact);
+            @Override
+            public void run() {
+                try {
+                    final IClassHierarchy cha = chaService.getClassHierachy(cu);
+                    if (cha instanceof LazyClassHierarchy) {
+                        final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
+                        final IType primaryType = cu.findPrimaryType();
+                        if (primaryType != null) {
+                            lcha.remove(javaElementResolver.toRecType(primaryType));
+                        }
+                    }
+                    if (!cu.isStructureKnown()) {
+                        monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
+                        return;
+                    }
+                    monitor.subTask("Recommenders Analyzing " + cu.getElementName());
+                    final List<Object> artifacts = Lists.newLinkedList();
+                    for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
+
+                        final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer,
+                                new InterruptingProgressMonitor(monitor));
+                        if (artifact != null) {
+                            artifacts.add(artifact);
+                        }
+                    }
+                    store.storeArtifacts(cu, artifacts);
+                    monitor.worked(1);
+
+                } catch (final CoreException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        store.storeArtifacts(cu, artifacts);
-        monitor.worked(1);
+        });
+        // try {
+        // // f.get(1000, TimeUnit.MILLISECONDS);
+        // } catch (final InterruptedException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch (final ExecutionException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch (final TimeoutException e) {
+        // f.cancel(true);
+        // }
+
     }
 
     private Object safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,

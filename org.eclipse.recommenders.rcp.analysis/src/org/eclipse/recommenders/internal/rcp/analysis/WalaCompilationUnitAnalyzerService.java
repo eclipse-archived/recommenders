@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.analysis;
 
+import java.util.concurrent.CancellationException;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -56,10 +58,14 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         try {
             monitor.beginTask("analyzing " + jdtCompilationUnit.getElementName(), 10);
             r.run(monitor);
+        } catch (final CancellationException x) {
+            RcpAnalysisPlugin.logWarning(x,
+                    "Analysis of '%s' exceeded max compuation time limit, and thus, has been canceled.",
+                    walaClass.getName());
         } catch (final Exception x) {
-            RcpAnalysisPlugin.logError(x, "error during analysis if '%s'", walaClass.getName());
+            RcpAnalysisPlugin.logError(x, "Error during analysis of '%s'", walaClass.getName());
         } catch (final UnimplementedError x) {
-            RcpAnalysisPlugin.logError(x, "error during analysis if '%s'", walaClass.getName());
+            RcpAnalysisPlugin.logError(x, "error during analysis of '%s'", walaClass.getName());
         } finally {
             monitor.done();
         }
