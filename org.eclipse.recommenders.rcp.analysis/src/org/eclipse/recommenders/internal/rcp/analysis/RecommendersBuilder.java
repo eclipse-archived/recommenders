@@ -56,6 +56,81 @@ import com.ibm.wala.ipa.cha.IClassHierarchy;
  */
 @SuppressWarnings("rawtypes")
 public class RecommendersBuilder extends IncrementalProjectBuilder {
+    private final class AnalyzerRunnable implements Runnable {
+        private final ICompilationUnit cu;
+        private Future<?> f;
+
+        private AnalyzerRunnable(final ICompilationUnit cu) {
+            this.cu = cu;
+        }
+
+        @Override
+        public void run() {
+
+            try {
+                scheduleTermination();
+                final IClassHierarchy cha = chaService.getClassHierachy(cu);
+                if (cha instanceof LazyClassHierarchy) {
+                    final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
+                    final IType primaryType = cu.findPrimaryType();
+                    if (primaryType != null) {
+                        lcha.remove(javaElementResolver.toRecType(primaryType));
+                    }
+                }
+                if (!cu.isStructureKnown()) {
+                    monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
+                    return;
+                }
+                monitor.subTask("Recommenders Analyzing " + cu.getElementName());
+                final List<Object> artifacts = Lists.newLinkedList();
+                for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
+
+                    // new InterruptingProgressMonitor(monitor)
+                    final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer, monitor);
+                    if (artifact != null) {
+                        artifacts.add(artifact);
+                    }
+                }
+                store.storeArtifacts(cu, artifacts);
+                monitor.worked(1);
+
+            } catch (final CoreException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void scheduleTermination() {
+
+            final Job j = new WorkspaceJob("") {
+
+                @Override
+                public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
+                    try {
+                        if (f != null) {
+                            f.get(2, TimeUnit.SECONDS);
+                        }
+                    } catch (final InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (final ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (final TimeoutException e) {
+                        f.cancel(true);
+                        return Status.CANCEL_STATUS;
+                    }
+                    return Status.OK_STATUS;
+                }
+            };
+            j.setSystem(true);
+            j.schedule();
+
+        }
+
+        public void setFuture(final Future<?> myFuture) {
+            this.f = myFuture;
+
+        }
+    }
+
     private static int ticksLastFullBuild = 100;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -200,60 +275,10 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
             return;
         }
 
-        final Future<?> f = executor.submit(new Runnable() {
+        final AnalyzerRunnable task = new AnalyzerRunnable(cu);
+        final Future<?> f = executor.submit(task);
+        task.setFuture(f);
 
-            @Override
-            public void run() {
-                try {
-                    final IClassHierarchy cha = chaService.getClassHierachy(cu);
-                    if (cha instanceof LazyClassHierarchy) {
-                        final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
-                        final IType primaryType = cu.findPrimaryType();
-                        if (primaryType != null) {
-                            lcha.remove(javaElementResolver.toRecType(primaryType));
-                        }
-                    }
-                    if (!cu.isStructureKnown()) {
-                        monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
-                        return;
-                    }
-                    monitor.subTask("Recommenders Analyzing " + cu.getElementName());
-                    final List<Object> artifacts = Lists.newLinkedList();
-                    for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
-
-                        // new InterruptingProgressMonitor(monitor)
-                        final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer, monitor);
-                        if (artifact != null) {
-                            artifacts.add(artifact);
-                        }
-                    }
-                    store.storeArtifacts(cu, artifacts);
-                    monitor.worked(1);
-
-                } catch (final CoreException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        final Job j = new WorkspaceJob("") {
-
-            @Override
-            public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
-                try {
-                    f.get(2, TimeUnit.SECONDS);
-                } catch (final InterruptedException e) {
-                    e.printStackTrace();
-                } catch (final ExecutionException e) {
-                    e.printStackTrace();
-                } catch (final TimeoutException e) {
-                    f.cancel(true);
-                    return Status.CANCEL_STATUS;
-                }
-                return Status.OK_STATUS;
-            }
-        };
-        j.setSystem(true);
-        j.schedule();
     }
 
     private Object safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
