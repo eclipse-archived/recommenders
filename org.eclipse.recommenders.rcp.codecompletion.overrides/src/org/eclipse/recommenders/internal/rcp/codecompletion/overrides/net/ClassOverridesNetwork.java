@@ -20,13 +20,13 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.eclipse.recommenders.bayes.BayesNet;
-import org.eclipse.recommenders.bayes.BayesNode;
-import org.eclipse.recommenders.bayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
+import org.eclipse.recommenders.jayes.BayesNet;
+import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -64,10 +64,6 @@ public class ClassOverridesNetwork {
         final IMethodName res = escapedMethodReferences.get(escapedName);
         ensureIsNotNull(res);
         return res;
-    }
-
-    public void updateBeliefs() {
-        junctionTreeAlgorithm.updateBeliefs();
     }
 
     public void clearEvidence() {

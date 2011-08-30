@@ -21,9 +21,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.eclipse.recommenders.bayes.BayesNet;
-import org.eclipse.recommenders.bayes.BayesNode;
-import org.eclipse.recommenders.bayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.commons.utils.Tuple;
@@ -31,6 +28,9 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodCallsNet;
+import org.eclipse.recommenders.jayes.BayesNet;
+import org.eclipse.recommenders.jayes.BayesNode;
+import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -118,11 +118,6 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         if (node != null) {
             junctionTreeAlgorithm.addEvidence(node, S_TRUE);
         }
-    }
-
-    @Override
-    public void updateBeliefs() {
-        junctionTreeAlgorithm.updateBeliefs();
     }
 
     @Override

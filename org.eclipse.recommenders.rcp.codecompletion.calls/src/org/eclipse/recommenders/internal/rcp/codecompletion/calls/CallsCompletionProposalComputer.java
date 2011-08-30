@@ -177,8 +177,6 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
                 && !(receiver.isThis() && ctx.getEnclosingMethod().isInit())) {
             model.negateConstructors();
         }
-        model.updateBeliefs();
-        // update
         final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model.getRecommendedMethodCalls(
                 MIN_PROBABILITY_THRESHOLD, 5);
         for (final Tuple<IMethodName, Double> recommended : recommendedMethodCalls) {

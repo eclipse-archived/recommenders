@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -39,7 +40,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Computes context-sensitive {@link PatternRecommendation}s.
@@ -168,7 +168,6 @@ public final class PatternRecommender {
         if (!needsConstructor && shallNegateConstructors(context.getVariable())) {
             model.negateConstructors();
         }
-        model.updateBeliefs();
     }
 
     /**
@@ -227,7 +226,6 @@ public final class PatternRecommender {
             final IObjectMethodCallsNet model) {
         final com.google.common.collect.ImmutableList.Builder<IMethodName> recommendedMethods = ImmutableList.builder();
         model.setPattern(patternName);
-        model.updateBeliefs();
         for (final Tuple<IMethodName, Double> pair : model.getRecommendedMethodCalls(METHOD_PROBABILITY_THRESHOLD)) {
             recommendedMethods.add(pair.getFirst());
         }

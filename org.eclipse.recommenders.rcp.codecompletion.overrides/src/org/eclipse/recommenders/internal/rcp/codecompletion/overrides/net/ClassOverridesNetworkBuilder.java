@@ -21,10 +21,10 @@ import java.util.TreeSet;
 import org.apache.commons.collections.primitives.ArrayDoubleList;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math.stat.StatUtils;
-import org.eclipse.recommenders.bayes.BayesNet;
-import org.eclipse.recommenders.bayes.BayesNode;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.jayes.BayesNet;
+import org.eclipse.recommenders.jayes.BayesNode;
 
 import com.google.common.collect.Lists;
 

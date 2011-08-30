@@ -68,7 +68,6 @@ public class InstantOverridesRecommender implements IRecommendationsViewContentP
         for (final MethodDeclaration method : type.methods) {
             model.observeMethodNode(method.superDeclaration);
         }
-        model.updateBeliefs();
     };
 
     private List<OverridesRecommendation> readRecommendations() {

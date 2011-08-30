@@ -38,9 +38,9 @@
 			<url>http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site/</url>
 		</repository>
 		<repository>
-			<id>bayesnet</id>
+			<id>jayes</id>
 			<layout>p2</layout>
-			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/students/th/michael-bayes/org.eclipse.recommenders.bayes.repository/target/site/</url>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/students/th/michael-bayes/org.eclipse.recommenders.jayes.repository/target/site/</url>
 		</repository>
 	</repositories>
 

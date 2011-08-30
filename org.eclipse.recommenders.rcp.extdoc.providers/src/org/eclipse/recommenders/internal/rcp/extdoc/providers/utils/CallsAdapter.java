@@ -126,7 +126,6 @@ public final class CallsAdapter {
         if (negateConstructors) {
             model.negateConstructors();
         }
-        model.updateBeliefs();
         final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model.getRecommendedMethodCalls(0.01, 5);
         facade.releaseModel(model);
         return recommendedMethodCalls;

@@ -26,8 +26,6 @@ public interface IObjectMethodCallsNet {
 
     public abstract void setCalled(final IMethodName calledMethod);
 
-    public abstract void updateBeliefs();
-
     public abstract void clearEvidence();
 
     public abstract void setMethodContext(final IMethodName newActiveMethodContext);

@@ -40,7 +40,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.commons.client,
  com.sun.jersey.client,
  com.sun.jersey.core,
- org.eclipse.recommenders.bayes
+ org.eclipse.recommenders.jayes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.rcp.codecompletion.calls,
  org.eclipse.recommenders.internal.rcp.codecompletion.calls.store

@@ -110,8 +110,6 @@ public class RecommendationsViewPublisherForCalls implements IRecommendationsVie
         } else if (variable.fuzzyIsDefinedByMethodReturn() || variable.fuzzyIsParameter()) {
             model.negateConstructors();
         }
-        // compute probabilities:
-        model.updateBeliefs();
         // get recommendations from net:
         for (final Tuple<IMethodName, Double> t : model.getRecommendedMethodCalls(MIN_PROBABILITY_THRESHOLD, 5)) {
             final IMethodName methodName = t.getFirst();
