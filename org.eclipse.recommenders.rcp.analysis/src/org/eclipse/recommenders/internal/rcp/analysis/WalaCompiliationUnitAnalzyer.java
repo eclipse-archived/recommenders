@@ -18,8 +18,9 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitFinalizer;
+import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitConsumer;
+import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitFinalizer;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 
@@ -51,17 +52,10 @@ public class WalaCompiliationUnitAnalzyer {
         this.compilationUnitConsumers = compilationUnitConsumers;
     }
 
-    public void init(final ICompilationUnit jdtCompilationUnit, final IClass walaClass,
-            final CompilationUnit recCompilationUnit) {
-        ensureIsNotNull(jdtCompilationUnit);
-        ensureIsNotNull(walaClass);
-        ensureIsNotNull(recCompilationUnit);
-        this.jdtCompilationUnit = jdtCompilationUnit;
-        this.walaClass = walaClass;
-        this.recCompilationUnit = recCompilationUnit;
-    }
-
     public void run(final IProgressMonitor monitor) throws JavaModelException {
+        if (Thread.interrupted() || monitor.isCanceled()) {
+            Throws.throwCancelationException();
+        }
         this.monitor = monitor;
         initializeCompilationUnit();
         analyzePrimaryType();
@@ -69,16 +63,16 @@ public class WalaCompiliationUnitAnalzyer {
         publishCompilationUnit();
     }
 
+    private void initializeCompilationUnit() {
+        recCompilationUnit.analysedOn = new Date();
+        recCompilationUnit.name = walaClass.getName().toString();
+    }
+
     private void analyzePrimaryType() throws JavaModelException {
         recCompilationUnit.primaryType = TypeDeclaration.create();
         final WalaTypeAnalyzer walaTypeAnalyzer = walaTypeAnalyzerProvider.get();
         walaTypeAnalyzer.initialize(jdtCompilationUnit.findPrimaryType(), recCompilationUnit.primaryType, walaClass);
         walaTypeAnalyzer.run(monitor);
-    }
-
-    private void initializeCompilationUnit() {
-        recCompilationUnit.analysedOn = new Date();
-        recCompilationUnit.name = walaClass.getName().toString();
     }
 
     private void finalizeCompilationUnit() {
@@ -91,6 +85,16 @@ public class WalaCompiliationUnitAnalzyer {
         for (final ICompilationUnitConsumer cuConsumer : compilationUnitConsumers) {
             cuConsumer.consume(recCompilationUnit);
         }
+    }
+
+    public void init(final ICompilationUnit jdtCompilationUnit, final IClass walaClass,
+            final CompilationUnit recCompilationUnit) {
+        ensureIsNotNull(jdtCompilationUnit);
+        ensureIsNotNull(walaClass);
+        ensureIsNotNull(recCompilationUnit);
+        this.jdtCompilationUnit = jdtCompilationUnit;
+        this.walaClass = walaClass;
+        this.recCompilationUnit = recCompilationUnit;
     }
 
     @Override

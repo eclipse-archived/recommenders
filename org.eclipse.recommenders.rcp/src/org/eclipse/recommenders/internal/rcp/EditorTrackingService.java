@@ -55,19 +55,22 @@ public class EditorTrackingService {
 
         @Override
         public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
-            monitor.beginTask("Notifying", listener.size());
-            for (final IEditorChangedListener l : listener) {
-                try {
-                    monitor.subTask(subTaskTitle(l));
-                    notifyListener(l, new SubProgressMonitor(monitor, 1));
-                    monitor.worked(1);
-                } catch (final CoreException x) {
-                    RecommendersPlugin.log(x);
-                } catch (final Exception x) {
-                    RecommendersPlugin.logError(x, "Exception occurred during notification.");
+            try {
+                monitor.beginTask("Notifying", listener.size());
+                for (final IEditorChangedListener l : listener) {
+                    try {
+                        monitor.subTask(subTaskTitle(l));
+                        notifyListener(l, new SubProgressMonitor(monitor, 1));
+                        monitor.worked(1);
+                    } catch (final CoreException x) {
+                        RecommendersPlugin.log(x);
+                    } catch (final Exception x) {
+                        RecommendersPlugin.logError(x, "Exception occurred during notification.");
+                    }
                 }
+            } finally {
+                monitor.done();
             }
-            monitor.done();
             return Status.OK_STATUS;
         }
 
@@ -79,13 +82,16 @@ public class EditorTrackingService {
                 throws CoreException;
     }
 
-    @Inject
-    public EditorTrackingService(final List<IEditorChangedListener> listener) {
-        this.listener = listener;
-        waitForWorkbench();
-    }
-
     private final IPartListener2 partListener = new IPartListener2() {
+        @Override
+        public void partClosed(final IWorkbenchPartReference partRef) {
+            if (isJavaEditorRef(partRef)) {
+                final IEditorDashboard board = findOrCreateDashboard(getJavaEditor(partRef));
+                fireEditorClosed(board);
+                releaseDashboard(partRef);
+            }
+        }
+
         @Override
         public void partActivated(final IWorkbenchPartReference partRef) {
             if (isJavaEditorRef(partRef)) {
@@ -99,15 +105,6 @@ public class EditorTrackingService {
             if (isJavaEditorRef(partRef)) {
                 final IEditorDashboard board = findOrCreateDashboard(getJavaEditor(partRef));
                 fireEditorDeactivated(board);
-            }
-        }
-
-        @Override
-        public void partClosed(final IWorkbenchPartReference partRef) {
-            if (isJavaEditorRef(partRef)) {
-                final IEditorDashboard board = findOrCreateDashboard(getJavaEditor(partRef));
-                fireEditorClosed(board);
-                releaseDashboard(partRef);
             }
         }
 
@@ -135,21 +132,6 @@ public class EditorTrackingService {
             }
         }
 
-        @Override
-        public void partInputChanged(final IWorkbenchPartReference partRef) {
-            // we are not interested in such events.
-        }
-
-        @Override
-        public void partBroughtToTop(final IWorkbenchPartReference partRef) {
-            /*
-             * see javadoc of partBroughtToTop: it's basically the same as
-             * partActivated except this method is called whenever an element is
-             * activated programmatically and not caused by a user action .
-             */
-            // partActivated(partRef);
-        }
-
         private boolean isJavaEditorRef(final IWorkbenchPartReference partRef) {
             return getJavaEditor(partRef) != null;
         }
@@ -175,7 +157,28 @@ public class EditorTrackingService {
         private void releaseDashboard(final IWorkbenchPartReference partRef) {
             boards.remove(partRef);
         }
+
+        @Override
+        public void partInputChanged(final IWorkbenchPartReference partRef) {
+            // we are not interested in such events.
+        }
+
+        @Override
+        public void partBroughtToTop(final IWorkbenchPartReference partRef) {
+            /*
+             * see javadoc of partBroughtToTop: it's basically the same as
+             * partActivated except this method is called whenever an element is
+             * activated programmatically and not caused by a user action .
+             */
+            // partActivated(partRef);
+        }
     };
+
+    @Inject
+    public EditorTrackingService(final List<IEditorChangedListener> listener) {
+        this.listener = listener;
+        waitForWorkbench();
+    }
 
     private void waitForWorkbench() {
         final Job j = new WorkbenchJob("") {
@@ -200,6 +203,15 @@ public class EditorTrackingService {
         final IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
         final IPartService partService = activeWorkbenchWindow.getPartService();
         partService.addPartListener(partListener);
+    }
+
+    private void simulateEditorOpendEventForOpenEditors() {
+        final IWorkbench workbench = PlatformUI.getWorkbench();
+        final IWorkbenchWindow activeWindow = workbench.getActiveWorkbenchWindow();
+        final IWorkbenchPage activePage = activeWindow.getActivePage();
+        for (final IEditorReference editorRefs : activePage.getEditorReferences()) {
+            partListener.partOpened(editorRefs);
+        }
     }
 
     // private void removePartListener() {
@@ -233,17 +245,18 @@ public class EditorTrackingService {
         partListener.partActivated(activePart);
     }
 
-    private void simulateEditorOpendEventForOpenEditors() {
-        final IWorkbench workbench = PlatformUI.getWorkbench();
-        final IWorkbenchWindow activeWindow = workbench.getActiveWorkbenchWindow();
-        final IWorkbenchPage activePage = activeWindow.getActivePage();
-        for (final IEditorReference editorRefs : activePage.getEditorReferences()) {
-            partListener.partOpened(editorRefs);
-        }
-    }
-
     private boolean isActivePageAlreadyAvailableOnStartup(final IWorkbenchPage activePage) {
         return null != activePage;
+    }
+
+    private void fireEditorClosed(final IEditorDashboard board) {
+        new BackgroundNotificationJob(jobTitle("Notifying listeners: editor '%s' closed", board)) {
+            @Override
+            protected void notifyListener(final IEditorChangedListener l, final IProgressMonitor monitor)
+                    throws CoreException {
+                l.editorClosed(board, monitor);
+            }
+        }.schedule();
     }
 
     private void fireEditorActivated(final IEditorDashboard board) {
@@ -262,16 +275,6 @@ public class EditorTrackingService {
             protected void notifyListener(final IEditorChangedListener l, final IProgressMonitor monitor)
                     throws CoreException {
                 l.editorDeactivated(board, monitor);
-            }
-        }.schedule();
-    }
-
-    private void fireEditorClosed(final IEditorDashboard board) {
-        new BackgroundNotificationJob(jobTitle("Notifying listeners: editor '%s' closed", board)) {
-            @Override
-            protected void notifyListener(final IEditorChangedListener l, final IProgressMonitor monitor)
-                    throws CoreException {
-                l.editorClosed(board, monitor);
             }
         }.schedule();
     }

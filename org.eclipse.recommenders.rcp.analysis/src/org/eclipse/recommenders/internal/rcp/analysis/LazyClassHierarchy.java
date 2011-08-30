@@ -73,12 +73,8 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
     public static final ClassLoaderReference SYNTETIC = new ClassLoaderReference(AnalysisScope.SYNTHETIC,
             ClassLoaderReference.Java, ClassLoaderReference.Application);
 
-    public static IClassHierarchy make(final IJavaProject project, final AnalysisScope scope) {
-        final LazyClassHierarchy res = new LazyClassHierarchy(project, scope);
-        return res;
-    }
-
     private static Logger log = Logger.getLogger(LazyClassHierarchy.class);
+
     private final IClassLoader extLoader;
     private final IClassLoader primLoader;
     private final IClassLoader bypassLoader;
@@ -98,9 +94,77 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
     }
 
+    public void remove(final ITypeName recType) {
+        ensureIsNotNull(recType);
+        final TypeName name = WalaNameUtils.rec2walaType(recType).getName();
+        invalidateObsoleteMethodsInCache(name);
+        clazzes.remove(name);
+    }
+
+    private void invalidateObsoleteMethodsInCache(final TypeName typeName) {
+        final AnalysisCache cache = InjectionService.getInstance().getInjector().getInstance(AnalysisCache.class);
+        final IClass clazz = clazzes.get(typeName);
+        if (clazz != null) {
+            for (final IMethod m : clazz.getDeclaredMethods()) {
+                cache.getSSACache().invalidate(m, Everywhere.EVERYWHERE);
+
+            }
+        }
+    }
+
     @Override
-    public boolean addClass(final IClass clazz) {
-        return false;
+    public IClass getLeastCommonSuperclass(final IClass A, final IClass B) {
+        throw throwUnsupportedOperation();
+    }
+
+    @Override
+    public TypeReference getLeastCommonSuperclass(final TypeReference A, final TypeReference B) {
+        throw throwUnsupportedOperation();
+    }
+
+    @Override
+    public IClassLoader getLoader(final ClassLoaderReference loaderRef) {
+        if (ClassLoaderReference.Application == loaderRef) {
+            return appLoader;
+        } else if (ClassLoaderReference.Extension == loaderRef) {
+            return extLoader;
+        } else if (ClassLoaderReference.Primordial == loaderRef) {
+            return primLoader;
+        } else if ("Synthetic".equals(loaderRef.getName().toString())) {
+            return bypassLoader;
+        } else {
+            throw throwUnreachable();
+        }
+    }
+
+    @Override
+    public IClassLoader[] getLoaders() {
+        throw throwUnsupportedOperation();
+    }
+
+    @Override
+    public int getNumber(final IClass c) {
+        throw throwUnsupportedOperation();
+    }
+
+    @Override
+    public int getNumberOfImmediateSubclasses(final IClass klass) {
+        throw throwUnsupportedOperation();
+    }
+
+    @Override
+    public Collection<IMethod> getPossibleTargets(final MethodReference ref) {
+        throw throwUnsupportedOperation();
+    }
+
+    @Override
+    public Set<IMethod> getPossibleTargets(final IClass receiverClass, final MethodReference ref) {
+        throw throwUnsupportedOperation();
+    }
+
+    @Override
+    public IClass getRootClass() {
+        return lookupClass(TypeReference.JavaLangObject);
     }
 
     @Override
@@ -137,6 +201,21 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
         return null;
     }
 
+    /**
+     * Return a cached version if available.<b>Note, since the sourceMethod code
+     * loader does some strange callbacks to the cha, we must handle them by
+     * returning null here.</b>
+     */
+    private boolean isClassAlreadyDefinedOrCurrentlyLoaded(final TypeReference A) {
+        return clazzes.containsKey(A.getName());
+    }
+
+    private IClass loadSynteticType(final TypeReference typeRef) {
+        final IClass lookupClass = bypassLoader.lookupClass(typeRef.getName());
+        clazzes.put(typeRef.getName(), lookupClass);
+        return lookupClass;
+    }
+
     private IType findEclipseHandle(final TypeReference typeRef) throws JavaModelException {
         checkNotNull(typeRef);
         if (typeRef.isPrimitiveType() || FakeRootClass.FAKE_ROOT_CLASS == typeRef
@@ -153,25 +232,28 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
             final String primaryType = name.substring(0, firstDollarIndex);
             // XXX i know... this is not sufficient in all cases; experimental
             final IType type = project.findType(primaryType);
+            if (type == null) {
+                return null;
+            }
             final String innerTypeName = name.substring(firstDollarIndex + 1);
             final IType res = type.getType(innerTypeName);
             return res;
         }
     }
 
-    private IClass loadSynteticType(final TypeReference typeRef) {
-        final IClass lookupClass = bypassLoader.lookupClass(typeRef.getName());
-        clazzes.put(typeRef.getName(), lookupClass);
-        return lookupClass;
-    }
-
-    /**
-     * Return a cached version if available.<b>Note, since the sourceMethod code
-     * loader does some strange callbacks to the cha, we must handle them by
-     * returning null here.</b>
-     */
-    private boolean isClassAlreadyDefinedOrCurrentlyLoaded(final TypeReference A) {
-        return clazzes.containsKey(A.getName());
+    private IClass loadBinaryClass(final BinaryType type) {
+        try {
+            final String fullyQualifiedName = type.getFullyQualifiedName();
+            final IClassLoader cl = fullyQualifiedName.startsWith("java") ? primLoader : extLoader;
+            final JDTBinaryTypeEntry entry = new JDTBinaryTypeEntry(type);
+            final ShrikeClassReaderHandle handle = new ShrikeClassReaderHandle(entry);
+            final ShrikeClass res = new ShrikeClass(handle, cl, this);
+            clazzes.put(res.getName(), res);
+            res.getSuperclass();
+            return res;
+        } catch (final InvalidClassFileException e) {
+            throw throwUnhandledException(e);
+        }
     }
 
     private IClass loadFromProjectOutputLocation(final SourceType type) throws JavaModelException {
@@ -212,29 +294,9 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
                 && member.getName().endsWith(".class");
     }
 
-    private IClass loadBinaryClass(final BinaryType type) {
-        try {
-            final String fullyQualifiedName = type.getFullyQualifiedName();
-            final IClassLoader cl = fullyQualifiedName.startsWith("java") ? primLoader : extLoader;
-            final JDTBinaryTypeEntry entry = new JDTBinaryTypeEntry(type);
-            final ShrikeClassReaderHandle handle = new ShrikeClassReaderHandle(entry);
-            final ShrikeClass res = new ShrikeClass(handle, cl, this);
-            clazzes.put(res.getName(), res);
-            res.getSuperclass();
-            return res;
-        } catch (final InvalidClassFileException e) {
-            throw throwUnhandledException(e);
-        }
-    }
-
     @Override
     public Collection<IClass> computeSubClasses(final TypeReference type) {
         throw throwUnsupportedOperation();
-    }
-
-    @Override
-    public ClassLoaderFactory getFactory() {
-        return null;
     }
 
     @Override
@@ -248,104 +310,13 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
     }
 
     @Override
-    public Collection<TypeReference> getJavaLangErrorTypes() {
-        // XXX Need a implementation here. I think, returning an empty list does
-        // no harm in our lazy
-        // setup, right?
-        return Collections.emptyList();
-    }
-
-    @Override
-    public Collection<TypeReference> getJavaLangRuntimeExceptionTypes() {
-        // XXX Need a implementation here. I think, returning an empty list does
-        // no harm in our lazy
-        // setup, right?
-        return Collections.emptyList();
-    }
-
-    @Override
-    public IClass getLeastCommonSuperclass(final IClass A, final IClass B) {
-        throw throwUnsupportedOperation();
-    }
-
-    @Override
-    public TypeReference getLeastCommonSuperclass(final TypeReference A, final TypeReference B) {
-        throw throwUnsupportedOperation();
-    }
-
-    @Override
-    public IClassLoader getLoader(final ClassLoaderReference loaderRef) {
-        if (ClassLoaderReference.Application == loaderRef) {
-            return appLoader;
-        } else if (ClassLoaderReference.Extension == loaderRef) {
-            return extLoader;
-        } else if (ClassLoaderReference.Primordial == loaderRef) {
-            return primLoader;
-        } else if ("Synthetic".equals(loaderRef.getName().toString())) {
-            return bypassLoader;
-        } else {
-            throw throwUnreachable();
-        }
-    }
-
-    @Override
-    public IClassLoader[] getLoaders() {
-        throw throwUnsupportedOperation();
-    }
-
-    @Override
-    public int getNumber(final IClass c) {
-        throw throwUnsupportedOperation();
-    }
-
-    @Override
-    public int getNumberOfClasses() {
-        return 0;
-    }
-
-    @Override
-    public int getNumberOfImmediateSubclasses(final IClass klass) {
-        throw throwUnsupportedOperation();
-    }
-
-    @Override
-    public Collection<IMethod> getPossibleTargets(final MethodReference ref) {
-        throw throwUnsupportedOperation();
-    }
-
-    @Override
-    public Set<IMethod> getPossibleTargets(final IClass receiverClass, final MethodReference ref) {
-        throw throwUnsupportedOperation();
-    }
-
-    @Override
-    public IClass getRootClass() {
-        return lookupClass(TypeReference.JavaLangObject);
-    }
-
-    @Override
-    public AnalysisScope getScope() {
-        return scope;
-    }
-
-    @Override
     public boolean implementsInterface(final IClass c, final IClass i) {
-        throw throwUnsupportedOperation();
+        return c.getAllImplementedInterfaces().contains(i);
     }
 
     @Override
     public boolean isAssignableFrom(final IClass c1, final IClass c2) {
         return isSubclassOf(c2, c1);
-    }
-
-    @Override
-    public boolean isInterface(final TypeReference type) {
-        throw throwUnsupportedOperation();
-    }
-
-    @Override
-    public boolean isRootClass(final IClass c) {
-        return TypeReference.JavaLangObject.equals(c.getReference());
     }
 
     @Override
@@ -358,6 +329,11 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
             current = current.getSuperclass();
         }
         return false;
+    }
+
+    @Override
+    public boolean isInterface(final TypeReference type) {
+        throw throwUnsupportedOperation();
     }
 
     public boolean isSyntheticClass(final IClass c) {
@@ -385,6 +361,52 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
             return null;
         }
         return clazz.getMethod(m.getSelector());
+    }
+
+    public static IClassHierarchy make(final IJavaProject project, final AnalysisScope scope) {
+        final LazyClassHierarchy res = new LazyClassHierarchy(project, scope);
+        return res;
+    }
+
+    @Override
+    public boolean addClass(final IClass clazz) {
+        return false;
+    }
+
+    @Override
+    public ClassLoaderFactory getFactory() {
+        return null;
+    }
+
+    @Override
+    public Collection<TypeReference> getJavaLangErrorTypes() {
+        // XXX Need a implementation here. I think, returning an empty list does
+        // no harm in our lazy
+        // setup, right?
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<TypeReference> getJavaLangRuntimeExceptionTypes() {
+        // XXX Need a implementation here. I think, returning an empty list does
+        // no harm in our lazy
+        // setup, right?
+        return Collections.emptyList();
+    }
+
+    @Override
+    public int getNumberOfClasses() {
+        return 0;
+    }
+
+    @Override
+    public AnalysisScope getScope() {
+        return scope;
+    }
+
+    @Override
+    public boolean isRootClass(final IClass c) {
+        return TypeReference.JavaLangObject.equals(c.getReference());
     }
 
     @Override
@@ -429,24 +451,6 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
             });
         } catch (final CoreException e) {
             throwUnhandledException(e);
-        }
-    }
-
-    public void remove(final ITypeName recType) {
-        ensureIsNotNull(recType);
-        final TypeName name = WalaNameUtils.rec2walaType(recType).getName();
-        invalidateObsoleteMethodsInCache(name);
-        clazzes.remove(name);
-    }
-
-    private void invalidateObsoleteMethodsInCache(final TypeName typeName) {
-        final AnalysisCache cache = InjectionService.getInstance().getInjector().getInstance(AnalysisCache.class);
-        final IClass clazz = clazzes.get(typeName);
-        if (clazz != null) {
-            for (final IMethod m : clazz.getDeclaredMethods()) {
-                cache.getSSACache().invalidate(m, Everywhere.EVERYWHERE);
-
-            }
         }
     }
 }

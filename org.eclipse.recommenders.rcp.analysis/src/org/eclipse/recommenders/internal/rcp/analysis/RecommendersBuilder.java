@@ -26,7 +26,6 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -101,12 +100,14 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
 
         private void scheduleTermination() {
 
-            final Job j = new WorkspaceJob("") {
+            final Job j = new Job("") {
 
                 @Override
-                public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
+                protected IStatus run(final IProgressMonitor monitor) {
                     try {
-                        if (f != null) {
+                        if (f == null) {
+                            this.schedule(100);
+                        } else {
                             f.get(2, TimeUnit.SECONDS);
                         }
                     } catch (final InterruptedException e) {
@@ -168,6 +169,7 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
     }
 
     private void analyzeCompilationUnit(final ICompilationUnit cu) throws CoreException {
+        chaService.getClassHierachy(cu);
         if (monitor.isCanceled()) {
             return;
         }

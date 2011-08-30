@@ -40,7 +40,6 @@ import org.eclipse.pde.core.plugin.IPluginModelBase;
 import org.eclipse.pde.internal.core.ClasspathUtilCore;
 import org.eclipse.pde.internal.core.PDECore;
 import org.eclipse.pde.internal.core.PDEStateHelper;
-import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 import com.ibm.wala.classLoader.BinaryDirectoryTreeModule;
 import com.ibm.wala.classLoader.JarFileModule;
@@ -130,13 +129,15 @@ public class EclipseProjectPath {
         }
     }
 
-    public static EclipseProjectPath make(final IJavaProject project) throws IOException, CoreException {
-        return make(project, false, true);
+    private void resolveProjectClasspathEntries(final boolean includeSource) throws JavaModelException, IOException {
+        resolveClasspathEntries(project.getResolvedClasspath(true), Loader.EXTENSION, includeSource);
     }
 
-    public static EclipseProjectPath make(final IJavaProject project, final boolean includeSource,
-            final boolean includeClassFiles) throws IOException, CoreException {
-        return new EclipseProjectPath(project, includeSource, includeClassFiles);
+    protected void resolveClasspathEntries(final IClasspathEntry[] entries, final Loader loader,
+            final boolean includeSource) throws JavaModelException, IOException {
+        for (int i = 0; i < entries.length; i++) {
+            resolveClasspathEntry(entries[i], loader, includeSource);
+        }
     }
 
     /**
@@ -145,27 +146,28 @@ public class EclipseProjectPath {
      */
     private void resolveClasspathEntry(final IClasspathEntry entry, final Loader loader, final boolean includeSource)
             throws JavaModelException, IOException {
-        final IClasspathEntry e = JavaCore.getResolvedClasspathEntry(entry);
-        if (e == null) {
-            RecommendersPlugin.logWarning("Unable to resolve classpath entry '%s' in project '%s'. "
-                    + "To get recommendations for that project you have to fix the dependencies. "
-                    + "After that close and reopen the project.", entry, project);
-            return;
-        }
+        // final IClasspathEntry e = JavaCore.getResolvedClasspathEntry(entry);
+        // if (e == null) {
+        // RecommendersPlugin.logWarning("Unable to resolve classpath entry '%s' in project '%s'. "
+        // +
+        // "To get recommendations for that project you have to fix the dependencies. "
+        // + "After that close and reopen the project.", entry, project);
+        // return;
+        // }
 
-        if (alreadyResolved.contains(e)) {
+        if (alreadyResolved.contains(entry)) {
             return;
         } else {
-            alreadyResolved.add(e);
+            alreadyResolved.add(entry);
         }
 
-        if (e.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
+        if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
             final IClasspathContainer cont = JavaCore.getClasspathContainer(entry.getPath(), project);
             final IClasspathEntry[] entries = cont.getClasspathEntries();
             resolveClasspathEntries(entries, cont.getKind() == IClasspathContainer.K_APPLICATION ? loader
                     : Loader.PRIMORDIAL, includeSource);
-        } else if (e.getEntryKind() == IClasspathEntry.CPE_LIBRARY) {
-            final File file = makeAbsolute(e.getPath()).toFile();
+        } else if (entry.getEntryKind() == IClasspathEntry.CPE_LIBRARY) {
+            final File file = makeAbsolute(entry.getPath()).toFile();
             JarFile j;
             try {
                 j = new JarFile(file);
@@ -180,19 +182,19 @@ public class EclipseProjectPath {
                 final List<Module> s = MapUtil.findOrCreateList(modules, loader);
                 s.add(file.isDirectory() ? (Module) new BinaryDirectoryTreeModule(file) : (Module) new JarFileModule(j));
             }
-        } else if (e.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+        } else if (entry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
             List<Module> s = MapUtil.findOrCreateList(modules, loader);
 
             if (includeSource) {
-                s.add(new EclipseSourceDirectoryTreeModule(e.getPath()));
+                s.add(new EclipseSourceDirectoryTreeModule(entry.getPath()));
             }
-            if (e.getOutputLocation() != null) {
-                final File output = makeAbsolute(e.getOutputLocation()).toFile();
+            if (entry.getOutputLocation() != null) {
+                final File output = makeAbsolute(entry.getOutputLocation()).toFile();
                 s = MapUtil.findOrCreateList(modules, loader);
                 s.add(new BinaryDirectoryTreeModule(output));
             }
-        } else if (e.getEntryKind() == IClasspathEntry.CPE_PROJECT) {
-            final IPath projectPath = makeAbsolute(e.getPath());
+        } else if (entry.getEntryKind() == IClasspathEntry.CPE_PROJECT) {
+            final IPath projectPath = makeAbsolute(entry.getPath());
             final IWorkspace ws = ResourcesPlugin.getWorkspace();
             final IWorkspaceRoot root = ws.getRoot();
             final IProject project = (IProject) root.getContainerForLocation(projectPath);
@@ -214,7 +216,7 @@ public class EclipseProjectPath {
                 Assertions.UNREACHABLE();
             }
         } else {
-            throw new RuntimeException("unexpected entry " + e);
+            throw new RuntimeException("unexpected entry " + entry);
         }
     }
 
@@ -293,11 +295,27 @@ public class EclipseProjectPath {
         }
     }
 
+    public static IPath makeAbsolute(final IPath p) {
+        IPath absolutePath = p;
+        if (p.toFile().exists()) {
+            return p;
+        }
+
+        final IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(p);
+        if (resource != null && resource.exists()) {
+            absolutePath = resource.getLocation();
+        }
+        return absolutePath;
+    }
+
     /**
-     * have we already processed a particular bundle description?
+     * @return true if the given jar file should be handled by the Primordial
+     *         loader. If false, other provisions should be made to add the jar
+     *         file to the appropriate component of the AnalysisScope.
+     *         Subclasses can override this method.
      */
-    private boolean alreadyProcessed(final BundleDescription bd) {
-        return bundlesProcessed.contains(bd.getName());
+    protected boolean isPrimordialJarFile(final JarFile j) {
+        return true;
     }
 
     /**
@@ -314,38 +332,43 @@ public class EclipseProjectPath {
         return true;
     }
 
+    private IPluginModelBase findModel(final IProject p) {
+        // PluginRegistry is specific to Eclipse 3.3+. Use PDECore for
+        // compatibility with 3.2
+        // return PluginRegistry.findModel(p);
+        return PDECore.getDefault().getModelManager().findModel(p);
+    }
+
     /**
-     * @return true if the given jar file should be handled by the Primordial
-     *         loader. If false, other provisions should be made to add the jar
-     *         file to the appropriate component of the AnalysisScope.
-     *         Subclasses can override this method.
+     * have we already processed a particular bundle description?
      */
-    protected boolean isPrimordialJarFile(final JarFile j) {
-        return true;
+    private boolean alreadyProcessed(final BundleDescription bd) {
+        return bundlesProcessed.contains(bd.getName());
     }
 
-    protected void resolveClasspathEntries(final IClasspathEntry[] entries, final Loader loader,
-            final boolean includeSource) throws JavaModelException, IOException {
-        for (int i = 0; i < entries.length; i++) {
-            resolveClasspathEntry(entries[i], loader, includeSource);
+    private IPluginModelBase findModel(final BundleDescription bd) {
+        // PluginRegistry is specific to Eclipse 3.3+. Use PDECore for
+        // compatibility with 3.2
+        // return PluginRegistry.findModel(bd);
+        return PDECore.getDefault().getModelManager().findModel(bd);
+    }
+
+    public AnalysisScope toAnalysisScope() throws IOException {
+        return toAnalysisScope(getClass().getClassLoader(), null);
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return toAnalysisScope((File) null).toString();
+        } catch (final IOException e) {
+            e.printStackTrace();
+            return "Error in toString()";
         }
     }
 
-    public static IPath makeAbsolute(final IPath p) {
-        IPath absolutePath = p;
-        if (p.toFile().exists()) {
-            return p;
-        }
-
-        final IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(p);
-        if (resource != null && resource.exists()) {
-            absolutePath = resource.getLocation();
-        }
-        return absolutePath;
-    }
-
-    private void resolveProjectClasspathEntries(final boolean includeSource) throws JavaModelException, IOException {
-        resolveClasspathEntries(project.getRawClasspath(), Loader.EXTENSION, includeSource);
+    public AnalysisScope toAnalysisScope(final File exclusionsFile) throws IOException {
+        return toAnalysisScope(getClass().getClassLoader(), exclusionsFile);
     }
 
     /**
@@ -392,39 +415,16 @@ public class EclipseProjectPath {
         }
     }
 
-    public AnalysisScope toAnalysisScope(final File exclusionsFile) throws IOException {
-        return toAnalysisScope(getClass().getClassLoader(), exclusionsFile);
+    public static EclipseProjectPath make(final IJavaProject project) throws IOException, CoreException {
+        return make(project, false, true);
     }
 
-    public AnalysisScope toAnalysisScope() throws IOException {
-        return toAnalysisScope(getClass().getClassLoader(), null);
+    public static EclipseProjectPath make(final IJavaProject project, final boolean includeSource,
+            final boolean includeClassFiles) throws IOException, CoreException {
+        return new EclipseProjectPath(project, includeSource, includeClassFiles);
     }
 
     public Collection<Module> getModules(final Loader loader, final boolean binary) {
         return Collections.unmodifiableCollection(modules.get(loader));
-    }
-
-    @Override
-    public String toString() {
-        try {
-            return toAnalysisScope((File) null).toString();
-        } catch (final IOException e) {
-            e.printStackTrace();
-            return "Error in toString()";
-        }
-    }
-
-    private IPluginModelBase findModel(final IProject p) {
-        // PluginRegistry is specific to Eclipse 3.3+. Use PDECore for
-        // compatibility with 3.2
-        // return PluginRegistry.findModel(p);
-        return PDECore.getDefault().getModelManager().findModel(p);
-    }
-
-    private IPluginModelBase findModel(final BundleDescription bd) {
-        // PluginRegistry is specific to Eclipse 3.3+. Use PDECore for
-        // compatibility with 3.2
-        // return PluginRegistry.findModel(bd);
-        return PDECore.getDefault().getModelManager().findModel(bd);
     }
 }
