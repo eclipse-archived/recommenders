@@ -13,9 +13,12 @@ package org.eclipse.recommenders.internal.rcp.analysis;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -23,15 +26,18 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
-import org.eclipse.recommenders.internal.rcp.InterruptingProgressMonitor;
 import org.eclipse.recommenders.internal.rcp.analysis.cp.IProjectClasspathAnalyzer;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
@@ -87,30 +93,39 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
 
     @Override
     protected void clean(final IProgressMonitor monitor) throws CoreException {
-        setMonitor(monitor);
-        performCleanBuild();
+        try {
+            setMonitor(monitor);
+            performCleanBuild();
+        } finally {
+            monitor.done();
+        }
+
     }
 
     @Override
     protected IProject[] build(final int kind, final Map args, final IProgressMonitor monitor) throws CoreException {
-        setMonitor(monitor);
-        switch (kind) {
-        case FULL_BUILD:
-            performFullBuild();
-            return null;
-        case CLEAN_BUILD:
-            performCleanBuild();
-            return null;
-        case INCREMENTAL_BUILD:
-        case AUTO_BUILD:
-        default:
-            final IResourceDelta delta = getDelta(getProject());
-            if (delta == null) {
+        try {
+            setMonitor(monitor);
+            switch (kind) {
+            case FULL_BUILD:
                 performFullBuild();
-            } else {
-                performIncrementalBuild(delta);
+                return null;
+            case CLEAN_BUILD:
+                performCleanBuild();
+                return null;
+            case INCREMENTAL_BUILD:
+            case AUTO_BUILD:
+            default:
+                final IResourceDelta delta = getDelta(getProject());
+                if (delta == null) {
+                    performFullBuild();
+                } else {
+                    performIncrementalBuild(delta);
+                }
+                return null;
             }
-            return null;
+        } finally {
+            monitor.done();
         }
     }
 
@@ -206,8 +221,8 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
                     final List<Object> artifacts = Lists.newLinkedList();
                     for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
 
-                        final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer,
-                                new InterruptingProgressMonitor(monitor));
+                        // new InterruptingProgressMonitor(monitor)
+                        final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer, monitor);
                         if (artifact != null) {
                             artifacts.add(artifact);
                         }
@@ -220,18 +235,25 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
                 }
             }
         });
-        // try {
-        // // f.get(1000, TimeUnit.MILLISECONDS);
-        // } catch (final InterruptedException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch (final ExecutionException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch (final TimeoutException e) {
-        // f.cancel(true);
-        // }
+        final Job j = new WorkspaceJob("") {
 
+            @Override
+            public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
+                try {
+                    f.get(2, TimeUnit.SECONDS);
+                } catch (final InterruptedException e) {
+                    e.printStackTrace();
+                } catch (final ExecutionException e) {
+                    e.printStackTrace();
+                } catch (final TimeoutException e) {
+                    f.cancel(true);
+                    return Status.CANCEL_STATUS;
+                }
+                return Status.OK_STATUS;
+            }
+        };
+        j.setSystem(true);
+        j.schedule();
     }
 
     private Object safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
