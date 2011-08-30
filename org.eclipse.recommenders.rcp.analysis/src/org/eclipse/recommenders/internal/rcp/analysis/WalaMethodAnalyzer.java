@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.analysis;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
@@ -24,6 +25,7 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDec
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 
+import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.ibm.wala.classLoader.IClass;
@@ -99,6 +101,10 @@ public class WalaMethodAnalyzer {
     }
 
     private void logErrorMessage(final Exception e) {
+        final Throwable rootCause = Throwables.getRootCause(e);
+        if (rootCause instanceof CancellationException) {
+            return;
+        }
         final IMethod method = walaEntrypoint.getMethod();
         final String signature = method.getSignature();
         System.err.printf("exception in %s: %s\n", signature, e);

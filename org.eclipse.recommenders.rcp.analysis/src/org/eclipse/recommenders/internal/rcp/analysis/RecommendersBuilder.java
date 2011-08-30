@@ -133,7 +133,8 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
 
     private static int ticksLastFullBuild = 100;
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime()
+            .availableProcessors());
     private static int ticksLastIncrBuild = 2;
 
     private CountingProgressMonitor monitor;
@@ -166,15 +167,30 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         this.analyzers = analyzers;
     }
 
-    @Override
-    protected void clean(final IProgressMonitor monitor) throws CoreException {
-        try {
-            setMonitor(monitor);
-            performCleanBuild();
-        } finally {
-            monitor.done();
+    private void analyzeCompilationUnit(final ICompilationUnit cu) throws CoreException {
+        if (monitor.isCanceled()) {
+            return;
         }
 
+        final AnalyzerRunnable task = new AnalyzerRunnable(cu);
+        final Future<?> f = executor.submit(task);
+        task.setFuture(f);
+
+    }
+
+    private void analyzeClasspath() {
+        // final IJavaProject javaProject = JavaCore.create(getProject());
+        // final SubProgressMonitor submonitor = new SubProgressMonitor(monitor,
+        // 5);
+        // final ProjectClasspath cp = cpAnalyzer.analyze(javaProject,
+        // submonitor);
+        // store.storeArtifact(javaProject, cp);
+    }
+
+    private void removeCompilationUnit(final ICompilationUnit cu) throws CoreException {
+        monitor.subTask("Removing Analysis Artifacts for " + cu.getElementName());
+        store.removeArtifacts(cu);
+        monitor.worked(1);
     }
 
     @Override
@@ -202,44 +218,6 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         } finally {
             monitor.done();
         }
-    }
-
-    private void setMonitor(final IProgressMonitor monitor) {
-        this.monitor = new CountingProgressMonitor(monitor);
-    }
-
-    private void performCleanBuild() throws CoreException {
-        monitor.subTask("Cleaning " + getProject().getName());
-        store.cleanStore(getProject());
-        monitor.worked(1);
-    }
-
-    private void performFullBuild() throws CoreException {
-        monitor.beginTask("Perform Full Build", ticksLastFullBuild);
-        performCleanBuild();
-        getProject().accept(new IResourceVisitor() {
-            @Override
-            public boolean visit(final IResource resource) throws CoreException {
-                final IJavaElement element = JavaCore.create(resource);
-                if (element instanceof ICompilationUnit) {
-                    analyzeCompilationUnit((ICompilationUnit) element);
-                }
-                return element != null;
-            }
-        });
-
-        analyzeClasspath();
-
-        ticksLastFullBuild = monitor.actualWork;
-    }
-
-    private void analyzeClasspath() {
-        // final IJavaProject javaProject = JavaCore.create(getProject());
-        // final SubProgressMonitor submonitor = new SubProgressMonitor(monitor,
-        // 5);
-        // final ProjectClasspath cp = cpAnalyzer.analyze(javaProject,
-        // submonitor);
-        // store.storeArtifact(javaProject, cp);
     }
 
     private void performIncrementalBuild(final IResourceDelta delta) throws CoreException {
@@ -270,15 +248,44 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         ticksLastIncrBuild = monitor.actualWork;
     }
 
-    private void analyzeCompilationUnit(final ICompilationUnit cu) throws CoreException {
-        if (monitor.isCanceled()) {
-            return;
+    @Override
+    protected void clean(final IProgressMonitor monitor) throws CoreException {
+        try {
+            setMonitor(monitor);
+            performCleanBuild();
+        } finally {
+            monitor.done();
         }
 
-        final AnalyzerRunnable task = new AnalyzerRunnable(cu);
-        final Future<?> f = executor.submit(task);
-        task.setFuture(f);
+    }
 
+    private void setMonitor(final IProgressMonitor monitor) {
+        this.monitor = new CountingProgressMonitor(monitor);
+    }
+
+    private void performFullBuild() throws CoreException {
+        monitor.beginTask("Perform Full Build", ticksLastFullBuild);
+        performCleanBuild();
+        getProject().accept(new IResourceVisitor() {
+            @Override
+            public boolean visit(final IResource resource) throws CoreException {
+                final IJavaElement element = JavaCore.create(resource);
+                if (element instanceof ICompilationUnit) {
+                    analyzeCompilationUnit((ICompilationUnit) element);
+                }
+                return element != null;
+            }
+        });
+
+        analyzeClasspath();
+
+        ticksLastFullBuild = monitor.actualWork;
+    }
+
+    private void performCleanBuild() throws CoreException {
+        monitor.subTask("Cleaning " + getProject().getName());
+        store.cleanStore(getProject());
+        monitor.worked(1);
     }
 
     private Object safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
@@ -297,11 +304,5 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         final String analyzerName = analyzer.getClass().getSimpleName();
         final String cuName = cu.getElementName();
         RecommendersPlugin.logError(x, "Analyzer '%s' threw exception while analzying '%s'", analyzerName, cuName);
-    }
-
-    private void removeCompilationUnit(final ICompilationUnit cu) throws CoreException {
-        monitor.subTask("Removing Analysis Artifacts for " + cu.getElementName());
-        store.removeArtifacts(cu);
-        monitor.worked(1);
     }
 }
