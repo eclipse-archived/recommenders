@@ -85,7 +85,7 @@ public class ClassOverridesNetwork {
     public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodOverrides(final double minProbability) {
         final TreeSet<Tuple<IMethodName, Double>> recommendations = createSortedSetForMethodRecommendations();
         for (final BayesNode node : methodNodes) {
-            if (junctionTreeAlgorithm.getEvidence().containsKey(node.getId())) {
+            if (junctionTreeAlgorithm.getEvidence().containsKey(node)) {
                 continue;
             }
             final double probability = junctionTreeAlgorithm.getBeliefs(node)[0];

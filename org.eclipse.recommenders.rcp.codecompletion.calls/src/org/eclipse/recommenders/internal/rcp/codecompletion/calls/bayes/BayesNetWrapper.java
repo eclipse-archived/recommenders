@@ -152,7 +152,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         for (final IMethodName method : callNodes.keySet()) {
             final BayesNode bayesNode = callNodes.get(method);
 
-            if (junctionTreeAlgorithm.getEvidence().containsKey(bayesNode.getId())) {
+            if (junctionTreeAlgorithm.getEvidence().containsKey(bayesNode)) {
                 continue;
             }
             final double probability = junctionTreeAlgorithm.getBeliefs(bayesNode)[bayesNode.getOutcomeIndex(S_TRUE)];
