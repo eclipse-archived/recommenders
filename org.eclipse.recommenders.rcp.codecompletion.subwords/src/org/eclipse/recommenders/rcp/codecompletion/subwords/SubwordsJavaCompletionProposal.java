@@ -12,6 +12,7 @@ package org.eclipse.recommenders.rcp.codecompletion.subwords;
 
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
@@ -38,10 +39,16 @@ public class SubwordsJavaCompletionProposal extends JavaCompletionProposal {
     }
 
     @Override
+    public void apply(final IDocument document, final char trigger, final int offset) {
+        // TODO Auto-generated method stub
+        super.apply(document, trigger, offset);
+    }
+
+    @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
         setRelevance(subwordsContext.calculateRelevance());
-        return subwordsContext.isRegexMatchButNoPrefixMatch();
+        return subwordsContext.isRegexMatch();
     }
 
     @Override

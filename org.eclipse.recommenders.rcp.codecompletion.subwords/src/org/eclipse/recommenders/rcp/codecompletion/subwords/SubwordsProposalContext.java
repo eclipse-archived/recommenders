@@ -110,6 +110,10 @@ public class SubwordsProposalContext {
         return createMatcher().matches();
     }
 
+    public boolean isRegexMatch() {
+        return createMatcher().matches();
+    }
+
     private Matcher createMatcher() {
         return pattern.matcher(subwordsMatchingRegion);
     }
