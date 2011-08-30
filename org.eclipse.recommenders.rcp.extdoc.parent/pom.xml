@@ -42,6 +42,11 @@
 			<layout>p2</layout>
 			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/head/</url>
 		</repository>
+		<repository>
+			<id>jayes</id>
+			<layout>p2</layout>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/students/th/michael-bayes/org.eclipse.recommenders.jayes.repository/target/site/</url>
+		</repository>
 	</repositories>
 
 
