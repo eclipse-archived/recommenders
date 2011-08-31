@@ -64,7 +64,7 @@ public class WalaClassHierarchyService implements IClassHierarchyService, IEleme
      * @see #activate();
      */
     @Override
-    public synchronized void elementChanged(final ElementChangedEvent event) {
+    public void elementChanged(final ElementChangedEvent event) {
         process(event.getDelta());
     }
 
@@ -117,7 +117,6 @@ public class WalaClassHierarchyService implements IClassHierarchyService, IEleme
         }
     }
 
-    // @Override
     @Override
     public synchronized IClassHierarchy getClassHierachy(final IJavaElement jdtElement) {
         ensureIsNotNull(jdtElement);
