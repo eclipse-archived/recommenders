@@ -13,15 +13,13 @@ package org.eclipse.recommenders.mining.extdocs.couch;
 import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrl;
 import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKey;
 import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKeyObject;
-import static org.eclipse.recommenders.commons.client.CouchUtils.transformKeys;
 import static org.eclipse.recommenders.commons.utils.Option.wrap;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.recommenders.commons.client.CouchUtils;
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
+import org.eclipse.recommenders.commons.client.GenericResultRowView;
 import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.utils.Option;
@@ -47,10 +45,10 @@ public class CouchDbDataAccess {
     public Set<ITypeName> getSuperclassNames() {
         final Set<ITypeName> result = Sets.newHashSet();
         final String url = createViewUrl("compilationunits", "bySuperclass") + "?reduce=true&group_level=1";
-        final GenericResultObjectView<Object> resultView = client.doGetRequest(url,
-                new GenericType<GenericResultObjectView<Object>>() {
+        final GenericResultRowView<String, Object, Object> resultView = client.doGetRequest(url,
+                new GenericType<GenericResultRowView<String, Object, Object>>() {
                 });
-        final List<String> keys = transformKeys(resultView);
+        final List<String> keys = resultView.getTransformedKeys();
         for (final String key : keys) {
             if (key != null) {
                 result.add(VmTypeName.get(key));
@@ -62,10 +60,10 @@ public class CouchDbDataAccess {
     public Iterable<CompilationUnit> getCompilationUnitsForSuperclass(final ITypeName superclass) {
         final String url = createViewUrlWithKey("compilationunits", "bySuperclass", superclass.getIdentifier())
                 + "&reduce=false&include_docs=true";
-        final GenericResultObjectView<CompilationUnit> resultView = client.doGetRequest(url,
-                new GenericType<GenericResultObjectView<CompilationUnit>>() {
+        final GenericResultRowView<Object, CompilationUnit, Object> resultView = client.doGetRequest(url,
+                new GenericType<GenericResultRowView<Object, CompilationUnit, Object>>() {
                 });
-        return CouchUtils.transformDocs(resultView);
+        return resultView.getTransformedDocs();
     }
 
     public void saveOrUpdate(final ClassOverrideDirectives directives) {
@@ -85,10 +83,10 @@ public class CouchDbDataAccess {
         keyValuePairs.put("providerId", ClassOverrideDirectives.class.getSimpleName());
         keyValuePairs.put("type", type.getIdentifier());
         final String url = createViewUrlWithKeyObject("providers", "providers", keyValuePairs);
-        final GenericResultObjectView<ClassOverrideDirectives> resultView = client.doGetRequest(url,
-                new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
+        final GenericResultRowView<Object, Object, ClassOverrideDirectives> resultView = client.doGetRequest(url,
+                new GenericType<GenericResultRowView<Object, Object, ClassOverrideDirectives>>() {
                 });
-        return wrap(CouchUtils.getFirst(resultView, null));
+        return wrap(resultView.getFirstValue(null));
     }
 
 }

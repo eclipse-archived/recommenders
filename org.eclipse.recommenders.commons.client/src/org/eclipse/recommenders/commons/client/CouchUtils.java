@@ -34,22 +34,6 @@ public class CouchUtils {
         return resultList;
     }
 
-    public static <T> List<T> transformDocs(final GenericResultObjectView<T> queryResult) {
-        final List<T> resultList = Lists.newLinkedList();
-        for (final ResultObject<T> row : queryResult.rows) {
-            resultList.add(row.doc);
-        }
-        return resultList;
-    }
-
-    public static List<String> transformKeys(final GenericResultObjectView<?> queryResult) {
-        final List<String> result = Lists.newLinkedList();
-        for (final ResultObject<?> resultObj : queryResult.rows) {
-            result.add(resultObj.key);
-        }
-        return result;
-    }
-
     public static <T> T getFirst(final GenericResultObjectView<T> queryResult, final T defaultValue) {
         final List<T> res = transformValues(queryResult);
         return Iterables.getFirst(res, defaultValue);
