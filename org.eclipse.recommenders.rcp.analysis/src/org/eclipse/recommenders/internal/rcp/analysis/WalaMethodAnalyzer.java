@@ -31,6 +31,7 @@ import com.google.inject.Provider;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
+import com.ibm.wala.util.CancelException;
 
 public class WalaMethodAnalyzer {
     private final Set<IMethodAnalyzer> methodAnalyzers;
@@ -95,16 +96,19 @@ public class WalaMethodAnalyzer {
             try {
                 methodAnalyzer.analyzeMethod(walaEntrypoint, recMethod, monitor);
             } catch (final Exception e) {
+                final Throwable rootCause = Throwables.getRootCause(e);
+                if (rootCause instanceof CancellationException) {
+                    Throwables.propagate(e);
+                } else if (rootCause instanceof CancelException) {
+                    Throwables.propagate(e);
+                }
+
                 logErrorMessage(e);
             }
         }
     }
 
     private void logErrorMessage(final Exception e) {
-        final Throwable rootCause = Throwables.getRootCause(e);
-        if (rootCause instanceof CancellationException) {
-            return;
-        }
         final IMethod method = walaEntrypoint.getMethod();
         final String signature = method.getSignature();
         System.err.printf("exception in %s: %s\n", signature, e);

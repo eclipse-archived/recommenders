@@ -10,33 +10,24 @@
  */
 package org.eclipse.recommenders.internal.rcp.analysis;
 
+import static org.eclipse.recommenders.internal.rcp.analysis.builder.ChangedCompilationUnitsFinder.findChangedCompilkationUnits;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.commons.injection.InjectionService;
+import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
+import org.eclipse.recommenders.internal.rcp.InterruptingProgressMonitor;
+import org.eclipse.recommenders.internal.rcp.analysis.builder.CompilationUnitsFinder;
 import org.eclipse.recommenders.internal.rcp.analysis.cp.IProjectClasspathAnalyzer;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
@@ -55,87 +46,8 @@ import com.ibm.wala.ipa.cha.IClassHierarchy;
  */
 @SuppressWarnings("rawtypes")
 public class RecommendersBuilder extends IncrementalProjectBuilder {
-    private final class AnalyzerRunnable implements Runnable {
-        private final ICompilationUnit cu;
-        private Future<?> f;
-
-        private AnalyzerRunnable(final ICompilationUnit cu) {
-            this.cu = cu;
-        }
-
-        @Override
-        public void run() {
-
-            try {
-                scheduleTermination();
-                final IClassHierarchy cha = chaService.getClassHierachy(cu);
-                if (cha instanceof LazyClassHierarchy) {
-                    final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
-                    final IType primaryType = cu.findPrimaryType();
-                    if (primaryType != null) {
-                        lcha.remove(javaElementResolver.toRecType(primaryType));
-                    }
-                }
-                if (!cu.isStructureKnown()) {
-                    monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
-                    return;
-                }
-                monitor.subTask("Recommenders Analyzing " + cu.getElementName());
-                final List<Object> artifacts = Lists.newLinkedList();
-                for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
-
-                    // new InterruptingProgressMonitor(monitor)
-                    final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer, monitor);
-                    if (artifact != null) {
-                        artifacts.add(artifact);
-                    }
-                }
-                store.storeArtifacts(cu, artifacts);
-                monitor.worked(1);
-
-            } catch (final CoreException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void scheduleTermination() {
-
-            final Job j = new Job("") {
-
-                @Override
-                protected IStatus run(final IProgressMonitor monitor) {
-                    try {
-                        if (f == null) {
-                            this.schedule(100);
-                        } else {
-                            f.get(2, TimeUnit.SECONDS);
-                        }
-                    } catch (final InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (final ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (final TimeoutException e) {
-                        f.cancel(true);
-                        return Status.CANCEL_STATUS;
-                    }
-                    return Status.OK_STATUS;
-                }
-            };
-            j.setSystem(true);
-            j.schedule();
-
-        }
-
-        public void setFuture(final Future<?> myFuture) {
-            this.f = myFuture;
-
-        }
-    }
-
     private static int ticksLastFullBuild = 100;
 
-    private static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime()
-            .availableProcessors());
     private static int ticksLastIncrBuild = 2;
 
     private CountingProgressMonitor monitor;
@@ -146,8 +58,6 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
     @Inject
     private Set<ICompilationUnitAnalyzer> analyzers;
 
-    @Inject
-    private IProjectClasspathAnalyzer cpAnalyzer;
     @Inject
     private IClassHierarchyService chaService;
 
@@ -168,37 +78,21 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         this.analyzers = analyzers;
     }
 
-    private void analyzeCompilationUnit(final ICompilationUnit cu) throws CoreException {
-        chaService.getClassHierachy(cu);
-        if (monitor.isCanceled()) {
-            return;
+    @Override
+    protected void clean(final IProgressMonitor monitor) throws CoreException {
+        try {
+            setMonitor(monitor);
+            performCleanBuild();
+        } finally {
+            monitor.done();
         }
 
-        final AnalyzerRunnable task = new AnalyzerRunnable(cu);
-        final Future<?> f = executor.submit(task);
-        task.setFuture(f);
-
-    }
-
-    private void analyzeClasspath() {
-        // final IJavaProject javaProject = JavaCore.create(getProject());
-        // final SubProgressMonitor submonitor = new SubProgressMonitor(monitor,
-        // 5);
-        // final ProjectClasspath cp = cpAnalyzer.analyze(javaProject,
-        // submonitor);
-        // store.storeArtifact(javaProject, cp);
-    }
-
-    private void removeCompilationUnit(final ICompilationUnit cu) throws CoreException {
-        monitor.subTask("Removing Analysis Artifacts for " + cu.getElementName());
-        store.removeArtifacts(cu);
-        monitor.worked(1);
     }
 
     @Override
     protected IProject[] build(final int kind, final Map args, final IProgressMonitor monitor) throws CoreException {
+        setMonitor(monitor);
         try {
-            setMonitor(monitor);
             switch (kind) {
             case FULL_BUILD:
                 performFullBuild();
@@ -216,78 +110,83 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
                     performIncrementalBuild(delta);
                 }
                 return null;
+
             }
         } finally {
             monitor.done();
         }
-    }
-
-    private void performIncrementalBuild(final IResourceDelta delta) throws CoreException {
-        monitor.beginTask("Incremental Build", ticksLastIncrBuild);
-        delta.accept(new IResourceDeltaVisitor() {
-            @Override
-            public boolean visit(final IResourceDelta delta) throws CoreException {
-                final IResource resource = delta.getResource();
-                final IJavaElement element = JavaCore.create(resource);
-                if (element instanceof ICompilationUnit) {
-                    final ICompilationUnit cu = (ICompilationUnit) element;
-                    switch (delta.getKind()) {
-                    case IResourceDelta.ADDED:
-                    case IResourceDelta.CHANGED:
-                    case IResourceDelta.REPLACED:
-                        analyzeCompilationUnit(cu);
-                        break;
-                    case IResourceDelta.REMOVED:
-                        removeCompilationUnit(cu);
-                        break;
-                    default:
-                        break;
-                    }
-                }
-                return element != null;
-            }
-        });
-        ticksLastIncrBuild = monitor.actualWork;
-    }
-
-    @Override
-    protected void clean(final IProgressMonitor monitor) throws CoreException {
-        try {
-            setMonitor(monitor);
-            performCleanBuild();
-        } finally {
-            monitor.done();
-        }
-
     }
 
     private void setMonitor(final IProgressMonitor monitor) {
         this.monitor = new CountingProgressMonitor(monitor);
     }
 
-    private void performFullBuild() throws CoreException {
-        monitor.beginTask("Perform Full Build", ticksLastFullBuild);
-        performCleanBuild();
-        getProject().accept(new IResourceVisitor() {
-            @Override
-            public boolean visit(final IResource resource) throws CoreException {
-                final IJavaElement element = JavaCore.create(resource);
-                if (element instanceof ICompilationUnit) {
-                    analyzeCompilationUnit((ICompilationUnit) element);
-                }
-                return element != null;
-            }
-        });
-
-        analyzeClasspath();
-
-        ticksLastFullBuild = monitor.actualWork;
-    }
-
     private void performCleanBuild() throws CoreException {
         monitor.subTask("Cleaning " + getProject().getName());
         store.cleanStore(getProject());
         monitor.worked(1);
+    }
+
+    private void performFullBuild() throws CoreException {
+        monitor.beginTask("Perform Full Build", ticksLastFullBuild);
+        performCleanBuild();
+        analyzeCompilationUnits(CompilationUnitsFinder.visitResource(getProject()));
+        ticksLastFullBuild = monitor.actualWork;
+    }
+
+    private void performIncrementalBuild(final IResourceDelta delta) throws CoreException {
+        monitor.beginTask("Incremental Build", ticksLastIncrBuild);
+        final Tuple<List<ICompilationUnit>/* added */, List<ICompilationUnit> /* removed */> deltas = findChangedCompilkationUnits(delta);
+
+        analyzeCompilationUnits(deltas.getFirst());
+        removeCompilationUnit(deltas.getSecond());
+        ticksLastIncrBuild = monitor.actualWork;
+    }
+
+    private void analyzeCompilationUnits(final List<ICompilationUnit> cus) throws CoreException {
+
+        final int size = cus.size();
+        int counter = 0;
+        for (final ICompilationUnit cu : cus) {
+            if (monitor.isCanceled()) {
+                return;
+            }
+            if (!cu.isStructureKnown()) {
+                reportSkippingCompilationUnit(cu);
+                return;
+            }
+
+            removeCachedClassFromClassHierarchy(cu);
+            final String msg = String.format("Analyzing '%s/%s' (%d of %d)", cu.getJavaProject().getElementName(), cu
+                    .getResource().getProjectRelativePath(), counter++, size);
+            monitor.subTask(msg);
+            final List<Object> artifacts = Lists.newLinkedList();
+            for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
+
+                final InterruptingProgressMonitor monitor2 = new InterruptingProgressMonitor(monitor);
+                final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer, monitor2);
+                if (artifact != null) {
+                    artifacts.add(artifact);
+                }
+            }
+            store.storeArtifacts(cu, artifacts);
+            monitor.worked(1);
+        }
+    }
+
+    private void reportSkippingCompilationUnit(final ICompilationUnit cu) {
+        monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
+    }
+
+    private void removeCachedClassFromClassHierarchy(final ICompilationUnit cu) {
+        final IClassHierarchy cha = chaService.getClassHierachy(cu);
+        if (cha instanceof LazyClassHierarchy) {
+            final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
+            final IType primaryType = cu.findPrimaryType();
+            if (primaryType != null) {
+                lcha.remove(javaElementResolver.toRecType(primaryType));
+            }
+        }
     }
 
     private Object safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
@@ -306,5 +205,13 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         final String analyzerName = analyzer.getClass().getSimpleName();
         final String cuName = cu.getElementName();
         RecommendersPlugin.logError(x, "Analyzer '%s' threw exception while analzying '%s'", analyzerName, cuName);
+    }
+
+    private void removeCompilationUnit(final List<ICompilationUnit> cus) throws CoreException {
+        for (final ICompilationUnit cu : cus) {
+            monitor.subTask("Removing Analysis Artifacts for " + cu.getElementName());
+            store.removeArtifacts(cu);
+            monitor.worked(1);
+        }
     }
 }

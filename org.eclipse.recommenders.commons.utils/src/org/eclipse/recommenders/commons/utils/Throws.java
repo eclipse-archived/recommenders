@@ -71,7 +71,7 @@ public class Throws {
         throw new UnsupportedOperationException(formattedMessage);
     }
 
-    public static Exception throwCancelationException() {
+    public static CancellationException throwCancelationException() {
         throw new CancellationException();
     }
 }

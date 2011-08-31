@@ -89,14 +89,15 @@ public class LocalNamesCollector {
     }
 
     private boolean storeLocalNameForValueNumber(final int valueNumber, final String name) {
+        if (Thread.interrupted()) {
+            System.out.println("canceled while analyzing " + ir.getMethod().getSignature());
+            throw Throws.throwCancelationException();
+        }
         return names.put(valueNumber, name);
     }
 
     private void collectLocalValueNames() {
         for (final Iterator<SSAInstruction> it = ir.iterateAllInstructions(); it.hasNext();) {
-            if (Thread.currentThread().isInterrupted()) {
-                Throws.throwCancelationException();
-            }
             final SSAInstruction instr = it.next();
             {
                 // check for field access
@@ -147,9 +148,6 @@ public class LocalNamesCollector {
             return;
         }
         for (final ISSABasicBlock block : basicBlocks) {
-            if (Thread.interrupted()) {
-                Throws.throwCancelationException();
-            }
             final int last = block.getLastInstructionIndex();
             final String[] localNames = ir.getLocalNames(last, valueNumber);
             storeLocalNamesForValueNumber(valueNumber, localNames);

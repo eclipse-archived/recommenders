@@ -18,7 +18,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitConsumer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ICompilationUnitFinalizer;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
@@ -53,9 +52,6 @@ public class WalaCompiliationUnitAnalzyer {
     }
 
     public void run(final IProgressMonitor monitor) throws JavaModelException {
-        if (Thread.interrupted() || monitor.isCanceled()) {
-            Throws.throwCancelationException();
-        }
         this.monitor = monitor;
         initializeCompilationUnit();
         analyzePrimaryType();

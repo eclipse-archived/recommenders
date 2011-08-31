@@ -104,7 +104,7 @@ public class WalaTypeAnalyzer {
     }
 
     private void analyzeEachMethod() throws JavaModelException {
-        if (Thread.interrupted() || monitor.isCanceled()) {
+        if (Thread.currentThread().isInterrupted() || monitor.isCanceled()) {
             Throws.throwCancelationException();
         }
         final List<Entrypoint> entrypoints = entrypointSelector.get().selectEntrypoints(walaClass);

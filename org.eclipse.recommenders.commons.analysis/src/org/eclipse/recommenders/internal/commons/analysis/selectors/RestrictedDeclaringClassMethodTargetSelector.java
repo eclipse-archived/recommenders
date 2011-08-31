@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.eclipse.recommenders.commons.utils.Bag;
 import org.eclipse.recommenders.commons.utils.HashBag;
-import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.internal.commons.analysis.utils.ClassUtils;
 import org.eclipse.recommenders.internal.commons.analysis.utils.MethodUtils;
 import org.eclipse.recommenders.internal.commons.analysis.utils.RecommendersInits;
@@ -41,7 +40,7 @@ public class RestrictedDeclaringClassMethodTargetSelector implements MethodTarge
     private final Set<IClass> acceptedDeclaringClasses = Sets.newHashSet();
 
     private final SSAPropagationCallGraphBuilder builder;
-    private Bag<CallSiteReference> reentryCounter = HashBag.newHashBag();
+    private final Bag<CallSiteReference> reentryCounter = HashBag.newHashBag();
 
     public RestrictedDeclaringClassMethodTargetSelector(final MethodTargetSelector delegate,
             final IClass restrictedReceiverType, final SSAPropagationCallGraphBuilder builder) {
@@ -52,9 +51,6 @@ public class RestrictedDeclaringClassMethodTargetSelector implements MethodTarge
 
     @Override
     public IMethod getCalleeTarget(final CGNode caller, final CallSiteReference call, final IClass receiverType) {
-        if (Thread.currentThread().isInterrupted()) {
-            Throws.throwCancelationException();
-        }
 
         // final boolean receiverThis = isReceiverThis(caller, call,
         // receiverType);

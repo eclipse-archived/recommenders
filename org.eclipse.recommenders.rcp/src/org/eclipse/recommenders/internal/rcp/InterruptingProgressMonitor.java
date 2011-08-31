@@ -10,94 +10,98 @@
  */
 package org.eclipse.recommenders.internal.rcp;
 
-import org.eclipse.core.resources.WorkspaceJob;
-import org.eclipse.core.runtime.CoreException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.rcp.utils.CountingProgressMonitor;
 
 public class InterruptingProgressMonitor implements IProgressMonitor {
 
-    private final CountingProgressMonitor delegate;
+    private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
+    private final CountingProgressMonitor reporting_only_monitor;
     private boolean done;
+    private Thread currentThread;
 
     @Override
     public void beginTask(final String name, final int plannedTotalWork) {
-        delegate.beginTask(name, plannedTotalWork);
-        final Thread currentThread = Thread.currentThread();
-
-        final WorkspaceJob hob = new WorkspaceJob("Timout Job") {
+        currentThread = Thread.currentThread();
+        reporting_only_monitor.beginTask(name, plannedTotalWork);
+        executor.schedule(new Runnable() {
 
             @Override
-            public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
-                if (!done) {
-                    currentThread.interrupt();
+            public void run() {
+
+                if (!InterruptingProgressMonitor.this.done) {
+                    InterruptingProgressMonitor.this.setCanceled(true);
                 }
-                return Status.OK_STATUS;
             }
-        };
-        hob.setSystem(true);
-        hob.schedule(2000);
+        }, 2, TimeUnit.SECONDS);
+
     }
 
     @Override
     public void done() {
         this.done = true;
-        delegate.done();
+        // dont call done on enclosing monitor!
+        // clear flag
+        Thread.interrupted();
     }
 
     @Override
     public void internalWorked(final double work) {
-        delegate.internalWorked(work);
+        reporting_only_monitor.internalWorked(work);
     }
 
     @Override
     public boolean isCanceled() {
-        return delegate.isCanceled();
+        return reporting_only_monitor.isCanceled() || Thread.currentThread().isInterrupted();
     }
 
     @Override
     public void setCanceled(final boolean value) {
-        delegate.setCanceled(value);
+        if (value) {
+            currentThread.interrupt();
+        }
     }
 
     @Override
     public void setTaskName(final String name) {
-        delegate.setTaskName(name);
+        reporting_only_monitor.setTaskName(name);
     }
 
     @Override
     public void subTask(final String name) {
-        delegate.subTask(name);
+        reporting_only_monitor.subTask(name);
     }
 
     @Override
     public void worked(final int work) {
-        delegate.worked(work);
+        reporting_only_monitor.worked(work);
     }
 
     public void worked() {
-        delegate.worked();
+        reporting_only_monitor.worked();
     }
 
     @Override
     public int hashCode() {
-        return delegate.hashCode();
+        return reporting_only_monitor.hashCode();
     }
 
     @Override
     public boolean equals(final Object obj) {
-        return delegate.equals(obj);
+        return reporting_only_monitor.equals(obj);
     }
 
     @Override
     public String toString() {
-        return delegate.toString();
+        return reporting_only_monitor.toString();
     }
 
     public InterruptingProgressMonitor(final CountingProgressMonitor monitor) {
-        this.delegate = monitor;
+        this.reporting_only_monitor = monitor;
     }
 
 }
