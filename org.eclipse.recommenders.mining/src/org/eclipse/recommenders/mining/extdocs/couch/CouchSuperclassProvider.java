@@ -29,7 +29,7 @@ public class CouchSuperclassProvider implements ISuperclassProvider {
 
     @Override
     public Set<ITypeName> getSuperclasses() {
-        return db.getCompilationUnitSuperclases();
+        return db.getSuperclassNames();
     }
 
 }

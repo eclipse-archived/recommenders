@@ -44,7 +44,7 @@ public class CouchDbDataAccess {
         this.client = client;
     }
 
-    public Set<ITypeName> getCompilationUnitSuperclases() {
+    public Set<ITypeName> getSuperclassNames() {
         final Set<ITypeName> result = Sets.newHashSet();
         final String url = createViewUrl("compilationunits", "bySuperclass") + "?reduce=true&group_level=1";
         final GenericResultObjectView<Object> resultView = client.doGetRequest(url,
@@ -68,15 +68,6 @@ public class CouchDbDataAccess {
         return CouchUtils.transformDocs(resultView);
     }
 
-    public Option<ClassOverrideDirectives> getClassOverrideDirectives(final ITypeName type) {
-        final Map<String, String> keyValuePairs = Maps.newHashMap();
-        final String url = createViewUrlWithKeyObject("providers", "providers", keyValuePairs);
-        final GenericResultObjectView<ClassOverrideDirectives> resultView = client.doGetRequest(url,
-                new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
-                });
-        return wrap(CouchUtils.getFirst(resultView, null));
-    }
-
     public void saveOrUpdate(final ClassOverrideDirectives directives) {
         final Option<ClassOverrideDirectives> directivesOption = getClassOverrideDirectives(directives.getType());
         if (directivesOption.hasValue()) {
@@ -87,6 +78,17 @@ public class CouchDbDataAccess {
         final TransactionResult result = client.doPostRequest("", directives, TransactionResult.class);
         directives._id = result.id;
         directives._rev = result.rev;
+    }
+
+    private Option<ClassOverrideDirectives> getClassOverrideDirectives(final ITypeName type) {
+        final Map<String, String> keyValuePairs = Maps.newHashMap();
+        keyValuePairs.put("providerId", ClassOverrideDirectives.class.getSimpleName());
+        keyValuePairs.put("type", type.getIdentifier());
+        final String url = createViewUrlWithKeyObject("providers", "providers", keyValuePairs);
+        final GenericResultObjectView<ClassOverrideDirectives> resultView = client.doGetRequest(url,
+                new GenericType<GenericResultObjectView<ClassOverrideDirectives>>() {
+                });
+        return wrap(CouchUtils.getFirst(resultView, null));
     }
 
 }
