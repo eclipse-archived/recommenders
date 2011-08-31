@@ -10,31 +10,37 @@
  */
 package org.eclipse.recommenders.rcp.utils;
 
+import static java.net.NetworkInterface.getNetworkInterfaces;
+import static org.eclipse.recommenders.commons.utils.GenericEnumerationUtils.iterable;
+import static org.eclipse.recommenders.commons.utils.Option.none;
+import static org.eclipse.recommenders.commons.utils.Option.wrap;
+
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.UUID;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.rcp.utils.internal.PreferencesInitalizer;
 import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 
 public class UUIDHelper {
 
     public static String getUUID() {
-        String uuid = lookupUUIDFromStore();
-        if (uuid == null) {
-            uuid = generateGlobalUUID();
-            storeUUID(uuid);
+        final Option<String> uuid = lookupUUIDFromStore();
+        if (uuid.hasValue()) {
+            return uuid.get();
         }
-        return uuid;
+        final String newUuid = generateGlobalUUID();
+        storeUUID(newUuid);
+        return newUuid;
     }
 
-    private static String lookupUUIDFromStore() {
+    private static Option<String> lookupUUIDFromStore() {
         final RecommendersUtilsPlugin plugin = RecommendersUtilsPlugin.getDefault();
         final IPreferenceStore prefStore = plugin.getPreferenceStore();
         final String uuid = prefStore.getString(PreferencesInitalizer.UUID);
-        return uuid.isEmpty() ? null : uuid;
+        return Option.wrap(uuid);
     }
 
     private static void storeUUID(final String uuid) {
@@ -44,26 +50,30 @@ public class UUIDHelper {
     }
 
     public static String generateGlobalUUID() {
-        String uuid = generateUUIDFromMacAddress();
-        if (uuid == null) {
-            uuid = UUID.randomUUID().toString();
+        final Option<String> uuid = generateUUIDFromMacAddress();
+        if (!uuid.hasValue()) {
+            return UUID.randomUUID().toString();
         }
-        return uuid;
+        return uuid.get();
     }
 
-    private static String generateUUIDFromMacAddress() {
-        String uuid = null;
+    private static Option<String> generateUUIDFromMacAddress() {
         try {
-            final Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
-            if (e.hasMoreElements()) {
-                final NetworkInterface net = e.nextElement();
+            final Enumeration<NetworkInterface> e = getNetworkInterfaces();
+            for (final NetworkInterface net : iterable(e)) {
                 final byte[] mac = net.getHardwareAddress();
-                uuid = UUID.nameUUIDFromBytes(mac).toString();
+                if (mac == null) {
+                    // see
+                    return none();
+                }
+                final String uuid = UUID.nameUUIDFromBytes(mac).toString();
+                return wrap(uuid);
             }
-        } catch (final SocketException e) {
+        } catch (final Exception e) {
+            // this is odd:
             e.printStackTrace();
         }
-        return uuid;
+        return none();
     }
 
     public static String generateUID() {
