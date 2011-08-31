@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project org.eclipse.recommenders.mining">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/Users/Marcel/Desktop/export/do.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.recommenders.mining.calls.Main"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.lang3_3.0.0.201108301413.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.google.guava_8.0.0.201108301413.jar"/>
+            <fileset dir="/Users/Marcel/Repositories/org.eclipse.recommenders/org.eclipse.recommenders.commons.utils/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.google.gson_1.7.1.201108301413.jar"/>
+            <fileset dir="/Users/Marcel/Repositories/org.eclipse.recommenders/org.eclipse.recommenders.commons.udc/bin"/>
+            <fileset dir="/Users/Marcel/Repositories/org.eclipse.recommenders/org.eclipse.recommenders.commons.utils.gson/bin"/>
+            <fileset dir="/Users/Marcel/Repositories/org.eclipse.recommenders/org.eclipse.recommenders.commons.bayesnet/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.math_2.1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.primitives_1.0.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.ibm.wala.core_1.3.2.201108301413.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.ibm.wala.util_1.3.2.201108301413.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.ibm.wala.shrike_1.3.2.201108301413.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.runtime_3.6.0.v20100505.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.osgi_3.6.2.R36x_v20110210.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/javax.transaction_1.1.1.v201105210645.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.common_3.6.0.v20100503.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.jobs_3.5.1.R36x_v20100824.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.runtime.compatibility.registry_3.3.0.v20100520/runtime_registry_compatibility.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.registry_3.5.0.v20100503.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.preferences_3.3.0.v20100503.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.core.contenttype_3.4.100.v20100505-1235.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.equinox.app_1.3.1.R36x_v20100803.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.log4j_1.2.15.v201012070815.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.apache.commons.io_2.0.1.v201105210651.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.google.inject_3.0.0.201108301413.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.google.inject.multibindings_3.0.0.201108301413.jar"/>
+            <fileset dir="/Users/Marcel/Repositories/frankenberger-android/android4me.axmlprinter/bin"/>
+            <fileset dir="/Users/Marcel/Repositories/org.eclipse.recommenders/org.eclipse.recommenders.commons.analysis/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.sun.jersey.server_1.6.0.201108301413.jar"/>
+            <fileset dir="/Users/Marcel/Repositories/org.eclipse.recommenders/org.eclipse.recommenders.commons.injection/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.sun.jersey.core_1.6.0.201108301413.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/com.sun.jersey.client_1.6.0.201108301413.jar"/>
+            <fileset dir="/Users/Marcel/Repositories/org.eclipse.recommenders/org.eclipse.recommenders.commons.client/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/javax.servlet_2.5.0.v200910301333.jar"/>
+            <fileset dir="/Users/Marcel/Repositories/org.eclipse.recommenders/org.eclipse.recommenders.server.commons/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.osgi.services_3.2.100.v20100503.jar"/>
+            <fileset dir="/Users/Marcel/Repositories/frankenberger-android/org.eclipse.recommenders.server.udc/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.kohsuke.args4j_2.0.12.v200910131500.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.eclipse.recommenders.jayes_0.2.0.v20110830-2309-b81.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/ch.qos.logback.classic_0.9.27.v20110224-1110.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/ch.qos.logback.core_0.9.27.v20110224-1110.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/javax.inject_1.0.0.v20091030.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.aopalliance_1.0.0.v201105210816.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/net.sf.cglib_2.2.0.201108301413.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/Marcel/Workspaces/eclipse.org/.metadata/.plugins/org.eclipse.pde.core/.bundle_pool/plugins/org.objectweb.asm_3.3.1.v201105211655.jar"/>
+            <fileset dir="/Users/Marcel/Repositories/org.eclipse.recommenders/org.eclipse.recommenders.mining/bin"/>
+        </jar>
+    </target>
+</project>

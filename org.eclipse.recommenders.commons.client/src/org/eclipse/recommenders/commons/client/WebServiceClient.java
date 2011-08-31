@@ -34,6 +34,8 @@ import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 
 public class WebServiceClient {
 
+    public static String ESCAPED_QUOTE = WebServiceClient.encode("\"");
+
     private final ClientConfiguration configuration;
     private final Client client;
     private final Map<String, Cookie> cookies;
@@ -208,4 +210,5 @@ public class WebServiceClient {
     public void addQueryParameter(final String parameter) {
         queryParameters.add(parameter);
     }
+
 }

@@ -46,6 +46,9 @@ public class LocalNamesCollectingCallGraphAnalyzer implements ICallGraphAnalyzer
     private void collectPointers() {
         for (final CGNode entryNode : callGraph.getEntrypointNodes()) {
             final IR ir = entryNode.getIR();
+            if (ir == null) {
+                continue;
+            }
             final LocalNamesCollector t = new LocalNamesCollector(ir);
             for (final int valueNumber : t.getValues()) {
                 final String valueName = t.getName(valueNumber);

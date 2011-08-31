@@ -29,6 +29,7 @@ public class Manifest {
     }
 
     public Manifest(final String name, final VersionRange version, final Date timestamp) {
+        // XXX: is null for each of these fields allowed?
         this.name = name;
         this.versionRange = version;
         this.timestamp = timestamp;

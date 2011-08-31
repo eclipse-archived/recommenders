@@ -16,6 +16,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class ResultObject<T> {
 
+    public static <T> ResultObject<T> create(final String id, final T value) {
+        final ResultObject<T> res = new ResultObject<T>();
+        res.id = id;
+        res.value = value;
+        return res;
+    }
+
     public String id;
     public T value;
 }
