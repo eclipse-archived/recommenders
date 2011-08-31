@@ -18,10 +18,10 @@
    <feature url="features/org.eclipse.recommenders.rcp.extdoc_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.extdoc" version="0.3.0.qualifier">
       <category name="sandbox"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.jayes.feature_0.2.0.v20110830-1523-b80.jar" id="org.eclipse.recommenders.jayes.feature" version="0.2.0.v20110830-1523-b80">
+   <feature url="features/org.eclipse.recommenders.jayes.feature_0.2.0.v20110830-0935-b79.jar" id="org.eclipse.recommenders.jayes.feature" version="0.2.0.v20110830-0935-b79">
       <category name="3rd"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201108301413.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201108301413">
+   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201108301246.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201108301246">
       <category name="3rd"/>
    </feature>
    <category-def name="main" label="Eclipse Code Recommenders - Code Completion"/>
