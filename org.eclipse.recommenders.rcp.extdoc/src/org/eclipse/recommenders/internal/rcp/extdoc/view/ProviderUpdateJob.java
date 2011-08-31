@@ -40,6 +40,7 @@ class ProviderUpdateJob extends Job {
     ProviderUpdateJob(final ProvidersTable table, final TableItem item, final IJavaElementSelection selection) {
         super(String.format("Updating %s", ((IProvider) ((Composite) item.getData()).getData()).getProviderFullName()));
         super.setPriority(LONG);
+        setSystem(true);
         active.add(this);
 
         this.table = table;

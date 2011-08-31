@@ -158,12 +158,14 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
         ProviderJob(final Composite control) {
             super("Updating Hover Provider");
             this.control = control;
+            setSystem(true);
             provider = (IProvider) control.getData();
         }
 
         @Override
         public IStatus run(final IProgressMonitor monitor) {
             try {
+                monitor.beginTask("Updating ", 1);
                 if (lastSelection != null && provider.selectionChanged(lastSelection, control)) {
                     ProviderUiJob.run(new ProviderUiJob() {
                         @Override
@@ -175,6 +177,8 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
                 }
             } catch (final Exception e) {
                 ExtDocPlugin.logException(e);
+            } finally {
+                monitor.done();
             }
             return Status.OK_STATUS;
         }

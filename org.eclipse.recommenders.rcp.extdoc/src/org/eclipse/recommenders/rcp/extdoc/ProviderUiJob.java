@@ -34,6 +34,7 @@ public abstract class ProviderUiJob {
         final UIJob uiJob = new UIJob("Updating Provider View") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
+                monitor.beginTask("upadate UI", 1);
                 if (!composite.isDisposed()) {
                     try {
                         job.run(composite);
@@ -42,9 +43,11 @@ public abstract class ProviderUiJob {
                     }
                     composite.getParent().getParent().getParent().getParent().layout(true, true);
                 }
+                monitor.done();
                 return Status.OK_STATUS;
             }
         };
+        uiJob.setSystem(true);
         uiJob.schedule();
     }
 
