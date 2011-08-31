@@ -15,6 +15,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 
+import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 
 public class Algorithm implements Runnable {
@@ -39,8 +40,10 @@ public class Algorithm implements Runnable {
             try {
                 final ClassOverrideDirectives generatedDirectives = directivesGenerator.generate(superclass, cus);
                 consumer.consume(generatedDirectives);
+            } catch (final JsonParseException e) {
+                System.out.println("warn: entry already exists:");
             } catch (final RuntimeException e) {
-                e.printStackTrace();
+                System.out.printf("[err] %s: %s\n", superclass.getClassName(), e.getMessage());
             }
         }
     }

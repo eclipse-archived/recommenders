@@ -50,7 +50,7 @@ public class CouchUtils {
     public static String createViewUrlWithKeyObject(final String designDocument, final String view,
             final Map<String, String> keyValuePairs) {
         final String baseUrl = createViewUrl(designDocument, view);
-        final Set<String> keyValueStrings = Sets.newHashSet();
+        final Set<String> keyValueStrings = Sets.newLinkedHashSet();
         for (final Entry<String, String> entry : keyValuePairs.entrySet()) {
             keyValueStrings.add(quote(entry.getKey()) + ":" + quote(entry.getValue()));
         }

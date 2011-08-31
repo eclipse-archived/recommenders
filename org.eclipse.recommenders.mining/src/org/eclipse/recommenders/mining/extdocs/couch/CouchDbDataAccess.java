@@ -79,14 +79,21 @@ public class CouchDbDataAccess {
     }
 
     private Option<ClassOverrideDirectives> getClassOverrideDirectives(final ITypeName type) {
-        final Map<String, String> keyValuePairs = Maps.newHashMap();
+        final Map<String, String> keyValuePairs = Maps.newLinkedHashMap();
         keyValuePairs.put("providerId", ClassOverrideDirectives.class.getSimpleName());
         keyValuePairs.put("type", type.getIdentifier());
         final String url = createViewUrlWithKeyObject("providers", "providers", keyValuePairs);
-        final GenericResultRowView<Object, Object, ClassOverrideDirectives> resultView = client.doGetRequest(url,
-                new GenericType<GenericResultRowView<Object, Object, ClassOverrideDirectives>>() {
+        final GenericResultRowView<Key, Map<String, String>, ClassOverrideDirectives> resultView = client.doGetRequest(
+                url, new GenericType<GenericResultRowView<Key, Map<String, String>, ClassOverrideDirectives>>() {
                 });
         return wrap(resultView.getFirstValue(null));
+    }
+
+    private static class Key {
+        // String providerId;
+        // String type;
+        // String method;
+
     }
 
 }
