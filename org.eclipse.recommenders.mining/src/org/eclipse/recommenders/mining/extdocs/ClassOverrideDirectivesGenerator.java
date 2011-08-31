@@ -47,7 +47,6 @@ public class ClassOverrideDirectivesGenerator {
     }
 
     private ClassOverrideDirectives toDirective() {
-
         final ClassOverrideDirectives res = ClassOverrideDirectives.create(superclass, numberOfSubclasses,
                 overriddenMethods.asMap());
         res.validate();

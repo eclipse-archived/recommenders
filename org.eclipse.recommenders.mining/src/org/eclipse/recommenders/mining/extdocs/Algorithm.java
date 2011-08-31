@@ -13,6 +13,7 @@ package org.eclipse.recommenders.mining.extdocs;
 
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
+import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 
 import com.google.inject.Inject;
 
@@ -33,7 +34,14 @@ public class Algorithm implements Runnable {
     @Override
     public void run() {
         for (final ITypeName superclass : superclassProvider.getSuperclasses()) {
-            final Iterable<CompilationUnit> cu = cuProvider.getCompilationUnits(superclass);
+            final Iterable<CompilationUnit> cus = cuProvider.getCompilationUnits(superclass);
+            final ClassOverrideDirectivesGenerator directivesGenerator = new ClassOverrideDirectivesGenerator(0.05);
+            try {
+                final ClassOverrideDirectives generatedDirectives = directivesGenerator.generate(superclass, cus);
+                consumer.consume(generatedDirectives);
+            } catch (final RuntimeException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

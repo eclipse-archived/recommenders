@@ -19,6 +19,8 @@ import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class ClassOverrideDirectives implements IServerType {
 
+    public String _id;
+    public String _rev;
     private final String providerId = getClass().getSimpleName();
     private ITypeName type;
 
@@ -49,6 +51,10 @@ public final class ClassOverrideDirectives implements IServerType {
         Checks.ensureIsNotNull(type);
         Checks.ensureIsGreaterOrEqualTo(numberOfSubclasses, 1, null);
         Checks.ensureIsFalse(overrides.isEmpty(), "empty overrides not allowed.");
+    }
+
+    public ITypeName getType() {
+        return type;
     }
 
 }

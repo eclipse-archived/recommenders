@@ -24,5 +24,7 @@ public class ResultObject<T> {
     }
 
     public String id;
+    public String key;
+    public T doc;
     public T value;
 }

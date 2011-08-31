@@ -17,7 +17,7 @@ public class ClientConfiguration {
 
     public static ClientConfiguration create(final String baseurl) {
         final ClientConfiguration res = new ClientConfiguration();
-        res.baseUrl = baseurl;
+        res.setBaseUrl(baseurl);
         return res;
     }
 

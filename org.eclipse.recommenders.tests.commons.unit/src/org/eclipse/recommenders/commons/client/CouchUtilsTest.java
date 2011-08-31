@@ -13,10 +13,12 @@ package org.eclipse.recommenders.commons.client;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class CouchUtilsTest {
 
@@ -39,12 +41,26 @@ public class CouchUtilsTest {
     }
 
     @Test
+    public void testViewWithUnescapedKeyAndQuote() {
+        final String actual = CouchUtils.createViewUrlWithKey("doc", "view", "simple\"Key\"");
+        assertEquals("_design/doc/_view/view?key=%22simple%5C%22Key%5C%22%22", actual);
+    }
+
+    @Test
+    public void testViewWithKeObject() {
+        final Map<String, String> keyValuePairs = Maps.newHashMap();
+        keyValuePairs.put("abc", "xyz");
+        final String actual = CouchUtils.createViewUrlWithKeyObject("doc", "view", keyValuePairs);
+        assertEquals("_design/doc/_view/view?key=%7B%22abc%22%3A%22xyz%22%7D", actual);
+    }
+
+    @Test
     public void testTransform() {
         final List<String> expected = Lists.newArrayList("value");
 
         final GenericResultObjectView<String> res = new GenericResultObjectView<String>();
         res.rows = Lists.newArrayList(ResultObject.create("id", "value"));
-        final List<String> actual = CouchUtils.transform(res);
+        final List<String> actual = CouchUtils.transformValues(res);
         assertEquals(expected, actual);
     }
 

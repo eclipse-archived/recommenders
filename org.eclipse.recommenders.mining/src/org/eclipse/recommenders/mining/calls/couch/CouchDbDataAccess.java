@@ -13,7 +13,7 @@ package org.eclipse.recommenders.mining.calls.couch;
 import static com.google.common.collect.Iterables.getFirst;
 import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrl;
 import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKey;
-import static org.eclipse.recommenders.commons.client.CouchUtils.transform;
+import static org.eclipse.recommenders.commons.client.CouchUtils.transformValues;
 
 import java.util.Collection;
 import java.util.Date;
@@ -46,7 +46,7 @@ public class CouchDbDataAccess {
         final GenericResultObjectView<Date> queryResult = client.doGetRequest(url,
                 new GenericType<GenericResultObjectView<Date>>() {
                 });
-        final List<Date> res = CouchUtils.transform(queryResult);
+        final List<Date> res = CouchUtils.transformValues(queryResult);
         return getFirst(res, new Date(0));
     }
 
@@ -55,7 +55,7 @@ public class CouchDbDataAccess {
         final GenericResultObjectView<LibraryIdentifier> result = client.doGetRequest(url,
                 new GenericType<GenericResultObjectView<LibraryIdentifier>>() {
                 });
-        return transform(result);
+        return transformValues(result);
     }
 
     public Collection<LibraryIdentifier> getLibraryIdentifiersForSymbolicName(final String symbolicName) {
@@ -63,7 +63,7 @@ public class CouchDbDataAccess {
         final GenericResultObjectView<LibraryIdentifier> result = client.doGetRequest(url,
                 new GenericType<GenericResultObjectView<LibraryIdentifier>>() {
                 });
-        return transform(result);
+        return transformValues(result);
     }
 
     public Collection<ModelSpecification> getModelSpecifications() {
@@ -71,7 +71,7 @@ public class CouchDbDataAccess {
         final GenericResultObjectView<ModelSpecification> queryResult = client.doGetRequest(url,
                 new GenericType<GenericResultObjectView<ModelSpecification>>() {
                 });
-        return transform(queryResult);
+        return transformValues(queryResult);
     }
 
     public Collection<ModelSpecification> lookupAllModelSpecifications() {
@@ -79,7 +79,7 @@ public class CouchDbDataAccess {
         final GenericResultObjectView<ModelSpecification> queryResult = client.doGetRequest(url,
                 new GenericType<GenericResultObjectView<ModelSpecification>>() {
                 });
-        return transform(queryResult);
+        return transformValues(queryResult);
     }
 
     public List<ObjectUsage> getObjectUsages(final Set<String> fingerprints) {
@@ -96,7 +96,7 @@ public class CouchDbDataAccess {
         final GenericResultObjectView<ObjectUsage> queryResult = client.doGetRequest(url,
                 new GenericType<GenericResultObjectView<ObjectUsage>>() {
                 });
-        return transform(queryResult);
+        return transformValues(queryResult);
     }
 
     public void save(final ModelSpecification modelSpec) {
