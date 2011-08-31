@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Mining Tools Tests
+Bundle-SymbolicName: org.eclipse.recommenders.tests.mining
+Bundle-Version: 0.0.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.mockito,
+ org.objenesis,
+ org.junit,
+ org.eclipse.recommenders.mining,
+ org.eclipse.recommenders.commons.udc,
+ com.google.guava,
+ org.eclipse.recommenders.commons.utils,
+ org.apache.commons.lang3,
+ org.eclipse.recommenders.commons.bayesnet,
+ org.eclipse.recommenders.commons.analysis,
+ org.eclipse.recommenders.server.extdoc,
+ org.hamcrest

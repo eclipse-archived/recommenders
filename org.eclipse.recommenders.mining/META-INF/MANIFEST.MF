@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Usage Data Mining Tools (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.mining
+Bundle-Version: 0.3.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.recommenders.commons.udc,
+ org.eclipse.recommenders.commons.utils,
+ org.eclipse.recommenders.commons.utils.gson,
+ org.eclipse.recommenders.commons.bayesnet,
+ com.google.guava;bundle-version="8.0.0",
+ org.apache.commons.lang3,
+ org.apache.commons.math,
+ org.apache.commons.primitives,
+ org.eclipse.recommenders.commons.analysis,
+ com.google.inject;bundle-version="3.0.0",
+ org.eclipse.recommenders.server.udc;resolution:=optional,
+ org.kohsuke.args4j;bundle-version="2.0.0",
+ org.eclipse.recommenders.commons.client,
+ com.sun.jersey.client;bundle-version="1.6.0",
+ org.eclipse.recommenders.jayes,
+ ch.qos.logback.classic,
+ ch.qos.logback.core,
+ javax.inject,
+ org.aopalliance,
+ net.sf.cglib,
+ org.objectweb.asm,
+ com.google.inject.multibindings,
+ org.eclipse.recommenders.server.extdoc
+Export-Package: org.eclipse.recommenders.mining.calls,
+ org.eclipse.recommenders.mining.calls.couch,
+ org.eclipse.recommenders.mining.calls.generation,
+ org.eclipse.recommenders.mining.calls.zip,
+ org.eclipse.recommenders.mining.extdocs
