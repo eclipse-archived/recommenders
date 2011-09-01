@@ -1,0 +1,21 @@
+{
+   "_id": "_design/metaData",
+   "language": "javascript",
+   "views": {
+       "libraryIdentifier": {
+           "map": "function(doc) {\n\tif(doc.name && doc.version) {\n\t\temit(doc._id, doc);\n\t}\n}"
+       },
+       "modelSpecifications": {
+           "map": "function(doc) {\n\tif(!doc.symbolicName || !doc.versionRange)\n\t\treturn;\n\n\temit(doc.symbolicName, doc);\n}"
+       },
+       "libraryIdentifierByName": {
+           "map": "function(doc) {\n\tif(doc.name && doc.version) {\n\t\temit(doc.name, doc);\n\t}\n}"
+       },
+       "modelSpecificationsIncludeAlias": {
+           "map": "function(doc) {\n\tif(!doc.symbolicName || !doc.versionRange)\n\t\treturn;\n\n\temit(doc.symbolicName, doc);\n\n\tif(doc.aliases) {\n\t\tfor(var i=0; i<doc.aliases.length; i++) {\n\t\t\temit(doc.aliases[i], doc);\n\t\t}\n\t}\n}"
+       },
+       "modelSpecificationByFingerprint": {
+           "map": "function(doc) {\n\tif(!doc.symbolicName || !doc.versionRange || !doc.fingerprints)\n\t\treturn;\n\n\tfor(var i=0; i<doc.fingerprints.length; i++) {\n\t\temit(doc.fingerprints[i], doc);\n\t}\n}"
+       }
+   }
+}
