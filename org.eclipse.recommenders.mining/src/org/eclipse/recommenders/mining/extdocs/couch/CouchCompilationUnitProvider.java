@@ -1,5 +1,9 @@
 package org.eclipse.recommenders.mining.extdocs.couch;
 
+import static org.eclipse.recommenders.commons.utils.names.VmTypeName.OBJECT;
+
+import java.util.Collections;
+
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.mining.extdocs.ICompilationUnitProvider;
@@ -18,7 +22,9 @@ public class CouchCompilationUnitProvider implements ICompilationUnitProvider {
 
     @Override
     public Iterable<CompilationUnit> getCompilationUnits(final ITypeName superclass) {
+        if (OBJECT.equals(superclass)) {
+            return Collections.emptyList();
+        }
         return db.getCompilationUnitsForSuperclass(superclass);
     }
-
 }

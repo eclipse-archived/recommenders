@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 public class CouchSuperclassProvider implements ISuperclassProvider {
 
     private final CouchDbDataAccess db;
+    private Set<ITypeName> _cached;
 
     @Inject
     public CouchSuperclassProvider(@Input final CouchDbDataAccess db) {
@@ -29,7 +30,10 @@ public class CouchSuperclassProvider implements ISuperclassProvider {
 
     @Override
     public Set<ITypeName> getSuperclasses() {
-        return db.getSuperclassNames();
+        if (_cached == null) {
+            _cached = db.getSuperclassNames();
+        }
+        return _cached;
     }
 
 }

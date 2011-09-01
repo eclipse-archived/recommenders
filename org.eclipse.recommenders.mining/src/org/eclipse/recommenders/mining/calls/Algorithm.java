@@ -93,6 +93,6 @@ public class Algorithm {
         writer.consume(manifest);
         modelGenerator.generateModel(writer);
         writer.close();
-        spec.isAfterLastBuilt(timestamp);
+        spec.setLatestBuilt(timestamp);
     }
 }

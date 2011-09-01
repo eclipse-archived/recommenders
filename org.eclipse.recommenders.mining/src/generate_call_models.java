@@ -8,8 +8,10 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-package org.eclipse.recommenders.mining.calls;
 
+
+import org.eclipse.recommenders.mining.calls.Algorithm;
+import org.eclipse.recommenders.mining.calls.AlgorithmParameters;
 import org.eclipse.recommenders.mining.calls.couch.CouchGuiceModule;
 import org.eclipse.recommenders.mining.calls.zip.ZipGuiceModule;
 import org.kohsuke.args4j.CmdLineException;
@@ -21,7 +23,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
-public class Main {
+public class generate_call_models {
 
     static AlgorithmParameters arguments = new AlgorithmParameters();
 
@@ -43,7 +45,7 @@ public class Main {
             System.err.println(e.getMessage());
             parser.printUsage(System.err);
             System.err.println();
-            System.err.printf("run it using: java -jar %s %s\n", Main.class, parser.printExample(ExampleMode.ALL));
+            System.err.printf("run it using: java -jar %s %s\n", generate_call_models.class, parser.printExample(ExampleMode.ALL));
             System.exit(-1);
         }
     }

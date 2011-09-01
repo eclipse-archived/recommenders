@@ -27,6 +27,7 @@ public class CouchExtdocDirectiveConsumer implements IExtdocDirectiveConsumer {
 
     @Override
     public void consume(final ClassOverrideDirectives directives) {
+        System.out.println("Saving for " + directives.getType());
         db.saveOrUpdate(directives);
     }
 

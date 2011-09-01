@@ -43,7 +43,7 @@ public class CouchDbDataAccess {
     }
 
     public Set<ITypeName> getSuperclassNames() {
-        final Set<ITypeName> result = Sets.newHashSet();
+        final Set<ITypeName> result = Sets.newTreeSet();
         final String url = createViewUrl("compilationunits", "bySuperclass") + "?reduce=true&group_level=1";
         final GenericResultRowView<String, Object, Object> resultView = client.doGetRequest(url,
                 new GenericType<GenericResultRowView<String, Object, Object>>() {
