@@ -48,10 +48,9 @@ public class ProjectServices implements IRecommendersProjectLifeCycleListener {
 
     @Override
     public void projectClosed(final IJavaProject project) {
-        if (!modelFacades.containsKey(project)) {
-            return;
+        if (modelFacades.containsKey(project)) {
+            final ProjectModelFacade facade = modelFacades.remove(project);
+            facade.dispose();
         }
-        final ProjectModelFacade facade = modelFacades.remove(project);
-        facade.dispose();
     }
 }
