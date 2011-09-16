@@ -20,6 +20,7 @@ import org.eclipse.recommenders.commons.utils.Fingerprints;
 import com.google.common.collect.Maps;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.JarFileEntry;
+import com.ibm.wala.classLoader.ModuleEntry;
 import com.ibm.wala.classLoader.ShrikeClass;
 
 public class JarFileModuleEntryFingerprintComputer implements IDependencyFingerprintComputer {
@@ -32,7 +33,11 @@ public class JarFileModuleEntryFingerprintComputer implements IDependencyFingerp
             return null;
         }
         final ShrikeClass shrikeClazz = ensureIsInstanceOf(clazz, ShrikeClass.class);
-        final JarFileEntry entry = ensureIsInstanceOf(shrikeClazz.getModuleEntry(), JarFileEntry.class);
+        final ModuleEntry moduleEntry = shrikeClazz.getModuleEntry();
+        if (!(moduleEntry instanceof JarFileEntry)) {
+            return null;
+        }
+        final JarFileEntry entry = ensureIsInstanceOf(moduleEntry, JarFileEntry.class);
         return findOrCreateFingerprint(entry);
     }
 
