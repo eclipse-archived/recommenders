@@ -14,6 +14,8 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -92,12 +94,16 @@ public class IdFingerprintCompilationUnitFinalizer implements ICompilationUnitFi
         compilationUnit.imports.add(recTypeRef);
     }
 
-    private synchronized String fingerprint(final IClass clazz) {
+    private final Lock lock = new ReentrantLock();
+
+    private String fingerprint(final IClass clazz) {
         ensureIsNotNull(clazz);
         String fingerprint = map.get(clazz);
         if (fingerprint == null) {
+            lock.lock();
             fingerprint = ClassUtils.fingerprint(clazz);
             map.put(clazz, fingerprint);
+            lock.unlock();
         }
         return fingerprint;
     }

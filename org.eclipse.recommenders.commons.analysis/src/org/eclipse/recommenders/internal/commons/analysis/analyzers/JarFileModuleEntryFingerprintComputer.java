@@ -14,6 +14,8 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsInstanceOf;
 
 import java.io.File;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.recommenders.commons.utils.Fingerprints;
 
@@ -25,7 +27,7 @@ import com.ibm.wala.classLoader.ShrikeClass;
 
 public class JarFileModuleEntryFingerprintComputer implements IDependencyFingerprintComputer {
 
-    Map<File, String/* fingerprint */> fingerprints = Maps.newHashMap();
+    private final Map<File, String/* fingerprint */> fingerprints = Maps.newHashMap();
 
     @Override
     public String computeContainerFingerprint(final IClass clazz) {
@@ -41,12 +43,20 @@ public class JarFileModuleEntryFingerprintComputer implements IDependencyFingerp
         return findOrCreateFingerprint(entry);
     }
 
-    private synchronized String findOrCreateFingerprint(final JarFileEntry jarFileEntry) {
+    private final Lock lock = new ReentrantLock();
+
+    private String findOrCreateFingerprint(final JarFileEntry jarFileEntry) {
         final File f = new File(jarFileEntry.getJarFile().getName());
         String fingerprint = fingerprints.get(f);
+
         if (fingerprint == null) {
+            System.out.println("sha1 for " + f.getName() + ":");
+
+            lock.lock();
             fingerprint = Fingerprints.sha1(f);
+            System.out.println("sha1 for " + f.getName() + ": " + fingerprint);
             fingerprints.put(f, fingerprint);
+            lock.unlock();
         }
         return fingerprint;
     }
