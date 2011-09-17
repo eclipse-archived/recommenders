@@ -47,17 +47,14 @@ public class JarFileModuleEntryFingerprintComputer implements IDependencyFingerp
 
     private String findOrCreateFingerprint(final JarFileEntry jarFileEntry) {
         final File f = new File(jarFileEntry.getJarFile().getName());
+        lock.lock();
         String fingerprint = fingerprints.get(f);
-
         if (fingerprint == null) {
-            System.out.println("sha1 for " + f.getName() + ":");
-
-            lock.lock();
             fingerprint = Fingerprints.sha1(f);
-            System.out.println("sha1 for " + f.getName() + ": " + fingerprint);
             fingerprints.put(f, fingerprint);
-            lock.unlock();
+            System.out.println("Computed SHA1 for " + f + " - " + fingerprint);
         }
+        lock.unlock();
         return fingerprint;
     }
 
