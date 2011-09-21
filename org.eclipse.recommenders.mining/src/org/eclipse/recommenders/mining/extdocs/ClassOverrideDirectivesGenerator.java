@@ -26,10 +26,14 @@ public class ClassOverrideDirectivesGenerator {
     public ClassOverrideDirectives generate(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
         this.superclass = superclass;
         this.overriddenMethods = newTreeBag();
+        numberOfSubclasses = 0;
 
+        System.out.println("Superclass: " + superclass);
+        System.out.println();
         for (final CompilationUnit cu : cus) {
             numberOfSubclasses++;
             visitOverriddenMethods(cu);
+            System.out.println("\t" + cu.primaryType.name);
         }
         filterInfrequentMethods();
         final ClassOverrideDirectives res = toDirective();
