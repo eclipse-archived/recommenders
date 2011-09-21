@@ -9,7 +9,6 @@
  *     Marcel Bruch - Initial API and implementation
  */
 
-
 import org.eclipse.recommenders.mining.extdocs.Algorithm;
 import org.eclipse.recommenders.mining.extdocs.AlgorithmParameters;
 import org.eclipse.recommenders.mining.extdocs.couch.CouchGuiceModule;
@@ -45,7 +44,8 @@ public class generate_extdocs {
             System.err.println(e.getMessage());
             parser.printUsage(System.err);
             System.err.println();
-            System.err.printf("run it using: java -jar %s %s\n", generate_extdocs.class, parser.printExample(ExampleMode.ALL));
+            System.err.printf("run it using: java -jar %s %s\n", generate_extdocs.class,
+                    parser.printExample(ExampleMode.ALL));
             System.exit(-1);
         }
     }

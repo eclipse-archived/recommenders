@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.commons.utils;
 
+import java.util.TreeSet;
+
 import com.google.common.collect.Maps;
 
 public class TreeBag<T extends Comparable<T>> extends HashBag<T> {
@@ -23,4 +25,8 @@ public class TreeBag<T extends Comparable<T>> extends HashBag<T> {
         index = Maps.newTreeMap();
     }
 
+    @Override
+    public TreeSet<T> elements() {
+        return new TreeSet<T>(index.keySet());
+    }
 }

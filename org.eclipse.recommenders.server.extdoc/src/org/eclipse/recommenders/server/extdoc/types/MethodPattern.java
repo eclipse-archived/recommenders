@@ -12,6 +12,9 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
@@ -41,5 +44,20 @@ public final class MethodPattern implements IServerType {
     public void validate() {
         Checks.ensureIsTrue(numberOfObservations > 0);
         Checks.ensureIsTrue(!methods.isEmpty());
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

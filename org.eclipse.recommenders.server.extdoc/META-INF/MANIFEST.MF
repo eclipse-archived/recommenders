@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.commons.client,
  org.eclipse.recommenders.rcp.extdoc,
  org.eclipse.recommenders.rcp.utils,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.apache.commons.lang3
 Export-Package: org.eclipse.recommenders.internal.server.extdoc;x-internal:=true,
  org.eclipse.recommenders.server.extdoc;
   uses:="org.eclipse.jface.preference,

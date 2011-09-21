@@ -27,6 +27,7 @@ import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
+import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -85,6 +86,29 @@ public class CouchDbDataAccess {
         final String url = createViewUrlWithKeyObject("providers", "providers", keyValuePairs);
         final GenericResultRowView<Key, Map<String, String>, ClassOverrideDirectives> resultView = client.doGetRequest(
                 url, new GenericType<GenericResultRowView<Key, Map<String, String>, ClassOverrideDirectives>>() {
+                });
+        return wrap(resultView.getFirstValue(null));
+    }
+
+    public void saveOrUpdate(final ClassOverridePatterns pattern) {
+        final Option<ClassOverridePatterns> patternsOption = getClassOverridePatterns(pattern.getType());
+        if (patternsOption.hasValue()) {
+            final ClassOverridePatterns oldPattern = patternsOption.get();
+            pattern._id = oldPattern._id;
+            pattern._rev = oldPattern._rev;
+        }
+        final TransactionResult result = client.doPostRequest("", pattern, TransactionResult.class);
+        pattern._id = result.id;
+        pattern._rev = result.rev;
+    }
+
+    private Option<ClassOverridePatterns> getClassOverridePatterns(final ITypeName type) {
+        final Map<String, String> keyValuePairs = Maps.newLinkedHashMap();
+        keyValuePairs.put("providerId", ClassOverridePatterns.class.getSimpleName());
+        keyValuePairs.put("type", type.getIdentifier());
+        final String url = createViewUrlWithKeyObject("providers", "providers", keyValuePairs);
+        final GenericResultRowView<Key, Map<String, String>, ClassOverridePatterns> resultView = client.doGetRequest(
+                url, new GenericType<GenericResultRowView<Key, Map<String, String>, ClassOverridePatterns>>() {
                 });
         return wrap(resultView.getFirstValue(null));
     }

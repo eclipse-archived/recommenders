@@ -15,11 +15,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import com.google.common.collect.Maps;
 
@@ -106,7 +106,7 @@ public class HashBag<T> implements Bag<T> {
 
     @Override
     public Set<T> elements() {
-        return new TreeSet<T>(index.keySet());
+        return new HashSet<T>(index.keySet());
     }
 
     @Override
@@ -224,6 +224,7 @@ public class HashBag<T> implements Bag<T> {
         return Maps.newHashMap(index);
     }
 
+    @Override
     public boolean isEmpty() {
         return index.isEmpty();
     }

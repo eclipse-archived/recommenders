@@ -16,4 +16,5 @@ Require-Bundle: org.mockito,
  org.eclipse.recommenders.commons.bayesnet,
  org.eclipse.recommenders.commons.analysis,
  org.eclipse.recommenders.server.extdoc,
- org.hamcrest
+ org.hamcrest,
+ org.slf4j.api

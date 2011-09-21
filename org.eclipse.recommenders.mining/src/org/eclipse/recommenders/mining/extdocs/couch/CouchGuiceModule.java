@@ -18,27 +18,25 @@ import java.lang.annotation.Target;
 
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
+import org.eclipse.recommenders.mining.extdocs.AbstractExtdocGuiceModule;
 import org.eclipse.recommenders.mining.extdocs.AlgorithmParameters;
 import org.eclipse.recommenders.mining.extdocs.ICompilationUnitProvider;
 import org.eclipse.recommenders.mining.extdocs.IExtdocDirectiveConsumer;
 import org.eclipse.recommenders.mining.extdocs.ISuperclassProvider;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-public class CouchGuiceModule extends AbstractModule {
-
-    private final AlgorithmParameters arguments;
+public class CouchGuiceModule extends AbstractExtdocGuiceModule {
 
     public CouchGuiceModule(final AlgorithmParameters arguments) {
-        this.arguments = arguments;
+        super(arguments);
     }
 
     @Override
     protected void configure() {
-        bind(AlgorithmParameters.class).toInstance(arguments);
+        super.configure();
         bind(ICompilationUnitProvider.class).to(CouchCompilationUnitProvider.class);
         bind(ISuperclassProvider.class).to(CouchSuperclassProvider.class);
         bind(IExtdocDirectiveConsumer.class).to(CouchExtdocDirectiveConsumer.class);

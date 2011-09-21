@@ -17,6 +17,8 @@ import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class ClassOverridePatterns implements IServerType {
 
+    public String _id;
+    public String _rev;
     @SuppressWarnings("unused")
     private final String providerId = getClass().getSimpleName();
     private ITypeName type;
@@ -40,5 +42,9 @@ public final class ClassOverridePatterns implements IServerType {
     public void validate() {
         Checks.ensureIsNotNull(type);
         Checks.ensureIsNotNull(patterns);
+    }
+
+    public ITypeName getType() {
+        return type;
     }
 }
