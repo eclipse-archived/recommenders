@@ -26,7 +26,7 @@ public class ServerConfiguration {
     private static final String SERVER_COUCHDB_BASEURL = "org.eclipse.recommenders.server.couchdb.baseurl";
 
     private static final String DEFAULT_BASEDIR_PREFIX = "recommenders";
-    public static final int DEFAULT_HTTP_PORT = 17295;
+    public static final int DEFAULT_HTTP_PORT = 29750;
     private static final String DEFAULT_HTTP_HOST = "http://localhost" + ":" + DEFAULT_HTTP_PORT;
 
     /**
