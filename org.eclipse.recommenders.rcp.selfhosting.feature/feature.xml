@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.recommenders.rcp.selfhosting.feature"
-      label="Code Recommenders: Team Server Management Feature (Incubation)"
+      label="Code Recommenders: Self-hosting Platform (Incubation)"
       version="0.3.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

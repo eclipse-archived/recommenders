@@ -16,6 +16,32 @@
       [Enter License Description here.]
    </license>
 
+   <requires>
+      <import plugin="org.eclipse.equinox.common" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.equinox.registry" version="3.4.0" match="compatible"/>
+      <import plugin="com.google.gson" version="1.7.1" match="greaterOrEqual"/>
+      <import plugin="com.sun.jersey.core" version="1.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.osgi" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.equinox.common" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.core.jobs" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.equinox.preferences" version="3.3.0" match="compatible"/>
+      <import plugin="org.eclipse.core.contenttype" version="3.3.0" match="compatible"/>
+      <import plugin="org.eclipse.equinox.app" version="1.0.0" match="compatible"/>
+      <import plugin="org.slf4j.api"/>
+      <import plugin="javax.servlet.jsp"/>
+      <import plugin="org.eclipse.equinox.preferences" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.equinox.registry" version="3.2.0" match="compatible"/>
+      <import plugin="org.apache.jasper"/>
+      <import plugin="javax.servlet" version="2.5.0" match="greaterOrEqual"/>
+      <import plugin="com.google.inject"/>
+      <import plugin="com.google.inject" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.lang3" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.google.inject.multibindings"/>
+      <import plugin="ch.qos.logback.classic"/>
+      <import plugin="ch.qos.logback.core"/>
+      <import plugin="org.eclipse.recommenders.commons.client" version="0.2.0" match="greaterOrEqual"/>
+   </requires>
+
    <plugin
          id="com.google.gson"
          download-size="0"

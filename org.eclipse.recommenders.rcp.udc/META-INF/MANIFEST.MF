@@ -22,8 +22,8 @@ Require-Bundle: org.eclipse.ui,
  javax.inject,
  org.eclipse.jdt.core,
  org.eclipse.recommenders.commons.injection,
- org.eclipse.recommenders.commons.udc;bundle-version="0.2.0",
- org.eclipse.recommenders.rcp.utils;bundle-version="0.2.0",
+ org.eclipse.recommenders.commons.udc,
+ org.eclipse.recommenders.rcp.utils,
  com.google.inject
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
