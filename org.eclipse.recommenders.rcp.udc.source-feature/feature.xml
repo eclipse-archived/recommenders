@@ -18,14 +18,14 @@
    </license>
 
    <plugin
-         id="org.eclipse.recommenders.commons.udc"
+         id="org.eclipse.recommenders.commons.udc.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.rcp.udc"
+         id="org.eclipse.recommenders.rcp.udc.source"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
