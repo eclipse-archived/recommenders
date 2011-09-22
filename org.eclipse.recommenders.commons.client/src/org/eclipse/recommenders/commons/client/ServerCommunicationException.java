@@ -17,4 +17,8 @@ public class ServerCommunicationException extends RuntimeException {
     public ServerCommunicationException(final Throwable e) {
         super(e);
     }
+
+    public ServerCommunicationException(final String message, final Throwable e) {
+        super(message, e);
+    }
 }

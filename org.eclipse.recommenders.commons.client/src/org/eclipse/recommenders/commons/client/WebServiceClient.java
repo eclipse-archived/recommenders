@@ -172,7 +172,7 @@ public class WebServiceClient {
                 throw new ServerErrorException(e);
             }
         } else if (e instanceof ClientHandlerException) {
-            throw new ServerUnreachableException(e);
+            throw new ServerUnreachableException("Couldn't connect to " + configuration.getBaseUrl(), e);
         }
         throw e;
     }

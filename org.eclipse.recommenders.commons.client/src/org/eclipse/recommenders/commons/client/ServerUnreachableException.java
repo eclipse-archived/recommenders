@@ -17,4 +17,8 @@ public class ServerUnreachableException extends ServerCommunicationException {
     public ServerUnreachableException(final Throwable e) {
         super(e);
     }
+
+    public ServerUnreachableException(final String message, final Throwable e) {
+        super(message, e);
+    }
 }
