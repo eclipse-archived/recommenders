@@ -44,8 +44,8 @@ public class AlgorithmParameters {
     @Option(name = "--force", usage = "Forces model generation - even if no new object usages could be found. Only used if --in points to a CouchDB. Defaults to 'false'.")
     private boolean force = false;
 
-    public AlgorithmParameters(final String in, final File out, final String symbolicName,
-            final String versionRange, final boolean updateSpecs, final boolean force) {
+    public AlgorithmParameters(final String in, final File out, final String symbolicName, final String versionRange,
+            final boolean updateSpecs, final boolean force) {
         super();
         this.in = in;
         this.out = out;
@@ -84,6 +84,10 @@ public class AlgorithmParameters {
         return out;
     }
 
+    public void setOut(final File out) {
+        this.out = out;
+    }
+
     public String getSymbolicName() {
         return symbolicName;
     }
@@ -103,5 +107,10 @@ public class AlgorithmParameters {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
+    public void setForce(final boolean newValue) {
+        this.force = newValue;
+
     }
 }

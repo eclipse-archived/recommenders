@@ -8,7 +8,6 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-
 import org.eclipse.recommenders.mining.extdocs.Algorithm;
 import org.eclipse.recommenders.mining.extdocs.AlgorithmParameters;
 import org.eclipse.recommenders.mining.extdocs.couch.CouchGuiceModule;

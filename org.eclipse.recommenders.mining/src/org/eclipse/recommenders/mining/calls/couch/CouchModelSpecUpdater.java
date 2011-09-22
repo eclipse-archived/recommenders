@@ -42,4 +42,8 @@ public class CouchModelSpecUpdater implements IModelGenerationListener {
 
     }
 
+    @Override
+    public void generate(final ModelSpecification spec) {
+    }
+
 }

@@ -37,6 +37,7 @@
          restorable="true">
    </view>
    <view
+         category="org.eclipse.recommenders.rcp.category.views"
          class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codesearch.views.ResultsView"
          icon="icons/obj16/slocalhelp_obj.gif"
          id="org.eclipse.recommenders.internal.rcp.codesearch.views.ResultsView"

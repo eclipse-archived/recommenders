@@ -22,4 +22,6 @@ public interface IModelGenerationListener {
 
     void skip(ModelSpecification spec, String reason);
 
+    void generate(ModelSpecification spec);
+
 }

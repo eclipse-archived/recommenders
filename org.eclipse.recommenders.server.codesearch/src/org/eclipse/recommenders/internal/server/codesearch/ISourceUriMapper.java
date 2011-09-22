@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.server.codesearch;
 
 import java.net.URI;
 
-import org.eclipse.recommenders.internal.server.codesearch.jaxrs.CodesearchApplication;
+import org.eclipse.recommenders.internal.server.codesearch.wiring.WebserviceResourceConfig;
 
 /**
  * Maps an internal source URI to an externally accessible URI. For example an
@@ -20,7 +20,7 @@ import org.eclipse.recommenders.internal.server.codesearch.jaxrs.CodesearchAppli
  * "http://hostname:port/sources?class=some/class/Name".
  * 
  * Different mappers exist. They are configured in
- * {@link CodesearchApplication#getModule()}.
+ * {@link WebserviceResourceConfig#getModule()}.
  * 
  */
 public interface ISourceUriMapper {

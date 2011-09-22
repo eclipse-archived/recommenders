@@ -50,7 +50,8 @@ public class LazyProjectClassLoader implements IClassLoader {
     public IClass lookupClass(final TypeName className) {
         // may be called by child class loaders. This call MUST be delegates to
         // the lazyCHA!
-        final TypeReference ref = TypeReference.findOrCreate(loaderRef, className);
+        final String newName = className.toString().replaceAll("L\\$", "L");
+        final TypeReference ref = TypeReference.findOrCreate(loaderRef, newName);
         return this.cha.lookupClass(ref);
     }
 

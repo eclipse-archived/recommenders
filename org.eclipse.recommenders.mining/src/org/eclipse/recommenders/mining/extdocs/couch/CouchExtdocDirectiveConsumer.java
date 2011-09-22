@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.mining.extdocs.couch;
 
-import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.mining.extdocs.IExtdocDirectiveConsumer;
 import org.eclipse.recommenders.mining.extdocs.couch.CouchGuiceModule.Output;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
@@ -29,15 +28,12 @@ public class CouchExtdocDirectiveConsumer implements IExtdocDirectiveConsumer {
 
     @Override
     public void consume(final ClassOverrideDirectives directives) {
-        System.out.println("Saving for " + directives.getType());
         db.saveOrUpdate(directives);
     }
 
     @Override
-    public void consume(final Option<ClassOverridePatterns> patterns) {
-        if (patterns.hasValue()) {
-            db.saveOrUpdate(patterns.get());
-        }
+    public void consume(final ClassOverridePatterns patterns) {
+        db.saveOrUpdate(patterns);
     }
 
 }

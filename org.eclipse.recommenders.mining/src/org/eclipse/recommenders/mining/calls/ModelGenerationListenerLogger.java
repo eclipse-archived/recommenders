@@ -10,30 +10,39 @@
  */
 package org.eclipse.recommenders.mining.calls;
 
+import static java.lang.String.format;
+
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ModelGenerationListenerLogger implements IModelGenerationListener {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     @Override
     public void started(final ModelSpecification spec) {
-        System.out.println("begin:" + spec.getIdentifier());
-
+        log.debug("Checking for new update for '{}'", spec.getIdentifier());
     }
 
     @Override
     public void finished(final ModelSpecification spec) {
-        System.out.println("finished:" + spec.getIdentifier());
+        log.debug("Checked call model generation for '{}'", spec.getIdentifier());
     }
 
     @Override
     public void failed(final ModelSpecification spec, final Exception e) {
-        System.err.println("failed:" + spec.getIdentifier());
-        e.printStackTrace();
+        final String msg = format("Faild to generate call model generation for '%s'", spec.getIdentifier());
+        log.error(msg, e);
     }
 
     @Override
     public void skip(final ModelSpecification spec, final String reason) {
-        System.out.println("Skipped " + spec.getIdentifier() + ": reason: " + reason);
+        log.debug("Skipped model generation for '{}': {}", spec.getIdentifier(), reason);
     }
 
+    @Override
+    public void generate(final ModelSpecification spec) {
+        log.info("Generating new calls model for '{}'.", spec.getIdentifier());
+    }
 }

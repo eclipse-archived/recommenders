@@ -34,7 +34,6 @@ import org.eclipse.recommenders.internal.commons.analysis.analyzers.ModifiersCla
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ModifiersMethodAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.NameClassAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.NameMethodAnalyzer;
-import org.eclipse.recommenders.internal.commons.analysis.analyzers.ParameterCallsitesCallGraphAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ReceiverCallsitesCallGraphAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.SuperDeclarationMethodAnalyzer;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.ThisObjectInstanceKeyCompilationUnitFinalizer;
@@ -62,7 +61,6 @@ import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
-import com.ibm.wala.ipa.callgraph.AnalysisCache;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.callgraph.impl.Util;
 import com.ibm.wala.ipa.summaries.XMLMethodSummaryReader;
@@ -87,7 +85,7 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
         configureCallgraphAnalyzer();
         configureCompilationUnitFinalizer();
         configureCompilationUnitConsumer();
-        bind(AnalysisCache.class).toInstance(new AnalysisCache());
+        // bind(AnalysisCache.class).toInstance(new AnalysisCache());
         bind(IEntrypointSelector.class).to(AllMethodsAndContructorsEntrypointSelector.class);
     }
 
@@ -119,7 +117,7 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
 
     private void configureCallgraphAnalyzer() {
         final Multibinder<ICallGraphAnalyzer> b = Multibinder.newSetBinder(binder(), ICallGraphAnalyzer.class);
-        b.addBinding().to(ParameterCallsitesCallGraphAnalyzer.class);
+        // b.addBinding().to(ParameterCallsitesCallGraphAnalyzer.class);
         b.addBinding().to(ReceiverCallsitesCallGraphAnalyzer.class);
         b.addBinding().to(LocalNamesCollectingCallGraphAnalyzer.class);
 

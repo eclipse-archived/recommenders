@@ -23,7 +23,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.commons.injection.InjectionService;
+import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
 import org.eclipse.recommenders.internal.rcp.InterruptingProgressMonitor;
@@ -143,7 +145,7 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         ticksLastIncrBuild = monitor.actualWork;
     }
 
-    private void analyzeCompilationUnits(final List<ICompilationUnit> cus) throws CoreException {
+    private void analyzeCompilationUnits(final List<ICompilationUnit> cus) {
 
         final int size = cus.size();
         int counter = 0;
@@ -151,9 +153,13 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
             if (monitor.isCanceled()) {
                 return;
             }
-            if (!cu.isStructureKnown()) {
-                reportSkippingCompilationUnit(cu);
-                return;
+            try {
+                if (!cu.isStructureKnown()) {
+                    reportSkippingCompilationUnit(cu);
+                    return;
+                }
+            } catch (final JavaModelException e) {
+                RecommendersPlugin.logWarning(e, "Couldn't analyze %s. Skipped.", cu.getElementName());
             }
 
             removeCachedClassFromClassHierarchy(cu);
@@ -164,9 +170,9 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
             for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
 
                 final InterruptingProgressMonitor monitor2 = new InterruptingProgressMonitor(monitor);
-                final Object artifact = safeAnalyzeCompilationUnit(cu, analyzer, monitor2);
-                if (artifact != null) {
-                    artifacts.add(artifact);
+                final Option<?> artifact = safeAnalyzeCompilationUnit(cu, analyzer, monitor2);
+                if (artifact.hasValue()) {
+                    artifacts.add(artifact.get());
                 }
             }
             store.storeArtifacts(cu, artifacts);
@@ -189,7 +195,7 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private Object safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
+    private Option<?> safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
             final IProgressMonitor monitor) {
 
         try {

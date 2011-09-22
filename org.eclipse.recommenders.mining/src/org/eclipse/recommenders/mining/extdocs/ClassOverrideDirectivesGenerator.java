@@ -1,7 +1,18 @@
+/**
+ * Copyright (c) 2010 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */
 package org.eclipse.recommenders.mining.extdocs;
 
 import static org.eclipse.recommenders.commons.utils.TreeBag.newTreeBag;
 
+import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.commons.utils.TreeBag;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -9,10 +20,14 @@ import org.eclipse.recommenders.internal.commons.analysis.codeelements.Compilati
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
 public class ClassOverrideDirectivesGenerator {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final double minOverridesProbability;
     private TreeBag<IMethodName> overriddenMethods;
@@ -23,21 +38,18 @@ public class ClassOverrideDirectivesGenerator {
         this.minOverridesProbability = minOverridesProbability;
     }
 
-    public ClassOverrideDirectives generate(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
+    public Option<ClassOverrideDirectives> generate(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
         this.superclass = superclass;
         this.overriddenMethods = newTreeBag();
         numberOfSubclasses = 0;
 
-        System.out.println("Superclass: " + superclass);
-        System.out.println();
+        log.debug("Generating class overrides directives for '{}'. ", superclass);
         for (final CompilationUnit cu : cus) {
             numberOfSubclasses++;
             visitOverriddenMethods(cu);
-            System.out.println("\t" + cu.primaryType.name);
         }
         filterInfrequentMethods();
-        final ClassOverrideDirectives res = toDirective();
-        return res;
+        return toDirective();
     }
 
     private void visitOverriddenMethods(final CompilationUnit cu) {
@@ -50,11 +62,16 @@ public class ClassOverrideDirectivesGenerator {
         }
     }
 
-    private ClassOverrideDirectives toDirective() {
+    private Option<ClassOverrideDirectives> toDirective() {
         final ClassOverrideDirectives res = ClassOverrideDirectives.create(superclass, numberOfSubclasses,
                 overriddenMethods.asMap());
-        res.validate();
-        return res;
+        try {
+            res.validate();
+        } catch (final Exception e) {
+            log.debug("class overrides directives generation failed for '{}'", superclass);
+            return Option.none();
+        }
+        return Option.wrap(res);
     }
 
     private void filterInfrequentMethods() {

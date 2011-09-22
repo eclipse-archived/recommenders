@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.recommenders.commons.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.internal.rcp.extdoc.view.ExtDocView;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.swt.widgets.Display;
@@ -61,7 +62,9 @@ public final class UiManager implements IExtendedSelectionListener {
     }
 
     private void initViewVisibilityListener() {
-        getWorkbenchSite().getPage().addPartListener(new ViewVisibilityListener());
+        if (currentPartSite != null) {
+            currentPartSite.getPage().addPartListener(new ViewVisibilityListener());
+        }
         viewHasVisibilityListener = true;
     }
 
@@ -76,8 +79,8 @@ public final class UiManager implements IExtendedSelectionListener {
     /**
      * @return The default ExtDoc interface to the current workbench page.
      */
-    public IWorkbenchPartSite getWorkbenchSite() {
-        return currentPartSite;
+    public Option<IWorkbenchPartSite> getWorkbenchSite() {
+        return Option.wrap(currentPartSite);
     }
 
     /**

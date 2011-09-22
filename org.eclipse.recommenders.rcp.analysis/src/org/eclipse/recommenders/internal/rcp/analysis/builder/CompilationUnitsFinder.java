@@ -40,7 +40,13 @@ public class CompilationUnitsFinder implements IResourceVisitor {
         final IJavaElement element = JavaCore.create(resource);
         if (element instanceof ICompilationUnit) {
             final ICompilationUnit cu = (ICompilationUnit) element;
-            cus.add(cu);
+            try {
+                cu.isStructureKnown();
+                cus.add(cu);
+            } catch (final Exception e) {
+                // if we can't open it, skip it
+            }
+
         }
         return true;
     }

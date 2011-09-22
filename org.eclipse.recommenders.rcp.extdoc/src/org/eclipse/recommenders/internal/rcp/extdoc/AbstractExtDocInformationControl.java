@@ -28,6 +28,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControlExtension2;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
@@ -35,6 +36,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchPartSite;
 
 abstract class AbstractExtDocInformationControl extends AbstractInformationControl implements
         IInformationControlExtension2 {
@@ -89,7 +91,11 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
     }
 
     private void createContentControl(final Composite parent) {
-        composite = new ProvidersComposite(parent, uiManager.getWorkbenchSite().getWorkbenchWindow());
+
+        final Option<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
+        if (site.hasValue()) {
+            composite = new ProvidersComposite(parent, site.get().getWorkbenchWindow());
+        }
     }
 
     private void fillToolbar(final ToolBarManager toolbar) {
@@ -99,7 +105,10 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
                 .getIcon("lcl16/goto_input.png"))) {
             @Override
             public void run() {
-                new OpenAction(uiManager.getWorkbenchSite()).run(new Object[] { lastSelection.getJavaElement() });
+                final Option<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
+                if (site.hasValue()) {
+                    new OpenAction(site.get()).run(new Object[] { lastSelection.getJavaElement() });
+                }
             }
         });
         toolbar.add(new Action("Show in ExtDoc View", ExtDocPlugin.getIconDescriptor("lcl16/extdoc_open.png")) {

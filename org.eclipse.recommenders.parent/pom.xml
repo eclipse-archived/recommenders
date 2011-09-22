@@ -209,6 +209,7 @@
 						<validHeader>org.eclipse.recommenders.releng/etc/license-tu-darmstadt-2011.txt</validHeader>
 						<validHeader>org.eclipse.recommenders.releng/etc/license-henss-2010.txt</validHeader>
 						<validHeader>org.eclipse.recommenders.releng/etc/license-henss-2011.txt</validHeader>
+						<validHeader>org.eclipse.recommenders.releng/etc/license-google-wb.txt</validHeader>
 					</validHeaders>
 					<strictCheck>false</strictCheck>
 					<quiet>false</quiet>

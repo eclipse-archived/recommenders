@@ -24,6 +24,7 @@ public class GuiceInjectableProvider implements InjectableProvider<Inject, Type>
 
     private final Injector injector;
 
+    @Inject
     public GuiceInjectableProvider(final Injector injector) {
         this.injector = injector;
     }

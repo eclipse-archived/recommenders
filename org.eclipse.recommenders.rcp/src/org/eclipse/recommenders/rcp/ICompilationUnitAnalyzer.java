@@ -12,7 +12,9 @@ package org.eclipse.recommenders.rcp;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 
 /**
  * {@link ICompilationUnitAnalyzer}s do the real work in code recommenders. They
@@ -23,5 +25,5 @@ import org.eclipse.recommenders.commons.utils.annotations.Provisional;
  */
 @Provisional
 public interface ICompilationUnitAnalyzer<T> {
-    T analyze(final ICompilationUnit cu, IProgressMonitor monitor);
+    Option<CompilationUnit> analyze(final ICompilationUnit cu, IProgressMonitor monitor);
 }

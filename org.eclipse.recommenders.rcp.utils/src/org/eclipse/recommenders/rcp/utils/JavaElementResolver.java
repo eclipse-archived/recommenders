@@ -17,10 +17,10 @@ import java.util.HashSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
@@ -30,9 +30,9 @@ import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 import org.eclipse.jdt.internal.codeassist.impl.AssistSourceMethod;
 import org.eclipse.jdt.internal.codeassist.impl.AssistSourceType;
-import org.eclipse.jdt.internal.core.hierarchy.TypeHierarchy;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.internal.corext.util.SearchUtils;
+import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.IName;
@@ -240,9 +240,7 @@ public class JavaElementResolver {
                 return null;
             }
             final String[] jdtParamTypes = createJDTParameterTypeStrings(recMethod);
-            final TypeHierarchy hierarchy = new TypeHierarchy(jdtType, new ICompilationUnit[0],
-                    jdtType.getJavaProject(), false);
-            hierarchy.refresh(null);
+            final ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(jdtType);
             final IMethod jdtMethod = JavaModelUtil.findMethodInHierarchy(hierarchy, jdtType, recMethod.getName(),
                     jdtParamTypes, recMethod.isInit());
             return jdtMethod;

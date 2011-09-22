@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls.store;
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,7 +41,6 @@ import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.jersey.api.client.UniformInterfaceException;
 
-@SuppressWarnings("restriction")
 public class SearchManifestJob extends WorkspaceJob {
 
     private final File file;
@@ -70,7 +71,7 @@ public class SearchManifestJob extends WorkspaceJob {
     }
 
     private void resolve() {
-        monitor.beginTask("Begin model lookup for " + file.getPath(), 100);
+        monitor.beginTask(format("Requesting calls model for '%s'.", file.getPath()), 100);
         findClasspathDependencyInformation();
         monitor.worked(10);
         if (!findManifest()) {
@@ -78,7 +79,7 @@ public class SearchManifestJob extends WorkspaceJob {
         }
         monitor.worked(15);
         if (!storeContainsModel()) {
-            monitor.subTask("Downloading model...");
+            monitor.subTask("New model found. Downloading.");
             downloadAndRegisterArchive(manifest);
         }
         monitor.worked(75);

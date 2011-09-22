@@ -11,6 +11,7 @@ package org.eclipse.recommenders.internal.server.codesearch.lucene;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFalse;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.commons.utils.Throws.throwIllegalStateException;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
 import java.io.File;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipException;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -38,15 +38,18 @@ import org.eclipse.recommenders.commons.codesearch.Request;
 import org.eclipse.recommenders.commons.utils.Bag;
 import org.eclipse.recommenders.commons.utils.TreeBag;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
+import org.eclipse.recommenders.internal.server.codesearch.wiring.GuiceModule.CodesearchBasedir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class LuceneSearchService {
 
-    private static Logger log = Logger.getLogger(LuceneSearchService.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private FeatureWeights weights;
     private IndexReader luceneIndexReader;
     private File baseDir;
@@ -54,8 +57,7 @@ public class LuceneSearchService {
     private File weightsFile;
 
     @Inject
-    public LuceneSearchService(@Named("codesearch.basedir") final File basedir) throws CorruptIndexException,
-            IOException {
+    public LuceneSearchService(@CodesearchBasedir final File basedir) throws CorruptIndexException, IOException {
         initializeFilesAndFolders(basedir);
         initializeLuceneIndexReader();
         initializeTermFrequencyIndex();
@@ -64,16 +66,24 @@ public class LuceneSearchService {
 
     private void initializeFilesAndFolders(final File basedir) throws ZipException, IOException {
         this.baseDir = basedir;
+
+        // lucene index:
         this.indexDir = new File(basedir, "index");
+        log.debug("Lucene index directory: {}", indexDir.getAbsoluteFile());
         if (!indexDir.exists()) {
             indexDir.mkdirs();
         }
-        weightsFile = new File(baseDir, "weights/active-weights.json");
 
+        // weights file:
+        weightsFile = new File(baseDir, "weights/active-weights.json");
+        log.debug("Weights file location: {}", weightsFile.getAbsoluteFile());
     }
 
     private void initializeLuceneIndexReader() throws IOException, CorruptIndexException {
         final SimpleFSDirectory index = new SimpleFSDirectory(indexDir);
+        if (!IndexReader.indexExists(index)) {
+            throwIllegalStateException("Index %s does not exist or is not a valid Lucene index.", index);
+        }
         luceneIndexReader = IndexReader.open(index);
     }
 

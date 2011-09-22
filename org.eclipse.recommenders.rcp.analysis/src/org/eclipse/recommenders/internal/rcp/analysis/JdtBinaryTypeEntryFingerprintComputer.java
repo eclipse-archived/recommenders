@@ -14,6 +14,8 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsInstanceOf;
 
 import java.io.File;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.recommenders.commons.utils.Fingerprints;
 import org.eclipse.recommenders.internal.commons.analysis.analyzers.IDependencyFingerprintComputer;
@@ -46,13 +48,18 @@ public class JdtBinaryTypeEntryFingerprintComputer implements IDependencyFingerp
         return findOrCreateFingerprint((JDTBinaryTypeEntry) entry);
     }
 
+    Lock lock = new ReentrantLock();
+
     private synchronized String findOrCreateFingerprint(final JDTBinaryTypeEntry entry) {
+        lock.lock();
         final File f = entry.getJarFile();
         String fingerprint = fingerprints.get(f);
         if (fingerprint == null) {
             fingerprint = Fingerprints.sha1(f);
             fingerprints.put(f, fingerprint);
+            System.out.println("computed fingerprint for " + f);
         }
+        lock.unlock();
         return fingerprint;
     }
 

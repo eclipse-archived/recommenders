@@ -25,19 +25,10 @@ public class GenericInverseTermHitratioFeatureScorer implements SingleFeatureSco
     private final IndexReader reader;
     private final Bag<Integer> relevantDocs = HashBag.newHashBag();
     private final List<Term> terms;
-    private final String fieldName;
 
     public GenericInverseTermHitratioFeatureScorer(final IndexReader reader, final List<Term> terms) throws IOException {
         this.reader = reader;
         this.terms = terms;
-        this.fieldName = getFieldNameFromTerms();
-    }
-
-    private String getFieldNameFromTerms() {
-        if (!terms.isEmpty()) {
-            return terms.get(0).field();
-        }
-        return null;
     }
 
     @Override

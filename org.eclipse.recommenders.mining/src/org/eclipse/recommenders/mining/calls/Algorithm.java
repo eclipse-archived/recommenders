@@ -68,6 +68,9 @@ public class Algorithm {
                 l.skip(spec, "no (new) data.");
             }
         } else {
+            for (final IModelGenerationListener l : generationListeners) {
+                l.generate(spec);
+            }
             generateModelZipAndUpdateSpec(spec, index);
         }
 

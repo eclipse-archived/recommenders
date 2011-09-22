@@ -21,9 +21,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -34,6 +36,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -81,6 +84,7 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
     private final IClassLoader appLoader;
     private final AnalysisScope scope;
     private final IJavaProject project;
+    private final HashSet<TypeName> failedClazzes = new HashSet<TypeName>();
     private final HashMap<TypeName, IClass> clazzes = new HashMap<TypeName, IClass>();
     private final HashMap<IResource, TypeName> watchlist = new HashMap<IResource, TypeName>();
 
@@ -169,35 +173,57 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
 
     @Override
     public IClass lookupClass(final TypeReference typeRef) {
+
         final TypeName name = typeRef.getName();
-        if (isClassAlreadyDefinedOrCurrentlyLoaded(typeRef)) {
-            return ensureIsNotNull(clazzes.get(name));
-        }
-        if (typeRef.isArrayType()) {
-            final ArrayClassLoader arrayClassLoader = scope.getArrayClassLoader();
-            final IClass lookupClass = arrayClassLoader.lookupClass(name, appLoader, this);
-            if (lookupClass == null) {
-                System.err.println("failed to resolve " + name);
-            }
-            return lookupClass;
-        }
         try {
+            if (isClassAlreadyDefinedOrCurrentlyLoaded(typeRef)) {
+                return ensureIsNotNull(clazzes.get(name));
+            }
+            if (failedClazzes.contains(name)) {
+                return null;
+            }
+            if (typeRef.isArrayType()) {
+                final ArrayClassLoader arrayClassLoader = scope.getArrayClassLoader();
+                final IClass lookupClass = arrayClassLoader.lookupClass(name, appLoader, this);
+                if (lookupClass == null) {
+                    System.err.println("failed to resolve " + name);
+                }
+                return lookupClass;
+            }
+            if (!typeRef.getClassLoader().equals(SYNTETIC) && typeRef.getName().toString().startsWith("L$")) {
+                failedClazzes.add(name);
+                final String newName = name.toString().replaceAll("L\\$", "L");
+                final IClass lookupClass = bypassLoader.lookupClass(name);
+                System.out.println();
+                // final TypeReference findOrCreate =
+                // TypeReference.findOrCreate(typeRef.getClassLoader(),
+                // newName);
+                // return lookupClass(findOrCreate);
+            }
             if (typeRef.getClassLoader().equals(SYNTETIC)) {
                 // if bypassed then synthetic
                 return ensureIsNotNull(loadSynteticType(typeRef));
             }
-            final IType type = findEclipseHandle(typeRef);
-            if (type instanceof BinaryType) {
-                // then it is either primordial or extension.
-                return ensureIsNotNull(loadBinaryClass((BinaryType) type));
-            } else if (type instanceof SourceType) {
-                // it's sourceMethod, i.e., application.
-                return loadFromProjectOutputLocation((SourceType) type);
-                // return loadSourceType((SourceType) type);
+            final StopWatch w = new StopWatch();
+            try {
+                w.start();
+                final IType type = findEclipseHandle(typeRef);
+                if (type instanceof BinaryType) {
+                    // then it is either primordial or extension.
+                    return ensureIsNotNull(loadBinaryClass((BinaryType) type));
+                } else if (type instanceof SourceType) {
+                    // it's sourceMethod, i.e., application.
+                    return loadFromProjectOutputLocation((SourceType) type);
+                    // return loadSourceType((SourceType) type);
+                }
+            } finally {
+                w.stop();
+                // System.out.println("loading " + typeRef + " took " + w);
             }
         } catch (final JavaModelException e) {
             throwUnhandledException(e);
         }
+        failedClazzes.add(name);
         return null;
     }
 
@@ -364,6 +390,7 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
     }
 
     public static IClassHierarchy make(final IJavaProject project, final AnalysisScope scope) {
+        final ISchedulingRule schedulingRule = project.getSchedulingRule();
         final LazyClassHierarchy res = new LazyClassHierarchy(project, scope);
         return res;
     }

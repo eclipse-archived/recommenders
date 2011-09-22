@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2011 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,11 +20,14 @@ import org.eclipse.recommenders.commons.udc.ModelSpecification;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.VersionRange;
 import org.eclipse.recommenders.commons.utils.VersionRange.VersionRangeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
 public class ModelSpecsGenerator {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final CouchDbDataAccess db;
 
     @Inject
@@ -44,9 +47,10 @@ public class ModelSpecsGenerator {
             }
 
             db.save(modelSpec);
-            System.out.println("updated " + modelSpec.getIdentifier());
             modelSpecs.add(modelSpec);
+            log.info("Updated model spec for '{}'.", modelSpec.getIdentifier());
         }
+        log.info("Model spec update opertions done.");
     }
 
     private ModelSpecification createModelSpecification(final LibraryIdentifier libraryIdentifier) {

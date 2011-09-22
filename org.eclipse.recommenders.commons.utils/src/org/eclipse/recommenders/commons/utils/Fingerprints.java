@@ -14,19 +14,31 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureExists;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFile;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
+import com.google.common.io.InputSupplier;
+
 public class Fingerprints {
+    private static final class StreamInputSupplier implements InputSupplier<InputStream> {
+        private final InputStream stream;
+
+        private StreamInputSupplier(final InputStream stream) {
+            this.stream = stream;
+        }
+
+        @Override
+        public InputStream getInput() throws IOException {
+            return stream;
+        }
+    }
+
     // private static final String DIGEST_MD5 = "MD5";
     private static final String DIGEST_SHA1 = "SHA-1";
 
@@ -40,45 +52,17 @@ public class Fingerprints {
         ensureExists(file);
         ensureIsFile(file);
         //
-        FileInputStream stream = null;
         try {
-            stream = new FileInputStream(file);
-            final FileChannel channel = stream.getChannel();
-            final ByteBuffer buffer = ByteBuffer.allocateDirect(8 * 1024);
             final MessageDigest digest = createMessageDigest();
-            while (channel.read(buffer) != -1) {
-                buffer.flip();
-                digest.update(buffer);
-                buffer.clear();
-            }
-            return digest.digest();
+            return Files.getDigest(file, digest);
         } catch (final Exception e) {
             throw Throws.throwUnhandledException(e);
-        } finally {
-            IOUtils.closeQuietly(stream);
         }
     }
 
     public static String sha1(final File file) {
-        ensureIsNotNull(file);
-        ensureExists(file);
-        ensureIsFile(file);
-        //
-        FileInputStream stream = null;
-        try {
-            stream = new FileInputStream(file);
-            final FileChannel channel = stream.getChannel();
-            final ByteBuffer buffer = channel.map(MapMode.READ_ONLY, 0, (int) channel.size());
-            final MessageDigest digest = createMessageDigest();
-            digest.update(buffer);
-            return toString(digest);
-        } catch (final Exception e) {
-            throw Throws.throwUnhandledException(e);
-        } finally {
-            IOUtils.closeQuietly(stream);
-            // it's sufficient to close the stream only.
-            // IOUtils.closeQuietly(channel);
-        }
+        final byte[] sha1 = internal_sha1v2(file);
+        return toHexString(sha1);
     }
 
     private static String toString(final MessageDigest digest) {
@@ -102,13 +86,9 @@ public class Fingerprints {
         ensureIsNotNull(stream);
         try {
             final MessageDigest digest = createMessageDigest();
-            final DigestInputStream digestStream = new DigestInputStream(new BufferedInputStream(stream), digest);
-            while (digestStream.read() != -1) {
-                // simply read the stream data one-by-one
-                // XXX this may be slow. Maybe we should use byte[] to read more
-                // data in a single pass?
-            }
-            return toString(digest);
+            final StreamInputSupplier supplier = new StreamInputSupplier(stream);
+            final byte[] sha1 = ByteStreams.getDigest(supplier, digest);
+            return toHexString(sha1);
         } catch (final Exception e) {
             throw Throws.throwUnhandledException(e);
         } finally {

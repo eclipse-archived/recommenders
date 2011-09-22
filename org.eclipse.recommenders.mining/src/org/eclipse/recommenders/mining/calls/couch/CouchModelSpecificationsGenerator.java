@@ -1,7 +1,5 @@
-package org.eclipse.recommenders.mining.calls.couch;
-
 /**
- * Copyright (c) 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2011 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +8,7 @@ package org.eclipse.recommenders.mining.calls.couch;
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
+package org.eclipse.recommenders.mining.calls.couch;
 
 import java.util.Collection;
 import java.util.Set;

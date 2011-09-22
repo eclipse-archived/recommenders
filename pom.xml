@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
@@ -12,87 +11,80 @@
 		<!-- configuration -->
 		<module>org.eclipse.recommenders.parent</module>
 
-		<!-- plug-ins -->
 		<module>org.eclipse.recommenders.commons.analysis</module>
-		<module>org.eclipse.recommenders.tests.commons.analysis</module>
-
+		<module>org.eclipse.recommenders.commons.bayesnet</module>
+		<module>org.eclipse.recommenders.commons.client</module>
+		<module>org.eclipse.recommenders.commons.codesearch</module>
 		<module>org.eclipse.recommenders.commons.injection</module>
+		<module>org.eclipse.recommenders.commons.selection</module>
 		<module>org.eclipse.recommenders.commons.utils</module>
 		<module>org.eclipse.recommenders.commons.utils.gson</module>
-		<module>org.eclipse.recommenders.commons.bayesnet</module>
 		<module>org.eclipse.recommenders.commons.udc</module>
-		<module>org.eclipse.recommenders.rcp</module>
 
-		<module>org.eclipse.recommenders.rcp.analysis</module>
-		<module>org.eclipse.recommenders.tests.rcp.analysis</module>
-
-		<module>org.eclipse.recommenders.rcp.codecompletion</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion</module>
-
-		<module>org.eclipse.recommenders.rcp.codecompletion.calls</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.calls</module>
-
-
-		<module>org.eclipse.recommenders.rcp.codecompletion.overrides</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.overrides</module>
-
-		<module>org.eclipse.recommenders.rcp.codecompletion.chain</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.chain</module>
-
-		<module>org.eclipse.recommenders.rcp.codecompletion.templates</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module>
-
-		<module>org.eclipse.recommenders.rcp.codecompletion.subwords</module>
-		<!-- <module>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</module> -->
-		
-		<module>org.eclipse.recommenders.rcp.utils</module>
-		<module>org.eclipse.recommenders.tests.commons</module>
-		<module>org.eclipse.recommenders.tests.commons.unit</module>
+		<module>org.eclipse.recommenders.doc.user</module>
 		<module>org.eclipse.recommenders.examples.rcp.codecompletion</module>
 
-
-		<!-- Codesearch -->
-		
-		<module>org.eclipse.recommenders.commons.codesearch</module>
-		<module>org.eclipse.recommenders.commons.client</module>
+		<module>org.eclipse.recommenders.rcp</module>
+		<module>org.eclipse.recommenders.rcp.analysis</module>
+		<module>org.eclipse.recommenders.rcp.codecompletion</module>
+		<module>org.eclipse.recommenders.rcp.codecompletion.calls</module>
+		<module>org.eclipse.recommenders.rcp.codecompletion.chain</module>
+		<module>org.eclipse.recommenders.rcp.codecompletion.overrides</module>
+		<module>org.eclipse.recommenders.rcp.codecompletion.templates</module>
+		<module>org.eclipse.recommenders.rcp.codecompletion.subwords</module>
 		<module>org.eclipse.recommenders.rcp.codesearch</module>
+		<module>org.eclipse.recommenders.rcp.extdoc</module>
+		<module>org.eclipse.recommenders.rcp.extdoc.providers</module>
+		<module>org.eclipse.recommenders.rcp.logging</module>
+		<module>org.eclipse.recommenders.rcp.selfhosting</module>
+		<module>org.eclipse.recommenders.rcp.udc</module>
+		<module>org.eclipse.recommenders.rcp.utils</module>
+
+		<module>org.eclipse.recommenders.mining</module>
+
+		<module>org.eclipse.recommenders.tests.commons.analysis</module>
+		<module>org.eclipse.recommenders.tests.commons</module>
+		<module>org.eclipse.recommenders.tests.commons.extdoc</module>
+		<module>org.eclipse.recommenders.tests.commons.selection</module>
+		<module>org.eclipse.recommenders.tests.commons.unit</module>
+		<module>org.eclipse.recommenders.tests.rcp.analysis</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.calls</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.chain</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.overrides</module>
+		<module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module>
+		<!-- <module>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</module> -->
+		<module>org.eclipse.recommenders.tests.rcp.udc</module>
+		<module>org.eclipse.recommenders.tests.server.udc</module>
+		<module>org.eclipse.recommenders.tests.mining</module>
+
+		<module>org.eclipse.recommenders.tools</module>
+
 
 		<module>org.eclipse.recommenders.server.codesearch</module>
 		<module>org.eclipse.recommenders.server.commons</module>
-		
-		<module>org.eclipse.recommenders.doc.user</module>
-
-		<!-- ExtDoc -->
-		<module>org.eclipse.recommenders.commons.selection</module>
-		<module>org.eclipse.recommenders.rcp.extdoc</module>
-		<module>org.eclipse.recommenders.rcp.extdoc.providers</module>
-		<module>org.eclipse.recommenders.rcp.extdoc.feature</module>
 		<module>org.eclipse.recommenders.server.extdoc</module>
-		<module>org.eclipse.recommenders.tests.commons.extdoc</module>
-		<module>org.eclipse.recommenders.tests.commons.selection</module>
-		<!--<module>org.eclipse.recommenders.tests.rcp.extdoc</module>-->
+		<module>org.eclipse.recommenders.server.udc</module>
+		<module>org.eclipse.recommenders.server.setup</module>
 
 
-		<!-- features 'n update sites -->
+		<module>org.eclipse.recommenders.rcp.extdoc.feature</module>
 
 		<module>org.eclipse.recommenders.rcp.codecompletion.feature</module>
 		<module>org.eclipse.recommenders.rcp.codecompletion.source-feature</module>
-
 		<module>org.eclipse.recommenders.rcp.codecompletion.subwords.feature</module>
 		<module>org.eclipse.recommenders.rcp.codecompletion.subwords.source-feature</module>
-
 		<module>org.eclipse.recommenders.rcp.codesearch.feature</module>
-
-		<module>org.eclipse.recommenders.rcp.update-site</module>
-		
-		<module>org.eclipse.recommenders.server.codesearch.feature</module>
-
+		<module>org.eclipse.recommenders.rcp.selfhosting.feature</module>
 		<module>org.eclipse.recommenders.server.feature</module>
+		<module>org.eclipse.recommenders.server.codesearch.feature</module>
+		<module>org.eclipse.recommenders.server.udc.feature</module>
+
+
 		<module>org.eclipse.recommenders.server.update-site</module>
-		
-		<!-- Tools -->
-		<module>org.eclipse.recommenders.tools</module>
-		
+		<module>org.eclipse.recommenders.rcp.update-site</module>
+
+
 	</modules>
 
 </project>

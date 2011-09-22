@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.mining.extdocs;
 
-import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
 
@@ -18,5 +17,5 @@ public interface IExtdocDirectiveConsumer {
 
     public void consume(ClassOverrideDirectives directives);
 
-    public void consume(Option<ClassOverridePatterns> patterns);
+    public void consume(ClassOverridePatterns patterns);
 }

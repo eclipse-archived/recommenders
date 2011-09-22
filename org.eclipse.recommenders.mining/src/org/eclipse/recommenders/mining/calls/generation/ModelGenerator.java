@@ -1,7 +1,5 @@
-package org.eclipse.recommenders.mining.calls.generation;
-
 /**
- * Copyright (c) 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2011 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +10,7 @@ package org.eclipse.recommenders.mining.calls.generation;
  *    Marcel Burch - initial API.
  *    Johannes Lerch - initial API and implementation.
  */
-import java.io.IOException;
+package org.eclipse.recommenders.mining.calls.generation;import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +26,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+;
 
 public class ModelGenerator {
 

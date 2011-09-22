@@ -8,8 +8,6 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-
-
 import org.eclipse.recommenders.mining.calls.Algorithm;
 import org.eclipse.recommenders.mining.calls.AlgorithmParameters;
 import org.eclipse.recommenders.mining.calls.couch.CouchGuiceModule;
@@ -45,7 +43,8 @@ public class generate_call_models {
             System.err.println(e.getMessage());
             parser.printUsage(System.err);
             System.err.println();
-            System.err.printf("run it using: java -jar %s %s\n", generate_call_models.class, parser.printExample(ExampleMode.ALL));
+            System.err.printf("run it using: java -jar %s %s\n", generate_call_models.class,
+                    parser.printExample(ExampleMode.ALL));
             System.exit(-1);
         }
     }

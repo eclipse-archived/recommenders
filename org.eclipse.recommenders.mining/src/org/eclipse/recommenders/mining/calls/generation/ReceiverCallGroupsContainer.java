@@ -1,4 +1,3 @@
-package org.eclipse.recommenders.mining.calls.generation;
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
@@ -9,7 +8,7 @@ package org.eclipse.recommenders.mining.calls.generation;
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-
+package org.eclipse.recommenders.mining.calls.generation;
 
 import java.util.Set;
 
@@ -23,44 +22,43 @@ import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import com.google.common.collect.Sets;
 
 public class ReceiverCallGroupsContainer {
-	public Set<IMethodName> invokedMethods = Sets.newHashSet();
+    public Set<IMethodName> invokedMethods = Sets.newHashSet();
 
-	public Bag<IMethodName> observedContexts = HashBag.newHashBag();
+    public Bag<IMethodName> observedContexts = HashBag.newHashBag();
 
-	public Bag<String> definitionSites = HashBag.newHashBag();
-	public static ReceiverCallGroupsContainer create() {
-		final ReceiverCallGroupsContainer res = new ReceiverCallGroupsContainer();
-		return res;
-	}
-	public static ReceiverCallGroupsContainer newGroup(
-			final Set<IMethodName> callGroup,
-			final Tuple<IMethodName, Integer>[] callingContextsWithFrequency,
-			final Tuple<String, Integer>[] definitionContextsWithFrequency) {
-		final ReceiverCallGroupsContainer res = new ReceiverCallGroupsContainer();
-		res.invokedMethods = callGroup;
+    public Bag<String> definitionSites = HashBag.newHashBag();
 
-		for (final Tuple<IMethodName, Integer> c : callingContextsWithFrequency) {
-			res.observedContexts.add(c.getFirst(), c.getSecond());
-		}
+    public static ReceiverCallGroupsContainer create() {
+        final ReceiverCallGroupsContainer res = new ReceiverCallGroupsContainer();
+        return res;
+    }
 
-		for (final Tuple<String, Integer> d : definitionContextsWithFrequency) {
-			res.definitionSites.add(d.getFirst(), d.getSecond());
-		}
-		return res;
-	}
+    public static ReceiverCallGroupsContainer newGroup(final Set<IMethodName> callGroup,
+            final Tuple<IMethodName, Integer>[] callingContextsWithFrequency,
+            final Tuple<String, Integer>[] definitionContextsWithFrequency) {
+        final ReceiverCallGroupsContainer res = new ReceiverCallGroupsContainer();
+        res.invokedMethods = callGroup;
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this,
-				ToStringStyle.SIMPLE_STYLE);
-	}
+        for (final Tuple<IMethodName, Integer> c : callingContextsWithFrequency) {
+            res.observedContexts.add(c.getFirst(), c.getSecond());
+        }
 
-	public int numberOfUsagesInContext(final IMethodName curCallingContext) {
-		return observedContexts.count(curCallingContext);
-	}
+        for (final Tuple<String, Integer> d : definitionContextsWithFrequency) {
+            res.definitionSites.add(d.getFirst(), d.getSecond());
+        }
+        return res;
+    }
 
-	public int numberOfUsagesInContextAndDefinitionSite(
-			IMethodName curCallingContext, String definitionSite) {
-		return observedContexts.count(curCallingContext);
-	}
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
+    }
+
+    public int numberOfUsagesInContext(final IMethodName curCallingContext) {
+        return observedContexts.count(curCallingContext);
+    }
+
+    public int numberOfUsagesInContextAndDefinitionSite(final IMethodName curCallingContext, final String definitionSite) {
+        return observedContexts.count(curCallingContext);
+    }
 }

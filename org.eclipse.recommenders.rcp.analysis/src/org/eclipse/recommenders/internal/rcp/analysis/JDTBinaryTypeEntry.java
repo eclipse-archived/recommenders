@@ -50,7 +50,8 @@ public class JDTBinaryTypeEntry implements ModuleEntry, IJarFileProvider {
     @Override
     public InputStream getInputStream() {
         try {
-            return new ByteArrayInputStream(b.getClassFile().getBytes());
+            final ByteArrayInputStream bytes = new ByteArrayInputStream(b.getClassFile().getBytes());
+            return bytes;
         } catch (final JavaModelException e) {
             throw throwUnhandledException(e);
         }
@@ -81,7 +82,7 @@ public class JDTBinaryTypeEntry implements ModuleEntry, IJarFileProvider {
         File res = null;
         final IResource resource = b.getResource();
         if (resource != null) {
-            IPath location = resource.getLocation();
+            final IPath location = resource.getLocation();
             res = location.toFile();
         } else {
             final IPath path = b.getPath();

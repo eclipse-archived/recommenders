@@ -33,7 +33,6 @@ public final class ClassOverrideDirectives implements IServerType {
         res.type = type;
         res.numberOfSubclasses = numberOfSubclasses;
         res.overrides = overriddenMethods;
-        res.validate();
         return res;
     }
 

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.recommenders.rcp.selfhosting.feature"
+      label="Code Recommenders: Team Server Management Feature (Incubation)"
+      version="0.3.0.qualifier"
+      provider-name="Eclipse Code Recommenders">
+
+   <description url="http://www.eclipse.org/recommenders/">
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <includes
+         id="org.eclipse.recommenders.server.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.recommenders.server.codesearch.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.recommenders.server.udc.feature"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.logging"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.selfhosting"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.mining"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.udc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.recommenders.server.setup"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>

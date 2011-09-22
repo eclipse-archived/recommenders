@@ -97,6 +97,26 @@ public class LocalNamesCollector {
     }
 
     private void collectLocalValueNames() {
+
+        int i = 0;
+        for (final SSAInstruction instr : ir.getInstructions()) {
+            if (instr != null && instr.hasDef()) {
+                final int def = instr.getDef();
+                final ISSABasicBlock basicBlockForInstruction = ir.getBasicBlockForInstruction(instr);
+                final String[] localNames = ir.getLocalNames(basicBlockForInstruction.getLastInstructionIndex(), def);
+                // redundant. this doesn't work at all times
+                storeLocalNamesForValueNumber(def, localNames);
+                // findLocalNamesForValueNumberInBasicBlocks(def);
+                // if (localNames == null) {
+                // final String name = getName(def);
+                // if (name != UNKNOWN) {
+                // System.out.println("");
+                // }
+                // }
+            }
+            i += 2;
+        }
+
         for (final Iterator<SSAInstruction> it = ir.iterateAllInstructions(); it.hasNext();) {
             final SSAInstruction instr = it.next();
             {

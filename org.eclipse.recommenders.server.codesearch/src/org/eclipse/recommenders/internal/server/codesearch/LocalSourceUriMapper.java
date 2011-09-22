@@ -14,21 +14,32 @@ import static java.lang.String.format;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
+
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.internal.server.codesearch.wiring.GuiceModule.CodesearchBaseurl;
+
+import com.google.inject.Inject;
 
 public class LocalSourceUriMapper implements ISourceUriMapper {
 
+    private final String baseurl;
+
+    @Inject
+    public LocalSourceUriMapper(@CodesearchBaseurl final URL baseurl) {
+        this.baseurl = StringUtils.removeEnd(baseurl.toExternalForm(), "/");
+    }
+
     @Override
     public URI map(final URI uri) {
-
         try {
             final String part = uri.getSchemeSpecificPart();
             final String encodedPart = URLEncoder.encode(part, "UTF-8");
-            final String url = format("%s/source/%s", Constants.WEB_BASE_URL, encodedPart);
+            final String url = format("%s/source/%s", baseurl, encodedPart);
             return new URI(url);
         } catch (final Exception e) {
             throw throwUnhandledException(e);
         }
-
     }
 }

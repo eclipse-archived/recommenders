@@ -17,16 +17,16 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.recommenders.internal.server.codesearch.wiring.GuiceModule.CodesearchBasedir;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class ZipFileSourceCodeProvider {
 
     private ZipFile zipFile;
 
     @Inject
-    public ZipFileSourceCodeProvider(@Named("codesearch.basedir") final File baseDir) {
+    public ZipFileSourceCodeProvider(@CodesearchBasedir final File baseDir) {
         try {
             zipFile = new ZipFile(new File(baseDir, "sources/sources.zip"));
 

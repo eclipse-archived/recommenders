@@ -8,7 +8,6 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.mining.calls.couch.CouchDbDataAccess;

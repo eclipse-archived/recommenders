@@ -1,5 +1,3 @@
-package org.eclipse.recommenders.mining.calls.generation;
-
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
@@ -10,6 +8,8 @@ package org.eclipse.recommenders.mining.calls.generation;
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
+package org.eclipse.recommenders.mining.calls.generation;
+
 import static org.apache.commons.lang3.ArrayUtils.toArray;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureEquals;
 import static org.eclipse.recommenders.mining.calls.generation.NetworkUtils.CTX_DUMMY;

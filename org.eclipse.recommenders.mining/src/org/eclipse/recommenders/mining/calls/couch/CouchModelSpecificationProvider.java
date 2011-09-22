@@ -34,9 +34,7 @@ public class CouchModelSpecificationProvider implements IModelSpecificationProvi
     public Iterable<ModelSpecification> findSpecifications() {
 
         final Collection<ModelSpecification> specs = db.lookupAllModelSpecifications();
-        Collections2.filter(specs, new NewObjectUsagesAvailablePredicate(db, forceModelGeneration));
-
-        return specs;
+        return Collections2.filter(specs, new NewObjectUsagesAvailablePredicate(db, forceModelGeneration));
     }
 
 }

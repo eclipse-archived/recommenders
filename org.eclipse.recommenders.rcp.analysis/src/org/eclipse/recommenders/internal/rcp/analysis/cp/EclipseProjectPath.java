@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.analysis.cp;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFalse;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -213,8 +215,14 @@ public class EclipseProjectPath {
                 }
             } catch (final CoreException e1) {
                 e1.printStackTrace();
-                Assertions.UNREACHABLE();
+                // Assertions.UNREACHABLE();
             }
+        } else if (entry.getEntryKind() == IClasspathEntry.CPE_VARIABLE) {
+            final IClasspathEntry resolved = JavaCore.getResolvedClasspathEntry(entry);
+            ensureIsFalse(resolved.getEntryKind() == IClasspathEntry.CPE_VARIABLE,
+                    "failed assumption during resolving classpath entry " + entry);
+            resolveClasspathEntry(resolved, loader, includeSource);
+
         } else {
             throw new RuntimeException("unexpected entry " + entry);
         }

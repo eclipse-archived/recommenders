@@ -48,9 +48,10 @@ public class BypassingAbstractClassesClassTargetSelector implements ClassTargetS
         final TypeReference realTypeRef = realType.getReference();
         final TypeName bypassTypeName = BypassSyntheticClass.getName(realTypeRef);
         IClass bypassClass = loader.lookupClass(bypassTypeName);
-        if (bypassClass == null) {
+        if (bypassClass == null || !bypassClass.getName().toString().startsWith("L$")) {
             bypassClass = createAndRegisterBypassClass(realType, cha, bypassTypeName, loader);
         }
+        // why?
         ensureIsInstanceOf(bypassClass, BypassSyntheticClass.class);
         return bypassClass;
     }

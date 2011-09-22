@@ -42,7 +42,7 @@ public class ClassOverridesDirectivesGeneratorTest {
         final ClassOverrideDirectivesGenerator sut = new ClassOverrideDirectivesGenerator(0.05);
         final CompilationUnit cu1 = create("Ls1", m1, m2);
         final CompilationUnit cu2 = create("Ls2", m1, m3);
-        final ClassOverrideDirectives actual = sut.generate(superclass, asList(cu1, cu2));
+        final ClassOverrideDirectives actual = sut.generate(superclass, asList(cu1, cu2)).get();
         assertThat(actual.getNumberOfSubclasses(), is(2));
 
         final HashMap<IMethodName, Integer> expected = Maps.newHashMap();
@@ -58,7 +58,7 @@ public class ClassOverridesDirectivesGeneratorTest {
         final ClassOverrideDirectivesGenerator sut = new ClassOverrideDirectivesGenerator(0.7);
         final CompilationUnit cu1 = create("Ls1", m1, m2);
         final CompilationUnit cu2 = create("Ls2", m1, m3);
-        final ClassOverrideDirectives actual = sut.generate(superclass, asList(cu1, cu2));
+        final ClassOverrideDirectives actual = sut.generate(superclass, asList(cu1, cu2)).get();
         assertThat(actual.getNumberOfSubclasses(), is(2));
 
         final HashMap<IMethodName, Integer> expected = Maps.newHashMap();
