@@ -13,7 +13,4 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.recommenders.commons.logging
-Bundle-ClassPath: lib/jcl-over-slf4j-1.6.1.jar,
- lib/jul-to-slf4j-1.6.1.jar,
- lib/log4j-over-slf4j-1.6.1.jar,
- .
+Bundle-ClassPath: .

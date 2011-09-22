@@ -11,13 +11,11 @@ package org.eclipse.recommenders.commons.logging;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public class LoggingActivator implements BundleActivator {
 
     @Override
     public void start(final BundleContext bundleContext) throws Exception {
-        SLF4JBridgeHandler.install();
     }
 
     @Override
