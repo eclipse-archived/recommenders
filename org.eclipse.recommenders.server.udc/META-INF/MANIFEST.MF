@@ -12,17 +12,15 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.commons.analysis,
  com.sun.jersey.client,
  org.eclipse.recommenders.commons.client,
- org.eclipse.recommenders.commons.utils.gson,
  org.eclipse.recommenders.commons.utils,
  com.google.guava,
- org.apache.commons.lang3,
  org.eclipse.recommenders.server.commons,
  org.eclipse.recommenders.commons.udc,
  javax.servlet,
- org.slf4j.api
+ org.slf4j.api,
+ org.eclipse.osgi.services
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.osgi.service.http;version="1.2.1"
 Bundle-Vendor: Eclipse Code Recommenders
 Export-Package: org.eclipse.recommenders.internal.server.udc,
  org.eclipse.recommenders.internal.server.udc.wiring,
