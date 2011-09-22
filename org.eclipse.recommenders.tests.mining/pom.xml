@@ -11,8 +11,8 @@
 	<packaging>eclipse-test-plugin</packaging>
 
 	<properties>
-		<emma.filter>+org.eclipse.recommenders.internal.rcp.codecompletion.subwords.*,+org.eclipse.recommenders.rcp.codecompletion.subwords.*</emma.filter>
-		<eclemma.instrument.bundles>org.eclipse.recommenders.rcp.codecompletion.subwords</eclemma.instrument.bundles>
+		<emma.filter>+org.eclipse.recommenders.mining.*</emma.filter>
+		<eclemma.instrument.bundles>org.eclipse.recommenders.mining</eclemma.instrument.bundles>
 	</properties>
 	<profiles>
 		<profile>
