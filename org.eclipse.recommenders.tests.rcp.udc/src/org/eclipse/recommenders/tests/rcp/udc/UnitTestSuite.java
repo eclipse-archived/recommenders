@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.tests.rcp.udc;
 
-import org.eclipse.recommenders.internal.depersonalizer.CompilationUnitProvider;
 import org.eclipse.recommenders.internal.depersonalizer.LineNumberDepersonalizerTest;
 import org.eclipse.recommenders.internal.depersonalizer.NameDepersonalizerTest;
 import org.eclipse.recommenders.internal.depersonalizer.ObjectUsageFilterTest;
@@ -19,8 +18,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ CompilationUnitProvider.class, LineNumberDepersonalizerTest.class, NameDepersonalizerTest.class,
-        ObjectUsageFilterTest.class })
+@SuiteClasses({ LineNumberDepersonalizerTest.class, NameDepersonalizerTest.class, ObjectUsageFilterTest.class })
 public class UnitTestSuite {
 
 }
