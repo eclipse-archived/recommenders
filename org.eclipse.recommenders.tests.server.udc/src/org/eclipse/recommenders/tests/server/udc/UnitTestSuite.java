@@ -8,7 +8,7 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-package org.eclipse.recommernders.tests.server.udc;
+package org.eclipse.recommenders.tests.server.udc;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

@@ -8,10 +8,10 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommernders.tests.server.udc;
+package org.eclipse.recommenders.tests.server.udc;
 
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.v36;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.vi36_e37;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.v36;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.vi36_e37;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

@@ -8,18 +8,18 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommernders.tests.server.udc;
+package org.eclipse.recommenders.tests.server.udc;
 
 import static junit.framework.Assert.assertEquals;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.v36;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.v362;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.v38;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.vi23_e24;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.vi35_e36;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.vi35_e37;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.vi36_e37;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.vi37_e38;
-import static org.eclipse.recommernders.tests.server.udc.VersionConstants.vi38_e39;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.v36;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.v362;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.v38;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.vi23_e24;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.vi35_e36;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.vi35_e37;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.vi36_e37;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.vi37_e38;
+import static org.eclipse.recommenders.tests.server.udc.VersionConstants.vi38_e39;
 
 import java.util.Date;
 
