@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.recommenders.rcp.codecompletion.source"
+      id="org.eclipse.recommenders.rcp.codecompletion.source-feature"
       label="Code Recommenders: Intelligent Code Completion Sources (Incubation)"
       version="0.3.0.qualifier"
       provider-name="Eclipse Code Recommenders">
@@ -24,13 +24,13 @@
          version="0.0.0"
          unpack="false"/>
 
-	<plugin
+   <plugin
          id="org.eclipse.recommenders.commons.bayesnet.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.recommenders.commons.utils.source"
          download-size="0"
