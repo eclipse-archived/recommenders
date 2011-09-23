@@ -7,14 +7,14 @@
  *
  * Contributors:
  */
-package org.eclipse.recommenders.commons.logging.views;
+package org.eclipse.recommenders.internal.rcp.logging.views;
 
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.recommenders.commons.logging.model.LoggingEventManager;
-import org.eclipse.recommenders.commons.logging.model.LoggingEventManagerEvent;
-import org.eclipse.recommenders.commons.logging.model.LoggingEventManagerListener;
+import org.eclipse.recommenders.internal.rcp.logging.model.LoggingEventManager;
+import org.eclipse.recommenders.internal.rcp.logging.model.LoggingEventManagerEvent;
+import org.eclipse.recommenders.internal.rcp.logging.model.LoggingEventManagerListener;
 import org.eclipse.swt.widgets.Display;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;

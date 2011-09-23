@@ -16,7 +16,7 @@ import java.util.Properties;
 
 import org.eclipse.equinox.http.jetty.JettyConfigurator;
 import org.eclipse.equinox.http.jetty.JettyConstants;
-import org.eclipse.recommenders.commons.logging.LoggingActivator;
+import org.eclipse.recommenders.internal.rcp.logging.LoggingActivator;
 import org.eclipse.recommenders.server.codesearch.resources.CodeSearchResource;
 import org.eclipse.recommenders.server.commons.ServerConfiguration;
 import org.eclipse.recommenders.server.udc.resources.UploadResource;

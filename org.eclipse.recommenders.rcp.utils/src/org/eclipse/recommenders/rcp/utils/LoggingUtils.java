@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Bundle;
 
 public class LoggingUtils {
-    private static IStatus newStatus(final int kind, final Throwable exception, final String pluginId,
+    public static IStatus newStatus(final int kind, final Throwable exception, final String pluginId,
             final String messageFormat, final Object... messageArgs) {
         final String message = messageFormat == null ? "" : format(messageFormat, messageArgs);
         final IStatus res = new Status(kind, pluginId, message, exception);
@@ -54,5 +54,20 @@ public class LoggingUtils {
     public static void log(final CoreException exception, final Plugin plugin) {
         final IStatus status = exception.getStatus();
         log(status, plugin);
+    }
+
+    public static IStatus newInfo(final Throwable exception, final String pluginId, final String messageFormat,
+            final Object... methodArgs) {
+        return newStatus(IStatus.INFO, exception, pluginId, messageFormat, methodArgs);
+    }
+
+    public static IStatus newError(final Throwable exception, final String pluginId, final String messageFormat,
+            final Object... methodArgs) {
+        return newStatus(IStatus.ERROR, exception, pluginId, messageFormat, methodArgs);
+    }
+
+    public static IStatus newWarning(final Throwable exception, final String pluginId, final String messageFormat,
+            final Object... methodArgs) {
+        return newStatus(IStatus.WARNING, exception, pluginId, messageFormat, methodArgs);
     }
 }

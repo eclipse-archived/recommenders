@@ -5,7 +5,7 @@
          point="org.eclipse.ui.views">
       <view
             category="org.eclipse.recommenders.rcp.category.views"
-            class="org.eclipse.recommenders.commons.logging.views.LogbackView"
+            class="org.eclipse.recommenders.internal.rcp.logging.views.LogbackView"
             id="org.eclipse.recommenders.rcp.logging.view1"
             name="Code Recommenders Logs"
             restorable="true">

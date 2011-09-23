@@ -7,7 +7,7 @@
  *
  * Contributors:
  */
-package org.eclipse.recommenders.commons.logging;
+package org.eclipse.recommenders.internal.rcp.logging;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-import org.eclipse.recommenders.commons.logging.model.LoggingEventManager;
+import org.eclipse.recommenders.internal.rcp.logging.model.LoggingEventManager;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 

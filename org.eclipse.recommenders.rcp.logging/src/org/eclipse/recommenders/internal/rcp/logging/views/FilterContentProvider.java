@@ -8,14 +8,14 @@
  *
  * Contributors:
  */
-package org.eclipse.recommenders.commons.logging.views;
+package org.eclipse.recommenders.internal.rcp.logging.views;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.recommenders.commons.logging.model.EventFilter;
+import org.eclipse.recommenders.internal.rcp.logging.model.EventFilter;
 import org.eclipse.swt.graphics.Image;
 
 import ch.qos.logback.classic.boolex.JaninoEventEvaluator;

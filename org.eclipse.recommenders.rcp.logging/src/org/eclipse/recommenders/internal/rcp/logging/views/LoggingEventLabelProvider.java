@@ -7,12 +7,12 @@
  *
  * Contributors:
  */
-package org.eclipse.recommenders.commons.logging.views;
+package org.eclipse.recommenders.internal.rcp.logging.views;
 
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.recommenders.commons.logging.model.LoggingEventManager;
+import org.eclipse.recommenders.internal.rcp.logging.model.LoggingEventManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;

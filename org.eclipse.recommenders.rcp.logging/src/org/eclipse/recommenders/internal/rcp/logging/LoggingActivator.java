@@ -7,15 +7,20 @@
  *
  * Contributors:
  */
-package org.eclipse.recommenders.commons.logging;
+package org.eclipse.recommenders.internal.rcp.logging;
 
-import org.osgi.framework.BundleActivator;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
-public class LoggingActivator implements BundleActivator {
+public class LoggingActivator extends Plugin {
+
+    public static final String BUNDLE_ID = "org.eclipse.recommenders.rcp.logging";
 
     @Override
     public void start(final BundleContext bundleContext) throws Exception {
+        final IStatus res = new LogbackConfigurationInitializer().call();
+        getLog().log(res);
     }
 
     @Override

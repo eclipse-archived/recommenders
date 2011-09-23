@@ -7,7 +7,7 @@
  *
  * Contributors:
  */
-package org.eclipse.recommenders.commons.logging.views;
+package org.eclipse.recommenders.internal.rcp.logging.views;
 
 import java.net.Socket;
 
@@ -15,9 +15,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.recommenders.commons.logging.SimpleSocketServer;
-import org.eclipse.recommenders.commons.logging.model.EventFilter;
-import org.eclipse.recommenders.commons.logging.model.LoggingEventManager;
+import org.eclipse.recommenders.internal.rcp.logging.SimpleSocketServer;
+import org.eclipse.recommenders.internal.rcp.logging.model.EventFilter;
+import org.eclipse.recommenders.internal.rcp.logging.model.LoggingEventManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.graphics.Font;

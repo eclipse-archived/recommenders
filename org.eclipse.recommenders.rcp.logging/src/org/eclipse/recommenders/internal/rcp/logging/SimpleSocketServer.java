@@ -7,7 +7,7 @@
  *
  * Contributors:
  */
-package org.eclipse.recommenders.commons.logging;
+package org.eclipse.recommenders.internal.rcp.logging;
 
 import java.io.IOException;
 import java.net.ServerSocket;

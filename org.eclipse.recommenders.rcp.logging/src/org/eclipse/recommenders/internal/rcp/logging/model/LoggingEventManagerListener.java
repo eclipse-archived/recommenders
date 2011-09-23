@@ -7,7 +7,7 @@
  *
  * Contributors:
  */
-package org.eclipse.recommenders.commons.logging.model;
+package org.eclipse.recommenders.internal.rcp.logging.model;
 
 public interface LoggingEventManagerListener {
 

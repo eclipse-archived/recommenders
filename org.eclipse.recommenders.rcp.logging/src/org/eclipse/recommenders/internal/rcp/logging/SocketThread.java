@@ -8,7 +8,7 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-package org.eclipse.recommenders.commons.logging;
+package org.eclipse.recommenders.internal.rcp.logging;
 
 import java.io.BufferedReader;
 import java.io.IOException;

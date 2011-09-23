@@ -3,14 +3,18 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Logging (Incubator)
 Bundle-SymbolicName: org.eclipse.recommenders.rcp.logging;singleton:=true
 Bundle-Version: 0.3.0.qualifier
-Bundle-Activator: org.eclipse.recommenders.commons.logging.LoggingActivator
+Bundle-Activator: org.eclipse.recommenders.internal.rcp.logging.LoggingActivator
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.core.runtime,
  org.slf4j.api,
  ch.qos.logback.classic,
  ch.qos.logback.core,
- org.eclipse.ui
+ org.eclipse.ui,
+ org.eclipse.recommenders.commons.utils,
+ org.apache.commons.lang3,
+ com.google.guava,
+ org.eclipse.recommenders.rcp.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.recommenders.commons.logging
+Export-Package: org.eclipse.recommenders.internal.rcp.logging
 Bundle-ClassPath: .
