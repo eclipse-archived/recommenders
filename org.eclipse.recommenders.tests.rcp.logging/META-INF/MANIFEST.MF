@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Logging
+Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp.logging
+Bundle-Version: 1.0.0.qualifier
+Fragment-Host: org.eclipse.recommenders.rcp.logging
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit4,
+ org.mockito,
+ org.objenesis
