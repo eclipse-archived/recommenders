@@ -10,12 +10,13 @@
  */
 package org.eclipse.recommenders.tests.rcp.logging;
 
+import org.eclipse.recommenders.internal.rcp.logging.LogbackConfigurationInitializerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({})
+@SuiteClasses({ LogbackConfigurationInitializerTest.class })
 public class UnitTestSuite {
 
 }
