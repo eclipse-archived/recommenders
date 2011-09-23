@@ -11,7 +11,6 @@ package org.eclipse.recommenders.internal.server.codesearch.lucene;
 
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFalse;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.commons.utils.Throws.throwIllegalStateException;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
 import java.io.File;
@@ -24,14 +23,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipException;
 
+import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.eclipse.recommenders.commons.codesearch.FeatureWeights;
 import org.eclipse.recommenders.commons.codesearch.Request;
@@ -43,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 
@@ -80,9 +84,14 @@ public class LuceneSearchService {
     }
 
     private void initializeLuceneIndexReader() throws IOException, CorruptIndexException {
-        final SimpleFSDirectory index = new SimpleFSDirectory(indexDir);
+        Directory index = new SimpleFSDirectory(indexDir);
         if (!IndexReader.indexExists(index)) {
-            throwIllegalStateException("Index %s does not exist or is not a valid Lucene index.", index);
+            index = new RAMDirectory();
+            final IndexWriter writer = new IndexWriter(index, new WhitespaceAnalyzer(),
+                    IndexWriter.MaxFieldLength.UNLIMITED);
+            writer.close();
+
+            log.error("No code search index found at {}. Using NOP index instead.", indexDir);
         }
         luceneIndexReader = IndexReader.open(index);
     }
@@ -99,8 +108,13 @@ public class LuceneSearchService {
 
     private void initializeFeatureWeights() {
         this.weights = new FeatureWeights();
-        this.weights.weights = GsonUtil.deserialize(weightsFile, new TypeToken<Map<String, Float>>() {
-        }.getType());
+        if (weightsFile.exists()) {
+            this.weights.weights = GsonUtil.deserialize(weightsFile, new TypeToken<Map<String, Float>>() {
+            }.getType());
+        } else {
+            this.weights.weights = Maps.newHashMap();
+            log.error("No weights file found at {}. Using zero weights instead.", weightsFile);
+        }
     }
 
     public List<LuceneSearchResult> search(final Request request) {
