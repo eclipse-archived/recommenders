@@ -13,9 +13,12 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
 import org.eclipse.jface.viewers.ISelection;
@@ -31,6 +34,7 @@ import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
+import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -38,7 +42,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends AbstractTitledProvider {
@@ -67,16 +70,9 @@ public final class JavadocProvider extends AbstractTitledProvider {
 
     @Override
     public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
-        try {
-            final IJavaElement javaElement = getJavaElement(selection.getJavaElement());
-            if (javaElement == null) {
-                return null;
-            }
-            selection.getJavaElement().getAttachedJavadoc(null);
-            return displayComments(selection.getJavaElement());
-        } catch (final JavaModelException e) {
-            return null;
-        }
+        final IJavaElement javaElement = getJavaElement(selection.getJavaElement());
+        return javaElement == null ? displayContent(selection.getJavaElement(), false) : displayContent(javaElement,
+                true);
     }
 
     @Override
@@ -88,12 +84,39 @@ public final class JavadocProvider extends AbstractTitledProvider {
         if (javaElement instanceof ILocalVariable) {
             return ElementResolver.toJdtType(VariableResolver.resolveTypeSignature((ILocalVariable) javaElement));
         }
-        return javaElement;
+        try {
+            IJavaElement element = javaElement;
+            while (true) {
+                if (element == null) {
+                    return null;
+                }
+                final boolean hasJavadocInSource = element instanceof IMember
+                        && ((IMember) element).getJavadocRange() != null;
+                if (hasJavadocInSource || element.getAttachedJavadoc(null) != null) {
+                    return element;
+                }
+                if (element instanceof IMethod) {
+                    final IJavaElement firstDeclaration = JdtUtils.getoverriddenMethod((IMethod) element);
+                    if (element.equals(firstDeclaration)) {
+                        return null;
+                    }
+                    element = firstDeclaration;
+                } else {
+                    return null;
+                }
+            }
+        } catch (final JavaModelException e) {
+            return null;
+        }
     }
 
-    private ProviderUiJob displayComments(final IJavaElement javaElement) {
+    private ProviderUiJob displayContent(final IJavaElement javaElement, final boolean communityFeedback) {
+        if (javaElement == null) {
+            return null;
+        }
         final IName name = ElementResolver.resolveName(javaElement);
-        final CommunityFeedback features = CommunityFeedback.create(name, null, this, server);
+        final CommunityFeedback features = communityFeedback ? CommunityFeedback.create(name, null, this, server)
+                : null;
         return new ProviderUiJob() {
             @Override
             public void run(final Composite composite) {

@@ -106,7 +106,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
             return null;
         }
         final int definitions = selfcalls.getNumberOfDefinitions();
-        final CommunityFeedback features = CommunityFeedback.create(method, null, this, server);
+        final CommunityFeedback features = CommunityFeedback.create(firstDeclaration, null, this, server);
 
         return new ProviderUiJob() {
             @Override
