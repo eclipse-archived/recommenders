@@ -61,6 +61,10 @@ public class LoggingUtils {
         return newStatus(IStatus.INFO, exception, pluginId, messageFormat, methodArgs);
     }
 
+    public static IStatus newInfo(final String pluginId, final String messageFormat, final Object... methodArgs) {
+        return newStatus(IStatus.INFO, null, pluginId, messageFormat, methodArgs);
+    }
+
     public static IStatus newError(final Throwable exception, final String pluginId, final String messageFormat,
             final Object... methodArgs) {
         return newStatus(IStatus.ERROR, exception, pluginId, messageFormat, methodArgs);

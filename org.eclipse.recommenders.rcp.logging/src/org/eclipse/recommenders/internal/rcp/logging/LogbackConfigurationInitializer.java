@@ -77,8 +77,7 @@ public class LogbackConfigurationInitializer implements Callable<IStatus> {
         try {
             final File logbackConfigurationFile = getFallbackConfigurationFile();
             setLogbackConfigurationFileProperty(logbackConfigurationFile);
-            return newInfo(null, BUNDLE_ID, "Temporarirly set logback configuration file to %s",
-                    logbackConfigurationFile);
+            return newInfo(BUNDLE_ID, "Temporarirly set logback configuration file to %s", logbackConfigurationFile);
         } catch (final Exception e) {
             return newError(e, BUNDLE_ID, "Failed to lookup fallback config file. Couldn't initialize logback");
         }
