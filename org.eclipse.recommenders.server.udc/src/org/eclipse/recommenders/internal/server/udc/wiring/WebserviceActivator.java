@@ -37,6 +37,11 @@ public class WebserviceActivator {
     }
 
     public void stop() {
-        httpService.unregister(servicePath);
+        try {
+            httpService.unregister(servicePath);
+        } catch (final Exception e) {
+            // ignore that. Errors occur when the http server is currently going
+            // down.
+        }
     }
 }
