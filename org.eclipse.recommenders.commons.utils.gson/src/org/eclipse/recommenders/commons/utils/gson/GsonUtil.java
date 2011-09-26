@@ -13,6 +13,8 @@ package org.eclipse.recommenders.commons.utils.gson;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.Date;
 
@@ -57,7 +60,7 @@ public class GsonUtil {
             //
             builder.registerTypeAdapter(File.class, new GsonFileDeserializer());
             builder.registerTypeAdapter(File.class, new GsonFileSerializer());
-            builder.setPrettyPrinting();
+            // builder.setPrettyPrinting();
             // builder.setDateFormat("dd.MM.yyyy HH:mm:ss");
             builder.registerTypeAdapter(Date.class, new ISO8601DateParser());
             builder.registerTypeAdapter(Multimap.class, new MultimapTypeAdapter());
@@ -85,9 +88,9 @@ public class GsonUtil {
     public static <T> T deserialize(final File jsonFile, final Type classOfT) {
         ensureIsNotNull(jsonFile);
         ensureIsNotNull(classOfT);
-        FileInputStream fis;
+        InputStream fis;
         try {
-            fis = new FileInputStream(jsonFile);
+            fis = new BufferedInputStream(new FileInputStream(jsonFile));
         } catch (final FileNotFoundException e) {
             throw Throws.throwUnhandledException(e, "Unable to deserialize from file " + jsonFile.getAbsolutePath());
         }
@@ -110,9 +113,9 @@ public class GsonUtil {
     public static void serialize(final Object obj, final File dest) {
         ensureIsNotNull(obj);
         ensureIsNotNull(dest);
-        FileWriter fw = null;
+        Writer fw = null;
         try {
-            fw = new FileWriter(dest);
+            fw = new BufferedWriter(new FileWriter(dest));
             getInstance().toJson(obj, fw);
         } catch (final IOException x) {
             throwUnhandledException(x);
