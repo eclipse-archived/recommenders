@@ -19,13 +19,14 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.jar.JarFile;
 
-import org.apache.log4j.Logger;
 import org.eclipse.recommenders.commons.utils.Fingerprints;
 import org.eclipse.recommenders.commons.utils.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ArchiveDetailsExtractor {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final JarFile jarFile;
     private final File file;
     private List<JarIdExtractor> jarIdExtractors;
@@ -85,7 +86,7 @@ public class ArchiveDetailsExtractor {
     }
 
     private boolean requiresJarIdExtraction() {
-        return (lazyName == null || lazyVersion == null);
+        return lazyName == null || lazyVersion == null;
     }
 
     private void setNameIfFound(final JarIdExtractor extractor) {

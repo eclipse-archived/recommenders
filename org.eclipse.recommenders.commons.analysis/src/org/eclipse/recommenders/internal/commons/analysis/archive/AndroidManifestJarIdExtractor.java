@@ -11,21 +11,22 @@
 package org.eclipse.recommenders.internal.commons.analysis.archive;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.eclipse.recommenders.commons.utils.Version;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.res.AXmlResourceParser;
 import android.util.TypedValue;
+
+import com.google.common.io.ByteStreams;
 
 public class AndroidManifestJarIdExtractor extends JarIdExtractor {
 
@@ -37,7 +38,9 @@ public class AndroidManifestJarIdExtractor extends JarIdExtractor {
     @Override
     public void extract(final JarFile jarFile) throws Exception {
         final byte[] content = readBytes(jarFile);
-        if (isCompressed(content)) {
+        if (content.length == 0) {
+            // do nothing.
+        } else if (isCompressed(content)) {
             parseCompressedFile(new ByteArrayInputStream(content));
         } else {
             parseFromString(new String(content));
@@ -61,25 +64,12 @@ public class AndroidManifestJarIdExtractor extends JarIdExtractor {
 
     private byte[] readBytes(final JarFile jarFile) throws IOException {
         final InputStream is = getInputStream(jarFile);
-
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        writeContentToOutputStream(is, out);
-
-        return out.toByteArray();
-    }
-
-    private void writeContentToOutputStream(final InputStream is, final OutputStream out) throws IOException {
-        final byte[] xml = new byte[1024];
-        int available;
-        while ((available = is.read(xml)) > 0) {
-            out.write(xml, 0, available);
-        }
+        return ByteStreams.toByteArray(is);
     }
 
     private InputStream getInputStream(final JarFile jarFile) throws IOException {
         final ZipEntry entry = jarFile.getEntry(androidManifestFileName);
-        return jarFile.getInputStream(entry);
+        return entry == null ? new NullInputStream(0) : jarFile.getInputStream(entry);
     }
 
     private void parseCompressedFile(final InputStream is) {

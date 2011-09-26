@@ -20,7 +20,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
@@ -45,7 +46,7 @@ import com.ibm.wala.ssa.SSAPutInstruction;
  * recommenders-initializers).
  */
 public class HeapHelper {
-    private static final Logger log = Logger.getLogger(HeapHelper.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final HeapGraph heapgraph;
 

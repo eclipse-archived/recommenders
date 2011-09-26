@@ -14,7 +14,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -31,7 +32,7 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.ssa.SSAInvokeInstruction;
 
 public class ReceiverCallsitesCallGraphVisitor extends SSAInstruction.Visitor implements Runnable {
-    private static final Logger log = Logger.getLogger(ReceiverCallsitesCallGraphVisitor.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final CallGraph callGraph;
 
@@ -148,6 +149,10 @@ public class ReceiverCallsitesCallGraphVisitor extends SSAInstruction.Visitor im
     }
 
     private boolean hasDeclaredMethod(final InstanceKey receiver, final IMethod targetMethod) {
+        if (targetMethod.isInit()) {
+            // super constructor calls on this are not resolved by cha!
+            return true;
+        }
         final IClass type = receiver.getConcreteType();
         final IMethod resolved = cha.resolveMethod(type, targetMethod.getSelector());
         return resolved != null;
@@ -156,7 +161,7 @@ public class ReceiverCallsitesCallGraphVisitor extends SSAInstruction.Visitor im
     private void logAnalysisBugReceiverDoesNotHaveMethod(final InstanceKey receiver, final IMethod targetMethod,
             final int lineNumber) {
         final String msg = String
-                .format("Analysis Bug: Type %s does not declare a method %s as the static analysis makes us believe. This illegal call has been observed in source method %s, line %d",
+                .format("Analysis Bug: Type '%s' does not declare a method '%s' as the static analysis makes us believe. This illegal call has been observed in source method '%s', line %d",
                         receiver.getConcreteType().getName(), targetMethod.getSignature(),
                         entrypointMethod.getSignature(), lineNumber);
         log.error(msg);
