@@ -12,13 +12,16 @@ package org.eclipse.recommenders.internal.rcp;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnreachable;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -34,7 +37,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.recommenders.commons.utils.IOUtils;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.commons.utils.gson.GsonUtil;
@@ -48,6 +50,9 @@ import com.google.inject.Singleton;
 
 @Singleton
 public class JsonArtifactStore implements IArtifactStore {
+
+    ExecutorService writerPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
     private final Map<Tuple<IJavaElement, Class<?>>, Object> index = Maps.newHashMap();
 
     private final List<IArtifactStoreChangedListener> listener;
@@ -120,17 +125,22 @@ public class JsonArtifactStore implements IArtifactStore {
     }
 
     private <T> T loadFileContents(final Class<T> clazz, final IFile file) {
-        InputStream in = null;
+        final File location = file.getRawLocation().toFile();
+        // InputStream in = null;
         try {
-            in = file.getContents(true);
-            return GsonUtil.deserialize(in, clazz);
-        } catch (final CoreException e) {
-            RecommendersPlugin.log(e);
+            return GsonUtil.deserialize(location, clazz);
+            // in = file.getContents(true);
+
+        } catch (final Exception e) {
+            RecommendersPlugin
+                    .logError(
+                            e,
+                            "The code recommenders builder is mixed up. Perform a clean build. If this exceptions occurs several times, please report a bug.");
             throw throwUnreachable(
                     "the code recommenders builder is mixed up. Perform a clean build. If this exceptions occurs several times, please report a bug.",
                     e);
         } finally {
-            IOUtils.closeQuietly(in);
+            // IOUtils.closeQuietly(in);
         }
     }
 
@@ -140,11 +150,18 @@ public class JsonArtifactStore implements IArtifactStore {
         ensureIsNotNull(newArtifacts, "null artifacts  list not allowed");
         final IFolder folder = getCompilationUnitArtifactsFolder(cu);
         createResource(folder, new NullProgressMonitor());
-        for (final Object artifact : newArtifacts) {
-            writeArtifactToDisk(folder, artifact);
-            updateIndex(cu, artifact);
-        }
-        fireArtifactsChanged(cu);
+        writerPool.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                for (final Object artifact : newArtifacts) {
+                    writeArtifactToDisk(folder, artifact);
+                    updateIndex(cu, artifact);
+                }
+                fireArtifactsChanged(cu);
+            }
+        });
+
     }
 
     private <T> void updateIndex(final IJavaElement cu, final T artifact) {
@@ -186,19 +203,22 @@ public class JsonArtifactStore implements IArtifactStore {
     }
 
     private void writeArtifactToDisk(final IFolder folder, final Object artifact) {
+        ensureIsTrue(folder.exists());
         final String simpleName = artifact.getClass().getSimpleName();
         final IFile file = folder.getFile(simpleName + ".json");
-        final String serialize = GsonUtil.serialize(artifact);
-        final ByteArrayInputStream source = new ByteArrayInputStream(serialize.getBytes());
-        try {
-            if (file.exists()) {
-                file.setContents(source, true, false, null);
-            } else {
-                file.create(source, true, null);
-            }
-        } catch (final Exception x) {
-            throwUnhandledException(x);
-        }
+        final File location = file.getRawLocation().toFile();
+        GsonUtil.serialize(artifact, location);
+        // try {
+        // final byte[] bytes = GsonUtil.serialize(artifact).getBytes();
+        // final InputStream source = new ByteArrayInputStream(bytes);
+        // if (file.exists()) {
+        // file.setContents(source, true, false, null);
+        // } else {
+        // file.create(source, true, null);
+        // }
+        // } catch (final Exception x) {
+        // throwUnhandledException(x);
+        // }
     }
 
     @Override
@@ -243,7 +263,9 @@ public class JsonArtifactStore implements IArtifactStore {
                 break;
             }
         } catch (final Exception x) {
-            throwUnhandledException(x);
+            // debug:
+            x.printStackTrace();
+            // throwUnhandledException(x);
         }
     }
 }
