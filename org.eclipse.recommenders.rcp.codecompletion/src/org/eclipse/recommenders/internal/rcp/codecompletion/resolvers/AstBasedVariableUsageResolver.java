@@ -58,6 +58,7 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
     private Variable localVariable;
     private Kind localVariableKind;
     private final Set<IMethodName> receiverMethodInvocations = Sets.newHashSet();
+    private IIntelligentCompletionContext ctx;
 
     @Inject
     public AstBasedVariableUsageResolver(final IAstProvider provider) {
@@ -68,6 +69,7 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
     @Override
     public boolean canResolve(final IIntelligentCompletionContext ctx) {
         ensureIsNotNull(ctx);
+        this.ctx = ctx;
         this.localVariable = ctx.getVariable();
         this.jdtCompilationUnit = ctx.getCompilationUnit();
         this.invocationOffset = ctx.getInvocationOffset();
@@ -88,7 +90,8 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
 
     private boolean findEnclosingMethodDeclaration() {
         ensureIsNotNull(ast);
-        ASTNode node = NodeFinder.perform(ast, invocationOffset, 0);
+        final int fixedInvocationOffset = getFixedOffsetForOldAsts();
+        ASTNode node = NodeFinder.perform(ast, fixedInvocationOffset, 0);
         while (node != null) {
             if (node instanceof MethodDeclaration) {
                 astEnclosingMethodDeclaration = cast(node);
@@ -98,6 +101,24 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
             node = node.getParent();
         }
         return jdtEnclosingMethodDeclaration != null;
+    }
+
+    /**
+     * Due to timing issues of the CachingAstProvider it might happen that we
+     * work on a deprecated version of the AST. This happens on fast typing.
+     * This method gets an invocation offset that should work with the previous
+     * version of the AST. This is done by subtracting variable name length of
+     * the local + prefix length from the original invocation offset.
+     */
+    private int getFixedOffsetForOldAsts() {
+        if (localVariable.getName() != null) {
+            int varNameLength = localVariable.getName().getIdentifier().length();
+            int prefixLength = ctx.getPrefixToken().length();
+            return invocationOffset
+                    - (varNameLength + prefixLength);
+        } else {
+            return invocationOffset;
+        }
     }
 
     private boolean findUsages() {
