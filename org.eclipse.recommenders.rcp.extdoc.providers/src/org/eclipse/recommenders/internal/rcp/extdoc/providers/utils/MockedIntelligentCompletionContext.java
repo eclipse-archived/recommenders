@@ -126,7 +126,8 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final String getPrefixToken() {
-        throw new IllegalAccessError();
+        return "";
+        // throw new IllegalAccessError();
     }
 
     @Override
