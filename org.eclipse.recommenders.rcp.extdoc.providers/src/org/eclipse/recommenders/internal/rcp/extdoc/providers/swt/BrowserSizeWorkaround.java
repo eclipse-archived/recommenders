@@ -19,11 +19,12 @@ import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 public final class BrowserSizeWorkaround {
 
-    private static final int MINIMUM_HEIGHT = 0;
+    private static final int MINIMUM_HEIGHT = 1;
 
     private final Browser browser;
     private GridData gridData;
@@ -69,7 +70,17 @@ public final class BrowserSizeWorkaround {
     private void setHeightAndTriggerLayout(final int height) {
         gridData.heightHint = height;
         gridData.minimumHeight = height;
-        browser.getParent().getParent().getParent().layout(true);
+
+        // TODO: Following is only a workaround for an error in layout
+        // propagation:
+        Composite parent = browser.getParent();
+        for (int i = 0; parent != null; i++) {
+            if (parent != null) {
+                parent.layout(true);
+                // System.out.println("layouting depth " + i + ": " + parent);
+            }
+            parent = parent.getParent();
+        }
     }
 
     private void registerProgressListener() {
