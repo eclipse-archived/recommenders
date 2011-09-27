@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.codeelements;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -68,6 +70,8 @@ public class Variable implements Comparable<Variable>, INamedCodeElement {
     // TODO rework to use variable names instead...
     @Override
     public IName getName() {
+        ensureIsNotNull(referenceContext);
+        ensureIsNotNull(name);
         return VmVariableName.get(referenceContext.getIdentifier() + "#" + name);
     }
 

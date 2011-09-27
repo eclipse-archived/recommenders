@@ -111,11 +111,10 @@ public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
      * the local + prefix length from the original invocation offset.
      */
     private int getFixedOffsetForOldAsts() {
-        if (localVariable.getName() != null) {
-            int varNameLength = localVariable.getName().getIdentifier().length();
-            int prefixLength = ctx.getPrefixToken().length();
-            return invocationOffset
-                    - (varNameLength + prefixLength);
+        if (localVariable.getNameLiteral() != null) {
+            final int varNameLength = localVariable.getNameLiteral().length();
+            final int prefixLength = ctx.getPrefixToken().length();
+            return invocationOffset - (varNameLength + prefixLength);
         } else {
             return invocationOffset;
         }
