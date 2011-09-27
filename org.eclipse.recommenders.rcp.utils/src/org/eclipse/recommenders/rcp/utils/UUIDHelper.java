@@ -19,6 +19,7 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 import java.util.UUID;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.rcp.utils.internal.PreferencesInitalizer;
@@ -67,11 +68,13 @@ public class UUIDHelper {
             final Enumeration<NetworkInterface> e = getNetworkInterfaces();
             for (final NetworkInterface net : iterable(e)) {
                 final byte[] mac = net.getHardwareAddress();
-                if (mac == null) {
-                    // see
-                    return none();
+                if (ArrayUtils.isEmpty(mac)) {
+                    continue;
                 }
                 final String uuid = UUID.nameUUIDFromBytes(mac).toString();
+                if (Strings.isNullOrEmpty(uuid)) {
+                    continue;
+                }
                 return wrap(uuid);
             }
         } catch (final Exception e) {
