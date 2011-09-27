@@ -43,8 +43,7 @@ public class InitalizeCouchdb implements Callable<IStatus> {
     private final MultiStatus result = new MultiStatus(BUNDLE_ID, 0, "Operation Report", null);
 
     @Inject
-    public InitalizeCouchdb(@LocalCouchdb final WebServiceClient client,
-            @LocalCouchdb final File couchConfigurationArea) {
+    public InitalizeCouchdb(@LocalCouchdb final WebServiceClient client, @LocalCouchdb final File couchConfigurationArea) {
         this.client = client;
         this.configArea = couchConfigurationArea;
     }
@@ -55,10 +54,19 @@ public class InitalizeCouchdb implements Callable<IStatus> {
             findOrCreateDatabase(db.getName());
             final Iterator<File> it = iterateFiles(db, INSTANCE, INSTANCE);
             while (it.hasNext()) {
-                putDocument(it.next());
+                final File next = it.next();
+                if (shouldIgnore(next)) {
+                    continue;
+                }
+                putDocument(next);
             }
         }
         return result;
+    }
+
+    private boolean shouldIgnore(final File next) {
+        final String name = next.getName();
+        return name.startsWith(".") || !name.endsWith(".json");
     }
 
     private void findOrCreateDatabase(final String databaseName) {

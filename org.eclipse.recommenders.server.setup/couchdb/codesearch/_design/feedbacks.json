@@ -1,0 +1,9 @@
+{
+   "_rev": "1-488cd799cb2084e38a9cbb83ef43d57e",
+   "language": "javascript",
+   "views": {
+       "feedbacks": {
+           "map": "function(doc) {\n  if(doc.feedbacks!= null){\n\tlog(doc);\n\temit(null, doc);\n}\n}"
+       }
+   }
+}

@@ -19,6 +19,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.recommenders.internal.server.codesearch.wiring.GuiceModule.CodesearchBasedir;
 
+import com.google.common.io.Files;
 import com.google.inject.Inject;
 
 public class ZipFileSourceCodeProvider {
@@ -28,7 +29,10 @@ public class ZipFileSourceCodeProvider {
     @Inject
     public ZipFileSourceCodeProvider(@CodesearchBasedir final File baseDir) {
         try {
-            zipFile = new ZipFile(new File(baseDir, "sources/sources.zip"));
+            final File file = new File(baseDir, "sources/sources.zip");
+            zipFile = new ZipFile(file);
+            // load file contents into RAM to make serving requests faster:
+            Files.toByteArray(file);
 
         } catch (final IOException e) {
             throw new RuntimeException(e);
