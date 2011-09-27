@@ -91,7 +91,9 @@ public class MinimalManagementView extends ViewPart {
             private void putDocument(final WebServiceClient c, final File couchdbBasedir, final File contentFile)
                     throws IOException {
 
-                String path = removeStart(contentFile.getAbsolutePath(), couchdbBasedir.getAbsolutePath() + "/");
+                String path = removeStart(contentFile.getAbsolutePath(), couchdbBasedir.getAbsolutePath());
+                path = path.replace("\\", "/");
+                path = StringUtils.removeStart(path, "/");
                 path = StringUtils.removeEnd(path, ".json");
                 try {
                     final String content = Files.toString(contentFile, Charsets.UTF_8);
