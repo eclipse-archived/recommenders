@@ -7,7 +7,7 @@ Bundle-Activator: org.eclipse.recommenders.internal.server.codesearch.wiring.Bun
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.recommenders.commons.utils,
  org.eclipse.recommenders.commons.codesearch,
- org.apache.lucene,
+ org.apache.lucene;bundle-version="3.0.0",
  com.google.guava,
  org.eclipse.recommenders.commons.utils.gson,
  org.apache.commons.io,
