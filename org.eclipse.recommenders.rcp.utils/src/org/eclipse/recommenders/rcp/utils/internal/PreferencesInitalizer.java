@@ -16,11 +16,11 @@ import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
 public class PreferencesInitalizer extends AbstractPreferenceInitializer {
 
-    public static String UUID = "uuid";
+    public static String PROP_UUID = "uuid";
 
     @Override
     public void initializeDefaultPreferences() {
         final IPreferenceStore preferenceStore = RecommendersUtilsPlugin.getDefault().getPreferenceStore();
-        preferenceStore.setDefault(UUID, UUIDHelper.generateGlobalUUID());
+        preferenceStore.setDefault(PROP_UUID, UUIDHelper.generateGlobalUUID());
     }
 }

@@ -24,6 +24,8 @@ import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.rcp.utils.internal.PreferencesInitalizer;
 import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 
+import com.google.common.base.Strings;
+
 public class UUIDHelper {
 
     public static String getUUID() {
@@ -39,14 +41,17 @@ public class UUIDHelper {
     private static Option<String> lookupUUIDFromStore() {
         final RecommendersUtilsPlugin plugin = RecommendersUtilsPlugin.getDefault();
         final IPreferenceStore prefStore = plugin.getPreferenceStore();
-        final String uuid = prefStore.getString(PreferencesInitalizer.UUID);
+        final String uuid = prefStore.getString(PreferencesInitalizer.PROP_UUID);
+        if (Strings.isNullOrEmpty(uuid)) {
+            return Option.none();
+        }
         return Option.wrap(uuid);
     }
 
     private static void storeUUID(final String uuid) {
         final RecommendersUtilsPlugin plugin = RecommendersUtilsPlugin.getDefault();
         final IPreferenceStore prefStore = plugin.getPreferenceStore();
-        prefStore.putValue(PreferencesInitalizer.UUID, uuid);
+        prefStore.putValue(PreferencesInitalizer.PROP_UUID, uuid);
     }
 
     public static String generateGlobalUUID() {

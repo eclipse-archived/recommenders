@@ -65,7 +65,7 @@ public final class SocialBookmark implements IServerType, Comparable<SocialBookm
 
     @Override
     public void validate() {
-        Checks.ensureIsTrue(!userId.isEmpty());
+        Checks.ensureIsFalse(userId.isEmpty(), "user id is not allowed to be empty.");
         Preconditions.checkArgument(title.length() >= 5 && !"Link Title".equals("title"),
                 "The title has to be at least 5 characters long.");
         // TODO: use external library, also has to do security checks.
