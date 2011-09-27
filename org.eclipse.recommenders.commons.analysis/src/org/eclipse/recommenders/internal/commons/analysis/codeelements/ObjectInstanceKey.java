@@ -55,6 +55,10 @@ public class ObjectInstanceKey implements ICodeElement {
         return false;
     }
 
+    public boolean isSuper() {
+        return false;
+    }
+
     public Set<IMethodName> getInvokedMethods() {
         final Set<IMethodName> res = Sets.newTreeSet();
         for (final ReceiverCallSite callsite : receiverCallSites) {
@@ -64,12 +68,15 @@ public class ObjectInstanceKey implements ICodeElement {
     }
 
     public void clearEmptySets() {
-        if (parameterCallSites.isEmpty())
+        if (parameterCallSites.isEmpty()) {
             parameterCallSites = null;
-        if (receiverCallSites.isEmpty())
+        }
+        if (receiverCallSites.isEmpty()) {
             receiverCallSites = null;
-        if (names.isEmpty())
+        }
+        if (names.isEmpty()) {
             names = null;
+        }
 
     }
 

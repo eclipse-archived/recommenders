@@ -175,7 +175,7 @@ public class NetworkUtils {
     public static void workaroundRecomputeMissingDefintionSite(final ObjectInstanceKey obj,
             final IMethodName firstDeclarationOfEnclosingMethod) {
         if (obj.definitionSite == null) {
-            if (obj.isThis()) {
+            if (obj.isThis() || obj.isSuper()) {
                 obj.definitionSite = DefinitionSite.newSite(Kind.THIS);
             } else if (obj.kind == ObjectInstanceKey.Kind.PARAMETER) {
                 obj.definitionSite = DefinitionSite
