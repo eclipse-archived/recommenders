@@ -60,7 +60,7 @@ public class GsonUtil {
             //
             builder.registerTypeAdapter(File.class, new GsonFileDeserializer());
             builder.registerTypeAdapter(File.class, new GsonFileSerializer());
-            // builder.setPrettyPrinting();
+            builder.setPrettyPrinting();
             // builder.setDateFormat("dd.MM.yyyy HH:mm:ss");
             builder.registerTypeAdapter(Date.class, new ISO8601DateParser());
             builder.registerTypeAdapter(Multimap.class, new MultimapTypeAdapter());
