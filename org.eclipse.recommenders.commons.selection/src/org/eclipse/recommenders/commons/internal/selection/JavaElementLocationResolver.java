@@ -13,11 +13,13 @@ package org.eclipse.recommenders.commons.internal.selection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.internal.core.ResolvedBinaryMethod;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 
 /**
@@ -54,7 +56,11 @@ final class JavaElementLocationResolver {
      * @return The code location of the element represented by the AST node.
      */
     protected static JavaElementLocation resolveLocation(final IJavaElement javaElement, final ASTNode astNode) {
-        if (astNode == null) {
+        if (astNode == null && javaElement instanceof IClassFile) {
+            return JavaElementLocation.TYPE_DECLARATION;
+        } else if (astNode == null && javaElement instanceof ResolvedBinaryMethod) {
+            return JavaElementLocation.METHOD_DECLARATION;
+        } else if (astNode == null) {
             return null;
         }
         final ASTNode locationNode = getLocationNode(astNode);

@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.internal.core.ImportDeclaration;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
@@ -197,8 +198,10 @@ public abstract class AbstractLocationSensitiveTitledProvider extends AbstractTi
             return null;
         } else if (javaElement instanceof IImportContainer) {
             return null;
+        } else if (javaElement instanceof ITypeRoot) {
+            return updateTypeDeclarationSelection(selection, ((ITypeRoot) javaElement).findPrimaryType());
         }
-        throw new IllegalArgumentException(selection.toString());
+        throw Throws.throwIllegalArgumentException("unexpected selection  type: '%s'", selection.getJavaElement());
     }
 
     protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {

@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.SourceField;
 import org.eclipse.jdt.internal.corext.util.MethodOverrideTester;
@@ -57,6 +58,8 @@ public final class ExamplesProvider extends AbstractTitledProvider {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             return displayContentForType(ElementResolver.toRecType((IType) element));
+        } else if (element instanceof ITypeRoot) {
+            return displayContentForType(ElementResolver.toRecType(((ITypeRoot) element).findPrimaryType()));
         } else if (element instanceof IMethod) {
             return displayContentForMethod((IMethod) element);
         } else if (element instanceof ILocalVariable) {

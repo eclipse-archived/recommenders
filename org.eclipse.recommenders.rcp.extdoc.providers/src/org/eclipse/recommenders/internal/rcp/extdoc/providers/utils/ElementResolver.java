@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.ImportContainer;
 import org.eclipse.jdt.internal.core.ImportDeclaration;
@@ -50,6 +51,9 @@ public final class ElementResolver {
             return toRecMethod((IMethod) javaElement);
         } else if (javaElement instanceof IType) {
             return toRecType((IType) javaElement);
+        } else if (javaElement instanceof ITypeRoot) {
+            final IType primaryType = ((ITypeRoot) javaElement).findPrimaryType();
+            return resolveName(primaryType);
         } else if (javaElement instanceof ILocalVariable) {
             final IMethodName declaringMethod = toRecMethod((IMethod) javaElement.getParent());
             return Variable.create(javaElement.getElementName(), null, declaringMethod).getName();
