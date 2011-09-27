@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.providers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.names.IName;
@@ -20,6 +21,7 @@ import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
+import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 import org.eclipse.recommenders.server.extdoc.SocialBookmarksServer;
 import org.eclipse.recommenders.server.extdoc.types.SocialBookmark;
 import org.eclipse.recommenders.server.extdoc.types.SocialBookmarks;
@@ -34,7 +36,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 
 public final class SocialBookmarksProvider extends AbstractTitledProvider {
 
@@ -147,6 +148,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
             updateDisplay(element, composite, bookmarks);
         } catch (final IllegalArgumentException e) {
             SwtFactory.createLabel(composite, e.getMessage(), false, false, SWT.COLOR_RED, true);
+            RecommendersUtilsPlugin.logError(e, "validation failed: %s", e.getMessage());
         }
         layout(composite);
     }
