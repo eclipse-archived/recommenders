@@ -82,6 +82,11 @@ public final class JavaElementSelectionResolver {
 
     private static IJavaElement resolveJavaElement(final IEditorInput editorInput, final int offset) {
         final ITypeRoot root = (ITypeRoot) JavaUI.getEditorInputJavaElement(editorInput);
+        if (root == null) {
+            // this happens for code search for instance. The cu's openend here
+            // are not resolved to type roots by jdt
+            return null;
+        }
         try {
             final IJavaElement[] elements = root.codeSelect(offset, 0);
             return elements.length > 0 ? elements[0] : root.getElementAt(offset);
