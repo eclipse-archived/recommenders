@@ -66,7 +66,7 @@ public class MethodSelfcallDirectivesGenerator {
             if (method.superDeclaration == null) {
                 continue;
             }
-            final IMethodName superMethodName = method.superDeclaration;
+            final IMethodName superMethodName = method.firstDeclaration;
             final Set<IMethodName> observedSelfCalls = Sets.newHashSet();
             for (final ObjectInstanceKey obj : method.objects) {
                 if (!obj.isThis()) {
@@ -81,7 +81,7 @@ public class MethodSelfcallDirectivesGenerator {
                     globalSupermethodsIndex.put(superMethodName, globalSelfCalls);
                 }
                 globalSelfCalls.addAll(observedSelfCalls);
-                globalImlementorsCounter.add(method.superDeclaration);
+                globalImlementorsCounter.add(method.firstDeclaration);
             }
         }
     }
