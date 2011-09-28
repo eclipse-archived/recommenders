@@ -32,7 +32,7 @@ public class LogbackConfigurationInitializerTest {
             }
         };
         sut.call();
-        assertEquals("/tmp", System.getProperty(PROP_LOGBACK_CONFIGURATION_FILE));
+        assertEquals(new File("/tmp").getAbsolutePath(), System.getProperty(PROP_LOGBACK_CONFIGURATION_FILE));
     }
 
     @Test
