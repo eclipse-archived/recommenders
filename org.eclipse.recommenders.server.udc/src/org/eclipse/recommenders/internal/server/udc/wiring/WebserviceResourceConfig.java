@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.eclipse.recommenders.commons.client.GsonProvider;
 import org.eclipse.recommenders.server.commons.GuiceInjectableProvider;
-import org.eclipse.recommenders.server.udc.resources.ManifestResource;
+import org.eclipse.recommenders.server.udc.resources.MetaDataResource;
 import org.eclipse.recommenders.server.udc.resources.ModelResource;
 import org.eclipse.recommenders.server.udc.resources.UploadResource;
 
@@ -37,7 +37,7 @@ public class WebserviceResourceConfig extends DefaultResourceConfig {
         final Set<Class<?>> result = new HashSet<Class<?>>();
         result.add(ModelResource.class);
         result.add(UploadResource.class);
-        result.add(ManifestResource.class);
+        result.add(MetaDataResource.class);
         return result;
     }
 

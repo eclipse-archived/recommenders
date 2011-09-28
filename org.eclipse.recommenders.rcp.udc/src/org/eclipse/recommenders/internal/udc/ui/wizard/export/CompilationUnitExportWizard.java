@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.IPageChangeProvider;
@@ -43,6 +45,8 @@ import org.eclipse.recommenders.internal.udc.ui.wizard.WizardWithPageChangeProvi
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 
+import com.google.inject.Provider;
+
 public class CompilationUnitExportWizard extends WizardWithPageChangeProvider implements IExportWizard {
     IStructuredSelection initialSelection;
     ProjectSelectionPage projectSelectionPage = new ProjectSelectionPage();
@@ -51,10 +55,12 @@ public class CompilationUnitExportWizard extends WizardWithPageChangeProvider im
     private final PackageSelectionPage packageSelectionPage = new PackageSelectionPage();
     private final LibrariesPage librariesPage = new LibrariesPage();
     private final IDepersonalisationProvider depersonalisationProvider;
+    private final Provider<UploadClasspathDependencyInfosJob> uploadDepInfoJobProvider;
 
-    public CompilationUnitExportWizard() {
+    @Inject
+    public CompilationUnitExportWizard(final Provider<UploadClasspathDependencyInfosJob> uploadDepInfoJobProvider) {
+        this.uploadDepInfoJobProvider = uploadDepInfoJobProvider;
         depersonalisationProvider = new DelegatingDepersonalizerProvider(librariesPage, depersonalisationPage);
-
     }
 
     @Override
@@ -115,19 +121,22 @@ public class CompilationUnitExportWizard extends WizardWithPageChangeProvider im
 
     @Override
     public boolean performFinish() {
+        final UploadClasspathDependencyInfosJob uploadDepInfoJob = uploadDepInfoJobProvider.get();
+        uploadDepInfoJob.schedule();
+
         final PackageTester packageTester = new PackageTester(packageSelectionPage.getIncludeExpressions(),
                 packageSelectionPage.getExcludeExpressions());
         final ExecutorService service = Executors.newFixedThreadPool(2);
         for (final IProject project : getProjects()) {
-            final CompilationUnitExportJob job = new CompilationUnitExportJob(new IProject[] { project },
+            final CompilationUnitExportJob exportJob = new CompilationUnitExportJob(new IProject[] { project },
                     depersonalisationProvider.getDepersonalizers(), destinationPage.getExporter(), packageTester);
             service.submit(new Runnable() {
 
                 @Override
                 public void run() {
-                    job.schedule();
+                    exportJob.schedule();
                     try {
-                        job.join();
+                        exportJob.join();
                     } catch (final InterruptedException e) {
 
                     }

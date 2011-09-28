@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-@Path("manifest")
-public class ManifestResource {
+@Path("/")
+public class MetaDataResource {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -47,10 +47,19 @@ public class ManifestResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     @POST
+    @Path("/dependencyInfo")
+    public void registerClasspathDependencyInfo(final ClasspathDependencyInformation dependencyInfo) {
+        findOrCreateLibraryIdentifier(dependencyInfo);
+    }
+
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @POST
+    @Path("manifest")
     public ManifestMatchResult searchManifest(final ClasspathDependencyInformation dependencyInfo) {
         log.debug("Received search request for {}.", dependencyInfo);
 
-        final LibraryIdentifier libraryIdentifier = findLibraryIdentifier(dependencyInfo);
+        final LibraryIdentifier libraryIdentifier = findOrCreateLibraryIdentifier(dependencyInfo);
         Manifest manifest = findFingerprintMatch(libraryIdentifier);
         if (manifest != null) {
             return new ManifestMatchResult(manifest);
@@ -93,7 +102,7 @@ public class ManifestResource {
         return new Manifest(modelSpec.getSymbolicName(), modelSpec.getVersionRange(), timestamp);
     }
 
-    private LibraryIdentifier findLibraryIdentifier(final ClasspathDependencyInformation dependencyInfo) {
+    private LibraryIdentifier findOrCreateLibraryIdentifier(final ClasspathDependencyInformation dependencyInfo) {
         ensureIsNotNull(dependencyInfo);
         ensureIsNotEmpty(dependencyInfo.jarFileFingerprint,
                 "ClasspathDependencyInformation must at least contain a fingerprint.");

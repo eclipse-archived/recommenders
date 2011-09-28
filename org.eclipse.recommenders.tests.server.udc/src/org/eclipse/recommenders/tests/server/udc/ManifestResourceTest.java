@@ -28,7 +28,7 @@ import org.eclipse.recommenders.commons.udc.LibraryIdentifier;
 import org.eclipse.recommenders.commons.udc.ManifestMatchResult;
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
 import org.eclipse.recommenders.internal.server.udc.CouchDBAccessService;
-import org.eclipse.recommenders.server.udc.resources.ManifestResource;
+import org.eclipse.recommenders.server.udc.resources.MetaDataResource;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -52,7 +52,7 @@ public class ManifestResourceTest {
     public void testHappyPath() {
         // setup:
         final CouchDBAccessService dataAccess = createDataAccessMock();
-        final ManifestResource sut = createSut(dataAccess);
+        final MetaDataResource sut = createSut(dataAccess);
         when(dataAccess.getLibraryIdentifierForFingerprint(jface_3_6.jarFileFingerprint)).thenReturn(
                 createLibraryIdentifier(jface_3_6));
         when(dataAccess.getModelSpecificationsByNameOrAlias(JFACE_SYMBOLIC_NAME)).thenReturn(
@@ -68,7 +68,7 @@ public class ManifestResourceTest {
     public void testNoMatch() {
         // setup:
         final CouchDBAccessService dataAccess = createDataAccessMock();
-        final ManifestResource sut = createSut(dataAccess);
+        final MetaDataResource sut = createSut(dataAccess);
         when(dataAccess.getLibraryIdentifierForFingerprint(jface_3_6.jarFileFingerprint)).thenReturn(
                 createLibraryIdentifier(jface_3_6));
         when(dataAccess.getModelSpecificationsByNameOrAlias(JFACE_SYMBOLIC_NAME)).thenReturn(
@@ -83,7 +83,7 @@ public class ManifestResourceTest {
     public void testUnknownLibraryIdentifier() {
         // setup:
         final CouchDBAccessService dataAccess = createDataAccessMock();
-        final ManifestResource sut = createSut(dataAccess);
+        final MetaDataResource sut = createSut(dataAccess);
         when(dataAccess.getLibraryIdentifierForFingerprint(jface_3_6.jarFileFingerprint)).thenReturn(null);
         when(dataAccess.getModelSpecificationsByNameOrAlias(JFACE_SYMBOLIC_NAME)).thenReturn(
                 new LinkedList<ModelSpecification>());
@@ -98,7 +98,7 @@ public class ManifestResourceTest {
     public void testUnknownVersion() {
         // setup:
         final CouchDBAccessService dataAccess = createDataAccessMock();
-        final ManifestResource sut = createSut(dataAccess);
+        final MetaDataResource sut = createSut(dataAccess);
         when(dataAccess.getLibraryIdentifierForFingerprint(jface_unknown.jarFileFingerprint)).thenReturn(null);
         when(dataAccess.getModelSpecificationsByNameOrAlias(JFACE_SYMBOLIC_NAME)).thenReturn(
                 Lists.newArrayList(jfaceModel_3_6));
@@ -113,7 +113,7 @@ public class ManifestResourceTest {
     public void testUnknownSymbolicName() {
         // setup:
         final CouchDBAccessService dataAccess = createDataAccessMock();
-        final ManifestResource sut = createSut(dataAccess);
+        final MetaDataResource sut = createSut(dataAccess);
         when(dataAccess.getLibraryIdentifierForFingerprint(unknownFingerprint.jarFileFingerprint)).thenReturn(null);
         when(dataAccess.getModelSpecificationsByNameOrAlias("")).thenReturn(new LinkedList<ModelSpecification>());
         // exercise:
@@ -132,13 +132,13 @@ public class ManifestResourceTest {
         return dataAccess;
     }
 
-    private ManifestResource createSut(final CouchDBAccessService dataAccess) {
+    private MetaDataResource createSut(final CouchDBAccessService dataAccess) {
         final Injector injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
                 bind(CouchDBAccessService.class).toInstance(dataAccess);
             }
         });
-        return injector.getInstance(ManifestResource.class);
+        return injector.getInstance(MetaDataResource.class);
     }
 }

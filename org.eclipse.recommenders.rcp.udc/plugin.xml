@@ -5,7 +5,7 @@
          point="org.eclipse.ui.exportWizards">
       <wizard
             category="org.eclipse.recommenders.rcp.category.export"
-            class="org.eclipse.recommenders.internal.udc.ui.wizard.export.CompilationUnitExportWizard"
+            class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.udc.ui.wizard.export.CompilationUnitExportWizard"
             icon="res/icons/slice.gif"
             id="org.eclipse.recommenders.udc.export.compilationunitexportwizard"
             name="API Usage Data">
