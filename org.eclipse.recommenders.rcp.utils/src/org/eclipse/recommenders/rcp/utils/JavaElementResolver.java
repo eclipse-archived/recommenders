@@ -73,6 +73,11 @@ public class JavaElementResolver {
             } else {
                 failedRecTypes.add(recType);
             }
+        } else if (!jdtType.exists()) {
+            // found in cache but not existing anymore?
+            // restart resolution process:
+            cache.remove(recType);
+            return toJdtType(recType);
         }
         return jdtType;
     }
@@ -182,6 +187,11 @@ public class JavaElementResolver {
                 return null;
             }
             registerRecJdtElementPair(recMethod, jdtMethod);
+        } else if (!jdtMethod.exists()) {
+            // found in cache but not existing anymore?
+            // restart resolution process:
+            cache.remove(recMethod);
+            return toJdtMethod(recMethod);
         }
         return jdtMethod;
     }

@@ -23,11 +23,13 @@ import org.eclipse.recommenders.commons.client.GenericResultRowView;
 import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.utils.Option;
+import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
+import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -110,6 +112,30 @@ public class CouchDbDataAccess {
         final GenericResultRowView<Key, Map<String, String>, ClassOverridePatterns> resultView = client.doGetRequest(
                 url, new GenericType<GenericResultRowView<Key, Map<String, String>, ClassOverridePatterns>>() {
                 });
+        return wrap(resultView.getFirstValue(null));
+    }
+
+    public void saveOrUpdate(final MethodSelfcallDirectives methodSelfcall) {
+        final Option<MethodSelfcallDirectives> patternsOption = getMethodSelfcallDirectives(methodSelfcall.getMethod());
+        if (patternsOption.hasValue()) {
+            final MethodSelfcallDirectives oldPattern = patternsOption.get();
+            methodSelfcall._id = oldPattern._id;
+            methodSelfcall._rev = oldPattern._rev;
+        }
+        final TransactionResult result = client.doPostRequest("", methodSelfcall, TransactionResult.class);
+        methodSelfcall._id = result.id;
+        methodSelfcall._rev = result.rev;
+    }
+
+    private Option<MethodSelfcallDirectives> getMethodSelfcallDirectives(final IMethodName method) {
+        final Map<String, String> keyValuePairs = Maps.newLinkedHashMap();
+        keyValuePairs.put("providerId", MethodSelfcallDirectives.class.getSimpleName());
+        keyValuePairs.put("method", method.getIdentifier());
+        final String url = createViewUrlWithKeyObject("providers", "providers", keyValuePairs);
+        final GenericResultRowView<Key, Map<String, String>, MethodSelfcallDirectives> resultView = client
+                .doGetRequest(url,
+                        new GenericType<GenericResultRowView<Key, Map<String, String>, MethodSelfcallDirectives>>() {
+                        });
         return wrap(resultView.getFirstValue(null));
     }
 

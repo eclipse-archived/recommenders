@@ -12,10 +12,13 @@ package org.eclipse.recommenders.mining.extdocs;
 
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
+import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 
 public interface IExtdocDirectiveConsumer {
 
     public void consume(ClassOverrideDirectives directives);
 
     public void consume(ClassOverridePatterns patterns);
+
+    public void consume(MethodSelfcallDirectives methodSelfcallDirectives);
 }

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.analysis;
 
+import static org.eclipse.recommenders.commons.utils.Option.none;
 import static org.eclipse.recommenders.internal.rcp.analysis.builder.ChangedCompilationUnitsFinder.findChangedCompilkationUnits;
 
 import java.util.List;
@@ -81,17 +82,6 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
     }
 
     @Override
-    protected void clean(final IProgressMonitor monitor) throws CoreException {
-        try {
-            setMonitor(monitor);
-            performCleanBuild();
-        } finally {
-            monitor.done();
-        }
-
-    }
-
-    @Override
     protected IProject[] build(final int kind, final Map args, final IProgressMonitor monitor) throws CoreException {
         setMonitor(monitor);
         try {
@@ -119,16 +109,6 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private void setMonitor(final IProgressMonitor monitor) {
-        this.monitor = new CountingProgressMonitor(monitor);
-    }
-
-    private void performCleanBuild() throws CoreException {
-        monitor.subTask("Cleaning " + getProject().getName());
-        store.cleanStore(getProject());
-        monitor.worked(1);
-    }
-
     private void performFullBuild() throws CoreException {
         monitor.beginTask("Perform Full Build", ticksLastFullBuild);
         performCleanBuild();
@@ -143,6 +123,61 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         analyzeCompilationUnits(deltas.getFirst());
         removeCompilationUnit(deltas.getSecond());
         ticksLastIncrBuild = monitor.actualWork;
+    }
+
+    private void reportSkippingCompilationUnit(final ICompilationUnit cu) {
+        monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
+    }
+
+    private void removeCachedClassFromClassHierarchy(final ICompilationUnit cu) {
+        final IClassHierarchy cha = chaService.getClassHierachy(cu);
+        if (cha instanceof LazyClassHierarchy) {
+            final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
+            final IType primaryType = cu.findPrimaryType();
+            if (primaryType != null) {
+                lcha.remove(javaElementResolver.toRecType(primaryType));
+            }
+        }
+    }
+
+    private Option<?> safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
+            final IProgressMonitor monitor) {
+
+        try {
+            return analyzer.analyze(cu, monitor);
+        } catch (final RuntimeException x) {
+            logAnalyzerFailed(cu, analyzer, x);
+            return none();
+        }
+    }
+
+    private void removeCompilationUnit(final List<ICompilationUnit> cus) throws CoreException {
+        for (final ICompilationUnit cu : cus) {
+            monitor.subTask("Removing Analysis Artifacts for " + cu.getElementName());
+            store.removeArtifacts(cu);
+            monitor.worked(1);
+        }
+    }
+
+    @Override
+    protected void clean(final IProgressMonitor monitor) throws CoreException {
+        try {
+            setMonitor(monitor);
+            performCleanBuild();
+        } finally {
+            monitor.done();
+        }
+
+    }
+
+    private void setMonitor(final IProgressMonitor monitor) {
+        this.monitor = new CountingProgressMonitor(monitor);
+    }
+
+    private void performCleanBuild() throws CoreException {
+        monitor.subTask("Cleaning " + getProject().getName());
+        store.cleanStore(getProject());
+        monitor.worked(1);
     }
 
     private void analyzeCompilationUnits(final List<ICompilationUnit> cus) {
@@ -180,44 +215,10 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private void reportSkippingCompilationUnit(final ICompilationUnit cu) {
-        monitor.subTask("Skipping " + cu.getElementName() + " because of syntax errors.");
-    }
-
-    private void removeCachedClassFromClassHierarchy(final ICompilationUnit cu) {
-        final IClassHierarchy cha = chaService.getClassHierachy(cu);
-        if (cha instanceof LazyClassHierarchy) {
-            final LazyClassHierarchy lcha = (LazyClassHierarchy) cha;
-            final IType primaryType = cu.findPrimaryType();
-            if (primaryType != null) {
-                lcha.remove(javaElementResolver.toRecType(primaryType));
-            }
-        }
-    }
-
-    private Option<?> safeAnalyzeCompilationUnit(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
-            final IProgressMonitor monitor) {
-
-        try {
-            return analyzer.analyze(cu, monitor);
-        } catch (final RuntimeException x) {
-            logAnalyzerFailed(cu, analyzer, x);
-            return null;
-        }
-    }
-
     private void logAnalyzerFailed(final ICompilationUnit cu, final ICompilationUnitAnalyzer<?> analyzer,
             final Exception x) {
         final String analyzerName = analyzer.getClass().getSimpleName();
         final String cuName = cu.getElementName();
         RecommendersPlugin.logError(x, "Analyzer '%s' threw exception while analzying '%s'", analyzerName, cuName);
-    }
-
-    private void removeCompilationUnit(final List<ICompilationUnit> cus) throws CoreException {
-        for (final ICompilationUnit cu : cus) {
-            monitor.subTask("Removing Analysis Artifacts for " + cu.getElementName());
-            store.removeArtifacts(cu);
-            monitor.worked(1);
-        }
     }
 }

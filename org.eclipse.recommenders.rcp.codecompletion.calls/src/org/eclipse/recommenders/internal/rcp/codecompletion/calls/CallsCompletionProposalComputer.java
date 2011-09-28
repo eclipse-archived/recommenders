@@ -146,7 +146,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
                 return true;
             }
         }
-        return true;
+        return false;
     }
 
     private boolean findModel() {
@@ -157,15 +157,6 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             model = modelFacade.acquireModel(receiverType);
         }
         return model != null;
-    }
-
-    private void releaseModel() {
-        if (model != null) {
-            final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
-            final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
-            modelFacade.releaseModel(model);
-            model = null;
-        }
     }
 
     private void findRecommendations() {
@@ -214,6 +205,15 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
                 proposals.add(decoratedProposal);
                 return;
             }
+        }
+    }
+
+    private void releaseModel() {
+        if (model != null) {
+            final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
+            final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+            modelFacade.releaseModel(model);
+            model = null;
         }
     }
 

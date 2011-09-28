@@ -55,10 +55,6 @@ public class ObjectInstanceKey implements ICodeElement {
         return false;
     }
 
-    public boolean isSuper() {
-        return false;
-    }
-
     public Set<IMethodName> getInvokedMethods() {
         final Set<IMethodName> res = Sets.newTreeSet();
         for (final ReceiverCallSite callsite : receiverCallSites) {

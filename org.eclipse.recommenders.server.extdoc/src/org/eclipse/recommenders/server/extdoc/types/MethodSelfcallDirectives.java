@@ -18,6 +18,8 @@ import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
 public final class MethodSelfcallDirectives implements IServerType {
 
+    public String _id;
+    public String _rev;
     private final String providerId = getClass().getSimpleName();
     private IMethodName method;
 
@@ -48,6 +50,10 @@ public final class MethodSelfcallDirectives implements IServerType {
         Checks.ensureIsNotNull(method);
         Checks.ensureIsGreaterOrEqualTo(numberOfDefinitions, 1, null);
         Checks.ensureIsFalse(calls.isEmpty(), "empty self-calls not allowed.");
+    }
+
+    public IMethodName getMethod() {
+        return method;
     }
 
 }

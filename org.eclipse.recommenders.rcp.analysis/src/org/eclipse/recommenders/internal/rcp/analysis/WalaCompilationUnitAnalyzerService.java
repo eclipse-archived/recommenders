@@ -39,73 +39,11 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
 
     private Injector injector;
 
+    private final SimpleTimeLimiter limiter = new SimpleTimeLimiter();
+
     @Inject
     public WalaCompilationUnitAnalyzerService(final IClassHierarchyService wala) {
         this.wala = wala;
-    }
-
-    private final SimpleTimeLimiter limiter = new SimpleTimeLimiter();
-
-    @Override
-    public Option<CompilationUnit> analyze(final ICompilationUnit jdtCompilationUnit, final IProgressMonitor monitor) {
-        final StopWatch w = new StopWatch();
-        w.start();
-        CompilationUnit res = null;
-        try {
-            res = limiter.callWithTimeout(new Callable<CompilationUnit>() {
-
-                @Override
-                public CompilationUnit call() throws Exception {
-                    final IType jdtType = jdtCompilationUnit.findPrimaryType();
-                    if (jdtType == null) {
-                        return null;
-                    }
-                    final IClass walaClass = wala.getType(jdtType);
-                    if (walaClass == null) {
-                        return null;
-                    }
-                    final CompilationUnit recCompilationUnit = CompilationUnit.create();
-                    //
-                    //
-                    createAnalysisInjector(walaClass);
-                    final WalaCompiliationUnitAnalzyer r = injector.getInstance(WalaCompiliationUnitAnalzyer.class);
-                    r.init(jdtCompilationUnit, walaClass, recCompilationUnit);
-                    monitor.beginTask("analyzing " + jdtCompilationUnit.getElementName(), 10);
-                    r.run(monitor);
-                    return recCompilationUnit;
-                }
-
-            }, 5, TimeUnit.SECONDS, true);
-
-        } catch (final CancellationException x) {
-            RcpAnalysisPlugin.logWarning(x,
-                    "Analysis of '%s' exceeded max compuation time limit, and thus, has been canceled.",
-                    jdtCompilationUnit.getElementName());
-        } catch (final IllegalStateException x) {
-            final Throwable rootCause = Throwables.getRootCause(x);
-            if (rootCause instanceof CancelException || rootCause instanceof CallGraphBuilderCancelException) {
-                RcpAnalysisPlugin.logWarning(x,
-                        "Analysis of '%s' exceeded max compuation time limit, and thus, has been canceled.",
-                        jdtCompilationUnit.getElementName());
-            } else {
-                RcpAnalysisPlugin.logError(x, "Analysis of %s failed with excpetion: %s",
-                        jdtCompilationUnit.getElementName(), x.getMessage());
-            }
-        } catch (final UncheckedTimeoutException x) {
-            RcpAnalysisPlugin.logWarning(x,
-                    "Analysis of '%s' exceeded max compuation time limit, and thus, has been canceled.",
-                    jdtCompilationUnit.getElementName());
-
-        } catch (final Exception x) {
-            RcpAnalysisPlugin.logError(x, "Error during analysis of '%s' : %s", jdtCompilationUnit.getElementName(),
-                    x.getMessage());
-        } catch (final UnimplementedError x) {
-            RcpAnalysisPlugin.logError(x, "error during analysis of '%s'", jdtCompilationUnit.getElementName());
-        } finally {
-            monitor.done();
-        }
-        return Option.wrap(res);
-
     }
 
     private void createAnalysisInjector(final IClass walaClass) {
@@ -196,5 +134,67 @@ public class WalaCompilationUnitAnalyzerService implements ICompilationUnitAnaly
         // });
         // w.stop();
         // System.out.println(w);
+    }
+
+    @Override
+    public Option<CompilationUnit> analyze(final ICompilationUnit jdtCompilationUnit, final IProgressMonitor monitor) {
+        final StopWatch w = new StopWatch();
+        w.start();
+        CompilationUnit res = null;
+        try {
+            res = limiter.callWithTimeout(new Callable<CompilationUnit>() {
+
+                @Override
+                public CompilationUnit call() throws Exception {
+                    final IType jdtType = jdtCompilationUnit.findPrimaryType();
+                    if (jdtType == null) {
+                        return null;
+                    }
+                    final IClass walaClass = wala.getType(jdtType);
+                    if (walaClass == null) {
+                        return null;
+                    }
+                    final CompilationUnit recCompilationUnit = CompilationUnit.create();
+                    //
+                    //
+                    createAnalysisInjector(walaClass);
+                    final WalaCompiliationUnitAnalzyer r = injector.getInstance(WalaCompiliationUnitAnalzyer.class);
+                    r.init(jdtCompilationUnit, walaClass, recCompilationUnit);
+                    monitor.beginTask("analyzing " + jdtCompilationUnit.getElementName(), 10);
+                    r.run(monitor);
+                    return recCompilationUnit;
+                }
+
+            }, 5, TimeUnit.SECONDS, true);
+
+        } catch (final CancellationException x) {
+            RcpAnalysisPlugin.logWarning(x,
+                    "Analysis of '%s' exceeded max compuation time limit, and thus, has been canceled.",
+                    jdtCompilationUnit.getElementName());
+        } catch (final IllegalStateException x) {
+            final Throwable rootCause = Throwables.getRootCause(x);
+            if (rootCause instanceof CancelException || rootCause instanceof CallGraphBuilderCancelException) {
+                RcpAnalysisPlugin.logWarning(x,
+                        "Analysis of '%s' exceeded max compuation time limit, and thus, has been canceled.",
+                        jdtCompilationUnit.getElementName());
+            } else {
+                RcpAnalysisPlugin.logError(x, "Analysis of %s failed with excpetion: %s",
+                        jdtCompilationUnit.getElementName(), x.getMessage());
+            }
+        } catch (final UncheckedTimeoutException x) {
+            RcpAnalysisPlugin.logWarning(x,
+                    "Analysis of '%s' exceeded max compuation time limit, and thus, has been canceled.",
+                    jdtCompilationUnit.getElementName());
+
+        } catch (final Exception x) {
+            RcpAnalysisPlugin.logError(x, "Error during analysis of '%s' : %s", jdtCompilationUnit.getElementName(),
+                    x.getMessage());
+        } catch (final UnimplementedError x) {
+            RcpAnalysisPlugin.logError(x, "error during analysis of '%s'", jdtCompilationUnit.getElementName());
+        } finally {
+            monitor.done();
+        }
+        return Option.wrap(res);
+
     }
 }

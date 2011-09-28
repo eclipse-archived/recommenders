@@ -11,11 +11,14 @@
 
 package org.eclipse.recommenders.mining.extdocs;
 
+import java.util.List;
+
 import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
+import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,21 +34,25 @@ public class Algorithm implements Runnable {
     private final IExtdocDirectiveConsumer consumer;
     private final ClassOverrideDirectivesGenerator directivesGenerator;
     private final ClassOverridePatternsGenerator patternsGenerator;
+    private final MethodSelfcallDirectivesGenerator methodSelfcallGenerator;
 
     @Inject
     public Algorithm(final ISuperclassProvider superclassProvider, final ICompilationUnitProvider cuProvider,
             final IExtdocDirectiveConsumer consumer, final ClassOverrideDirectivesGenerator directivesGenerator,
-            final ClassOverridePatternsGenerator patternsGenerator) {
+            final ClassOverridePatternsGenerator patternsGenerator,
+            final MethodSelfcallDirectivesGenerator methodSelfcallGenerator) {
         this.superclassProvider = superclassProvider;
         this.cuProvider = cuProvider;
         this.consumer = consumer;
         this.directivesGenerator = directivesGenerator;
         this.patternsGenerator = patternsGenerator;
+        this.methodSelfcallGenerator = methodSelfcallGenerator;
     }
 
     @Override
     public void run() {
         log.info("Running Extdocs model generation (class-overrides-directives and class-overrides-patterns. No self-calls yet.)");
+        methodSelfcallGenerator.initialize();
         for (final ITypeName superclass : superclassProvider.getSuperclasses()) {
             log.debug("Running extdoc analysis on {}.", superclass);
             final Iterable<CompilationUnit> cus = cuProvider.getCompilationUnits(superclass);
@@ -58,6 +65,7 @@ public class Algorithm implements Runnable {
                 if (optPattern.hasValue()) {
                     consumer.consume(optPattern.get());
                 }
+                methodSelfcallGenerator.analyzeCompilationUnits(cus);
             } catch (final JsonParseException e) {
                 log.warn("Entry already exists: %s", e.getMessage());
             } catch (final RuntimeException e) {
@@ -66,6 +74,12 @@ public class Algorithm implements Runnable {
                 log.error(msg, e);
             }
         }
+
+        final List<MethodSelfcallDirectives> methodSelfcalls = methodSelfcallGenerator.generate();
+        for (final MethodSelfcallDirectives methodSelfcallDirectives : methodSelfcalls) {
+            consumer.consume(methodSelfcallDirectives);
+        }
+
         log.info("Finished extdoc model generation.");
     }
 }

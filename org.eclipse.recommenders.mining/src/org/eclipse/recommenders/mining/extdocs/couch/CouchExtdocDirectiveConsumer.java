@@ -14,6 +14,7 @@ import org.eclipse.recommenders.mining.extdocs.IExtdocDirectiveConsumer;
 import org.eclipse.recommenders.mining.extdocs.couch.CouchGuiceModule.Output;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
+import org.eclipse.recommenders.server.extdoc.types.MethodSelfcallDirectives;
 
 import com.google.inject.Inject;
 
@@ -34,6 +35,11 @@ public class CouchExtdocDirectiveConsumer implements IExtdocDirectiveConsumer {
     @Override
     public void consume(final ClassOverridePatterns patterns) {
         db.saveOrUpdate(patterns);
+    }
+
+    @Override
+    public void consume(final MethodSelfcallDirectives methodSelfcallDirectives) {
+        db.saveOrUpdate(methodSelfcallDirectives);
     }
 
 }
