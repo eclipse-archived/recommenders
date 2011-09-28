@@ -28,7 +28,9 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.recommenders.commons.internal.selection.JavaElementSelection;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
@@ -144,7 +146,12 @@ final class ExtDocCodeAssistantHover {
             @Override
             protected IJavaElementSelection getSelection(final Object input) {
                 final IJavaElement element = ((JavadocBrowserInformationControlInput) input).getElement();
-                return getUiManager().getLastSelection().copy(element);
+                final Option<IJavaElementSelection> lastSelection = getUiManager().getLastSelection();
+                if (lastSelection.hasValue()) {
+                    return lastSelection.get().copy(element);
+                }
+
+                return new JavaElementSelection(element);
             }
 
             @Override

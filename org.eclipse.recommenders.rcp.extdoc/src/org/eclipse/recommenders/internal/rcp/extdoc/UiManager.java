@@ -86,8 +86,8 @@ public final class UiManager implements IExtendedSelectionListener {
     /**
      * @return The last user selection that has been observed by ExtDoc.
      */
-    public IJavaElementSelection getLastSelection() {
-        return lastSelection;
+    public Option<IJavaElementSelection> getLastSelection() {
+        return Option.wrap(lastSelection);
     }
 
     @Override
