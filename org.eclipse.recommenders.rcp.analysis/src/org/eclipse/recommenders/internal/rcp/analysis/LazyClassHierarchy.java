@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -46,6 +45,8 @@ import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaAnalysisUtils;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaNameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterators;
 import com.ibm.wala.classLoader.ArrayClassLoader;
@@ -76,7 +77,7 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
     public static final ClassLoaderReference SYNTETIC = new ClassLoaderReference(AnalysisScope.SYNTHETIC,
             ClassLoaderReference.Java, ClassLoaderReference.Application);
 
-    private static Logger log = Logger.getLogger(LazyClassHierarchy.class);
+    private static Logger log = LoggerFactory.getLogger(LazyClassHierarchy.class);
 
     private final IClassLoader extLoader;
     private final IClassLoader primLoader;

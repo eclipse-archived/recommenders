@@ -129,7 +129,7 @@ public class WalaTypeAnalyzer {
 
     private void cancelAnalysisIfIInterrupted() {
         if (Thread.currentThread().isInterrupted()) {
-            Throws.throwCancelationException();
+             Throws.throwCancelationException();
         }
     }
 }

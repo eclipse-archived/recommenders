@@ -24,6 +24,8 @@ import org.eclipse.recommenders.internal.commons.analysis.analyzers.IMethodAnaly
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
@@ -34,6 +36,8 @@ import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.util.CancelException;
 
 public class WalaMethodAnalyzer {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final Set<IMethodAnalyzer> methodAnalyzers;
 
     private Entrypoint walaEntrypoint;
@@ -111,6 +115,6 @@ public class WalaMethodAnalyzer {
     private void logErrorMessage(final Exception e) {
         final IMethod method = walaEntrypoint.getMethod();
         final String signature = method.getSignature();
-        System.err.printf("exception in %s: %s\n", signature, e);
+        log.error(String.format("exception in %s: %s", signature, e.getMessage()), e);
     }
 }
