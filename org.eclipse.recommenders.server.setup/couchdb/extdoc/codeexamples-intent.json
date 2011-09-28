@@ -1,0 +1,11 @@
+{
+   "providerId": "CodeExamples",
+   "type": "Landroid/content/Intent",
+   "examples": [
+       {
+           "code": "//Open URL in browser:
+Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(\"http://developer.android.com/reference/android/content/Intent.html\"));
+startActivity(intent);"
+       }
+   ]
+}
