@@ -36,7 +36,7 @@ public class FragmentResolver {
             if (inProgress.contains(file)) {
                 continue;
             }
-            if (!dependencyStore.containsClasspathDependencyInfo(file) || !dependencyStore.containsManifest(file)) {
+            if (!dependencyStore.containsClasspathDependencyInfo(file)) {
                 inProgress.add(file);
                 scheduleJob(file);
             }
