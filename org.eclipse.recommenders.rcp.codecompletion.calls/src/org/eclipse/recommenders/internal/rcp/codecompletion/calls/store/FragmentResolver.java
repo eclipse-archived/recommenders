@@ -33,7 +33,7 @@ public class FragmentResolver {
 
     public void resolve(final File[] files) {
         for (final File file : files) {
-            if (inProgress.contains(file)) {
+            if (inProgress.contains(file) || !isJarFile(file)) {
                 continue;
             }
             if (!dependencyStore.containsClasspathDependencyInfo(file)) {
@@ -46,6 +46,10 @@ public class FragmentResolver {
     private void scheduleJob(final File file) {
         final SearchManifestJob job = jobFactory.create(file);
         job.schedule();
+    }
+
+    private boolean isJarFile(final File file) {
+        return file.getName().endsWith(".jar");
     }
 
 }
