@@ -63,6 +63,7 @@ public class RecommendersProjectLifeCycleService implements IElementChangedListe
                     }
                     monitor.worked(1);
                 }
+                monitor.done();
                 return Status.OK_STATUS;
             }
         }.schedule();
