@@ -51,7 +51,7 @@ public class Algorithm implements Runnable {
 
     @Override
     public void run() {
-        log.info("Running Extdocs model generation (class-overrides-directives and class-overrides-patterns. No self-calls yet.)");
+        log.info("Running Extdocs model generation (class-overrides-directives, class-overrides-patterns and method self-calls. No class self-calls yet.)");
         methodSelfcallGenerator.initialize();
         for (final ITypeName superclass : superclassProvider.getSuperclasses()) {
             log.debug("Running extdoc analysis on {}.", superclass);
