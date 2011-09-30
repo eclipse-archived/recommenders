@@ -18,9 +18,6 @@
    <feature url="features/org.eclipse.recommenders.rcp.selfhosting.feature_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.selfhosting.feature" version="0.3.0.qualifier">
       <category name="sandbox"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201109222203.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201109222203">
-      <category name="3rd"/>
-   </feature>
    <feature url="features/org.eclipse.recommenders.rcp.codesearch.source-feature_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codesearch.source-feature" version="0.3.0.qualifier">
       <category name="sources"/>
    </feature>
@@ -29,6 +26,9 @@
    </feature>
    <feature url="features/org.eclipse.recommenders.rcp.codecompletion.source-feature_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.source-feature" version="0.3.0.qualifier">
       <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201109301053.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201109301053">
+      <category name="3rd"/>
    </feature>
    <category-def name="main" label="Eclipse Code Recommenders - Main"/>
    <category-def name="sandbox" label="Eclipse Code Recommenders - Sandbox">
