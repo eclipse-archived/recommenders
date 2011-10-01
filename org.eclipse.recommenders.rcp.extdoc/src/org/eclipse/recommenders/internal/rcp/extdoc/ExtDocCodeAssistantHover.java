@@ -44,11 +44,12 @@ final class ExtDocCodeAssistantHover {
     private ExtDocCodeAssistantHover() {
     }
 
-    static void installToEditor(final JavaEditor editor, final UiManager uiManager, final ProviderStore providerStore) {
+    static void installToEditor(final JavaEditor editor, final UiManager uiManager, final ProviderStore providerStore,
+            final UpdateService updateService) {
         final JavaSourceViewer viewer = (JavaSourceViewer) editor.getViewer();
         final JavaTextTools textTools = JavaPlugin.getDefault().getJavaTextTools();
         viewer.unconfigure();
-        viewer.configure(new ViewerConfiguration(uiManager, providerStore, textTools.getColorManager(),
+        viewer.configure(new ViewerConfiguration(uiManager, providerStore, updateService, textTools.getColorManager(),
                 stealPreferenceStore(viewer), editor, IJavaPartitions.JAVA_PARTITIONING));
     }
 
@@ -68,13 +69,13 @@ final class ExtDocCodeAssistantHover {
         private final IInformationControlCreator creator;
 
         ViewerConfiguration(final UiManager uiManager, final ProviderStore providerStore,
-                final IColorManager colorManager, final IPreferenceStore preferenceStore, final ITextEditor editor,
-                final String partitioning) {
+                final UpdateService updateService, final IColorManager colorManager,
+                final IPreferenceStore preferenceStore, final ITextEditor editor, final String partitioning) {
             super(colorManager, preferenceStore, editor, partitioning);
             creator = new IInformationControlCreator() {
                 @Override
                 public IInformationControl createInformationControl(final Shell parent) {
-                    return new InformationControl(parent, uiManager, providerStore, null);
+                    return new InformationControl(parent, uiManager, providerStore, updateService, null);
                 }
             };
         }
@@ -93,8 +94,8 @@ final class ExtDocCodeAssistantHover {
             private boolean lastWasExtDoc = true;
 
             public InformationControl(final Shell parent, final UiManager uiManager, final ProviderStore providerStore,
-                    final InformationControl copy) {
-                super(parent, uiManager, providerStore, copy);
+                    final UpdateService updateService, final InformationControl copy) {
+                super(parent, uiManager, providerStore, updateService, copy);
             }
 
             @Override
@@ -159,7 +160,7 @@ final class ExtDocCodeAssistantHover {
                 return new IInformationControlCreator() {
                     @Override
                     public IInformationControl createInformationControl(final Shell parent) {
-                        return new InformationControl(parent, getUiManager(), getProviderStore(),
+                        return new InformationControl(parent, getUiManager(), getProviderStore(), getUpdateService(),
                                 InformationControl.this);
                     }
                 };

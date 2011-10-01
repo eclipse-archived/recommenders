@@ -17,6 +17,7 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProvidersComposite;
+import org.eclipse.recommenders.internal.rcp.extdoc.UpdateService;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
@@ -46,10 +47,10 @@ final class ProvidersTable {
     private final IEclipsePreferences preferences;
     private IJavaElementSelection lastSelection;
 
-    ProvidersTable(final Composite parent, final ProviderStore providerStore) {
+    ProvidersTable(final Composite parent, final ProviderStore providerStore, final UpdateService updateService) {
         final Composite composite = SwtFactory.createGridComposite(parent, 1, 0, 6, 0, 0);
         createLocationLabel(composite);
-        createTable(composite, providerStore);
+        createTable(composite, providerStore, updateService);
         composite.setBackground(table.getBackground());
         preferences = ExtDocPlugin.getPreferences();
     }
@@ -64,10 +65,11 @@ final class ProvidersTable {
         locationLabel.setToolTipText("Provider selection is sensitive to the displayed code location.");
     }
 
-    private void createTable(final Composite composite, final ProviderStore providerStore) {
+    private void createTable(final Composite composite, final ProviderStore providerStore,
+            final UpdateService updateService) {
         table = new Table(composite, SWT.CHECK | SWT.FULL_SELECTION);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        table.addListener(SWT.Selection, new ProvidersTableSelectionListener(this));
+        table.addListener(SWT.Selection, new ProvidersTableSelectionListener(this, updateService));
         enableDragAndDrop(providerStore);
     }
 

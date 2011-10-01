@@ -17,6 +17,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProvidersComposite;
+import org.eclipse.recommenders.internal.rcp.extdoc.UpdateService;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
@@ -41,13 +42,16 @@ public class ExtDocView extends ViewPart {
     private static final String SASH_POSITION_KEY = "extDocSashPosition";
 
     private final ProviderStore providerStore;
+    private final UpdateService updateService;
+
     private ProvidersComposite providersComposite;
     private ProvidersTable table;
     private boolean linkingEnabled = true;
 
     @Inject
-    ExtDocView(final ProviderStore providerStore) {
+    ExtDocView(final ProviderStore providerStore, final UpdateService updateService) {
         this.providerStore = providerStore;
+        this.updateService = updateService;
     }
 
     @Override
@@ -60,7 +64,7 @@ public class ExtDocView extends ViewPart {
     private void createSash(final Composite parent) {
         final SashForm sashForm = new SashForm(parent, SWT.SMOOTH);
         sashForm.setLayout(new FillLayout());
-        table = new ProvidersTable(sashForm, providerStore);
+        table = new ProvidersTable(sashForm, providerStore, updateService);
         providersComposite = new ProvidersComposite(sashForm, getViewSite().getWorkbenchWindow());
         table.setProvidersComposite(providersComposite);
         handleSashWeights(sashForm);
@@ -109,14 +113,12 @@ public class ExtDocView extends ViewPart {
     }
 
     private void updateProviders(final IJavaElementSelection selection) {
-        ProviderUpdateJob.cancelActiveJobs();
         for (final TableItem item : table.getItems()) {
             if (item.getChecked()) {
-                final ProviderUpdateJob job = new ProviderUpdateJob(table, item, selection);
-                job.setSystem(true);
-                job.schedule();
+                updateService.schedule(new ProviderUpdateJob(table, item, selection));
             }
         }
+        updateService.invokeAll();
     }
 
     @Override

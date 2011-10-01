@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.internal.rcp.extdoc.UpdateService;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -22,9 +23,11 @@ import org.eclipse.swt.widgets.TableItem;
 final class ProvidersTableSelectionListener implements Listener {
 
     private final ProvidersTable table;
+    private final UpdateService updateService;
 
-    ProvidersTableSelectionListener(final ProvidersTable table) {
+    ProvidersTableSelectionListener(final ProvidersTable table, final UpdateService updateService) {
         this.table = table;
+        this.updateService = updateService;
     }
 
     @Override
@@ -45,7 +48,8 @@ final class ProvidersTableSelectionListener implements Listener {
         table.setChecked(preferenceId, tableItem.getChecked());
         if (tableItem.getGrayed()) {
             if (tableItem.getChecked()) {
-                new ProviderUpdateJob(table, tableItem, lastSelection).schedule();
+                updateService.schedule(new ProviderUpdateJob(table, tableItem, lastSelection));
+                updateService.invokeAll();
             }
         } else {
             table.setContentVisible(tableItem, tableItem.getChecked(), true);

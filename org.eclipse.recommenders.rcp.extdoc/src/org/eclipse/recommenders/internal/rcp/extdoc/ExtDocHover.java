@@ -36,11 +36,11 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
     private final IInformationControlCreator creator;
 
     @Inject
-    ExtDocHover(final UiManager uiManager, final ProviderStore providerStore) {
+    ExtDocHover(final UiManager uiManager, final ProviderStore providerStore, final UpdateService updateService) {
         creator = new IInformationControlCreator() {
             @Override
             public IInformationControl createInformationControl(final Shell parent) {
-                return new InformationControl(parent, uiManager, providerStore, null);
+                return new InformationControl(parent, uiManager, providerStore, updateService, null);
             }
         };
     }
@@ -66,8 +66,8 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
     private static final class InformationControl extends AbstractExtDocInformationControl {
 
         public InformationControl(final Shell parentShell, final UiManager uiManager,
-                final ProviderStore providerStore, final InformationControl copy) {
-            super(parentShell, uiManager, providerStore, copy);
+                final ProviderStore providerStore, final UpdateService updateService, final InformationControl copy) {
+            super(parentShell, uiManager, providerStore, updateService, copy);
         }
 
         @Override
@@ -80,7 +80,8 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
             return new IInformationControlCreator() {
                 @Override
                 public IInformationControl createInformationControl(final Shell parent) {
-                    return new InformationControl(parent, getUiManager(), getProviderStore(), InformationControl.this);
+                    return new InformationControl(parent, getUiManager(), getProviderStore(), getUpdateService(),
+                            InformationControl.this);
                 }
             };
         }

@@ -33,6 +33,7 @@ public final class UiManager implements IExtendedSelectionListener {
 
     private final ExtDocView extDocView;
     private final ProviderStore providerStore;
+    private final UpdateService updateService;
 
     private boolean isViewVisible = true;
     private boolean viewHasVisibilityListener;
@@ -41,9 +42,10 @@ public final class UiManager implements IExtendedSelectionListener {
     private IJavaElementSelection lastSelection;
 
     @Inject
-    UiManager(final ExtDocView extDocView, final ProviderStore providerStore) {
+    UiManager(final ExtDocView extDocView, final ProviderStore providerStore, final UpdateService updateService) {
         this.extDocView = extDocView;
         this.providerStore = providerStore;
+        this.updateService = updateService;
     }
 
     @Override
@@ -96,7 +98,7 @@ public final class UiManager implements IExtendedSelectionListener {
         if (site != null) {
             currentPartSite = site;
         }
-        ExtDocCodeAssistantHover.installToEditor(editor, this, providerStore);
+        ExtDocCodeAssistantHover.installToEditor(editor, this, providerStore, updateService);
     }
 
     private final class ViewVisibilityListener implements IPartListener2 {

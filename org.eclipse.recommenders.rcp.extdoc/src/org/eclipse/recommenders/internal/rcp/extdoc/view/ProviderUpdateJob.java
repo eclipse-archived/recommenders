@@ -10,14 +10,11 @@
  */
 package org.eclipse.recommenders.internal.rcp.extdoc.view;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
+import org.eclipse.recommenders.internal.rcp.extdoc.UpdateService.UpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.graphics.Image;
@@ -25,11 +22,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.progress.UIJob;
 
-class ProviderUpdateJob extends Job {
+class ProviderUpdateJob implements UpdateJob {
 
     private static final Image ICON_LOADING = ExtDocPlugin.getIcon("lcl16/loading.gif");
-
-    private static Set<ProviderUpdateJob> active = new HashSet<ProviderUpdateJob>();
 
     private final ProvidersTable table;
     private final TableItem item;
@@ -37,12 +32,9 @@ class ProviderUpdateJob extends Job {
     private final IProvider provider;
     private final IJavaElementSelection selection;
 
-    ProviderUpdateJob(final ProvidersTable table, final TableItem item, final IJavaElementSelection selection) {
-        super(String.format("Updating %s", ((IProvider) ((Composite) item.getData()).getData()).getProviderFullName()));
-        super.setPriority(LONG);
-        setSystem(true);
-        active.add(this);
+    private boolean hasContent;
 
+    ProviderUpdateJob(final ProvidersTable table, final TableItem item, final IJavaElementSelection selection) {
         this.table = table;
         this.item = item;
         composite = (Composite) item.getData();
@@ -53,24 +45,17 @@ class ProviderUpdateJob extends Job {
     }
 
     @Override
-    public IStatus run(final IProgressMonitor monitor) {
+    public void run() {
         try {
-            monitor.beginTask("Updating Extended Javadocs", 1);
-            try {
-                hideProvider();
-                updateProvider();
-            } catch (final Exception e) {
-                ExtDocPlugin.logException(e);
-            }
-            return Status.OK_STATUS;
-        } finally {
-            monitor.done();
-            active.remove(this);
+            hideProvider();
+            hasContent = provider.selectionChanged(selection, composite);
+        } catch (final Exception e) {
+            ExtDocPlugin.logException(e);
         }
     }
 
     private void hideProvider() {
-        final UIJob job = new UIJob("Update provider table") {
+        new UIJob("Update provider table") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!item.isDisposed()) {
@@ -78,13 +63,22 @@ class ProviderUpdateJob extends Job {
                 }
                 return Status.OK_STATUS;
             }
-        };
-        job.schedule();
+        }.schedule();
     }
 
-    private void updateProvider() {
-        final boolean hasContent = provider.selectionChanged(selection, composite);
-        final UIJob job = new UIJob("Update provider table") {
+    @Override
+    public void handleSuccessful() {
+        displayProvider();
+    }
+
+    @Override
+    public void handleCancellation() {
+        // TODO: show timeout notification
+        System.err.println(provider + " cancelled");
+    }
+
+    private void displayProvider() {
+        new UIJob("Update provider table") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!item.isDisposed()) {
@@ -93,14 +87,6 @@ class ProviderUpdateJob extends Job {
                 }
                 return Status.OK_STATUS;
             }
-        };
-        job.schedule();
-    }
-
-    public static void cancelActiveJobs() {
-        for (final ProviderUpdateJob job : active) {
-            job.cancel();
-        }
-        active.clear();
+        }.schedule();
     }
 }
