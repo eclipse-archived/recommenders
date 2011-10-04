@@ -15,6 +15,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Singleton;
+
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.internal.rcp.views.cu.CompilationUnitViewPublisher;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
@@ -30,6 +32,7 @@ import org.eclipse.recommenders.rcp.utils.ast.ASTStringUtils;
 import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
 
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provides;
@@ -54,6 +57,13 @@ public class RecommendersModule extends AbstractModule implements Module {
         configureJavaElementResolver();
         configureAstProvider();
         configureBuilder();
+    }
+
+    @Singleton
+    @Provides
+    public EventBus provideWorkspaceEventBus() {
+        final EventBus bus = new EventBus("Code Recommenders Workspace Event Bus");
+        return bus;
     }
 
     private void configureAstProvider() {

@@ -9,6 +9,7 @@ Require-Bundle: com.google.guava,
  org.eclipse.core.runtime,
  com.google.inject;visibility:=reexport,
  com.google.inject.assistedinject;visibility:=reexport,
- com.google.inject.multibindings;visibility:=reexport
+ com.google.inject.multibindings;visibility:=reexport,
+ javax.inject;bundle-version="1.0.0";visibility:=reexport
 Export-Package: org.eclipse.recommenders.commons.injection,
  org.eclipse.recommenders.commons.internal.injection
