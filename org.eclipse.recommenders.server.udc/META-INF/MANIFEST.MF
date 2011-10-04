@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.eclipse.recommenders.server.udc;singleton:=true
 Bundle-Version: 0.3.0.qualifier
 Bundle-Activator: org.eclipse.recommenders.internal.server.udc.wiring.BundleActivator
 Require-Bundle: org.eclipse.core.runtime,
- com.google.inject,
  com.sun.jersey.server,
  org.eclipse.recommenders.commons.injection,
  com.sun.jersey.core,

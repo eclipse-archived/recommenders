@@ -13,10 +13,9 @@ Require-Bundle: org.apache.commons.lang3,
  org.eclipse.core.runtime,
  org.apache.commons.io,
  org.eclipse.recommenders.commons.utils.gson,
- com.google.inject,
- com.google.inject.multibindings,
  android4me.axmlprinter,
- org.slf4j.api
+ org.slf4j.api,
+ org.eclipse.recommenders.commons.injection
 Export-Package: org.eclipse.recommenders.internal.commons.analysis.analyzers,
  org.eclipse.recommenders.internal.commons.analysis.analyzers.modules,
  org.eclipse.recommenders.internal.commons.analysis.archive,

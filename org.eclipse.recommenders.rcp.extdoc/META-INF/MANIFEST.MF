@@ -13,7 +13,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.commons.selection,
  org.eclipse.recommenders.rcp.utils,
  com.google.guava,
- com.google.inject,
  org.eclipse.jface.text,
  org.eclipse.recommenders.commons.injection,
  org.eclipse.ui.editors
