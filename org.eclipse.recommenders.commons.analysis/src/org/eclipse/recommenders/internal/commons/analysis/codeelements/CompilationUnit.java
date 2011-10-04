@@ -16,8 +16,10 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.IName;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmTypeName;
 
 import com.google.common.collect.Lists;
@@ -119,5 +121,14 @@ public class CompilationUnit implements ICodeElement {
                 primaryType.accept(v);
             }
         }
+    }
+
+    public Option<TypeDeclaration> findType(final ITypeName enclosingType) {
+        for (final TypeDeclaration decl : allTypes()) {
+            if (decl.getName().equals(enclosingType)) {
+                return Option.wrap(decl);
+            }
+        }
+        return Option.none();
     }
 }

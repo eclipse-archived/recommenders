@@ -15,28 +15,29 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.commons.utils.Option;
+import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.commons.utils.names.VmMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.codecompletion.CompletionProposalDecorator;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-@SuppressWarnings("restriction")
 public class OverridesCompletionProposalComputer implements IJavaCompletionProposalComputer {
     private final IArtifactStore artifactStore;
 
     private IIntelligentCompletionContext ctx;
-
-    private ICompilationUnit jdtCu;
 
     private final InstantOverridesRecommender recommender;
 
@@ -46,12 +47,20 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
 
     private final IntelligentCompletionContextResolver contextResolver;
 
+    private final JavaElementResolver jdtCache;
+
+    private IType jdtType;
+
+    private TypeDeclaration crType;
+
     @Inject
     public OverridesCompletionProposalComputer(final IArtifactStore artifactStore,
-            final InstantOverridesRecommender recommender, final IntelligentCompletionContextResolver contextResolver) {
+            final InstantOverridesRecommender recommender, final IntelligentCompletionContextResolver contextResolver,
+            final JavaElementResolver jdtCache) {
         this.artifactStore = artifactStore;
         this.recommender = recommender;
         this.contextResolver = contextResolver;
+        this.jdtCache = jdtCache;
     };
 
     @Override
@@ -67,16 +76,33 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
 
     private List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
         this.ctx = ctx;
-        this.jdtCu = ctx.getCompilationUnit();
-        if (!isCompletionTriggeredInTypeDeclarationBody()) {
-            return Collections.emptyList();
-        } else if (!artifactStore.hasArtifact(jdtCu, CompilationUnit.class)) {
+        if (!resolveEnclosingType()) {
             return Collections.emptyList();
         }
-        final CompilationUnit recCu = artifactStore.loadArtifact(jdtCu, CompilationUnit.class);
-        recommendations = recommender.createRecommendations(recCu.primaryType);
+        if (!isCompletionTriggeredInTypeDeclarationBody()) {
+            return Collections.emptyList();
+        } else if (!artifactStore.hasArtifact(jdtType, CompilationUnit.class)) {
+            return Collections.emptyList();
+        }
+        if (!findTypeDeclaration()) {
+            return Collections.emptyList();
+        }
+        recommendations = recommender.createRecommendations(crType);
         computeProposals();
         return proposals;
+    }
+
+    private boolean findTypeDeclaration() {
+        final CompilationUnit recCu = artifactStore.loadArtifact(jdtType, CompilationUnit.class);
+        final Option<TypeDeclaration> match = recCu.findType(ctx.getEnclosingType());
+        crType = match.getOrElse(null);
+        return match.hasValue();
+    }
+
+    private boolean resolveEnclosingType() {
+        final ITypeName enclosingType = ctx.getEnclosingType();
+        this.jdtType = jdtCache.toJdtType(enclosingType);
+        return jdtType != null;
     }
 
     private void computeProposals() {

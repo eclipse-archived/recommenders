@@ -16,7 +16,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.rcp.utils,
  org.eclipse.recommenders.commons.utils,
  org.eclipse.recommenders.commons.utils.gson,
- com.google.inject,
  org.eclipse.recommenders.commons.analysis,
  org.eclipse.ui.ide,
  org.eclipse.recommenders.commons.injection,
@@ -26,4 +25,3 @@ Export-Package: org.eclipse.recommenders.internal.rcp,
  org.eclipse.recommenders.internal.rcp.views.recommendations,
  org.eclipse.recommenders.rcp
 Bundle-ActivationPolicy: lazy; exclude:="org.eclipse.recommenders.internal.rcp.guice"
-Import-Package: javax.inject;version="1.0.0"

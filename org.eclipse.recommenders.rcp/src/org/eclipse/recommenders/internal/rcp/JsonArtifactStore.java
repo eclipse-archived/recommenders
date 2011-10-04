@@ -16,15 +16,12 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnhandledException;
 import static org.eclipse.recommenders.commons.utils.Throws.throwUnreachable;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -35,7 +32,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.annotations.Nullable;
@@ -44,7 +40,7 @@ import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.MapMaker;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -53,7 +49,8 @@ public class JsonArtifactStore implements IArtifactStore {
 
     ExecutorService writerPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    private final Map<Tuple<IJavaElement, Class<?>>, Object> index = Maps.newHashMap();
+    private final Map<Tuple<IJavaElement, Class<?>>, Object> cache = new MapMaker().concurrencyLevel(1).maximumSize(50)
+            .makeMap();
 
     private final List<IArtifactStoreChangedListener> listener;
 
@@ -72,7 +69,7 @@ public class JsonArtifactStore implements IArtifactStore {
 
     private <T> boolean isArtifactInIndex(final IJavaElement cu, final Class<T> clazz) {
         final Tuple<IJavaElement, Class<?>> key = createIndexKey(cu, clazz);
-        return index.containsKey(key);
+        return cache.containsKey(key);
     }
 
     private boolean existsCompilationUnitArtifactFileOnDisk(final IJavaElement cu, final Class<?> clazz) {
@@ -80,52 +77,51 @@ public class JsonArtifactStore implements IArtifactStore {
     }
 
     @Override
-    public <T> T loadArtifact(final ICompilationUnit cu, final Class<T> clazz) {
+    public <T> T loadArtifact(final IJavaElement cu, final Class<T> clazz) {
         ensureIsNotNull(cu);
         ensureIsNotNull(clazz);
         ensureIsNotNull(isArtifactInIndex(cu, clazz) || existsCompilationUnitArtifactFileOnDisk(cu, clazz));
         if (isArtifactInIndex(cu, clazz)) {
             return getArtifactInIndex(cu, clazz);
         }
-        final IFile file = getCompilationUnitArtifactFile(cu, clazz);
+        final File file = getCompilationUnitArtifactFile(cu, clazz);
         final T artifact = loadFileContents(clazz, file);
         putArtifactInIndex(cu, clazz, artifact);
         return artifact;
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getArtifactInIndex(final ICompilationUnit cu, final Class<T> clazz) {
+    private <T> T getArtifactInIndex(final IJavaElement cu, final Class<T> clazz) {
         final Tuple<IJavaElement, Class<?>> key = createIndexKey(cu, clazz);
-        return (T) index.get(key);
+        return (T) cache.get(key);
     }
 
-    private Object putArtifactInIndex(final ICompilationUnit cu, final Class<?> clazz, final Object artifact) {
+    private Object putArtifactInIndex(final IJavaElement cu, final Class<?> clazz, final Object artifact) {
         final Tuple<IJavaElement, Class<?>> key = createIndexKey(cu, clazz);
-        return index.put(key, artifact);
+        return cache.put(key, artifact);
     }
 
     private <T> Tuple<IJavaElement, Class<?>> createIndexKey(final IJavaElement cu, final Class<T> clazz) {
         return Tuple.create(cu, clazz);
     }
 
-    private IFile getCompilationUnitArtifactFile(final IJavaElement cu, final Class<?> artifactType) {
-        final IFolder folder = getCompilationUnitArtifactsFolder(cu);
-        final IFile file = folder.getFile(artifactType.getSimpleName() + ".json");
+    private File getCompilationUnitArtifactFile(final IJavaElement cu, final Class<?> artifactType) {
+        final File folder = getCompilationUnitArtifactsFolder(cu);
+        final File file = new File(folder, artifactType.getSimpleName() + ".json");
         return file;
     }
 
-    private IFolder getCompilationUnitArtifactsFolder(final IJavaElement unit) {
+    private File getCompilationUnitArtifactsFolder(final IJavaElement unit) {
         final IResource cuFile = unit.getResource();
         final IProject project = cuFile.getProject();
         final IPath cuPath = cuFile.getProjectRelativePath();
         final IPath dataPath = project.getFolder(".recommenders/data").getProjectRelativePath();
         final IPath path = dataPath.append(cuPath);
-        final IFolder folder = project.getFolder(path);
+        final File folder = project.getFolder(path).getRawLocation().toFile();
         return folder;
     }
 
-    private <T> T loadFileContents(final Class<T> clazz, final IFile file) {
-        final File location = file.getRawLocation().toFile();
+    private <T> T loadFileContents(final Class<T> clazz, final File location) {
         // InputStream in = null;
         try {
             return GsonUtil.deserialize(location, clazz);
@@ -148,7 +144,7 @@ public class JsonArtifactStore implements IArtifactStore {
     public <T> void storeArtifacts(final IJavaElement cu, final List<T> newArtifacts) {
         ensureIsNotNull(cu, "null compilation unit not allowed");
         ensureIsNotNull(newArtifacts, "null artifacts  list not allowed");
-        final IFolder folder = getCompilationUnitArtifactsFolder(cu);
+        final File folder = getCompilationUnitArtifactsFolder(cu);
         createResource(folder, new NullProgressMonitor());
         writerPool.execute(new Runnable() {
 
@@ -166,12 +162,12 @@ public class JsonArtifactStore implements IArtifactStore {
 
     private <T> void updateIndex(final IJavaElement cu, final T artifact) {
         final Tuple<IJavaElement, Class<?>> key = createIndexKey(cu, artifact.getClass());
-        index.put(key, artifact);
+        cache.put(key, artifact);
     }
 
     @Override
     public <T> void storeArtifact(final IJavaElement cu, final T artifact) {
-        final IFolder folder = getCompilationUnitArtifactsFolder(cu);
+        final File folder = getCompilationUnitArtifactsFolder(cu);
         createResource(folder, new NullProgressMonitor());
         writeArtifactToDisk(folder, artifact);
         updateIndex(cu, artifact);
@@ -202,11 +198,10 @@ public class JsonArtifactStore implements IArtifactStore {
         }.schedule();
     }
 
-    private void writeArtifactToDisk(final IFolder folder, final Object artifact) {
+    private void writeArtifactToDisk(final File folder, final Object artifact) {
         ensureIsTrue(folder.exists());
         final String simpleName = artifact.getClass().getSimpleName();
-        final IFile file = folder.getFile(simpleName + ".json");
-        final File location = file.getRawLocation().toFile();
+        final File location = new File(folder, simpleName + ".json");
         GsonUtil.serialize(artifact, location);
         // try {
         // final byte[] bytes = GsonUtil.serialize(artifact).getBytes();
@@ -223,10 +218,12 @@ public class JsonArtifactStore implements IArtifactStore {
 
     @Override
     public void cleanStore(final IProject project) {
-        final IFolder folder = project.getFolder(".recommenders/data/");
+
+        final IPath rawLocation = project.getLocation();
+        final File folder = new File(rawLocation.toFile(), ".recommenders/data/");
         if (folder.exists()) {
             try {
-                folder.delete(true, null);
+                folder.delete();
             } catch (final Exception x) {
                 throwUnhandledException(x);
             }
@@ -236,36 +233,16 @@ public class JsonArtifactStore implements IArtifactStore {
     @Override
     public void removeArtifacts(final IJavaElement cu) {
         try {
-            getCompilationUnitArtifactsFolder(cu).delete(true, null);
+            getCompilationUnitArtifactsFolder(cu).delete();
         } catch (final Exception x) {
             throwUnhandledException(x);
         }
     }
 
-    private void createResource(final IResource resource, final IProgressMonitor monitor) {
+    private void createResource(final File resource, final IProgressMonitor monitor) {
         if (resource == null || resource.exists()) {
             return;
         }
-        if (!resource.getParent().exists()) {
-            createResource(resource.getParent(), monitor);
-        }
-        try {
-            switch (resource.getType()) {
-            case IResource.FILE:
-                ((IFile) resource).create(new ByteArrayInputStream(new byte[0]), true, monitor);
-                break;
-            case IResource.FOLDER:
-                ((IFolder) resource).create(IResource.DERIVED, true, monitor);
-                break;
-            case IResource.PROJECT:
-                ((IProject) resource).create(monitor);
-                ((IProject) resource).open(monitor);
-                break;
-            }
-        } catch (final Exception x) {
-            // debug:
-            x.printStackTrace();
-            // throwUnhandledException(x);
-        }
+        resource.mkdirs();
     }
 }
