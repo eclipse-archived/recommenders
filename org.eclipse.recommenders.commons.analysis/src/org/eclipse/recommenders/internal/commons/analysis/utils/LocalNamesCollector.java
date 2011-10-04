@@ -10,19 +10,22 @@
  */
 package org.eclipse.recommenders.internal.commons.analysis.utils;
 
+import static org.eclipse.recommenders.commons.utils.Checks.cast;
+
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.eclipse.recommenders.commons.utils.Throws;
+import java.util.Map;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.MapMaker;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.ibm.wala.ipa.summaries.SyntheticIR;
 import com.ibm.wala.ssa.IR;
 import com.ibm.wala.ssa.ISSABasicBlock;
 import com.ibm.wala.ssa.SSACFG;
-import com.ibm.wala.ssa.SSACheckCastInstruction;
 import com.ibm.wala.ssa.SSAGetInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.ssa.SSAPutInstruction;
@@ -31,23 +34,35 @@ import com.ibm.wala.ssa.SSAPutInstruction;
  * Collects the name for all local variables - if available.
  */
 public class LocalNamesCollector {
-    private static final String NOT_FOUND = "not-found";
+
+    private final static Map<IR, Multimap<Integer, String>> cache = new MapMaker().maximumSize(100).concurrencyLevel(1)
+            .makeMap();
 
     public static final String UNKNOWN = "unnamed";
 
     // private static final Logger log =
     // Logger.getLogger(LocalNamesCollector.class);
-    private final Multimap<Integer/* value number */, String> names = HashMultimap.create();
+    private Multimap<Integer/* value number */, String> names = HashMultimap.create();
 
     private IR ir;
 
     private List<ISSABasicBlock> basicBlocks;
 
+    private HashSet<Integer> bbEndIndex;
+
     public LocalNamesCollector(final IR ir) {
-        storeIR(ir);
-        storeBasicBlocks();
-        collectParameterNames();
-        collectLocalValueNames();
+
+        if (ir instanceof SyntheticIR) {
+            return;
+        } else if (cache.containsKey(ir)) {
+            names = cache.get(ir);
+        } else {
+            cache.put(ir, names);
+            storeIR(ir);
+            storeBasicBlocks();
+            collectParameterNames();
+            collectLocalValueNames();
+        }
     }
 
     private void storeIR(final IR ir) {
@@ -56,8 +71,11 @@ public class LocalNamesCollector {
 
     private void storeBasicBlocks() {
         final SSACFG cfg = ir.getControlFlowGraph();
+        bbEndIndex = Sets.newHashSet();
+
         basicBlocks = new LinkedList<ISSABasicBlock>();
         for (final ISSABasicBlock block : cfg) {
+            bbEndIndex.add(block.getLastInstructionIndex());
             if (blockHasPositiveLastInstructionIndex(block)) {
                 basicBlocks.add(block);
             }
@@ -91,90 +109,85 @@ public class LocalNamesCollector {
     private boolean storeLocalNameForValueNumber(final int valueNumber, final String name) {
         if (Thread.interrupted()) {
             System.out.println("canceled while analyzing " + ir.getMethod().getSignature());
-            throw Throws.throwCancelationException();
+            // throw Throws.throwCancelationException();
         }
         return names.put(valueNumber, name);
     }
 
     private void collectLocalValueNames() {
 
-        int i = 0;
-        for (final SSAInstruction instr : ir.getInstructions()) {
-            if (instr != null && instr.hasDef()) {
-                final int def = instr.getDef();
-                final ISSABasicBlock basicBlockForInstruction = ir.getBasicBlockForInstruction(instr);
-                final String[] localNames = ir.getLocalNames(basicBlockForInstruction.getLastInstructionIndex(), def);
-                // redundant. this doesn't work at all times
-                storeLocalNamesForValueNumber(def, localNames);
-                // findLocalNamesForValueNumberInBasicBlocks(def);
-                // if (localNames == null) {
-                // final String name = getName(def);
-                // if (name != UNKNOWN) {
-                // System.out.println("");
-                // }
-                // }
+        final HashSet<Integer> yetUnresolvedValues = Sets.newHashSet();
+        final HashMultimap<Integer, String> fieldAccessNames = HashMultimap.create();
+        final SSAInstruction[] instructions = ir.getInstructions();
+
+        for (int instructionIndex = 0; instructionIndex < instructions.length; instructionIndex++) {
+            final SSAInstruction instr = instructions[instructionIndex];
+            if (instr == null) {
+                continue;
             }
-            i += 2;
+
+            addAllDefs(yetUnresolvedValues, instr);
+            addAllUnresolvedUses(yetUnresolvedValues, instr);
+            addFieldAccessNames(fieldAccessNames, instr);
+
+            resolveAllUnkownVariableNames(yetUnresolvedValues, instructionIndex);
         }
 
-        for (final Iterator<SSAInstruction> it = ir.iterateAllInstructions(); it.hasNext();) {
-            final SSAInstruction instr = it.next();
-            {
-                // check for field access
-                if (instr instanceof SSAGetInstruction) {
-                    final SSAGetInstruction instruction = (SSAGetInstruction) instr;
-                    final String name = instruction.getDeclaredField().getName().toString();
-                    final int val = instruction.getDef();
-                    storeLocalNameForValueNumber(val, name);
-                } else if (instr instanceof SSAPutInstruction) {
-                    final SSAPutInstruction instruction = (SSAPutInstruction) instr;
-                    final String name = instruction.getDeclaredField().getName().toString();
-                    final int val = instruction.getVal();
-                    storeLocalNameForValueNumber(val, name);
-                } else if (instr instanceof SSACheckCastInstruction) {
-                    // TODO cast need special treatment. Instance keys need
-                    // refinement because of cast.
-                    // handle cases like ' Composite container = (Composite)
-                    // super.createDialogArea(parent);'
-                    // XXX w/o updating the instance key this results in worse
-                    // recommendations. ignore for now and let
-                    // instant code completion handle this.
-                    //
-                    // final SSACheckCastInstruction instruction =
-                    // (SSACheckCastInstruction) instr;
-                    // final int use = instruction.getUse(0);
-                    // final int def = instruction.getDef();
-                    // findLocalNamesForValueNumberInBasicBlocks(def);
-                    // final String defName = getName(instr.getDef());
-                    // final String useName = getName(use);
-                    // if (useName == UNKNOWN && defName != UNKNOWN) {
-                    // storeLocalNameForValueNumber(use, defName);
-                    // }
+        for (final Integer vn : yetUnresolvedValues.toArray(new Integer[0])) {
+            if (fieldAccessNames.containsKey(vn)) {
+                for (final String name : fieldAccessNames.get(vn)) {
+                    storeLocalNameForValueNumber(vn, name);
+                    yetUnresolvedValues.remove(vn);
                 }
+            } else {
+                storeLocalNameForValueNumber(vn, UNKNOWN);
             }
-            for (int defIndex = instr.getNumberOfDefs(); defIndex-- > 0;) {
-                final int def = instr.getDef(defIndex);
-                findLocalNamesForValueNumberInBasicBlocks(def);
-            }
-            for (int useIndex = instr.getNumberOfUses(); useIndex-- > 0;) {
-                final int use = instr.getUse(useIndex);
-                findLocalNamesForValueNumberInBasicBlocks(use);
+        }
+
+    }
+
+    private void resolveAllUnkownVariableNames(final HashSet<Integer> yetUnresolvedValues, final int instructionIndex) {
+        if (bbEndIndex.contains(instructionIndex)) {
+            for (final Integer vn : yetUnresolvedValues.toArray(new Integer[0])) {
+                final String[] localNames = ir.getLocalNames(instructionIndex, vn);
+                if (localNames == null) {
+                    continue;
+                }
+                for (final String name : localNames) {
+                    if (name != null) {
+                        storeLocalNameForValueNumber(vn, name);
+                        yetUnresolvedValues.remove(vn);
+                    }
+                }
             }
         }
     }
 
-    private void findLocalNamesForValueNumberInBasicBlocks(final int valueNumber) {
-        if (names.containsKey(valueNumber)) {
-            return;
+    private void addFieldAccessNames(final HashMultimap<Integer, String> fieldAccessNames, final SSAInstruction instr) {
+        if (instr instanceof SSAGetInstruction) {
+            final SSAGetInstruction get = cast(instr);
+            final String name = get.getDeclaredField().getName().toString();
+            fieldAccessNames.put(get.getDef(), name);
+        } else if (instr instanceof SSAPutInstruction) {
+            final SSAPutInstruction put = (SSAPutInstruction) instr;
+            final String name = put.getDeclaredField().getName().toString();
+            fieldAccessNames.put(put.getVal(), name);
         }
-        for (final ISSABasicBlock block : basicBlocks) {
-            final int last = block.getLastInstructionIndex();
-            final String[] localNames = ir.getLocalNames(last, valueNumber);
-            storeLocalNamesForValueNumber(valueNumber, localNames);
+    }
+
+    private void addAllUnresolvedUses(final HashSet<Integer> yetUnresolvedValues, final SSAInstruction instr) {
+        for (int useIndex = instr.getNumberOfUses(); useIndex-- > 0;) {
+            final int vn = instr.getUse(useIndex);
+            if (!names.containsKey(vn)) {
+                yetUnresolvedValues.add(vn);
+            }
         }
-        if (!names.containsKey(valueNumber)) {
-            names.put(valueNumber, UNKNOWN);
-            return;
+    }
+
+    private void addAllDefs(final HashSet<Integer> yetUnresolvedValues, final SSAInstruction instr) {
+        for (int defIndex = instr.getNumberOfDefs(); defIndex-- > 0;) {
+            final int vn = instr.getDef(defIndex);
+            yetUnresolvedValues.add(vn);
         }
     }
 
@@ -185,24 +198,19 @@ public class LocalNamesCollector {
      *         number or the first name under which found for this value number
      */
     public String getName(final int valueNumber) {
+        final String internalGetName = internalGetName(valueNumber);
+        return internalGetName;
+    }
+
+    private String internalGetName(final int valueNumber) {
         if (!names.containsKey(valueNumber)) {
             return UNKNOWN;
         }
         final Collection<String> knownNamesForValue = names.get(valueNumber);
 
-        // if (knownNamesForValue.size() > 1) {
-        // logMoreThanOneNameFoundWarning(valueNumber);
-        // }
         return knownNamesForValue.iterator().next();
     }
 
-    // private void logMoreThanOneNameFoundWarning(final int valueNumber) {
-    // final String msg =
-    // String.format("%s:\n\tMore than one name for vale %d found: %s",
-    // ir.getMethod()
-    // .getSignature(), valueNumber, names);
-    // log.warn(msg);
-    // }
     /**
      * Returns the values for which a name could be found.
      */

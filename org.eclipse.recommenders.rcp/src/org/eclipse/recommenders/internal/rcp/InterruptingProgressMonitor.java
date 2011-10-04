@@ -37,7 +37,7 @@ public class InterruptingProgressMonitor implements IProgressMonitor {
                     InterruptingProgressMonitor.this.setCanceled(true);
                 }
             }
-        }, 2, TimeUnit.SECONDS);
+        }, 10, TimeUnit.SECONDS);
 
     }
 
