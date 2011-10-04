@@ -13,12 +13,12 @@ package org.eclipse.recommenders.internal.rcp.extdoc.view;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProviderStore;
 import org.eclipse.recommenders.internal.rcp.extdoc.ProvidersComposite;
+import org.eclipse.recommenders.internal.rcp.extdoc.UpdateService;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,7 +26,8 @@ public final class ProvidersTableTest {
 
     @Test
     public void testProvidersTable() {
-        final ProvidersTable table = new ProvidersTable(ExtDocUtils.getShell(), new ProviderStore());
+        final ProvidersTable table = new ProvidersTable(ExtDocUtils.getShell(), new ProviderStore(),
+                new UpdateService());
         table.setProvidersComposite(new ProvidersComposite(ExtDocUtils.getShell(), ExtDocUtils.getWorkbenchWindow()));
         table.addProvider(mockProviderComposite(), "Test", null);
         Assert.assertEquals(1, table.getItems().length);

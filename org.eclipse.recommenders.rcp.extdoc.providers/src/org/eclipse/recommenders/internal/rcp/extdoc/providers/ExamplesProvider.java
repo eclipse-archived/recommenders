@@ -26,8 +26,9 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeature
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
-import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.server.extdoc.CodeExamplesServer;
 import org.eclipse.recommenders.server.extdoc.types.CodeExamples;
@@ -54,7 +55,7 @@ public final class ExamplesProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
+    public ProviderUiUpdateJob updateSelection(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             return displayContentForType(ElementResolver.toRecType((IType) element));
@@ -70,7 +71,7 @@ public final class ExamplesProvider extends AbstractTitledProvider {
         return null;
     }
 
-    private ProviderUiJob displayContentForMethod(final IMethod method) {
+    private ProviderUiUpdateJob displayContentForMethod(final IMethod method) {
         try {
             if (method.isConstructor()) {
                 return displayContentForType(ElementResolver.toRecType(method.getDeclaringType()));
@@ -88,19 +89,19 @@ public final class ExamplesProvider extends AbstractTitledProvider {
         }
     }
 
-    private ProviderUiJob displayContentForType(final ITypeName type) {
+    private ProviderUiUpdateJob displayContentForType(final ITypeName type) {
         if (type == null) {
             return null;
         }
         return displayCodeSnippets(type, server.getTypeCodeExamples(type));
     }
 
-    private ProviderUiJob displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
+    private ProviderUiUpdateJob displayCodeSnippets(final IName element, final CodeExamples codeExamples) {
         final CommunityFeedback features = CommunityFeedback.create(element, null, this, server);
-        return new ProviderUiJob() {
+        return new ProviderUiUpdateJob() {
             @Override
             public void run(final Composite composite) {
-                disposeChildren(composite);
+                UiUtils.disposeChildren(composite);
                 if (codeExamples == null) {
                     final Label label = new Label(composite, SWT.NONE);
                     label.setText("Sorry, this feature is currently under development. It will follow soon when ready.");

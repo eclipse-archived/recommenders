@@ -14,7 +14,6 @@ import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,14 +25,14 @@ public final class AbstractProviderCompositeTest {
         final Composite control = composite.createComposite(ExtDocUtils.getShell(), null);
 
         Assert.assertEquals(3, control.getChildren().length);
-        AbstractTitledProvider.disposeChildren(control);
+        UiUtils.disposeChildren(control);
         Assert.assertEquals(0, control.getChildren().length);
     }
 
     private static final class ProviderComposite extends AbstractTitledProvider {
 
         @Override
-        public ProviderUiJob updateSelection(final IJavaElementSelection context) {
+        public ProviderUiUpdateJob updateSelection(final IJavaElementSelection context) {
             return null;
         }
 

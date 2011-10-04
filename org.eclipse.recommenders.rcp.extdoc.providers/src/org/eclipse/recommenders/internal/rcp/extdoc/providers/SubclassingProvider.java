@@ -27,8 +27,9 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TableListing;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
-import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
@@ -56,7 +57,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
+    public ProviderUiUpdateJob updateSelection(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element instanceof IType) {
             return displayContentForType(ElementResolver.toRecType((IType) element));
@@ -68,7 +69,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
         return null;
     }
 
-    private ProviderUiJob displayContentForType(final ITypeName type) {
+    private ProviderUiUpdateJob displayContentForType(final ITypeName type) {
         final ClassOverrideDirectives overrides = server.getClassOverrideDirectives(type);
         if (overrides == null) {
             return null;
@@ -82,10 +83,10 @@ public final class SubclassingProvider extends AbstractTitledProvider {
         final ClassSelfcallDirectives calls = server.getClassSelfcallDirectives(type);
         final CommunityFeedback features = CommunityFeedback.create(type, null, this, server);
 
-        return new ProviderUiJob() {
+        return new ProviderUiUpdateJob() {
             @Override
             public void run(final Composite composite) {
-                disposeChildren(composite);
+                UiUtils.disposeChildren(composite);
                 final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);
                 line.createStyleRange(31 + getLength(subclasses), elementName.length(), SWT.NORMAL, false, true);
                 displayDirectives(overrides.getOverrides(), "override", subclasses, composite);
@@ -98,7 +99,7 @@ public final class SubclassingProvider extends AbstractTitledProvider {
         };
     }
 
-    private ProviderUiJob displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration) {
+    private ProviderUiUpdateJob displayContentForMethod(final IMethodName method, final IMethodName firstDeclaration) {
         // TODO first is not correct in all cases. this needs to be fixed soon
         // after the demo
         final MethodSelfcallDirectives selfcalls = server.getMethodSelfcallDirectives(firstDeclaration);
@@ -108,10 +109,10 @@ public final class SubclassingProvider extends AbstractTitledProvider {
         final int definitions = selfcalls.getNumberOfDefinitions();
         final CommunityFeedback features = CommunityFeedback.create(firstDeclaration, null, this, server);
 
-        return new ProviderUiJob() {
+        return new ProviderUiUpdateJob() {
             @Override
             public void run(final Composite composite) {
-                disposeChildren(composite);
+                UiUtils.disposeChildren(composite);
                 // displayMethodOverrideInformation(firstDeclaration.getDeclaringType().getClassName(),
                 // definitions, 25);
                 final String text = String

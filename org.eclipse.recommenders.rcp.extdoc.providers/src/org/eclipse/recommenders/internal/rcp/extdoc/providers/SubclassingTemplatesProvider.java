@@ -25,8 +25,9 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TableListing;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TextAndFeaturesLine;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
-import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverridePatterns;
@@ -52,11 +53,11 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
     }
 
     @Override
-    protected ProviderUiJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected ProviderUiUpdateJob updateExtendsDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         return printProposals(ElementResolver.toRecType(type));
     }
 
-    private ProviderUiJob printProposals(final ITypeName type) {
+    private ProviderUiUpdateJob printProposals(final ITypeName type) {
         final ClassOverridePatterns directive = server.getClassOverridePatterns(type);
         if (directive == null) {
             return null;
@@ -69,10 +70,10 @@ public final class SubclassingTemplatesProvider extends AbstractLocationSensitiv
                         numberOfSubclasses);
         final CommunityFeedback ratings = CommunityFeedback.create(type, null, this, server);
 
-        return new ProviderUiJob() {
+        return new ProviderUiUpdateJob() {
             @Override
             public void run(final Composite composite) {
-                disposeChildren(composite);
+                UiUtils.disposeChildren(composite);
                 SwtFactory.createStyledText(composite, text, SWT.COLOR_BLACK, true);
 
                 final Composite templates = SwtFactory.createGridComposite(composite, 1, 0, 12, 0, 0);

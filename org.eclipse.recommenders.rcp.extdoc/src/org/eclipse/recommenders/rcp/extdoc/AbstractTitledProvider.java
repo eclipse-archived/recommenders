@@ -19,7 +19,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchWindow;
 
 /**
@@ -52,37 +51,32 @@ public abstract class AbstractTitledProvider extends AbstractProvider {
     protected abstract Composite createContentComposite(Composite parent);
 
     @Override
+    public final Composite getContentControl(final Composite composite) {
+        return ((ProviderComposite) composite).contentComposite;
+    }
+
+    @Override
     public boolean isAvailableForLocation(final JavaElementLocation location) {
         return location != JavaElementLocation.PACKAGE_DECLARATION;
     }
 
     @Override
     public final boolean selectionChanged(final IJavaElementSelection selection, final Composite composite) {
-        final ProviderUiJob job = updateSelection(selection);
+        final ProviderUiUpdateJob job = updateSelection(selection);
         if (job == null) {
             return false;
         }
-        ProviderUiJob.run(job, ((ProviderComposite) composite).contentComposite);
+        ProviderUiUpdateJob.run(job, ((ProviderComposite) composite).contentComposite);
         return true;
     }
 
-    protected abstract ProviderUiJob updateSelection(IJavaElementSelection selection);
+    protected abstract ProviderUiUpdateJob updateSelection(IJavaElementSelection selection);
 
     /**
      * @return The currently active {@link IWorkbenchWindow}.
      */
     public final IWorkbenchWindow getWorkbenchWindow() {
         return window;
-    }
-
-    /**
-     * @param composite
-     *            The composite for which all children will be disposed.
-     */
-    public static final void disposeChildren(final Composite composite) {
-        for (final Control child : composite.getChildren()) {
-            child.dispose();
-        }
     }
 
     private static final class ProviderComposite extends Composite {

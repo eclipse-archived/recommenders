@@ -25,17 +25,17 @@ import org.eclipse.jface.text.AbstractInformationControl;
 import org.eclipse.jface.text.IInformationControlExtension2;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.utils.Option;
-import org.eclipse.recommenders.internal.rcp.extdoc.UpdateService.UpdateJob;
+import org.eclipse.recommenders.internal.rcp.extdoc.UpdateService.AbstractUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
-abstract class AbstractExtDocInformationControl extends AbstractInformationControl implements
+abstract class AbstractHoverInformationControl extends AbstractInformationControl implements
         IInformationControlExtension2 {
 
     private final UiManager uiManager;
@@ -46,9 +46,9 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
     private IJavaElementSelection lastSelection;
     private Map<IProvider, IAction> actions;
 
-    AbstractExtDocInformationControl(final Shell parentShell, final UiManager uiManager,
+    AbstractHoverInformationControl(final Shell parentShell, final UiManager uiManager,
             final ProviderStore providerStore, final UpdateService updateService,
-            final AbstractExtDocInformationControl copy) {
+            final AbstractHoverInformationControl copy) {
         super(parentShell, new ToolBarManager(SWT.FLAT));
         this.uiManager = uiManager;
         this.providerStore = providerStore;
@@ -59,7 +59,7 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
         create();
     }
 
-    private void copyInformationControl(final AbstractExtDocInformationControl copy) {
+    private void copyInformationControl(final AbstractHoverInformationControl copy) {
         composite = copy.composite;
         lastSelection = copy.lastSelection;
         actions = copy.actions;
@@ -143,7 +143,7 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
             for (final Composite control : composite.getProviders()) {
                 ((GridData) control.getLayoutData()).exclude = true;
                 actions.get(control.getData()).setEnabled(false);
-                updateService.schedule(new ProviderJob(control));
+                updateService.schedule(new PopUpProviderUpdateJob(control));
             }
             updateService.invokeAll();
             composite.updateSelectionLabel(selection.getJavaElement());
@@ -164,14 +164,14 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
 
     abstract IJavaElementSelection getSelection(Object object);
 
-    private final class ProviderJob implements UpdateJob {
+    private final class PopUpProviderUpdateJob extends AbstractUpdateJob {
 
         private final Composite control;
         private final IProvider provider;
 
         private boolean displayProvider;
 
-        ProviderJob(final Composite control) {
+        PopUpProviderUpdateJob(final Composite control) {
             this.control = control;
             provider = (IProvider) control.getData();
         }
@@ -186,23 +186,27 @@ abstract class AbstractExtDocInformationControl extends AbstractInformationContr
         }
 
         @Override
-        public void handleSuccessful() {
+        public void finishSuccessful() {
             if (displayProvider) {
-                ProviderUiJob.run(new ProviderUiJob() {
-                    @Override
-                    public void run(final Composite composite) {
-                        ((GridData) composite.getLayoutData()).exclude = false;
-                        actions.get(provider).setEnabled(true);
-                    }
-                }, control);
+                displayProvider();
             }
         }
 
         @Override
-        public void handleCancellation() {
-            // TODO: show timeout notification
-            System.err.println(provider + " cancelled in pop-up");
+        public void handleTimeout() {
+            displayTimeoutMessage(provider.getContentControl(control));
+            displayProvider();
         }
-    }
 
+        private void displayProvider() {
+            ProviderUiUpdateJob.run(new ProviderUiUpdateJob() {
+                @Override
+                public void run(final Composite composite) {
+                    ((GridData) composite.getLayoutData()).exclude = false;
+                    actions.get(provider).setEnabled(true);
+                }
+            }, control);
+        }
+
+    }
 }

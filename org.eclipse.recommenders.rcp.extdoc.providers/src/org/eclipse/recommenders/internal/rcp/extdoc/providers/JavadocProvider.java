@@ -30,8 +30,9 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResol
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedViewSite;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.VariableResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
-import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -69,7 +70,7 @@ public final class JavadocProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
+    public ProviderUiUpdateJob updateSelection(final IJavaElementSelection selection) {
         final IJavaElement javaElement = getJavaElement(selection.getJavaElement());
         return javaElement == null ? displayContent(selection.getJavaElement(), false) : displayContent(javaElement,
                 true);
@@ -110,19 +111,19 @@ public final class JavadocProvider extends AbstractTitledProvider {
         }
     }
 
-    private ProviderUiJob displayContent(final IJavaElement javaElement, final boolean communityFeedback) {
+    private ProviderUiUpdateJob displayContent(final IJavaElement javaElement, final boolean communityFeedback) {
         if (javaElement == null) {
             return null;
         }
         final IName name = ElementResolver.resolveName(javaElement);
         final CommunityFeedback features = communityFeedback ? CommunityFeedback.create(name, null, this, server)
                 : null;
-        return new ProviderUiJob() {
+        return new ProviderUiUpdateJob() {
             @Override
             public void run(final Composite composite) {
                 javadocs.get(composite).setInput(javaElement);
                 final Composite feedbackComposite = feedbackComposites.get(composite);
-                disposeChildren(feedbackComposite);
+                UiUtils.disposeChildren(feedbackComposite);
                 if (features != null) {
                     features.loadCommentsComposite(feedbackComposite);
                     features.loadStarsRatingComposite(feedbackComposite);

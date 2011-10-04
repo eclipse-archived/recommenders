@@ -48,7 +48,7 @@ final class ProvidersTableSelectionListener implements Listener {
         table.setChecked(preferenceId, tableItem.getChecked());
         if (tableItem.getGrayed()) {
             if (tableItem.getChecked()) {
-                updateService.schedule(new ProviderUpdateJob(table, tableItem, lastSelection));
+                updateService.schedule(new ViewProviderUpdateJob(table, tableItem, lastSelection));
                 updateService.invokeAll();
             }
         } else {

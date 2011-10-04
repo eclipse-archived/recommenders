@@ -63,7 +63,7 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
         return isProblemHoverActive ? problemHover.getHoverControlCreator() : creator;
     }
 
-    private static final class InformationControl extends AbstractExtDocInformationControl {
+    private static final class InformationControl extends AbstractHoverInformationControl {
 
         public InformationControl(final Shell parentShell, final UiManager uiManager,
                 final ProviderStore providerStore, final UpdateService updateService, final InformationControl copy) {

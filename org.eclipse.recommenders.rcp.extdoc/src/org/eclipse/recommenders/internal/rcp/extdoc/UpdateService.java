@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.extdoc;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -21,17 +22,20 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
+import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.UiUtils;
+import org.eclipse.swt.widgets.Composite;
 
-public class UpdateService {
+public final class UpdateService {
 
     private final ExecutorService pool = Executors.newCachedThreadPool();
-    private final Map<UpdateJob, Callable<UpdateJob>> jobs = new HashMap<UpdateJob, Callable<UpdateJob>>();
+    private final Map<IUpdateJob, Callable<IUpdateJob>> jobs = new HashMap<IUpdateJob, Callable<IUpdateJob>>();
 
-    public void schedule(final UpdateJob job) {
-        jobs.put(job, new Callable<UpdateJob>() {
+    public void schedule(final IUpdateJob job) {
+        jobs.put(job, new Callable<IUpdateJob>() {
 
             @Override
-            public UpdateJob call() throws Exception {
+            public IUpdateJob call() throws Exception {
                 job.run();
                 return job;
             }
@@ -40,10 +44,11 @@ public class UpdateService {
 
     public void invokeAll() {
         try {
-            for (final Future<UpdateJob> future : pool.invokeAll(jobs.values(), 5, TimeUnit.SECONDS)) {
+            final List<Future<IUpdateJob>> futures = pool.invokeAll(jobs.values(), 2, TimeUnit.SECONDS);
+            for (final Future<IUpdateJob> future : futures) {
                 try {
-                    final UpdateJob job = future.get();
-                    job.handleSuccessful();
+                    final IUpdateJob job = future.get();
+                    job.finishSuccessful();
                     jobs.remove(future.get());
                 } catch (final CancellationException e) {
                 } catch (final ExecutionException e) {
@@ -53,17 +58,26 @@ public class UpdateService {
         } catch (final InterruptedException e) {
             ExtDocPlugin.logException(e);
         }
-        for (final UpdateJob job : jobs.keySet()) {
-            job.handleCancellation();
+        for (final IUpdateJob job : jobs.keySet()) {
+            job.handleTimeout();
         }
         jobs.clear();
     }
 
-    public static interface UpdateJob extends Runnable {
+    public interface IUpdateJob extends Runnable {
 
-        void handleSuccessful();
+        void finishSuccessful();
 
-        void handleCancellation();
+        void handleTimeout();
 
+    }
+
+    public abstract static class AbstractUpdateJob implements IUpdateJob {
+
+        protected final void displayTimeoutMessage(final Composite composite) {
+            UiUtils.disposeChildren(composite);
+            SwtFactory.createLabel(composite, "Provider timed out. Please review your network status.", true);
+            UiUtils.layoutParents(composite);
+        }
     }
 }

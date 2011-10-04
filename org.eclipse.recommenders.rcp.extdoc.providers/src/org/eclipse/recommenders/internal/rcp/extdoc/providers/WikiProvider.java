@@ -20,8 +20,9 @@ import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
-import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.swt.SWT;
@@ -56,7 +57,7 @@ public final class WikiProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection selection) {
+    public ProviderUiUpdateJob updateSelection(final IJavaElementSelection selection) {
         final IJavaElement element = selection.getJavaElement();
         if (element == null || element instanceof ILocalVariable || element.getElementName().isEmpty()) {
             return null;
@@ -64,11 +65,11 @@ public final class WikiProvider extends AbstractTitledProvider {
         return updateDisplay(element, server.getText(element));
     }
 
-    private ProviderUiJob updateDisplay(final IJavaElement element, final String markup) {
-        return new ProviderUiJob() {
+    private ProviderUiUpdateJob updateDisplay(final IJavaElement element, final String markup) {
+        return new ProviderUiUpdateJob() {
             @Override
             public void run(final Composite composite) {
-                disposeChildren(composite);
+                UiUtils.disposeChildren(composite);
                 if (markup == null) {
                     displayNoText(element, composite);
                 } else {
@@ -107,7 +108,7 @@ public final class WikiProvider extends AbstractTitledProvider {
     }
 
     void displayEditArea(final IJavaElement element, final Composite composite) {
-        disposeChildren(composite);
+        UiUtils.disposeChildren(composite);
         final Text text = SwtFactory.createTextArea(composite, "", 100, 0);
         SwtFactory.createButton(composite, "Save Changes", new SelectionAdapter() {
             @Override
@@ -120,7 +121,7 @@ public final class WikiProvider extends AbstractTitledProvider {
 
     void update(final IJavaElement javaElement, final String text, final Composite composite) {
         server.setText(javaElement, text);
-        disposeChildren(composite);
+        UiUtils.disposeChildren(composite);
         displayText(javaElement, text, composite);
         layout(composite);
     }

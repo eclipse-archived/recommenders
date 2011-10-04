@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
-import org.eclipse.recommenders.internal.rcp.extdoc.UpdateService.UpdateJob;
+import org.eclipse.recommenders.internal.rcp.extdoc.UpdateService.AbstractUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.swt.graphics.Image;
@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.progress.UIJob;
 
-class ProviderUpdateJob implements UpdateJob {
+class ViewProviderUpdateJob extends AbstractUpdateJob {
 
     private static final Image ICON_LOADING = ExtDocPlugin.getIcon("lcl16/loading.gif");
 
@@ -34,7 +34,7 @@ class ProviderUpdateJob implements UpdateJob {
 
     private boolean hasContent;
 
-    ProviderUpdateJob(final ProvidersTable table, final TableItem item, final IJavaElementSelection selection) {
+    ViewProviderUpdateJob(final ProvidersTable table, final TableItem item, final IJavaElementSelection selection) {
         this.table = table;
         this.item = item;
         composite = (Composite) item.getData();
@@ -54,8 +54,19 @@ class ProviderUpdateJob implements UpdateJob {
         }
     }
 
+    @Override
+    public void finishSuccessful() {
+        displayProvider(hasContent);
+    }
+
+    @Override
+    public void handleTimeout() {
+        super.displayTimeoutMessage(provider.getContentControl(composite));
+        displayProvider(true);
+    }
+
     private void hideProvider() {
-        new UIJob("Update provider table") {
+        final UIJob job = new UIJob("Update provider table") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!item.isDisposed()) {
@@ -63,30 +74,21 @@ class ProviderUpdateJob implements UpdateJob {
                 }
                 return Status.OK_STATUS;
             }
-        }.schedule();
+        };
+        job.schedule();
     }
 
-    @Override
-    public void handleSuccessful() {
-        displayProvider();
-    }
-
-    @Override
-    public void handleCancellation() {
-        // TODO: show timeout notification
-        System.err.println(provider + " cancelled");
-    }
-
-    private void displayProvider() {
-        new UIJob("Update provider table") {
+    private void displayProvider(final boolean display) {
+        final UIJob job = new UIJob("Update provider table") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
                 if (!item.isDisposed()) {
-                    table.setContentVisible(item, hasContent, true);
+                    table.setContentVisible(item, display, true);
                     item.setImage((Image) item.getData("image"));
                 }
                 return Status.OK_STATUS;
             }
-        }.schedule();
+        };
+        job.schedule();
     }
 }

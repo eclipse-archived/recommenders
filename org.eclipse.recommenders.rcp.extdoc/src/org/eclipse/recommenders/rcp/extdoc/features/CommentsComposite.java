@@ -20,6 +20,7 @@ import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -126,9 +127,6 @@ final class CommentsComposite extends Composite {
 
     @Override
     public void layout() {
-        super.layout(true);
-        if (getParent().getParent() != null) {
-            getParent().getParent().getParent().layout(true);
-        }
+        UiUtils.layoutParents(this);
     }
 }

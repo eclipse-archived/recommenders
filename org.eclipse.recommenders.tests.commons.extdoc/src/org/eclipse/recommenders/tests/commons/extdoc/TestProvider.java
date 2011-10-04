@@ -13,7 +13,7 @@ package org.eclipse.recommenders.tests.commons.extdoc;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
-import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -33,8 +33,8 @@ public final class TestProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public ProviderUiJob updateSelection(final IJavaElementSelection context) {
-        return new ProviderUiJob() {
+    public ProviderUiUpdateJob updateSelection(final IJavaElementSelection context) {
+        return new ProviderUiUpdateJob() {
             @Override
             public void run(final Composite composite) {
                 if (!text.isDisposed()) {

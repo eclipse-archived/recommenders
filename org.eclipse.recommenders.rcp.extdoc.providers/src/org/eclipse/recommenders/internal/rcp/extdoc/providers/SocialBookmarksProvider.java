@@ -18,8 +18,9 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.swt.TableListing;
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
-import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 import org.eclipse.recommenders.server.extdoc.SocialBookmarksServer;
@@ -52,7 +53,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
     }
 
     @Override
-    protected ProviderUiJob updateSelection(final IJavaElementSelection selection) {
+    protected ProviderUiUpdateJob updateSelection(final IJavaElementSelection selection) {
         final IName name = ElementResolver.resolveName(selection.getJavaElement());
         if (name == null) {
             return null;
@@ -60,7 +61,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         final SocialBookmarks bookmarks = server.getBookmarks(name);
         // Prefetching of bookmarks and ratings before we enter the UI job.
         bookmarks.getBookmarks(name, server, this);
-        return new ProviderUiJob() {
+        return new ProviderUiUpdateJob() {
             @Override
             public void run(final Composite composite) {
                 updateDisplay(selection.getJavaElement(), composite, bookmarks);
@@ -69,7 +70,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
     }
 
     void updateDisplay(final IJavaElement element, final Composite composite, final SocialBookmarks bookmarks) {
-        disposeChildren(composite);
+        UiUtils.disposeChildren(composite);
         displayItems(element, composite, bookmarks);
         displayAddControl(element, composite, bookmarks);
     }
@@ -114,7 +115,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
                 ExtDocPlugin.getIcon("eview16/add.gif"), false, new MouseAdapter() {
                     @Override
                     public void mouseUp(final MouseEvent event) {
-                        disposeChildren(addComposite);
+                        UiUtils.disposeChildren(addComposite);
                         displayAddArea(element, composite, addComposite, bookmarks);
                     }
                 });
@@ -133,7 +134,7 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
         SwtFactory.createButton(addComposite, "Cancel", new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent event) {
-                disposeChildren(addComposite);
+                UiUtils.disposeChildren(addComposite);
                 displayAddControl(element, composite, bookmarks);
                 layout(composite);
             }

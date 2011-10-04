@@ -115,7 +115,7 @@ public class ExtDocView extends ViewPart {
     private void updateProviders(final IJavaElementSelection selection) {
         for (final TableItem item : table.getItems()) {
             if (item.getChecked()) {
-                updateService.schedule(new ProviderUpdateJob(table, item, selection));
+                updateService.schedule(new ViewProviderUpdateJob(table, item, selection));
             }
         }
         updateService.invokeAll();

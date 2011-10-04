@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -21,7 +24,9 @@ import org.eclipse.ui.progress.UIJob;
  * definition of composite updates carried out, i.e. what content should be
  * displayed.
  */
-public abstract class ProviderUiJob {
+public abstract class ProviderUiUpdateJob {
+
+    private static Set<UIJob> jobs = new HashSet<UIJob>();
 
     /**
      * @param job
@@ -30,23 +35,24 @@ public abstract class ProviderUiJob {
      * @param composite
      *            The composite in which the UI job will fill its content.
      */
-    public static void run(final ProviderUiJob job, final Composite composite) {
+    public static void run(final ProviderUiUpdateJob job, final Composite composite) {
         final UIJob uiJob = new UIJob("Updating Provider View") {
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
-                monitor.beginTask("upadate UI", 1);
+                monitor.beginTask("Update UI", 1);
                 if (!composite.isDisposed()) {
                     try {
                         job.run(composite);
+                        UiUtils.layoutParents(composite);
                     } catch (final Exception e) {
                         ExtDocPlugin.logException(e);
                     }
-                    composite.getParent().getParent().getParent().getParent().layout(true, true);
                 }
                 monitor.done();
                 return Status.OK_STATUS;
             }
         };
+        jobs.add(uiJob);
         uiJob.setSystem(true);
         uiJob.schedule();
     }
@@ -57,5 +63,12 @@ public abstract class ProviderUiJob {
      *            content.
      */
     public abstract void run(Composite composite);
+
+    public static void cancelActiveJobs() {
+        for (final UIJob job : jobs) {
+            job.cancel();
+        }
+        jobs.clear();
+    }
 
 }

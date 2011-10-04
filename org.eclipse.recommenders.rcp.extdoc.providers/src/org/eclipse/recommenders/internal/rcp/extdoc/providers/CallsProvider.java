@@ -37,8 +37,9 @@ import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.ElementResol
 import org.eclipse.recommenders.internal.rcp.extdoc.providers.utils.MockedIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvider;
-import org.eclipse.recommenders.rcp.extdoc.ProviderUiJob;
+import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
+import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
 import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -69,13 +70,13 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
     }
 
     @Override
-    protected ProviderUiJob updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected ProviderUiUpdateJob updateImportDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
         return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
+    protected ProviderUiUpdateJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IField field) {
         final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
         if (context == null) {
             return null;
@@ -85,50 +86,50 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
     }
 
     @Override
-    protected ProviderUiJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected ProviderUiUpdateJob updateFieldDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
         return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
+    protected ProviderUiUpdateJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IMethod method) {
         final MockedIntelligentCompletionContext context = ContextFactory.createThisVariableContext(selection, method);
         return displayProposalsForMethod(method, true, context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected ProviderUiUpdateJob updateMethodDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
         return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
+    protected ProviderUiUpdateJob updateParameterDeclarationSelection(final IJavaElementSelection selection, final IType type) {
         final MockedIntelligentCompletionContext context = new MockedIntelligentCompletionContext(selection);
         return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
     @Override
-    protected ProviderUiJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
+    protected ProviderUiUpdateJob updateParameterDeclarationSelection(final IJavaElementSelection selection,
             final ILocalVariable local) {
         final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
         return context == null ? null : displayProposalsForVariable(local, true, null, context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
+    protected ProviderUiUpdateJob updateMethodBodySelection(final IJavaElementSelection selection, final ILocalVariable local) {
         final MockedIntelligentCompletionContext context = ContextFactory.createLocalVariableContext(selection, local);
         return context == null ? null : displayProposalsForVariable(local, false, null, context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
+    protected ProviderUiUpdateJob updateMethodBodySelection(final IJavaElementSelection selection, final IField field) {
         final MockedIntelligentCompletionContext context = ContextFactory.createFieldVariableContext(selection, field);
         return context == null ? null : displayProposalsForVariable(field, false, null, context);
     }
 
     @Override
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
+    protected ProviderUiUpdateJob updateMethodBodySelection(final IJavaElementSelection selection, final IMethod method) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
         final IMethodName invokedMethod = Preconditions.checkNotNull(ElementResolver.toRecMethod(method), method);
         final ITypeName receiverType = context.getReceiverType();
@@ -138,12 +139,12 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
     }
 
     @Override
-    protected ProviderUiJob updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
+    protected ProviderUiUpdateJob updateMethodBodySelection(final IJavaElementSelection selection, final IType type) {
         final MockedIntelligentCompletionContext context = ContextFactory.createNullVariableContext(selection);
         return displayProposalsForType(type, new HashSet<IMethodName>(), type.getElementName(), context);
     }
 
-    private ProviderUiJob displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors,
+    private ProviderUiUpdateJob displayProposalsForVariable(final IJavaElement element, final boolean negateConstructors,
             final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilityFromMethods,
             final MockedIntelligentCompletionContext context) {
         final Variable variable = context.getVariable();
@@ -160,7 +161,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         return null;
     }
 
-    private ProviderUiJob displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods,
+    private ProviderUiUpdateJob displayProposalsForType(final IType type, final Set<IMethodName> invokedMethods,
             final String elementName, final MockedIntelligentCompletionContext context) {
         final ITypeName typeName = ElementResolver.toRecType(type);
         final IProjectModelFacade facade = adapter.getModelFacade(type);
@@ -172,7 +173,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         return null;
     }
 
-    private ProviderUiJob displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration,
+    private ProviderUiUpdateJob displayProposalsForMethod(final IMethod method, final boolean isMethodDeclaration,
             final MockedIntelligentCompletionContext context) {
         final ITypeName type = CallsAdapter.getMethodsDeclaringType(method);
         final IProjectModelFacade facade = adapter.getModelFacade(method);
@@ -188,7 +189,7 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         return first.equals(method) ? null : displayProposalsForMethod(first, isMethodDeclaration, context);
     }
 
-    private ProviderUiJob displayProposals(final IJavaElement element, final String elementName, final IName elementId,
+    private ProviderUiUpdateJob displayProposals(final IJavaElement element, final String elementName, final IName elementId,
             final boolean isMethodDeclaration, final SortedSet<Tuple<IMethodName, Double>> proposals,
             final Set<IMethodName> calledMethods,
             final SortedSet<Tuple<IMethodName, Tuple<IMethodName, Double>>> maxProbabilitiesFromMethods) {
@@ -202,10 +203,10 @@ public final class CallsProvider extends AbstractLocationSensitiveTitledProvider
         final String text2 = "When accessed from single methods, probabilites for this field's methods might be different:";
         final CommunityFeedback features = CommunityFeedback.create(elementId, null, this, server);
 
-        return new ProviderUiJob() {
+        return new ProviderUiUpdateJob() {
             @Override
             public void run(final Composite composite) {
-                disposeChildren(composite);
+                UiUtils.disposeChildren(composite);
                 final TextAndFeaturesLine line = TextAndFeaturesLine.create(composite, text, features);
                 line.createStyleRange(12 + action.length(), elementName.length(), SWT.NORMAL, false, true);
                 displayProposals(element, isMethodDeclaration, proposals, calledMethods, composite);

@@ -87,7 +87,7 @@ final class ExtDocCodeAssistantHover {
             return assist;
         }
 
-        private final class InformationControl extends AbstractExtDocInformationControl {
+        private final class InformationControl extends AbstractHoverInformationControl {
 
             private StyledText text;
             private Composite hoverComposite;
