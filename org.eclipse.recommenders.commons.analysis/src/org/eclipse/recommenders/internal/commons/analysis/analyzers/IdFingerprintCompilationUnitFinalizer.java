@@ -34,7 +34,8 @@ import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.types.TypeReference;
 
 public class IdFingerprintCompilationUnitFinalizer implements ICompilationUnitFinalizer {
-    private final Map<IClass, String/* fingerprint */> map = new MapMaker().softKeys().makeMap();
+    private final Map<IClass, String/* fingerprint */> map = new MapMaker().softKeys().maximumSize(50)
+            .concurrencyLevel(2).makeMap();
     private final IDependencyFingerprintComputer fingerprintComputer;
 
     @Inject

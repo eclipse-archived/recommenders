@@ -32,7 +32,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
 import org.eclipse.recommenders.internal.commons.analysis.utils.WalaUtils;
-import org.eclipse.recommenders.internal.rcp.analysis.cp.EclipseProjectPath;
 import org.eclipse.recommenders.rcp.analysis.IClassHierarchyService;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
@@ -73,8 +72,9 @@ public class WalaClassHierarchyService implements IClassHierarchyService, IEleme
         final StopWatch w = new StopWatch();
         w.start();
         try {
-            final EclipseProjectPath path = EclipseProjectPath.make(project);
-            final AnalysisScope scope = path.toAnalysisScope();
+            // final EclipseProjectPath path = EclipseProjectPath.make(project);
+            // final AnalysisScope scope = path.toAnalysisScope();
+            final AnalysisScope scope = AnalysisScope.createJavaAnalysisScope();
             final IClassHierarchy cha = LazyClassHierarchy.make(project, scope);
             project2chaTable.put(project, cha);
         } catch (final Exception e) {

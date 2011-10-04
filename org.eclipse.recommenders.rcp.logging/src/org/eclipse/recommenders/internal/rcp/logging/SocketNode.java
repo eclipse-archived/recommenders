@@ -49,7 +49,12 @@ public class SocketNode implements Runnable {
                 // trick to keep the original thread name
                 event.getThreadName();
                 // add it to the manager's LoggingEvent list
-                LoggingEventManager.getManager().addLoggingEvent(event);
+                try {
+                    LoggingEventManager.getManager().addLoggingEvent(event);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         } catch (final ClassNotFoundException e) {
             printVersionError(e);

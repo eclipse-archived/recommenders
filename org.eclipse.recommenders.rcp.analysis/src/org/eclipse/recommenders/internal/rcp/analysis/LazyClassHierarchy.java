@@ -35,7 +35,6 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -391,7 +390,6 @@ public class LazyClassHierarchy implements IClassHierarchy, IResourceChangeListe
     }
 
     public static IClassHierarchy make(final IJavaProject project, final AnalysisScope scope) {
-        final ISchedulingRule schedulingRule = project.getSchedulingRule();
         final LazyClassHierarchy res = new LazyClassHierarchy(project, scope);
         return res;
     }

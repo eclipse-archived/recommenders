@@ -29,7 +29,6 @@ import org.eclipse.recommenders.commons.injection.InjectionService;
 import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.annotations.Testing;
-import org.eclipse.recommenders.internal.rcp.InterruptingProgressMonitor;
 import org.eclipse.recommenders.internal.rcp.analysis.builder.CompilationUnitsFinder;
 import org.eclipse.recommenders.internal.rcp.analysis.cp.IProjectClasspathAnalyzer;
 import org.eclipse.recommenders.rcp.IArtifactStore;
@@ -204,8 +203,9 @@ public class RecommendersBuilder extends IncrementalProjectBuilder {
             final List<Object> artifacts = Lists.newLinkedList();
             for (final ICompilationUnitAnalyzer<?> analyzer : analyzers) {
 
-                final InterruptingProgressMonitor monitor2 = new InterruptingProgressMonitor(monitor);
-                final Option<?> artifact = safeAnalyzeCompilationUnit(cu, analyzer, monitor2);
+                // final InterruptingProgressMonitor monitor2 = new
+                // InterruptingProgressMonitor(monitor);
+                final Option<?> artifact = safeAnalyzeCompilationUnit(cu, analyzer, monitor);
                 if (artifact.hasValue()) {
                     artifacts.add(artifact.get());
                 }
