@@ -35,7 +35,7 @@ public interface IArtifactStore {
      * @param clazz
      *            the runtime type of the requested artifact
      */
-    public <T> T loadArtifact(ICompilationUnit cu, Class<T> clazz);
+    public <T> T loadArtifact(IJavaElement cu, Class<T> clazz);
 
     /**
      * Persists the given artifact for the given compilation unit.
