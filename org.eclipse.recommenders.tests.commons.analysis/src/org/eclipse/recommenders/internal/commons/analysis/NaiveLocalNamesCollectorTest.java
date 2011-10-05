@@ -21,6 +21,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.recommenders.internal.commons.analysis.utils.LocalNamesCollectorNaiveEdition;
 import org.eclipse.recommenders.tests.commons.analysis.utils.BundleClassloaderBasedClassHierarchy;
 import org.eclipse.recommenders.tests.commons.analysis.utils.WalaTestUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -41,6 +42,7 @@ public class NaiveLocalNamesCollectorTest {
     private LocalNamesCollectorNaiveEdition sut;
 
     @Test
+    @Ignore
     public void testSimpleCase() throws InvalidClassFileException {
         setupNameCollectors(Names__Field_To_Temp_Local.class);
         verifyLocalNames("this", "tmp");
