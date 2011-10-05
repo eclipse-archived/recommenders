@@ -14,6 +14,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -32,7 +36,9 @@ import org.eclipse.recommenders.rcp.utils.ast.ASTStringUtils;
 import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
 
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provides;
@@ -62,7 +68,11 @@ public class RecommendersModule extends AbstractModule implements Module {
     @Singleton
     @Provides
     public EventBus provideWorkspaceEventBus() {
-        final EventBus bus = new EventBus("Code Recommenders Workspace Event Bus");
+        final int numberOfCores = Runtime.getRuntime().availableProcessors();
+        final ThreadPoolExecutor pool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>());
+        final Executor executor = MoreExecutors.getExitingExecutorService(pool);
+        final EventBus bus = new AsyncEventBus("Code Recommenders Workspace Event Bus", pool);
         return bus;
     }
 
