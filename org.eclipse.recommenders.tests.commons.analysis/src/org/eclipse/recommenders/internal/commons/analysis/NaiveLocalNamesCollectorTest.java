@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.ipa.callgraph.AnalysisCache;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
+import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.IR;
 
 public class NaiveLocalNamesCollectorTest {
@@ -40,7 +41,7 @@ public class NaiveLocalNamesCollectorTest {
     private LocalNamesCollectorNaiveEdition sut;
 
     @Test
-    public void testSimpleCase() {
+    public void testSimpleCase() throws InvalidClassFileException {
         setupNameCollectors(Names__Field_To_Temp_Local.class);
         verifyLocalNames("this", "tmp");
     }
@@ -55,7 +56,7 @@ public class NaiveLocalNamesCollectorTest {
 
     }
 
-    private void setupNameCollectors(final Class<?> testCase) {
+    private void setupNameCollectors(final Class<?> testCase) throws InvalidClassFileException {
         method = WalaTestUtils.lookupTestMethod(cha, testCase);
         ir = cache.getIR(method);
         sut = new LocalNamesCollectorNaiveEdition(ir);
