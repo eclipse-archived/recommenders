@@ -32,6 +32,11 @@ public class MethodSelfcallDirectivesGenerator {
 
     private Map<IMethodName, TreeBag<IMethodName>> globalSupermethodsIndex;
     private TreeBag<IMethodName> globalImlementorsCounter;
+    private final double minSelfcallProbability;
+
+    public MethodSelfcallDirectivesGenerator(final double minSelfcallProbability) {
+        this.minSelfcallProbability = minSelfcallProbability;
+    }
 
     public void initialize() {
         globalSupermethodsIndex = Maps.newHashMap();
@@ -63,7 +68,7 @@ public class MethodSelfcallDirectivesGenerator {
     private void analyzeCompilationUnit(final CompilationUnit cu) {
         final TypeDeclaration subclass = cu.primaryType;
         for (final MethodDeclaration method : subclass.methods) {
-            if (method.superDeclaration == null) {
+            if (method.firstDeclaration == null) {
                 continue;
             }
             final IMethodName superMethodName = method.firstDeclaration;
@@ -97,8 +102,8 @@ public class MethodSelfcallDirectivesGenerator {
     private void filterInfrequentMethods(final TreeBag<IMethodName> value, final int numberOfSubclasses) {
         for (final IMethodName method : Sets.newHashSet(value.elements())) {
             final int timesObserved = value.count(method);
-            final double percentage = 100 * timesObserved / (double) numberOfSubclasses;
-            if (percentage < 5) {
+            final double percentage = timesObserved / (double) numberOfSubclasses;
+            if (percentage < minSelfcallProbability) {
                 value.removeAll(method);
             }
         }
