@@ -17,9 +17,11 @@ import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 public final class BrowserSizeWorkaround {
@@ -70,17 +72,22 @@ public final class BrowserSizeWorkaround {
     private void setHeightAndTriggerLayout(final int height) {
         gridData.heightHint = height;
         gridData.minimumHeight = height;
+        revalidateLayout(browser);
+    }
 
-        // TODO: Following is only a workaround for an error in layout
-        // propagation:
-        Composite parent = browser.getParent();
-        for (int i = 0; parent != null; i++) {
-            if (parent != null) {
-                parent.layout(true);
-                // System.out.println("layouting depth " + i + ": " + parent);
-            }
-            parent = parent.getParent();
+    public static void revalidateLayout(final Control c) {
+        final Composite parent = c.getParent();
+        if (parent == null) {
+            ((Composite) c).layout(true, true);
+            return;
         }
+
+        if (c instanceof ScrolledComposite) {
+            parent.layout(true, true);
+            return;
+        }
+
+        revalidateLayout(parent);
     }
 
     private void registerProgressListener() {
