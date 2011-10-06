@@ -101,6 +101,9 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
 
     private boolean resolveEnclosingType() {
         final ITypeName enclosingType = ctx.getEnclosingType();
+        if (enclosingType == null) {
+            return false;
+        }
         this.jdtType = jdtCache.toJdtType(enclosingType);
         return jdtType != null;
     }
