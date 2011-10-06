@@ -71,12 +71,13 @@ public class MavenVersionParserTest {
         parser.parse(version);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidOsgiStyle() {
+    @Test
+    public void testAlternativeDelimiter() {
         final String version = "1.2.3.5";
         final MavenVersionParser parser = new MavenVersionParser();
-        assertFalse(parser.canParse(version));
-        parser.parse(version);
+        assertTrue(parser.canParse(version));
+        final Version sut = parser.parse(version);
+        assertEquals("1.2.3.5", sut.toString());
     }
 
     @Test(expected = IllegalArgumentException.class)

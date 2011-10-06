@@ -13,6 +13,7 @@ package org.eclipse.recommenders.commons.utils.parser;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.recommenders.commons.utils.Throws;
 import org.eclipse.recommenders.commons.utils.Version;
 
@@ -44,7 +45,7 @@ public class MavenVersionParser implements VersionParser {
                     consumeDelimiter(tokenizer, ".");
                     micro = parseInt(tokenizer);
                     if (tokenizer.hasMoreTokens()) {
-                        consumeDelimiter(tokenizer, "-");
+                        consumeDelimiter(tokenizer, "-", ".");
                         qualifier = parseString(tokenizer);
                         if (tokenizer.hasMoreTokens()) {
                             Throws.throwIllegalArgumentException("couldn't convert string into version: '%s'", version);
@@ -66,11 +67,14 @@ public class MavenVersionParser implements VersionParser {
         return Integer.parseInt(st.nextToken());
     }
 
-    private static void consumeDelimiter(final StringTokenizer st, final String allowedDelimiter) {
+    private static void consumeDelimiter(final StringTokenizer st, final String... allowedDelimiters) {
         final String delimiter = st.nextToken();
-        if (!delimiter.equals(allowedDelimiter)) {
-            Throws.throwIllegalArgumentException("Unexpected delimiter '%s'; Expected delimiter '%s'", delimiter,
-                    allowedDelimiter);
+        for (final String allowedDelimiter : allowedDelimiters) {
+            if (delimiter.equals(allowedDelimiter)) {
+                return;
+            }
         }
+        Throws.throwIllegalArgumentException("Unexpected delimiter '%s'; Expected delimiters '%s'", delimiter,
+                StringUtils.join(allowedDelimiters, "','"));
     }
 }
