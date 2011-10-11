@@ -136,10 +136,10 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
             public void widgetSelected(final SelectionEvent event) {
                 UiUtils.disposeChildren(addComposite);
                 displayAddControl(element, composite, bookmarks);
-                layout(composite);
+                UiUtils.layoutParents(composite);
             }
         });
-        layout(composite);
+        UiUtils.layoutParents(composite);
     }
 
     void addBookmark(final String text, final String url, final IJavaElement element, final Composite composite,
@@ -151,11 +151,6 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
             SwtFactory.createLabel(composite, e.getMessage(), false, false, SWT.COLOR_RED, true);
             RecommendersUtilsPlugin.logError(e, "validation failed: %s", e.getMessage());
         }
-        layout(composite);
-    }
-
-    static void layout(final Composite composite) {
-        composite.layout(true);
-        composite.getParent().getParent().layout(true);
+        UiUtils.layoutParents(composite);
     }
 }

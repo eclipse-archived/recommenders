@@ -54,8 +54,10 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
     public Object getHoverInfo2(final ITextViewer textViewer, final IRegion hoverRegion) {
         final Object problemInfo = problemHover.getHoverInfo2(textViewer, hoverRegion);
         isProblemHoverActive = problemInfo != null;
-        return isProblemHoverActive ? problemInfo : JavaElementSelectionResolver.resolveFromEditor(
-                (JavaEditor) getEditor(), hoverRegion.getOffset());
+        if (isProblemHoverActive) {
+            return problemInfo;
+        }
+        return JavaElementSelectionResolver.resolveFromEditor((JavaEditor) getEditor(), hoverRegion.getOffset());
     }
 
     @Override

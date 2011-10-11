@@ -52,7 +52,6 @@ final class ExtDocCodeAssistantHover {
                 stealPreferenceStore(viewer), editor, IJavaPartitions.JAVA_PARTITIONING));
     }
 
-    // TODO: Find another way to get the right preference store!
     private static IPreferenceStore stealPreferenceStore(final JavaSourceViewer viewer) {
         try {
             final Field privateField = JavaSourceViewer.class.getDeclaredField("fPreferenceStore");

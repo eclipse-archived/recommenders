@@ -130,7 +130,10 @@ public final class JavaElementSelection implements IJavaElementSelection {
 
     @Override
     public int hashCode() {
-        return (getJavaElement() == null ? 0 : getJavaElement().hashCode()) + getElementLocation().hashCode()
-                + (getEditor() == null ? 0 : getEditor().hashCode());
+        int sum = 0;
+        sum += getJavaElement() == null ? 0 : getJavaElement().hashCode();
+        sum += getElementLocation() == null ? 0 : getElementLocation().hashCode();
+        sum += getEditor() == null ? 0 : getEditor().hashCode();
+        return sum;
     }
 }

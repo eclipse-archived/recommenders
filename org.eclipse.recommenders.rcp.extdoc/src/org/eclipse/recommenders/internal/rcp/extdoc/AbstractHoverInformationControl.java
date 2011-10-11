@@ -83,7 +83,6 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
     protected void createContent(final Composite parent) {
         if (providersComposite == null) {
             createContentControl(parent);
-            actions = new HashMap<IProvider, IAction>();
             fillToolbar(getToolBarManager());
         } else {
             providersComposite.setParent(parent);
@@ -91,7 +90,6 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
     }
 
     private void createContentControl(final Composite parent) {
-
         final Option<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
         if (site.hasValue()) {
             providersComposite = new ProvidersComposite(parent, site.get().getWorkbenchWindow());
@@ -101,26 +99,13 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
     private void fillToolbar(final ToolBarManager toolbar) {
         addProviderActions(toolbar);
         toolbar.add(new Separator());
-        toolbar.add(new Action("Open Input", ImageDescriptor.createFromImage(ExtDocPlugin
-                .getIcon("lcl16/goto_input.png"))) {
-            @Override
-            public void run() {
-                final Option<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
-                if (site.hasValue()) {
-                    new OpenAction(site.get()).run(new Object[] { lastSelection.getJavaElement() });
-                }
-            }
-        });
-        toolbar.add(new Action("Show in ExtDoc View", ExtDocPlugin.getIconDescriptor("lcl16/extdoc_open.png")) {
-            @Override
-            public void run() {
-                uiManager.selectionChanged(lastSelection);
-            }
-        });
+        addOpenInputAction(toolbar);
+        addShowInViewAction(toolbar);
         toolbar.update(true);
     }
 
     private void addProviderActions(final ToolBarManager toolbar) {
+        actions = new HashMap<IProvider, IAction>();
         for (final IProvider provider : providerStore.getProviders()) {
             final Composite providerComposite = providersComposite.addProvider(provider);
             final IAction action = new Action("Scroll to " + provider.getProviderFullName(),
@@ -135,19 +120,46 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
         }
     }
 
+    private void addOpenInputAction(final ToolBarManager toolbar) {
+        toolbar.add(new Action("Open Input", ImageDescriptor.createFromImage(ExtDocPlugin
+                .getIcon("lcl16/goto_input.png"))) {
+            @Override
+            public void run() {
+                final Option<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
+                if (site.hasValue()) {
+                    new OpenAction(site.get()).run(new Object[] { lastSelection.getJavaElement() });
+                }
+            }
+        });
+    }
+
+    private void addShowInViewAction(final ToolBarManager toolbar) {
+        toolbar.add(new Action("Show in ExtDoc View", ExtDocPlugin.getIconDescriptor("lcl16/extdoc_open.png")) {
+            @Override
+            public void run() {
+                uiManager.selectionChanged(lastSelection);
+            }
+        });
+    }
+
     @Override
     public void setInput(final Object input) {
         final IJavaElementSelection selection = getSelection(input);
         if (!selection.equals(lastSelection)) {
             lastSelection = selection;
-            for (final Composite control : providersComposite.getProviders()) {
-                ((GridData) control.getLayoutData()).exclude = true;
-                actions.get(control.getData()).setEnabled(false);
-                updateService.schedule(new PopUpProviderUpdateJob(control));
-            }
+            updateProviders();
             updateService.invokeAll();
             providersComposite.updateSelectionLabel(selection.getJavaElement());
         }
+    }
+
+    private void updateProviders() {
+        for (final Composite control : providersComposite.getProviders()) {
+            ((GridData) control.getLayoutData()).exclude = true;
+            actions.get(control.getData()).setEnabled(false);
+            updateService.schedule(new PopUpProviderUpdateJob(control));
+        }
+        updateService.invokeAll();
     }
 
     UiManager getUiManager() {
@@ -169,7 +181,7 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
         private final Composite control;
         private final IProvider provider;
 
-        private boolean displayProvider;
+        private boolean displayProviderOnSuccess;
 
         PopUpProviderUpdateJob(final Composite control) {
             this.control = control;
@@ -179,7 +191,7 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
         @Override
         public void run() {
             try {
-                displayProvider = lastSelection != null && provider.selectionChanged(lastSelection, control);
+                displayProviderOnSuccess = lastSelection != null && provider.selectionChanged(lastSelection, control);
             } catch (final Exception e) {
                 ExtDocPlugin.logException(e);
             }
@@ -187,7 +199,7 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
 
         @Override
         public void finishSuccessful() {
-            if (displayProvider) {
+            if (displayProviderOnSuccess) {
                 displayProvider();
             }
         }

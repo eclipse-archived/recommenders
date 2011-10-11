@@ -12,11 +12,11 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers.utils;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Names;
 import org.eclipse.recommenders.commons.utils.Names.PrimitiveType;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
@@ -60,8 +60,10 @@ public final class VariableResolver {
         if (PrimitiveType.fromSrc(resolvedTypeName) != null) {
             return resolvePrimitive(resolvedTypeName);
         }
-        final IJavaProject javaProject = declaringType.getJavaProject();
-        return ElementResolver.toRecType(javaProject.findType(resolvedTypeName));
+        // TODO: Fails on generics, refactor to use commons' utility methods.
+        final IType resolvedType = declaringType.getJavaProject().findType(resolvedTypeName);
+        Checks.ensureIsNotNull(resolvedType, resolvedTypeName + ", " + declaringType + ", " + typeSignature);
+        return ElementResolver.toRecType(resolvedType);
     }
 
     private static ITypeName resolvePrimitive(final String primitiveTypeName) {
