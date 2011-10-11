@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.extdoc;
 
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -30,7 +31,10 @@ public final class UiUtils {
 
     public static void layoutParents(final Composite composite) {
         for (Composite parent = composite; parent != null; parent = parent.getParent()) {
-            parent.layout(true);
+            if (parent.getParent().getParent() == null || parent instanceof ScrolledComposite) {
+                parent.getParent().layout(true, true);
+                break;
+            }
         }
     }
 

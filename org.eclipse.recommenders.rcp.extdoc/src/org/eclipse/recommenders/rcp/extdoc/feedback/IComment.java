@@ -8,28 +8,30 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.features;
+package org.eclipse.recommenders.rcp.extdoc.feedback;
 
 import java.util.Date;
 
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
 
-public interface IRating extends IServerType {
+/**
+ * A comment submitted by a user to a provider.
+ */
+public interface IComment extends IServerType {
 
     /**
-     * @return A value from 1 to 5 where 5 is the best rating.
-     */
-    int getRating();
-
-    /**
-     * @return An internal unique user ID allowing to associate ratings with
-     *         users.
-     */
-    String getUserId();
-
-    /**
-     * @return The date the rating was submitted.
+     * @return The date the comment was submitted.
      */
     Date getDate();
+
+    /**
+     * @return The displayed author name.
+     */
+    String getUsername();
+
+    /**
+     * @return The text of the comment.
+     */
+    String getText();
 
 }

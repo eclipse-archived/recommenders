@@ -56,7 +56,7 @@ public interface IProvider extends IExecutableExtension {
      */
     Composite createComposite(Composite parent, IWorkbenchWindow workbenchWindow);
 
-    Composite getContentControl(Composite composite);
+    Composite resolveContentComposite(Composite mainProviderComposite);
 
     /**
      * @param selection

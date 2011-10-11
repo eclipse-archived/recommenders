@@ -27,7 +27,7 @@
    <feature url="features/org.eclipse.recommenders.rcp.codecompletion.source-feature_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.source-feature" version="0.3.0.qualifier">
       <category name="sources"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201109301053.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201109301053">
+   <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201110042205.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201110042205">
       <category name="3rd"/>
    </feature>
    <category-def name="main" label="Eclipse Code Recommenders - Main"/>

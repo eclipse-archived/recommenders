@@ -8,9 +8,11 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.features;
+package org.eclipse.recommenders.rcp.extdoc.feedback;
 
 import org.eclipse.recommenders.commons.utils.names.IName;
+import org.eclipse.recommenders.rcp.extdoc.feedback.CommentsComposite;
+import org.eclipse.recommenders.rcp.extdoc.feedback.CommunityFeedback;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;

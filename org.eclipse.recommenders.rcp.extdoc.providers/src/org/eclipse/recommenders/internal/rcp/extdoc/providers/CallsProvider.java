@@ -40,8 +40,8 @@ import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveTitledProvid
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.UiUtils;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
-import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
+import org.eclipse.recommenders.rcp.extdoc.feedback.CommunityFeedback;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;

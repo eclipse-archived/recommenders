@@ -30,7 +30,7 @@ import org.eclipse.recommenders.rcp.extdoc.AbstractTitledProvider;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.UiUtils;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
+import org.eclipse.recommenders.rcp.extdoc.feedback.CommunityFeedback;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.server.extdoc.SubclassingServer;
 import org.eclipse.recommenders.server.extdoc.types.ClassOverrideDirectives;

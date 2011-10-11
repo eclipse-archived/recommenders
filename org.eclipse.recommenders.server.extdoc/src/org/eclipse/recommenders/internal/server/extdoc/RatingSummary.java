@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.internal.server.extdoc;
 
-import org.eclipse.recommenders.rcp.extdoc.features.IRating;
-import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IRating;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IRatingSummary;
 
 final class RatingSummary implements IRatingSummary {
 

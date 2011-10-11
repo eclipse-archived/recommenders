@@ -14,10 +14,10 @@ import java.util.Collection;
 
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.rcp.extdoc.features.IComment;
-import org.eclipse.recommenders.rcp.extdoc.features.IRating;
-import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
-import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IComment;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IRating;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IRatingSummary;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IUserFeedbackServer;
 import org.eclipse.recommenders.tests.commons.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.commons.extdoc.TestTypeUtils;

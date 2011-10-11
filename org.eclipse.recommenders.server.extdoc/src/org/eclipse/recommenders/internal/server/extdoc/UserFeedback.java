@@ -18,10 +18,10 @@ import java.util.Set;
 
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.rcp.extdoc.features.IComment;
-import org.eclipse.recommenders.rcp.extdoc.features.IRating;
-import org.eclipse.recommenders.rcp.extdoc.features.IRatingSummary;
-import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IComment;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IRating;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IRatingSummary;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IUserFeedback;
 import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 
 import com.google.gson.annotations.SerializedName;

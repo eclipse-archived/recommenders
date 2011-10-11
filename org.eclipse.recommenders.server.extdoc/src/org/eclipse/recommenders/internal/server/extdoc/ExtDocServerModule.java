@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.server.extdoc;
 
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.extdoc.preferences.PreferenceConstants;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.UsernameProvider;

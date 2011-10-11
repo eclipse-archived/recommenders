@@ -41,7 +41,7 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
     private final UiManager uiManager;
     private final ProviderStore providerStore;
     private final UpdateService updateService;
-    private ProvidersComposite composite;
+    private ProvidersComposite providersComposite;
 
     private IJavaElementSelection lastSelection;
     private Map<IProvider, IAction> actions;
@@ -60,7 +60,7 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
     }
 
     private void copyInformationControl(final AbstractHoverInformationControl copy) {
-        composite = copy.composite;
+        providersComposite = copy.providersComposite;
         lastSelection = copy.lastSelection;
         actions = copy.actions;
         final ToolBarManager manager = getToolBarManager();
@@ -81,12 +81,12 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
 
     @Override
     protected void createContent(final Composite parent) {
-        if (composite == null) {
+        if (providersComposite == null) {
             createContentControl(parent);
             actions = new HashMap<IProvider, IAction>();
             fillToolbar(getToolBarManager());
         } else {
-            composite.setParent(parent);
+            providersComposite.setParent(parent);
         }
     }
 
@@ -94,7 +94,7 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
 
         final Option<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
         if (site.hasValue()) {
-            composite = new ProvidersComposite(parent, site.get().getWorkbenchWindow());
+            providersComposite = new ProvidersComposite(parent, site.get().getWorkbenchWindow());
         }
     }
 
@@ -122,12 +122,12 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
 
     private void addProviderActions(final ToolBarManager toolbar) {
         for (final IProvider provider : providerStore.getProviders()) {
-            final Composite providerComposite = composite.addProvider(provider);
+            final Composite providerComposite = providersComposite.addProvider(provider);
             final IAction action = new Action("Scroll to " + provider.getProviderFullName(),
                     ImageDescriptor.createFromImage(provider.getIcon())) {
                 @Override
                 public void run() {
-                    composite.scrollToProvider(providerComposite);
+                    providersComposite.scrollToProvider(providerComposite);
                 }
             };
             toolbar.add(action);
@@ -140,13 +140,13 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
         final IJavaElementSelection selection = getSelection(input);
         if (!selection.equals(lastSelection)) {
             lastSelection = selection;
-            for (final Composite control : composite.getProviders()) {
+            for (final Composite control : providersComposite.getProviders()) {
                 ((GridData) control.getLayoutData()).exclude = true;
                 actions.get(control.getData()).setEnabled(false);
                 updateService.schedule(new PopUpProviderUpdateJob(control));
             }
             updateService.invokeAll();
-            composite.updateSelectionLabel(selection.getJavaElement());
+            providersComposite.updateSelectionLabel(selection.getJavaElement());
         }
     }
 
@@ -194,7 +194,7 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
 
         @Override
         public void handleTimeout() {
-            displayTimeoutMessage(provider.getContentControl(control));
+            displayTimeoutMessage(provider.resolveContentComposite(control));
             displayProvider();
         }
 

@@ -17,10 +17,10 @@ import java.util.Map;
 import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.commons.utils.names.IName;
 import org.eclipse.recommenders.rcp.extdoc.IProvider;
-import org.eclipse.recommenders.rcp.extdoc.features.IComment;
-import org.eclipse.recommenders.rcp.extdoc.features.IRating;
-import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
-import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedbackServer;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IComment;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IRating;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IUserFeedback;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IUserFeedbackServer;
 import org.eclipse.recommenders.server.extdoc.ICouchDbServer;
 import org.eclipse.recommenders.server.extdoc.UsernameProvider;
 

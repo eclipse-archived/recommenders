@@ -51,7 +51,7 @@ public abstract class AbstractTitledProvider extends AbstractProvider {
     protected abstract Composite createContentComposite(Composite parent);
 
     @Override
-    public final Composite getContentControl(final Composite composite) {
+    public final Composite resolveContentComposite(final Composite composite) {
         return ((ProviderComposite) composite).contentComposite;
     }
 

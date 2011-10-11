@@ -74,10 +74,11 @@ public final class UpdateService {
 
     public abstract static class AbstractUpdateJob implements IUpdateJob {
 
-        protected final void displayTimeoutMessage(final Composite composite) {
-            UiUtils.disposeChildren(composite);
-            SwtFactory.createLabel(composite, "Provider timed out. Please review your network status.", true);
-            UiUtils.layoutParents(composite);
+        protected final void displayTimeoutMessage(final Composite providersContentComposite) {
+            UiUtils.disposeChildren(providersContentComposite);
+            SwtFactory.createLabel(providersContentComposite, "Provider timed out. Please review your network status.",
+                    true);
+            UiUtils.layoutParents(providersContentComposite);
         }
     }
 }

@@ -18,8 +18,8 @@ import org.eclipse.recommenders.internal.rcp.extdoc.view.ProvidersTableTest;
 import org.eclipse.recommenders.rcp.extdoc.AbstractLocationSensitiveProviderCompositeTest;
 import org.eclipse.recommenders.rcp.extdoc.AbstractProviderCompositeTest;
 import org.eclipse.recommenders.rcp.extdoc.SourceCodeAreaTest;
-import org.eclipse.recommenders.rcp.extdoc.features.CommentsCompositeTest;
-import org.eclipse.recommenders.rcp.extdoc.features.StarsRatingCompositeTest;
+import org.eclipse.recommenders.rcp.extdoc.feedback.CommentsCompositeTest;
+import org.eclipse.recommenders.rcp.extdoc.feedback.StarsRatingCompositeTest;
 import org.eclipse.recommenders.rcp.extdoc.preferences.ExtDocPreferencePageTest;
 
 import org.junit.runner.RunWith;

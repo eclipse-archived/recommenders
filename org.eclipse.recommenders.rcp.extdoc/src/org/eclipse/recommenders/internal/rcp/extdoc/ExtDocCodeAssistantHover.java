@@ -20,7 +20,6 @@ import org.eclipse.jdt.internal.ui.text.java.hover.JavadocBrowserInformationCont
 import org.eclipse.jdt.ui.text.IColorManager;
 import org.eclipse.jdt.ui.text.IJavaPartitions;
 import org.eclipse.jdt.ui.text.JavaSourceViewerConfiguration;
-import org.eclipse.jdt.ui.text.JavaTextTools;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.IInformationControl;
@@ -47,9 +46,9 @@ final class ExtDocCodeAssistantHover {
     static void installToEditor(final JavaEditor editor, final UiManager uiManager, final ProviderStore providerStore,
             final UpdateService updateService) {
         final JavaSourceViewer viewer = (JavaSourceViewer) editor.getViewer();
-        final JavaTextTools textTools = JavaPlugin.getDefault().getJavaTextTools();
+        final IColorManager colorManager = JavaPlugin.getDefault().getJavaTextTools().getColorManager();
         viewer.unconfigure();
-        viewer.configure(new ViewerConfiguration(uiManager, providerStore, updateService, textTools.getColorManager(),
+        viewer.configure(new ViewerConfiguration(uiManager, providerStore, updateService, colorManager,
                 stealPreferenceStore(viewer), editor, IJavaPartitions.JAVA_PARTITIONING));
     }
 

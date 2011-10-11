@@ -23,7 +23,7 @@ import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.ProviderUiUpdateJob;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.UiUtils;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
+import org.eclipse.recommenders.rcp.extdoc.feedback.CommunityFeedback;
 import org.eclipse.recommenders.server.extdoc.WikiServer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;

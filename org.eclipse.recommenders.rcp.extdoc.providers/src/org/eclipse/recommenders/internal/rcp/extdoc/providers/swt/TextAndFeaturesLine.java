@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.rcp.extdoc.providers.swt;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
-import org.eclipse.recommenders.rcp.extdoc.features.CommunityFeedback;
+import org.eclipse.recommenders.rcp.extdoc.feedback.CommunityFeedback;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;

@@ -40,7 +40,7 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
         creator = new IInformationControlCreator() {
             @Override
             public IInformationControl createInformationControl(final Shell parent) {
-                return new InformationControl(parent, uiManager, providerStore, updateService, null);
+                return new HoverInformationControl(parent, uiManager, providerStore, updateService, null);
             }
         };
     }
@@ -63,10 +63,10 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
         return isProblemHoverActive ? problemHover.getHoverControlCreator() : creator;
     }
 
-    private static final class InformationControl extends AbstractHoverInformationControl {
+    private static final class HoverInformationControl extends AbstractHoverInformationControl {
 
-        public InformationControl(final Shell parentShell, final UiManager uiManager,
-                final ProviderStore providerStore, final UpdateService updateService, final InformationControl copy) {
+        public HoverInformationControl(final Shell parentShell, final UiManager uiManager,
+                final ProviderStore providerStore, final UpdateService updateService, final HoverInformationControl copy) {
             super(parentShell, uiManager, providerStore, updateService, copy);
         }
 
@@ -80,8 +80,8 @@ public final class ExtDocHover extends AbstractJavaEditorTextHover {
             return new IInformationControlCreator() {
                 @Override
                 public IInformationControl createInformationControl(final Shell parent) {
-                    return new InformationControl(parent, getUiManager(), getProviderStore(), getUpdateService(),
-                            InformationControl.this);
+                    return new HoverInformationControl(parent, getUiManager(), getProviderStore(), getUpdateService(),
+                            HoverInformationControl.this);
                 }
             };
         }

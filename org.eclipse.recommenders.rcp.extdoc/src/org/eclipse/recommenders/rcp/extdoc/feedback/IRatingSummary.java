@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.rcp.extdoc.features;
+package org.eclipse.recommenders.rcp.extdoc.feedback;
 
 public interface IRatingSummary {
 

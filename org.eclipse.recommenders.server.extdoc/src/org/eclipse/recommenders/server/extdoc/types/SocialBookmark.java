@@ -12,7 +12,7 @@ package org.eclipse.recommenders.server.extdoc.types;
 
 import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.rcp.extdoc.IServerType;
-import org.eclipse.recommenders.rcp.extdoc.features.IUserFeedback;
+import org.eclipse.recommenders.rcp.extdoc.feedback.IUserFeedback;
 
 import com.google.common.base.Preconditions;
 

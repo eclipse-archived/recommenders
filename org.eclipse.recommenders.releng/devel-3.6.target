@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders Development Environment" sequenceNumber="24">
+<target name="Code Recommenders Development Environment" sequenceNumber="26">
 <locations>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.swtbot.forms.feature.group" version="2.0.4.20110304_0338-e5aff47-dev-e36"/>
-<unit id="org.eclipse.swtbot.eclipse.feature.group" version="2.0.4.20110304_0338-e5aff47-dev-e36"/>
-<unit id="org.eclipse.swtbot.feature.group" version="2.0.4.20110304_0338-e5aff47-dev-e36"/>
-<unit id="org.eclipse.swtbot.ide.feature.group" version="2.0.4.20110304_0338-e5aff47-dev-e36"/>
-<unit id="org.eclipse.swtbot.eclipse.test.junit4.feature.group" version="2.0.4.20110304_0338-e5aff47-dev-e36"/>
-<repository location="http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site/"/>
-</location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.help.feature.group" version="1.2.1.r362_v20101111-7e7jEVFDr6xg-LSlC_z0w1D"/>
 <unit id="org.eclipse.jdt.feature.group" version="3.6.2.r362_v20101117-0800-7z8XFW6FLFlmjJcvz03jyeFBLS_F"/>
@@ -36,9 +28,17 @@
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/students/th/michael-bayes/org.eclipse.recommenders.jayes.repository/target/site/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201109301053"/>
-<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201109301053"/>
-<unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201109301053"/>
+<unit id="org.eclipse.swtbot.eclipse.feature.group" version="2.0.5.20111003_1754-3676ac8-dev-e36"/>
+<unit id="org.eclipse.swtbot.ide.feature.group" version="2.0.5.20111003_1754-3676ac8-dev-e36"/>
+<unit id="org.eclipse.swtbot.eclipse.test.junit4.feature.group" version="2.0.5.20111003_1754-3676ac8-dev-e36"/>
+<unit id="org.eclipse.swtbot.forms.feature.group" version="2.0.5.20111003_1754-3676ac8-dev-e36"/>
+<unit id="org.eclipse.swtbot.feature.group" version="2.0.5.20111003_1754-3676ac8-dev-e36"/>
+<repository location="http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site/"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201110042205"/>
+<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201110042205"/>
+<unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201110042205"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head"/>
 </location>
 </locations>
