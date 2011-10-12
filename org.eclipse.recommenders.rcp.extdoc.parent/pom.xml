@@ -288,6 +288,7 @@
 		<module>../org.eclipse.recommenders.tests.server.extdoc</module>
 		
 		<module>../org.eclipse.recommenders.commons.analysis</module>
+		<module>../org.eclipse.recommenders.commons.client</module>
 		<module>../org.eclipse.recommenders.commons.utils</module>
 		<module>../org.eclipse.recommenders.commons.utils.gson</module>
 		<module>../org.eclipse.recommenders.tests.commons</module>
