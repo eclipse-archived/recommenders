@@ -283,15 +283,15 @@
 		<module>../org.eclipse.recommenders.server.extdoc</module>
 		<module>../org.eclipse.recommenders.tests.commons.extdoc</module>
 		<module>../org.eclipse.recommenders.tests.commons.selection</module>
-		<!-- <module>../org.eclipse.recommenders.tests.rcp.extdoc</module>
-		<module>../org.eclipse.recommenders.tests.rcp.extdoc.providers</module> -->
+		<module>../org.eclipse.recommenders.tests.rcp.extdoc</module>
+		<module>../org.eclipse.recommenders.tests.rcp.extdoc.providers</module>
 		<module>../org.eclipse.recommenders.tests.server.extdoc</module>
 		
-		<module>../org.eclipse.recommenders.commons.analysis</module>
+		<!-- <module>../org.eclipse.recommenders.commons.analysis</module>
 		<module>../org.eclipse.recommenders.commons.client</module>
 		<module>../org.eclipse.recommenders.commons.utils</module>
 		<module>../org.eclipse.recommenders.commons.utils.gson</module>
-		<module>../org.eclipse.recommenders.tests.commons</module>
+		<module>../org.eclipse.recommenders.tests.commons</module> -->
 	</modules>
 
 </project>
