@@ -30,7 +30,8 @@ public class CompilationUnitServerExporter implements ICompilationUnitExporter {
 
     @Inject
     public CompilationUnitServerExporter(@UdcServer final ClientConfiguration config) {
-        this.wsClient = new WebServiceClient(config);
+        wsClient = new WebServiceClient(config);
+        wsClient.setRequestsToGzipCompressed();
     }
 
     @Override

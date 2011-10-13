@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import com.google.inject.Inject;
@@ -28,8 +29,10 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 
 public class WebServiceClient {
@@ -38,27 +41,34 @@ public class WebServiceClient {
 
     private final ClientConfiguration configuration;
     private final Client client;
-    private final Map<String, Cookie> cookies;
+    private final Map<String, Cookie> cookies = new LinkedHashMap<String, Cookie>();
+    private final Map<String, Object> headerEntries = new LinkedHashMap<String, Object>();
     private final List<String> queryParameters = new LinkedList<String>();
 
     @Inject
     public WebServiceClient(final ClientConfiguration configuration) {
         this.configuration = configuration;
         ensureIsTrue(configuration.getBaseUrl() != null);
-        this.client = new Client(new URLConnectionClientHandler(), new DefaultClientConfig(GsonProvider.class));
-        cookies = new LinkedHashMap<String, Cookie>();
+        client = new Client(new URLConnectionClientHandler(), new DefaultClientConfig(GsonProvider.class));
+        client.addFilter(new GZIPContentEncodingFilter(false));
     }
 
     public String getBaseUrl() {
         return configuration.getBaseUrl();
     }
 
+    public void setRequestsToGzipCompressed() {
+        headerEntries.put(HttpHeaders.CONTENT_ENCODING, "gzip");
+    }
+
     public Builder createRequestBuilder(final String path) {
-        final String baseUrl = getBaseUrl();
-        String fullPath = baseUrl + path;
-        fullPath = appendQueryParameters(fullPath);
-        return addCookies(client.resource(fullPath).accept(MediaType.APPLICATION_JSON_TYPE)
-                .type(MediaType.APPLICATION_JSON));
+        final String fullPath = appendQueryParameters(getBaseUrl() + path);
+        final WebResource resource = client.resource(fullPath);
+        Builder builder = resource.accept(MediaType.APPLICATION_JSON_TYPE);
+        builder = builder.type(MediaType.APPLICATION_JSON);
+        builder = addCookies(builder);
+        builder = addHeaders(builder);
+        return builder;
     }
 
     private String appendQueryParameters(final String path) {
@@ -77,6 +87,13 @@ public class WebServiceClient {
     private Builder addCookies(final Builder builder) {
         for (final Cookie cookie : cookies.values()) {
             builder.cookie(cookie);
+        }
+        return builder;
+    }
+
+    private Builder addHeaders(Builder builder) {
+        for (final String key : headerEntries.keySet()) {
+            builder = builder.header(key, headerEntries.get(key));
         }
         return builder;
     }
