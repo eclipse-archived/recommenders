@@ -129,18 +129,17 @@ public class CompilationUnitExportJob extends Job {
     }
 
     private void exportProject(final IProject project, final IProgressMonitor monitor) {
-        monitor.beginTask("Export project " + project.getName(), 5);
+        monitor.beginTask("Export project " + project.getName(), 100);
         final List<IFile> collectedFiles = collectFiles(project);
-        monitor.worked(1);
+        monitor.worked(5);
         monitor.subTask("Deserializing compilation units");
         final List<CompilationUnit> units = deserializeCompilationUnits(collectedFiles, new SubProgressMonitor(monitor,
-                1));
-        monitor.worked(1);
+                40));
         monitor.subTask("Anonymizing upload data.");
-        depersonalizeUnits(units, new SubProgressMonitor(monitor, 1));
+        depersonalizeUnits(units, new SubProgressMonitor(monitor, 5));
         monitor.worked(1);
         monitor.subTask("Uploading files.");
-        exporter.exportUnits(project, units, new SubProgressMonitor(monitor, 1));
+        exporter.exportUnits(project, units, new SubProgressMonitor(monitor, 40));
         monitor.done();
     }
 
