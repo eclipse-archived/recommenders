@@ -57,8 +57,12 @@ public class WebServiceClient {
         return configuration.getBaseUrl();
     }
 
-    public void setRequestsToGzipCompressed() {
-        headerEntries.put(HttpHeaders.CONTENT_ENCODING, "gzip");
+    public void enableGzipCompression(final boolean enabled) {
+        if (enabled) {
+            headerEntries.put(HttpHeaders.CONTENT_ENCODING, "gzip");
+        } else {
+            headerEntries.remove(HttpHeaders.CONTENT_ENCODING);
+        }
     }
 
     public Builder createRequestBuilder(final String path) {

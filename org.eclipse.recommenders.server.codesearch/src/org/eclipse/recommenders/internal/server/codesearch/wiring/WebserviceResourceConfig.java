@@ -10,6 +10,7 @@
 package org.eclipse.recommenders.internal.server.codesearch.wiring;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.recommenders.commons.client.GsonProvider;
@@ -19,6 +20,7 @@ import org.eclipse.recommenders.server.codesearch.resources.SourceCodeResource;
 import org.eclipse.recommenders.server.commons.GuiceInjectableProvider;
 
 import com.google.inject.Inject;
+import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 
 public class WebserviceResourceConfig extends DefaultResourceConfig {
@@ -45,5 +47,21 @@ public class WebserviceResourceConfig extends DefaultResourceConfig {
         result.add(guiceProvider);
         result.add(new GsonProvider());
         return result;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public List getContainerRequestFilters() {
+        final List filters = super.getContainerRequestFilters();
+        filters.add(new GZIPContentEncodingFilter());
+        return filters;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public List getContainerResponseFilters() {
+        final List filters = super.getContainerResponseFilters();
+        filters.add(new GZIPContentEncodingFilter());
+        return filters;
     }
 }
