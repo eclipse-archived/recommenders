@@ -42,8 +42,8 @@ public class WebServiceClient {
     private final ClientConfiguration configuration;
     private final Client client;
     private final Map<String, Cookie> cookies = new LinkedHashMap<String, Cookie>();
-    private final Map<String, Object> headerEntries = new LinkedHashMap<String, Object>();
     private final List<String> queryParameters = new LinkedList<String>();
+    private boolean gzipCompression = false;
 
     @Inject
     public WebServiceClient(final ClientConfiguration configuration) {
@@ -57,12 +57,8 @@ public class WebServiceClient {
         return configuration.getBaseUrl();
     }
 
-    public void enableGzipCompression(final boolean enabled) {
-        if (enabled) {
-            headerEntries.put(HttpHeaders.CONTENT_ENCODING, "gzip");
-        } else {
-            headerEntries.remove(HttpHeaders.CONTENT_ENCODING);
-        }
+    public void enableGzipCompression(final boolean gzipCompression) {
+        this.gzipCompression = gzipCompression;
     }
 
     public Builder createRequestBuilder(final String path) {
@@ -71,7 +67,6 @@ public class WebServiceClient {
         Builder builder = resource.accept(MediaType.APPLICATION_JSON_TYPE);
         builder = builder.type(MediaType.APPLICATION_JSON);
         builder = addCookies(builder);
-        builder = addHeaders(builder);
         return builder;
     }
 
@@ -95,9 +90,9 @@ public class WebServiceClient {
         return builder;
     }
 
-    private Builder addHeaders(Builder builder) {
-        for (final String key : headerEntries.keySet()) {
-            builder = builder.header(key, headerEntries.get(key));
+    private Builder addGzipHeader(final Builder builder) {
+        if (gzipCompression) {
+            return builder.header(HttpHeaders.CONTENT_ENCODING, "gzip");
         }
         return builder;
     }
@@ -124,7 +119,7 @@ public class WebServiceClient {
             throws NotFoundException, ConflictException, UnauthorizedAccessException, ServerErrorException,
             ServerUnreachableException {
         try {
-            return createRequestBuilder(path).put(resultType, requestEntity);
+            return addGzipHeader(createRequestBuilder(path)).put(resultType, requestEntity);
         } catch (final RuntimeException e) {
             return handlePutAndPostRequestException(e);
         }
@@ -134,7 +129,8 @@ public class WebServiceClient {
             throws NotFoundException, ConflictException, UnauthorizedAccessException, ServerErrorException,
             ServerUnreachableException {
         try {
-            final Builder builder = createRequestBuilder(path);
+            Builder builder = createRequestBuilder(path);
+            builder = addGzipHeader(builder);
             return builder.post(resultType, requestEntity);
         } catch (final RuntimeException e) {
             return handlePutAndPostRequestException(e);
@@ -144,14 +140,18 @@ public class WebServiceClient {
     public <T> T doPostRequest(final String path, final Object requestEntity, final GenericType<T> genericType)
             throws NotFoundException, ServerUnreachableException, ServerErrorException {
         try {
-            return createRequestBuilder(path).post(genericType);
+            return addGzipHeader(createRequestBuilder(path)).post(genericType);
         } catch (final RuntimeException e) {
             return handlePutAndPostRequestException(e);
         }
     }
 
     public void doPostRequest(final String path, final Object requestEntity) {
-        createRequestBuilder(path).post(requestEntity);
+        try {
+            addGzipHeader(createRequestBuilder(path)).post(requestEntity);
+        } catch (final RuntimeException e) {
+            handlePutAndPostRequestException(e);
+        }
     }
 
     public <T> T doDeleteRequest(final String path, final Class<T> resultType) throws NotFoundException,

@@ -18,7 +18,8 @@ import org.eclipse.recommenders.commons.utils.Version;
 import org.eclipse.recommenders.commons.utils.parser.VersionParserFactory;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.SearchManifestJob;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ResolveCallsModelJob;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ResolveCallsModelJob.OverridePolicy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -127,7 +128,7 @@ public class DependencyDetailsSection extends AbstractDependencySection {
     }
 
     private void scheduleResolvingJob() {
-        final SearchManifestJob job = jobFactory.create(file);
+        final ResolveCallsModelJob job = jobFactory.create(file, OverridePolicy.ALL);
         job.schedule();
     }
 

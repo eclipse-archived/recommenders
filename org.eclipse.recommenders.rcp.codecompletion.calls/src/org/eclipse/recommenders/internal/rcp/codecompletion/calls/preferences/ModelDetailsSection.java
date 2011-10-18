@@ -22,7 +22,8 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.Manifest
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchive;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteResolverJobFactory;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.SearchManifestJob;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ResolveCallsModelJob;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ResolveCallsModelJob.OverridePolicy;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -129,8 +130,7 @@ public class ModelDetailsSection extends AbstractDependencySection {
     }
 
     private void reresolveModel() {
-        dependencyStore.invalidateManifest(file);
-        final SearchManifestJob job = jobFactory.create(file);
+        final ResolveCallsModelJob job = jobFactory.create(file, OverridePolicy.MANIFEST);
         job.schedule();
         reresolveButton.setEnabled(false);
     }
