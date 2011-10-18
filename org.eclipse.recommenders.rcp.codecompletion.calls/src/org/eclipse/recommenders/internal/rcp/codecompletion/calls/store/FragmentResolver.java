@@ -16,8 +16,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ResolveCallsModelJob.OverridePolicy;
-
 import com.google.common.collect.Sets;
 
 @Singleton
@@ -46,7 +44,7 @@ public class FragmentResolver {
     }
 
     private void scheduleJob(final File file) {
-        final ResolveCallsModelJob job = jobFactory.create(file, OverridePolicy.NONE);
+        final ResolveCallsModelJob job = jobFactory.create(file, CallsModelResolver.OverridePolicy.NONE);
         job.schedule();
     }
 

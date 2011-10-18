@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ResolveCallsModelJob.OverridePolicy;
+import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelResolver.OverridePolicy;
 
 public class UpdateAllModelsJob extends WorkspaceJob {
 
@@ -44,7 +44,7 @@ public class UpdateAllModelsJob extends WorkspaceJob {
                 continue;
             }
 
-            final ResolveCallsModelJob job = jobFactory.create(file, OverridePolicy.ALL);
+            final ResolveCallsModelJob job = jobFactory.create(file, CallsModelResolver.OverridePolicy.ALL);
             job.schedule();
         }
         return Status.OK_STATUS;

@@ -15,7 +15,8 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ModelArchiveStoreTest.class, ModelStoreCleanupTest.class, ProposalMatcherTest.class })
+@SuiteClasses({ ModelArchiveStoreTest.class, ModelStoreCleanupTest.class, ProposalMatcherTest.class,
+        CallsModelResolverTest.class })
 public class UnitTestSuite {
 
 }

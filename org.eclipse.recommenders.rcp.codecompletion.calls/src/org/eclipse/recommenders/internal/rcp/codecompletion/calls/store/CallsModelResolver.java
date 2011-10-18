@@ -35,7 +35,11 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.UniformInterfaceException;
 
-public class CallsModelResolverService {
+public class CallsModelResolver {
+
+    public static enum OverridePolicy {
+        NONE, ALL, MANIFEST
+    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ClasspathDependencyStore dependencyStore;
@@ -43,12 +47,42 @@ public class CallsModelResolverService {
     private final WebServiceClient client;
 
     @Inject
-    public CallsModelResolverService(final ClasspathDependencyStore dependencyStore,
-            final ModelArchiveStore modelStore, @UdcServer final ClientConfiguration config) {
+    public CallsModelResolver(final ClasspathDependencyStore dependencyStore, final ModelArchiveStore modelStore,
+            @UdcServer final ClientConfiguration config) {
         this.dependencyStore = dependencyStore;
         this.modelStore = modelStore;
         client = new WebServiceClient(config);
         client.enableGzipCompression(true);
+    }
+
+    public void resolve(final File file, final CallsModelResolver.OverridePolicy overridePolicy) {
+        final Option<ClasspathDependencyInformation> dependencyInfo = findClasspathDependencyInformation(file,
+                overridePolicy);
+        if (dependencyInfo.hasValue()) {
+            findModel(file, overridePolicy, dependencyInfo.get());
+        }
+    }
+
+    private Option<ClasspathDependencyInformation> findClasspathDependencyInformation(final File file,
+            final OverridePolicy overridePolicy) {
+        if (overridePolicy != CallsModelResolver.OverridePolicy.ALL
+                && dependencyStore.containsClasspathDependencyInfo(file)) {
+            return Option.wrap(dependencyStore.getClasspathDependencyInfo(file));
+        } else {
+            final Option<ClasspathDependencyInformation> dependencyInfo = tryExtractClasspathDependencyInfo(file);
+            if (dependencyInfo.hasValue()) {
+                dependencyStore.putClasspathDependencyInfo(file, dependencyInfo.get());
+            }
+            return dependencyInfo;
+        }
+    }
+
+    private void findModel(final File file, final OverridePolicy overridePolicy,
+            final ClasspathDependencyInformation dependencyInfo) {
+        if (overridePolicy == CallsModelResolver.OverridePolicy.NONE && doesStoreContainModel(file)) {
+            return;
+        }
+        downloadAndRegisterModel(file, dependencyInfo);
     }
 
     public Option<ClasspathDependencyInformation> tryExtractClasspathDependencyInfo(final File file) {
@@ -97,13 +131,13 @@ public class CallsModelResolverService {
         return false;
     }
 
-    private Option<Manifest> findManifest(final ClasspathDependencyInformation dependencyInfo) {
+    protected Option<Manifest> findManifest(final ClasspathDependencyInformation dependencyInfo) {
         final ManifestMatchResult matchResult = client.doPostRequest("manifest", dependencyInfo,
                 ManifestMatchResult.class);
         return Option.wrap(matchResult.bestMatch);
     }
 
-    private File downloadModel(final Manifest manifest) throws IOException {
+    protected File downloadModel(final Manifest manifest) throws IOException {
         final String url = "model/" + WebServiceClient.encode(manifest.getIdentifier());
         final InputStream is = client.createRequestBuilder(url).accept(MediaType.APPLICATION_OCTET_STREAM_TYPE)
                 .get(InputStream.class);
@@ -115,7 +149,7 @@ public class CallsModelResolverService {
         return temp;
     }
 
-    public boolean hasModel(final File file) {
+    public boolean doesStoreContainModel(final File file) {
         if (dependencyStore.containsManifest(file)) {
             final Manifest manifest = dependencyStore.getManifest(file);
             final IModelArchive modelArchive = modelStore.getModelArchive(manifest);
