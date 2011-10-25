@@ -108,9 +108,6 @@ public class ProjectModelFacade implements IElementChangedListener, IProjectMode
             if (dependencyStore.containsManifest(file)) {
                 final Manifest manifest = dependencyStore.getManifest(file);
                 final IModelArchive archive = archiveStore.getModelArchive(manifest);
-                if (archive == IModelArchive.NULL) {
-                    dependencyStore.invalidateManifest(file);
-                }
                 return archive;
             } else {
                 return IModelArchive.NULL;

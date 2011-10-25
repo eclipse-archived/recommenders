@@ -21,30 +21,41 @@ import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.CallsCompletionModule.UdcServer;
 
+import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientHandlerException;
 
 public class CompilationUnitServerExporter implements ICompilationUnitExporter {
+
+    private final static int FRAGMENT_SIZE = 100;
     private final static String webResourcePath = "upload/compilationunit/";
 
     private final WebServiceClient wsClient;
+    private IProgressMonitor monitor;
 
     @Inject
     public CompilationUnitServerExporter(@UdcServer final ClientConfiguration config) {
-        this.wsClient = new WebServiceClient(config);
+        wsClient = new WebServiceClient(config);
+        wsClient.enableGzipCompression(true);
     }
 
     @Override
     public void exportUnits(final IProject sourceProject, final List<CompilationUnit> units,
             final IProgressMonitor monitor) {
-        monitor.beginTask("Sending compilation units to server", 1);
+        this.monitor = monitor;
+        monitor.beginTask("Sending compilation units to server", units.size());
         monitor.subTask("Uploading compilation units for project " + sourceProject.getName());
+
         trySendData(units);
         monitor.done();
     }
 
     private void trySendData(final List<CompilationUnit> units) {
         try {
-            wsClient.doPostRequest(webResourcePath, units);
+            final List<List<CompilationUnit>> partitions = Lists.partition(units, FRAGMENT_SIZE);
+            for (final List<CompilationUnit> partition : partitions) {
+                wsClient.doPostRequest(webResourcePath, partition);
+                monitor.worked(partition.size());
+            }
         } catch (final ClientHandlerException e) {
             throw new IllegalStateException("Could not send compilation units to the server", e);
         }

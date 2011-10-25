@@ -14,5 +14,5 @@ import java.io.File;
 
 public interface RemoteResolverJobFactory {
 
-    SearchManifestJob create(File file);
+    ResolveCallsModelJob create(File file, CallsModelResolver.OverridePolicy reresolve);
 }

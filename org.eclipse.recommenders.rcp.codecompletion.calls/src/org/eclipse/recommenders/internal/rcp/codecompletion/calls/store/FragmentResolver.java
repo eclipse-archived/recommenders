@@ -44,7 +44,7 @@ public class FragmentResolver {
     }
 
     private void scheduleJob(final File file) {
-        final SearchManifestJob job = jobFactory.create(file);
+        final ResolveCallsModelJob job = jobFactory.create(file, CallsModelResolver.OverridePolicy.NONE);
         job.schedule();
     }
 
