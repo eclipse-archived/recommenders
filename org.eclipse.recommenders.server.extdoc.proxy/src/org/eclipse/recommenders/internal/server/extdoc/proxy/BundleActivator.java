@@ -33,7 +33,7 @@ public class BundleActivator implements org.osgi.framework.BundleActivator {
 
     @Override
     public void start(final BundleContext bundleContext) throws Exception {
-        BundleActivator.context = bundleContext;
+        context = bundleContext;
         tracker = new ServiceTracker(context, HttpService.class.getName(), null) {
 
             private HttpService associatedWithHttpService;

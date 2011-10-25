@@ -4,7 +4,6 @@ Bundle-Name: Code Recommenders: ExtDoc CouchDB Proxy Server
 Bundle-SymbolicName: org.eclipse.recommenders.server.extdoc.proxy;singleton:=true
 Bundle-Version: 0.3.0.qualifier
 Bundle-Activator: org.eclipse.recommenders.internal.server.extdoc.proxy.BundleActivator
-Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.core.runtime,
  com.sun.jersey.server,
  org.eclipse.recommenders.commons.injection,
@@ -17,7 +16,6 @@ Require-Bundle: org.eclipse.core.runtime,
  javax.servlet,
  org.slf4j.api,
  org.eclipse.osgi.services
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.recommenders.internal.server.extdoc.proxy;x-internal:=true
-Import-Package: org.osgi.framework
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Eclipse Code Recommenders
