@@ -49,6 +49,15 @@ public class ModelArchiveStore implements IModelArchiveStore {
         return archive;
     }
 
+    public boolean removeModelArchive(final Manifest manifest) {
+        final IModelArchive archive = manifest2archive.get(manifest);
+        if (archive == null) {
+            return false;
+        }
+        final File file = getModelFile(manifest);
+        return file.delete();
+    }
+
     private File getModelFile(final Manifest manifest) {
         return new File(modelArchivesLocation, manifest.getIdentifier() + ".zip").getAbsoluteFile();
     }

@@ -18,7 +18,6 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelResolver;
-import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.CallsModelResolver.OverridePolicy;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ManifestResolvementInformation;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ModelArchive;
@@ -27,6 +26,7 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.RemoteRe
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ResolveCallsModelJob;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
@@ -49,6 +49,7 @@ public class ModelDetailsSection extends AbstractDependencySection {
     private final ModelArchiveStore archiveStore;
     private Text resolvedTimestampText;
     private Text resolvingStrategyText;
+    private Button deleteModelButton;
 
     public ModelDetailsSection(final PreferencePage preferencePage, final Composite parent,
             final ClasspathDependencyStore dependencyStore, final ModelArchiveStore archiveStore,
@@ -88,6 +89,21 @@ public class ModelDetailsSection extends AbstractDependencySection {
         selectModelButton = createButton(parent, loadSharedImage(ISharedImages.IMG_OBJ_FOLDER),
                 createSelectionListener());
         selectModelButton.setToolTipText("Select model file");
+
+        deleteModelButton = createButton(parent, loadImage("/icons/obj16/trash.gif"), new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                if (file == null) {
+                    return;
+                }
+                final ManifestResolvementInformation resolvementInfo = dependencyStore.getManifestResolvementInfo(file);
+                final Manifest manifest = resolvementInfo.getManifest();
+                dependencyStore.invalidateManifest(file);
+                archiveStore.removeModelArchive(manifest);
+            }
+        });
+        deleteModelButton.setToolTipText("Remove model from store.");
     }
 
     public void selectFile(final File file) {
