@@ -32,13 +32,13 @@
       <page
             category="org.eclipse.recommenders.rcp.category.preferences"
             class="org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences.CallsPreferencePage"
-            id="org.eclipse.recommenders.rcp.codecompletion.calls.page1"
+            id="org.eclipse.recommenders.rcp.codecompletion.calls.collector"
             name="Usage Data Collector">
       </page>
       <page
             category="org.eclipse.recommenders.rcp.category.preferences"
             class="org.eclipse.recommenders.commons.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.codecompletion.calls.preferences.DependenciesPreferencePage"
-            id="org.eclipse.recommenders.rcp.codecompletion.calls.page1"
+            id="org.eclipse.recommenders.rcp.codecompletion.calls.dependencies"
             name="Dependencies">
       </page>
    </extension>
