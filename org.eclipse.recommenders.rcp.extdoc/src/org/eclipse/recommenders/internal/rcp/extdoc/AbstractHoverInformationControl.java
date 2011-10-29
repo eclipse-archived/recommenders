@@ -148,7 +148,6 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
         if (!selection.equals(lastSelection)) {
             lastSelection = selection;
             updateProviders();
-            updateService.invokeAll();
             providersComposite.updateSelectionLabel(selection.getJavaElement());
         }
     }

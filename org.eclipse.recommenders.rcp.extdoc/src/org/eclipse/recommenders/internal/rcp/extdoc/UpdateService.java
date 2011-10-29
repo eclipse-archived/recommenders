@@ -21,10 +21,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.rcp.extdoc.ExtDocPlugin;
 import org.eclipse.recommenders.rcp.extdoc.SwtFactory;
 import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.progress.UIJob;
 
 public final class UpdateService {
 
@@ -43,6 +48,16 @@ public final class UpdateService {
     }
 
     public void invokeAll() {
+        new Job("Run ExtDoc updates.") {
+            @Override
+            protected IStatus run(final IProgressMonitor monitor) {
+                runAllJobs();
+                return Status.OK_STATUS;
+            }
+        }.schedule();
+    }
+
+    private void runAllJobs() {
         try {
             final List<Future<IUpdateJob>> futures = pool.invokeAll(jobs.values(), 2, TimeUnit.SECONDS);
             for (final Future<IUpdateJob> future : futures) {
@@ -75,10 +90,16 @@ public final class UpdateService {
     public abstract static class AbstractUpdateJob implements IUpdateJob {
 
         protected final void displayTimeoutMessage(final Composite providersContentComposite) {
-            UiUtils.disposeChildren(providersContentComposite);
-            SwtFactory.createLabel(providersContentComposite, "Provider timed out. Please review your network status.",
-                    true);
-            UiUtils.layoutParents(providersContentComposite);
+            new UIJob("Updating Provider View") {
+                @Override
+                public IStatus runInUIThread(final IProgressMonitor monitor) {
+                    UiUtils.disposeChildren(providersContentComposite);
+                    SwtFactory.createLabel(providersContentComposite,
+                            "Provider timed out. Please review your network status.", true);
+                    UiUtils.layoutParents(providersContentComposite);
+                    return Status.OK_STATUS;
+                }
+            }.schedule();
         }
     }
 }
