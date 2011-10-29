@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.server.codesearch.resources;
 
+import static java.lang.String.format;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,7 +34,9 @@ public class SourceCodeResource {
         final String filename = id.replaceAll("\\W", ".").substring(1) + ".java";
         final String fileContent = localFileService.readFile(filename);
         if (fileContent == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+
+            final String err = format("no file %s found in db file %s", filename, localFileService.getFile());
+            throw new WebApplicationException(new IllegalStateException(err), Response.Status.NOT_FOUND);
         } else {
             return fileContent;
         }

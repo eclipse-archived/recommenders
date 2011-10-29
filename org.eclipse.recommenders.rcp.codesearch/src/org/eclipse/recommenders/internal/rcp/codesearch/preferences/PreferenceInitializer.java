@@ -16,7 +16,7 @@ import org.eclipse.recommenders.internal.rcp.codesearch.CodesearchPlugin;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static final String SERVER_URL = "http://137.248.121.220:29757/codesearch/";
+    private static final String SERVER_URL = "http://recommenders1.st.informatik.tu-darmstadt.de/codesearch/";
 
     @Override
     public void initializeDefaultPreferences() {

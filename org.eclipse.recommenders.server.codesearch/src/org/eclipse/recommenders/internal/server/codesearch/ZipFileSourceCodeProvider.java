@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.server.codesearch;
 
+import static org.eclipse.recommenders.commons.utils.Throws.throwIllegalArgumentException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +32,9 @@ public class ZipFileSourceCodeProvider {
     public ZipFileSourceCodeProvider(@CodesearchBasedir final File baseDir) {
         try {
             final File file = new File(baseDir, "sources/sources.zip");
+            if (!file.exists()) {
+                throwIllegalArgumentException("no codesearch database file found at %s", file);
+            }
             zipFile = new ZipFile(file);
             // load file contents into RAM to make serving requests faster:
             Files.toByteArray(file);
@@ -51,6 +56,10 @@ public class ZipFileSourceCodeProvider {
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public File getFile() {
+        return new File(zipFile.getName());
     }
 
 }
