@@ -68,6 +68,6 @@ public interface IProvider extends IExecutableExtension {
      */
     boolean selectionChanged(IJavaElementSelection selection, Composite composite);
 
-    boolean ignoreTimeout();
+    boolean hideOnTimeout();
 
 }

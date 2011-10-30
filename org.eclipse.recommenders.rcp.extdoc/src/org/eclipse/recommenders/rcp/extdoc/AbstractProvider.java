@@ -60,7 +60,7 @@ abstract class AbstractProvider implements IProvider {
     }
 
     @Override
-    public boolean ignoreTimeout() {
+    public boolean hideOnTimeout() {
         return false;
     }
 

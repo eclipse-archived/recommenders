@@ -82,7 +82,7 @@ public final class JavadocProvider extends AbstractTitledProvider {
     }
 
     @Override
-    public boolean ignoreTimeout() {
+    public boolean hideOnTimeout() {
         return true;
     }
 

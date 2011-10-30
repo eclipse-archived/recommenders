@@ -205,8 +205,10 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
 
         @Override
         public void handleTimeout() {
-            displayTimeoutMessage(provider.resolveContentComposite(control));
-            displayProvider();
+            if (!provider.hideOnTimeout()) {
+                displayTimeoutMessage(provider.resolveContentComposite(control));
+                displayProvider();
+            }
         }
 
         private void displayProvider() {
