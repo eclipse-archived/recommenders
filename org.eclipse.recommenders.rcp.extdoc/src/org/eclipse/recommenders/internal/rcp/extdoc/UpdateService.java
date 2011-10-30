@@ -33,6 +33,8 @@ import org.eclipse.ui.progress.UIJob;
 
 public final class UpdateService {
 
+    private static boolean firstRun = true;
+
     private final ExecutorService pool = Executors.newCachedThreadPool();
     private final Map<IUpdateJob, Callable<IUpdateJob>> jobs = new HashMap<IUpdateJob, Callable<IUpdateJob>>();
 
@@ -59,7 +61,7 @@ public final class UpdateService {
 
     private void runAllJobs() {
         try {
-            final List<Future<IUpdateJob>> futures = pool.invokeAll(jobs.values(), 2, TimeUnit.SECONDS);
+            final List<Future<IUpdateJob>> futures = pool.invokeAll(jobs.values(), firstRun ? 10 : 2, TimeUnit.SECONDS);
             for (final Future<IUpdateJob> future : futures) {
                 try {
                     final IUpdateJob job = future.get();
@@ -77,6 +79,7 @@ public final class UpdateService {
             job.handleTimeout();
         }
         jobs.clear();
+        firstRun = false;
     }
 
     public interface IUpdateJob extends Runnable {

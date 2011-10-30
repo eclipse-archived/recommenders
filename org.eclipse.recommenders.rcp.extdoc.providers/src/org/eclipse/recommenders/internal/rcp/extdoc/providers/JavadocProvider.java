@@ -81,6 +81,11 @@ public final class JavadocProvider extends AbstractTitledProvider {
         return true;
     }
 
+    @Override
+    public boolean ignoreTimeout() {
+        return true;
+    }
+
     private static IJavaElement getJavaElement(final IJavaElement javaElement) {
         if (javaElement instanceof ILocalVariable) {
             return ElementResolver.toJdtType(VariableResolver.resolveTypeSignature((ILocalVariable) javaElement));

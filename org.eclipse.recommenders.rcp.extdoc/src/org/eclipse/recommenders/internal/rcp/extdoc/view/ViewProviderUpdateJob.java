@@ -61,7 +61,9 @@ class ViewProviderUpdateJob extends AbstractUpdateJob {
 
     @Override
     public void handleTimeout() {
-        super.displayTimeoutMessage(provider.resolveContentComposite(composite));
+        if (provider.ignoreTimeout()) {
+            super.displayTimeoutMessage(provider.resolveContentComposite(composite));
+        }
         displayProvider(true);
     }
 

@@ -60,6 +60,11 @@ abstract class AbstractProvider implements IProvider {
     }
 
     @Override
+    public boolean ignoreTimeout() {
+        return false;
+    }
+
+    @Override
     public final boolean equals(final Object object) {
         return object instanceof IProvider && hashCode() == object.hashCode();
     }
