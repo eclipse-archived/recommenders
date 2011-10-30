@@ -90,6 +90,7 @@ final class ProvidersTableDropAdapter extends DropTargetAdapter {
         newItem.setText(originalItem.getText());
         newItem.setData(newItemControl);
         newItem.setImage(originalItem.getImage());
+        newItem.setData("image", originalItem.getImage());
         newItem.setChecked(originalItem.getChecked());
         newItem.setGrayed(originalItem.getGrayed());
     }
