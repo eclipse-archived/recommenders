@@ -44,9 +44,11 @@ public class UploadClasspathDependencyInfosJob extends Job {
         monitor.beginTask("", dependencies.size());
 
         for (final File dependency : dependencies) {
-            final ClasspathDependencyInformation dependencyInfo = dependencyStore
-                    .getClasspathDependencyInfo(dependency);
-            client.doPostRequest("dependencyInfo", dependencyInfo);
+            if (dependencyStore.containsClasspathDependencyInfo(dependency)) {
+                final ClasspathDependencyInformation dependencyInfo = dependencyStore
+                        .getClasspathDependencyInfo(dependency);
+                client.doPostRequest("dependencyInfo", dependencyInfo);
+            }
             monitor.worked(1);
         }
         return Status.OK_STATUS;
