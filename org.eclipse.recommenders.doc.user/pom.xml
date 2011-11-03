@@ -52,6 +52,9 @@
 										navigationimages="true" title="Recommenders Documentation"
 										helpPrefix="help" generateUnifiedToc="true">
 										<path name="Recommenders/UserGuide" title="Recommenders User Guide" />
+										<path name="Recommenders/New_and_Noteworthy/0.4"
+											title="Recommenders 
+											New and Noteworthy 0.4" />
 										<path name="Recommenders/New_and_Noteworthy/0.3"
 											title="Recommenders 
 											New and Noteworthy 0.3" />
