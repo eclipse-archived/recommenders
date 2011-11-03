@@ -39,6 +39,8 @@ import org.eclipse.recommenders.internal.rcp.codecompletion.calls.IObjectMethodC
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -46,6 +48,7 @@ import com.google.common.collect.Sets;
 
 public class BayesNetWrapper implements IObjectMethodCallsNet {
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final ITypeName typeName;
 
 	private JunctionTreeAlgorithm junctionTreeAlgorithm;
@@ -172,7 +175,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
 	@Override
 	public void setQuery(ObjectUsage query) {
-		System.out.println("query: " + query);
+		logger.info("query: " + query);
 		clearEvidence();
 		setMethodContext(query.contextFirst);
 		setKind(query.kind);
@@ -209,9 +212,9 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 			}
 		}
 
-		System.out.println("recommended: ");
+		logger.info("recommended: ");
 		for (Tuple<IMethodName, Double> t : res) {
-			System.out.println(t.getFirst() + ": " + t.getSecond());
+			logger.info(t.getFirst() + ": " + t.getSecond());
 		}
 
 		return res;

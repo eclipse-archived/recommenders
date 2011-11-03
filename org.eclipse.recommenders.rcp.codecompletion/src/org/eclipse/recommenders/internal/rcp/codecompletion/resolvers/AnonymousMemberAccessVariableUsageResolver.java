@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey.Kind;
@@ -53,13 +54,11 @@ public class AnonymousMemberAccessVariableUsageResolver implements IVariableUsag
 
 	@Override
 	public DefinitionSite.Kind getResolvedVariableKind() {
-		// TODO Auto-generated method stub
-		return null;
+		return DefinitionSite.Kind.UNKNOWN;
 	}
 
 	@Override
 	public IMethodName getResolvedVariableDefinition() {
-		// TODO Auto-generated method stub
-		return null;
+		return ObjectUsage.UNKNOWN_METHOD;
 	}
 }
