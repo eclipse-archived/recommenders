@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: RCP ExtDoc Client (Incubation) (Experimental)
 Bundle-SymbolicName: org.eclipse.recommenders.rcp.extdoc;singleton:=true
-Bundle-Version: 0.3.0.qualifier
+Bundle-Version: 0.4.0.qualifier
 Implementation-Version: 0.2.0
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.ui,

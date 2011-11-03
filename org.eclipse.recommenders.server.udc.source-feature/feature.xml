@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.server.udc.source-feature"
       label="Code Recommenders: Usage Data Collector Server Sources (Incubation)"
-      version="0.3.0.qualifier"
+      version="0.4.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.eclipse.org/recommenders/">

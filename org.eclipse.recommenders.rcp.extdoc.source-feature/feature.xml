@@ -14,7 +14,7 @@
 <feature
       id="org.eclipse.recommenders.rcp.extdoc.source-feature"
       label="Code Recommenders: ExtDoc Client Sources (Incubation) (Experimental)"
-      version="0.3.0.qualifier"
+      version="0.4.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.eclipse.org/recommenders/">

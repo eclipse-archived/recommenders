@@ -2,10 +2,10 @@
 <feature
       id="org.eclipse.recommenders.udc.feature"
       label="Code Recommenders: RCP Usage Data Collector (Incubation) (Experimental)"
-      version="0.1.0.qualifier"
+      version="0.4.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
-  <description url="http://www.eclipse.org/recommenders/">
+   <description url="http://www.eclipse.org/recommenders/">
       %description
    </description>
 

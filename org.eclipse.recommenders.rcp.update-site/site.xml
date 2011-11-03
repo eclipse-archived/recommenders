@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.recommenders.codecompletion_0.3.0.qualifier.jar" id="org.eclipse.recommenders.codecompletion" version="0.3.0.qualifier">
+   <feature url="features/org.eclipse.recommenders.codecompletion_0.4.0.qualifier.jar" id="org.eclipse.recommenders.codecompletion" version="0.4.0.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.rcp.codesearch_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codesearch" version="0.3.0.qualifier">
+   <feature url="features/org.eclipse.recommenders.rcp.codesearch_0.4.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codesearch" version="0.4.0.qualifier">
       <category name="sandbox"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.rcp.codecompletion.subwords_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.subwords" version="0.3.0.qualifier">
+   <feature url="features/org.eclipse.recommenders.rcp.codecompletion.subwords_0.4.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.subwords" version="0.4.0.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.rcp.extdoc_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.extdoc" version="0.3.0.qualifier">
+   <feature url="features/org.eclipse.recommenders.rcp.extdoc_0.4.0.qualifier.jar" id="org.eclipse.recommenders.rcp.extdoc" version="0.4.0.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.rcp.selfhosting.feature_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.selfhosting.feature" version="0.3.0.qualifier">
+   <feature url="features/org.eclipse.recommenders.rcp.selfhosting.feature_0.4.0.qualifier.jar" id="org.eclipse.recommenders.rcp.selfhosting.feature" version="0.4.0.qualifier">
       <category name="sandbox"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.rcp.codesearch.source-feature_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codesearch.source-feature" version="0.3.0.qualifier">
+   <feature url="features/org.eclipse.recommenders.rcp.codesearch.source-feature_0.4.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codesearch.source-feature" version="0.4.0.qualifier">
       <category name="sources"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.rcp.codecompletion.subwords.source-feature_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.subwords.source-feature" version="0.3.0.qualifier">
+   <feature url="features/org.eclipse.recommenders.rcp.codecompletion.subwords.source-feature_0.4.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.subwords.source-feature" version="0.4.0.qualifier">
       <category name="sources"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.rcp.codecompletion.source-feature_0.3.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.source-feature" version="0.3.0.qualifier">
+   <feature url="features/org.eclipse.recommenders.rcp.codecompletion.source-feature_0.4.0.qualifier.jar" id="org.eclipse.recommenders.rcp.codecompletion.source-feature" version="0.4.0.qualifier">
       <category name="sources"/>
    </feature>
    <feature url="features/org.eclipse.recommenders.3rd.feature_0.1.0.201110251509.jar" id="org.eclipse.recommenders.3rd.feature" version="0.1.0.201110251509">

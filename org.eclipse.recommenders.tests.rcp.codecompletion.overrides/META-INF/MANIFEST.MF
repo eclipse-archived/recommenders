@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for Overrides Code Completion
 Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp.codecompletion.overrides
-Bundle-Version: 0.3.0.qualifier
+Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.rcp.codecompletion.overrides;bundle-version="0.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

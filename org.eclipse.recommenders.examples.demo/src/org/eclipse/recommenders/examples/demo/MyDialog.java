@@ -11,10 +11,8 @@
 package org.eclipse.recommenders.examples.demo;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
@@ -35,9 +33,9 @@ public class MyDialog extends Dialog {
     @Override
     protected Control createDialogArea(final Composite parent) {
         final Composite container = (Composite) super.createDialogArea(parent);
- 
+
         swtTextWidget = new Text(container, SWT.BORDER);
-        final swtTextWidget.
+
         return container;
     }
 
