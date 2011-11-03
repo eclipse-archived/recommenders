@@ -3,14 +3,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.4.0-SNAPSHOT</version>
 	<packaging>eclipse-test-plugin</packaging>
 	<artifactId>org.eclipse.recommenders.tests.server.udc.modelgeneration</artifactId>
 	<parent>
 		<relativePath>../org.eclipse.recommenders.udc-test-parent</relativePath>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.udc-test-parent</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.4.0-SNAPSHOT</version>
 	</parent>
 	<properties>
 		<eclemma.instrument.bundles>org.eclipse.recommenders.server.udc.modelgeneration</eclemma.instrument.bundles>
