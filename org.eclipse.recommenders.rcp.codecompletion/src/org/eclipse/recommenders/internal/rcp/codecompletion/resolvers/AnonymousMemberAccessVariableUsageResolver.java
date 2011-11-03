@@ -18,6 +18,7 @@ import java.util.Set;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey.Kind;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
@@ -26,27 +27,39 @@ import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 @SuppressWarnings("restriction")
 public class AnonymousMemberAccessVariableUsageResolver implements IVariableUsageResolver {
 
-    private IIntelligentCompletionContext ctx;
+	private IIntelligentCompletionContext ctx;
 
-    @Override
-    public boolean canResolve(final IIntelligentCompletionContext ctx) {
-        this.ctx = ensureIsNotNull(ctx);
-        final ASTNode completionNode = ctx.getCompletionNode();
-        final boolean isThis = "this".equals(ctx.getReceiverName());
-        return !isThis && completionNode instanceof CompletionOnMemberAccess;
-    }
+	@Override
+	public boolean canResolve(final IIntelligentCompletionContext ctx) {
+		this.ctx = ensureIsNotNull(ctx);
+		final ASTNode completionNode = ctx.getCompletionNode();
+		final boolean isThis = "this".equals(ctx.getReceiverName());
+		return !isThis && completionNode instanceof CompletionOnMemberAccess;
+	}
 
-    @Override
-    public Set<IMethodName> getReceiverMethodInvocations() {
-        return Collections.emptySet();
-    }
+	@Override
+	public Set<IMethodName> getReceiverMethodInvocations() {
+		return Collections.emptySet();
+	}
 
-    @Override
-    public Variable getResolvedVariable() {
-        final Variable var = ctx.getVariable();
-        final Variable res = Variable.create(null, var.getType(), ctx.getEnclosingMethod());
-        res.kind = Kind.RETURN;
-        return res;
+	@Override
+	public Variable getResolvedVariable() {
+		final Variable var = ctx.getVariable();
+		final Variable res = Variable.create(null, var.getType(), ctx.getEnclosingMethod());
+		res.kind = Kind.RETURN;
+		return res;
 
-    }
+	}
+
+	@Override
+	public DefinitionSite.Kind getResolvedVariableKind() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IMethodName getResolvedVariableDefinition() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

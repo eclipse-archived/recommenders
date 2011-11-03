@@ -14,13 +14,18 @@ import java.util.Set;
 
 import org.eclipse.recommenders.commons.utils.annotations.Provisional;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 
 @Provisional
 public interface IVariableUsageResolver {
-    public boolean canResolve(IIntelligentCompletionContext ctx);
+	public boolean canResolve(IIntelligentCompletionContext ctx);
 
-    public Variable getResolvedVariable();
+	public Variable getResolvedVariable();
 
-    public Set<IMethodName> getReceiverMethodInvocations();
+	public Kind getResolvedVariableKind();
+
+	public IMethodName getResolvedVariableDefinition();
+
+	public Set<IMethodName> getReceiverMethodInvocations();
 }

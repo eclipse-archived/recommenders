@@ -12,6 +12,8 @@ package org.eclipse.recommenders.commons.bayesnet;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -99,5 +101,15 @@ public class Node implements Serializable {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+    
+    @Override
+    public boolean equals(Object arg0) {
+    	return EqualsBuilder.reflectionEquals(this, arg0);
+    }
+    
+    @Override
+    public int hashCode() {
+    	return HashCodeBuilder.reflectionHashCode(this);
     }
 }

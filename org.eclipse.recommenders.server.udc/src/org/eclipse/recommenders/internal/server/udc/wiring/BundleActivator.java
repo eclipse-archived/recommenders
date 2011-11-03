@@ -23,72 +23,65 @@ import com.google.inject.Injector;
 
 public class BundleActivator implements org.osgi.framework.BundleActivator {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private ServiceTracker tracker;
-    private static BundleContext context;
-    private WebserviceActivator serviceActivator;
+	private ServiceTracker tracker;
+	private static BundleContext context;
+	private WebserviceActivator serviceActivator;
 
-    static BundleContext getContext() {
-        return context;
-    }
+	static BundleContext getContext() {
+		return context;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext
-     * )
-     */
-    @Override
-    public void start(final BundleContext bundleContext) throws Exception {
-        BundleActivator.context = bundleContext;
-        tracker = new ServiceTracker(context, HttpService.class.getName(), null) {
+	@Override
+	public void start(final BundleContext bundleContext) throws Exception {
+		BundleActivator.context = bundleContext;
+		tracker = new ServiceTracker(context, HttpService.class.getName(), null) {
 
-            private HttpService associatedWithHttpService;
+			private HttpService associatedWithHttpService;
 
-            @Override
-            public Object addingService(final ServiceReference serviceRef) {
-                associatedWithHttpService = (HttpService) super.addingService(serviceRef);
+			@Override
+			public Object addingService(final ServiceReference serviceRef) {
+				associatedWithHttpService = (HttpService) super.addingService(serviceRef);
 
-                final Injector child = InjectionService.getInstance().getInjector()
-                        .createChildInjector(new GuiceModule(associatedWithHttpService));
-                serviceActivator = child.getInstance(WebserviceActivator.class);
-                try {
-                    serviceActivator.start();
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                }
-                log.info("Started Code Recommenders Call Models Service");
-                return associatedWithHttpService;
+				final Injector child = InjectionService.getInstance().getInjector()
+						.createChildInjector(new GuiceModule(associatedWithHttpService));
+				serviceActivator = child.getInstance(WebserviceActivator.class);
+				try {
+					serviceActivator.start();
+				} catch (final Exception e) {
+					throw new RuntimeException(e);
+				}
+				log.info("Started Code Recommenders Call Models Service");
+				return associatedWithHttpService;
 
-            }
+			}
 
-            @Override
-            public void removedService(final ServiceReference ref, final Object service) {
-                if (associatedWithHttpService == service) {
-                    stopService();
-                    associatedWithHttpService = null;
-                }
-                // XXX is super required?
-                super.removedService(ref, service);
-                log.info("Stopped Code Recommenders Call Models Service");
-            }
-        };
-        tracker.open();
-    }
+			@Override
+			public void removedService(final ServiceReference ref, final Object service) {
+				if (associatedWithHttpService == service) {
+					stopService();
+					associatedWithHttpService = null;
+				}
+				// XXX is super required?
+				super.removedService(ref, service);
+				log.info("Stopped Code Recommenders Call Models Service");
+			}
+		};
+		tracker.open();
+	}
 
-    @Override
-    public void stop(final BundleContext bundleContext) throws Exception {
-        BundleActivator.context = null;
-        tracker.close();
-        stopService();
-    }
+	@Override
+	public void stop(final BundleContext bundleContext) throws Exception {
+		BundleActivator.context = null;
+		tracker.close();
+		stopService();
+	}
 
-    private void stopService() {
-        if (serviceActivator != null) {
-            serviceActivator.stop();
-        }
-    }
+	private void stopService() {
+		if (serviceActivator != null) {
+			serviceActivator.stop();
+		}
+	}
 
 }

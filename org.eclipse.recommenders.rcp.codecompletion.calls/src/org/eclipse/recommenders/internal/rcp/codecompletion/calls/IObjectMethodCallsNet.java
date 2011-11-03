@@ -15,39 +15,42 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.annotations.Nullable;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite;
 
 public interface IObjectMethodCallsNet {
 
-    public abstract ITypeName getType();
+	public abstract ITypeName getType();
 
-    public abstract void setCalled(final IMethodName calledMethod);
+	public abstract void setCalled(final IMethodName calledMethod);
 
-    public abstract void clearEvidence();
+	public abstract void clearEvidence();
 
-    public abstract void setMethodContext(final IMethodName newActiveMethodContext);
+	public abstract void setMethodContext(final IMethodName newActiveMethodContext);
 
-    public abstract void setObservedMethodCalls(final @Nullable ITypeName rebaseType,
-            final Set<IMethodName> invokedMethods);
+	public abstract void setKind(final DefinitionSite.Kind newKind);
 
-    public abstract SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold);
+	public abstract void setDefinition(final IMethodName newDefinition);
 
-    public abstract SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(
-            final double minProbabilityThreshold, final int maxNumberOfRecommendations);
+	public abstract void setObservedMethodCalls(final @Nullable ITypeName rebaseType,
+			final Set<IMethodName> invokedMethods);
 
-    public abstract void negateConstructors();
+	public abstract void setQuery(ObjectUsage query);
 
-    public abstract List<Tuple<String, Double>> getPatternsWithProbability();
+	public abstract SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold);
 
-    public abstract void setPattern(String patternName);
+	public abstract SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(
+			final double minProbabilityThreshold, final int maxNumberOfRecommendations);
 
-    public abstract Collection<IMethodName> getMethodCalls();
+	public abstract List<Tuple<String, Double>> getPatternsWithProbability();
 
-    public abstract Collection<IMethodName> getContexts();
+	public abstract void setPattern(String patternName);
 
-    public abstract Collection<String> getPatterns();
+	public abstract Collection<IMethodName> getMethodCalls();
 
+	public abstract Collection<IMethodName> getContexts();
 }

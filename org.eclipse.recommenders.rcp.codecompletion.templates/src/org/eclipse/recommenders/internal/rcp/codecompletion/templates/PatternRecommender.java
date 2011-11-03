@@ -165,9 +165,11 @@ public final class PatternRecommender {
         model.clearEvidence();
         model.setMethodContext(context.getEnclosingMethodsFirstDeclaration());
         model.setObservedMethodCalls(model.getType(), receiverMethodInvocations);
-        if (!needsConstructor && shallNegateConstructors(context.getVariable())) {
-            model.negateConstructors();
-        }
+        // TODO check why "negateConstructors()" was needed here
+        // if (!needsConstructor &&
+        // shallNegateConstructors(context.getVariable())) {
+        // model.negateConstructors();
+        // }
     }
 
     /**

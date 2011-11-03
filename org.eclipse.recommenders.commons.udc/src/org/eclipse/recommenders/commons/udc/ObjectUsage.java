@@ -15,19 +15,33 @@ import java.util.Set;
 
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.commons.utils.names.VmMethodName;
+import org.eclipse.recommenders.commons.utils.names.VmTypeName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite;
+
+import com.google.common.collect.Sets;
 
 public class ObjectUsage {
 
-    public ITypeName type;
-    public IMethodName contextSuper;
-    public IMethodName contextFirst;
-    public Set<IMethodName> calls;
-    public Date cuCreationTimestamp;
+	public static final ITypeName UNKNOWN_TYPE = VmTypeName.get("LNull");
+	public static final IMethodName UNKNOWN_METHOD = VmMethodName.get("LNull.null()V");
+	public static final DefinitionSite.Kind UNKNOWN_KIND = DefinitionSite.Kind.UNKNOWN;
 
-    @Override
-    public String toString() {
-        return "ObjectUsage [type=" + type + ", contextSuper=" + contextSuper + ", contextFirst=" + contextFirst
-                + ", calls=" + calls + "]";
-    }
+	public static final IMethodName NO_METHOD = VmMethodName.get("LNone.none()V"); // param/fields
+	public static final IMethodName DUMMY_METHOD = VmMethodName.get("LDummy.dummy()V"); // crash prevention
 
+	public Date cuCreationTimestamp;
+	public ITypeName type;
+
+	public IMethodName contextSuper;
+	public IMethodName contextFirst;
+	public Set<IMethodName> calls = Sets.newHashSet();
+	public DefinitionSite.Kind kind;
+	public IMethodName definition;
+
+	@Override
+	public String toString() {
+		return "ObjectUsage [type=" + type + ", contextSuper=" + contextSuper + ", contextFirst=" + contextFirst
+				+ ", calls=" + calls + ", kind=" + kind + ", def=" + definition + "]";
+	}
 }

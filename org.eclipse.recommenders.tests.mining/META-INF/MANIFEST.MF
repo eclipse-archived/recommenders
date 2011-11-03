@@ -17,4 +17,9 @@ Require-Bundle: org.mockito,
  org.eclipse.recommenders.commons.analysis,
  org.eclipse.recommenders.server.extdoc,
  org.hamcrest,
- org.slf4j.api
+ org.slf4j.api,
+ org.apache.mahout,
+ org.eclipse.recommenders.commons.client,
+ com.sun.jersey.client,
+ org.eclipse.recommenders.commons.utils.gson
+Export-Package: org.eclipse.recommenders.tests.commons.mining.utils

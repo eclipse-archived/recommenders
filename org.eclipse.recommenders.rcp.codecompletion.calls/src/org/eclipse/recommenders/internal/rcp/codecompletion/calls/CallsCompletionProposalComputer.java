@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.internal.rcp.codecompletion.calls;
 
 import static java.util.Collections.emptyList;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFalse;
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,9 +32,11 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.commons.utils.Tuple;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 import org.eclipse.recommenders.commons.utils.names.ITypeName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.IProjectModelFacade;
 import org.eclipse.recommenders.internal.rcp.codecompletion.calls.store.ProjectServices;
@@ -48,190 +52,216 @@ import com.google.inject.Provider;
 
 @SuppressWarnings("restriction")
 public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
-    private static final double MIN_PROBABILITY_THRESHOLD = 0.1d;
-    private Set<Class<?>> supportedCompletionRequests;
 
-    private IIntelligentCompletionContext ctx;
+	private static final int MAX_NUM_PROPOSALS = 3;
+	private static final double MIN_PROBABILITY_THRESHOLD = 0.1d;
 
-    private Collection<CallsRecommendation> recommendations;
+	private Set<Class<?>> supportedCompletionRequests;
+	private final ProjectServices projectServices;
+	private final IntelligentCompletionContextResolver contextResolver;
+	private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;
 
-    private List<IJavaCompletionProposal> proposals;
+	private IIntelligentCompletionContext ctx;
 
-    private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;
+	private Collection<CallsRecommendation> recommendations;
+	private List<IJavaCompletionProposal> proposals;
 
-    private Set<IMethodName> receiverMethodInvocations;
+	private IObjectMethodCallsNet model;
 
-    private ITypeName receiverType;
+	private Variable receiver;
 
-    private IObjectMethodCallsNet model;
+	private ITypeName receiverType;
+	private IMethodName firstMethodDeclaration;
+	private DefinitionSite.Kind receiverDefinitionKind;
+	private IMethodName receiverDefinition;
+	private Set<IMethodName> receiverMethodInvocations;
+	private ObjectUsage query;
 
-    private Variable receiver;
+	@Inject
+	public CallsCompletionProposalComputer(final ProjectServices projectServices,
+			final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
+			final IntelligentCompletionContextResolver contextResolver) {
+		this.projectServices = projectServices;
+		this.usageResolversProvider = usageResolversProvider;
+		this.contextResolver = contextResolver;
+		initializeSuportedCompletionRequests();
+	}
 
-    private IMethodName firstMethodDeclaration;
+	private void initializeSuportedCompletionRequests() {
+		supportedCompletionRequests = Sets.newHashSet();
+		supportedCompletionRequests.add(CompletionOnMemberAccess.class);
+		supportedCompletionRequests.add(CompletionOnMessageSend.class);
+		supportedCompletionRequests.add(CompletionOnQualifiedNameReference.class);
+		supportedCompletionRequests.add(CompletionOnSingleNameReference.class);
+	}
 
-    private final IntelligentCompletionContextResolver contextResolver;
-    private final ProjectServices projectServices;
+	@Override
+	public List<?> computeCompletionProposals(final ContentAssistInvocationContext context,
+			final IProgressMonitor monitor) {
+		final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
+		if (contextResolver.hasProjectRecommendersNature(jCtx)) {
+			final IIntelligentCompletionContext iCtx = contextResolver.resolveContext(jCtx);
+			return computeProposals(iCtx);
+		} else {
+			return Collections.emptyList();
+		}
+	}
 
-    @Inject
-    public CallsCompletionProposalComputer(final ProjectServices projectServices,
-            final Provider<Set<IVariableUsageResolver>> usageResolversProvider,
-            final IntelligentCompletionContextResolver contextResolver) {
-        this.projectServices = projectServices;
-        this.usageResolversProvider = usageResolversProvider;
-        this.contextResolver = contextResolver;
-        initializeSuportedCompletionRequests();
-    }
+	private List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
+		this.ctx = ctx;
+		try {
+			boolean canComputeProposal = isCompletionRequestSupported() && findReceiverInContext()
+					&& resolveObjectUsage() && findModel();
+			if (!canComputeProposal) {
+				return emptyList();
+			}
 
-    private void initializeSuportedCompletionRequests() {
-        supportedCompletionRequests = Sets.newHashSet();
-        supportedCompletionRequests.add(CompletionOnMemberAccess.class);
-        supportedCompletionRequests.add(CompletionOnMessageSend.class);
-        supportedCompletionRequests.add(CompletionOnQualifiedNameReference.class);
-        supportedCompletionRequests.add(CompletionOnSingleNameReference.class);
-    }
+			findRecommendations();
+			findMatchingProposals();
+			releaseModel();
+		} catch (Exception e) {
+			System.out.println("");
+		}
+		return this.proposals;
+	}
 
-    @Override
-    public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
-        final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
-        if (contextResolver.hasProjectRecommendersNature(jCtx)) {
-            final IIntelligentCompletionContext iCtx = contextResolver.resolveContext(jCtx);
-            return computeProposals(iCtx);
-        } else {
-            return Collections.emptyList();
-        }
-    }
+	private boolean isCompletionRequestSupported() {
+		final ASTNode node = ctx.getCompletionNode();
+		return node == null ? false : supportedCompletionRequests.contains(node.getClass());
+	}
 
-    private List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
-        this.ctx = ctx;
-        if (!isCompletionRequestSupported()) {
-            return emptyList();
-        }
-        if (!findReceiverInContext()) {
-            return emptyList();
-        }
-        if (!findVariableUsageAndInvocationContext()) {
-            return emptyList();
-        }
-        if (!findModel()) {
-            return emptyList();
-        }
-        findRecommendations();
-        findMatchingProposals();
-        releaseModel();
-        return this.proposals;
-    }
+	private boolean findReceiverInContext() {
+		receiver = ctx.getVariable();
+		return receiver != null;
+	}
 
-    private boolean isCompletionRequestSupported() {
-        final ASTNode node = ctx.getCompletionNode();
-        return node == null ? false : supportedCompletionRequests.contains(node.getClass());
-    }
+	private boolean resolveObjectUsage() {
+		firstMethodDeclaration = ctx.getEnclosingMethodsFirstDeclaration();
+		// receiverMethodInvocations = receiver.getReceiverCalls();
+		for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
+			if (resolver.canResolve(ctx)) {
 
-    private boolean findReceiverInContext() {
-        receiver = ctx.getVariable();
-        return receiver != null;
-    }
+				System.out.println("resolving with: " + resolver.getClass());
 
-    private boolean findVariableUsageAndInvocationContext() {
-        firstMethodDeclaration = ctx.getEnclosingMethodsFirstDeclaration();
-        receiverMethodInvocations = receiver.getReceiverCalls();
-        for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
-            if (resolver.canResolve(ctx)) {
+				// XXX this is a bit dirty: we need to handle this
+				// appropriately... here ctx.getVariable() makes a hack for the
+				// recevier type which noone can understand in 3 months.
+				receiverType = receiver.isThis() ? receiver.type : ctx.getReceiverType();
+				receiverMethodInvocations = resolver.getReceiverMethodInvocations();
+				receiver = resolver.getResolvedVariable();
 
-                // XXX this is a bit dirty: we need to handle this
-                // appropriately... here ctx.getVariable() makes a hack for the
-                // recevier type which noone can understand in 3 months.
-                receiverType = receiver.isThis() ? receiver.type : ctx.getReceiverType();
-                receiverMethodInvocations = resolver.getReceiverMethodInvocations();
-                receiver = resolver.getResolvedVariable();
-                return true;
-            }
-        }
-        return false;
-    }
+				for (IMethodName call : receiverMethodInvocations) {
+					ensureIsFalse(call.isInit(), "calls contained init");
+				}
 
-    private boolean findModel() {
-        final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
-        final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+				receiverDefinition = resolver.getResolvedVariableDefinition();
+				receiverDefinitionKind = resolver.getResolvedVariableKind();
 
-        if (modelFacade.hasModel(receiverType)) {
-            model = modelFacade.acquireModel(receiverType);
-        }
-        return model != null;
-    }
+				ensureIsNotNull(receiverDefinition);
 
-    private void findRecommendations() {
-        recommendations = Lists.newLinkedList();
-        model.clearEvidence();
-        model.setMethodContext(firstMethodDeclaration);
-        model.setObservedMethodCalls(receiverType, receiverMethodInvocations);
-        if ((receiver.fuzzyIsParameter() || receiver.fuzzyIsDefinedByMethodReturn())
-                && !(receiver.isThis() && ctx.getEnclosingMethod().isInit())) {
-            model.negateConstructors();
-        }
-        final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model.getRecommendedMethodCalls(
-                MIN_PROBABILITY_THRESHOLD, 5);
-        for (final Tuple<IMethodName, Double> recommended : recommendedMethodCalls) {
-            final IMethodName method = recommended.getFirst();
-            final Double probability = recommended.getSecond();
-            if (ctx.expectsReturnValue() && method.isVoid()) {
-                continue;
-            }
-            final CallsRecommendation recommendation = CallsRecommendation.create(receiver, method, probability);
-            recommendations.add(recommendation);
-        }
-    }
+				query = createQuery();
 
-    private void findMatchingProposals() {
-        this.proposals = Lists.newLinkedList();
-        for (final CompletionProposal eclProposal : ctx.getJdtProposals()) {
-            switch (eclProposal.getKind()) {
-            case CompletionProposal.METHOD_REF:
-            case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
-            case CompletionProposal.METHOD_NAME_REFERENCE:
-                createCallProposalIfRecommended(eclProposal);
-            }
-        }
-    }
+				return true;
+			}
+		}
+		return false;
+	}
 
-    private void createCallProposalIfRecommended(final CompletionProposal proposal) {
+	private ObjectUsage createQuery() {
+		ObjectUsage query = new ObjectUsage();
+		query.type = receiverType;
+		query.contextFirst = firstMethodDeclaration;
+		query.kind = receiverDefinitionKind;
+		query.definition = receiverDefinition;
+		query.calls = receiverMethodInvocations;
+		return query;
+	}
 
-        final ProposalMatcher matcher = new ProposalMatcher(proposal);
+	private boolean findModel() {
+		final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
+		final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
 
-        for (final CallsRecommendation call : recommendations) {
-            if (matcher.matches(call.method)) {
-                final IJavaCompletionProposal javaProposal = ctx.toJavaCompletionProposal(proposal);
-                final CompletionProposalDecorator decoratedProposal = new CompletionProposalDecorator(javaProposal,
-                        call);
-                proposals.add(decoratedProposal);
-                return;
-            }
-        }
-    }
+		if (modelFacade.hasModel(receiverType)) {
+			model = modelFacade.acquireModel(receiverType);
+		}
+		return model != null;
+	}
 
-    private void releaseModel() {
-        if (model != null) {
-            final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
-            final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
-            modelFacade.releaseModel(model);
-            model = null;
-        }
-    }
+	private void findRecommendations() {
+		recommendations = Lists.newLinkedList();
 
-    @Override
-    public void sessionStarted() {
-    }
+		model.setQuery(query);
 
-    @Override
-    public List computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
-        return Collections.emptyList();
-    }
+		final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model
+				.getRecommendedMethodCalls(MIN_PROBABILITY_THRESHOLD);
 
-    @Override
-    public String getErrorMessage() {
-        return null;
-    }
+		for (final Tuple<IMethodName, Double> recommended : recommendedMethodCalls) {
+			final IMethodName method = recommended.getFirst();
+			final Double probability = recommended.getSecond();
+			if (ctx.expectsReturnValue() && method.isVoid()) {
+				continue;
+			}
+			final CallsRecommendation recommendation = CallsRecommendation.create(receiver, method, probability);
+			recommendations.add(recommendation);
+		}
+	}
 
-    @Override
-    public void sessionEnded() {
-    }
+	private void findMatchingProposals() {
+		this.proposals = Lists.newLinkedList();
+		for (final CompletionProposal eclProposal : ctx.getJdtProposals()) {
+			switch (eclProposal.getKind()) {
+			case CompletionProposal.METHOD_REF:
+			case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
+			case CompletionProposal.METHOD_NAME_REFERENCE:
+				createCallProposalIfRecommended(eclProposal);
+			}
+		}
+	}
+
+	private void createCallProposalIfRecommended(final CompletionProposal proposal) {
+
+		final ProposalMatcher matcher = new ProposalMatcher(proposal);
+
+		for (final CallsRecommendation call : recommendations) {
+			if (matcher.matches(call.method)) {
+				final IJavaCompletionProposal javaProposal = ctx.toJavaCompletionProposal(proposal);
+				final CompletionProposalDecorator decoratedProposal = new CompletionProposalDecorator(javaProposal,
+						call);
+
+				boolean maxNumReached = proposals.size() >= MAX_NUM_PROPOSALS;
+				if (!maxNumReached) {
+					proposals.add(decoratedProposal);
+				}
+				return;
+			}
+		}
+	}
+
+	private void releaseModel() {
+		if (model != null) {
+			final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
+			final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
+			modelFacade.releaseModel(model);
+			model = null;
+		}
+	}
+
+	@Override
+	public void sessionStarted() {
+	}
+
+	@Override
+	public List<?> computeContextInformation(final ContentAssistInvocationContext context,
+			final IProgressMonitor monitor) {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public String getErrorMessage() {
+		return null;
+	}
+
+	@Override
+	public void sessionEnded() {
+	}
 }

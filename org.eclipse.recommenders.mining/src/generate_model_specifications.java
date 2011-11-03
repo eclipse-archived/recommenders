@@ -10,8 +10,8 @@
  */
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
-import org.eclipse.recommenders.mining.calls.couch.CouchDbDataAccess;
-import org.eclipse.recommenders.mining.calls.couch.ModelSpecsGenerator;
+import org.eclipse.recommenders.mining.calls.data.couch.CouchDbDataAccess;
+import org.eclipse.recommenders.mining.calls.data.couch.MergedModelSpecsGenerator;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.ExampleMode;
@@ -21,7 +21,8 @@ public class generate_model_specifications {
 
     private static class Parameters {
         @Option(name = "--in", usage = "--in http://localhost:5984/udc/ for example")
-        private final String in = "http://localhost:5984/udc/";
+        public String in = "http://localhost:5984/udc/";
+         
     }
 
     private static Parameters params = new Parameters();
@@ -30,8 +31,9 @@ public class generate_model_specifications {
         parseArguments(rawArgs);
 
         final ClientConfiguration conf = new ClientConfiguration();
-        conf.setBaseUrl(params.in);
-        final ModelSpecsGenerator g = new ModelSpecsGenerator(new CouchDbDataAccess(new WebServiceClient(conf)));
+        String in = params.in;
+		conf.setBaseUrl(in);
+        final MergedModelSpecsGenerator g = new MergedModelSpecsGenerator(new CouchDbDataAccess(new WebServiceClient(conf)));
         g.execute();
     }
 

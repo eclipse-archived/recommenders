@@ -38,20 +38,16 @@ public class AlgorithmParameters {
     @Option(name = "--version-range", usage = "The version range of the model's manifest (such as '[3.6.0,4.0.0)'). Only used if -in points to a zip file. Defaults to '(0.0.0,0.0.0)'.")
     private String versionRange = "(0.0.0,0.0.0)";
 
-    @Option(name = "--update-specs", usage = "Generates the missing model specifications. Only used if --in points to a CouchDB. Defaults to 'false'.")
-    private boolean updateSpecs = false;
-
     @Option(name = "--force", usage = "Forces model generation - even if no new object usages could be found. Only used if --in points to a CouchDB. Defaults to 'false'.")
     private boolean force = false;
 
     public AlgorithmParameters(final String in, final File out, final String symbolicName, final String versionRange,
-            final boolean updateSpecs, final boolean force) {
+            final boolean force) {
         super();
         this.in = in;
         this.out = out;
         this.symbolicName = symbolicName;
         this.versionRange = versionRange;
-        this.updateSpecs = updateSpecs;
         this.force = force;
     }
 
@@ -94,10 +90,6 @@ public class AlgorithmParameters {
 
     public VersionRange getVersionRange() {
         return VersionRange.create(versionRange);
-    }
-
-    public boolean isUpdateSpecs() {
-        return updateSpecs;
     }
 
     public boolean isForce() {

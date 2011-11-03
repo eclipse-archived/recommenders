@@ -24,10 +24,10 @@
 						<artifactItem>
 							<groupId>org.eclipse.recommenders</groupId>
 							<artifactId>rcp.codecompletion.overrides.models</artifactId>
-							<version>0.2.0</version>
+							<version>0.3.0</version>
 							<packaging>zip</packaging>
 							<downloadUrl>
-								http://vandyk.st.informatik.tu-darmstadt.de/updates/models/overrides-models.{packaging}
+								http://recommenders1.st.informatik.tu-darmstadt.de/updates/models/overrides-models.{packaging}
                         </downloadUrl>
 							<!-- checksum>671a3d4431df7e9ce29c08f7fcd7533d</checksum -->
 						</artifactItem>
@@ -73,7 +73,7 @@
 								<artifactItem>
 									<groupId>org.eclipse.recommenders</groupId>
 									<artifactId>rcp.codecompletion.overrides.models</artifactId>
-									<version>0.2.0</version>
+									<version>0.3.0</version>
 									<type>zip</type>
 									<outputDirectory>data/</outputDirectory>
 									<destFileName>models.zip</destFileName>

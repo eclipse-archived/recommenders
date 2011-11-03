@@ -10,9 +10,11 @@
  */
 package org.eclipse.recommenders.internal.rcp.codecompletion.resolvers;
 
+import static org.eclipse.recommenders.commons.udc.ObjectUsage.UNKNOWN_METHOD;
 import static org.eclipse.recommenders.commons.utils.Checks.cast;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -22,15 +24,19 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
+import org.eclipse.recommenders.internal.commons.analysis.codeelements.DefinitionSite;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.ObjectInstanceKey.Kind;
 import org.eclipse.recommenders.internal.commons.analysis.codeelements.Variable;
@@ -44,181 +50,194 @@ import com.google.inject.Inject;
 
 public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
 
-    private final IAstProvider astprovider;
-    private int invocationOffset;
+	private final IAstProvider astprovider;
+	private int invocationOffset;
 
-    private CompilationUnit ast;
+	private CompilationUnit ast;
 
-    private MethodDeclaration astEnclosingMethodDeclaration;
+	private MethodDeclaration astEnclosingMethodDeclaration;
 
-    private ICompilationUnit jdtCompilationUnit;
+	private ICompilationUnit jdtCompilationUnit;
 
-    private IMethod jdtEnclosingMethodDeclaration;
+	private IMethod jdtEnclosingMethodDeclaration;
 
-    private Variable localVariable;
-    private Kind localVariableKind;
-    private final Set<IMethodName> receiverMethodInvocations = Sets.newHashSet();
-    private IIntelligentCompletionContext ctx;
+	private Variable localVariable;
+	private Kind localVariableKind;
+	private final Set<IMethodName> receiverMethodInvocations = Sets.newHashSet();
+	private IIntelligentCompletionContext ctx;
+	private DefinitionSite.Kind receiverDefinitionKind;
 
-    @Inject
-    public AstBasedVariableUsageResolver(final IAstProvider provider) {
-        astprovider = provider;
+	private IMethodName receiverDefinition;
 
-    }
+	@Inject
+	public AstBasedVariableUsageResolver(final IAstProvider provider) {
+		astprovider = provider;
 
-    @Override
-    public boolean canResolve(final IIntelligentCompletionContext ctx) {
-        ensureIsNotNull(ctx);
-        this.ctx = ctx;
-        this.localVariable = ctx.getVariable();
-        this.jdtCompilationUnit = ctx.getCompilationUnit();
-        this.invocationOffset = ctx.getInvocationOffset();
-        if (!findAst()) {
-            return false;
-        }
-        if (!findEnclosingMethodDeclaration()) {
-            return false;
-        }
-        return findUsages();
-    }
+	}
 
-    private boolean findAst() {
+	@Override
+	public boolean canResolve(final IIntelligentCompletionContext ctx) {
+		ensureIsNotNull(ctx);
+		this.ctx = ctx;
+		this.localVariable = ctx.getVariable();
+		this.jdtCompilationUnit = ctx.getCompilationUnit();
+		this.invocationOffset = ctx.getInvocationOffset();
+		if (!findAst()) {
+			return false;
+		}
+		if (!findEnclosingMethodDeclaration()) {
+			return false;
+		}
+		return findUsages();
+	}
 
-        ast = astprovider.get(jdtCompilationUnit);
-        return ast != null;
-    }
+	private boolean findAst() {
 
-    private boolean findEnclosingMethodDeclaration() {
-        ensureIsNotNull(ast);
-        final int fixedInvocationOffset = getFixedOffsetForOldAsts();
-        ASTNode node = NodeFinder.perform(ast, fixedInvocationOffset, 0);
-        while (node != null) {
-            if (node instanceof MethodDeclaration) {
-                astEnclosingMethodDeclaration = cast(node);
-                jdtEnclosingMethodDeclaration = BindingUtils.getMethod(astEnclosingMethodDeclaration.resolveBinding());
-                break;
-            }
-            node = node.getParent();
-        }
-        return jdtEnclosingMethodDeclaration != null;
-    }
+		ast = astprovider.get(jdtCompilationUnit);
+		return ast != null;
+	}
 
-    /**
-     * Due to timing issues of the CachingAstProvider it might happen that we
-     * work on a deprecated version of the AST. This happens on fast typing.
-     * This method gets an invocation offset that should work with the previous
-     * version of the AST. This is done by subtracting variable name length of
-     * the local + prefix length from the original invocation offset.
-     */
-    private int getFixedOffsetForOldAsts() {
-        if (localVariable.getNameLiteral() != null) {
-            final int varNameLength = localVariable.getNameLiteral().length();
-            final int prefixLength = ctx.getPrefixToken().length();
-            return invocationOffset - (varNameLength + prefixLength);
-        } else {
-            return invocationOffset;
-        }
-    }
+	private boolean findEnclosingMethodDeclaration() {
+		ensureIsNotNull(ast);
+		final int fixedInvocationOffset = getFixedOffsetForOldAsts();
+		ASTNode node = NodeFinder.perform(ast, fixedInvocationOffset, 0);
+		while (node != null) {
+			if (node instanceof MethodDeclaration) {
+				astEnclosingMethodDeclaration = cast(node);
+				jdtEnclosingMethodDeclaration = BindingUtils.getMethod(astEnclosingMethodDeclaration.resolveBinding());
+				break;
+			}
+			node = node.getParent();
+		}
+		return jdtEnclosingMethodDeclaration != null;
+	}
 
-    private boolean findUsages() {
-        ensureIsNotNull(astEnclosingMethodDeclaration);
-        astEnclosingMethodDeclaration.accept(new ASTVisitor() {
+	/**
+	 * Due to timing issues of the CachingAstProvider it might happen that we work on a deprecated version of the AST.
+	 * This happens on fast typing. This method gets an invocation offset that should work with the previous version of
+	 * the AST. This is done by subtracting variable name length of the local + prefix length from the original
+	 * invocation offset.
+	 */
+	private int getFixedOffsetForOldAsts() {
+		if (localVariable.getNameLiteral() != null) {
+			final int varNameLength = localVariable.getNameLiteral().length();
+			final int prefixLength = ctx.getPrefixToken().length();
+			return invocationOffset - (varNameLength + prefixLength);
+		} else {
+			return invocationOffset;
+		}
+	}
 
-            @Override
-            public boolean visit(final SimpleName node) {
-                final IVariableBinding var = BindingUtils.getVariableBinding(node);
-                if (var == null) {
-                    return true;
-                }
-                if (var.getName().equals(localVariable.getNameLiteral())) {
-                    determineVariableKind(var);
-                    final ASTNode parent = node.getParent();
-                    if (parent instanceof MethodInvocation) {
-                        registerMethodCallOnReceiver((MethodInvocation) parent);
-                    } else if (parent instanceof Assignment) {
-                        evaluateAssignment((Assignment) parent);
-                    } else if (parent instanceof VariableDeclarationFragment) {
-                        evaluateVariableDeclarationFragment((VariableDeclarationFragment) parent);
-                    }
-                }
-                return true;
-            }
+	private boolean findUsages() {
+		ensureIsNotNull(astEnclosingMethodDeclaration);
+		astEnclosingMethodDeclaration.accept(new ASTVisitor() {
 
-            private void determineVariableKind(final IVariableBinding var) {
+			@Override
+			public boolean visit(final SimpleName node) {
+				final IVariableBinding var = BindingUtils.getVariableBinding(node);
+				if (var == null) {
+					return true;
+				}
+				if (var.getName().equals(localVariable.getNameLiteral())) {
+					determineVariableKind(var);
+					final ASTNode parent = node.getParent();
+					if (parent instanceof MethodInvocation) {
+						MethodInvocation methodInvocation = (MethodInvocation) parent;
+						registerMethodCallOnReceiver(methodInvocation);
+					} else if (parent instanceof Assignment) {
+						Assignment assignment = (Assignment) parent;
+						evaluateDefinitionByAssignment(assignment.getRightHandSide());
+					} else if (parent instanceof VariableDeclarationFragment) {
+						VariableDeclarationFragment declarationFragment = (VariableDeclarationFragment) parent;
+						VariableDeclarationStatement declarationStatement = (VariableDeclarationStatement) declarationFragment
+								.getParent();
+						List<?> fragments = declarationStatement.fragments();
+						VariableDeclarationFragment lastFragment = (VariableDeclarationFragment) fragments
+								.get(fragments.size() - 1);
+						evaluateDefinitionByAssignment(lastFragment.getInitializer());
+					}
+				}
+				return true;
+			}
 
-                if (var.isParameter()) {
-                    localVariableKind = ObjectInstanceKey.Kind.PARAMETER;
-                } else if (var.isField()) {
-                    localVariableKind = Kind.FIELD;
-                } else {
-                    localVariableKind = Kind.LOCAL;
+			private void determineVariableKind(final IVariableBinding var) {
 
-                }
-            }
+				if (var.isParameter()) {
+					localVariableKind = ObjectInstanceKey.Kind.PARAMETER;
+				} else if (var.isField()) {
+					localVariableKind = Kind.FIELD;
+				} else {
+					localVariableKind = Kind.LOCAL;
 
-            private void evaluateVariableDeclarationFragment(final VariableDeclarationFragment fragment) {
-                checkIsAssignmentForMethodReturn(fragment);
-                final Expression initializer = fragment.getInitializer();
-                if (initializer instanceof ClassInstanceCreation) {
-                    registerConstructorCallOnVariable((ClassInstanceCreation) initializer);
-                }
-            }
+				}
+			}
 
-            private void checkIsAssignmentForMethodReturn(final VariableDeclarationFragment fragment) {
+			private void evaluateDefinitionByAssignment(ASTNode node) {
+				if (node instanceof ClassInstanceCreation) {
+					registerConstructorCallOnVariable((ClassInstanceCreation) node);
+					localVariableKind = Kind.LOCAL;
+				} else if (node instanceof MethodInvocation) {
+					MethodInvocation methodInv = (MethodInvocation) node;
+					receiverDefinitionKind = DefinitionSite.Kind.METHOD_RETURN;
+					receiverDefinition = BindingUtils.toMethodName(methodInv.resolveMethodBinding());
+				} else if (node instanceof SuperMethodInvocation) {
+					SuperMethodInvocation methodInv = (SuperMethodInvocation) node;
+					receiverDefinitionKind = DefinitionSite.Kind.METHOD_RETURN;
+					receiverDefinition = BindingUtils.toMethodName(methodInv.resolveMethodBinding());
+				} else if (node instanceof ParenthesizedExpression) {
+					ParenthesizedExpression pExp = (ParenthesizedExpression) node;
+					evaluateDefinitionByAssignment(pExp.getExpression());
+				} else if (node instanceof ConditionalExpression) {
+					ConditionalExpression cond = (ConditionalExpression) node;
+					evaluateDefinitionByAssignment(cond.getThenExpression());
+					evaluateDefinitionByAssignment(cond.getElseExpression());
+				}
+			}
 
-                if (isVariableDeclarationOfCurrentVariable(fragment) && !isConstructorCall(fragment.getInitializer())) {
-                    localVariableKind = Kind.RETURN;
-                }
-            }
+			private void registerConstructorCallOnVariable(final ClassInstanceCreation invoke) {
+				final IMethodBinding b = invoke.resolveConstructorBinding();
+				final IMethodName method = BindingUtils.toMethodName(b);
 
-            private boolean isConstructorCall(final Expression initializer) {
-                return initializer instanceof ClassInstanceCreation;
-            }
+				receiverDefinitionKind = DefinitionSite.Kind.NEW;
 
-            private boolean isVariableDeclarationOfCurrentVariable(final VariableDeclarationFragment fragment) {
-                final SimpleName astName = fragment.getName();
-                final String astNameLiteral = astName.getIdentifier();
-                final String recNameLiteral = localVariable.getNameLiteral();
-                return astNameLiteral.equals(recNameLiteral);
-            }
+				if (method != null) {
+					receiverDefinition = method;
+				} else {
+					receiverDefinition = UNKNOWN_METHOD;
+				}
+			}
 
-            private void evaluateAssignment(final Assignment a) {
-                final Expression rhs = a.getRightHandSide();
-                if (rhs instanceof ClassInstanceCreation) {
-                    registerConstructorCallOnVariable((ClassInstanceCreation) rhs);
-                    localVariableKind = Kind.LOCAL;
-                }
-            }
+			private void registerMethodCallOnReceiver(final MethodInvocation invoke) {
+				final IMethodBinding b = invoke.resolveMethodBinding();
+				final IMethodName method = BindingUtils.toMethodName(b);
+				if (method != null) {
+					receiverMethodInvocations.add(method);
+				}
+			}
+		});
+		return true;
+	}
 
-            private void registerConstructorCallOnVariable(final ClassInstanceCreation invoke) {
-                final IMethodBinding b = invoke.resolveConstructorBinding();
-                final IMethodName method = BindingUtils.toMethodName(b);
-                if (method != null) {
-                    receiverMethodInvocations.add(method);
-                }
-            }
+	@Override
+	public Set<IMethodName> getReceiverMethodInvocations() {
+		return receiverMethodInvocations;
+	}
 
-            private void registerMethodCallOnReceiver(final MethodInvocation invoke) {
-                final IMethodBinding b = invoke.resolveMethodBinding();
-                final IMethodName method = BindingUtils.toMethodName(b);
-                if (method != null) {
-                    receiverMethodInvocations.add(method);
-                }
-            }
-        });
-        return true;
-    }
+	@Override
+	public Variable getResolvedVariable() {
+		final Variable res = Variable.create(localVariable.getNameLiteral(), localVariable.getType(),
+				localVariable.getReferenceContext());
+		res.kind = localVariableKind;
+		return res;
+	}
 
-    @Override
-    public Set<IMethodName> getReceiverMethodInvocations() {
-        return receiverMethodInvocations;
-    }
+	@Override
+	public DefinitionSite.Kind getResolvedVariableKind() {
+		return receiverDefinitionKind;
+	}
 
-    @Override
-    public Variable getResolvedVariable() {
-        final Variable res = Variable.create(localVariable.getNameLiteral(), localVariable.getType(),
-                localVariable.getReferenceContext());
-        res.kind = localVariableKind;
-        return res;
-    }
+	@Override
+	public IMethodName getResolvedVariableDefinition() {
+		return receiverDefinition;
+	}
 }

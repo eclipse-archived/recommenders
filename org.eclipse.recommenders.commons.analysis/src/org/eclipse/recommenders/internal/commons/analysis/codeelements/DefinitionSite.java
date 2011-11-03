@@ -16,53 +16,54 @@ import org.eclipse.recommenders.commons.utils.names.IFieldName;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
 
 public class DefinitionSite {
-    public enum Kind {
-        METHOD_RETURN, NEW, FIELD, PARAMETER, THIS, UNKNOWN
-    }
 
-    public static DefinitionSite newSite(final Kind definitionKind, final IMethodName sourceMethod,
-            final int lineNumber, final IMethodName definedByMethod) {
-        final DefinitionSite res = new DefinitionSite();
-        res.kind = definitionKind;
-        res.sourceMethod = sourceMethod;
-        res.lineNumber = lineNumber;
-        res.definedByMethod = definedByMethod;
-        return res;
-    }
+	public enum Kind {
+		METHOD_RETURN, NEW, FIELD, PARAMETER, THIS, UNKNOWN
+	}
 
-    public static DefinitionSite newSite(final Kind definitionKind) {
-        return newSite(definitionKind, null, -1, null);
-    }
+	public static DefinitionSite newSite(final Kind definitionKind, final IMethodName sourceMethod,
+			final int lineNumber, final IMethodName definedByMethod) {
+		final DefinitionSite res = new DefinitionSite();
+		res.kind = definitionKind;
+		res.sourceMethod = sourceMethod;
+		res.lineNumber = lineNumber;
+		res.definedByMethod = definedByMethod;
+		return res;
+	}
 
-    public static DefinitionSite create(final IFieldName definedByField) {
-        final DefinitionSite res = new DefinitionSite();
-        res.kind = Kind.FIELD;
-        res.definedByField = definedByField;
-        return res;
-    }
+	public static DefinitionSite newSite(final Kind definitionKind) {
+		return newSite(definitionKind, null, -1, null);
+	}
 
-    public Kind kind;
+	public static DefinitionSite create(final IFieldName definedByField) {
+		final DefinitionSite res = new DefinitionSite();
+		res.kind = Kind.FIELD;
+		res.definedByField = definedByField;
+		return res;
+	}
 
-    public IMethodName sourceMethod;
+	public Kind kind;
 
-    public IFieldName definedByField;
+	public IMethodName sourceMethod;
 
-    public int lineNumber;
+	public IFieldName definedByField;
 
-    /**
-     * The method that returned this value
-     */
-    public IMethodName definedByMethod;
+	public int lineNumber;
 
-    /**
-     * @see #newSite(Kind, IMethodName, int, IMethodName)
-     */
-    protected DefinitionSite() {
-        // use create methods instead
-    }
+	/**
+	 * The method that returned this value
+	 */
+	public IMethodName definedByMethod;
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-    }
+	/**
+	 * @see #newSite(Kind, IMethodName, int, IMethodName)
+	 */
+	protected DefinitionSite() {
+		// use create methods instead
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
 }

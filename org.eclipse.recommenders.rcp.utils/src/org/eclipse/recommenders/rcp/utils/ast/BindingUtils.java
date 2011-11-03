@@ -84,7 +84,7 @@ public class BindingUtils {
         // assertNotNull(b);
         final IJavaElement element = resolveJavaElementQuietly(b);
         if (!resolveSucceeded(element, IMethod.class)) {
-            log.warn("couldn't resolve ITypeBinding to IJavaElement");
+            log.warn("couldn't resolve IMethodBinding to IJavaElement");
             return null;
         }
         return (IMethod) element;
@@ -141,11 +141,14 @@ public class BindingUtils {
         final IMethodName ref = toMethodName(getMethod(b));
         if (ref == null && b != null) {
             try {
+            	// there is no matching source element (only a compiler-generated method)
                 final ITypeBinding declaringClass = b.getDeclaringClass();
                 final ITypeName typeName = toTypeName(declaringClass);
                 final String key = b.getKey();
-                final String substring = key.substring(key.lastIndexOf(";.") + 2);
-                return VmMethodName.get(typeName.getIdentifier(), substring);
+                 String methodName = key.substring(key.lastIndexOf(";.") + 2);
+                if(methodName.startsWith("("))
+                	methodName = "<init>" + methodName;
+                return VmMethodName.get(typeName.getIdentifier(), methodName);
             } catch (final Exception e) {
             }
         }

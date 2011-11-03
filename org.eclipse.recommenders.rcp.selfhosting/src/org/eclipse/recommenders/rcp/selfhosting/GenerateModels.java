@@ -22,8 +22,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.recommenders.mining.calls.Algorithm;
 import org.eclipse.recommenders.mining.calls.AlgorithmParameters;
-import org.eclipse.recommenders.mining.calls.couch.CouchGuiceModule;
-import org.eclipse.recommenders.mining.calls.couch.ModelSpecsGenerator;
+import org.eclipse.recommenders.mining.calls.data.couch.CouchGuiceModule;
+import org.eclipse.recommenders.mining.calls.data.couch.ModelSpecsGenerator;
 import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.recommenders.server.commons.ServerConfiguration;
 

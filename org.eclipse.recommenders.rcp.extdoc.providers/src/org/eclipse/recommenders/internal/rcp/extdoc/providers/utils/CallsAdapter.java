@@ -123,9 +123,9 @@ public final class CallsAdapter {
         model.clearEvidence();
         model.setMethodContext(context == null ? null : context.getEnclosingMethodsFirstDeclaration());
         model.setObservedMethodCalls(typeName, invokedMethods);
-        if (negateConstructors) {
-            model.negateConstructors();
-        }
+//        if (negateConstructors) {
+//            model.negateConstructors();
+//        }
         final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model.getRecommendedMethodCalls(0.01, 5);
         facade.releaseModel(model);
         return recommendedMethodCalls;

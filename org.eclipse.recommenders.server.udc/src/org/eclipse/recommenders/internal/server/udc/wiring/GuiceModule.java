@@ -30,50 +30,50 @@ import com.google.inject.Provides;
 
 public class GuiceModule extends AbstractModule {
 
-    private final static String COUCHDB_BASEURL = "org.eclipse.recommenders.server.udc.couchdb.baseurl";
+	private final static String COUCHDB_BASEURL = "org.eclipse.recommenders.server.udc.couchdb.baseurl";
 
-    private final HttpService httpService;
+	private final HttpService httpService;
 
-    public GuiceModule(final HttpService associatedWithHttpService) {
-        httpService = associatedWithHttpService;
-    }
+	public GuiceModule(final HttpService associatedWithHttpService) {
+		httpService = associatedWithHttpService;
+	}
 
-    @Override
-    protected void configure() {
-        bind(HttpService.class).toInstance(httpService);
+	@Override
+	protected void configure() {
+		bind(HttpService.class).toInstance(httpService);
 
-        // needed for JIT binding to select the correct injector:
-        bind(GuiceInjectableProvider.class);
+		// needed for JIT binding to select the correct injector:
+		bind(GuiceInjectableProvider.class);
 
-        bind(ClientConfiguration.class).annotatedWith(UdcScope.class).toInstance(
-                ClientConfiguration.create(getCouchDbBaseurl()));
+		bind(ClientConfiguration.class).annotatedWith(UdcScope.class).toInstance(
+				ClientConfiguration.create(getCouchDbBaseurl()));
 
-        bind(File.class).annotatedWith(ModelLocation.class).toInstance(getCallModelsBasedir());
-    }
+		bind(File.class).annotatedWith(ModelLocation.class).toInstance(getCallModelsBasedir());
+	}
 
-    private String getCouchDbBaseurl() {
-        final String url = System.getProperty(COUCHDB_BASEURL, ServerConfiguration.getCouchBaseurl() + "udc/");
-        return url;
-    }
+	private String getCouchDbBaseurl() {
+		final String url = System.getProperty(COUCHDB_BASEURL, ServerConfiguration.getCouchBaseurl() + "udc/");
+		return url;
+	}
 
-    private File getCallModelsBasedir() {
-        return new File(ServerConfiguration.getDataBasedir(), "models/calls");
-    }
+	private File getCallModelsBasedir() {
+		return new File(ServerConfiguration.getDataBasedir(), "models/calls");
+	}
 
-    @Provides
-    CouchDBAccessService createDefaultDataAccess(@UdcScope final ClientConfiguration config) {
-        return new CouchDBAccessService(config);
-    }
+	@Provides
+	CouchDBAccessService createDefaultDataAccess(@UdcScope final ClientConfiguration config) {
+		return new CouchDBAccessService(config);
+	}
 
-    @BindingAnnotation
-    @Target(PARAMETER)
-    @Retention(RUNTIME)
-    public static @interface UdcScope {
-    }
+	@BindingAnnotation
+	@Target(PARAMETER)
+	@Retention(RUNTIME)
+	public static @interface UdcScope {
+	}
 
-    @BindingAnnotation
-    @Target({ PARAMETER, ElementType.FIELD })
-    @Retention(RUNTIME)
-    public static @interface ModelLocation {
-    }
+	@BindingAnnotation
+	@Target({ PARAMETER, ElementType.FIELD })
+	@Retention(RUNTIME)
+	public static @interface ModelLocation {
+	}
 }

@@ -10,8 +10,10 @@
  */
 package org.eclipse.recommenders.mining.extdocs;
 
+import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.commons.utils.TreeBag.newTreeBag;
 
+import org.eclipse.recommenders.commons.utils.Checks;
 import org.eclipse.recommenders.commons.utils.Option;
 import org.eclipse.recommenders.commons.utils.TreeBag;
 import org.eclipse.recommenders.commons.utils.names.IMethodName;
@@ -56,6 +58,7 @@ public class ClassOverrideDirectivesGenerator {
         final TypeDeclaration type = cu.primaryType;
 
         for (final MethodDeclaration method : type.methods) {
+        	ensureIsNotNull(method.name, "method name is null");
             if (!method.name.isInit() && method.superDeclaration != null) {
                 overriddenMethods.add(method.superDeclaration);
             }
