@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -44,6 +45,8 @@ import org.eclipse.recommenders.rcp.codecompletion.CompletionProposalDecorator;
 import org.eclipse.recommenders.rcp.codecompletion.IIntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.codecompletion.IVariableUsageResolver;
 import org.eclipse.recommenders.rcp.codecompletion.IntelligentCompletionContextResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -53,13 +56,14 @@ import com.google.inject.Provider;
 @SuppressWarnings("restriction")
 public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-	private static final int MAX_NUM_PROPOSALS = 3;
+	private static final int MAX_NUM_PROPOSALS = 5;
 	private static final double MIN_PROBABILITY_THRESHOLD = 0.1d;
 
 	private Set<Class<?>> supportedCompletionRequests;
 	private final ProjectServices projectServices;
 	private final IntelligentCompletionContextResolver contextResolver;
 	private final Provider<Set<IVariableUsageResolver>> usageResolversProvider;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private IIntelligentCompletionContext ctx;
 
@@ -109,20 +113,34 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
 	private List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
 		this.ctx = ctx;
-		try {
-			boolean canComputeProposal = isCompletionRequestSupported() && findReceiverInContext()
-					&& resolveObjectUsage() && findModel();
-			if (!canComputeProposal) {
-				return emptyList();
-			}
-
-			findRecommendations();
-			findMatchingProposals();
-			releaseModel();
-		} catch (Exception e) {
-			System.out.println("");
+		if (!canComputeProposal()) {
+			return emptyList();
 		}
+
+		findRecommendations();
+		findMatchingProposals();
+		releaseModel();
 		return this.proposals;
+	}
+
+	private boolean canComputeProposal() {
+		if (!isCompletionRequestSupported()) {
+			logger.info("completion request not supported");
+			return false;
+		}
+		if (!findReceiverInContext()) {
+			logger.info("receiver not found in context");
+			return false;
+		}
+		if (!resolveObjectUsage()) {
+			logger.info("object usage could not be resolved");
+			return false;
+		}
+		if (!findModel()) {
+			logger.info("no model could be found");
+			return false;
+		}
+		return true;
 	}
 
 	private boolean isCompletionRequestSupported() {
@@ -141,7 +159,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 		for (final IVariableUsageResolver resolver : usageResolversProvider.get()) {
 			if (resolver.canResolve(ctx)) {
 
-				System.out.println("resolving with: " + resolver.getClass());
+				logger.info("resolving with: " + resolver.getClass());
 
 				// XXX this is a bit dirty: we need to handle this
 				// appropriately... here ctx.getVariable() makes a hack for the
@@ -157,7 +175,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 				receiverDefinition = resolver.getResolvedVariableDefinition();
 				receiverDefinitionKind = resolver.getResolvedVariableKind();
 
-				ensureIsNotNull(receiverDefinition);
+				ensureIsNotNull(receiverDefinition, "definition is null");
 
 				query = createQuery();
 
@@ -216,6 +234,24 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 				createCallProposalIfRecommended(eclProposal);
 			}
 		}
+
+		Collections.sort(proposals, new Comparator<IJavaCompletionProposal>() {
+
+			@Override
+			public int compare(IJavaCompletionProposal o1, IJavaCompletionProposal o2) {
+				return new Integer(o2.getRelevance()).compareTo(o1.getRelevance());
+			}
+		});
+
+		List<IJavaCompletionProposal> intelligentProposals = Lists.newArrayList();
+		for (IJavaCompletionProposal proposal : proposals) {
+			if (intelligentProposals.size() < MAX_NUM_PROPOSALS) {
+				intelligentProposals.add(proposal);
+			}
+		}
+		proposals.clear();
+		proposals.addAll(intelligentProposals);
+		// TODO kŸrzen
 	}
 
 	private void createCallProposalIfRecommended(final CompletionProposal proposal) {
@@ -228,11 +264,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 				final CompletionProposalDecorator decoratedProposal = new CompletionProposalDecorator(javaProposal,
 						call);
 
-				boolean maxNumReached = proposals.size() >= MAX_NUM_PROPOSALS;
-				if (!maxNumReached) {
-					proposals.add(decoratedProposal);
-				}
-				return;
+				proposals.add(decoratedProposal);
 			}
 		}
 	}

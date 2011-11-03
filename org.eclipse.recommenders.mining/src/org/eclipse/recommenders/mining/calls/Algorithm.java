@@ -54,22 +54,19 @@ public class Algorithm {
 
 		for (final ModelSpecification spec : specProvider.findSpecifications()) {
 
-//			String symbolicName = spec.getSymbolicName();
-//			if (symbolicName.startsWith("org.eclipse.")) {
-				try {
-					for (final IModelGenerationListener l : generationListeners) {
-						l.started(spec);
-					}
-					doGenerate(spec);
-					for (final IModelGenerationListener l : generationListeners) {
-						l.finished(spec);
-					}
-				} catch (final Exception e) {
-					for (final IModelGenerationListener l : generationListeners) {
-						l.failed(spec, e);
-					}
+			try {
+				for (final IModelGenerationListener l : generationListeners) {
+					l.started(spec);
 				}
-//			}
+				doGenerate(spec);
+				for (final IModelGenerationListener l : generationListeners) {
+					l.finished(spec);
+				}
+			} catch (final Exception e) {
+				for (final IModelGenerationListener l : generationListeners) {
+					l.failed(spec, e);
+				}
+			}
 		}
 	}
 
@@ -89,15 +86,11 @@ public class Algorithm {
 	}
 
 	private Multimap<ITypeName, ObjectUsage> buildIndex(final ModelSpecification spec) {
-//		int size = 0;
-		
 		final Iterable<ObjectUsage> usages = usageProvider.findObjectUsages(spec);
 		final HashMultimap<ITypeName, ObjectUsage> res = HashMultimap.create();
 		for (final ObjectUsage objectUsage : usages) {
 			res.put(objectUsage.type, objectUsage);
-//			size++;
 		}
-//		System.out.println(spec.getSymbolicName() + "#" + spec.getVersionRange() + "#" + size + "#" + spec._id + "#" + spec.getFingerprints());
 
 		return res;
 	}
@@ -119,7 +112,7 @@ public class Algorithm {
 				writer.consume(typeName, network);
 			}
 		} catch (RuntimeException e) {
-			throw e; // for debugging
+			throw e; // TODO remove this debugging code
 		}
 
 		writer.close();
