@@ -93,9 +93,13 @@ public final class UpdateService {
     public abstract static class AbstractUpdateJob implements IUpdateJob {
 
         protected final void displayTimeoutMessage(final Composite providersContentComposite) {
+
             new UIJob("Updating Provider View") {
                 @Override
                 public IStatus runInUIThread(final IProgressMonitor monitor) {
+                    if (providersContentComposite.isDisposed()) {
+                        return Status.CANCEL_STATUS;
+                    }
                     UiUtils.disposeChildren(providersContentComposite);
                     SwtFactory.createLabel(providersContentComposite,
                             "Provider timed out. Please review your network status.", true);
