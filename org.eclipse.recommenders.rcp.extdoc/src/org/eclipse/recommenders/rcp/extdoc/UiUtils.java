@@ -24,9 +24,11 @@ public final class UiUtils {
      *            The composite for which all children will be disposed.
      */
     public static void disposeChildren(final Composite composite) {
+        if (composite.isDisposed()) {
+            return;
+        }
         for (final Control child : composite.getChildren()) {
-            if (!child.isDisposed())
-                child.dispose();
+            child.dispose();
         }
     }
 
@@ -34,11 +36,10 @@ public final class UiUtils {
         for (Composite parent = composite; parent != null; parent = parent.getParent()) {
             // TODO: REVIEW MB: Johannes, this is confusing me. why is the
             // parentsParentsParent needed? create a separate method for this?
-            Composite theParentsParent = parent.getParent();
-            Composite theParentsParentsParent = theParentsParent.getParent();
+            final Composite theParentsParent = parent.getParent();
+            final Composite theParentsParentsParent = theParentsParent.getParent();
             if (theParentsParentsParent == null || parent instanceof ScrolledComposite) {
-                if (!theParentsParent.isDisposed())
-                    theParentsParent.layout(true, true);
+                theParentsParent.layout(true, true);
                 break;
             }
         }
