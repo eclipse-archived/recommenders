@@ -25,14 +25,20 @@ public final class UiUtils {
      */
     public static void disposeChildren(final Composite composite) {
         for (final Control child : composite.getChildren()) {
-            child.dispose();
+            if (!child.isDisposed())
+                child.dispose();
         }
     }
 
     public static void layoutParents(final Composite composite) {
         for (Composite parent = composite; parent != null; parent = parent.getParent()) {
-            if (parent.getParent().getParent() == null || parent instanceof ScrolledComposite) {
-                parent.getParent().layout(true, true);
+            // TODO: REVIEW MB: Johannes, this is confusing me. why is the
+            // parentsParentsParent needed? create a separate method for this?
+            Composite theParentsParent = parent.getParent();
+            Composite theParentsParentsParent = theParentsParent.getParent();
+            if (theParentsParentsParent == null || parent instanceof ScrolledComposite) {
+                if (!theParentsParent.isDisposed())
+                    theParentsParent.layout(true, true);
                 break;
             }
         }
