@@ -1,5 +1,3 @@
-package org.eclipse.recommenders.internal.server.console;
-
 /**
  * Copyright (c) 2010, 2011 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
@@ -10,6 +8,7 @@ package org.eclipse.recommenders.internal.server.console;
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
+package org.eclipse.recommenders.internal.server.console;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
@@ -18,7 +17,7 @@ import static org.apache.commons.io.filefilter.TrueFileFilter.INSTANCE;
 import static org.apache.commons.lang3.StringUtils.removeStart;
 import static org.eclipse.recommenders.commons.utils.LoggingUtils.newInfo;
 import static org.eclipse.recommenders.commons.utils.LoggingUtils.newWarning;
-import static org.eclipse.recommenders.internal.server.console.Constants.BUNDLE_ID;
+import static org.eclipse.recommenders.internal.server.console.Activator.BUNDLE_ID;
 
 import java.io.File;
 import java.io.IOException;
