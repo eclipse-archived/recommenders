@@ -10,10 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.analysis;
 
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.recommenders.commons.utils.LoggingUtils;
 import org.osgi.framework.BundleContext;
@@ -46,8 +43,6 @@ public class RcpAnalysisPlugin extends Plugin {
     public void start(final BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(new ExperimentalResourceChangeListener(),
-                IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE);
     }
 
     @Override
