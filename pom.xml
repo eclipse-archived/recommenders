@@ -64,6 +64,7 @@
 
 
 		<module>org.eclipse.recommenders.server.codesearch</module>
+		<module>org.eclipse.recommenders.server.console</module>
 		<module>org.eclipse.recommenders.server.commons</module>
 		<module>org.eclipse.recommenders.server.extdoc</module>
 		<module>org.eclipse.recommenders.server.udc</module>
