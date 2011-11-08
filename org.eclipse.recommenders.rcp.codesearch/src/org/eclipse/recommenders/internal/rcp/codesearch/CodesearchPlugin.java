@@ -12,9 +12,9 @@ package org.eclipse.recommenders.internal.rcp.codesearch;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.recommenders.commons.utils.LoggingUtils;
 import org.eclipse.recommenders.internal.rcp.codesearch.views.QueryView;
 import org.eclipse.recommenders.internal.rcp.codesearch.views.ResultsView;
-import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.recommenders.rcp.utils.RCPUtils;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;

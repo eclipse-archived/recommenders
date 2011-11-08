@@ -14,10 +14,10 @@ import static org.eclipse.core.runtime.Status.OK_STATUS;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsDirectory;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsFile;
 import static org.eclipse.recommenders.commons.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.commons.utils.LoggingUtils.newError;
+import static org.eclipse.recommenders.commons.utils.LoggingUtils.newInfo;
+import static org.eclipse.recommenders.commons.utils.LoggingUtils.newWarning;
 import static org.eclipse.recommenders.internal.rcp.logging.LoggingActivator.BUNDLE_ID;
-import static org.eclipse.recommenders.rcp.utils.LoggingUtils.newError;
-import static org.eclipse.recommenders.rcp.utils.LoggingUtils.newInfo;
-import static org.eclipse.recommenders.rcp.utils.LoggingUtils.newWarning;
 
 import java.io.File;
 import java.io.IOException;

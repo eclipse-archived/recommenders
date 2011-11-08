@@ -12,8 +12,8 @@ package org.eclipse.recommenders.rcp;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.recommenders.commons.injection.InjectionService;
+import org.eclipse.recommenders.commons.utils.LoggingUtils;
 import org.eclipse.recommenders.internal.rcp.RecommendersDashboard;
-import org.eclipse.recommenders.rcp.utils.LoggingUtils;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
