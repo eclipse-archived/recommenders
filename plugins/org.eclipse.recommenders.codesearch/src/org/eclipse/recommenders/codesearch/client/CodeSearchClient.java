@@ -1,0 +1,40 @@
+/**
+ * Copyright (c) 2010 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Johannes Lerch - initial API and implementation.
+ */
+package org.eclipse.recommenders.codesearch.client;
+
+import org.eclipse.recommenders.codesearch.Feedback;
+import org.eclipse.recommenders.codesearch.ICodeSearchResource;
+import org.eclipse.recommenders.codesearch.Request;
+import org.eclipse.recommenders.codesearch.Response;
+import org.eclipse.recommenders.commons.client.WebServiceClient;
+
+import com.google.inject.Inject;
+
+public class CodeSearchClient implements ICodeSearchResource {
+
+    private final WebServiceClient client;
+
+    @Inject
+    public CodeSearchClient(final WebServiceClient client) {
+        this.client = client;
+    }
+
+    @Override
+    public Response search(final Request request) {
+        return client.doPostRequest("search", request, Response.class);
+    }
+
+    @Override
+    public void addFeedback(final String requestId, final Feedback feedback) {
+        client.doPostRequest("feedback/" + requestId, feedback);
+    }
+
+}

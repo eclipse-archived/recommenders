@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: RCP Analysis (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.analysis.rcp;singleton:=true
+Bundle-Version: 0.4.0.qualifier
+Bundle-Activator: org.eclipse.recommenders.internal.analysis.rcp.RcpAnalysisPlugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.recommenders.utils,
+ org.eclipse.jdt.core,
+ org.eclipse.core.resources,
+ com.ibm.wala.core,
+ com.ibm.wala.shrike,
+ com.google.guava,
+ org.eclipse.recommenders.utils.rcp,
+ org.apache.commons.lang3,
+ org.eclipse.pde.core,
+ org.eclipse.recommenders.analysis,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.recommenders.injection,
+ org.eclipse.ui,
+ javax.annotations.jsr305;bundle-version="0.0.0",
+ com.google.inject.multibindings,
+ org.eclipse.recommenders.utils.gson,
+ org.slf4j.api,
+ ch.qos.logback.classic
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.recommenders.analysis.rcp,
+ org.eclipse.recommenders.internal.analysis.rcp
+Bundle-Vendor: Eclipse Code Recommenders
+Import-Package: javax.inject;version="1.0.0"

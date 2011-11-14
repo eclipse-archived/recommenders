@@ -1,0 +1,22 @@
+package name differs from plugin name for historical reasons.
+the bayesian networks use plain java serialization which in turn requires
+ the class names including package names to remain stable.
+ 
+Thus, this project main package differs.
+
+
+Caused by: java.lang.ClassNotFoundException: org.eclipse.recommenders.commons.bayesnet.BayesianNetwork
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClassInternal(BundleLoader.java:506)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:422)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:410)
+	at org.eclipse.osgi.internal.baseadaptor.DefaultClassLoader.loadClass(DefaultClassLoader.java:107)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:247)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:247)
+	at java.io.ObjectInputStream.resolveClass(ObjectInputStream.java:603)
+	at java.io.ObjectInputStream.readNonProxyDesc(ObjectInputStream.java:1574)
+	at java.io.ObjectInputStream.readClassDesc(ObjectInputStream.java:1495)
+	at java.io.ObjectInputStream.readOrdinaryObject(ObjectInputStream.java:1731)
+	at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1328)
+	at java.io.ObjectInputStream.readObject(ObjectInputStream.java:350)
+	at org.eclipse.recommenders.internal.calls.rcp.store.BinarySmileCallsNetLoader.load(BinarySmileCallsNetLoader.java:26)

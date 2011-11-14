@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Extdoc Server
+Bundle-SymbolicName: org.eclipse.recommenders.extdoc.server.proxy;singleton:=true
+Bundle-Version: 0.4.0.qualifier
+Bundle-Activator: org.eclipse.recommenders.internal.extdoc.server.proxy.BundleActivator
+Require-Bundle: org.eclipse.core.runtime,
+ com.sun.jersey.server,
+ org.eclipse.recommenders.injection,
+ com.sun.jersey.core,
+ com.sun.jersey.client,
+ org.eclipse.recommenders.webclient,
+ org.eclipse.recommenders.utils,
+ com.google.guava,
+ org.eclipse.recommenders.server,
+ javax.servlet,
+ org.slf4j.api,
+ org.eclipse.osgi.services
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Eclipse Code Recommenders

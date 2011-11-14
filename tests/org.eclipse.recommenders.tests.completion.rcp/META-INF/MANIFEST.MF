@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Codecompletion Test Suite (Incubator)
+Bundle-SymbolicName: org.eclipse.recommenders.tests.completion.rcp
+Bundle-Version: 0.4.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.completion.rcp
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.mockito,
+ org.junit4

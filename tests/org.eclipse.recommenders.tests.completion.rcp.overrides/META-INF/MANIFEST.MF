@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for Overrides Code Completion
+Bundle-SymbolicName: org.eclipse.recommenders.tests.completion.rcp.overrides
+Bundle-Version: 0.4.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.completion.rcp.overrides
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.recommenders.tests,
+ org.junit4

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.eclipse.recommenders</groupId>
+		<artifactId>org.eclipse.recommenders.parent</artifactId>
+		<version>0.4.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.eclipse.recommenders.feature</groupId>
+	<artifactId>org.eclipse.recommenders.feature.parent</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+
+		<module>org.eclipse.recommenders.feature.codesearch.rcp</module>
+		<module>org.eclipse.recommenders.feature.codesearch.rcp.source</module>
+		<module>org.eclipse.recommenders.feature.codesearch.server</module>
+		<module>org.eclipse.recommenders.feature.codesearch.server.source</module>
+
+		<module>org.eclipse.recommenders.feature.completion.rcp</module>
+		<module>org.eclipse.recommenders.feature.completion.rcp.source</module>
+
+		<module>org.eclipse.recommenders.feature.completion.rcp.subwords</module>
+		<module>org.eclipse.recommenders.feature.completion.rcp.subwords.source</module>
+
+		<module>org.eclipse.recommenders.feature.extdoc.rcp</module>
+		<module>org.eclipse.recommenders.feature.extdoc.rcp.source</module>
+		<module>org.eclipse.recommenders.feature.udc.rcp</module>
+		<module>org.eclipse.recommenders.feature.udc.rcp.source</module>
+		<module>org.eclipse.recommenders.feature.udc.server</module>
+		<module>org.eclipse.recommenders.feature.udc.server.source</module>
+
+
+
+		<!-- <module>org.eclipse.recommenders.feature.server</module> -->
+		<module>org.eclipse.recommenders.feature.server.rootfiles</module>
+
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+        <pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<configuration>
+						<rules>
+							<requireFilesExist>
+								<files>
+									<file>${basedir}/about.html</file>
+									<file>${basedir}/feature.properties</file>
+									<file>${basedir}/license.html</file>
+									<file>${basedir}/epl-v10.html</file>
+								</files>
+							</requireFilesExist>
+						</rules>
+						<fail>true</fail>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

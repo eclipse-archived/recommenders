@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.exportWizards">
+      <wizard
+            category="org.eclipse.recommenders.rcp.category.export"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.udc.ui.wizard.export.CompilationUnitExportWizard"
+            icon="res/icons/slice.gif"
+            id="org.eclipse.recommenders.udc.export.compilationunitexportwizard"
+            name="API Usage Data">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.recommenders.rcp.category.preferences"
+            class="org.eclipse.recommenders.internal.udc.ui.preferences.SharingPreferencesPage"
+            id="org.eclipse.recommenders.udc.export.preferences.sharing"
+            name="Sharing">
+      </page>
+      <page
+            category="org.eclipse.recommenders.udc.export.preferences.sharing"
+            class="org.eclipse.recommenders.internal.udc.ui.preferences.DepersonalisationPage"
+            id="org.eclipse.recommenders.udc.export.preferences.depersonalisationpage"
+            name="Depersonalisation">
+      </page>
+      <page
+            category="org.eclipse.recommenders.udc.export.preferences.sharing"
+            class="org.eclipse.recommenders.internal.udc.ui.preferences.PackagePreferencePage"
+            id="org.eclipse.recommenders.udc.export.preferences.exportedPackages"
+            name="Shared Packages">
+      </page>
+      <page
+            category="org.eclipse.recommenders.udc.export.preferences.sharing"
+            class="org.eclipse.recommenders.internal.udc.ui.preferences.ProjectPreferencePage"
+            id="org.eclipse.recommenders.udc.export.preferences.projectselection"
+            name="Shared Projects">
+      </page>
+      <page
+            category="org.eclipse.recommenders.udc.export.preferences.sharing"
+            class="org.eclipse.recommenders.internal.udc.ui.preferences.LibrariesPreferencePage"
+            id="org.eclipse.recommenders.udc.export.preferences.sharedLibraries"
+            name="Shared Libraries">
+      </page>
+      <page
+            category="org.eclipse.recommenders.rcp.category.preferences"
+            class="org.eclipse.recommenders.internal.udc.ui.preferences.UpdateModelPreferencePage"
+            id="org.eclipse.recommenders.udc.export.preferences.modelupdate"
+            name="Updating models">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.recommenders.internal.udc.ui.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.eclipse.recommenders.internal.udc.OpenWizardDelegate">
+      </startup>
+      <startup
+            class="org.eclipse.recommenders.internal.udc.UploadDataDelegate">
+      </startup>
+      <startup
+            class="org.eclipse.recommenders.internal.udc.UpdateModelsDelegate">
+      </startup>
+   </extension>
+
+</plugin>

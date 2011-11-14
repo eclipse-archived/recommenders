@@ -1,0 +1,53 @@
+/**
+ * Copyright (c) 2011 Stefan Henss.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Stefan Henss - initial API and implementation.
+ */
+package org.eclipse.recommenders.tests.extdoc;
+
+import org.eclipse.recommenders.extdoc.rcp.AbstractTitledProvider;
+import org.eclipse.recommenders.extdoc.rcp.ProviderUiUpdateJob;
+import org.eclipse.recommenders.extdoc.rcp.SwtFactory;
+import org.eclipse.recommenders.extdoc.rcp.selection.selection.IJavaElementSelection;
+import org.eclipse.recommenders.extdoc.rcp.selection.selection.JavaElementLocation;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+
+public final class TestProvider extends AbstractTitledProvider {
+
+    private Label text;
+
+    @Override
+    public String getProviderName() {
+        return "TestProvider";
+    }
+
+    @Override
+    public boolean isAvailableForLocation(final JavaElementLocation location) {
+        return true;
+    }
+
+    @Override
+    public ProviderUiUpdateJob updateSelection(final IJavaElementSelection context) {
+        return new ProviderUiUpdateJob() {
+            @Override
+            public void run(final Composite composite) {
+                if (!text.isDisposed()) {
+                    text.setText(context.toString());
+                }
+            }
+        };
+    }
+
+    @Override
+    protected Composite createContentComposite(final Composite parent) {
+        text = SwtFactory.createLabel(parent, "", true);
+        return parent;
+    }
+
+}

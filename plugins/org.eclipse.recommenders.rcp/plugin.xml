@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2010 Darmstadt University of Technology.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+       Darmstadt University of Technology - initial API and implementation.
+
+-->
+<?eclipse version="3.4"?>
+<plugin>
+ <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="org.eclipse.recommenders.rcp.popup.javaeditor"
+            targetID="#CompilationUnitEditorContext">
+         <menu
+               icon="icons/full/view16/slice.gif"
+               id="org.eclipse.recommenders.rcp.category.popup"
+               label="Recommenders"
+               path="additions">
+         </menu>
+      </viewerContribution>
+      <objectContribution
+            adaptable="true"
+            id="org.eclipse.recommenders.rcp.popup.iproject"
+            nameFilter="*"
+            objectClass="org.eclipse.core.resources.IProject">
+         <menu
+               icon="icons/full/view16/slice.gif"
+               id="org.eclipse.recommenders.rcp.category.popup"
+               label="Recommenders"
+               path="additions">
+         </menu>
+      </objectContribution>
+      <objectContribution
+            adaptable="true"
+            id="org.eclipse.recommenders.rcp.popup.icompilationunit"
+            nameFilter="*"
+            objectClass="org.eclipse.jdt.core.ICompilationUnit">
+         <menu
+               icon="icons/full/view16/slice.gif"
+               id="org.eclipse.recommenders.rcp.category.popup"
+               label="Recommenders"
+               path="additions">
+         </menu>
+      </objectContribution>
+      
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.eclipse.recommenders.internal.rcp.EclipseStartupHook">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.recommenders.injection.modules">
+         <module
+            class="org.eclipse.recommenders.internal.rcp.RecommendersModule">
+      </module>
+   </extension>
+     <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.eclipse.recommenders.rcp.category.views"
+            name="Recommenders">
+      </category>
+      <view
+            category="org.eclipse.recommenders.rcp.category.views"
+            class="org.eclipse.recommenders.internal.rcp.views.recommendations.RecommendationsView"
+            icon="icons/full/view16/slice.gif"
+            id="org.eclipse.recommenders.rcp.views.RecommendationsView"
+            name="Recommendations">
+      </view>
+      <view
+            category="org.eclipse.recommenders.rcp.category.views"
+            class="org.eclipse.recommenders.internal.rcp.views.cu.CompilationUnitView"
+            icon="icons/full/view16/slice.gif"
+            id="org.eclipse.recommenders.rcp.views.CompilationUnitView"
+            name="Compilation Unit (Debug)"
+            restorable="true">
+      </view>
+   </extension>
+     <extension
+           point="org.eclipse.core.runtime.adapters">
+        <factory
+              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit"
+              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
+           <adapter
+                 type="org.eclipse.ui.model.IWorkbenchAdapter">
+           </adapter>
+        </factory>
+        <factory
+              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration"
+              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
+           <adapter
+                 type="org.eclipse.ui.model.IWorkbenchAdapter">
+           </adapter>
+        </factory>
+         <factory
+              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration"
+              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
+           <adapter
+                 type="org.eclipse.ui.model.IWorkbenchAdapter">
+           </adapter>
+        </factory>
+         <factory
+              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey"
+              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
+           <adapter
+                 type="org.eclipse.ui.model.IWorkbenchAdapter">
+           </adapter>
+        </factory>
+         <factory
+              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.ReceiverCallSite"
+              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
+           <adapter
+                 type="org.eclipse.ui.model.IWorkbenchAdapter">
+           </adapter>
+        </factory>
+         <factory
+              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.Variable"
+              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
+           <adapter
+                 type="org.eclipse.ui.model.IWorkbenchAdapter">
+           </adapter>
+        </factory>
+     </extension>
+     <extension
+           point="org.eclipse.ui.preferencePages">
+        <page
+              class="org.eclipse.recommenders.internal.rcp.RecommendersMainPreferencePage"
+              id="org.eclipse.recommenders.rcp.category.preferences"
+              name="Code Recommenders">
+        </page>
+     </extension>
+     <extension
+         point="org.eclipse.ui.exportWizards">
+      <category
+            id="org.eclipse.recommenders.rcp.category.export"
+            name="Code Recommenders">
+      </category>
+      </extension>
+</plugin>

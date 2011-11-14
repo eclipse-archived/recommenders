@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: RCP Intelligent Chain Completion Engine (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.chain;singleton:=true
+Bundle-Version: 0.4.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.jface.text,
+ org.eclipse.ui,
+ org.eclipse.recommenders.analysis.rcp,
+ com.ibm.wala.core,
+ org.eclipse.recommenders.analysis,
+ org.eclipse.recommenders.injection,
+ org.eclipse.recommenders.utils.rcp,
+ org.eclipse.recommenders.utils,
+ org.eclipse.core.resources,
+ com.ibm.wala.shrike,
+ org.eclipse.recommenders.completion.rcp,
+ com.google.guava
+Bundle-ActivationPolicy: lazy
+Import-Package: org.apache.commons.lang3.time

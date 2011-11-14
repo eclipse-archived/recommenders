@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Commons Analysis (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.analysis
+Bundle-Version: 0.4.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.apache.commons.lang3,
+ com.google.guava,
+ org.eclipse.recommenders.utils,
+ com.ibm.wala.core,
+ com.ibm.wala.shrike,
+ org.eclipse.core.runtime,
+ org.apache.commons.io,
+ org.eclipse.recommenders.utils.gson,
+ android4me.axmlprinter,
+ org.slf4j.api,
+ org.eclipse.recommenders.injection
+Export-Package: org.eclipse.recommenders.internal.analysis.analyzers,
+ org.eclipse.recommenders.internal.analysis.analyzers.modules,
+ org.eclipse.recommenders.internal.analysis.archive,
+ org.eclipse.recommenders.internal.analysis.codeelements,
+ org.eclipse.recommenders.internal.analysis.entrypoints,
+ org.eclipse.recommenders.internal.analysis.fixture,
+ org.eclipse.recommenders.internal.analysis.newsites,
+ org.eclipse.recommenders.internal.analysis.selectors,
+ org.eclipse.recommenders.internal.analysis.utils
+Bundle-ActivationPolicy: lazy

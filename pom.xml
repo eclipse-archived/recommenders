@@ -1,103 +1,241 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Resources on the web: -->
+<!-- http://wiki.eclipse.org/Tycho/Packaging_Types -->
+<!-- http://wiki.eclipse.org/Tycho/Reference_Card -->
+<!-- http://wiki.eclipse.org/Category:Tycho -->
+<!-- http://wiki.eclipse.org/Minerva -->
+<!-- http://intellectualcramps.wordpress.com/2011/06/04/tycho-surefire-test-setup-tips/ -->
+<!-- http://maksim.sorokin.dk/it/2010/12/21/tests-in-tycho/ -->
+<!-- http://www.jug.ch/events/slides/111020_Tycho-Maven-Eclipse-RCP.pdf -->
+<!-- http://git.eclipse.org/c/tycho/org.eclipse.tycho.git/tree/tycho-demo -->
+<!-- http://timezra.blogspot.com/2010/05/tycho-tests-without-osgi.html -->
+<!-- http://www.java-forum.org/deployment/116917-tycho-unit-tests.html -->
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
-	<artifactId>org.eclipse.recommenders.aggregator</artifactId>
+	<artifactId>org.eclipse.recommenders.parent</artifactId>
 	<version>0.4.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<properties>
+		<tycho-version>0.13.0</tycho-version>
+		<jacoco-version>0.5.4.201111111111</jacoco-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<build-alias>b000</build-alias>
+	</properties>
+
+
 	<modules>
-		<!-- configuration -->
-		<module>org.eclipse.recommenders.parent</module>
-
-		<module>org.eclipse.recommenders.commons.analysis</module>
-		<module>org.eclipse.recommenders.commons.bayesnet</module>
-		<module>org.eclipse.recommenders.commons.client</module>
-		<module>org.eclipse.recommenders.commons.codesearch</module>
-		<module>org.eclipse.recommenders.commons.injection</module>
-		<module>org.eclipse.recommenders.commons.selection</module>
-		<module>org.eclipse.recommenders.commons.utils</module>
-		<module>org.eclipse.recommenders.commons.utils.gson</module>
-		<module>org.eclipse.recommenders.commons.udc</module>
-
-		<module>org.eclipse.recommenders.doc.user</module>
-		<module>org.eclipse.recommenders.examples.rcp.codecompletion</module>
-
-		<module>org.eclipse.recommenders.rcp</module>
-		<module>org.eclipse.recommenders.rcp.analysis</module>
-		<module>org.eclipse.recommenders.rcp.codecompletion</module>
-		<module>org.eclipse.recommenders.rcp.codecompletion.calls</module>
-		<module>org.eclipse.recommenders.rcp.codecompletion.chain</module>
-		<module>org.eclipse.recommenders.rcp.codecompletion.overrides</module>
-		<module>org.eclipse.recommenders.rcp.codecompletion.templates</module>
-		<module>org.eclipse.recommenders.rcp.codecompletion.subwords</module>
-		<module>org.eclipse.recommenders.rcp.codesearch</module>
-		<module>org.eclipse.recommenders.rcp.extdoc</module>
-		<module>org.eclipse.recommenders.rcp.extdoc.providers</module>
-		<module>org.eclipse.recommenders.rcp.logging</module>
-		<module>org.eclipse.recommenders.rcp.selfhosting</module>
-		<module>org.eclipse.recommenders.rcp.udc</module>
-		<module>org.eclipse.recommenders.rcp.utils</module>
-
-		<module>org.eclipse.recommenders.mining</module>
-
-		<module>org.eclipse.recommenders.tests.commons.analysis</module>
-		<module>org.eclipse.recommenders.tests.commons</module>
-		<module>org.eclipse.recommenders.tests.commons.extdoc</module>
-		<module>org.eclipse.recommenders.tests.commons.selection</module>
-		<module>org.eclipse.recommenders.tests.commons.unit</module>
-		<module>org.eclipse.recommenders.tests.rcp.analysis</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.calls</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.chain</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.overrides</module>
-		<module>org.eclipse.recommenders.tests.rcp.codecompletion.templates</module>
-		
-		<!-- <module>org.eclipse.recommenders.tests.rcp.codecompletion.subwords</module> -->
-		<module>org.eclipse.recommenders.tests.rcp.logging</module>
-		<module>org.eclipse.recommenders.tests.rcp.udc</module>
-		<module>org.eclipse.recommenders.tests.server.udc</module>
-		<module>org.eclipse.recommenders.tests.mining</module>
-
-		<module>org.eclipse.recommenders.tools</module>
-
-
-		<module>org.eclipse.recommenders.server.codesearch</module>
-		<module>org.eclipse.recommenders.server.console</module>
-		<module>org.eclipse.recommenders.server.commons</module>
-		<module>org.eclipse.recommenders.server.extdoc</module>
-		<module>org.eclipse.recommenders.server.udc</module>
-		<module>org.eclipse.recommenders.server.setup</module>
-
-
-		<module>org.eclipse.recommenders.rcp.extdoc.feature</module>
-
-		<module>org.eclipse.recommenders.rcp.codecompletion.feature</module>
-		<module>org.eclipse.recommenders.rcp.codecompletion.source-feature</module>
-		
-		<module>org.eclipse.recommenders.rcp.codecompletion.subwords.feature</module>
-		<module>org.eclipse.recommenders.rcp.codecompletion.subwords.source-feature</module>
-		
-		<module>org.eclipse.recommenders.rcp.codesearch.feature</module>
-		<module>org.eclipse.recommenders.rcp.codesearch.source-feature</module>
-		
-		
-		
-		<module>org.eclipse.recommenders.server.codesearch.feature</module>
-		<module>org.eclipse.recommenders.server.codesearch.source-feature</module>
-		
-		<module>org.eclipse.recommenders.server.udc.feature</module>
-		<module>org.eclipse.recommenders.server.udc.source-feature</module>
-
-
-		<module>org.eclipse.recommenders.server.update-site</module>
-		<module>org.eclipse.recommenders.rcp.update-site</module>
-		
-		<module>org.eclipse.recommenders.rcp.selfhosting.feature</module>
-		<module>org.eclipse.recommenders.server.feature</module>
-
-
+		<module>etc/licenses</module>
+		<module>plugins</module>
+		<module>tests</module>
+		<module>features</module>
+		<module>dist</module>
 	</modules>
+
+	<build>
+		<!-- MB: Why do we need this here (and not in pluginManagement)? Because of the P2 repos? -->
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+			</plugin>
+		</plugins>
+
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-maven-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<!-- MB: why do we need extensions=true? -->
+					<extensions>true</extensions>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>target-platform-configuration</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<resolver>p2</resolver>
+						<ignoreTychoRepositories>false</ignoreTychoRepositories>
+						<environments>
+							<environment>
+								<os>linux</os>
+								<ws>gtk</ws>
+								<arch>x86</arch>
+							</environment>
+							<environment>
+								<os>linux</os>
+								<ws>gtk</ws>
+								<arch>x86_64</arch>
+							</environment>
+							<environment>
+								<os>win32</os>
+								<ws>win32</ws>
+								<arch>x86</arch>
+							</environment>
+							<environment>
+								<os>win32</os>
+								<ws>win32</ws>
+								<arch>x86_64</arch>
+							</environment>
+							<environment>
+								<os>macosx</os>
+								<ws>cocoa</ws>
+								<arch>x86</arch>
+							</environment>
+							<environment>
+								<os>macosx</os>
+								<ws>cocoa</ws>
+								<arch>x86_64</arch>
+							</environment>
+						</environments>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-source-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<executions>
+						<execution>
+							<id>attach-source</id>
+							<phase>process-classes</phase>
+							<goals>
+								<goal>plugin-source</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-packaging-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<format>'v'yyyyMMdd-HHmm'-${build-alias}'</format>
+						<archiveSite>false</archiveSite>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-surefire-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<!-- http://mdwhatever.free.fr/index.php/2011/09/quality-analysis-on-eclipse-plugins-with-tycho-sonar-jacoco-and-swtbot/ -->
+					<!-- https://github.com/Godin/sonar-experiments/tree/master/jacoco-examples -->
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>${jacoco-version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>jacoco-site</id>
+							<phase>site</phase>
+							<goals>
+								<goal>report</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-p2-repository-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<includeAllDependencies>true</includeAllDependencies>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>com.mycila.maven-license-plugin</groupId>
+					<artifactId>maven-license-plugin</artifactId>
+					<version>1.9.0</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.eclipse.recommenders</groupId>
+							<artifactId>license-headers</artifactId>
+							<version>0.4.0-SNAPSHOT</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<encoding>UTF-8</encoding>
+
+						<header>license-tu-darmstadt-2011.txt</header>
+						<validHeaders>
+							<validHeader>license-frankenberger-2011.txt</validHeader>
+							<validHeader>license-fritz-kaluza-2010.txt</validHeader>
+							<validHeader>license-fritz-kaluza-2010.txt</validHeader>
+							<validHeader>license-tu-darmstadt-2010.txt</validHeader>
+							<validHeader>license-tu-darmstadt-2011.txt</validHeader>
+							<validHeader>license-henss-2010.txt</validHeader>
+							<validHeader>license-kutschke-2011.txt</validHeader>
+							<validHeader>license-henss-2011.txt</validHeader>
+							<validHeader>license-proksch-2011.txt</validHeader>
+							<validHeader>license-google-wb.txt</validHeader>
+						</validHeaders>
+						<strictCheck>false</strictCheck>
+						<quiet>false</quiet>
+						<failIfMissing>true</failIfMissing>
+						<includes>
+							<include>src/**/*.java</include>
+						</includes>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>1.0.1</version>
+					<executions>
+						<execution>
+							<id>enforce-files-exist</id>
+							<goals>
+								<goal>enforce</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>helios</id>
+			<layout>p2</layout>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/helios/</url>
+		</repository>
+		<repository>
+			<id>recommenders-3rd</id>
+			<layout>p2</layout>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head/</url>
+		</repository>
+		<!-- repository> <id>orbit</id> <layout>p2</layout> <url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/orbit /</url> 
+			</repository -->
+	</repositories>
 
 </project>

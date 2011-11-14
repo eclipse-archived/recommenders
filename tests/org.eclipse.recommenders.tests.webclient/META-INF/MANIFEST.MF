@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Webclient Tests (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.tests.webclient
+Bundle-Version: 0.4.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.recommenders.utils.gson,
+ org.eclipse.recommenders.webclient,
+ org.junit4,
+ com.google.guava

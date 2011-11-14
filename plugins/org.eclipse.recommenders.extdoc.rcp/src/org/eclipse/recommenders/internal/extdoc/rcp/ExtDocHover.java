@@ -1,0 +1,92 @@
+/**
+ * Copyright (c) 2011 Stefan Henss.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Stefan Henss - initial API and implementation.
+ */
+package org.eclipse.recommenders.internal.extdoc.rcp;
+
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.internal.ui.text.java.hover.AbstractJavaEditorTextHover;
+import org.eclipse.jdt.internal.ui.text.java.hover.ProblemHover;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.recommenders.extdoc.rcp.selection.selection.IJavaElementSelection;
+import org.eclipse.recommenders.extdoc.rcp.selection.selection.JavaElementSelectionResolver;
+import org.eclipse.swt.widgets.Shell;
+
+import com.google.inject.Inject;
+
+/**
+ * Displays provider content in a pop-up when hovering a Java element in the
+ * editor.
+ */
+@SuppressWarnings("restriction")
+public final class ExtDocHover extends AbstractJavaEditorTextHover {
+
+    private final ProblemHover problemHover = new ProblemHover();
+    private boolean isProblemHoverActive;
+
+    private final IInformationControlCreator creator;
+
+    @Inject
+    ExtDocHover(final UiManager uiManager, final ProviderStore providerStore, final UpdateService updateService) {
+        creator = new IInformationControlCreator() {
+            @Override
+            public IInformationControl createInformationControl(final Shell parent) {
+                return new HoverInformationControl(parent, uiManager, providerStore, updateService, null);
+            }
+        };
+    }
+
+    @Override
+    public String getHoverInfo(final ITextViewer textViewer, final IRegion hoverRegion) {
+        throw new IllegalAccessError("JDT is expected to call getHoverInfo2");
+    }
+
+    @Override
+    public Object getHoverInfo2(final ITextViewer textViewer, final IRegion hoverRegion) {
+        final Object problemInfo = problemHover.getHoverInfo2(textViewer, hoverRegion);
+        isProblemHoverActive = problemInfo != null;
+        if (isProblemHoverActive) {
+            return problemInfo;
+        }
+        return JavaElementSelectionResolver.resolveFromEditor((JavaEditor) getEditor(), hoverRegion.getOffset());
+    }
+
+    @Override
+    public IInformationControlCreator getHoverControlCreator() {
+        return isProblemHoverActive ? problemHover.getHoverControlCreator() : creator;
+    }
+
+    private static final class HoverInformationControl extends AbstractHoverInformationControl {
+
+        public HoverInformationControl(final Shell parentShell, final UiManager uiManager,
+                final ProviderStore providerStore, final UpdateService updateService, final HoverInformationControl copy) {
+            super(parentShell, uiManager, providerStore, updateService, copy);
+        }
+
+        @Override
+        protected IJavaElementSelection getSelection(final Object input) {
+            return (IJavaElementSelection) input;
+        }
+
+        @Override
+        public IInformationControlCreator getInformationPresenterControlCreator() {
+            return new IInformationControlCreator() {
+                @Override
+                public IInformationControl createInformationControl(final Shell parent) {
+                    return new HoverInformationControl(parent, getUiManager(), getProviderStore(), getUpdateService(),
+                            HoverInformationControl.this);
+                }
+            };
+        }
+    }
+
+}

@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Commons for ExtDoc Tests
+Bundle-SymbolicName: org.eclipse.recommenders.tests.extdoc;singleton:=true
+Bundle-Version: 0.4.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.jdt.core,
+ org.mockito,
+ org.eclipse.core.runtime,
+ org.eclipse.recommenders.extdoc.rcp,
+ org.eclipse.recommenders.extdoc.transport,
+ com.sun.jersey.client,
+ org.eclipse.jdt.core,
+ org.eclipse.recommenders.webclient,
+ org.eclipse.recommenders.extdoc.rcp.selection,
+ org.eclipse.recommenders.utils,
+ org.eclipse.recommenders.extdoc.rcp.providers,
+ org.eclipse.recommenders.extdoc.rcp,
+ org.eclipse.recommenders.utils.rcp,
+ org.eclipse.ui,
+ org.eclipse.core.resources
+Export-Package: org.eclipse.recommenders.tests.extdoc

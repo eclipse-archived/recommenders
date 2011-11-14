@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for Call Code Completion
+Bundle-SymbolicName: org.eclipse.recommenders.tests.completion.rcp.calls
+Bundle-Version: 0.4.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.completion.rcp.calls;bundle-version="0.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.recommenders.tests,
+ org.junit4,
+ org.mockito,
+ org.objenesis

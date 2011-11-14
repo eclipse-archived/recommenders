@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="Recommenders Server Product" uid="org.eclipse.recommenders.server" id="dummy" version="0.4.0.qualifier" useFeatures="true" includeLaunchers="false">
+
+   <configIni use="">
+   </configIni>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="org.eclipse.recommenders.3rd.feature"/>
+      <feature id="org.eclipse.recommenders.feature.server" version="0.4.0.qualifier"/>
+      <feature id="org.eclipse.recommenders.feature.server.rootfiles" version="0.4.0.qualifier"/>
+      <feature id="org.eclipse.recommenders.feature.codesearch.server" version="0.4.0.qualifier"/>
+      <feature id="org.eclipse.recommenders.feature.udc.server" version="0.4.0.qualifier"/>
+   </features>
+
+   <configurations>
+      <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.recommenders.server.codesearch" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.recommenders.server.console" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.recommenders.server.udc" autoStart="true" startLevel="3" />
+      <property name="eclipse.ignoreApp" value="true" />
+      <property name="org.eclipse.equinox.http.jetty.http.port" value="29750" />
+      <property name="org.eclipse.recommenders.server.http.baseurl" value="http://recommenders1.st.informatik.tu-darmstadt.de:29750/codesearch" />
+      <property name="osgi.noShutdown" value="true" />
+   </configurations>
+
+</product>
