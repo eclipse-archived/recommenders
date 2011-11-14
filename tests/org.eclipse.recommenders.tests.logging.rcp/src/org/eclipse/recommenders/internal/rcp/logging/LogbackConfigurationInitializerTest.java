@@ -10,14 +10,13 @@
  */
 package org.eclipse.recommenders.internal.rcp.logging;
 
-import static org.eclipse.recommenders.internal.logging.rcp.LogbackConfigurationInitializer.PROP_LOGBACK_CONFIGURATION_FILE;
+import static org.eclipse.recommenders.internal.rcp.logging.LogbackConfigurationInitializer.PROP_LOGBACK_CONFIGURATION_FILE;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.recommenders.internal.rcp.logging.LogbackConfigurationInitializer;
 import org.junit.Test;
 
 public class LogbackConfigurationInitializerTest {
