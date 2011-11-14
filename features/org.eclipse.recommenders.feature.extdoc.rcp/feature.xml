@@ -51,7 +51,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.extdoc.server"
+         id="org.eclipse.recommenders.extdoc.transport"
          download-size="0"
          install-size="0"
          version="0.0.0"
