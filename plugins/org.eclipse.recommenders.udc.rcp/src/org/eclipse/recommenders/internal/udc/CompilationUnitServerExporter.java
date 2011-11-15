@@ -16,10 +16,10 @@ import javax.inject.Inject;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.calls.rcp.CallsCompletionModule.UdcServer;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientHandlerException;

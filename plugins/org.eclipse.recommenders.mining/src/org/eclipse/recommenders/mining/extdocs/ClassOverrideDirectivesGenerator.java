@@ -17,7 +17,6 @@ import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;
-import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.TreeBag;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -58,7 +57,7 @@ public class ClassOverrideDirectivesGenerator {
         final TypeDeclaration type = cu.primaryType;
 
         for (final MethodDeclaration method : type.methods) {
-        	ensureIsNotNull(method.name, "method name is null");
+            ensureIsNotNull(method.name, "method name is null");
             if (!method.name.isInit() && method.superDeclaration != null) {
                 overriddenMethods.add(method.superDeclaration);
             }
@@ -71,7 +70,7 @@ public class ClassOverrideDirectivesGenerator {
         try {
             res.validate();
         } catch (final Exception e) {
-            log.debug("class overrides directives generation failed for '{}'", superclass);
+            log.debug("class overrides directives generation failed for '{}': {}", superclass, e.getMessage());
             return Option.none();
         }
         return Option.wrap(res);

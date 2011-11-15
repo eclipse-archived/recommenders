@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.mining.extdocs.zip;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.mining.extdocs.AbstractExtdocGuiceModule;
 import org.eclipse.recommenders.mining.extdocs.AlgorithmParameters;
 import org.eclipse.recommenders.mining.extdocs.ICompilationUnitProvider;
@@ -20,6 +18,8 @@ import org.eclipse.recommenders.mining.extdocs.ISuperclassProvider;
 import org.eclipse.recommenders.mining.extdocs.couch.CouchDbDataAccess;
 import org.eclipse.recommenders.mining.extdocs.couch.CouchExtdocDirectiveConsumer;
 import org.eclipse.recommenders.mining.extdocs.couch.CouchGuiceModule.Output;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;

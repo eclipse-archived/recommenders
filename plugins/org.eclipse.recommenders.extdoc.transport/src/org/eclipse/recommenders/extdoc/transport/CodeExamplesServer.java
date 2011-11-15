@@ -10,11 +10,11 @@
  */
 package org.eclipse.recommenders.extdoc.transport;
 
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.extdoc.transport.types.CodeExamples;
 import org.eclipse.recommenders.internal.extdoc.transport.AbstractFeedbackServer;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;

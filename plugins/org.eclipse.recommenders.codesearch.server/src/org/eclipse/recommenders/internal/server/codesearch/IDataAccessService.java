@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.server.codesearch;
 import java.util.List;
 
 import org.eclipse.recommenders.codesearch.SnippetSummary;
-import org.eclipse.recommenders.commons.client.TransactionResult;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 public interface IDataAccessService {
 

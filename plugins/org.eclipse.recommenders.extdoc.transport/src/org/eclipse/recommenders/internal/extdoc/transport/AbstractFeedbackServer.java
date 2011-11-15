@@ -14,7 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.extdoc.rcp.IProvider;
 import org.eclipse.recommenders.extdoc.rcp.feedback.IComment;
 import org.eclipse.recommenders.extdoc.rcp.feedback.IRating;
@@ -23,6 +22,7 @@ import org.eclipse.recommenders.extdoc.rcp.feedback.IUserFeedbackServer;
 import org.eclipse.recommenders.extdoc.transport.ICouchDbServer;
 import org.eclipse.recommenders.extdoc.transport.UsernameProvider;
 import org.eclipse.recommenders.utils.names.IName;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
 
 import com.sun.jersey.api.client.GenericType;
 

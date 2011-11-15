@@ -13,10 +13,10 @@ package org.eclipse.recommenders.extdoc.transport;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.extdoc.rcp.IServerType;
 import org.eclipse.recommenders.utils.names.IName;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.sun.jersey.api.client.GenericType;
 

@@ -8,10 +8,10 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-package org.eclipse.recommenders.commons.client;
+package org.eclipse.recommenders.webclient;
 
 import static java.lang.String.format;
-import static org.eclipse.recommenders.commons.client.WebServiceClient.encode;
+import static org.eclipse.recommenders.webclient.WebServiceClient.encode;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +19,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.results.ResultObject;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;

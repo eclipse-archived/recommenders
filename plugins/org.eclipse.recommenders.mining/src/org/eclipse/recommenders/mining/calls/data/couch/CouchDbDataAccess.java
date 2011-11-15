@@ -11,22 +11,22 @@
 package org.eclipse.recommenders.mining.calls.data.couch;
 
 import static com.google.common.collect.Iterables.getFirst;
-import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrl;
-import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKey;
-import static org.eclipse.recommenders.commons.client.CouchUtils.transformValues;
+import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrl;
+import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrlWithKey;
+import static org.eclipse.recommenders.webclient.CouchUtils.transformValues;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.recommenders.commons.client.CouchUtils;
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.commons.client.TransactionResult;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.udc.LibraryIdentifier;
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
 import org.eclipse.recommenders.commons.udc.ObjectUsage;
+import org.eclipse.recommenders.webclient.CouchUtils;
+import org.eclipse.recommenders.webclient.WebServiceClient;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;

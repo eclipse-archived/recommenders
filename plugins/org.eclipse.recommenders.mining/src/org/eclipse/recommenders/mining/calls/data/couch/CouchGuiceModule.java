@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.mining.calls.data.couch;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.mining.calls.AbstractBindingModule;
 import org.eclipse.recommenders.mining.calls.AlgorithmParameters;
 import org.eclipse.recommenders.mining.calls.data.IModelSpecificationProvider;
@@ -19,6 +17,8 @@ import org.eclipse.recommenders.mining.calls.data.IObjectUsageProvider;
 import org.eclipse.recommenders.mining.calls.generation.IModelGenerator;
 import org.eclipse.recommenders.mining.calls.generation.ModelGenerationListenerLogger;
 import org.eclipse.recommenders.mining.calls.generation.callgroups.CallgroupModelGenerator2;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.inject.Provides;
 import com.google.inject.Singleton;

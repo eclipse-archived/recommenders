@@ -8,12 +8,17 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.client;
+package org.eclipse.recommenders.webclient.exceptions;
 
-public class InvalidRequestException extends RuntimeException {
+public class ServerUnreachableException extends ServerCommunicationException {
+
     private static final long serialVersionUID = 1L;
 
-    public InvalidRequestException(final Throwable e) {
+    public ServerUnreachableException(final Throwable e) {
         super(e);
+    }
+
+    public ServerUnreachableException(final String message, final Throwable e) {
+        super(message, e);
     }
 }

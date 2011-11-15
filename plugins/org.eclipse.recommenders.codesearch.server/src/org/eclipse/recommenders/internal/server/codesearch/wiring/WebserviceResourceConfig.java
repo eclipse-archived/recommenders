@@ -13,11 +13,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.recommenders.commons.client.GsonProvider;
 import org.eclipse.recommenders.server.GuiceInjectableProvider;
 import org.eclipse.recommenders.server.codesearch.resources.AdminResource;
 import org.eclipse.recommenders.server.codesearch.resources.CodeSearchResource;
 import org.eclipse.recommenders.server.codesearch.resources.SourceCodeResource;
+import org.eclipse.recommenders.webclient.GsonProvider;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;

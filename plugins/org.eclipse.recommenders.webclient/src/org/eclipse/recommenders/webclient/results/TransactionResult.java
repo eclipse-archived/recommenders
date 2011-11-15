@@ -8,14 +8,13 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.client;
+package org.eclipse.recommenders.webclient.results;
 
-public class UnauthorizedAccessException extends InvalidRequestException {
+public class TransactionResult {
 
-    private static final long serialVersionUID = 1L;
-
-    public UnauthorizedAccessException(final Throwable e) {
-        super(e);
-    }
-
+    public String id;
+    public boolean ok;
+    public String rev;
+    public String error;
+    public String reason;
 }

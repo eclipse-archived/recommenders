@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.client;
+package org.eclipse.recommenders.webclient.exceptions;
 
 public class NotFoundException extends InvalidRequestException {
     private static final long serialVersionUID = 1L;

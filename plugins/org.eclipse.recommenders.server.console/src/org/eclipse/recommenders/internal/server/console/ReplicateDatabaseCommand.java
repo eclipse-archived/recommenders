@@ -21,8 +21,8 @@ import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.internal.server.console.ConsoleGuiceModule.LocalCouchdb;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.inject.Inject;
 

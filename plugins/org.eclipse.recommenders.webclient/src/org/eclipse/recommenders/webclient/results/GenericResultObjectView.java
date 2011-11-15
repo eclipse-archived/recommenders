@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.commons.client;
+package org.eclipse.recommenders.webclient.results;
 
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.

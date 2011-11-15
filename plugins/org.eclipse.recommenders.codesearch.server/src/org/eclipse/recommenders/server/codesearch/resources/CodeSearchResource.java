@@ -28,13 +28,13 @@ import org.eclipse.recommenders.codesearch.Proposal;
 import org.eclipse.recommenders.codesearch.Request;
 import org.eclipse.recommenders.codesearch.Response;
 import org.eclipse.recommenders.codesearch.SnippetSummary;
-import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.internal.server.codesearch.IDataAccessService;
 import org.eclipse.recommenders.internal.server.codesearch.ISourceUriMapper;
 import org.eclipse.recommenders.internal.server.codesearch.RequestLogEntry;
 import org.eclipse.recommenders.internal.server.codesearch.lucene.LuceneSearchResult;
 import org.eclipse.recommenders.internal.server.codesearch.lucene.LuceneSearchService;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;

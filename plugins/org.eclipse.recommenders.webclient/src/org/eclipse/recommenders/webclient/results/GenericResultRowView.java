@@ -8,9 +8,10 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.client;
+package org.eclipse.recommenders.webclient.results;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -59,4 +60,13 @@ public class GenericResultRowView<Key, Doc, Value> {
         final List<Doc> res = getTransformedDocs();
         return Iterables.getFirst(res, defaultDoc);
     }
+    
+
+	public String getHighestDocId() {
+		try {
+			return Iterables.getLast(rows).id;
+		} catch(NoSuchElementException e) {
+			return "";
+		}
+	}
 }

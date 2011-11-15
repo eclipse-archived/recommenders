@@ -17,11 +17,11 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.recommenders.codesearch.SnippetSummary;
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.commons.client.GsonProvider;
-import org.eclipse.recommenders.commons.client.ResultObject;
-import org.eclipse.recommenders.commons.client.TransactionResult;
 import org.eclipse.recommenders.internal.server.codesearch.wiring.GuiceModule.CodesearchCouchDbBaseurl;
+import org.eclipse.recommenders.webclient.GsonProvider;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.results.ResultObject;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;

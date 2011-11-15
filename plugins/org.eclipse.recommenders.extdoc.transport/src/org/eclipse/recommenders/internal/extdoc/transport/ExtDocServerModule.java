@@ -10,11 +10,11 @@
  */
 package org.eclipse.recommenders.internal.extdoc.transport;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.extdoc.rcp.feedback.IUserFeedbackServer;
 import org.eclipse.recommenders.extdoc.rcp.preferences.PreferenceConstants;
 import org.eclipse.recommenders.extdoc.transport.ICouchDbServer;
 import org.eclipse.recommenders.extdoc.transport.UsernameProvider;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;

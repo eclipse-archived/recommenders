@@ -8,14 +8,17 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.client;
+package org.eclipse.recommenders.webclient.exceptions;
 
-public class ConflictException extends InvalidRequestException {
+public class ServerCommunicationException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public ConflictException(final Throwable e) {
+    public ServerCommunicationException(final Throwable e) {
         super(e);
     }
 
+    public ServerCommunicationException(final String message, final Throwable e) {
+        super(message, e);
+    }
 }

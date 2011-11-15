@@ -18,10 +18,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.internal.server.udc.CouchDBAccessService;
 import org.eclipse.recommenders.server.GuiceInjectableProvider;
 import org.eclipse.recommenders.server.ServerConfiguration;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
 import org.osgi.service.http.HttpService;
 
 import com.google.inject.AbstractModule;

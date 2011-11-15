@@ -12,8 +12,8 @@ package org.eclipse.recommenders.internal.extdoc.transport;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.extdoc.rcp.preferences.PreferenceConstants;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;

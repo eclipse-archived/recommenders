@@ -16,18 +16,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.commons.client.ServerErrorException;
-import org.eclipse.recommenders.commons.client.ServerUnreachableException;
-import org.eclipse.recommenders.commons.client.TransactionResult;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.extdoc.rcp.IServerType;
 import org.eclipse.recommenders.extdoc.rcp.preferences.PreferenceConstants;
 import org.eclipse.recommenders.extdoc.transport.ICouchDbServer;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IName;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.WebServiceClient;
+import org.eclipse.recommenders.webclient.exceptions.ServerErrorException;
+import org.eclipse.recommenders.webclient.exceptions.ServerUnreachableException;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;

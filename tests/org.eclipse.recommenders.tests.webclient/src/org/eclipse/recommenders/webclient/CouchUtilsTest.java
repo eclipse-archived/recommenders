@@ -15,9 +15,9 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.recommenders.commons.client.CouchUtils;
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.commons.client.ResultObject;
+import org.eclipse.recommenders.webclient.CouchUtils;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.results.ResultObject;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;

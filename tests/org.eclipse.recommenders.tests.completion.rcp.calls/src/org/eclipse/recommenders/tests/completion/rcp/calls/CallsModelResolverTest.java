@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.calls.rcp.store.CallsModelResolver;
@@ -31,6 +30,7 @@ import org.eclipse.recommenders.internal.calls.rcp.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.calls.rcp.store.CallsModelResolver.OverridePolicy;
 import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.VersionRange;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
 import org.junit.Test;
 
 public class CallsModelResolverTest {

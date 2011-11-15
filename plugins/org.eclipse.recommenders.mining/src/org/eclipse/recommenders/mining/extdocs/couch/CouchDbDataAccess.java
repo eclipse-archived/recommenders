@@ -10,18 +10,14 @@
  */
 package org.eclipse.recommenders.mining.extdocs.couch;
 
-import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrl;
-import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKey;
-import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKeyObject;
 import static org.eclipse.recommenders.utils.Option.wrap;
+import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrl;
+import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrlWithKeyObject;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.recommenders.commons.client.GenericResultRowView;
-import org.eclipse.recommenders.commons.client.TransactionResult;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.transport.types.ClassOverridePatterns;
 import org.eclipse.recommenders.extdoc.transport.types.MethodSelfcallDirectives;
@@ -30,11 +26,16 @@ import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
+import org.eclipse.recommenders.webclient.WebServiceClient;
+import org.eclipse.recommenders.webclient.results.GenericResultRowView;
+import org.eclipse.recommenders.webclient.results.SimpleView;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.WebResource;
 
 public class CouchDbDataAccess {
 
@@ -61,12 +62,11 @@ public class CouchDbDataAccess {
     }
 
     public Iterable<CompilationUnit> getCompilationUnitsForSuperclass(final ITypeName superclass) {
-        final String url = createViewUrlWithKey("compilationunits", "bySuperclass", superclass.getIdentifier())
-                + "&reduce=false&include_docs=true";
-        final GenericResultRowView<Object, CompilationUnit, Object> resultView = client.doGetRequest(url,
-                new GenericType<GenericResultRowView<Object, CompilationUnit, Object>>() {
-                });
-        return resultView.getTransformedDocs();
+        WebResource resource = client.createResource("/_design/compilationunits/_view/bySuperclass");
+        String key = superclass.getIdentifier();
+        GenericType<SimpleView<CompilationUnit>> docType = new GenericType<SimpleView<CompilationUnit>>() {
+        };
+        return new DocumentsByKey<CompilationUnit>(resource, key, docType);
     }
 
     public void saveOrUpdate(final ClassOverrideDirectives directives) {

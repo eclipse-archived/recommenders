@@ -8,13 +8,14 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.client;
+package org.eclipse.recommenders.webclient.exceptions;
 
-public class TransactionResult {
+public class ConflictException extends InvalidRequestException {
 
-    public String id;
-    public boolean ok;
-    public String rev;
-    public String error;
-    public String reason;
+    private static final long serialVersionUID = 1L;
+
+    public ConflictException(final Throwable e) {
+        super(e);
+    }
+
 }

@@ -8,17 +8,14 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.commons.client;
+package org.eclipse.recommenders.webclient.exceptions;
 
-public class ServerCommunicationException extends RuntimeException {
+
+public class ServerErrorException extends ServerCommunicationException {
 
     private static final long serialVersionUID = 1L;
 
-    public ServerCommunicationException(final Throwable e) {
+    public ServerErrorException(final Throwable e) {
         super(e);
-    }
-
-    public ServerCommunicationException(final String message, final Throwable e) {
-        super(message, e);
     }
 }

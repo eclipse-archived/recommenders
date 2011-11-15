@@ -20,7 +20,6 @@ import java.lang.annotation.Target;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.internal.analysis.rcp.IRecommendersProjectLifeCycleListener;
 import org.eclipse.recommenders.internal.calls.rcp.preferences.ClientConfigurationPreferenceListener;
 import org.eclipse.recommenders.internal.calls.rcp.store.ClasspathDependencyStore;
@@ -30,6 +29,7 @@ import org.eclipse.recommenders.internal.calls.rcp.store.ProjectModelFacadeFacto
 import org.eclipse.recommenders.internal.calls.rcp.store.ProjectServices;
 import org.eclipse.recommenders.internal.calls.rcp.store.RemoteResolverJobFactory;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.inject.AbstractModule;
