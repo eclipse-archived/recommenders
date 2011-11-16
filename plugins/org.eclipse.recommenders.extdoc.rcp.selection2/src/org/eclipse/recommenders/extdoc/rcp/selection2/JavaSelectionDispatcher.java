@@ -6,4 +6,8 @@ public class JavaSelectionDispatcher {
 
     }
 
+    public void fire(final JavaSelection selection) {
+
+    }
+
 }

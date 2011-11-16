@@ -21,7 +21,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.recommenders.internal.rcp.views.cu.CompilationUnitViewPublisher;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.eclipse.recommenders.internal.rcp.views.recommendations.RecommendationsViewPublisher;
@@ -34,6 +39,8 @@ import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.ast.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.ast.ASTStringUtils;
 import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.AsyncEventBus;
@@ -145,5 +152,30 @@ public class RecommendersModule extends AbstractModule implements Module {
             }
         });
         return sorted;
+    }
+
+    @Provides
+    public IWorkspaceRoot provideWorkspaceRoot() {
+        return ResourcesPlugin.getWorkspace().getRoot();
+    }
+
+    @Provides
+    public IWorkspace provideWorkspace() {
+        return ResourcesPlugin.getWorkspace();
+    }
+
+    @Provides
+    public IWorkbench provideWorkbench() {
+        return PlatformUI.getWorkbench();
+    }
+
+    @Provides
+    public IJavaModel provideJavaModel() {
+        return JavaModelManager.getJavaModelManager().getJavaModel();
+    }
+
+    @Provides
+    public JavaModelManager provideJavaModelManger() {
+        return JavaModelManager.getJavaModelManager();
     }
 }

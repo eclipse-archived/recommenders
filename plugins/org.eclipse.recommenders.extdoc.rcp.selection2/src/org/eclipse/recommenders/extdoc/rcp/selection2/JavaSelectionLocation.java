@@ -36,5 +36,7 @@ public enum JavaSelectionLocation {
     METHOD_DECLARATION_PARAMETER,
     METHOD_DECLARATION_THROWS,
     METHOD_BODY,
+    //
+    UNKNOWN,
 
 }

@@ -10,21 +10,28 @@
  */
 package org.eclipse.recommenders.extdoc.rcp.selection2;
 
+import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+
+import com.google.common.base.Optional;
 
 /**
  * Contains all required information about the user's selection of a java element in the perspective (e.g. Editor,
  * Package Explorer, Outline, ...).
  */
-// TODO: implement - remove abstract afterwards and make final
-public abstract class JavaSelection {
+public final class JavaSelection {
+
+    private final IJavaElement element;
+    private final JavaSelectionLocation location;
+    private final ASTNode selection;
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
@@ -34,22 +41,39 @@ public abstract class JavaSelection {
 
     }
 
-    abstract IJavaElement getElement();
+    public JavaSelection(final IJavaElement element, final JavaSelectionLocation location) {
+        this(element, location, null);
+    }
 
-    abstract JavaSelectionLocation getLocation();
+    public JavaSelection(final IJavaElement element, final JavaSelectionLocation location, final ASTNode selection) {
+        this.element = element;
+        this.location = location;
+        this.selection = selection;
+    }
 
-    // AST related methods:
+    public IJavaElement getElement() {
+        return element;
+    }
 
-    abstract boolean hasAst();
+    public JavaSelectionLocation getLocation() {
+        return location;
+    }
 
-    abstract AST getAst();
+    public boolean hasSelectedNode() {
+        return selection != null;
+    }
 
-    abstract ASTNode getSelectedNode();
+    public Optional<ASTNode> getSelectedNode() {
+        return Optional.fromNullable(selection);
+    }
 
-    // REMINDER: needed
     @Override
-    abstract public int hashCode();
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(obj, this);
+    }
 
     @Override
-    abstract public boolean equals(Object obj);
+    public int hashCode() {
+        return reflectionHashCode(this);
+    }
 }

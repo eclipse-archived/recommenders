@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.utils;
 
+import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
@@ -66,6 +67,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.ITextEditor;
+
+import com.google.common.base.Optional;
 
 @SuppressWarnings({ "restriction", "unchecked", "deprecation" })
 public class JdtUtils {
@@ -262,8 +265,7 @@ public class JdtUtils {
     }
 
     /**
-     * Finds and returns the Java element that contains the text selection in
-     * the given editor.
+     * Finds and returns the Java element that contains the text selection in the given editor.
      * 
      * @param editor
      *            the Java editor
@@ -326,6 +328,11 @@ public class JdtUtils {
             log(e);
             return null;
         }
+    }
+
+    public static Optional<ITypeRoot> findTypeRoot(final IEditorPart editor) {
+        final ITypeRoot root = EditorUtility.getEditorInputJavaElement(editor, true);
+        return fromNullable(root);
     }
 
     public static ASTNode resolveDeclarationNode(final JavaEditor editor) throws JavaModelException {
