@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.jdt.core,
  org.junit4,
  com.google.guava,
+ org.mockito,
  org.eclipse.jface.text,
  org.eclipse.jdt.ui,
  org.eclipse.core.runtime,

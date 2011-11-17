@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.extdoc.rcp.selection2;
 
+import static com.google.common.base.Optional.fromNullable;
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 
 import java.lang.annotation.ElementType;
@@ -17,17 +19,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import com.google.common.base.Optional;
 
 /**
- * Contains all required information about the user's selection of a java element in the perspective (e.g. Editor,
- * Package Explorer, Outline, ...).
+ * Contains all required information about the user's selection of a java
+ * element in the perspective (e.g. Editor, Package Explorer, Outline, ...).
  */
-public final class JavaSelection {
+public class JavaSelection {
 
     private final IJavaElement element;
     private final JavaSelectionLocation location;
@@ -64,12 +65,12 @@ public final class JavaSelection {
     }
 
     public Optional<ASTNode> getSelectedNode() {
-        return Optional.fromNullable(selection);
+        return fromNullable(selection);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(obj, this);
+        return reflectionEquals(obj, this);
     }
 
     @Override
