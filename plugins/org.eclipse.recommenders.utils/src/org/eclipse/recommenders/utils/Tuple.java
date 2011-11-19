@@ -22,6 +22,7 @@ public class Tuple<T0, T1> {
         return new Tuple<T0, T1>(t0, t1);
     }
 
+    @Deprecated
     public static <T0, S0 extends T0, T1, S1 extends T1> Tuple<T0, T1> create(final S0 t0, final S1 t1) {
         return newTuple(t0, t1);
     }

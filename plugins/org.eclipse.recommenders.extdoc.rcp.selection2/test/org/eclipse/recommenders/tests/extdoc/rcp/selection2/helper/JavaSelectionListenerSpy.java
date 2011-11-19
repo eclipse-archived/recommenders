@@ -8,7 +8,7 @@
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
-package helper;
+package org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelection;
 
 public class JavaSelectionListenerSpy {
+
     private List<JavaSelection> events = newArrayList();
 
     public List<JavaSelection> get() {

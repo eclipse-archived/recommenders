@@ -8,7 +8,9 @@
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
-package helper;
+package org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper;
+
+import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionLocation.TYPE_DECLARATION;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelection;
@@ -16,7 +18,7 @@ import org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelection.JavaSelectio
 
 public class SpyImplementation extends JavaSelectionListenerSpy {
 
-    @JavaSelectionListener
+    @JavaSelectionListener(TYPE_DECLARATION)
     public void methodInSuperclass(IType type, JavaSelection selection) {
         recordEvent(selection);
     }

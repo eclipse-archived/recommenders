@@ -1,14 +1,21 @@
 package org.eclipse.recommenders.tests.extdoc.rcp.selection2;
 
+import static java.util.Arrays.asList;
 import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionLocation.TYPE_DECLARATION;
 import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionLocation.TYPE_DECLARATION_EXTENDS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import helper.JavaSelectionListenerSpy;
-import helper.SpyImplementation;
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionTestUtils.ANNOTATION_IN_METHOD_DECLARATION;
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionTestUtils.METHOD_IN_METHOD_BODY;
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionTestUtils.METHOD_IN_METHOD_DECLARATION;
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionTestUtils.TYPE_IN_METHOD_BODY;
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionTestUtils.TYPE_IN_METHOD_DECLARATION_PARAMS;
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionTestUtils.TYPE_IN_METHOD_DECLARATION_THROWS;
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionTestUtils.TYPE_IN_TYPE_DECLARATION;
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionTestUtils.TYPE_IN_TYPE_DECLARATION_EXTENDS;
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionTestUtils.TYPE_IN_TYPE_DECLARATION_IMPLEMENTS;
+import static org.junit.Assert.assertTrue;
 
-import java.security.InvalidParameterException;
+import java.util.List;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
@@ -16,20 +23,23 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelection;
 import org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelection.JavaSelectionListener;
 import org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionDispatcher;
-import org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionLocation;
+import org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.JavaSelectionListenerSpy;
+import org.eclipse.recommenders.tests.extdoc.rcp.selection2.helper.SpyImplementation;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.eventbus.Subscribe;
+
+@SuppressWarnings("unused")
 public class JavaSelectionDispatcherTest {
 
+    public static final List<JavaSelection> POOL = asList(TYPE_IN_TYPE_DECLARATION, TYPE_IN_TYPE_DECLARATION_EXTENDS,
+            TYPE_IN_TYPE_DECLARATION_IMPLEMENTS, TYPE_IN_METHOD_BODY, TYPE_IN_METHOD_DECLARATION_PARAMS,
+            TYPE_IN_METHOD_DECLARATION_THROWS, ANNOTATION_IN_METHOD_DECLARATION, METHOD_IN_METHOD_DECLARATION,
+            METHOD_IN_METHOD_BODY);
+
     public JavaSelectionDispatcher sut;
-    private JavaSelectionListenerSpy listener;
-    private JavaSelection wanted;
-    private JavaSelection wanted2;
-    private JavaSelection unwanted;
-    private JavaSelection unwanted2;
-    private JavaSelection unwanted3;
-    private JavaSelection unwanted4;
+    private JavaSelectionListenerSpy spy;
 
     @Before
     public void setup() {
@@ -37,119 +47,106 @@ public class JavaSelectionDispatcherTest {
     }
 
     @Test
-    public void listenerCanRegisterForallElementsAndAllLocations() {
+    public void listenerCanBeRegistered() {
+        spy = new SpyImplementation();
+        List<JavaSelection> wanted = asList(TYPE_IN_TYPE_DECLARATION);
+        registerFireAndVerify(wanted);
+    }
 
-        wanted = mockJavaSelection(IType.class, TYPE_DECLARATION);
-        wanted2 = mockJavaSelection(IMethod.class, METHOD_DECLARATION);
-        listener = new JavaSelectionListenerSpy() {
+    public void listenersCanBeRegisteredAsAnonymousClasses() {
+        final boolean[] listenerWasCalled = { false };
+        sut.register(new Object() {
+            @JavaSelectionListener
+            public void m(IJavaElement e, JavaSelection s) {
+                listenerWasCalled[0] = true;
+            }
+        });
+        sut.fire(TYPE_IN_METHOD_BODY);
+        assertTrue(listenerWasCalled[0]);
+    }
+
+    @Test
+    public void listenerCanRegisterForAllElementsAndAllLocations() {
+
+        spy = new JavaSelectionListenerSpy() {
             @JavaSelectionListener
             public void allElementsAndAllLocations(final IJavaElement type, final JavaSelection selection) {
                 recordEvent(selection);
             }
         };
 
-        sut.register(listener);
-        sut.fire(wanted);
-        sut.fire(wanted2);
+        List<JavaSelection> wanted = POOL;
 
-        listener.verifyContains(wanted);
-        listener.verifyContains(wanted2);
+        registerFireAndVerify(wanted);
     }
 
     @Test
     public void listenerCanRegisterForAllElementsAndSpecificLocation() {
 
-        wanted = mockJavaSelection(IType.class, TYPE_DECLARATION);
-        unwanted = mockJavaSelection(IType.class, TYPE_DECLARATION_EXTENDS);
-
-        listener = new JavaSelectionListenerSpy() {
-            @JavaSelectionListener(TYPE_DECLARATION)
-            public void allElementsAndSpecificLocation(final IJavaElement type, final JavaSelection selection) {
+        spy = new JavaSelectionListenerSpy() {
+            @JavaSelectionListener(METHOD_DECLARATION)
+            public void allElementsAndSpecificLocation(final IJavaElement e, final JavaSelection selection) {
                 recordEvent(selection);
             }
         };
 
-        sut.register(listener);
-        sut.fire(wanted);
-        sut.fire(unwanted);
+        List<JavaSelection> wanted = asList(ANNOTATION_IN_METHOD_DECLARATION, METHOD_IN_METHOD_DECLARATION);
 
-        listener.verifyContains(wanted);
-        listener.verifyNotContains(unwanted);
+        registerFireAndVerify(wanted);
     }
 
     @Test
     public void listenerCanRegisterForSpecificElementsAndAllLocations() {
 
-        wanted = mockJavaSelection(IType.class, TYPE_DECLARATION);
-        unwanted = mockJavaSelection(IMethod.class, METHOD_DECLARATION);
-
-        listener = new JavaSelectionListenerSpy() {
+        spy = new JavaSelectionListenerSpy() {
             @JavaSelectionListener
             public void specificElementsAndAllLocations(final IType type, final JavaSelection selection) {
                 recordEvent(selection);
             }
         };
 
-        sut.register(listener);
-        sut.fire(wanted);
-        sut.fire(unwanted);
+        List<JavaSelection> wanted = asList(TYPE_IN_TYPE_DECLARATION, TYPE_IN_TYPE_DECLARATION_EXTENDS,
+                TYPE_IN_TYPE_DECLARATION_IMPLEMENTS, TYPE_IN_METHOD_BODY, TYPE_IN_METHOD_DECLARATION_PARAMS,
+                TYPE_IN_METHOD_DECLARATION_THROWS);
 
-        listener.verifyContains(wanted);
-        listener.verifyNotContains(unwanted);
+        registerFireAndVerify(wanted);
     }
 
     @Test
     public void listenerCanRegisterForSpecificElementsAndSpecificLocations() {
 
-        wanted = mockJavaSelection(IType.class, TYPE_DECLARATION);
-        unwanted = mockJavaSelection(IType.class, METHOD_DECLARATION);
-        unwanted2 = mockJavaSelection(IMethod.class, TYPE_DECLARATION);
-        unwanted3 = mockJavaSelection(IMethod.class, METHOD_DECLARATION);
-
-        listener = new JavaSelectionListenerSpy() {
+        spy = new JavaSelectionListenerSpy() {
             @JavaSelectionListener(TYPE_DECLARATION)
+            @Subscribe
             public void specificElementsAndSpecificLocations(final IType type, final JavaSelection selection) {
                 recordEvent(selection);
             }
         };
 
-        sut.register(listener);
-        sut.fire(wanted);
-        sut.fire(unwanted);
-        sut.fire(unwanted2);
-        sut.fire(unwanted3);
+        List<JavaSelection> wanted = asList(TYPE_IN_TYPE_DECLARATION);
 
-        listener.verifyContains(wanted);
-        listener.verifyNotContains(unwanted);
-        listener.verifyNotContains(unwanted2);
-        listener.verifyNotContains(unwanted3);
+        registerFireAndVerify(wanted);
     }
 
     @Test
     public void listenerCanRegisterForSpecificElementAndMultipleLocations() {
 
-        wanted = mockJavaSelection(IType.class, TYPE_DECLARATION);
-        wanted2 = mockJavaSelection(IType.class, TYPE_DECLARATION_EXTENDS);
-
-        listener = new JavaSelectionListenerSpy() {
+        spy = new JavaSelectionListenerSpy() {
             @JavaSelectionListener({ TYPE_DECLARATION, TYPE_DECLARATION_EXTENDS })
-            public void allElementsAndSpecificLocation(final IJavaElement type, final JavaSelection selection) {
+            public void allElementsAndSpecificLocation(final IType type, final JavaSelection selection) {
                 recordEvent(selection);
             }
         };
 
-        sut.register(listener);
-        sut.fire(wanted);
-        sut.fire(wanted2);
+        List<JavaSelection> wanted = asList(TYPE_IN_TYPE_DECLARATION, TYPE_IN_TYPE_DECLARATION_EXTENDS);
 
-        listener.verifyContains(wanted);
-        listener.verifyContains(wanted2);
+        registerFireAndVerify(wanted);
     }
 
     @Test
     public void listenersCanRegisterMoreThanOnceForRelatedClasses() {
-        wanted = mockJavaSelection(IType.class, TYPE_DECLARATION);
-        listener = new JavaSelectionListenerSpy() {
+
+        spy = new JavaSelectionListenerSpy() {
             @JavaSelectionListener(TYPE_DECLARATION)
             public void specificElementsAndSpecificLocations(final IJavaElement type, final JavaSelection selection) {
                 recordEvent(selection);
@@ -161,49 +158,58 @@ public class JavaSelectionDispatcherTest {
             }
         };
 
-        sut.register(listener);
-        sut.fire(wanted);
+        sut.register(spy);
+        sut.fire(TYPE_IN_TYPE_DECLARATION);
 
-        listener.verifyContains(wanted, 2);
+        spy.verifyContains(TYPE_IN_TYPE_DECLARATION, 2);
     }
 
     @Test
     public void listenersCanBeRegisteredInSubclasses() {
-        wanted = mockJavaSelection(IType.class, TYPE_DECLARATION);
-        listener = new SpyImplementation() {
-            @JavaSelectionListener
-            public void anotherListener(IType type, JavaSelection s) {
+
+        // anonymous subclass of an existing listener with subscriptions
+        spy = new SpyImplementation() {
+            @JavaSelectionListener(METHOD_DECLARATION)
+            public void anotherListener(IMethod m, JavaSelection s) {
                 recordEvent(s);
             }
         };
-        sut.register(listener);
-        sut.fire(wanted);
 
-        listener.verifyContains(wanted, 2);
+        List<JavaSelection> wanted = asList(TYPE_IN_TYPE_DECLARATION, METHOD_IN_METHOD_DECLARATION);
+
+        registerFireAndVerify(wanted);
     }
 
     @Test
     public void listenersCanBeUnregistered() {
-        wanted = mockJavaSelection(IType.class, TYPE_DECLARATION);
-        listener = new JavaSelectionListenerSpy() {
+        spy = new JavaSelectionListenerSpy() {
             @JavaSelectionListener
-            public void anotherListener(IType type, JavaSelection s) {
+            public void anotherListener(IJavaElement e, JavaSelection s) {
                 recordEvent(s);
             }
         };
-        sut.register(listener);
-        sut.unregister(listener);
-        sut.fire(wanted);
+        sut.register(spy);
+        sut.unregister(spy);
+        sut.fire(TYPE_IN_TYPE_DECLARATION);
 
-        listener.verifyNotContains(wanted);
+        spy.verifyNotContains(TYPE_IN_TYPE_DECLARATION);
     }
 
-    @Test(expected = InvalidParameterException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void registeringListenersWithoutAnnotationsThrowsException() {
         sut.register(new JavaSelectionListenerSpy());
     }
 
-    @Test(expected = InvalidParameterException.class)
+    @Test(expected = IllegalArgumentException.class)
+    public void registeringPrivateMethodsThrowsException() {
+        sut.register(new JavaSelectionListenerSpy() {
+            @JavaSelectionListener
+            private void aPrivateMEthod(IJavaElement e, JavaSelection s) {
+            }
+        });
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void registeringListenersWithIncompleteParametersThrowsException() {
         sut.register(new JavaSelectionListenerSpy() {
             @JavaSelectionListener
@@ -212,7 +218,7 @@ public class JavaSelectionDispatcherTest {
         });
     }
 
-    @Test(expected = InvalidParameterException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void registeringListenersWithoutIJavaElementThrowsException() {
         sut.register(new JavaSelectionListenerSpy() {
             @JavaSelectionListener
@@ -221,7 +227,7 @@ public class JavaSelectionDispatcherTest {
         });
     }
 
-    @Test(expected = InvalidParameterException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void registeringListenersWithoutJavaSelectionThrowsException() {
         sut.register(new JavaSelectionListenerSpy() {
             @JavaSelectionListener
@@ -230,11 +236,19 @@ public class JavaSelectionDispatcherTest {
         });
     }
 
-    public static JavaSelection mockJavaSelection(Class<? extends IJavaElement> clazz, JavaSelectionLocation location) {
-        IJavaElement element = mock(clazz);
-        JavaSelection selection = mock(JavaSelection.class);
-        when(selection.getElement()).thenReturn(element);
-        when(selection.getLocation()).thenReturn(location);
-        return selection;
+    private void registerFireAndVerify(List<JavaSelection> wanted) {
+        sut.register(spy);
+
+        for (JavaSelection event : POOL) {
+            sut.fire(event);
+        }
+
+        for (JavaSelection event : POOL) {
+            if (wanted.contains(event)) {
+                spy.verifyContains(event);
+            } else {
+                spy.verifyNotContains(event);
+            }
+        }
     }
 }

@@ -10,48 +10,104 @@
  */
 package org.eclipse.recommenders.extdoc.rcp.selection2;
 
-import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
-import static java.lang.String.format;
+import static java.lang.reflect.Modifier.isPublic;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
+import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
+import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
+import static org.eclipse.recommenders.utils.Tuple.newTuple;
 
 import java.lang.reflect.Method;
-import java.security.InvalidParameterException;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelection.JavaSelectionListener;
 import org.eclipse.recommenders.utils.Tuple;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 public class JavaSelectionDispatcher {
 
-    private Map<Tuple<Class<? extends IJavaElement>, JavaSelectionLocation>, Set<Tuple<Object, Method>>> subscriptions = newHashMap();
-
-    private Tuple<Object, Method> subscriber;
-    private Tuple<Class<? extends IJavaElement>, JavaSelectionLocation> subscription;
+    private Multimap<Tuple<Class<?>, JavaSelectionLocation>, Tuple<Object, Method>> subscriptions = HashMultimap
+            .create();
 
     private Set<Tuple<Method, JavaSelectionListener>> annotatedMethods;
 
+    /**
+     * Registers objects with methods that are annotated as
+     * <tt>JavaSelectionListener</tt>. The provided
+     * <tt>JavaSelectionLocation</tt> of the annotation and the type of the
+     * <tt>IJavaElement</tt> defined in the method signature are used to filter
+     * all <tt>JavaSelection</tt> events that are passed to the subscribed
+     * methods.
+     * <p>
+     * Those methods have to follow a fixed signature: <tt>IJavaElement</tt> and
+     * <tt>JavaSelection</tt> are the two expected parameters. It is ensured
+     * that the provided objects comply to this convention but no further
+     * validation is done by the dispatcher.
+     * <p>
+     * Through this convention it is possible to define overlapping
+     * subscriptions or even the same subscription twice. All subscriptions are
+     * called that match a fired event. The developer has to be aware that a
+     * single event triggers all matching methods in a class.
+     * <p>
+     * The following code is an example method that is used to subscribe for all
+     * <tt>JavaSelectionLocation</tt> and all <tt>IJavaElement</tt>:
+     * 
+     * <pre>
+     * {@code @JavaSelectionListener
+     * public void a(IJavaElement e, JavaSelection s) {
+     *  ...
+     * }
+     * </pre>
+     * 
+     * Subscribes to a specific <tt>JavaSelectionLocation</tt> and only to
+     * <tt>IMethod</tt>:
+     * 
+     * <pre>
+     * {@code @JavaSelectionListener(JavaSelectionLocation.METHOD_DECLARATION)
+     * public void a(IMethod m, JavaSelection s) {
+     *  ...
+     * }
+     * </pre>
+     * 
+     * Subscribes to multiple specific <tt>JavaSelectionLocation</tt> and only
+     * to <tt>IMethod</tt>:
+     * 
+     * <pre>
+     * {@code @JavaSelectionListener({METHOD_DECLARATION, METHOD_BODY })
+     * public void a(IMethod  m,  JavaSelection  s) {
+     *  ...
+     * }
+     * </pre>
+     * 
+     * To register all these methods simply pass an instance of the class which
+     * contains the methods to the dispatcher:
+     * 
+     * <pre>
+     * {@code dispatcher.register(new ClassThatContainsAllAnnotatedMethods());}
+     * </pre>
+     * 
+     * @param listener
+     *            an object with annotated methods
+     * @see JavaSelectionListener
+     * @see JavaSelectionLocation
+     * @see IJavaElement
+     * @see JavaSelection
+     */
     public void register(final Object listener) {
+        ensureIsNotNull(listener);
+
         annotatedMethods = findAnnotatedMethods(listener.getClass(), listener);
         if (annotatedMethods.isEmpty()) {
-            throw new InvalidParameterException("no listeners found");
+            throwIllegalArgumentException("no listeners found");
         }
 
         for (Tuple<Method, JavaSelectionListener> t : annotatedMethods) {
             subscribe(t.getFirst(), t.getSecond(), listener);
-        }
-    }
-
-    public void unregister(final Object listener) {
-        for (Set<Tuple<Object, Method>> subscribers : subscriptions.values()) {
-            Set<Tuple<Object, Method>> deletions = newHashSet();
-            for (Tuple<Object, Method> subscriber : subscribers) {
-                if (subscriber.getFirst().equals(listener)) {
-                    deletions.add(subscriber);
-                }
-            }
-            subscribers.removeAll(deletions);
         }
     }
 
@@ -62,79 +118,96 @@ public class JavaSelectionDispatcher {
         for (Method m : clazz.getDeclaredMethods()) {
             JavaSelectionListener annotation = m.getAnnotation(JavaSelection.JavaSelectionListener.class);
             if (annotation != null) {
+                ensureIsPublicMethod(m);
                 ensureCorrectMethodSignature(m);
-                methods.add(Tuple.create(m, annotation));
+                methods.add(newTuple(m, annotation));
             }
         }
 
         Class<?> parent = clazz.getSuperclass();
-        boolean isNullOrObject = parent == null || Object.class.equals(parent);
-        if (!isNullOrObject) {
+        if (!isNullOrObject(parent)) {
             methods.addAll(findAnnotatedMethods(parent, listener));
         }
 
         return methods;
     }
 
+    private static boolean isNullOrObject(Class<?> parent) {
+        return parent == null || Object.class.equals(parent);
+    }
+
+    private static void ensureIsPublicMethod(Method m) {
+        ensureIsTrue(isPublic(m.getModifiers()), "cannot register non-public method: %s", m.getName());
+    }
+
     private static void ensureCorrectMethodSignature(Method m) {
         final Class<?>[] params = m.getParameterTypes();
         if (params.length != 2) {
-            String msg = format("two parameters expected: %s, %s", IJavaElement.class.getSimpleName(),
+            throwIllegalArgumentException("two parameters expected: %s, %s", IJavaElement.class.getSimpleName(),
                     JavaSelection.class.getSimpleName());
-            throw new InvalidParameterException(msg);
         }
 
         if (!IJavaElement.class.isAssignableFrom(params[0])) {
-            throw new InvalidParameterException("first parameter needs to be " + IJavaElement.class.getName());
+            throwIllegalArgumentException("first parameter needs to be %s", IJavaElement.class.getName());
         }
 
         if (!JavaSelection.class.equals(params[1])) {
-            throw new InvalidParameterException("second parameter needs to be " + JavaSelection.class.getName());
+            throwIllegalArgumentException("second parameter needs to be %s", JavaSelection.class.getName());
         }
     }
 
     private void subscribe(Method m, JavaSelectionListener annotation, Object listener) {
-
-        subscriber = Tuple.create(listener, m);
-
         JavaSelectionLocation[] locs = annotation.value();
+        Class<?> elementType = m.getParameterTypes()[0];
+
+        Tuple<Object, Method> subscriber = newTuple(listener, m);
+
         if (locs.length == 0) {
-            subscription = Tuple.create(getElement(m), null);
+            Tuple<Class<?>, JavaSelectionLocation> subscription = newTuple(elementType, null);
             subscribe(subscriber, subscription);
         } else {
             for (JavaSelectionLocation loc : locs) {
-                subscription = Tuple.create(getElement(m), loc);
+                Tuple<Class<?>, JavaSelectionLocation> subscription = newTuple(elementType, loc);
                 subscribe(subscriber, subscription);
             }
         }
     }
 
-    private void subscribe(Tuple<Object, Method> subscriber,
-            Tuple<Class<? extends IJavaElement>, JavaSelectionLocation> subscription) {
-        Set<Tuple<Object, Method>> set = subscriptions.get(subscription);
-        if (set == null) {
-            set = newHashSet();
-            subscriptions.put(subscription, set);
+    private void subscribe(Tuple<Object, Method> subscriber, Tuple<Class<?>, JavaSelectionLocation> subscription) {
+        subscriptions.put(subscription, subscriber);
+    }
+
+    /**
+     * Unregisters all subscriptions for the provided
+     * <tt>JavaSelectionListener</tt>.
+     */
+    public void unregister(final Object listener) {
+        ensureIsNotNull(listener);
+
+        for (Iterator<Tuple<Object, Method>> it = subscriptions.values().iterator(); it.hasNext();) {
+            Tuple<?, ?> next = it.next();
+            if (next.getFirst().equals(listener)) {
+                it.remove();
+            }
         }
-        set.add(subscriber);
     }
 
-    @SuppressWarnings("unchecked")
-    private Class<? extends IJavaElement> getElement(Method m) {
-        return (Class<? extends IJavaElement>) m.getParameterTypes()[0];
-    }
-
+    /**
+     * Dispatches a provided <tt>JavaSelection</tt> and calls all registered
+     * <tt>JavaSelectionListener</tt> that match the selection.
+     */
     public void fire(final JavaSelection javaSelection) {
-        Class<? extends IJavaElement> element = javaSelection.getElement().getClass();
+        ensureIsNotNull(javaSelection);
+        Class<?> element = javaSelection.getElement().getClass();
 
-        for (Tuple<Class<? extends IJavaElement>, JavaSelectionLocation> subscription : subscriptions.keySet()) {
+        for (Tuple<Class<?>, JavaSelectionLocation> subscription : subscriptions.keySet()) {
             if (subscription.getFirst().isAssignableFrom(element)) {
                 invokeIfLocationMatches(subscription, javaSelection);
             }
         }
     }
 
-    private void invokeIfLocationMatches(Tuple<Class<? extends IJavaElement>, JavaSelectionLocation> subscription,
+    private void invokeIfLocationMatches(Tuple<Class<?>, JavaSelectionLocation> subscription,
             JavaSelection javaSelection) {
         JavaSelectionLocation firedLoc = javaSelection.getLocation();
         JavaSelectionLocation subscribedLoc = subscription.getSecond();
@@ -146,21 +219,29 @@ public class JavaSelectionDispatcher {
     }
 
     private static boolean locationsMatch(JavaSelectionLocation firedLoc, JavaSelectionLocation subscribedLoc) {
-        boolean matchesAll = subscribedLoc == null;
-        boolean specificMatch = subscribedLoc != null && subscribedLoc.equals(firedLoc);
-        return matchesAll || specificMatch;
+        return matchesAllLocations(subscribedLoc) || matchesFiredLocation(firedLoc, subscribedLoc);
+    }
+
+    private static boolean matchesFiredLocation(JavaSelectionLocation firedLoc, JavaSelectionLocation subscribedLoc) {
+        return subscribedLoc.equals(firedLoc);
+    }
+
+    private static boolean matchesAllLocations(JavaSelectionLocation subscribedLoc) {
+        return subscribedLoc == null;
     }
 
     private static void invoke(Tuple<Object, Method> subscriber, JavaSelection javaSelection) {
-        Object object = subscriber.getFirst();
-        Method method = subscriber.getSecond();
+        final Object object = subscriber.getFirst();
+        final Method method = subscriber.getSecond();
 
         try {
-            method.setAccessible(true); // jvm bug 4819108
+            if (!method.isAccessible()) {
+                method.setAccessible(true);
+            }
             method.invoke(object, javaSelection.getElement(), javaSelection);
         } catch (Exception e) {
             // should not happen after all tests above
-            throw new RuntimeException(e);
+            throwUnhandledException(e);
         }
     }
 }
