@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 final class ProvidersTable {
 
+    private static final Image CONTEXT_ICON = ExtDocPlugin.getIcon("eview16/context.gif");
     private static final Color COLOR_BLACK = SwtFactory.createColor(SWT.COLOR_BLACK);
     private static final Color COLOR_GRAY = SwtFactory.createColor(SWT.COLOR_DARK_GRAY);
 
@@ -60,7 +61,7 @@ final class ProvidersTable {
         final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gridData.heightHint = ExtDocView.HEAD_LABEL_HEIGHT;
         locationLabel.setLayoutData(gridData);
-        locationLabel.setImage(ExtDocPlugin.getIcon("eview16/context.gif"));
+        locationLabel.setImage(CONTEXT_ICON);
         locationLabel.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
         locationLabel.setToolTipText("Provider selection is sensitive to the displayed code location.");
     }

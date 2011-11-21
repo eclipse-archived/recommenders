@@ -12,8 +12,7 @@ package org.eclipse.recommenders.extdoc.rcp.selection2;
 
 public enum JavaSelectionLocation {
 
-    WORKSPACE,
-    PROJECT,
+    WORKSPACE, PROJECT,
 
     CLASSPATH_CONTAINER,
 
@@ -23,10 +22,8 @@ public enum JavaSelectionLocation {
 
     IMPORT_DECLARATION,
 
-    TYPE_DECLARATION,
-    TYPE_DECLARATION_EXTENDS,
-    TYPE_DECLARATION_IMPLEMENTS,
-    TYPE_BODY,
+    TYPE_DECLARATION, TYPE_DECLARATION_EXTENDS, TYPE_DECLARATION_IMPLEMENTS,
+    // TYPE_BODY,
 
     FIELD_DECLARATION,
     FIELD_DECLARATION_INITIALIZER,

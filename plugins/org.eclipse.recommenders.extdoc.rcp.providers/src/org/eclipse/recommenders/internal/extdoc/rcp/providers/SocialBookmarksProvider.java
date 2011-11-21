@@ -32,6 +32,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -39,6 +40,7 @@ import org.eclipse.swt.widgets.Text;
 import com.google.inject.Inject;
 
 public final class SocialBookmarksProvider extends AbstractTitledProvider {
+    private static final Image ADD_ICON = ExtDocPlugin.getIcon("eview16/add.gif");
 
     private final SocialBookmarksServer server;
 
@@ -111,8 +113,8 @@ public final class SocialBookmarksProvider extends AbstractTitledProvider {
 
     void displayAddControl(final IJavaElement element, final Composite composite, final SocialBookmarks bookmarks) {
         final Composite addComposite = SwtFactory.createGridComposite(composite, 4, 6, 0, 0, 0);
-        SwtFactory.createLink(addComposite, "Click here to add a new bookmark.", null,
-                ExtDocPlugin.getIcon("eview16/add.gif"), false, new MouseAdapter() {
+        SwtFactory.createLink(addComposite, "Click here to add a new bookmark.", null, ADD_ICON, false,
+                new MouseAdapter() {
                     @Override
                     public void mouseUp(final MouseEvent event) {
                         UiUtils.disposeChildren(addComposite);

@@ -10,7 +10,8 @@
  */
 package org.eclipse.recommenders.internal.server.console;
 
-import java.util.Properties;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.framework.BundleActivator;
@@ -23,7 +24,7 @@ public class Activator implements BundleActivator {
     public void start(final BundleContext context) throws Exception {
         final String serviceName = CommandProvider.class.getName();
         final RecommendersCommandProvider commandProvider = new RecommendersCommandProvider();
-        final Properties properties = new Properties();
+        final Dictionary<String, String> properties = new Hashtable<String, String>();
         context.registerService(serviceName, commandProvider, properties);
     }
 

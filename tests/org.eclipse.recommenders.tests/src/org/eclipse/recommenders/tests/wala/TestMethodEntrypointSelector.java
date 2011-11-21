@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.analysis;
+package org.eclipse.recommenders.tests.wala;
 
 import java.util.List;
 

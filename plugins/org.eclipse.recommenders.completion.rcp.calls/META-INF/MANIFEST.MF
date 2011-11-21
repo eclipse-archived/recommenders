@@ -38,8 +38,7 @@ Require-Bundle: org.eclipse.ui,
  com.sun.jersey.client,
  com.sun.jersey.core,
  org.eclipse.recommenders.jayes,
- org.slf4j.api,
- org.eclipse.recommenders.mining
+ org.slf4j.api
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.internal.calls.rcp,
  org.eclipse.recommenders.internal.calls.rcp.store

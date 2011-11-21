@@ -31,6 +31,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
@@ -40,6 +41,7 @@ public final class WikiProvider extends AbstractTitledProvider {
 
     private final WikiServer server;
     private final MarkupParser parser = new MarkupParser(new MediaWikiLanguage());
+    private static Image EDIT_ICON = ExtDocPlugin.getIcon("eview16/edit.png");
 
     @Inject
     public WikiProvider(final WikiServer server) {
@@ -98,13 +100,13 @@ public final class WikiProvider extends AbstractTitledProvider {
                 String.format("Currently there is no Wiki available for %s.", elementName), SWT.COLOR_BLACK, true);
         SwtFactory.createStyleRange(text, 41, elementName.length(), SWT.NORMAL, false, true);
 
-        SwtFactory.createCLabel(composite, "Click here to start writing.", false,
-                ExtDocPlugin.getIcon("eview16/edit.png")).addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseUp(final MouseEvent event) {
-                displayEditArea(element, composite);
-            }
-        });
+        SwtFactory.createCLabel(composite, "Click here to start writing.", false, EDIT_ICON).addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseUp(final MouseEvent event) {
+                        displayEditArea(element, composite);
+                    }
+                });
     }
 
     void displayEditArea(final IJavaElement element, final Composite composite) {

@@ -104,8 +104,8 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     }
 
     @Override
-    public List<? extends IJavaCompletionProposal> computeCompletionProposals(
-            final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
         if (contextResolver.hasProjectRecommendersNature(jCtx)) {
             final IIntelligentCompletionContext completionContext = contextResolver.resolveContext(jCtx);

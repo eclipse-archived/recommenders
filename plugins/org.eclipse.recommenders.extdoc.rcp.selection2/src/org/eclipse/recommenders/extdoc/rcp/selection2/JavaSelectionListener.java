@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionUtils.
 import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionUtils.resolveJavaElementFromViewer;
 import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionUtils.resolveSelectionLocationFromEditor;
 import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionUtils.resolveSelectionLocationFromViewer;
+import static org.eclipse.recommenders.utils.Checks.cast;
 
 import javax.inject.Inject;
 
@@ -50,13 +51,12 @@ public class JavaSelectionListener implements ISelectionListener {
             if (!element.isPresent()) {
                 return;
             }
-            final JavaSelectionLocation location = element.isPresent() ? resolveSelectionLocationFromViewer(element
-                    .get()) : JavaSelectionLocation.UNKNOWN;
+            final JavaSelectionLocation location = resolveSelectionLocationFromViewer(element.get());
             fireEventIfNew(element, location);
 
         } else if (selection instanceof ITextSelection && part instanceof JavaEditor) {
-            final JavaEditor editor = (JavaEditor) part;
-            final ITextSelection textSelection = (ITextSelection) selection;
+            final JavaEditor editor = cast(part);
+            final ITextSelection textSelection = cast(selection);
             final Optional<IJavaElement> element = resolveJavaElementFromEditor(editor, textSelection);
             if (!element.isPresent()) {
                 return;

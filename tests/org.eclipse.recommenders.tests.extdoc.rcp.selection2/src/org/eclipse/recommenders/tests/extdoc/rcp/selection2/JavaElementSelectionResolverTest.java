@@ -31,15 +31,9 @@ import com.google.common.base.Optional;
 
 public class JavaElementSelectionResolverTest {
 
-    /**
-     * 
-     */
     private static final int SOME_OFFSET = 111;
     static final IJavaElement[] EMPTY = new IJavaElement[0];
     static final IJavaElement SOME_ELEMENT = mock(IJavaElement.class);
-    /**
-     * 
-     */
     private static final IJavaElement[] IJAVA_ELEMENTS = new IJavaElement[] { SOME_ELEMENT };
 
     @Test
@@ -47,7 +41,8 @@ public class JavaElementSelectionResolverTest {
         final ITypeRoot root = mock(ITypeRoot.class);
         when(root.codeSelect(anyInt(), anyInt())).thenReturn(EMPTY);
         when(root.getElementAt(anyInt())).thenReturn(SOME_ELEMENT);
-        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromTypeRootInEditor(root, SOME_OFFSET);
+        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromTypeRootInEditor(root,
+                SOME_OFFSET);
         assertEquals(of(SOME_ELEMENT), actual);
     }
 
@@ -55,15 +50,17 @@ public class JavaElementSelectionResolverTest {
     public void testCodeSelectAndElementAtFail() throws JavaModelException {
         final ITypeRoot root = mock(ITypeRoot.class);
         when(root.codeSelect(anyInt(), anyInt())).thenReturn(EMPTY);
-        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromTypeRootInEditor(root, SOME_OFFSET);
-        assertEquals(absent(), actual);
+        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromTypeRootInEditor(root,
+                SOME_OFFSET);
+        assertEquals(of(root), actual);
     }
 
     @Test
     public void testCodeSelectNonNull() throws JavaModelException {
         final ITypeRoot root = mock(ITypeRoot.class);
         when(root.codeSelect(anyInt(), anyInt())).thenReturn(IJAVA_ELEMENTS);
-        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromTypeRootInEditor(root, SOME_OFFSET);
+        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromTypeRootInEditor(root,
+                SOME_OFFSET);
         assertEquals(of(SOME_ELEMENT), actual);
     }
 
@@ -73,7 +70,8 @@ public class JavaElementSelectionResolverTest {
         final ITypeRoot root = mock(ITypeRoot.class);
         final JavaModelException e = mock(JavaModelException.class);
         when(root.codeSelect(anyInt(), anyInt())).thenThrow(e);
-        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromTypeRootInEditor(root, SOME_OFFSET);
+        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromTypeRootInEditor(root,
+                SOME_OFFSET);
         assertEquals(absent(), actual);
     }
 

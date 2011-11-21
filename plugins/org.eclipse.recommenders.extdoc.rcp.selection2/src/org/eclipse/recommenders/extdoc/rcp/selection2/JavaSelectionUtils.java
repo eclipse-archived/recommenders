@@ -12,6 +12,7 @@ package org.eclipse.recommenders.extdoc.rcp.selection2;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
+import static org.eclipse.jdt.core.dom.VariableDeclarationFragment.NAME_PROPERTY;
 import static org.eclipse.jdt.ui.SharedASTProvider.WAIT_YES;
 import static org.eclipse.jdt.ui.SharedASTProvider.getAST;
 import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionLocation.FIELD_DECLARATION;
@@ -111,14 +112,15 @@ public class JavaSelectionUtils {
     }
 
     /**
-     * Picks the first element of the structured selection and returns it iff it's an {@link IJavaElement} -
-     * {@link Optional#absent()} otherwise.
+     * Returns the {@link IJavaElement} at the given offset in the editor.
+     * 
+     * @see #resolveJavaElementFromTypeRootInEditor(ITypeRoot, int)
      */
-    public static Optional<IJavaElement> resolveJavaElementFromViewer(final IStructuredSelection selection) {
-        ensureIsNotNull(selection);
-        final Object element = selection.getFirstElement();
-        if (element instanceof IJavaElement) {
-            return of((IJavaElement) element);
+    public static Optional<IJavaElement> resolveJavaElementFromEditor(final JavaEditor editor, final int offset) {
+        ensureIsNotNull(editor);
+        final Optional<ITypeRoot> root = findTypeRoot(editor);
+        if (root.isPresent()) {
+            return resolveJavaElementFromTypeRootInEditor(root.get(), offset);
         }
         return absent();
     }
@@ -154,23 +156,21 @@ public class JavaSelectionUtils {
     }
 
     /**
-     * Returns the {@link IJavaElement} at the given offset in the editor.
-     * 
-     * @see #resolveJavaElementFromTypeRootInEditor(ITypeRoot, int)
+     * Picks the first element of the structured selection and returns it iff it's an {@link IJavaElement} -
+     * {@link Optional#absent()} otherwise.
      */
-    public static Optional<IJavaElement> resolveJavaElementFromEditor(final JavaEditor editor, final int offset) {
-        ensureIsNotNull(editor);
-        final Optional<ITypeRoot> root = findTypeRoot(editor);
-        if (root.isPresent()) {
-            return resolveJavaElementFromTypeRootInEditor(root.get(), offset);
+    public static Optional<IJavaElement> resolveJavaElementFromViewer(final IStructuredSelection selection) {
+        ensureIsNotNull(selection);
+        final Object element = selection.getFirstElement();
+        if (element instanceof IJavaElement) {
+            return of((IJavaElement) element);
         }
         return absent();
     }
 
     public static JavaSelectionLocation resolveSelectionLocationFromViewer(final IJavaElement element) {
-        if (element == null) {
-            return JavaSelectionLocation.UNKNOWN;
-        }
+        ensureIsNotNull(element);
+
         switch (element.getElementType()) {
         case IJavaElement.CLASS_FILE:
         case IJavaElement.COMPILATION_UNIT:
@@ -187,7 +187,6 @@ public class JavaSelectionUtils {
         case IJavaElement.LOCAL_VARIABLE:
             // shouldn't happen in a viewer selection, right?
             return METHOD_BODY;
-
         case IJavaElement.JAVA_MODEL:
         case IJavaElement.PACKAGE_FRAGMENT:
         case IJavaElement.PACKAGE_FRAGMENT_ROOT:
@@ -208,8 +207,14 @@ public class JavaSelectionUtils {
         }
 
         final CompilationUnit astRoot = getAST(root.get(), WAIT_YES, null);
-        final ASTNode selectedNode = NodeFinder.perform(astRoot, selection.getOffset(), 1);
+        return resolveSelectionLocationFromAst(astRoot, selection.getOffset());
+    }
+
+    public static JavaSelectionLocation resolveSelectionLocationFromAst(final CompilationUnit astRoot, final int offset) {
+        ensureIsNotNull(astRoot);
+        final ASTNode selectedNode = NodeFinder.perform(astRoot, offset, 0);
         if (selectedNode == null) {
+            // this *should* never happen but it *can* happen...
             return JavaSelectionLocation.UNKNOWN;
         }
         final JavaSelectionLocation res = computeLocation(selectedNode);
@@ -217,15 +222,36 @@ public class JavaSelectionUtils {
     }
 
     private static JavaSelectionLocation computeLocation(ASTNode node) {
+        // deal with special case that no parent exists: for instance, if empty spaces before the package declaration
+        // are selected, we translate this to type declaration:
         ASTNode parent = node.getParent();
         if (parent == null) {
-            // if empty spaces before package declaration we translate this to type declaration
             return JavaSelectionLocation.TYPE_DECLARATION;
         }
 
+        // handle a direct selection on a declaration node, i.e., the users select a whitespace as in
+        // "public Æ void do(){}":
+        switch (node.getNodeType()) {
+        case ASTNode.COMPILATION_UNIT:
+        case ASTNode.TYPE_DECLARATION:
+            return TYPE_DECLARATION;
+        case ASTNode.METHOD_DECLARATION:
+        case ASTNode.INITIALIZER:
+            return METHOD_DECLARATION;
+        case ASTNode.FIELD_DECLARATION:
+            return FIELD_DECLARATION;
+        default:
+        }
+
+        // we have a child node selected. Let's figure out which location this translates best:
         while (node != null) {
             final StructuralPropertyDescriptor locationInParent = node.getLocationInParent();
             switch (parent.getNodeType()) {
+            case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
+                if (isVariableNameSelectionInFieldDeclaration(parent, locationInParent)) {
+                    return FIELD_DECLARATION;
+                }
+                break;
             case ASTNode.COMPILATION_UNIT:
             case ASTNode.TYPE_DECLARATION:
             case ASTNode.METHOD_DECLARATION:
@@ -237,9 +263,14 @@ public class JavaSelectionUtils {
             }
             node = parent;
             parent = parent.getParent();
-
         }
         return JavaSelectionLocation.UNKNOWN;
+    }
+
+    private static boolean isVariableNameSelectionInFieldDeclaration(final ASTNode parent,
+            final StructuralPropertyDescriptor locationInParent) {
+        final ASTNode superparent = parent.getParent();
+        return superparent instanceof FieldDeclaration && NAME_PROPERTY == locationInParent;
     }
 
     private static JavaSelectionLocation mapLocationInParent(final StructuralPropertyDescriptor locationInParent) {

@@ -35,7 +35,7 @@ import com.google.common.base.Preconditions;
 
 public final class CommentsComposite extends Composite {
 
-    private static Image commentsIcon = ExtDocPlugin.getIcon("eview16/comments.png");
+    private static Image COMMENTS_ICON = ExtDocPlugin.getIcon("eview16/comments.png");
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 
     private IName element;
@@ -63,7 +63,7 @@ public final class CommentsComposite extends Composite {
     }
 
     private void createCommentsArea() {
-        SwtFactory.createLink(this, "Show / Add Comments (" + comments.size() + ")", null, commentsIcon, true,
+        SwtFactory.createLink(this, "Show / Add Comments (" + comments.size() + ")", null, COMMENTS_ICON, true,
                 new MouseAdapter() {
                     @Override
                     public void mouseUp(final MouseEvent event) {
@@ -79,7 +79,7 @@ public final class CommentsComposite extends Composite {
             for (final IComment comment : comments) {
                 final String formattedDate = dateFormat.format(comment.getDate());
                 final String headLine = String.format("%s, %s", formattedDate, comment.getUsername());
-                SwtFactory.createCLabel(this, headLine, true, commentsIcon);
+                SwtFactory.createCLabel(this, headLine, true, COMMENTS_ICON);
                 SwtFactory.createLabel(this, comment.getText(), true);
             }
             SwtFactory.createLabel(this, "", false);

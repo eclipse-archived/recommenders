@@ -30,6 +30,7 @@ import org.eclipse.recommenders.extdoc.rcp.selection.selection.IJavaElementSelec
 import org.eclipse.recommenders.internal.extdoc.rcp.UpdateService.AbstractUpdateJob;
 import org.eclipse.recommenders.utils.Option;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -38,6 +39,7 @@ import org.eclipse.ui.IWorkbenchPartSite;
 abstract class AbstractHoverInformationControl extends AbstractInformationControl implements
         IInformationControlExtension2 {
 
+    private static Image GOTO_ICON = ExtDocPlugin.getIcon("lcl16/goto_input.png");
     private final UiManager uiManager;
     private final ProviderStore providerStore;
     private final UpdateService updateService;
@@ -121,8 +123,7 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
     }
 
     private void addOpenInputAction(final ToolBarManager toolbar) {
-        toolbar.add(new Action("Open Input", ImageDescriptor.createFromImage(ExtDocPlugin
-                .getIcon("lcl16/goto_input.png"))) {
+        toolbar.add(new Action("Open Input", ImageDescriptor.createFromImage(GOTO_ICON)) {
             @Override
             public void run() {
                 final Option<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
