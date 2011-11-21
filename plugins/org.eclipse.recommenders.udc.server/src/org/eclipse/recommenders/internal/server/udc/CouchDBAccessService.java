@@ -50,6 +50,15 @@ public class CouchDBAccessService {
         escapedQuotation = encode("\"");
     }
 
+    public boolean isAvailable() {
+        try {
+            final Object result = client.doGetRequest("", Object.class);
+            return result != null;
+        } catch (final RuntimeException e) {
+            return false;
+        }
+    }
+
     protected String getRevision(final String id) {
         final ClientResponse response = client.createRequestBuilder(id).head();
         if (response.getHeaders().containsKey("Etag")) {
