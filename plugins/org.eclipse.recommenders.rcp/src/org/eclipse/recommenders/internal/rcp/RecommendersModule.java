@@ -27,9 +27,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
-import org.eclipse.recommenders.internal.rcp.views.cu.CompilationUnitViewPublisher;
-import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
-import org.eclipse.recommenders.internal.rcp.views.recommendations.RecommendationsViewPublisher;
 import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
 import org.eclipse.recommenders.rcp.IAstProvider;
@@ -65,8 +62,6 @@ public class RecommendersModule extends AbstractModule implements Module {
     protected void configure() {
         configureArtifactStore();
         configureEditorTracker();
-        configureCompilationUnitViewPublisher();
-        configureRecommendationsViewPublisher();
         configureJavaElementResolver();
         configureAstProvider();
         configureBuilder();
@@ -99,19 +94,6 @@ public class RecommendersModule extends AbstractModule implements Module {
     private void configureEditorTracker() {
         bind(EditorTrackingService.class).in(Scopes.SINGLETON);
         editorChangedListenerBinder = Multibinder.newSetBinder(binder(), IEditorChangedListener.class);
-    }
-
-    private void configureCompilationUnitViewPublisher() {
-        bind(CompilationUnitViewPublisher.class).in(Scopes.SINGLETON);
-        editorChangedListenerBinder.addBinding().to(CompilationUnitViewPublisher.class);
-        artifactStoreChangedListenerBinder.addBinding().to(CompilationUnitViewPublisher.class);
-    }
-
-    private void configureRecommendationsViewPublisher() {
-        bind(RecommendationsViewPublisher.class).in(Scopes.SINGLETON);
-        editorChangedListenerBinder.addBinding().to(RecommendationsViewPublisher.class);
-        artifactStoreChangedListenerBinder.addBinding().to(RecommendationsViewPublisher.class);
-        Multibinder.newSetBinder(binder(), IRecommendationsViewContentProvider.class);
     }
 
     private void configureJavaElementResolver() {

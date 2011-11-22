@@ -10,23 +10,23 @@
  */
 package org.eclipse.recommenders.tests.internal.analysis;
 
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createClassMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createMethodWithBooleanParameterMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createMethodWithIntegerParameterMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPackageVisibleMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPrivateMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createProtectedMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicClinitMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicConstructorMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicFinalMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicNativeMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicStaticMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassGetDeclareMethods;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassGetMethodWithAnySelector;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassGetSuperclass;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockMethodGetDeclaringClass;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockMethodName;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createClassMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createMethodWithBooleanParameterMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createMethodWithIntegerParameterMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPackageVisibleMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPrivateMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createProtectedMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicClinitMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicConstructorMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicFinalMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicNativeMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicStaticMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassGetDeclareMethods;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassGetMethodWithAnySelector;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassGetSuperclass;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockMethodGetDeclaringClass;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockMethodName;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
@@ -47,26 +47,26 @@ public class MethodUtilsTest {
 
     @Test
     public void getDeclaredFinalAndPublicOrProtectedMethods() {
-        IClass clazz = createClassMock();
-        IMethod expected = createPublicFinalMethodMock();
-        Set<IMethod> someMethods = Sets.newHashSet(createPublicConstructorMock(), createPublicMethodMock(),
+        final IClass clazz = createClassMock();
+        final IMethod expected = createPublicFinalMethodMock();
+        final Set<IMethod> someMethods = Sets.newHashSet(createPublicConstructorMock(), createPublicMethodMock(),
                 createPrivateMethodMock(), createProtectedMethodMock(), expected);
         mockClassGetDeclareMethods(clazz, someMethods);
-        Collection<IMethod> actual = MethodUtils.findDeclaredFinalAndPublicOrProtectedMethods(clazz);
+        final Collection<IMethod> actual = MethodUtils.findDeclaredFinalAndPublicOrProtectedMethods(clazz);
         assertEquals(Collections.singleton(expected), actual);
     }
 
     @Test
     public void testFindAllDeclaredPublicInstanceMethods() {
         // setup
-        IClass clazz = createClassMock();
-        List<IMethod> expecteds = Lists.newArrayList(createPublicMethodMock(), createPublicFinalMethodMock());
-        Set<IMethod> someMethods = Sets.newHashSet(createPublicConstructorMock(), createPrivateMethodMock(),
+        final IClass clazz = createClassMock();
+        final List<IMethod> expecteds = Lists.newArrayList(createPublicMethodMock(), createPublicFinalMethodMock());
+        final Set<IMethod> someMethods = Sets.newHashSet(createPublicConstructorMock(), createPrivateMethodMock(),
                 createPublicClinitMock(), createPublicNativeMock());
         someMethods.addAll(expecteds);
         mockClassGetDeclareMethods(clazz, someMethods);
         // exercise
-        Collection<IMethod> actuals = MethodUtils.findAllDeclaredPublicInstanceMethodsWithImplementation(clazz);
+        final Collection<IMethod> actuals = MethodUtils.findAllDeclaredPublicInstanceMethodsWithImplementation(clazz);
         // verify
         assertEquals(Collections.emptyList(), CollectionUtils.disjunction(expecteds, actuals));
     }
@@ -74,14 +74,14 @@ public class MethodUtilsTest {
     @Test
     public void testGetDeclaredOverridableMethods() {
         // setup
-        IClass clazz = createClassMock();
-        Set<IMethod> expected = Sets.newHashSet(createPublicMethodMock(), createProtectedMethodMock());
-        Set<IMethod> someMethods = Sets.newHashSet(createPublicConstructorMock(), createPublicFinalMethodMock(),
+        final IClass clazz = createClassMock();
+        final Set<IMethod> expected = Sets.newHashSet(createPublicMethodMock(), createProtectedMethodMock());
+        final Set<IMethod> someMethods = Sets.newHashSet(createPublicConstructorMock(), createPublicFinalMethodMock(),
                 createPrivateMethodMock());
         someMethods.addAll(expected);
         mockClassGetDeclareMethods(clazz, someMethods);
         // exercise
-        Collection<IMethod> actual = MethodUtils.findDeclaredOverridableMethods(clazz);
+        final Collection<IMethod> actual = MethodUtils.findDeclaredOverridableMethods(clazz);
         // verify
         assertEquals(expected, actual);
     }
@@ -89,11 +89,11 @@ public class MethodUtilsTest {
     @Test
     public void testGetDeclaredConstructors() {
         // setup
-        IClass clazz = createClassMock();
-        Set<IMethod> expected = Sets.newHashSet(createPublicConstructorMock(), createPublicConstructorMock());
+        final IClass clazz = createClassMock();
+        final Set<IMethod> expected = Sets.newHashSet(createPublicConstructorMock(), createPublicConstructorMock());
         mockClassGetDeclareMethods(clazz, expected);
         // exercise
-        Collection<IMethod> actual = MethodUtils.findDeclaredConstructors(clazz);
+        final Collection<IMethod> actual = MethodUtils.findDeclaredConstructors(clazz);
         // verify
         assertEquals(expected, actual);
     }
@@ -101,10 +101,10 @@ public class MethodUtilsTest {
     @Test
     public void testGetSuperImplementation() throws Exception {
         // setup
-        IMethod method1 = createMethodWithBooleanParameterMock();
-        IMethod method2 = createMethodWithIntegerParameterMock();
+        final IMethod method1 = createMethodWithBooleanParameterMock();
+        final IMethod method2 = createMethodWithIntegerParameterMock();
         // exercise
-        boolean actual = MethodUtils.haveEqualSelector(method1, method2);
+        final boolean actual = MethodUtils.haveEqualSelector(method1, method2);
         // verify
         assertEquals(false, actual);
     }
@@ -112,10 +112,10 @@ public class MethodUtilsTest {
     @Test
     public void testEqualSelectorsWithDifferentMethods() throws Exception {
         // setup
-        IMethod method1 = createMethodWithBooleanParameterMock();
-        IMethod method2 = createMethodWithIntegerParameterMock();
+        final IMethod method1 = createMethodWithBooleanParameterMock();
+        final IMethod method2 = createMethodWithIntegerParameterMock();
         // exercise
-        boolean actual = MethodUtils.haveEqualSelector(method1, method2);
+        final boolean actual = MethodUtils.haveEqualSelector(method1, method2);
         // verify
         assertEquals(false, actual);
     }
@@ -125,18 +125,18 @@ public class MethodUtilsTest {
         //
         // setup
         // - inheritance tree
-        IClass subclass = createClassMock();
-        IClass baseclass = createClassMock();
+        final IClass subclass = createClassMock();
+        final IClass baseclass = createClassMock();
         mockClassGetSuperclass(subclass, baseclass);
         // - setup overrides relation
-        IMethod baseclassMethod = createPublicMethodMock();
+        final IMethod baseclassMethod = createPublicMethodMock();
         mockClassGetMethodWithAnySelector(baseclass, baseclassMethod);
         //
-        IMethod subclassMethod = createPublicMethodMock();
+        final IMethod subclassMethod = createPublicMethodMock();
         mockMethodGetDeclaringClass(subclassMethod, subclass);
         //
         // exercise
-        IMethod actual = MethodUtils.findSuperImplementation(subclassMethod);
+        final IMethod actual = MethodUtils.findSuperImplementation(subclassMethod);
         // verify
         assertEquals(baseclassMethod, actual);
     }
@@ -144,10 +144,10 @@ public class MethodUtilsTest {
     @Test
     public void testHaveSameParametersWithDifferentParamTypes() throws Exception {
         // setup
-        IMethod booleanMethod = createMethodWithBooleanParameterMock();
-        IMethod integerMethod = createMethodWithIntegerParameterMock();
+        final IMethod booleanMethod = createMethodWithBooleanParameterMock();
+        final IMethod integerMethod = createMethodWithIntegerParameterMock();
         // exercise
-        boolean actual = MethodUtils.haveSameParameters(booleanMethod, integerMethod);
+        final boolean actual = MethodUtils.haveSameParameters(booleanMethod, integerMethod);
         // verify
         assertEquals(false, actual);
     }
@@ -155,10 +155,10 @@ public class MethodUtilsTest {
     @Test
     public void testHaveSameParametersWithNoArgsAndOneArgsMethod() throws Exception {
         // setup
-        IMethod noArgMethod = createPublicMethodMock();
-        IMethod oneArgMethod = createMethodWithBooleanParameterMock();
+        final IMethod noArgMethod = createPublicMethodMock();
+        final IMethod oneArgMethod = createMethodWithBooleanParameterMock();
         // exercise
-        boolean actual = MethodUtils.haveSameParameters(noArgMethod, oneArgMethod);
+        final boolean actual = MethodUtils.haveSameParameters(noArgMethod, oneArgMethod);
         // verify
         assertEquals(false, actual);
     }
@@ -166,10 +166,10 @@ public class MethodUtilsTest {
     @Test
     public void testHaveSameParametersWithSameParamTypes() throws Exception {
         // setup
-        IMethod booleanMethod1 = createMethodWithBooleanParameterMock();
-        IMethod booleanMethod2 = createMethodWithBooleanParameterMock();
+        final IMethod booleanMethod1 = createMethodWithBooleanParameterMock();
+        final IMethod booleanMethod2 = createMethodWithBooleanParameterMock();
         // exercise
-        boolean actual = MethodUtils.haveSameParameters(booleanMethod1, booleanMethod2);
+        final boolean actual = MethodUtils.haveSameParameters(booleanMethod1, booleanMethod2);
         // verify
         assertEquals(true, actual);
     }
@@ -177,9 +177,9 @@ public class MethodUtilsTest {
     @Test
     public void testIsOverridableWithPrivateMethod() throws Exception {
         // setup
-        IMethod method = createPrivateMethodMock();
+        final IMethod method = createPrivateMethodMock();
         // exercise
-        boolean actual = MethodUtils.isOverridable(method);
+        final boolean actual = MethodUtils.isOverridable(method);
         // verify
         assertEquals(false, actual);
     }
@@ -187,9 +187,9 @@ public class MethodUtilsTest {
     @Test
     public void testIsOverridableWithProtectedMethod() throws Exception {
         // setup
-        IMethod method = createProtectedMethodMock();
+        final IMethod method = createProtectedMethodMock();
         // exercise
-        boolean actual = MethodUtils.isOverridable(method);
+        final boolean actual = MethodUtils.isOverridable(method);
         // verify
         assertEquals(true, actual);
     }
@@ -197,9 +197,9 @@ public class MethodUtilsTest {
     @Test
     public void testIsOverridableWithPublicConstrcutor() throws Exception {
         // setup
-        IMethod method = createPublicConstructorMock();
+        final IMethod method = createPublicConstructorMock();
         // exercise
-        boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
+        final boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
         // verify
         assertEquals(false, actual);
     }
@@ -207,9 +207,9 @@ public class MethodUtilsTest {
     @Test
     public void testIsOverridableWithPublicFinalMethod() throws Exception {
         // setup
-        IMethod method = createPublicFinalMethodMock();
+        final IMethod method = createPublicFinalMethodMock();
         // exercise
-        boolean actual = MethodUtils.isOverridable(method);
+        final boolean actual = MethodUtils.isOverridable(method);
         // verify
         assertEquals(false, actual);
     }
@@ -217,9 +217,9 @@ public class MethodUtilsTest {
     @Test
     public void testIsOverridableWithPublicMethod() throws Exception {
         // setup
-        IMethod method = createPublicMethodMock();
+        final IMethod method = createPublicMethodMock();
         // exercise
-        boolean actual = MethodUtils.isOverridable(method);
+        final boolean actual = MethodUtils.isOverridable(method);
         // verify
         assertEquals(true, actual);
     }
@@ -227,9 +227,9 @@ public class MethodUtilsTest {
     @Test
     public void testIsOverridableWithPublicStaticMethod() throws Exception {
         // setup
-        IMethod method = createPublicStaticMethodMock();
+        final IMethod method = createPublicStaticMethodMock();
         // exercise
-        boolean actual = MethodUtils.isOverridable(method);
+        final boolean actual = MethodUtils.isOverridable(method);
         // verify
         assertEquals(false, actual);
     }
@@ -237,9 +237,9 @@ public class MethodUtilsTest {
     @Test
     public void testIsPackageVisibleMethod() throws Exception {
         // setup
-        IMethod method = createPackageVisibleMethodMock();
+        final IMethod method = createPackageVisibleMethodMock();
         // exercise
-        boolean actual = MethodUtils.isPackageVisible(method);
+        final boolean actual = MethodUtils.isPackageVisible(method);
         // verify
         assertEquals(true, actual);
     }
@@ -247,10 +247,10 @@ public class MethodUtilsTest {
     @Test
     public void testIsCompilerGeneratedStaticAccessMethod_WithStaticMethodAndNotMatchingMethodNamee() throws Exception {
         // setup
-        IMethod plainStaticMethod = createPublicStaticMethodMock();
+        final IMethod plainStaticMethod = createPublicStaticMethodMock();
         mockMethodName(plainStaticMethod, "access");
         // exercise
-        boolean actual = MethodUtils.isCompilerGeneratedStaticAccessMethod(plainStaticMethod);
+        final boolean actual = MethodUtils.isCompilerGeneratedStaticAccessMethod(plainStaticMethod);
         // verify
         assertEquals(false, actual);
     }
@@ -258,10 +258,10 @@ public class MethodUtilsTest {
     @Test
     public void testIsCompilerGeneratedStaticAccessMethod_HappyPath() throws Exception {
         // setup
-        IMethod plainStaticMethod = createPublicStaticMethodMock();
+        final IMethod plainStaticMethod = createPublicStaticMethodMock();
         mockMethodName(plainStaticMethod, "access$0");
         // exercise
-        boolean actual = MethodUtils.isCompilerGeneratedStaticAccessMethod(plainStaticMethod);
+        final boolean actual = MethodUtils.isCompilerGeneratedStaticAccessMethod(plainStaticMethod);
         // verify
         assertEquals(true, actual);
     }
@@ -269,9 +269,9 @@ public class MethodUtilsTest {
     @Test
     public void testIsPackageVisibleMethodWithPublicMethod() throws Exception {
         // setup
-        IMethod method = createPublicMethodMock();
+        final IMethod method = createPublicMethodMock();
         // exercise
-        boolean actual = MethodUtils.isPackageVisible(method);
+        final boolean actual = MethodUtils.isPackageVisible(method);
         // verify
         assertEquals(false, actual);
     }
@@ -279,9 +279,9 @@ public class MethodUtilsTest {
     @Test
     public void testMayHaveSuperDeclarationPrivateMethod() throws Exception {
         // setup
-        IMethod method = createPrivateMethodMock();
+        final IMethod method = createPrivateMethodMock();
         // exercise
-        boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
+        final boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
         // verify
         assertEquals(false, actual);
     }
@@ -289,9 +289,9 @@ public class MethodUtilsTest {
     @Test
     public void testMayHaveSuperDeclarationPublicConstructor() throws Exception {
         // setup
-        IMethod method = createPublicConstructorMock();
+        final IMethod method = createPublicConstructorMock();
         // exercise
-        boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
+        final boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
         // verify
         assertEquals(false, actual);
     }
@@ -299,10 +299,10 @@ public class MethodUtilsTest {
     @Test
     public void testModifiersAllowBeingAReimplemtationSuperIsFinal() throws Exception {
         // setup
-        IMethod superDecl = createPublicFinalMethodMock();
-        IMethod decl = createPublicMethodMock();
+        final IMethod superDecl = createPublicFinalMethodMock();
+        final IMethod decl = createPublicMethodMock();
         // exercise
-        boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
+        final boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
         // verify
         assertEquals(false, actual);
     }
@@ -310,10 +310,10 @@ public class MethodUtilsTest {
     @Test
     public void testModifiersAllowBeingAReimplemtation_BothPublic() throws Exception {
         // setup
-        IMethod superDecl = createPublicMethodMock();
-        IMethod decl = createPublicMethodMock();
+        final IMethod superDecl = createPublicMethodMock();
+        final IMethod decl = createPublicMethodMock();
         // exercise
-        boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
+        final boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
         // verify
         assertEquals(true, actual);
     }
@@ -321,10 +321,10 @@ public class MethodUtilsTest {
     @Test
     public void testModifiersAllowBeingAReimplemtation_BothProtected() throws Exception {
         // setup
-        IMethod superDecl = createProtectedMethodMock();
-        IMethod decl = createPublicMethodMock();
+        final IMethod superDecl = createProtectedMethodMock();
+        final IMethod decl = createPublicMethodMock();
         // exercise
-        boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
+        final boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
         // verify
         assertEquals(true, actual);
     }
@@ -332,10 +332,10 @@ public class MethodUtilsTest {
     @Test
     public void testModifiersAllowBeingAReimplemtation_SuperPackageSubPrivate() throws Exception {
         // setup
-        IMethod superDecl = createPackageVisibleMethodMock();
-        IMethod decl = createPrivateMethodMock();
+        final IMethod superDecl = createPackageVisibleMethodMock();
+        final IMethod decl = createPrivateMethodMock();
         // exercise
-        boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
+        final boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
         // verify
         assertEquals(false, actual);
     }
@@ -343,10 +343,10 @@ public class MethodUtilsTest {
     @Test
     public void testModifiersAllowBeingAReimplemtation_SuperPackageSubProtected() throws Exception {
         // setup
-        IMethod superDecl = createPackageVisibleMethodMock();
-        IMethod decl = createProtectedMethodMock();
+        final IMethod superDecl = createPackageVisibleMethodMock();
+        final IMethod decl = createProtectedMethodMock();
         // exercise
-        boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
+        final boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
         // verify
         assertEquals(true, actual);
     }
@@ -354,10 +354,10 @@ public class MethodUtilsTest {
     @Test
     public void testModifiersAllowBeingAReimplemtation_SuperProtectedSubPublic() throws Exception {
         // setup
-        IMethod superDecl = createProtectedMethodMock();
-        IMethod decl = createPublicMethodMock();
+        final IMethod superDecl = createProtectedMethodMock();
+        final IMethod decl = createPublicMethodMock();
         // exercise
-        boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
+        final boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
         // verify
         assertEquals(true, actual);
     }
@@ -365,10 +365,10 @@ public class MethodUtilsTest {
     @Test
     public void testModifiersAllowBeingAReimplemtation_SuperPublicSubProtectedPublic() throws Exception {
         // setup
-        IMethod superDecl = createPublicMethodMock();
-        IMethod decl = createProtectedMethodMock();
+        final IMethod superDecl = createPublicMethodMock();
+        final IMethod decl = createProtectedMethodMock();
         // exercise
-        boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
+        final boolean actual = MethodUtils.modifiersAllowOverridingMethodDeclaration(superDecl, decl);
         // verify
         assertEquals(false, actual);
     }
@@ -376,9 +376,9 @@ public class MethodUtilsTest {
     @Test
     public void testMayHaveSuperDeclarationPublicFinalMethod() throws Exception {
         // setup
-        IMethod method = createPublicFinalMethodMock();
+        final IMethod method = createPublicFinalMethodMock();
         // exercise
-        boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
+        final boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
         // verify
         assertEquals(true, actual);
     }
@@ -386,9 +386,9 @@ public class MethodUtilsTest {
     @Test
     public void testMayHaveSuperDeclarationPublicStaticMethod() throws Exception {
         // setup
-        IMethod method = createPublicStaticMethodMock();
+        final IMethod method = createPublicStaticMethodMock();
         // exercise
-        boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
+        final boolean actual = MethodUtils.mayHaveSuperDeclaration(method);
         // verify
         assertEquals(false, actual);
     }

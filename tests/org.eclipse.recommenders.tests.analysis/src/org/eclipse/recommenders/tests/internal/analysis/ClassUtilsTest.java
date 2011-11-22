@@ -10,15 +10,15 @@
  */
 package org.eclipse.recommenders.tests.internal.analysis;
 
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createClassMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicClass;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createSomeApplicationTypeReference;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createSomePrimordialTypeReference;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createStaticClassMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassGetName;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassGetSuperclass;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassIsApplication;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassIsPrimordial;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createClassMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicClass;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createSomeApplicationTypeReference;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createSomePrimordialTypeReference;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createStaticClassMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassGetName;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassGetSuperclass;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassIsApplication;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassIsPrimordial;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -37,14 +37,14 @@ public class ClassUtilsTest {
     @Test
     public void testGetAllSuperclasses() {
         // setup
-        IClass baseclass = createClassMock();
-        IClass superclass = createClassMock();
-        IClass superSuperclass = createClassMock();
+        final IClass baseclass = createClassMock();
+        final IClass superclass = createClassMock();
+        final IClass superSuperclass = createClassMock();
         mockClassGetSuperclass(baseclass, superclass);
         mockClassGetSuperclass(superclass, superSuperclass);
-        List<IClass> expecteds = Arrays.asList(superclass, superSuperclass);
+        final List<IClass> expecteds = Arrays.asList(superclass, superSuperclass);
         // exercise
-        List<IClass> actuals = ClassUtils.getAllSuperclasses(baseclass);
+        final List<IClass> actuals = ClassUtils.getAllSuperclasses(baseclass);
         // verify
         assertEquals(expecteds, actuals);
     }
@@ -52,9 +52,9 @@ public class ClassUtilsTest {
     @Test
     public void testInSamePackage() {
         // setup
-        IClass c1 = createClassMock();
-        IClass c2 = createClassMock();
-        IClass c3 = createClassMock();
+        final IClass c1 = createClassMock();
+        final IClass c2 = createClassMock();
+        final IClass c3 = createClassMock();
         mockClassGetName(c1, "Lpackage/C1");
         mockClassGetName(c2, "Lpackage/C2");
         mockClassGetName(c3, "Lother/package/C3");
@@ -79,9 +79,9 @@ public class ClassUtilsTest {
 
     @Test
     public void testIsNestedClass_WithDefaultPackage() {
-        IClass container = createClassMock("name1");
-        IClass nested = createClassMock("name1$2");
-        IClass other = createClassMock("name3");
+        final IClass container = createClassMock("name1");
+        final IClass nested = createClassMock("name1$2");
+        final IClass other = createClassMock("name3");
         assertTrue(ClassUtils.isNestedClass(nested, container));
         assertFalse(ClassUtils.isNestedClass(nested, nested));
         assertFalse(ClassUtils.isNestedClass(nested, other));
@@ -89,9 +89,9 @@ public class ClassUtilsTest {
 
     @Test
     public void testIsNestedClass_HappyPath() {
-        IClass container = createClassMock("Lmy/package/Name1");
-        IClass nested = createClassMock("Lmy/package/Name1$2");
-        IClass other = createClassMock("Lmy/other/package/Name1");
+        final IClass container = createClassMock("Lmy/package/Name1");
+        final IClass nested = createClassMock("Lmy/package/Name1$2");
+        final IClass other = createClassMock("Lmy/other/package/Name1");
         assertTrue(ClassUtils.isNestedClass(nested, container));
         assertFalse(ClassUtils.isNestedClass(nested, nested));
         assertFalse(ClassUtils.isNestedClass(nested, other));
@@ -100,8 +100,8 @@ public class ClassUtilsTest {
     @Test
     public void testIsPrimordialIClass() {
         // setup
-        IClass c1 = createClassMock();
-        IClass c2 = createClassMock();
+        final IClass c1 = createClassMock();
+        final IClass c2 = createClassMock();
         mockClassIsPrimordial(c1);
         mockClassIsApplication(c2);
         // exercise & verify
@@ -112,8 +112,8 @@ public class ClassUtilsTest {
     @Test
     public void testIsPrimordialTypeReference() {
         // setup
-        TypeReference r1 = createSomePrimordialTypeReference();
-        TypeReference r2 = createSomeApplicationTypeReference();
+        final TypeReference r1 = createSomePrimordialTypeReference();
+        final TypeReference r2 = createSomeApplicationTypeReference();
         // exercise & verify
         assertTrue(ClassUtils.isPrimordial(r1));
         assertFalse(ClassUtils.isPrimordial(r2));
@@ -121,9 +121,9 @@ public class ClassUtilsTest {
 
     @Test
     public void testIsStatic() {
-        IClass c1 = createStaticClassMock();
+        final IClass c1 = createStaticClassMock();
         assertTrue(ClassUtils.isStatic(c1));
-        IClass c2 = createPublicClass();
+        final IClass c2 = createPublicClass();
         assertFalse(ClassUtils.isStatic(c2));
     }
 }

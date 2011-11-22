@@ -25,6 +25,7 @@
 		<module>org.eclipse.recommenders.tests.extdoc</module>
 		<module>org.eclipse.recommenders.tests.extdoc.rcp</module>
         <module>org.eclipse.recommenders.tests.extdoc.rcp.providers</module>
+		<module>org.eclipse.recommenders.tests.extdoc.rcp.selection2</module>
         <module>org.eclipse.recommenders.tests.extdoc.transport</module>
 		<!-- 
         -->

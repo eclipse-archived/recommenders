@@ -25,8 +25,8 @@ import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.internal.analysis.entrypoints.RecommendersEntrypoint;
 import org.eclipse.recommenders.internal.analysis.utils.InstanceCallGraphBuilder;
-import org.eclipse.recommenders.tests.analysis.BundleClassloaderBasedClassHierarchy;
-import org.eclipse.recommenders.tests.analysis.WalaTestUtils;
+import org.eclipse.recommenders.tests.wala.BundleClassloaderBasedClassHierarchy;
+import org.eclipse.recommenders.tests.wala.WalaTestUtils;
 import org.junit.Before;
 import org.junit.Test;
 

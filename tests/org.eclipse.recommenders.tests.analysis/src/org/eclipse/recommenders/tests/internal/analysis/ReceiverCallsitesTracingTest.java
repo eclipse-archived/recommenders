@@ -25,8 +25,8 @@ import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.internal.analysis.entrypoints.RecommendersEntrypoint;
 import org.eclipse.recommenders.internal.analysis.utils.InstanceCallGraphBuilder;
-import org.eclipse.recommenders.tests.analysis.BundleClassloaderBasedClassHierarchy;
-import org.eclipse.recommenders.tests.analysis.WalaTestUtils;
+import org.eclipse.recommenders.tests.wala.BundleClassloaderBasedClassHierarchy;
+import org.eclipse.recommenders.tests.wala.WalaTestUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -236,8 +236,8 @@ public class ReceiverCallsitesTracingTest {
     }
 
     /**
-     * This method has a changed behavior in v2 since it does not follow calls
-     * to the super class anymore. At least not now.
+     * This method has a changed behavior in v2 since it does not follow calls to the super class anymore. At least not
+     * now.
      */
     @Test
     public void testCallsToCreatorMethodInSuperclass() throws Exception {

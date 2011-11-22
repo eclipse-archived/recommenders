@@ -30,7 +30,6 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.util.ObjectVector;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
@@ -108,10 +107,14 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
         final InternalCompletionContext coreContext = (InternalCompletionContext) jCtx.getCoreContext();
         if (coreContext.isExtended()) {
-
-            final ASTNode completionNode = coreContext.getCompletionNode();
-            final ASTNode completionNodeParent = coreContext.getCompletionNodeParent();
-            final ObjectVector visibleFields = coreContext.getVisibleFields();
+            // test code for 4.2
+            // final ASTNode completionNode = coreContext.getCompletionNode();
+            // final ASTNode completionNodeParent = coreContext.getCompletionNodeParent();
+            // final ObjectVector visibleFields = coreContext.getVisibleFields();
+            // final ObjectVector visibleLocalVariables = coreContext.getVisibleLocalVariables();
+            // final char[][] expectedTypesSignatures = coreContext.getExpectedTypesSignatures();
+            // final char[][] expectedTypesKeys = coreContext.getExpectedTypesKeys();
+            // System.out.println();
         }
         if (contextResolver.hasProjectRecommendersNature(jCtx)) {
             final IIntelligentCompletionContext iCtx = contextResolver.resolveContext(jCtx);

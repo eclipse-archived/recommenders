@@ -70,67 +70,7 @@
             id="org.eclipse.recommenders.rcp.category.views"
             name="Recommenders">
       </category>
-      <view
-            category="org.eclipse.recommenders.rcp.category.views"
-            class="org.eclipse.recommenders.internal.rcp.views.recommendations.RecommendationsView"
-            icon="icons/full/view16/slice.gif"
-            id="org.eclipse.recommenders.rcp.views.RecommendationsView"
-            name="Recommendations">
-      </view>
-      <view
-            category="org.eclipse.recommenders.rcp.category.views"
-            class="org.eclipse.recommenders.internal.rcp.views.cu.CompilationUnitView"
-            icon="icons/full/view16/slice.gif"
-            id="org.eclipse.recommenders.rcp.views.CompilationUnitView"
-            name="Compilation Unit (Debug)"
-            restorable="true">
-      </view>
    </extension>
-     <extension
-           point="org.eclipse.core.runtime.adapters">
-        <factory
-              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit"
-              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
-           <adapter
-                 type="org.eclipse.ui.model.IWorkbenchAdapter">
-           </adapter>
-        </factory>
-        <factory
-              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration"
-              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
-           <adapter
-                 type="org.eclipse.ui.model.IWorkbenchAdapter">
-           </adapter>
-        </factory>
-         <factory
-              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration"
-              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
-           <adapter
-                 type="org.eclipse.ui.model.IWorkbenchAdapter">
-           </adapter>
-        </factory>
-         <factory
-              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey"
-              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
-           <adapter
-                 type="org.eclipse.ui.model.IWorkbenchAdapter">
-           </adapter>
-        </factory>
-         <factory
-              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.ReceiverCallSite"
-              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
-           <adapter
-                 type="org.eclipse.ui.model.IWorkbenchAdapter">
-           </adapter>
-        </factory>
-         <factory
-              adaptableType="org.eclipse.recommenders.internal.analysis.codeelements.Variable"
-              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.CodeElementsAdapterFactory">
-           <adapter
-                 type="org.eclipse.ui.model.IWorkbenchAdapter">
-           </adapter>
-        </factory>
-     </extension>
      <extension
            point="org.eclipse.ui.preferencePages">
         <page

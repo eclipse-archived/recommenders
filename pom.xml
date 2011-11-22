@@ -219,6 +219,11 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>1.7</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -234,6 +239,18 @@
 			<layout>p2</layout>
 			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head/</url>
 		</repository>
+		<repository>
+			<id>indigo</id>
+			<layout>p2</layout>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/indigo/</url>
+		</repository>
+		<repository>
+			<id>xtext</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/</url>
+		</repository>
+		
+		
 		<!-- repository> <id>orbit</id> <layout>p2</layout> <url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/orbit /</url> 
 			</repository -->
 	</repositories>

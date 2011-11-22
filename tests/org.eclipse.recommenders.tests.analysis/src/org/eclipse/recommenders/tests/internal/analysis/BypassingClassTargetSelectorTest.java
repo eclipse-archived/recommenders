@@ -10,15 +10,15 @@
  */
 package org.eclipse.recommenders.tests.internal.analysis;
 
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createCGNodeMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createNewSiteMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockCGNodeGetClassHierarchy;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockNewSiteGetDeclaredType;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createCGNodeMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createNewSiteMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockCGNodeGetClassHierarchy;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockNewSiteGetDeclaredType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.recommenders.internal.analysis.selectors.BypassingAbstractClassesClassTargetSelector;
-import org.eclipse.recommenders.tests.analysis.BundleClassloaderBasedClassHierarchy;
+import org.eclipse.recommenders.tests.wala.BundleClassloaderBasedClassHierarchy;
 import org.junit.Test;
 
 import com.ibm.wala.classLoader.IClass;

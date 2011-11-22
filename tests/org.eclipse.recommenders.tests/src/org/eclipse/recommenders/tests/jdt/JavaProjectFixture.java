@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -48,7 +49,7 @@ public class JavaProjectFixture {
     }
 
     private void createParser() {
-        parser = ASTParser.newParser(AST.JLS4);
+        parser = ASTParser.newParser(AST.JLS3);
         // parser.setEnvironment(...) enables bindings resolving
         parser.setProject(javaProject); // enables bindings and IJavaElement resolving
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -58,28 +59,48 @@ public class JavaProjectFixture {
     private void createJavaProject(final IWorkspace workspace, final String projectName) {
         final IProject project = workspace.getRoot().getProject(projectName);
         final IWorkspaceRunnable populate = new IWorkspaceRunnable() {
+
             @Override
             public void run(final IProgressMonitor monitor) throws CoreException {
+                createAndOpenProject(project);
+
+                if (!hasJavaNature(project)) {
+                    addJavaNature(project);
+                    configureProjectClasspath();
+                }
+            }
+
+            private void createAndOpenProject(final IProject project) throws CoreException {
                 if (!project.exists()) {
                     project.create(null);
                 }
                 project.open(null);
+            }
+
+            private boolean hasJavaNature(final IProject project) throws CoreException {
                 final IProjectDescription description = project.getDescription();
-
                 final String[] natures = description.getNatureIds();
-                final String[] newNatures = ArrayUtils.add(natures, JavaCore.NATURE_ID);
-                description.setNatureIds(newNatures);
-                project.setDescription(description, null);
+                return ArrayUtils.contains(natures, JavaCore.NATURE_ID);
+            }
 
-                final IJavaProject javaProject = JavaCore.create(project);
-
+            private void configureProjectClasspath() throws JavaModelException {
                 final Set<IClasspathEntry> entries = newHashSet();
                 final IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
                 final IClasspathEntry defaultJREContainerEntry = JavaRuntime.getDefaultJREContainerEntry();
                 entries.addAll(asList(rawClasspath));
                 entries.add(defaultJREContainerEntry);
                 final IClasspathEntry[] entriesArray = entries.toArray(new IClasspathEntry[entries.size()]);
-                javaProject.setRawClasspath(entriesArray, monitor);
+                javaProject.setRawClasspath(entriesArray, null);
+            }
+
+            private void addJavaNature(final IProject project) throws CoreException {
+                final IProjectDescription description = project.getDescription();
+                final String[] natures = description.getNatureIds();
+                final String[] newNatures = ArrayUtils.add(natures, JavaCore.NATURE_ID);
+                description.setNatureIds(newNatures);
+                project.setDescription(description, null);
+                javaProject = JavaCore.create(project);
+
             }
         };
         try {

@@ -10,20 +10,20 @@
  */
 package org.eclipse.recommenders.tests.internal.analysis;
 
-import static org.eclipse.recommenders.tests.analysis.TestConstants.METHOD_CLASS_FOR_NAME;
-import static org.eclipse.recommenders.tests.analysis.TestConstants.METHOD_OBJECT_HASHCODE;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createCGNodeMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createCallGraphBuilderMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createCallSiteReferenceMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicStaticMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockCallSiteGetDeclaredTarget;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockCallSiteIsDispatch;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockCallSiteIsFixed;
+import static org.eclipse.recommenders.tests.wala.TestConstants.METHOD_CLASS_FOR_NAME;
+import static org.eclipse.recommenders.tests.wala.TestConstants.METHOD_OBJECT_HASHCODE;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createCGNodeMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createCallGraphBuilderMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createCallSiteReferenceMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicStaticMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockCallSiteGetDeclaredTarget;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockCallSiteIsDispatch;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockCallSiteIsFixed;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.recommenders.internal.analysis.selectors.RestrictedDeclaringClassMethodTargetSelector;
-import org.eclipse.recommenders.tests.analysis.BundleClassloaderBasedClassHierarchy;
+import org.eclipse.recommenders.tests.wala.BundleClassloaderBasedClassHierarchy;
 import org.junit.Test;
 
 import com.ibm.wala.classLoader.CallSiteReference;
@@ -60,7 +60,7 @@ public class RestrictedDeclaringClassMethodTargetSelectorTest {
         mockCallSiteGetDeclaredTarget(call, METHOD_OBJECT_HASHCODE);
         mockCallSiteIsDispatch(call, true);
         final CGNode cgNode = createCGNodeMock();
-        IMethod sourceMethod = createPublicStaticMethodMock();
+        final IMethod sourceMethod = createPublicStaticMethodMock();
         when(cgNode.getMethod()).thenReturn(sourceMethod);
         final IMethod actualCallTarget = sut.getCalleeTarget(cgNode, call, thisClass);
         assertEquals(METHOD_OBJECT_HASHCODE, actualCallTarget.getReference());

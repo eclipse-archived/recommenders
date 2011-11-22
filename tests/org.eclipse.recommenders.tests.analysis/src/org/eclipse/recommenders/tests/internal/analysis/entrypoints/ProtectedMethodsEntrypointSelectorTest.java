@@ -10,16 +10,16 @@
  */
 package org.eclipse.recommenders.tests.internal.analysis.entrypoints;
 
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createClassMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPrivateMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createProtectedMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createProtectedStaticMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicClinitMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicConstructorMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicFinalMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicNativeMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicStaticMethodMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassGetDeclareMethods;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createClassMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPrivateMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createProtectedMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createProtectedStaticMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicClinitMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicConstructorMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicFinalMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicNativeMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicStaticMethodMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassGetDeclareMethods;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;

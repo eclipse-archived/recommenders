@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.tests.internal.analysis.analyzers;
 
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createClassMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPrivateIntegerField;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createPublicStringField;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassGetDeclaredFields;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createClassMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPrivateIntegerField;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createPublicStringField;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassGetDeclaredFields;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;

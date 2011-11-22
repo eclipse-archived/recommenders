@@ -33,6 +33,7 @@
 		<module>org.eclipse.recommenders.extdoc.rcp</module>
 		<module>org.eclipse.recommenders.extdoc.rcp.providers</module>
 		<module>org.eclipse.recommenders.extdoc.rcp.selection</module>
+		<module>org.eclipse.recommenders.extdoc.rcp.selection2</module>
 		<module>org.eclipse.recommenders.extdoc.transport</module>
 		<module>org.eclipse.recommenders.extdoc.server.proxy</module>
 

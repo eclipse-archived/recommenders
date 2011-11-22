@@ -11,8 +11,8 @@
 package org.eclipse.recommenders.tests.internal.analysis.analyzers;
 
 import static org.eclipse.recommenders.internal.analysis.utils.WalaNameUtils.wala2recMethodName;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createEntryPointMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createMethod;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createEntryPointMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createMethod;
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.recommenders.internal.analysis.analyzers.IMethodAnalyzer;

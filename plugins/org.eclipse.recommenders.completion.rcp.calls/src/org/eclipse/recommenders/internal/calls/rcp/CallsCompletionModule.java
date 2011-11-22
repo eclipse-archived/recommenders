@@ -29,7 +29,6 @@ import org.eclipse.recommenders.internal.calls.rcp.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.calls.rcp.store.ProjectModelFacadeFactory;
 import org.eclipse.recommenders.internal.calls.rcp.store.ProjectServices;
 import org.eclipse.recommenders.internal.calls.rcp.store.RemoteResolverJobFactory;
-import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.inject.AbstractModule;
@@ -41,65 +40,59 @@ import com.google.inject.name.Names;
 
 public class CallsCompletionModule extends AbstractModule {
 
-	public static final String MODEL_VERSION = "0.4";
-	public static final String CALLS_STORE_LOCATION = "calls.store.location";
+    public static final String MODEL_VERSION = "0.4";
+    public static final String CALLS_STORE_LOCATION = "calls.store.location";
 
-	@Override
-	protected void configure() {
-		configurePreferences();
-		configureProjectServices();
-		configureArchiveModelStore();
-		configureRecommendationsViewPublisher();
-	}
+    @Override
+    protected void configure() {
+        configurePreferences();
+        configureProjectServices();
+        configureArchiveModelStore();
+    }
 
-	private void configurePreferences() {
-		final ClientConfiguration config = new ClientConfiguration();
-		final IPreferenceStore store = CallsCompletionPlugin.getDefault().getPreferenceStore();
-		store.addPropertyChangeListener(new ClientConfigurationPreferenceListener(config, store));
-		bind(ClientConfiguration.class).annotatedWith(UdcServer.class).toInstance(config);
-	}
+    private void configurePreferences() {
+        final ClientConfiguration config = new ClientConfiguration();
+        final IPreferenceStore store = CallsCompletionPlugin.getDefault().getPreferenceStore();
+        store.addPropertyChangeListener(new ClientConfigurationPreferenceListener(config, store));
+        bind(ClientConfiguration.class).annotatedWith(UdcServer.class).toInstance(config);
+    }
 
-	private void configureProjectServices() {
-		bind(ProjectServices.class).in(Scopes.SINGLETON);
-		final Multibinder<IRecommendersProjectLifeCycleListener> multibinder = Multibinder.newSetBinder(binder(),
-				IRecommendersProjectLifeCycleListener.class);
-		multibinder.addBinding().to(ProjectServices.class);
-	}
+    private void configureProjectServices() {
+        bind(ProjectServices.class).in(Scopes.SINGLETON);
+        final Multibinder<IRecommendersProjectLifeCycleListener> multibinder = Multibinder.newSetBinder(binder(),
+                IRecommendersProjectLifeCycleListener.class);
+        multibinder.addBinding().to(ProjectServices.class);
+    }
 
-	private void configureArchiveModelStore() {
-		bind(IModelArchiveStore.class).to(ModelArchiveStore.class).in(Scopes.SINGLETON);
+    private void configureArchiveModelStore() {
+        bind(IModelArchiveStore.class).to(ModelArchiveStore.class).in(Scopes.SINGLETON);
 
-		final IPath stateLocation = Platform.getStateLocation(FrameworkUtil.getBundle(getClass()));
-		bind(File.class).annotatedWith(Names.named(CALLS_STORE_LOCATION)).toInstance(
-				new File(stateLocation.toFile(), MODEL_VERSION + "/models/"));
+        final IPath stateLocation = Platform.getStateLocation(FrameworkUtil.getBundle(getClass()));
+        bind(File.class).annotatedWith(Names.named(CALLS_STORE_LOCATION)).toInstance(
+                new File(stateLocation.toFile(), MODEL_VERSION + "/models/"));
 
-		bind(File.class).annotatedWith(ClasspathDependencyStoreLocation.class).toInstance(
-				new File(stateLocation.toFile(), MODEL_VERSION + "/dependencyIndex/"));
-		bind(ClasspathDependencyStore.class).in(Scopes.SINGLETON);
-		install(new FactoryModuleBuilder().build(ProjectModelFacadeFactory.class));
-		install(new FactoryModuleBuilder().build(RemoteResolverJobFactory.class));
-	}
+        bind(File.class).annotatedWith(ClasspathDependencyStoreLocation.class).toInstance(
+                new File(stateLocation.toFile(), MODEL_VERSION + "/dependencyIndex/"));
+        bind(ClasspathDependencyStore.class).in(Scopes.SINGLETON);
+        install(new FactoryModuleBuilder().build(ProjectModelFacadeFactory.class));
+        install(new FactoryModuleBuilder().build(RemoteResolverJobFactory.class));
+    }
 
-	private void configureRecommendationsViewPublisher() {
-		Multibinder.newSetBinder(binder(), IRecommendationsViewContentProvider.class).addBinding()
-				.to(RecommendationsViewPublisherForCalls.class);
-	}
+    @BindingAnnotation
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    public static @interface ClasspathDependencyStoreLocation {
+    }
 
-	@BindingAnnotation
-	@Target(PARAMETER)
-	@Retention(RUNTIME)
-	public static @interface ClasspathDependencyStoreLocation {
-	}
+    @BindingAnnotation
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    public static @interface UdcServer {
+    }
 
-	@BindingAnnotation
-	@Target(PARAMETER)
-	@Retention(RUNTIME)
-	public static @interface UdcServer {
-	}
-
-	@BindingAnnotation
-	@Target(PARAMETER)
-	@Retention(RUNTIME)
-	public static @interface PreferenceStore {
-	}
+    @BindingAnnotation
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    public static @interface PreferenceStore {
+    }
 }

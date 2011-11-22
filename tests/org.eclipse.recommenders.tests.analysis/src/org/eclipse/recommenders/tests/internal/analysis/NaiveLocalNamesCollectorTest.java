@@ -19,8 +19,8 @@ import names.Names__Field_To_Temp_Local;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.recommenders.internal.analysis.utils.LocalNamesCollectorNaiveEdition;
-import org.eclipse.recommenders.tests.analysis.BundleClassloaderBasedClassHierarchy;
-import org.eclipse.recommenders.tests.analysis.WalaTestUtils;
+import org.eclipse.recommenders.tests.wala.BundleClassloaderBasedClassHierarchy;
+import org.eclipse.recommenders.tests.wala.WalaTestUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 

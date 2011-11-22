@@ -11,8 +11,8 @@
 package org.eclipse.recommenders.tests.internal.analysis.analyzers;
 
 import static org.eclipse.recommenders.internal.analysis.utils.WalaNameUtils.wala2recTypeName;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.createClassMock;
-import static org.eclipse.recommenders.tests.analysis.WalaMockUtils.mockClassGetSuperclass;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.createClassMock;
+import static org.eclipse.recommenders.tests.wala.WalaMockUtils.mockClassGetSuperclass;
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.recommenders.internal.analysis.analyzers.DeclaredSuperclassClassAnalyzer;

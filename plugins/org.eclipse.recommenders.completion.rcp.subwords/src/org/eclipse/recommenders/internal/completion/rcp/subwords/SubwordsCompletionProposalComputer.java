@@ -27,8 +27,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
     private JavaContentAssistInvocationContext ctx;
 
     @Override
-    public List<?> computeCompletionProposals(final ContentAssistInvocationContext context,
-            final IProgressMonitor monitor) {
+    public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         ctx = (JavaContentAssistInvocationContext) context;
         return findSubwordMatchingProposals();
     }
@@ -64,8 +63,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
     }
 
     @Override
-    public List<?> computeContextInformation(final ContentAssistInvocationContext context,
-            final IProgressMonitor monitor) {
+    public List computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         return Collections.emptyList();
     }
 

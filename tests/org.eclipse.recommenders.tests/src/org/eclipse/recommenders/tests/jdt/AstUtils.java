@@ -25,7 +25,7 @@ public class AstUtils {
     public static String MARKER = "¥";
 
     public static CompilationUnit createAst(final String content) {
-        final ASTParser p = ASTParser.newParser(AST.JLS4);
+        final ASTParser p = ASTParser.newParser(AST.JLS3);
         p.setKind(ASTParser.K_COMPILATION_UNIT);
         p.setSource(content.toCharArray());
         final CompilationUnit cu = (CompilationUnit) p.createAST(null);

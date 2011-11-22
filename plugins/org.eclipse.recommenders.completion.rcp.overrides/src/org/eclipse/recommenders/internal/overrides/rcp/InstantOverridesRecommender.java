@@ -13,22 +13,17 @@ package org.eclipse.recommenders.internal.overrides.rcp;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.internal.overrides.rcp.net.ClassOverridesNetwork;
-import org.eclipse.recommenders.internal.rcp.views.recommendations.IRecommendationsViewContentProvider;
-import org.eclipse.recommenders.rcp.IRecommendation;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 
-public class InstantOverridesRecommender implements IRecommendationsViewContentProvider {
+public class InstantOverridesRecommender {
     private final double MIN_PROBABILITY_THRESHOLD = 0.1d;
 
     private final OverridesModelStore modelStore;
@@ -81,12 +76,4 @@ public class InstantOverridesRecommender implements IRecommendationsViewContentP
         return res;
     }
 
-    @Override
-    public void attachRecommendations(final ICompilationUnit jdtCompilationUnit,
-            final CompilationUnit recCompilationUnit, final Multimap<Object, IRecommendation> recommendations) {
-        for (final TypeDeclaration type : recCompilationUnit.allTypes()) {
-            final List<OverridesRecommendation> typeRecommendations = createRecommendations(type);
-            recommendations.putAll(type, typeRecommendations);
-        }
-    }
 }
