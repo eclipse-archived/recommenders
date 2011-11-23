@@ -16,23 +16,63 @@
 				<configuration>
 					<dependencies combine.children="append">
 						<dependency>
-							<type>p2-installable-unit</type>
+							<type>eclipse-plugin</type>
 							<artifactId>org.eclipse.jdt.launching</artifactId>
 						</dependency>
 						<dependency>
-							<type>p2-installable-unit</type>
+							<type>eclipse-plugin</type>
 							<artifactId>org.eclipse.jdt.core</artifactId>
-						</dependency>
-						<!-- this is required to run under mac osx: does it run with the same settings under linux/win too? -->
-						<dependency>
-							<type>p2-installable-unit</type>
-							<artifactId>org.eclipse.jdt.launching.macosx</artifactId>
-							<optional>true</optional>
 						</dependency>
 					</dependencies>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
+	<!-- special profiles for testing on mac and "all other" platforms -->
+	<profiles>
+		<profile>
+			<id>sun-jvm</id>
+			<activation>
+				<property>
+					<name>java.vendor.url</name>
+					<value>http://java.sun.com/</value>
+				</property>
+			</activation>
+			<properties>
+				<tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
+			</properties>
+		</profile>
+		<profile>
+			<id>osx</id>
+			<activation>
+				<property>
+					<name>java.vendor.url</name>
+					<value>http://www.apple.com/</value>
+				</property>
+			</activation>
+			<properties>
+				<tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.test.jvmArgs>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.eclipse.tycho</groupId>
+							<artifactId>tycho-surefire-plugin</artifactId>
+							<version>${tycho-version}</version>
+							<configuration>
+								<dependencies combine.children="append">
+									<dependency>
+										<artifactId>org.eclipse.jdt.launching.macosx</artifactId>
+										<version>3.2.100</version>
+										<type>eclipse-plugin</type>
+									</dependency>
+								</dependencies>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
 </project>

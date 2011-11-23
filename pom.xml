@@ -26,52 +26,7 @@
 		<build-alias>b000</build-alias>
 	</properties>
 
-	<!-- special profiles for testing on mac and "all other" platforms -->
-	<profiles>
-		<profile>
-			<id>sun-jvm</id>
-			<activation>
-				<property>
-					<name>java.vendor.url</name>
-					<value>http://java.sun.com/</value>
-				</property>
-			</activation>
-			<properties>
-				<tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
-			</properties>
-		</profile>
-		<profile>
-			<id>osx</id>
-			<activation>
-				<property>
-					<name>java.vendor.url</name>
-					<value>http://www.apple.com/</value>
-				</property>
-			</activation>
-			<properties>
-				<tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.test.jvmArgs>
-			</properties>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.eclipse.tycho</groupId>
-							<artifactId>tycho-surefire-plugin</artifactId>
-							<version>${tycho-version}</version>
-							<configuration>
-								<dependencies combine.children="append">
-									<dependency>
-										<artifactId>org.eclipse.jdt.launching.macosx</artifactId>
-										<!-- version>3.2.100</version> <type>eclipse-plugin</type -->
-									</dependency>
-								</dependencies>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-	</profiles>
+
 
 	<modules>
 		<module>etc/licenses</module>
