@@ -58,12 +58,11 @@
 							<groupId>org.eclipse.tycho</groupId>
 							<artifactId>tycho-surefire-plugin</artifactId>
 							<version>${tycho-version}</version>
-							<configuration combine.children="append">
-								<dependencies>
+							<configuration>
+								<dependencies combine.children="append">
 									<dependency>
 										<artifactId>org.eclipse.jdt.launching.macosx</artifactId>
-										<version>3.2.100</version>
-										<type>eclipse-plugin</type>
+										<!-- version>3.2.100</version> <type>eclipse-plugin</type -->
 									</dependency>
 								</dependencies>
 							</configuration>
