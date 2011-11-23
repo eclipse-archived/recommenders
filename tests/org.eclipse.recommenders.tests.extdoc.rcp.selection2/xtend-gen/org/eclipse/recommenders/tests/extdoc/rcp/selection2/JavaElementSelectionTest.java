@@ -16,9 +16,11 @@ import org.eclipse.recommenders.tests.extdoc.rcp.selection2.XtendUtils;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
+import org.eclipse.xtext.xbase.lib.IntegerExtensions;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xtend2.lib.StringConcatenation;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("all")
@@ -110,6 +112,13 @@ public class JavaElementSelectionTest {
       List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo, _operator_mappedTo_1, _operator_mappedTo_2);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
+  }
+  
+  @Test
+  @Ignore("Only for debugging the ui")
+  public void waitAlongTime() throws InterruptedException {
+    int _operator_multiply = IntegerExtensions.operator_multiply(((Integer)120), ((Integer)1000));
+    Thread.sleep(_operator_multiply);
   }
   
   public void exerciseAndVerify(final StringConcatenation code, final List<String> expected) {

@@ -26,14 +26,63 @@
 		<build-alias>b000</build-alias>
 	</properties>
 
+	<!-- special profiles for testing on mac and "all other" platforms -->
+	<profiles>
+		<profile>
+			<id>sun-jvm</id>
+			<activation>
+				<property>
+					<name>java.vendor.url</name>
+					<value>http://java.sun.com/</value>
+				</property>
+			</activation>
+			<properties>
+				<tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
+			</properties>
+		</profile>
+		<profile>
+			<id>osx</id>
+			<activation>
+				<property>
+					<name>java.vendor.url</name>
+					<value>http://www.apple.com/</value>
+				</property>
+			</activation>
+			<properties>
+				<tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.test.jvmArgs>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.eclipse.tycho</groupId>
+							<artifactId>tycho-surefire-plugin</artifactId>
+							<version>${tycho-version}</version>
+							<configuration>
+								<dependencies>
+									<dependency>
+										<artifactId>org.eclipse.jdt.launching.macosx</artifactId>
+										<version>3.2.100</version>
+										<type>eclipse-plugin</type>
+									</dependency>
+								</dependencies>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
 
 	<modules>
 		<module>etc/licenses</module>
+		<module>etc/targets</module>
 		<module>plugins</module>
 		<module>tests</module>
 		<module>features</module>
 		<module>dist</module>
 	</modules>
+
 
 	<build>
 		<!-- MB: Why do we need this here (and not in pluginManagement)? Because of the P2 repos? -->
@@ -64,44 +113,21 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<!-- we build code recommenders using target platforms only. We have to keep the target platform aynway to work with 
+						it inside Eclipse. This way, we have to ensure consistency. As a side effect, the build seems to speed up since the update 
+						sites are not queried on every build. -->
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>target-platform-configuration</artifactId>
 					<version>${tycho-version}</version>
 					<configuration>
-						<resolver>p2</resolver>
-						<ignoreTychoRepositories>false</ignoreTychoRepositories>
-						<environments>
-							<environment>
-								<os>linux</os>
-								<ws>gtk</ws>
-								<arch>x86</arch>
-							</environment>
-							<environment>
-								<os>linux</os>
-								<ws>gtk</ws>
-								<arch>x86_64</arch>
-							</environment>
-							<environment>
-								<os>win32</os>
-								<ws>win32</ws>
-								<arch>x86</arch>
-							</environment>
-							<environment>
-								<os>win32</os>
-								<ws>win32</ws>
-								<arch>x86_64</arch>
-							</environment>
-							<environment>
-								<os>macosx</os>
-								<ws>cocoa</ws>
-								<arch>x86</arch>
-							</environment>
-							<environment>
-								<os>macosx</os>
-								<ws>cocoa</ws>
-								<arch>x86_64</arch>
-							</environment>
-						</environments>
+						<target>
+							<artifact>
+								<groupId>org.eclipse.recommenders</groupId>
+								<artifactId>targets</artifactId>
+								<version>0.4.0-SNAPSHOT</version>
+								<classifier>e36</classifier>
+							</artifact>
+						</target>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -131,6 +157,9 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
+					<configuration>
+						<argLine>${tycho.test.jvmArgs}</argLine>
+					</configuration>
 				</plugin>
 				<plugin>
 					<!-- http://mdwhatever.free.fr/index.php/2011/09/quality-analysis-on-eclipse-plugins-with-tycho-sonar-jacoco-and-swtbot/ -->
@@ -227,32 +256,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>helios</id>
-			<layout>p2</layout>
-			<url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/helios/</url>
-		</repository>
-		<repository>
-			<id>recommenders-3rd</id>
-			<layout>p2</layout>
-			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head/</url>
-		</repository>
-		<repository>
-			<id>indigo</id>
-			<layout>p2</layout>
-			<url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/indigo/</url>
-		</repository>
-		<repository>
-			<id>xtext</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/</url>
-		</repository>
-		
-		
-		<!-- repository> <id>orbit</id> <layout>p2</layout> <url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/orbit /</url> 
-			</repository -->
-	</repositories>
-
 </project>

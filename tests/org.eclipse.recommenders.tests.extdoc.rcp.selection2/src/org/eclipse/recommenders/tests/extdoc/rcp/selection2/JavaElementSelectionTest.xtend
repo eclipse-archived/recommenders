@@ -11,6 +11,8 @@ import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.XtendUtils.*
 import org.eclipse.xtext.xtend2.lib.StringConcatenation
 import java.util.List
 import static junit.framework.Assert.*
+import org.eclipse.recommenders.utils.IGenericFilter$Decision
+import org.junit.Ignore
 
 class JavaElementSelectionTest {
 
@@ -90,7 +92,11 @@ class JavaElementSelectionTest {
 		exerciseAndVerify(code, expected);
 	}
 
-	
+	@Test
+	@Ignore("Only for debugging the ui")
+	def void waitAlongTime(){
+		Thread::sleep(120*1000)
+	}
 	def void exerciseAndVerify(StringConcatenation code, List<String> expected){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.parseWithMarkers(code.toString, "MyClass.java")

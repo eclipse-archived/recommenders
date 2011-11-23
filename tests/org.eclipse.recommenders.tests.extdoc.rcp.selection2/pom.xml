@@ -10,33 +10,9 @@
 	<packaging>eclipse-test-plugin</packaging>
 	<build>
 		<plugins>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>xtend-gen</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
-				<configuration>
-					<useUIHarness>false</useUIHarness>
-					<useUIThread>false</useUIThread>
-					<appArgLine>-XstartOnFirstThread</appArgLine>
-					<product>org.eclipse.platform.ide</product>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
