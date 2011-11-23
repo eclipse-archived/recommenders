@@ -38,7 +38,7 @@ import com.google.common.collect.Sets;
 
 public class JavaProjectFixture {
 
-    public static String MARKER = "¥";
+    public static String MARKER = AstUtils.MARKER;
 
     private IJavaProject javaProject;
     private ASTParser parser;
@@ -113,7 +113,7 @@ public class JavaProjectFixture {
 
     /**
      * @param fileName
-     *            should match the name of the primary type given in the content, i.e., if content = "class X {}" È
+     *            should match the name of the primary type given in the content, i.e., if content = "class X {}" ï¿½
      *            unitName = "X.java".
      */
     public CompilationUnit parse(final String content, final String fileName) {

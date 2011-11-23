@@ -18,8 +18,8 @@ class JavaSelectionLocationTest {
 	@Test
 	def void testBeforePackageDeclaration () {
 		val code = ''' 
-		¥pack¥age org.¥eclipse.recommenders.extdoc.rcp.selection2;¥
-		imp¥ort List;
+		â€¢packâ€¢age org.â€¢eclipse.recommenders.extdoc.rcp.selection2;â€¢
+		impâ€¢ort List;
 		class X{}
 		'''
 		val expected = newListWithFrequency(
@@ -31,13 +31,13 @@ class JavaSelectionLocationTest {
 	
 	@Test
 	def void testPrimaryTypeDeclaration () {
-		val code = '''¥pu¥blic¥ ¥cl¥ass¥ ¥My¥class¥ ¥ex¥tends¥ ¥Supe¥rclass¥ ¥imp¥lements¥ ¥Interfac¥e1¥ {}'''
+		val code = '''â€¢puâ€¢blicâ€¢ â€¢clâ€¢assâ€¢ â€¢Myâ€¢classâ€¢ â€¢exâ€¢tendsâ€¢ â€¢Supeâ€¢rclassâ€¢ â€¢impâ€¢lementsâ€¢ â€¢Interfacâ€¢e1â€¢ {}'''
 		val expected = newListWithFrequency(
-			TYPE_DECLARATION -> 9,				// ¥pu¥blic¥ ¥cl¥ass¥ ¥My¥class¥
-			TYPE_DECLARATION -> 3, 				// ¥ex¥tends¥ 
-			TYPE_DECLARATION_EXTENDS -> 3,		// ¥Supe¥rclass¥
-			TYPE_DECLARATION -> 3, 				// ¥imp¥lements¥ 
-			TYPE_DECLARATION_IMPLEMENTS -> 3	// ¥Interfac¥e1¥
+			TYPE_DECLARATION -> 9,				// â€¢puâ€¢blicâ€¢ â€¢clâ€¢assâ€¢ â€¢Myâ€¢classâ€¢
+			TYPE_DECLARATION -> 3, 				// â€¢exâ€¢tendsâ€¢ 
+			TYPE_DECLARATION_EXTENDS -> 3,		// â€¢Supeâ€¢rclassâ€¢
+			TYPE_DECLARATION -> 3, 				// â€¢impâ€¢lementsâ€¢ 
+			TYPE_DECLARATION_IMPLEMENTS -> 3	// â€¢Interfacâ€¢e1â€¢
 		)
 		exerciseAndVerify(code, expected);
 	}
@@ -49,7 +49,7 @@ class JavaSelectionLocationTest {
 	def void testNestedTypeDeclaration () {
 		val code = '''
 		class Myclass {
-			class MyClas¥s2 impl¥ements L¥istener {
+			class MyClasâ€¢s2 implâ€¢ements Lâ€¢istener {
 				public void run(){}
 			};
 		}'''
@@ -66,7 +66,7 @@ class JavaSelectionLocationTest {
 	def void testAnonymousTypeDeclarationInFieldInitializer () {
 		val code = '''
 		class Myclass {
-			Class2 c = new L¥istener(){
+			Class2 c = new Lâ€¢istener(){
 				public void run(){}
 			};
 			
@@ -84,7 +84,7 @@ class JavaSelectionLocationTest {
 		val code = '''
 		class Myclass {
 			void m(){
-				Listener l = new L¥istener(){
+				Listener l = new Lâ€¢istener(){
 					public void run(){}
 				};
 			}
@@ -101,17 +101,17 @@ class JavaSelectionLocationTest {
 	
 		val code = '''
 		class X {
-			p¥ublic stat¥ic St¥ring ¥  f¥ield¥ =¥ ¥new¥ St¥ring("¥")¥.¥toStri¥ng(¥)¥; ¥
+			pâ€¢ublic statâ€¢ic Stâ€¢ring â€¢  fâ€¢ieldâ€¢ =â€¢ â€¢newâ€¢ Stâ€¢ring("â€¢")â€¢.â€¢toStriâ€¢ng(â€¢)â€¢; â€¢
 		}'''
 	
 		val expected = newListWithFrequency(
-			FIELD_DECLARATION -> 3, // p¥ublic stat¥ic St¥ring
-			FIELD_DECLARATION -> 1, // ..String ¥  field...
-			FIELD_DECLARATION -> 2, // f¥ield¥
-			FIELD_DECLARATION_INITIALIZER -> 1, // =¥
-			FIELD_DECLARATION_INITIALIZER -> 4, // ¥new¥ St¥ring("¥")
-			FIELD_DECLARATION_INITIALIZER -> 5, // ¥.¥toStri¥ng(¥)¥
-			TYPE_DECLARATION -> 1 // ; ¥
+			FIELD_DECLARATION -> 3, // pâ€¢ublic statâ€¢ic Stâ€¢ring
+			FIELD_DECLARATION -> 1, // ..String â€¢  field...
+			FIELD_DECLARATION -> 2, // fâ€¢ieldâ€¢
+			FIELD_DECLARATION_INITIALIZER -> 1, // =â€¢
+			FIELD_DECLARATION_INITIALIZER -> 4, // â€¢newâ€¢ Stâ€¢ring("â€¢")
+			FIELD_DECLARATION_INITIALIZER -> 5, // â€¢.â€¢toStriâ€¢ng(â€¢)â€¢
+			TYPE_DECLARATION -> 1 // ; â€¢
 		)
 		exerciseAndVerify(code, expected);
 	}
@@ -120,17 +120,17 @@ class JavaSelectionLocationTest {
 	def void testMethodDeclaration () {
 		val code = '''
 		class X {
-			¥pu¥blic¥ ¥Stri¥ng¥ ¥metho¥d¥(¥St¥ring¥ a¥rg0¥, S¥tring ¥arg1) th¥rows ¥IllegalA¥rgumentEception¥ {
+			â€¢puâ€¢blicâ€¢ â€¢Striâ€¢ngâ€¢ â€¢methoâ€¢dâ€¢(â€¢Stâ€¢ringâ€¢ aâ€¢rg0â€¢, Sâ€¢tring â€¢arg1) thâ€¢rows â€¢IllegalAâ€¢rgumentEceptionâ€¢ {
 			}
 		}'''
 		
 		val expected = newListWithFrequency(
-			METHOD_DECLARATION -> 3,			// ¥pu¥blic¥
-			METHOD_DECLARATION_RETURN -> 3,		// ¥Stri¥ng¥
-			METHOD_DECLARATION -> 3,			// ¥metho¥d¥
-			METHOD_DECLARATION_PARAMETER -> 7,	// (¥St¥ring¥ a¥rg0¥, S¥tring ¥arg1)
-			METHOD_DECLARATION -> 1,			//  th¥rows
-			METHOD_DECLARATION_THROWS -> 3		// ¥IllegalA¥rgumentEception¥
+			METHOD_DECLARATION -> 3,			// â€¢puâ€¢blicâ€¢
+			METHOD_DECLARATION_RETURN -> 3,		// â€¢Striâ€¢ngâ€¢
+			METHOD_DECLARATION -> 3,			// â€¢methoâ€¢dâ€¢
+			METHOD_DECLARATION_PARAMETER -> 7,	// (â€¢Stâ€¢ringâ€¢ aâ€¢rg0â€¢, Sâ€¢tring â€¢arg1)
+			METHOD_DECLARATION -> 1,			//  thâ€¢rows
+			METHOD_DECLARATION_THROWS -> 3		// â€¢IllegalAâ€¢rgumentEceptionâ€¢
 		)
 		exerciseAndVerify(code, expected);
 	}
@@ -140,12 +140,12 @@ class JavaSelectionLocationTest {
 		val code = '''
 		class X {
 			
-			 String method(String arg0) throws Exception {¥
-				S¥tring ¥s¥2 = arg0.to¥String();
-				if(s2.is¥Empty()){
-					// c¥omment
-					s2 = s2¥.append("s"¥)
-				}¥
+			 String method(String arg0) throws Exception {â€¢
+				Sâ€¢tring â€¢sâ€¢2 = arg0.toâ€¢String();
+				if(s2.isâ€¢Empty()){
+					// câ€¢omment
+					s2 = s2â€¢.append("s"â€¢)
+				}â€¢
 			}
 		}'''
 

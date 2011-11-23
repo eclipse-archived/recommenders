@@ -20,7 +20,7 @@ class JavaElementSelectionTest {
 	def void testTypeSelectionsInMethodBody() {
 		val code = '''
 		class Myclass {
-			Str¥ing s = new St¥ring("");
+			Strâ€¢ing s = new Stâ€¢ring("");
 		}'''
 
 		val expected = newListWithFrequency(
@@ -33,7 +33,7 @@ class JavaElementSelectionTest {
 	@Test
 	def void testTypeSelectionInTypeDeclaration() {
 		// note: this does not work since classpath cannot resolve this!
-		val code = '''class Myc¥lass {}'''
+		val code = '''class Mycâ€¢lass {}'''
 
 		val expected = newListWithFrequency(
 			null as String -> 1 
@@ -46,7 +46,7 @@ class JavaElementSelectionTest {
 
 		val code = '''
 		import java.util.*;
-		class Myclass extends L¥ist {}
+		class Myclass extends Lâ€¢ist {}
 		'''
 
 		val expected = newListWithFrequency(
@@ -60,7 +60,7 @@ class JavaElementSelectionTest {
 	def void testTypeSelectionInMethodBody () {
 		val code = '''
 		class Myclass {
-			Str¥ing s = new St¥ring("");
+			Strâ€¢ing s = new Stâ€¢ring("");
 		}'''
 
 		val expected = newListWithFrequency(
@@ -76,9 +76,9 @@ class JavaElementSelectionTest {
 		val code = '''
 		class Myclass {
 			void test(String s1){
-				String s2 = s1.co¥ncat("hello");
-				s2.hashCode¥();
-				s1.¥equals(s2);
+				String s2 = s1.coâ€¢ncat("hello");
+				s2.hashCodeâ€¢();
+				s1.â€¢equals(s2);
 			}
 			
 		}'''
