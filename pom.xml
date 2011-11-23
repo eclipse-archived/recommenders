@@ -58,7 +58,7 @@
 							<groupId>org.eclipse.tycho</groupId>
 							<artifactId>tycho-surefire-plugin</artifactId>
 							<version>${tycho-version}</version>
-							<configuration>
+							<configuration combine.children="append">
 								<dependencies>
 									<dependency>
 										<artifactId>org.eclipse.jdt.launching.macosx</artifactId>

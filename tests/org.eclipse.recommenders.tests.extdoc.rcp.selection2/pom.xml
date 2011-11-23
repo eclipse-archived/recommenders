@@ -13,6 +13,23 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
+				<configuration>
+					<dependencies>
+						<dependency>
+							<type>p2-installable-unit</type>
+							<artifactId>org.eclipse.jdt.launching</artifactId>
+						</dependency>
+						<dependency>
+							<type>p2-installable-unit</type>
+							<artifactId>org.eclipse.jdt.core</artifactId>
+						</dependency>
+						<!-- this is required to run under mac osx: does it run with the same settings under linux/win too? -->
+						<dependency>
+							<type>p2-installable-unit</type>
+							<artifactId>org.eclipse.jdt.launching.macosx</artifactId>
+						</dependency>
+					</dependencies>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
