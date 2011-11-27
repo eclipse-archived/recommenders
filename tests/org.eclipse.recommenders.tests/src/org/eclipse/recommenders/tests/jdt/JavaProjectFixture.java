@@ -12,6 +12,7 @@ package org.eclipse.recommenders.tests.jdt;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
+import static org.eclipse.recommenders.tests.jdt.AstUtils.MARKER;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
@@ -37,8 +38,6 @@ import org.eclipse.recommenders.utils.Tuple;
 import com.google.common.collect.Sets;
 
 public class JavaProjectFixture {
-
-    public static String MARKER = AstUtils.MARKER;
 
     private IJavaProject javaProject;
     private ASTParser parser;

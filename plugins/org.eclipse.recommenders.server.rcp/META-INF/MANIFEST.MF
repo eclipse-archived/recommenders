@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Self-hosting Startup
+Bundle-Name: Code Recommenders: Self-hosting Startup (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.server.rcp;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Activator: org.eclipse.recommenders.rcp.selfhosting.Activator
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.core.runtime,

@@ -2,21 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Extdoc Transport (Incubation) (Experimental)
 Bundle-SymbolicName: org.eclipse.recommenders.extdoc.transport;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.eclipse.ui,
- org.eclipse.jdt.core,
- org.eclipse.recommenders.utils,
- com.google.guava,
- com.sun.jersey.client,
- org.eclipse.recommenders.utils.gson,
- org.eclipse.recommenders.webclient,
- org.eclipse.recommenders.extdoc.rcp,
- org.eclipse.recommenders.utils.rcp,
- org.eclipse.core.runtime,
- org.apache.commons.lang3,
- org.eclipse.recommenders.injection
 Export-Package: org.eclipse.recommenders.extdoc.transport;
   uses:="org.eclipse.jface.preference,
    org.eclipse.recommenders.server.extdoc.types,
@@ -29,3 +16,16 @@ Export-Package: org.eclipse.recommenders.extdoc.transport;
    org.eclipse.recommenders.internal.server.extdoc",
  org.eclipse.recommenders.extdoc.transport.types;uses:="org.eclipse.recommenders.rcp.extdoc.features,org.eclipse.recommenders.rcp.extdoc,org.eclipse.recommenders.commons.utils.names",
  org.eclipse.recommenders.internal.extdoc.transport;x-internal:=true
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.jdt.core,
+ org.eclipse.recommenders.utils,
+ com.google.guava,
+ com.sun.jersey.client,
+ org.eclipse.recommenders.utils.gson,
+ org.eclipse.recommenders.webclient,
+ org.eclipse.recommenders.extdoc.rcp,
+ org.eclipse.recommenders.utils.rcp,
+ org.eclipse.core.runtime,
+ org.apache.commons.lang3,
+ org.eclipse.recommenders.injection
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

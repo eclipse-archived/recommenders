@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tests for Templates Completion
+Bundle-Name: Code Recommenders: Tests for Templates Completion (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.extdoc.rcp.providers;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.extdoc.rcp.providers;bundle-version="0.1.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.recommenders.tests.internal.extdoc.rcp.providers;x-internal:=true
 Require-Bundle: org.junit4,
  org.eclipse.recommenders.tests.extdoc,
  org.mockito
-Export-Package: org.eclipse.recommenders.tests.internal.extdoc.rcp.providers;x-internal:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

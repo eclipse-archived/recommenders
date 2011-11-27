@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Recommenders Server Product" uid="org.eclipse.recommenders.server" id="dummy" version="0.4.0.qualifier" useFeatures="true" includeLaunchers="false">
+<product name="Recommenders Server Product" uid="org.eclipse.recommenders.server" id="dummy" version="0.5.0.qualifier" useFeatures="true" includeLaunchers="false">
 
    <configIni use="">
    </configIni>
@@ -11,10 +11,10 @@
 
    <features>
       <feature id="org.eclipse.recommenders.3rd.feature"/>
-      <feature id="org.eclipse.recommenders.feature.server" version="0.4.0.qualifier"/>
-      <feature id="org.eclipse.recommenders.feature.server.rootfiles" version="0.4.0.qualifier"/>
-      <feature id="org.eclipse.recommenders.feature.codesearch.server" version="0.4.0.qualifier"/>
-      <feature id="org.eclipse.recommenders.feature.udc.server" version="0.4.0.qualifier"/>
+      <feature id="org.eclipse.recommenders.feature.server"/>
+      <feature id="org.eclipse.recommenders.feature.server.rootfiles"/>
+      <feature id="org.eclipse.recommenders.feature.codesearch.server"/>
+      <feature id="org.eclipse.recommenders.feature.udc.server"/>
    </features>
 
    <configurations>

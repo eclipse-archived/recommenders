@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tests for Templates Completion
+Bundle-Name: Code Recommenders: Tests for Templates Completion (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.completion.rcp.templates
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.completion.rcp.templates
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4,
  org.eclipse.jdt.ui,
  org.eclipse.jdt.core,
@@ -16,3 +15,4 @@ Require-Bundle: org.junit4,
  javax.inject,
  org.objenesis,
  org.mockito
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

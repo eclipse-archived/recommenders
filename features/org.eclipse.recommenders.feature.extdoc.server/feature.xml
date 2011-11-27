@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.recommenders.feature.extdoc.server"
-      label="Code Recommenders: ExtDoc CouchDB Proxy Server"
-      version="0.3.0.qualifier">
+      label="Code Recommenders: ExtDoc CouchDB Proxy Server (Incubation)"
+      version="0.5.0.qualifier">
 
    <description url="http://www.eclipse.org/recommenders/">
       %description

@@ -2,9 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: RCP Utils (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.utils.rcp;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
+Bundle-Activator: org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin
 Bundle-Vendor: Eclipse Code Recommenders
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.recommenders.rcp.utils,
+ org.eclipse.recommenders.rcp.utils.ast,
+ org.eclipse.recommenders.rcp.utils.internal
 Require-Bundle: com.google.guava,
  org.eclipse.recommenders.utils,
  org.eclipse.jdt.core,
@@ -18,8 +21,5 @@ Require-Bundle: com.google.guava,
  org.eclipse.ui.editors,
  org.apache.log4j,
  org.eclipse.recommenders.injection
-Export-Package: org.eclipse.recommenders.rcp.utils,
- org.eclipse.recommenders.rcp.utils.ast,
- org.eclipse.recommenders.rcp.utils.internal
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin

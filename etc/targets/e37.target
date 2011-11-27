@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders Development Environment" sequenceNumber="43">
+<target name="Code Recommenders Development Environment" sequenceNumber="46">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtbot.forms.feature.group" version="2.0.5.20111003_1754-3676ac8-dev-e36"/>
@@ -12,18 +12,23 @@
 <repository location="http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="3.7.1.M20110909-1335"/>
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.7.1.v20110913-1526"/>
-<unit id="org.eclipse.mylyn.wikitext.sdk.feature.group" version="1.5.2.v20110908-0706"/>
-<unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.0.1.v201108020636"/>
-<unit id="org.eclipse.xtext.sdk.feature.group" version="2.0.1.v201108020636"/>
-<repository location="http://vandyk.st.informatik.tu-darmstadt.de/mirrors/indigo"/>
-</location>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201111131155"/>
 <unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201111131155"/>
 <unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201111131155"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="3.7.1.M20110909-1335"/>
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.7.1.v20110913-1526"/>
+<unit id="org.eclipse.mylyn.wikitext.sdk.feature.group" version="1.5.2.v20110908-0706"/>
+<repository location="http://vandyk.st.informatik.tu-darmstadt.de/mirrors/indigo"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.xpand.sdk.feature.group" version="1.1.1.v201108020519"/>
+<unit id="org.eclipse.xtend.feature.group" version="1.1.1.v201108020519"/>
+<unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.1.1.v201111141332"/>
+<unit id="org.eclipse.xtext.sdk.feature.group" version="2.1.1.v201111141332"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>

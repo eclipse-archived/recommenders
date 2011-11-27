@@ -2,8 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Usage Data Collector Server (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.udc.server;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Activator: org.eclipse.recommenders.internal.server.udc.wiring.BundleActivator
+Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.internal.server.udc,
+ org.eclipse.recommenders.internal.server.udc.wiring,
+ org.eclipse.recommenders.server.udc.resources
 Require-Bundle: org.eclipse.core.runtime,
  com.sun.jersey.server,
  org.eclipse.recommenders.injection,
@@ -18,9 +22,5 @@ Require-Bundle: org.eclipse.core.runtime,
  javax.servlet,
  org.slf4j.api,
  org.eclipse.osgi.services
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Vendor: Eclipse Code Recommenders
-Export-Package: org.eclipse.recommenders.internal.server.udc,
- org.eclipse.recommenders.internal.server.udc.wiring,
- org.eclipse.recommenders.server.udc.resources
+Bundle-ActivationPolicy: lazy

@@ -2,8 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Extdoc Providers (Incubation) (Experimental)
 Bundle-SymbolicName: org.eclipse.recommenders.extdoc.rcp.providers;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.internal.extdoc.rcp.providers;x-internal:=true,
+ org.eclipse.recommenders.internal.extdoc.rcp.providers.swt;x-internal:=true,
+ org.eclipse.recommenders.internal.extdoc.rcp.providers.utils;x-internal:=true
 Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui,
  org.eclipse.jdt.core,
@@ -26,8 +29,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.injection,
  org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.recommenders.internal.extdoc.rcp.providers;x-internal:=true,
- org.eclipse.recommenders.internal.extdoc.rcp.providers.swt;x-internal:=true,
- org.eclipse.recommenders.internal.extdoc.rcp.providers.utils;x-internal:=true
-Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui.forms.widgets
+Bundle-ActivationPolicy: lazy

@@ -2,22 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: RCP ExtDoc Client (Incubation) (Experimental)
 Bundle-SymbolicName: org.eclipse.recommenders.extdoc.rcp;singleton:=true
-Bundle-Version: 0.4.0.qualifier
-Implementation-Version: 0.2.0
-Bundle-Vendor: Eclipse Code Recommenders
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.eclipse.jdt.core,
- org.eclipse.jdt.ui,
- org.eclipse.recommenders.utils,
- org.eclipse.recommenders.extdoc.rcp.selection,
- org.eclipse.recommenders.utils.rcp,
- com.google.guava,
- org.eclipse.jface.text,
- org.eclipse.recommenders.injection,
- org.eclipse.ui.editors
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 0.5.0.qualifier
+Bundle-ClassPath: .
 Bundle-Activator: org.eclipse.recommenders.extdoc.rcp.ExtDocPlugin
+Bundle-Vendor: Eclipse Code Recommenders
 Export-Package: org.eclipse.recommenders.extdoc.rcp;
   uses:="org.eclipse.core.runtime,
    org.eclipse.jdt.internal.ui.javaeditor,
@@ -36,5 +24,17 @@ Export-Package: org.eclipse.recommenders.extdoc.rcp;
  org.eclipse.recommenders.extdoc.rcp.preferences;uses:="org.eclipse.jface.preference,org.eclipse.ui,org.eclipse.core.runtime.preferences",
  org.eclipse.recommenders.internal.extdoc.rcp;x-internal:=true,
  org.eclipse.recommenders.internal.extdoc.rcp.view;x-internal:=true
-Bundle-ClassPath: .
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.recommenders.utils,
+ org.eclipse.recommenders.extdoc.rcp.selection,
+ org.eclipse.recommenders.utils.rcp,
+ com.google.guava,
+ org.eclipse.jface.text,
+ org.eclipse.recommenders.injection,
+ org.eclipse.ui.editors
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Implementation-Version: 0.2.0

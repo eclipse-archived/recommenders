@@ -1,15 +1,15 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Injection Framework (Incubator)
+Bundle-Name: Code Recommenders: Injection Framework (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.injection;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: com.google.guava,
- org.eclipse.core.runtime,
- com.google.inject;visibility:=reexport,
- com.google.inject.assistedinject;visibility:=reexport,
- com.google.inject.multibindings;visibility:=reexport,
- javax.inject;bundle-version="1.0.0";visibility:=reexport
 Export-Package: org.eclipse.recommenders.injection,
  org.eclipse.recommenders.internal.injection
+Require-Bundle: com.google.guava,
+ org.eclipse.core.runtime,
+ com.google.inject;bundle-version="[3.0.0,4.0.0)";visibility:=reexport,
+ com.google.inject.assistedinject;bundle-version="[3.0.0,4.0.0)";visibility:=reexport,
+ com.google.inject.multibindings;bundle-version="[3.0.0,4.0.0)";visibility:=reexport,
+ javax.inject;bundle-version="[1.0.0,2.0.0)";visibility:=reexport
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -26,12 +26,23 @@ import org.junit.Test;
 @SuppressWarnings("all")
 public class JavaElementSelectionTest {
   @Test
+  public void testTypeSelectionInTypeDeclaration() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("class Myc$lass {}");
+      final StringConcatenation code = _builder;
+      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(((String) null), ((Integer)1));
+      List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
+      final List<String> expected = _newListWithFrequency;
+      this.exerciseAndVerify(code, expected);
+  }
+  
+  @Test
   public void testTypeSelectionsInMethodBody() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("class Myclass {");
       _builder.newLine();
       _builder.append("\t");
-      _builder.append("Str\u2022ing s = new St\u2022ring(\"\");");
+      _builder.append("Str$ing s = new St$ring(\"\");");
       _builder.newLine();
       _builder.append("}");
       final StringConcatenation code = _builder;
@@ -42,22 +53,11 @@ public class JavaElementSelectionTest {
   }
   
   @Test
-  public void testTypeSelectionInTypeDeclaration() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("class Myc\u2022lass {}");
-      final StringConcatenation code = _builder;
-      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(((String) null), ((Integer)1));
-      List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
-      final List<String> expected = _newListWithFrequency;
-      this.exerciseAndVerify(code, expected);
-  }
-  
-  @Test
   public void testTypeSelectionInExtends() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("import java.util.*;");
       _builder.newLine();
-      _builder.append("class Myclass extends L\u2022ist {}");
+      _builder.append("class Myclass extends L$ist {}");
       _builder.newLine();
       final StringConcatenation code = _builder;
       Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/util/List<>;", ((Integer)1));
@@ -72,7 +72,7 @@ public class JavaElementSelectionTest {
       _builder.append("class Myclass {");
       _builder.newLine();
       _builder.append("\t");
-      _builder.append("Str\u2022ing s = new St\u2022ring(\"\");");
+      _builder.append("Str$ing s = new St$ring(\"\");");
       _builder.newLine();
       _builder.append("}");
       final StringConcatenation code = _builder;
@@ -91,13 +91,13 @@ public class JavaElementSelectionTest {
       _builder.append("void test(String s1){");
       _builder.newLine();
       _builder.append("\t\t");
-      _builder.append("String s2 = s1.co\u2022ncat(\"hello\");");
+      _builder.append("String s2 = s1.co$ncat(\"hello\");");
       _builder.newLine();
       _builder.append("\t\t");
-      _builder.append("s2.hashCode\u2022();");
+      _builder.append("s2.hashCode$();");
       _builder.newLine();
       _builder.append("\t\t");
-      _builder.append("s1.\u2022equals(s2);");
+      _builder.append("s1.$equals(s2);");
       _builder.newLine();
       _builder.append("\t");
       _builder.append("}");

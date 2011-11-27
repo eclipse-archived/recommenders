@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.server.rcp"
       label="Code Recommenders: Self-hosting Platform (Incubation)"
-      version="0.4.0.qualifier"
+      version="0.5.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.eclipse.org/recommenders/">
@@ -55,7 +55,8 @@
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-  <plugin
+
+   <plugin
          id="org.eclipse.recommenders.udc.rcp"
          download-size="0"
          install-size="0"

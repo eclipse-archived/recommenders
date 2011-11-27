@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Teamer Server
+Bundle-Name: Code Recommenders: Team Server (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.product.server;singleton:=true
 Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders

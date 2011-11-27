@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tests for Analysis (Incubator)
+Bundle-Name: Code Recommenders: Tests for Analysis (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.analysis
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.analysis
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: classselector,
  org.eclipse.recommenders.tests.internal.analysis,
  org.eclipse.recommenders.tests.internal.analysis.analyzers,
@@ -17,3 +16,4 @@ Require-Bundle: org.apache.commons.collections,
  org.junit4,
  org.mockito,
  org.objenesis
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

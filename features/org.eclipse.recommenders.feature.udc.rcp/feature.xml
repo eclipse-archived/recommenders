@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.udc.rcp"
       label="Code Recommenders: RCP Usage Data Collector (Incubation) (Experimental)"
-      version="0.4.0.qualifier"
+      version="0.5.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.eclipse.org/recommenders/">
@@ -23,10 +23,12 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-<plugin
+
+   <plugin
          id="org.eclipse.recommenders.udc"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
 </feature>

@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommender: Tests Extdocs Selection 2
+Bundle-Name: Code Recommenders: Tests Extdocs Selection 2 (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.extdoc.rcp.selection2
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

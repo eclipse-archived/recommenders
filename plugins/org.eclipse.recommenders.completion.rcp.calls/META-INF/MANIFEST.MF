@@ -2,8 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Intelligent Call Completion Engine (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.calls;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
+Bundle-Activator: org.eclipse.recommenders.internal.calls.rcp.CallsCompletionPlugin
 Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.internal.calls.rcp,
+ org.eclipse.recommenders.internal.calls.rcp.store
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.recommenders.rcp,
@@ -40,9 +43,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.jayes,
  org.slf4j.api
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.recommenders.internal.calls.rcp,
- org.eclipse.recommenders.internal.calls.rcp.store
-Bundle-Activator: org.eclipse.recommenders.internal.calls.rcp.CallsCompletionPlugin
 Bundle-ActivationPolicy: lazy
-
-

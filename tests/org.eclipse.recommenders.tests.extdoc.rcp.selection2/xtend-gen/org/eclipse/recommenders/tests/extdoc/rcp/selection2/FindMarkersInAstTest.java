@@ -13,7 +13,7 @@ public class FindMarkersInAstTest {
   @Test
   public void test001() {
       StringConcatenation _builder = new StringConcatenation();
-      _builder.append("\u2022public class X extends Y {}");
+      _builder.append("$public class X extends Y {}");
       final StringConcatenation code = _builder;
       String _string = code.toString();
       Tuple<CompilationUnit,Set<Integer>> _createAstWithMarkers = AstUtils.createAstWithMarkers(_string);
@@ -26,7 +26,7 @@ public class FindMarkersInAstTest {
   @Test
   public void test002() {
       StringConcatenation _builder = new StringConcatenation();
-      _builder.append("class \u2022X\u2022 {}");
+      _builder.append("class $X$ {}");
       final StringConcatenation code = _builder;
       String _string = code.toString();
       Tuple<CompilationUnit,Set<Integer>> _createAstWithMarkers = AstUtils.createAstWithMarkers(_string);

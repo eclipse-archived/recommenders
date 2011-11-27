@@ -2,8 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: RCP Intelligent Code Completion (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
+Bundle-Activator: org.eclipse.recommenders.internal.completion.rcp.IntelligentCompletionPlugin
 Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.completion.rcp,
+ org.eclipse.recommenders.internal.completion.rcp
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core,
@@ -20,8 +23,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.analysis.rcp,
  org.eclipse.recommenders.udc;bundle-version="0.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.recommenders.completion.rcp,
- org.eclipse.recommenders.internal.completion.rcp
-Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.eclipse.recommenders.internal.completion.rcp.IntelligentCompletionPlugin
 Import-Package: javax.inject;version="1.0.0"
+Bundle-ActivationPolicy: lazy

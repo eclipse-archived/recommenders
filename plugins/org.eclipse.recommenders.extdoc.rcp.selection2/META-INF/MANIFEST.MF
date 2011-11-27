@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Extdoc Selection 2
+Bundle-Name: Code Recommenders: Extdoc Selection 2 (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.extdoc.rcp.selection2;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.recommenders.extdoc.rcp.selection2
 Require-Bundle: org.eclipse.jdt.core,
  org.junit4,
  com.google.guava,
@@ -22,4 +22,4 @@ Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.recommenders.injection,
  org.eclipse.recommenders.utils.rcp,
  org.apache.commons.lang3
-Export-Package: org.eclipse.recommenders.extdoc.rcp.selection2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

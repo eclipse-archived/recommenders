@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Commons for ExtDoc Tests
+Bundle-Name: Code Recommenders: Commons for ExtDoc Tests (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.extdoc;singleton:=true
-Bundle-Version: 0.4.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.tests.extdoc
 Require-Bundle: org.eclipse.jdt.core,
  org.mockito,
  org.eclipse.core.runtime,
@@ -20,4 +20,4 @@ Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.recommenders.utils.rcp,
  org.eclipse.ui,
  org.eclipse.core.resources
-Export-Package: org.eclipse.recommenders.tests.extdoc
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

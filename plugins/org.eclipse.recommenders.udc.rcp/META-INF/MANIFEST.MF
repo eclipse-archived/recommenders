@@ -2,8 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Usage Data Collector (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.udc.rcp;singleton:=true
-Bundle-Version: 0.4.0.qualifier
+Bundle-Version: 0.5.0.qualifier
+Bundle-ClassPath: .
 Bundle-Activator: org.eclipse.recommenders.internal.udc.Activator
+Export-Package: org.eclipse.recommenders.internal.udc,
+ org.eclipse.recommenders.internal.udc.depersonalizer
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -24,8 +27,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.injection,
  org.eclipse.recommenders.udc,
  org.eclipse.recommenders.utils.rcp
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ClassPath: .
-Export-Package: org.eclipse.recommenders.internal.udc,
- org.eclipse.recommenders.internal.udc.depersonalizer
+Bundle-ActivationPolicy: lazy

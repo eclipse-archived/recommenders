@@ -7,14 +7,14 @@ class FindMarkersInAstTest {
 	
 	@Test
 	def void test001 () {
-	val code = '''•public class X extends Y {}'''
+	val code = '''$public class X extends Y {}'''
 		val markers = createAstWithMarkers(code.toString)
 		assertTrue(markers.second.contains(0))
 	}
-
+	
 	@Test
 	def void test002 () {
-	val code = '''class •X• {}'''
+	val code = '''class $X$ {}'''
 		val markers = createAstWithMarkers(code.toString)
 
 		assertFalse(markers.first.toString.contains(MARKER))

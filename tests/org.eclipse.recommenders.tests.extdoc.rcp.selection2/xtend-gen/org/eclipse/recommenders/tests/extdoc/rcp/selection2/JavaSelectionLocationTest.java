@@ -21,9 +21,9 @@ public class JavaSelectionLocationTest {
   @Test
   public void testBeforePackageDeclaration() {
       StringConcatenation _builder = new StringConcatenation();
-      _builder.append("\u2022pack\u2022age org.\u2022eclipse.recommenders.extdoc.rcp.selection2;\u2022");
+      _builder.append("$pack$age org.$eclipse.recommenders.extdoc.rcp.selection2;$");
       _builder.newLine();
-      _builder.append("imp\u2022ort List;");
+      _builder.append("imp$ort List;");
       _builder.newLine();
       _builder.append("class X{}");
       _builder.newLine();
@@ -37,7 +37,7 @@ public class JavaSelectionLocationTest {
   @Test
   public void testPrimaryTypeDeclaration() {
       StringConcatenation _builder = new StringConcatenation();
-      _builder.append("\u2022pu\u2022blic\u2022 \u2022cl\u2022ass\u2022 \u2022My\u2022class\u2022 \u2022ex\u2022tends\u2022 \u2022Supe\u2022rclass\u2022 \u2022imp\u2022lements\u2022 \u2022Interfac\u2022e1\u2022 {}");
+      _builder.append("$pu$blic$ $cl$ass$ $My$class$ $ex$tends$ $Supe$rclass$ $imp$lements$ $Interfac$e1$ {}");
       final StringConcatenation code = _builder;
       Pair<JavaSelectionLocation,Integer> _operator_mappedTo = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(JavaSelectionLocation.TYPE_DECLARATION, ((Integer)9));
       Pair<JavaSelectionLocation,Integer> _operator_mappedTo_1 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(JavaSelectionLocation.TYPE_DECLARATION, ((Integer)3));
@@ -55,7 +55,7 @@ public class JavaSelectionLocationTest {
       _builder.append("class Myclass {");
       _builder.newLine();
       _builder.append("\t");
-      _builder.append("class MyClas\u2022s2 impl\u2022ements L\u2022istener {");
+      _builder.append("class MyClas$s2 impl$ements L$istener {");
       _builder.newLine();
       _builder.append("\t\t");
       _builder.append("public void run(){}");
@@ -78,7 +78,7 @@ public class JavaSelectionLocationTest {
       _builder.append("class Myclass {");
       _builder.newLine();
       _builder.append("\t");
-      _builder.append("Class2 c = new L\u2022istener(){");
+      _builder.append("Class2 c = new L$istener(){");
       _builder.newLine();
       _builder.append("\t\t");
       _builder.append("public void run(){}");
@@ -105,7 +105,7 @@ public class JavaSelectionLocationTest {
       _builder.append("void m(){");
       _builder.newLine();
       _builder.append("\t\t");
-      _builder.append("Listener l = new L\u2022istener(){");
+      _builder.append("Listener l = new L$istener(){");
       _builder.newLine();
       _builder.append("\t\t\t");
       _builder.append("public void run(){}");
@@ -130,7 +130,7 @@ public class JavaSelectionLocationTest {
       _builder.append("class X {");
       _builder.newLine();
       _builder.append("\t");
-      _builder.append("p\u2022ublic stat\u2022ic St\u2022ring \u2022  f\u2022ield\u2022 =\u2022 \u2022new\u2022 St\u2022ring(\"\u2022\")\u2022.\u2022toStri\u2022ng(\u2022)\u2022; \u2022");
+      _builder.append("p$ublic stat$ic St$ring $  f$ield$ =$ $new$ St$ring(\"$\")$.$toStri$ng($)$; $");
       _builder.newLine();
       _builder.append("}");
       final StringConcatenation code = _builder;
@@ -152,7 +152,7 @@ public class JavaSelectionLocationTest {
       _builder.append("class X {");
       _builder.newLine();
       _builder.append("\t");
-      _builder.append("\u2022pu\u2022blic\u2022 \u2022Stri\u2022ng\u2022 \u2022metho\u2022d\u2022(\u2022St\u2022ring\u2022 a\u2022rg0\u2022, S\u2022tring \u2022arg1) th\u2022rows \u2022IllegalA\u2022rgumentEception\u2022 {");
+      _builder.append("$pu$blic$ $Stri$ng$ $metho$d$($St$ring$ a$rg0$, S$tring $arg1) th$rows $IllegalA$rgumentEception$ {");
       _builder.newLine();
       _builder.append("\t");
       _builder.append("}");
@@ -178,22 +178,22 @@ public class JavaSelectionLocationTest {
       _builder.append("\t");
       _builder.newLine();
       _builder.append("\t ");
-      _builder.append("String method(String arg0) throws Exception {\u2022");
+      _builder.append("String method(String arg0) throws Exception {$");
       _builder.newLine();
       _builder.append("\t\t");
-      _builder.append("S\u2022tring \u2022s\u20222 = arg0.to\u2022String();");
+      _builder.append("S$tring $s$2 = arg0.to$String();");
       _builder.newLine();
       _builder.append("\t\t");
-      _builder.append("if(s2.is\u2022Empty()){");
+      _builder.append("if(s2.is$Empty()){");
       _builder.newLine();
       _builder.append("\t\t\t");
-      _builder.append("// c\u2022omment");
+      _builder.append("// c$omment");
       _builder.newLine();
       _builder.append("\t\t\t");
-      _builder.append("s2 = s2\u2022.append(\"s\"\u2022)");
+      _builder.append("s2 = s2$.append(\"s\"$)");
       _builder.newLine();
       _builder.append("\t\t");
-      _builder.append("}\u2022");
+      _builder.append("}$");
       _builder.newLine();
       _builder.append("\t");
       _builder.append("}");

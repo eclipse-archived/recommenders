@@ -1,13 +1,12 @@
 Manifest-Version: 1.0
+Bundle-Name: Code Recommenders: Bayesian Networks Library (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.jayes
-Bundle-Name: Code Recommenders: Bayesian Networks Library
-Bundle-Version: 0.4.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 0.5.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
 Provide-Package: org.eclipse.recommenders.bayes.sat,
  org.eclipse.recommenders.jayes,
  org.eclipse.recommenders.jayes.inference,
  org.eclipse.recommenders.jayes.inference.junctionTree,
  org.eclipse.recommenders.jayes.sampling,
  org.eclipse.recommenders.jayes.util
-Bundle-Vendor: Eclipse Code Recommenders
-
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

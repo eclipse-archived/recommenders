@@ -2,8 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Usage Data Server Tests (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.udc.server
-Bundle-Version: 0.4.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 0.5.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.udc.server
 Require-Bundle: com.sun.jersey.client,
  org.eclipse.recommenders.webclient,
  com.sun.jersey.core,
@@ -17,5 +18,4 @@ Require-Bundle: com.sun.jersey.client,
  org.aopalliance,
  net.sf.cglib,
  org.objectweb.asm
-Fragment-Host: org.eclipse.recommenders.udc.server
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
