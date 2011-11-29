@@ -1,18 +1,16 @@
 package org.eclipse.recommenders.tests.extdoc.rcp.selection2
 
+import java.util.List
 import org.eclipse.core.resources.ResourcesPlugin
-
 import org.eclipse.jdt.core.dom.NodeFinder
 import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
-import org.junit.Test
-import static org.eclipse.recommenders.tests.jdt.AstUtils.*
-import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.XtendUtils.*
 import org.eclipse.xtext.xtend2.lib.StringConcatenation
-import java.util.List
-import static junit.framework.Assert.*
-import org.eclipse.recommenders.utils.IGenericFilter$Decision
 import org.junit.Ignore
+import org.junit.Test
+
+import static junit.framework.Assert.*
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.XtendUtils.*
 
 class JavaElementSelectionTest {
 
