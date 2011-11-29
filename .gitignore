@@ -3,11 +3,6 @@
 *.zip
 *.gz
 
-## no (binary) documents
-*.pdf
-*.doc
-
-
 ## no derived resources
 *.class
 bin/

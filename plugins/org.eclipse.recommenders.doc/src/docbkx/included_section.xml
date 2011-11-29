@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section xmlns="http://docbook.org/ns/docbook" xmlns:db="http://docbook.org/ns/docbook" xmlns:ns3="http://www.w3.org/1999/xhtml" xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns5="http://www.w3.org/2000/svg" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xlink="http://www.w3.org/1999/xlink"
+         id="included" version="5.0">
+  <title>This is an included section</title>
+  <para>This is an included paragraph.</para>
+  <mediaobject><imageobject>
+  <imagedata fileref="media/martin-luther-king.jpg"/></imageobject></mediaobject>
+</section>
