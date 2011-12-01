@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.recommenders.commons.selection.IJavaElementSelection;
 import org.eclipse.recommenders.commons.selection.JavaElementLocation;
@@ -36,7 +37,12 @@ import org.eclipse.recommenders.rcp.extdoc.UiUtils;
 import org.eclipse.recommenders.rcp.extdoc.feedback.CommunityFeedback;
 import org.eclipse.recommenders.rcp.extdoc.feedback.IUserFeedbackServer;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPart;
@@ -65,8 +71,30 @@ public final class JavadocProvider extends AbstractTitledProvider {
 
         if (javadoc.getControl() instanceof Browser) {
             new BrowserSizeWorkaround((Browser) javadoc.getControl());
+        } else if (javadoc.getControl() instanceof StyledText) {
+            initializeStyledText((StyledText) javadoc.getControl());
         }
         return composite;
+    }
+
+    private void initializeStyledText(final StyledText styledText) {
+        final GridData gridData = GridDataFactory.fillDefaults().grab(true, false)
+                .hint(SWT.DEFAULT, BrowserSizeWorkaround.MINIMUM_HEIGHT)
+                .minSize(SWT.DEFAULT, BrowserSizeWorkaround.MINIMUM_HEIGHT).create();
+        styledText.setLayoutData(gridData);
+        styledText.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(final ModifyEvent e) {
+                final int height = styledText.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).y;
+                if (gridData.heightHint != height) {
+                    gridData.heightHint = height;
+                    gridData.minimumHeight = height;
+                    // styledText.setAlwaysShowScrollBars(false);
+                    UiUtils.layoutParents(styledText);
+                }
+            }
+        });
     }
 
     @Override

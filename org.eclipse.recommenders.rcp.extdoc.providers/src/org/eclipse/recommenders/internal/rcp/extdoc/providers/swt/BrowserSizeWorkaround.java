@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Display;
 
 public final class BrowserSizeWorkaround {
 
-    private static final int MINIMUM_HEIGHT = 1;
+    public static final int MINIMUM_HEIGHT = 1;
 
     private final Browser browser;
     private GridData gridData;
