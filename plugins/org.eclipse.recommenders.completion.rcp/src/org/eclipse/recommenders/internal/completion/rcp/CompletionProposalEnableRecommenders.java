@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.recommenders.analysis.rcp.RecommendersNature;
 import org.eclipse.recommenders.internal.rcp.IDs;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -37,7 +36,7 @@ public class CompletionProposalEnableRecommenders extends JavaCompletionProposal
 
     @Override
     public void apply(final ITextViewer viewer, final char trigger, final int stateMask, final int offset) {
-        RecommendersNature.addNature(project);
+        // RecommendersNature.addNature(project);
     }
 
     @Override

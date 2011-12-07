@@ -20,9 +20,9 @@ import junit.framework.Assert;
 
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.recommenders.completion.rcp.IVariableUsageResolver;
-import org.eclipse.recommenders.internal.calls.rcp.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.calls.rcp.store.ProjectModelFacade;
-import org.eclipse.recommenders.internal.calls.rcp.store.ProjectServices;
+import org.eclipse.recommenders.internal.completion.rcp.calls.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ProjectModelFacade;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.completion.rcp.templates.PatternRecommender;
 import org.eclipse.recommenders.internal.completion.rcp.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.completion.rcp.templates.types.PatternRecommendation;

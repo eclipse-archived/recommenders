@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.GregorianCalendar;
 
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.calls.rcp.store.ModelArchive;
-import org.eclipse.recommenders.internal.calls.rcp.store.ModelArchiveStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchive;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.VersionRange;
 import org.eclipse.recommenders.utils.VersionRange.VersionRangeBuilder;

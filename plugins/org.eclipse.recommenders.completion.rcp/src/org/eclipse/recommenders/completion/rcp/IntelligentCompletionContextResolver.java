@@ -15,7 +15,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.analysis.rcp.RecommendersNature;
 import org.eclipse.recommenders.internal.completion.rcp.IntelligentCompletionContext;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 
@@ -50,10 +49,10 @@ public class IntelligentCompletionContextResolver {
         return iCtx;
     }
 
-    public boolean hasProjectRecommendersNature(final JavaContentAssistInvocationContext jCtx) {
-        final IProject project = getProjectFromContext(jCtx);
-        return RecommendersNature.hasNature(project);
-    }
+    // public boolean hasProjectRecommendersNature(final JavaContentAssistInvocationContext jCtx) {
+    // final IProject project = getProjectFromContext(jCtx);
+    // return RecommendersNature.hasNature(project);
+    // }
 
     public IProject getProjectFromContext(final JavaContentAssistInvocationContext jCtx) {
         final ICompilationUnit cu = jCtx.getCompilationUnit();

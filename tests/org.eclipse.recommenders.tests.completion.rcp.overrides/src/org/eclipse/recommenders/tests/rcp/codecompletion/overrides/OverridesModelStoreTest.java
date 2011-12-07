@@ -95,6 +95,7 @@ public class OverridesModelStoreTest {
             return availableTypes;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public <T> T loadObjectForTypeName(final ITypeName name, final Type returnType) throws IOException {
             return (T) observations.get(name);

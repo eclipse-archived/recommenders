@@ -23,11 +23,8 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver;
-import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;
-import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 
@@ -35,7 +32,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 public class OverridesCompletionProposalComputer implements IJavaCompletionProposalComputer {
-    private final IArtifactStore artifactStore;
+    // private final IArtifactStore artifactStore;
 
     private IIntelligentCompletionContext ctx;
 
@@ -54,10 +51,11 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
     private TypeDeclaration crType;
 
     @Inject
-    public OverridesCompletionProposalComputer(final IArtifactStore artifactStore,
+    public OverridesCompletionProposalComputer(
+            // final IArtifactStore artifactStore,
             final InstantOverridesRecommender recommender, final IntelligentCompletionContextResolver contextResolver,
             final JavaElementResolver jdtCache) {
-        this.artifactStore = artifactStore;
+        // this.artifactStore = artifactStore;
         this.recommender = recommender;
         this.contextResolver = contextResolver;
         this.jdtCache = jdtCache;
@@ -66,37 +64,39 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
     @Override
     public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         final JavaContentAssistInvocationContext jCtx = (JavaContentAssistInvocationContext) context;
-        if (contextResolver.hasProjectRecommendersNature(jCtx)) {
-            final IIntelligentCompletionContext iCtx = contextResolver.resolveContext(jCtx);
-            return computeProposals(iCtx);
-        } else {
-            return Collections.emptyList();
-        }
+        // if (contextResolver.hasProjectRecommendersNature(jCtx)) {
+        final IIntelligentCompletionContext iCtx = contextResolver.resolveContext(jCtx);
+        return computeProposals(iCtx);
+        // } else {
+        // return Collections.emptyList();
+        // }
     }
 
     private List<IJavaCompletionProposal> computeProposals(final IIntelligentCompletionContext ctx) {
-        this.ctx = ctx;
-        if (!resolveEnclosingType()) {
-            return Collections.emptyList();
-        }
-        if (!isCompletionTriggeredInTypeDeclarationBody()) {
-            return Collections.emptyList();
-        } else if (!artifactStore.hasArtifact(jdtType, CompilationUnit.class)) {
-            return Collections.emptyList();
-        }
-        if (!findTypeDeclaration()) {
-            return Collections.emptyList();
-        }
-        recommendations = recommender.createRecommendations(crType);
-        computeProposals();
-        return proposals;
+        return Collections.emptyList();
+        // this.ctx = ctx;
+        // if (!resolveEnclosingType()) {
+        // return Collections.emptyList();
+        // }
+        // if (!isCompletionTriggeredInTypeDeclarationBody()) {
+        // return Collections.emptyList();
+        // } else if (!artifactStore.hasArtifact(jdtType, CompilationUnit.class)) {
+        // return Collections.emptyList();
+        // }
+        // if (!findTypeDeclaration()) {
+        // return Collections.emptyList();
+        // }
+        // recommendations = recommender.createRecommendations(crType);
+        // computeProposals();
+        // return proposals;
     }
 
     private boolean findTypeDeclaration() {
-        final CompilationUnit recCu = artifactStore.loadArtifact(jdtType, CompilationUnit.class);
-        final Option<TypeDeclaration> match = recCu.findType(ctx.getEnclosingType());
-        crType = match.getOrElse(null);
-        return match.hasValue();
+        return false;
+        // final CompilationUnit recCu = artifactStore.loadArtifact(jdtType, CompilationUnit.class);
+        // final Option<TypeDeclaration> match = recCu.findType(ctx.getEnclosingType());
+        // crType = match.getOrElse(null);
+        // return match.hasValue();
     }
 
     private boolean resolveEnclosingType() {

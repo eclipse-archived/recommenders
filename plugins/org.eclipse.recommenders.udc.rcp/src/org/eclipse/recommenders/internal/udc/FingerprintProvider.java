@@ -16,7 +16,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.calls.rcp.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
 
 import com.google.common.collect.Sets;
 

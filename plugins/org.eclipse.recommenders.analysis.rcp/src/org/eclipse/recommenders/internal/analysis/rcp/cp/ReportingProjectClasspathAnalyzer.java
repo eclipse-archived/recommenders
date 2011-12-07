@@ -18,8 +18,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.recommenders.internal.analysis.analyzers.modules.ClasspathEntry;
-import org.eclipse.recommenders.internal.analysis.analyzers.modules.ProjectClasspath;
+import org.eclipse.recommenders.internal.analysis.ClasspathEntry;
+import org.eclipse.recommenders.internal.analysis.ProjectClasspath;
 import org.eclipse.recommenders.internal.analysis.rcp.ClasspathEntryStore;
 import org.eclipse.recommenders.utils.Fingerprints;
 

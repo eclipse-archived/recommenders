@@ -15,9 +15,9 @@ import java.util.TreeSet;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.recommenders.internal.calls.rcp.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.calls.rcp.store.IProjectModelFacade;
-import org.eclipse.recommenders.internal.calls.rcp.store.ProjectServices;
+import org.eclipse.recommenders.internal.completion.rcp.calls.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.IProjectModelFacade;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.CallsAdapter;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.ContextFactory;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.MockedIntelligentCompletionContext;

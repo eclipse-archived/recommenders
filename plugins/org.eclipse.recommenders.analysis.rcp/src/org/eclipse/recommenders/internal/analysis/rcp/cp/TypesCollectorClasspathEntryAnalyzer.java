@@ -18,7 +18,7 @@ import java.util.zip.ZipEntry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.recommenders.internal.analysis.analyzers.modules.ClasspathEntry;
+import org.eclipse.recommenders.internal.analysis.ClasspathEntry;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeReference;
 import org.eclipse.recommenders.utils.Fingerprints;
 import org.eclipse.recommenders.utils.names.ITypeName;

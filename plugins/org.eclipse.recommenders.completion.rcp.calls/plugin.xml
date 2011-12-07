@@ -4,14 +4,14 @@
    <extension
          point="org.eclipse.recommenders.injection.modules">
       <module
-            class="org.eclipse.recommenders.internal.calls.rcp.CallsCompletionModule">
+            class="org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule">
       </module>
    </extension>
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
-            adaptableType="org.eclipse.recommenders.internal.calls.rcp.CallsRecommendation"
-            class="org.eclipse.recommenders.internal.calls.rcp.CallsCompletionAdapterFactory">
+            adaptableType="org.eclipse.recommenders.internal.completion.rcp.calls.CallsRecommendation"
+            class="org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionAdapterFactory">
          <adapter
                type="org.eclipse.ui.model.IWorkbenchAdapter">
          </adapter>
@@ -24,20 +24,20 @@
       <javaCompletionProposalComputer
             activate="true"
             categoryId="org.eclipse.recommenders.rcp.category.completion"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.calls.rcp.CallsCompletionProposalComputer">
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionProposalComputer">
       </javaCompletionProposalComputer>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.recommenders.rcp.category.preferences"
-            class="org.eclipse.recommenders.internal.calls.rcp.preferences.CallsPreferencePage"
+            class="org.eclipse.recommenders.internal.completion.rcp.calls.preferences.CallsPreferencePage"
             id="org.eclipse.recommenders.calls.rcp.collector"
             name="Usage Data Collector">
       </page>
       <page
             category="org.eclipse.recommenders.rcp.category.preferences"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.calls.rcp.preferences.DependenciesPreferencePage"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.calls.preferences.DependenciesPreferencePage"
             id="org.eclipse.recommenders.calls.rcp.dependencies"
             name="Dependencies">
       </page>
@@ -45,7 +45,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="org.eclipse.recommenders.internal.calls.rcp.preferences.PreferenceInitializer">
+            class="org.eclipse.recommenders.internal.completion.rcp.calls.preferences.PreferenceInitializer">
       </initializer>
    </extension>
 

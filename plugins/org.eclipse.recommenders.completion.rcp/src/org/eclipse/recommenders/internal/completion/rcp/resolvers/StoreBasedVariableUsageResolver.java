@@ -20,145 +20,143 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IVariableUsageResolver;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
+import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
-import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
 import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 
 public class StoreBasedVariableUsageResolver implements IVariableUsageResolver {
 
-	private final IArtifactStore store;
+    // private final IArtifactStore store;
 
-	private Variable localVariable;
+    private Variable localVariable;
 
-	private ICompilationUnit jdtCompilationUnit;
+    private ICompilationUnit jdtCompilationUnit;
 
-	private CompilationUnit recCompilationUnit;
+    private CompilationUnit recCompilationUnit;
 
-	private org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration enclosingMethod;
+    private org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration enclosingMethod;
 
-	private Variable matchingLocalVariable;
+    private Variable matchingLocalVariable;
 
-	private Kind receiverDefinitionKind;
+    private Kind receiverDefinitionKind;
 
-	private IMethodName receiverDefinition;
+    private IMethodName receiverDefinition;
 
-	@Inject
-	public StoreBasedVariableUsageResolver(final IArtifactStore store) {
-		this.store = store;
-	}
+    // @Inject
+    // public StoreBasedVariableUsageResolver(final IArtifactStore store) {
+    // this.store = store;
+    // }
 
-	@Override
-	public boolean canResolve(final IIntelligentCompletionContext ctx) {
-		ensureIsNotNull(ctx);
-		this.localVariable = ctx.getVariable();
-		this.jdtCompilationUnit = ctx.getCompilationUnit();
+    @Override
+    public boolean canResolve(final IIntelligentCompletionContext ctx) {
+        ensureIsNotNull(ctx);
+        this.localVariable = ctx.getVariable();
+        this.jdtCompilationUnit = ctx.getCompilationUnit();
 
-		if (!findCompilationUnitInStore()) {
-			return false;
-		}
-		if (!findEnclosingMethodDeclaration()) {
-			return false;
-		}
-		return findUsages();
-	}
+        if (!findCompilationUnitInStore()) {
+            return false;
+        }
+        if (!findEnclosingMethodDeclaration()) {
+            return false;
+        }
+        return findUsages();
+    }
 
-	private boolean findCompilationUnitInStore() {
-		if (!store.hasArtifact(jdtCompilationUnit, CompilationUnit.class)) {
-			return false;
-		}
-		recCompilationUnit = store.loadArtifact(jdtCompilationUnit, CompilationUnit.class);
-		return true;
-	}
+    private boolean findCompilationUnitInStore() {
+        // if (!store.hasArtifact(jdtCompilationUnit, CompilationUnit.class)) {
+        return false;
+        // }
+        // recCompilationUnit = store.loadArtifact(jdtCompilationUnit, CompilationUnit.class);
+        // return true;
+    }
 
-	private boolean findEnclosingMethodDeclaration() {
-		ensureIsNotNull(recCompilationUnit);
-		enclosingMethod = recCompilationUnit.findMethod(localVariable.getReferenceContext());
-		return enclosingMethod != null;
-	}
+    private boolean findEnclosingMethodDeclaration() {
+        ensureIsNotNull(recCompilationUnit);
+        enclosingMethod = recCompilationUnit.findMethod(localVariable.getReferenceContext());
+        return enclosingMethod != null;
+    }
 
-	private boolean findUsages() {
-		ensureIsNotNull(enclosingMethod);
-		matchingLocalVariable = enclosingMethod.findVariable(localVariable.getNameLiteral());
+    private boolean findUsages() {
+        ensureIsNotNull(enclosingMethod);
+        matchingLocalVariable = enclosingMethod.findVariable(localVariable.getNameLiteral());
 
-		boolean canResolve = matchingLocalVariable != null;
+        final boolean canResolve = matchingLocalVariable != null;
 
-		if (canResolve) {
-			initKindAndDefinition();
-		}
+        if (canResolve) {
+            initKindAndDefinition();
+        }
 
-		return canResolve;
-	}
+        return canResolve;
+    }
 
-	private void initKindAndDefinition() {
-		IMethodName initCall = getInitCall(matchingLocalVariable.getReceiverCalls());
+    private void initKindAndDefinition() {
+        final IMethodName initCall = getInitCall(matchingLocalVariable.getReceiverCalls());
 
-		if (initCall != null) {
-			// TODO set definitionSite in CU and use fuzzyFindDefinition()
-			receiverDefinitionKind = Kind.NEW;
-			receiverDefinition = initCall;
-		} else if (matchingLocalVariable.fuzzyIsDefinedByMethodReturn()) {
-			receiverDefinitionKind = Kind.METHOD_RETURN;
-			receiverDefinition = fuzzyFindDefinition();
-		} else if (matchingLocalVariable.fuzzyIsParameter()) {
-			receiverDefinitionKind = Kind.PARAMETER;
-			receiverDefinition = NO_METHOD;
-		} else {
-			// "unknown" is ignored by now, since there is no other way to detect fields
-			receiverDefinitionKind = Kind.FIELD;
-			receiverDefinition = NO_METHOD;
-		}
-	}
+        if (initCall != null) {
+            // TODO set definitionSite in CU and use fuzzyFindDefinition()
+            receiverDefinitionKind = Kind.NEW;
+            receiverDefinition = initCall;
+        } else if (matchingLocalVariable.fuzzyIsDefinedByMethodReturn()) {
+            receiverDefinitionKind = Kind.METHOD_RETURN;
+            receiverDefinition = fuzzyFindDefinition();
+        } else if (matchingLocalVariable.fuzzyIsParameter()) {
+            receiverDefinitionKind = Kind.PARAMETER;
+            receiverDefinition = NO_METHOD;
+        } else {
+            // "unknown" is ignored by now, since there is no other way to detect fields
+            receiverDefinitionKind = Kind.FIELD;
+            receiverDefinition = NO_METHOD;
+        }
+    }
 
-	private IMethodName fuzzyFindDefinition() {
-		for (ObjectInstanceKey o : matchingLocalVariable.pointsTo) {
-			if (o.definitionSite != null && o.definitionSite.definedByMethod != null) {
-				return o.definitionSite.definedByMethod;
-			}
-		}
-		return UNKNOWN_METHOD;
-	}
+    private IMethodName fuzzyFindDefinition() {
+        for (final ObjectInstanceKey o : matchingLocalVariable.pointsTo) {
+            if (o.definitionSite != null && o.definitionSite.definedByMethod != null) {
+                return o.definitionSite.definedByMethod;
+            }
+        }
+        return UNKNOWN_METHOD;
+    }
 
-	private IMethodName getInitCall(Set<IMethodName> calls) {
-		for (IMethodName call : calls) {
-			if (call.isInit()) {
-				return call;
-			}
-		}
-		return null;
-	}
+    private IMethodName getInitCall(final Set<IMethodName> calls) {
+        for (final IMethodName call : calls) {
+            if (call.isInit()) {
+                return call;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public Set<IMethodName> getReceiverMethodInvocations() {
-		return filterInitCalls(matchingLocalVariable.getReceiverCalls());
-	}
+    @Override
+    public Set<IMethodName> getReceiverMethodInvocations() {
+        return filterInitCalls(matchingLocalVariable.getReceiverCalls());
+    }
 
-	private Set<IMethodName> filterInitCalls(Set<IMethodName> calls) {
-		Set<IMethodName> callsWithout = Sets.newLinkedHashSet();
-		for (IMethodName call : calls) {
-			if (!call.isInit()) {
-				callsWithout.add(call);
-			}
-		}
-		return callsWithout;
-	}
+    private Set<IMethodName> filterInitCalls(final Set<IMethodName> calls) {
+        final Set<IMethodName> callsWithout = Sets.newLinkedHashSet();
+        for (final IMethodName call : calls) {
+            if (!call.isInit()) {
+                callsWithout.add(call);
+            }
+        }
+        return callsWithout;
+    }
 
-	@Override
-	public Variable getResolvedVariable() {
-		return matchingLocalVariable;
-	}
+    @Override
+    public Variable getResolvedVariable() {
+        return matchingLocalVariable;
+    }
 
-	@Override
-	public Kind getResolvedVariableKind() {
-		return receiverDefinitionKind;
-	}
+    @Override
+    public Kind getResolvedVariableKind() {
+        return receiverDefinitionKind;
+    }
 
-	@Override
-	public IMethodName getResolvedVariableDefinition() {
-		return receiverDefinition;
-	}
+    @Override
+    public IMethodName getResolvedVariableDefinition() {
+        return receiverDefinition;
+    }
 }

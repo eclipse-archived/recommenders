@@ -22,8 +22,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
-import org.eclipse.recommenders.internal.calls.rcp.CallsCompletionModule.UdcServer;
-import org.eclipse.recommenders.internal.calls.rcp.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule.UdcServer;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
 
 public class UploadClasspathDependencyInfosJob extends Job {
 

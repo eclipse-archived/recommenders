@@ -37,20 +37,20 @@ public class IntelligentCompletionProposalComputer implements IJavaCompletionPro
     public List computeCompletionProposals(final ContentAssistInvocationContext context,
             final IProgressMonitor /* actually a NullProgressMonitor in e3.6 --> */monitor) {
         final JavaContentAssistInvocationContext jContext = (JavaContentAssistInvocationContext) context;
-        if (contextResolver.hasProjectRecommendersNature(jContext)) {
-            return Collections.emptyList();
-        } else {
-            final List<IJavaCompletionProposal> proposals = Lists.newLinkedList();
-            proposals.add(createEnableRecommendersProposal(jContext));
-            return proposals;
-        }
+        // if (contextResolver.hasProjectRecommendersNature(jContext)) {
+        // return Collections.emptyList();
+        // } else {
+        final List<IJavaCompletionProposal> proposals = Lists.newLinkedList();
+        // proposals.add(createEnableRecommendersProposal(jContext));
+        return proposals;
+        // }
     }
 
-    private CompletionProposalEnableRecommenders createEnableRecommendersProposal(
-            final JavaContentAssistInvocationContext jCtx) {
-        return new CompletionProposalEnableRecommenders(contextResolver.getProjectFromContext(jCtx),
-                jCtx.getInvocationOffset());
-    }
+    // private CompletionProposalEnableRecommenders createEnableRecommendersProposal(
+    // final JavaContentAssistInvocationContext jCtx) {
+    // return new CompletionProposalEnableRecommenders(contextResolver.getProjectFromContext(jCtx),
+    // jCtx.getInvocationOffset());
+    // }
 
     @Override
     public List computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {

@@ -20,7 +20,6 @@ Require-Bundle: org.eclipse.ui,
  com.google.guava,
  org.apache.commons.lang3,
  org.eclipse.recommenders.utils,
- org.eclipse.ui.editors,
- org.eclipse.recommenders.injection
+ org.eclipse.ui.editors
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

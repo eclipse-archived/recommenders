@@ -4,4 +4,5 @@
     <title>Eclipse Code Recommenders</title>
     <xi:include href="new-and-noteworthy.xml"/>
     <xi:include href="user-manual.xml"/>
+    <xi:include href="isv/main.xml"/>
 </book>

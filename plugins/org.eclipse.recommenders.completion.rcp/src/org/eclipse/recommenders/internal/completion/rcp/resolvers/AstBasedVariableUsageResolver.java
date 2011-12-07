@@ -40,8 +40,8 @@ import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IVariableUsageResolver;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
-import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey.Kind;
+import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -51,200 +51,196 @@ import com.google.inject.Inject;
 
 public class AstBasedVariableUsageResolver implements IVariableUsageResolver {
 
-	private final IAstProvider astprovider;
-	private int invocationOffset;
+    private final IAstProvider astprovider;
+    private int invocationOffset;
 
-	private CompilationUnit ast;
+    private CompilationUnit ast;
 
-	private MethodDeclaration astEnclosingMethodDeclaration;
+    private MethodDeclaration astEnclosingMethodDeclaration;
 
-	private ICompilationUnit jdtCompilationUnit;
+    private ICompilationUnit jdtCompilationUnit;
 
-	private IMethod jdtEnclosingMethodDeclaration;
+    private IMethod jdtEnclosingMethodDeclaration;
 
-	private Variable localVariable;
-	private Kind localVariableKind;
-	private final Set<IMethodName> receiverMethodInvocations = Sets.newHashSet();
-	private IIntelligentCompletionContext ctx;
-	private DefinitionSite.Kind receiverDefinitionKind;
+    private Variable localVariable;
+    private Kind localVariableKind;
+    private final Set<IMethodName> receiverMethodInvocations = Sets.newHashSet();
+    private IIntelligentCompletionContext ctx;
+    private DefinitionSite.Kind receiverDefinitionKind;
 
-	private IMethodName receiverDefinition;
+    private IMethodName receiverDefinition = NO_METHOD;
 
-	@Inject
-	public AstBasedVariableUsageResolver(final IAstProvider provider) {
-		astprovider = provider;
+    @Inject
+    public AstBasedVariableUsageResolver(final IAstProvider provider) {
+        astprovider = provider;
 
-	}
+    }
 
-	@Override
-	public boolean canResolve(final IIntelligentCompletionContext ctx) {
-		ensureIsNotNull(ctx);
-		this.ctx = ctx;
-		this.localVariable = ctx.getVariable();
-		this.jdtCompilationUnit = ctx.getCompilationUnit();
-		this.invocationOffset = ctx.getInvocationOffset();
-		if (!findAst()) {
-			return false;
-		}
-		if (!findEnclosingMethodDeclaration()) {
-			return false;
-		}
-		return findUsages();
-	}
+    @Override
+    public boolean canResolve(final IIntelligentCompletionContext ctx) {
+        ensureIsNotNull(ctx);
+        this.ctx = ctx;
+        this.localVariable = ctx.getVariable();
+        this.jdtCompilationUnit = ctx.getCompilationUnit();
+        this.invocationOffset = ctx.getInvocationOffset();
+        if (!findAst()) {
+            return false;
+        }
+        if (!findEnclosingMethodDeclaration()) {
+            return false;
+        }
+        return findUsages();
+    }
 
-	private boolean findAst() {
+    private boolean findAst() {
+        ast = astprovider.get(jdtCompilationUnit);
+        return ast != null;
+    }
 
-		ast = astprovider.get(jdtCompilationUnit);
-		return ast != null;
-	}
+    private boolean findEnclosingMethodDeclaration() {
+        ensureIsNotNull(ast);
+        final int fixedInvocationOffset = getFixedOffsetForOldAsts();
+        ASTNode node = NodeFinder.perform(ast, fixedInvocationOffset, 0);
+        while (node != null) {
+            if (node instanceof MethodDeclaration) {
+                astEnclosingMethodDeclaration = cast(node);
+                jdtEnclosingMethodDeclaration = BindingUtils.getMethod(astEnclosingMethodDeclaration.resolveBinding());
+                break;
+            }
+            node = node.getParent();
+        }
+        return jdtEnclosingMethodDeclaration != null;
+    }
 
-	private boolean findEnclosingMethodDeclaration() {
-		ensureIsNotNull(ast);
-		final int fixedInvocationOffset = getFixedOffsetForOldAsts();
-		ASTNode node = NodeFinder.perform(ast, fixedInvocationOffset, 0);
-		while (node != null) {
-			if (node instanceof MethodDeclaration) {
-				astEnclosingMethodDeclaration = cast(node);
-				jdtEnclosingMethodDeclaration = BindingUtils.getMethod(astEnclosingMethodDeclaration.resolveBinding());
-				break;
-			}
-			node = node.getParent();
-		}
-		return jdtEnclosingMethodDeclaration != null;
-	}
+    /**
+     * Due to timing issues of the CachingAstProvider it might happen that we work on a deprecated version of the AST.
+     * This happens on fast typing. This method gets an invocation offset that should work with the previous version of
+     * the AST. This is done by subtracting variable name length of the local + prefix length from the original
+     * invocation offset.
+     */
+    private int getFixedOffsetForOldAsts() {
+        if (localVariable.getNameLiteral() != null) {
+            final int varNameLength = localVariable.getNameLiteral().length();
+            final int prefixLength = ctx.getPrefixToken().length();
+            return invocationOffset - (varNameLength + prefixLength);
+        } else {
+            return invocationOffset;
+        }
+    }
 
-	/**
-	 * Due to timing issues of the CachingAstProvider it might happen that we work on a deprecated version of the AST.
-	 * This happens on fast typing. This method gets an invocation offset that should work with the previous version of
-	 * the AST. This is done by subtracting variable name length of the local + prefix length from the original
-	 * invocation offset.
-	 */
-	private int getFixedOffsetForOldAsts() {
-		if (localVariable.getNameLiteral() != null) {
-			final int varNameLength = localVariable.getNameLiteral().length();
-			final int prefixLength = ctx.getPrefixToken().length();
-			return invocationOffset - (varNameLength + prefixLength);
-		} else {
-			return invocationOffset;
-		}
-	}
+    private boolean findUsages() {
+        ensureIsNotNull(astEnclosingMethodDeclaration);
+        astEnclosingMethodDeclaration.accept(new ASTVisitor() {
 
-	private boolean findUsages() {
-		ensureIsNotNull(astEnclosingMethodDeclaration);
-		astEnclosingMethodDeclaration.accept(new ASTVisitor() {
+            @Override
+            public boolean visit(final SimpleName node) {
+                final IVariableBinding var = BindingUtils.getVariableBinding(node);
+                if (var == null) {
+                    return true;
+                }
+                if (var.getName().equals(localVariable.getNameLiteral())) {
+                    determineVariableKind(var);
+                    final ASTNode parent = node.getParent();
+                    if (parent instanceof MethodInvocation) {
+                        final MethodInvocation methodInvocation = (MethodInvocation) parent;
+                        registerMethodCallOnReceiver(methodInvocation);
+                    } else if (parent instanceof Assignment) {
+                        final Assignment assignment = (Assignment) parent;
+                        evaluateDefinitionByAssignment(assignment.getRightHandSide());
+                    } else if (parent instanceof VariableDeclarationFragment) {
+                        final VariableDeclarationFragment declarationFragment = (VariableDeclarationFragment) parent;
+                        final VariableDeclarationStatement declarationStatement = (VariableDeclarationStatement) declarationFragment
+                                .getParent();
+                        final List<?> fragments = declarationStatement.fragments();
+                        final VariableDeclarationFragment lastFragment = (VariableDeclarationFragment) fragments
+                                .get(fragments.size() - 1);
+                        evaluateDefinitionByAssignment(lastFragment.getInitializer());
+                    }
+                }
+                return true;
+            }
 
-			@Override
-			public boolean visit(final SimpleName node) {
-				final IVariableBinding var = BindingUtils.getVariableBinding(node);
-				if (var == null) {
-					return true;
-				}
-				if (var.getName().equals(localVariable.getNameLiteral())) {
-					determineVariableKind(var);
-					final ASTNode parent = node.getParent();
-					if (parent instanceof MethodInvocation) {
-						final MethodInvocation methodInvocation = (MethodInvocation) parent;
-						registerMethodCallOnReceiver(methodInvocation);
-					} else if (parent instanceof Assignment) {
-						final Assignment assignment = (Assignment) parent;
-						evaluateDefinitionByAssignment(assignment.getRightHandSide());
-					} else if (parent instanceof VariableDeclarationFragment) {
-						final VariableDeclarationFragment declarationFragment = (VariableDeclarationFragment) parent;
-						final VariableDeclarationStatement declarationStatement = (VariableDeclarationStatement) declarationFragment
-								.getParent();
-						final List<?> fragments = declarationStatement.fragments();
-						final VariableDeclarationFragment lastFragment = (VariableDeclarationFragment) fragments
-								.get(fragments.size() - 1);
-						evaluateDefinitionByAssignment(lastFragment.getInitializer());
-					}
-				}
-				return true;
-			}
+            private void determineVariableKind(final IVariableBinding var) {
 
-			private void determineVariableKind(final IVariableBinding var) {
+                if (var.isParameter()) {
+                    localVariableKind = ObjectInstanceKey.Kind.PARAMETER;
+                    receiverDefinitionKind = DefinitionSite.Kind.PARAMETER;
+                } else if (var.isField()) {
+                    localVariableKind = Kind.FIELD;
+                    receiverDefinitionKind = DefinitionSite.Kind.FIELD;
+                } else {
+                    localVariableKind = Kind.LOCAL;
+                    receiverDefinitionKind = DefinitionSite.Kind.UNKNOWN;
+                }
+            }
 
-				if (var.isParameter()) {
-					localVariableKind = ObjectInstanceKey.Kind.PARAMETER;
-					receiverDefinitionKind = DefinitionSite.Kind.PARAMETER;
-					receiverDefinition = NO_METHOD;
-				} else if (var.isField()) {
-					localVariableKind = Kind.FIELD;
-					receiverDefinitionKind = DefinitionSite.Kind.FIELD;
-					receiverDefinition = NO_METHOD;
-				} else {
-					localVariableKind = Kind.LOCAL;
-					receiverDefinitionKind = DefinitionSite.Kind.UNKNOWN;
-					receiverDefinition = UNKNOWN_METHOD;
-				}
-			}
+            private void evaluateDefinitionByAssignment(final ASTNode node) {
+                if (node instanceof ClassInstanceCreation) {
+                    final ClassInstanceCreation creation = (ClassInstanceCreation) node;
+                    localVariableKind = Kind.LOCAL;
+                    receiverDefinitionKind = DefinitionSite.Kind.NEW;
+                    receiverDefinition = BindingUtils.toMethodName(creation.resolveConstructorBinding());
+                } else if (node instanceof MethodInvocation) {
+                    final MethodInvocation methodInv = (MethodInvocation) node;
+                    receiverDefinitionKind = DefinitionSite.Kind.METHOD_RETURN;
+                    receiverDefinition = BindingUtils.toMethodName(methodInv.resolveMethodBinding());
+                } else if (node instanceof SuperMethodInvocation) {
+                    final SuperMethodInvocation methodInv = (SuperMethodInvocation) node;
+                    receiverDefinitionKind = DefinitionSite.Kind.METHOD_RETURN;
+                    receiverDefinition = BindingUtils.toMethodName(methodInv.resolveMethodBinding());
+                } else if (node instanceof ParenthesizedExpression) {
+                    final ParenthesizedExpression pExp = (ParenthesizedExpression) node;
+                    evaluateDefinitionByAssignment(pExp.getExpression());
+                } else if (node instanceof ConditionalExpression) {
+                    final ConditionalExpression cond = (ConditionalExpression) node;
+                    evaluateDefinitionByAssignment(cond.getThenExpression());
+                    evaluateDefinitionByAssignment(cond.getElseExpression());
+                }
 
-			private void evaluateDefinitionByAssignment(final ASTNode node) {
-				if (node instanceof ClassInstanceCreation) {
-					ClassInstanceCreation creation = (ClassInstanceCreation) node;
-					localVariableKind = Kind.LOCAL;
-					receiverDefinitionKind = DefinitionSite.Kind.NEW;
-					receiverDefinition = BindingUtils.toMethodName(creation.resolveConstructorBinding());
-				} else if (node instanceof MethodInvocation) {
-					final MethodInvocation methodInv = (MethodInvocation) node;
-					receiverDefinitionKind = DefinitionSite.Kind.METHOD_RETURN;
-					receiverDefinition = BindingUtils.toMethodName(methodInv.resolveMethodBinding());
-				} else if (node instanceof SuperMethodInvocation) {
-					final SuperMethodInvocation methodInv = (SuperMethodInvocation) node;
-					receiverDefinitionKind = DefinitionSite.Kind.METHOD_RETURN;
-					receiverDefinition = BindingUtils.toMethodName(methodInv.resolveMethodBinding());
-				} else if (node instanceof ParenthesizedExpression) {
-					final ParenthesizedExpression pExp = (ParenthesizedExpression) node;
-					evaluateDefinitionByAssignment(pExp.getExpression());
-				} else if (node instanceof ConditionalExpression) {
-					final ConditionalExpression cond = (ConditionalExpression) node;
-					evaluateDefinitionByAssignment(cond.getThenExpression());
-					evaluateDefinitionByAssignment(cond.getElseExpression());
-				}
-			
-				if(receiverDefinition == null) {
-					receiverDefinition = UNKNOWN_METHOD;
-				}
-			}
+                if (receiverDefinition == null) {
+                    receiverDefinition = UNKNOWN_METHOD;
+                }
+            }
 
-			private void registerMethodCallOnReceiver(final MethodInvocation invoke) {
-				final IMethodBinding b = invoke.resolveMethodBinding();
-				final IMethodName method = BindingUtils.toMethodName(b);
-				if (method != null) {
-					receiverMethodInvocations.add(method);
-				}
-			}
-		});
-		return true;
-	}
+            private void registerMethodCallOnReceiver(final MethodInvocation invoke) {
+                final IMethodBinding b = invoke.resolveMethodBinding();
+                final IMethodName method = BindingUtils.toMethodName(b);
+                if (method != null) {
+                    receiverMethodInvocations.add(method);
+                }
+            }
+        });
+        return true;
+    }
 
-	@Override
-	public Set<IMethodName> getReceiverMethodInvocations() {
-		return receiverMethodInvocations;
-	}
+    @Override
+    public Set<IMethodName> getReceiverMethodInvocations() {
+        return receiverMethodInvocations;
+    }
 
-	@Override
-	public Variable getResolvedVariable() {
-		final Variable res = Variable.create(localVariable.getNameLiteral(), localVariable.getType(),
-				localVariable.getReferenceContext());
-		res.kind = localVariableKind;
-		return res;
-	}
+    @Override
+    public Variable getResolvedVariable() {
+        final Variable res = Variable.create(localVariable.getNameLiteral(), localVariable.getType(),
+                localVariable.getReferenceContext());
+        res.kind = localVariableKind;
+        return res;
+    }
 
-	@Override
-	public DefinitionSite.Kind getResolvedVariableKind() {
-		if(receiverDefinitionKind == null) {
-			return DefinitionSite.Kind.UNKNOWN;
-		} else {
-			return receiverDefinitionKind;
-		}
-	}
+    @Override
+    public DefinitionSite.Kind getResolvedVariableKind() {
+        if (receiverDefinitionKind == null) {
+            return DefinitionSite.Kind.UNKNOWN;
+        } else {
+            return receiverDefinitionKind;
+        }
+    }
 
-	@Override
-	public IMethodName getResolvedVariableDefinition() {
-		if(receiverDefinition == null) {
-			return UNKNOWN_METHOD;
-		} else {
-			return receiverDefinition;
-		}
-	}
+    @Override
+    public IMethodName getResolvedVariableDefinition() {
+        if (receiverDefinition == null) {
+            return UNKNOWN_METHOD;
+        } else {
+            return receiverDefinition;
+        }
+    }
 }

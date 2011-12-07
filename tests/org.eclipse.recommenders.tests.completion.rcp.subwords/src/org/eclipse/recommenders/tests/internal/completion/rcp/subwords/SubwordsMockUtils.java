@@ -94,6 +94,7 @@ public class SubwordsMockUtils {
         return javaProject;
     }
 
+    @SuppressWarnings("restriction")
     public static JavaCompletionProposal mockJdtCompletion(final String proposalDisplayString) {
         final JavaCompletionProposal mock = mock(JavaCompletionProposal.class);
         when(mock.getDisplayString()).thenReturn(proposalDisplayString);

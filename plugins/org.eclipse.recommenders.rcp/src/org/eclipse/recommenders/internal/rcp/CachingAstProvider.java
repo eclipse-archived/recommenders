@@ -13,13 +13,13 @@ package org.eclipse.recommenders.internal.rcp;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.recommenders.rcp.IAstProvider;
 
 import com.google.common.collect.MapMaker;
@@ -28,12 +28,16 @@ import com.google.inject.Singleton;
 @Singleton
 public class CachingAstProvider implements IAstProvider, IElementChangedListener {
 
-    private final Map<ICompilationUnit, CompilationUnit> cache = new MapMaker().weakValues().weakKeys()
-            .expiration(15, TimeUnit.MINUTES).makeMap();
+    private final Map<ICompilationUnit, CompilationUnit> cache = new MapMaker().maximumSize(20).makeMap();
 
     @Override
     public CompilationUnit get(final ICompilationUnit compilationUnit) {
-        return cache.get(compilationUnit);
+        CompilationUnit ast = cache.get(compilationUnit);
+        if (ast == null) {
+            ast = SharedASTProvider.getAST(compilationUnit, SharedASTProvider.WAIT_YES, null);
+            cache.put(compilationUnit, ast);
+        }
+        return ast;
     }
 
     @Override

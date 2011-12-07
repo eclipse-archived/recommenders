@@ -13,19 +13,26 @@ package org.eclipse.recommenders.tests.jdt;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static org.eclipse.recommenders.tests.jdt.AstUtils.MARKER;
+import static org.eclipse.recommenders.tests.jdt.AstUtils.MARKER_ESCAPE;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
+import static org.eclipse.recommenders.utils.Tuple.newTuple;
 
+import java.io.ByteArrayInputStream;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -123,18 +130,43 @@ public class JavaProjectFixture {
         return cu;
     }
 
-    public Tuple<CompilationUnit, Set<Integer>> parseWithMarkers(final String content, final String fileName) {
-        final Set<Integer> markers = Sets.newTreeSet();
+    public Tuple<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final String contentWithMarkers,
+            final String fileName) throws CoreException {
+        final IProject project = javaProject.getProject();
+        final IPath path = new Path(fileName);
+        final IFile file = project.getFile(fileName);
+        if (file.exists()) {
+            file.delete(true, null);
+        }
 
+        final Tuple<String, Set<Integer>> content = findMarkers(contentWithMarkers);
+        final ByteArrayInputStream is = new ByteArrayInputStream(content.getFirst().getBytes());
+        file.create(is, true, null);
+        final ICompilationUnit cu = (ICompilationUnit) javaProject.findElement(path);
+        return Tuple.newTuple(cu, content.getSecond());
+    }
+
+    public Tuple<CompilationUnit, Set<Integer>> parseWithMarkers(final String content, final String fileName) {
+        final Tuple<String, Set<Integer>> contentMarkersPair = findMarkers(content);
+        final String contentWoMarkers = contentMarkersPair.getFirst();
+        final Set<Integer> markers = contentMarkersPair.getSecond();
+        final CompilationUnit cu = parse(contentWoMarkers, fileName);
+        return newTuple(cu, markers);
+    }
+
+    public Tuple<String, Set<Integer>> findMarkers(final String content) {
+        final Set<Integer> markers = Sets.newTreeSet();
         int pos = 0;
         final StringBuilder sb = new StringBuilder(content);
         while ((pos = sb.indexOf(MARKER, pos)) != -1) {
             sb.delete(pos, pos + 1);
             markers.add(pos);
         }
+        return newTuple(sb.toString(), markers);
+    }
 
-        final CompilationUnit cu = parse(sb.toString(), fileName);
-        return Tuple.newTuple(cu, markers);
+    public String removeMarkers(final String content) {
+        return content.replaceAll(MARKER_ESCAPE, "");
     }
 
 }

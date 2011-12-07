@@ -97,8 +97,6 @@ public class JavaSelectionUtils {
 
     /**
      * Returns the {@link IJavaElement} at the current offset or {@link Optional#absent()} if resolving fails.
-     * 
-     * @see #resolveJavaElementFromEditor(JavaEditor, int)
      */
     public static Optional<IJavaElement> resolveJavaElementFromEditor(final IEditorPart editor,
             final ITextSelection selection) {
@@ -114,7 +112,6 @@ public class JavaSelectionUtils {
     /**
      * Returns the {@link IJavaElement} at the given offset in the editor.
      * 
-     * @see #resolveJavaElementFromTypeRootInEditor(ITypeRoot, int)
      */
     public static Optional<IJavaElement> resolveJavaElementFromEditor(final JavaEditor editor, final int offset) {
         ensureIsNotNull(editor);
@@ -230,7 +227,7 @@ public class JavaSelectionUtils {
         }
 
         // handle a direct selection on a declaration node, i.e., the users select a whitespace as in
-        // "public Æ void do(){}":
+        // "public ï¿½ void do(){}":
         switch (node.getNodeType()) {
         case ASTNode.COMPILATION_UNIT:
         case ASTNode.TYPE_DECLARATION:

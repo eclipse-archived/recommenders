@@ -29,5 +29,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.injection,
  org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.eclipse.ui.forms.widgets
 Bundle-ActivationPolicy: lazy

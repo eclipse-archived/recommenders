@@ -21,8 +21,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.calls.rcp.ModelStoreCleanup;
-import org.eclipse.recommenders.internal.calls.rcp.store.ModelArchive;
+import org.eclipse.recommenders.internal.completion.rcp.calls.ModelStoreCleanup;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchive;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.VersionRange;
 import org.eclipse.recommenders.utils.VersionRange.VersionRangeBuilder;

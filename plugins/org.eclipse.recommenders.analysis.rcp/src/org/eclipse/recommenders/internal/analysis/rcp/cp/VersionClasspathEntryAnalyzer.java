@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.analysis.rcp.cp;
 import java.util.Set;
 
 import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.recommenders.internal.analysis.analyzers.modules.ClasspathEntry;
+import org.eclipse.recommenders.internal.analysis.ClasspathEntry;
 import org.eclipse.recommenders.utils.Version;
 
 import com.google.inject.Inject;

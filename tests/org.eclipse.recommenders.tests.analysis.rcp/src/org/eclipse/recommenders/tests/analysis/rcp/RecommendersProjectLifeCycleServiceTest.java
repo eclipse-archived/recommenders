@@ -26,7 +26,6 @@ import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.recommenders.internal.analysis.rcp.IDs;
 import org.eclipse.recommenders.internal.analysis.rcp.IRecommendersProjectLifeCycleListener;
 import org.eclipse.recommenders.internal.analysis.rcp.RecommendersProjectLifeCycleService;
 import org.junit.Test;
@@ -80,7 +79,7 @@ public class RecommendersProjectLifeCycleServiceTest {
     private IProject createRecommendersProjectMock() {
         final IProject project = mock(IProject.class);
         try {
-            when(project.hasNature(IDs.NATURE_ID)).thenReturn(true);
+            // when(project.hasNature(IDs.NATURE_ID)).thenReturn(true);
             when(project.hasNature(JavaCore.NATURE_ID)).thenReturn(true);
         } catch (final CoreException e) {
             Assert.fail();

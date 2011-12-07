@@ -27,7 +27,7 @@ class JavaSelectionLocationTest {
 		) 
 		exerciseAndVerify(code, expected);
 	}
-
+ 
 	
 	@Test
 	def void testPrimaryTypeDeclaration () {

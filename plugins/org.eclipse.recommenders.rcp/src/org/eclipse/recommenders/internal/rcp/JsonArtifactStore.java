@@ -33,8 +33,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
+import org.eclipse.recommenders.rcp.IArtifactStoreOld;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.annotations.Nullable;
@@ -45,7 +45,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
-public class JsonArtifactStore implements IArtifactStore {
+public class JsonArtifactStore implements IArtifactStoreOld {
 
     ExecutorService writerPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 

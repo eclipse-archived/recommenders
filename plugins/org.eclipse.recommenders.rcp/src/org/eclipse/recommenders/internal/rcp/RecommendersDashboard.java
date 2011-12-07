@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.rcp;
 
 import java.util.Set;
 
-import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
@@ -21,9 +20,8 @@ import org.eclipse.recommenders.rcp.IEditorChangedListener;
 import com.google.inject.Inject;
 
 /**
- * Don't know whether this is actually needed. While experimenting with Guice in
- * RCP I had several injction exceptions due to bidirectional initializations.
- * Need to check from time to time whether this still holds.
+ * Don't know whether this is actually needed. While experimenting with Guice in RCP I had several injction exceptions
+ * due to bidirectional initializations. Need to check from time to time whether this still holds.
  * 
  * Last check: 02.01.11
  */
@@ -35,18 +33,19 @@ public class RecommendersDashboard {
 
     private final Set<ICompilationUnitAnalyzer> analyzers;
 
-    private final IArtifactStore artifactStore;
+    // private final IArtifactStore artifactStore;
 
     private final EditorTrackingService editorTrackingService;
 
     private final IAstProvider astProvider;
 
     @Inject
-    public RecommendersDashboard(final IArtifactStore artifactStore, final Set<ICompilationUnitAnalyzer> analyzers,
-            final Set<IEditorChangedListener> editorChangeListener,
+    public RecommendersDashboard(
+            // final IArtifactStore artifactStore,
+            final Set<ICompilationUnitAnalyzer> analyzers, final Set<IEditorChangedListener> editorChangeListener,
             final Set<IArtifactStoreChangedListener> storeChangedListener,
             final EditorTrackingService editorTrackingService, final IAstProvider astProvider) {
-        this.artifactStore = artifactStore;
+        // this.artifactStore = artifactStore;
         this.analyzers = analyzers;
         this.editorChangeListener = editorChangeListener;
         this.storeChangedListener = storeChangedListener;

@@ -15,7 +15,7 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.io.File;
 
-import org.eclipse.recommenders.internal.analysis.analyzers.modules.ClasspathEntry;
+import org.eclipse.recommenders.internal.analysis.ClasspathEntry;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 
 import com.google.inject.Inject;

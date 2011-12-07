@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
-import org.eclipse.recommenders.internal.calls.rcp.CallsCompletionModule.UdcServer;
+import org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule.UdcServer;
 
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientHandlerException;

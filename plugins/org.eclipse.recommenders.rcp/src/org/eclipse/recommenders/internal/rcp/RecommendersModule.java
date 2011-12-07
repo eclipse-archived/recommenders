@@ -27,7 +27,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
-import org.eclipse.recommenders.rcp.IArtifactStore;
 import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
@@ -86,7 +85,7 @@ public class RecommendersModule extends AbstractModule implements Module {
 
     private void configureArtifactStore() {
         bind(JsonArtifactStore.class).in(Scopes.SINGLETON);
-        bind(IArtifactStore.class).to(JsonArtifactStore.class).in(Scopes.SINGLETON);
+        // bind(IArtifactStore.class).to(JsonArtifactStore.class).in(Scopes.SINGLETON);
         compilationUnitAnalyzerBinder = Multibinder.newSetBinder(binder(), ICompilationUnitAnalyzer.class);
         artifactStoreChangedListenerBinder = Multibinder.newSetBinder(binder(), IArtifactStoreChangedListener.class);
     }

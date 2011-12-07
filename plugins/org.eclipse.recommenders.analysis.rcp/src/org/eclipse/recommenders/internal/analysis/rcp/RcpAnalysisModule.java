@@ -11,36 +11,8 @@
 package org.eclipse.recommenders.internal.analysis.rcp;
 
 import java.io.File;
-import java.io.InputStream;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.recommenders.analysis.rcp.IClassHierarchyService;
-import org.eclipse.recommenders.internal.analysis.analyzers.CallGraphMethodAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.ConstructorSuperDeclarationMethodAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.DeclaredFieldsClassAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.DeclaredInterfacesClassAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.DeclaredSuperclassClassAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.FirstDeclarationMethodAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.ICallGraphAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.IClassAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.ICompilationUnitConsumer;
-import org.eclipse.recommenders.internal.analysis.analyzers.ICompilationUnitFinalizer;
-import org.eclipse.recommenders.internal.analysis.analyzers.IDependencyFingerprintComputer;
-import org.eclipse.recommenders.internal.analysis.analyzers.IMethodAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.IdFingerprintCompilationUnitFinalizer;
-import org.eclipse.recommenders.internal.analysis.analyzers.JavaLangInstanceKeysRemoverCompilationUnitFinalizer;
-import org.eclipse.recommenders.internal.analysis.analyzers.LineNumberMethodAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.LocalNamesCollectingCallGraphAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.ModifiersClassAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.ModifiersMethodAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.NameClassAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.NameMethodAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.ReceiverCallsitesCallGraphAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.SuperDeclarationMethodAnalyzer;
-import org.eclipse.recommenders.internal.analysis.analyzers.ThisObjectInstanceKeyCompilationUnitFinalizer;
-import org.eclipse.recommenders.internal.analysis.analyzers.WalaDefaultInstanceKeysRemoverCompilationUnitFinalizer;
-import org.eclipse.recommenders.internal.analysis.entrypoints.AllMethodsAndContructorsEntrypointSelector;
-import org.eclipse.recommenders.internal.analysis.entrypoints.IEntrypointSelector;
 import org.eclipse.recommenders.internal.analysis.rcp.cp.BundleManifestSymbolicNameFinder;
 import org.eclipse.recommenders.internal.analysis.rcp.cp.BundleManifestVersionFinder;
 import org.eclipse.recommenders.internal.analysis.rcp.cp.FingerprintClasspathEntryAnalyzer;
@@ -53,17 +25,12 @@ import org.eclipse.recommenders.internal.analysis.rcp.cp.NameClasspathEntryAnaly
 import org.eclipse.recommenders.internal.analysis.rcp.cp.ReportingProjectClasspathAnalyzer;
 import org.eclipse.recommenders.internal.analysis.rcp.cp.TypesCollectorClasspathEntryAnalyzer;
 import org.eclipse.recommenders.internal.analysis.rcp.cp.VersionClasspathEntryAnalyzer;
-import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
-import com.ibm.wala.ipa.callgraph.AnalysisScope;
-import com.ibm.wala.ipa.callgraph.impl.Util;
-import com.ibm.wala.ipa.summaries.XMLMethodSummaryReader;
 
 @SuppressWarnings("rawtypes")
 public class RcpAnalysisModule extends AbstractModule implements com.google.inject.Module {
@@ -71,67 +38,12 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
 
     @Override
     protected void configure() {
-        bindClassHierarchyService();
-        bindCompilationUnitAnalyzer();
+        // bindClassHierarchyService();
+        // bindCompilationUnitAnalyzer();
         bindClasspathStore();
         bindClasspathAnalyzers();
-        bindCompilationUnitAnalyzers();
+        // bindCompilationUnitAnalyzers();
         bindProjectLifeCycleService();
-    }
-
-    private void bindCompilationUnitAnalyzers() {
-        configureClassAnalyzer();
-        configureMethodAnalyzer();
-        configureCallgraphAnalyzer();
-        configureCompilationUnitFinalizer();
-        configureCompilationUnitConsumer();
-        // bind(AnalysisCache.class).toInstance(new AnalysisCache());
-        bind(IEntrypointSelector.class).to(AllMethodsAndContructorsEntrypointSelector.class);
-    }
-
-    private void configureCompilationUnitConsumer() {
-        // empty binder
-        Multibinder.newSetBinder(binder(), ICompilationUnitConsumer.class);
-    }
-
-    private void configureClassAnalyzer() {
-        final Multibinder<IClassAnalyzer> b = Multibinder.newSetBinder(binder(), IClassAnalyzer.class);
-        b.addBinding().to(NameClassAnalyzer.class);
-        b.addBinding().to(ModifiersClassAnalyzer.class);
-        b.addBinding().to(DeclaredSuperclassClassAnalyzer.class);
-        b.addBinding().to(DeclaredInterfacesClassAnalyzer.class);
-        b.addBinding().to(DeclaredFieldsClassAnalyzer.class);
-
-    }
-
-    private void configureMethodAnalyzer() {
-        final Multibinder<IMethodAnalyzer> b = Multibinder.newSetBinder(binder(), IMethodAnalyzer.class);
-        b.addBinding().to(ModifiersMethodAnalyzer.class);
-        b.addBinding().to(NameMethodAnalyzer.class);
-        b.addBinding().to(LineNumberMethodAnalyzer.class);
-        b.addBinding().to(FirstDeclarationMethodAnalyzer.class);
-        b.addBinding().to(SuperDeclarationMethodAnalyzer.class);
-        b.addBinding().to(ConstructorSuperDeclarationMethodAnalyzer.class);
-        b.addBinding().to(CallGraphMethodAnalyzer.class);
-    }
-
-    private void configureCallgraphAnalyzer() {
-        final Multibinder<ICallGraphAnalyzer> b = Multibinder.newSetBinder(binder(), ICallGraphAnalyzer.class);
-        // b.addBinding().to(ParameterCallsitesCallGraphAnalyzer.class);
-        b.addBinding().to(ReceiverCallsitesCallGraphAnalyzer.class);
-        b.addBinding().to(LocalNamesCollectingCallGraphAnalyzer.class);
-
-    }
-
-    private void configureCompilationUnitFinalizer() {
-        final Multibinder<ICompilationUnitFinalizer> binder = Multibinder.newSetBinder(binder(),
-                ICompilationUnitFinalizer.class);
-        binder.addBinding().to(JavaLangInstanceKeysRemoverCompilationUnitFinalizer.class).in(Singleton.class);
-        binder.addBinding().to(WalaDefaultInstanceKeysRemoverCompilationUnitFinalizer.class).in(Singleton.class);
-        binder.addBinding().to(ThisObjectInstanceKeyCompilationUnitFinalizer.class).in(Singleton.class);
-
-        binder.addBinding().to(IdFingerprintCompilationUnitFinalizer.class).in(Singleton.class);
-        bind(IDependencyFingerprintComputer.class).to(JdtBinaryTypeEntryFingerprintComputer.class).in(Singleton.class);
     }
 
     private void bindClasspathStore() {
@@ -147,16 +59,6 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
         storeBaseDir.mkdirs();
         bind(File.class).annotatedWith(Names.named(CLASSPATH_ENTRY_STORE_BASEDIR)).toInstance(storeBaseDir);
 
-    }
-
-    private void bindClassHierarchyService() {
-        bind(IClassHierarchyService.class).to(WalaClassHierarchyService.class).in(Scopes.SINGLETON);
-    }
-
-    private void bindCompilationUnitAnalyzer() {
-        final Multibinder<ICompilationUnitAnalyzer> binder = Multibinder.newSetBinder(binder(),
-                ICompilationUnitAnalyzer.class);
-        binder.addBinding().to(WalaCompilationUnitAnalyzerService.class).in(Singleton.class);
     }
 
     private void bindClasspathAnalyzers() {
@@ -187,13 +89,4 @@ public class RcpAnalysisModule extends AbstractModule implements com.google.inje
         Multibinder.newSetBinder(binder(), IRecommendersProjectLifeCycleListener.class);
     }
 
-    @Provides
-    @Singleton
-    public XMLMethodSummaryReader provideXMLMethodSummaries() {
-        final AnalysisScope defaultScope = AnalysisScope.createJavaAnalysisScope();
-        final ClassLoader cl = Util.class.getClassLoader();
-        final InputStream s = cl.getResourceAsStream("natives.xml");
-        final XMLMethodSummaryReader summary = new XMLMethodSummaryReader(s, defaultScope);
-        return summary;
-    }
 }

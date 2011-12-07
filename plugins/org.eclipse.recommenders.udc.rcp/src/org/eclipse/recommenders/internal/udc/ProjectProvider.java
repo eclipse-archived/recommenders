@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.recommenders.analysis.rcp.RecommendersNature;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.recommenders.internal.udc.ui.preferences.ProjectPreferenceUtil;
 
 public class ProjectProvider {
@@ -50,7 +50,7 @@ public class ProjectProvider {
             if (!project.isAccessible()) {
                 continue;
             }
-            if (RecommendersNature.hasNature(project)) {
+            if (project.exists(new Path(".recommenders/"))) {
                 result.add(project);
             }
         }

@@ -11,7 +11,7 @@ package org.eclipse.recommenders.internal.analysis.rcp.cp;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.recommenders.internal.analysis.analyzers.modules.ProjectClasspath;
+import org.eclipse.recommenders.internal.analysis.ProjectClasspath;
 
 public interface IProjectClasspathAnalyzer {
 

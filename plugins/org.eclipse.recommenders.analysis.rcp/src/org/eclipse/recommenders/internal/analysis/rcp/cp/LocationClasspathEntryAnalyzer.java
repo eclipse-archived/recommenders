@@ -10,7 +10,7 @@
 package org.eclipse.recommenders.internal.analysis.rcp.cp;
 
 import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.recommenders.internal.analysis.analyzers.modules.ClasspathEntry;
+import org.eclipse.recommenders.internal.analysis.ClasspathEntry;
 
 public class LocationClasspathEntryAnalyzer implements IClasspathEntryAnalyzer {
 

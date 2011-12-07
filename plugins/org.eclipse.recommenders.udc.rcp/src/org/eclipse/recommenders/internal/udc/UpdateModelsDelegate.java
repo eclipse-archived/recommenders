@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.udc;
 
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.calls.rcp.store.UpdateAllModelsJob;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.UpdateAllModelsJob;
 import org.eclipse.ui.IStartup;
 
 public class UpdateModelsDelegate implements IStartup {

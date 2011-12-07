@@ -14,7 +14,6 @@ import org.eclipse.recommenders.completion.rcp.IVariableUsageResolver;
 import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.internal.completion.rcp.resolvers.AnonymousMemberAccessVariableUsageResolver;
 import org.eclipse.recommenders.internal.completion.rcp.resolvers.AstBasedVariableUsageResolver;
-import org.eclipse.recommenders.internal.completion.rcp.resolvers.StoreBasedVariableUsageResolver;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
@@ -34,7 +33,7 @@ public class IntelligentCompletionModule extends AbstractModule {
 
     private void configureVariableUsageResolvers() {
         final Multibinder<IVariableUsageResolver> b = Multibinder.newSetBinder(binder(), IVariableUsageResolver.class);
-        b.addBinding().to(StoreBasedVariableUsageResolver.class);
+        // b.addBinding().to(StoreBasedVariableUsageResolver.class);
         b.addBinding().to(AstBasedVariableUsageResolver.class);
         b.addBinding().to(AnonymousMemberAccessVariableUsageResolver.class);
     }

@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.recommenders.internal.calls.rcp.ProposalMatcher;
+import org.eclipse.recommenders.internal.completion.rcp.calls.ProposalMatcher;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.junit.Test;
 

@@ -10,12 +10,10 @@
  */
 package org.eclipse.recommenders.internal.analysis.rcp;
 
-import org.eclipse.recommenders.analysis.rcp.RecommendersNature;
-
 public class IDs {
 
-    public static final String NATURE_ID = RecommendersNature.class.getName();
+    // public static final String NATURE_ID = RecommendersNature.class.getName();
 
-    public static final String BUILDER_ID = " org.eclipse.recommenders.analysis.rcp.RecommendersBuilder";
+    // public static final String BUILDER_ID = " org.eclipse.recommenders.analysis.rcp.RecommendersBuilder";
 
 }

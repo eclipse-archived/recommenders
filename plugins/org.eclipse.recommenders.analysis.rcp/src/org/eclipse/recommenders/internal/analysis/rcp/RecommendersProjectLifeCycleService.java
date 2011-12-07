@@ -27,7 +27,6 @@ import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.recommenders.analysis.rcp.RecommendersNature;
 import org.eclipse.recommenders.rcp.utils.RCPUtils;
 
 public class RecommendersProjectLifeCycleService implements IElementChangedListener {
@@ -57,7 +56,7 @@ public class RecommendersProjectLifeCycleService implements IElementChangedListe
                 final Set<IProject> openProjects = getAllOpenProjects();
                 monitor.beginTask("", openProjects.size());
                 for (final IProject project : openProjects) {
-                    if (RecommendersNature.hasNature(project) && JavaProject.hasJavaNature(project)) {
+                    if (JavaProject.hasJavaNature(project)) {
                         final IJavaProject javaProject = toJavaProject(project);
                         fireOpenEvent(javaProject);
                     }
@@ -92,7 +91,7 @@ public class RecommendersProjectLifeCycleService implements IElementChangedListe
             return;
         }
 
-        if (isOpenEvent(delta) && RecommendersNature.hasNature(javaProject.getProject())) {
+        if (isOpenEvent(delta)) {
             fireOpenEvent(javaProject);
         } else if (isCloseEvent(delta)) {
             fireCloseEvent(javaProject);

@@ -1,24 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: RCP Intelligent Chain Completion Engine (Incubation)
+Bundle-Name: Code Recommenders: JDT Chain Completion
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.chain;singleton:=true
 Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.jdt.core,
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.eclipse.jdt.core;bundle-version="3.8.0",
+ org.eclipse.core.runtime,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
- org.eclipse.ui,
- org.eclipse.recommenders.analysis.rcp,
- com.ibm.wala.core,
- org.eclipse.recommenders.analysis,
- org.eclipse.recommenders.injection,
- org.eclipse.recommenders.utils.rcp,
- org.eclipse.recommenders.utils,
  org.eclipse.core.resources,
- com.ibm.wala.shrike,
- org.eclipse.recommenders.completion.rcp,
- com.google.guava
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.apache.commons.lang3.time
-Bundle-ActivationPolicy: lazy
+ org.eclipse.swt,
+ org.eclipse.jface

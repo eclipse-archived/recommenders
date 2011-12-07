@@ -15,5 +15,7 @@ Require-Bundle: org.apache.commons.collections,
  org.eclipse.recommenders.tests,
  org.junit4,
  org.mockito,
- org.objenesis
+ org.objenesis,
+ org.eclipse.recommenders.analysis.wala,
+ org.eclipse.recommenders.injection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -17,11 +17,14 @@
 
 		<module>org.eclipse.recommenders.analysis</module>
 		<module>org.eclipse.recommenders.analysis.rcp</module>
+        <module>org.eclipse.recommenders.analysis.wala</module>
 
 
 		<module>org.eclipse.recommenders.completion.rcp</module>
 		<module>org.eclipse.recommenders.completion.rcp.calls</module>
-		<module>org.eclipse.recommenders.completion.rcp.chain</module>
+		<!-- only works with 3.8 
+        <module>org.eclipse.recommenders.completion.rcp.chain</module>
+         -->
 		<module>org.eclipse.recommenders.completion.rcp.overrides</module>
 		<module>org.eclipse.recommenders.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.completion.rcp.templates</module>

@@ -30,7 +30,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.recommenders.internal.calls.rcp.store.ProjectServices;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.udc.PreferenceUtil;
 import org.eclipse.recommenders.internal.udc.ui.TreeComposite;
 import org.eclipse.recommenders.internal.udc.ui.TreeCompositeController;

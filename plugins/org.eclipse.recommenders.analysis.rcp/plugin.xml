@@ -7,46 +7,4 @@
             class="org.eclipse.recommenders.internal.analysis.rcp.RcpAnalysisModule">
       </module>
    </extension>
-<extension
-         id="RecommendersBuilder"
-         name="Code Recommenders Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            hasNature="true">
-         <run
-               class="org.eclipse.recommenders.internal.analysis.rcp.RecommendersBuilder">
-         </run>
-      </builder>
-   </extension>
-   <extension
-         id="RecommendersNature"
-         name="Code Recommenders Nature"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run
-               class="org.eclipse.recommenders.analysis.rcp.RecommendersNature">
-         </run>
-      </runtime>
-      <builder
-            id="org.eclipse.recommenders.analysis.rcp.RecommendersBuilder">
-      </builder>
-   </extension>
-    <extension
-         point="org.eclipse.ui.popupMenus">
-      
-     
-      <objectContribution
-            adaptable="true"
-            id="org.eclipse.recommenders.rcp.iproject"
-            nameFilter="*"
-            objectClass="org.eclipse.core.resources.IProject">
-         <action
-               class="org.eclipse.recommenders.internal.analysis.rcp.RecommendersNatureToggleAction"
-               enablesFor="+"
-               id="org.eclipse.recommenders.rcp.actions.toggleNatureAction"
-               label="Add/Remove Recommenders Nature"
-               menubarPath="org.eclipse.recommenders.rcp.category.popup/additions">
-         </action>
-      </objectContribution>
-   </extension>
 </plugin>
