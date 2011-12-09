@@ -12,8 +12,6 @@ package org.eclipse.recommenders.utils;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import org.eclipse.recommenders.utils.Bag;
-import org.eclipse.recommenders.utils.TreeBag;
 import org.junit.Test;
 
 public class TreeBagTest {

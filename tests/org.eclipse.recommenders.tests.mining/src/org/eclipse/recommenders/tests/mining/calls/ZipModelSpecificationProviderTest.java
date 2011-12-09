@@ -32,6 +32,6 @@ public class ZipModelSpecificationProviderTest {
         assertNotNull(spec);
         assertEquals(config.getSymbolicName(), spec.getSymbolicName());
         assertEquals(config.getVersionRange(), spec.getVersionRange());
-        assertFalse(spec.getLastBuilt().hasValue());
+        assertFalse(spec.getLastBuilt().isPresent());
     }
 }

@@ -158,7 +158,7 @@ class JavaSelectionLocationTest {
 
 
 
-	def private exerciseAndVerify(StringConcatenation code, List<JavaSelectionLocation> expected){
+	def private exerciseAndVerify(CharSequence code, List<JavaSelectionLocation> expected){
 		
 		val markers = createAstWithMarkers(code.toString)
 		val cu = markers.first

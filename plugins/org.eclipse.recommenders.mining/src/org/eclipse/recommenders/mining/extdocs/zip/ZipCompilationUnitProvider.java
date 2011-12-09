@@ -22,10 +22,10 @@ import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.mining.extdocs.AlgorithmParameters;
 import org.eclipse.recommenders.mining.extdocs.ICompilationUnitProvider;
 import org.eclipse.recommenders.mining.extdocs.ISuperclassProvider;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
@@ -47,8 +47,8 @@ public class ZipCompilationUnitProvider implements ICompilationUnitProvider, ISu
         cus = HashMultimap.create();
 
         for (final ZipEntry entry : iterable(zip.entries())) {
-            final Option<CompilationUnit> option = loadCompilationUnit(entry);
-            if (option.hasValue()) {
+            final Optional<CompilationUnit> option = loadCompilationUnit(entry);
+            if (option.isPresent()) {
                 final CompilationUnit cu = option.get();
                 final ITypeName superclass = cu.primaryType.superclass;
                 if (superclass != null) {
@@ -63,21 +63,21 @@ public class ZipCompilationUnitProvider implements ICompilationUnitProvider, ISu
         return cus.get(superclass);
     }
 
-    private Option<CompilationUnit> loadCompilationUnit(final ZipEntry entry) {
+    private Optional<CompilationUnit> loadCompilationUnit(final ZipEntry entry) {
         try {
             if (entry.getName().endsWith(".json")) {
                 final InputStream inputStream = zip.getInputStream(entry);
                 final CompilationUnit res = GsonUtil.deserialize(inputStream, CompilationUnit.class);
                 if (res.primaryType.superclass == null) {
-                    return Option.none();
+                    return Optional.absent();
                 }
-                return Option.wrap(res);
+                return Optional.fromNullable(res);
             }
         } catch (final IOException e) {
             // log.warn(String.format("Failed to parse '%s' from zip '%s'",
             // entry, zip.getName()), e);
         }
-        return Option.none();
+        return Optional.absent();
     }
 
     @Override

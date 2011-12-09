@@ -18,10 +18,10 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.recommenders.internal.completion.rcp.templates.CompletionProposalsBuilder;
 import org.eclipse.recommenders.internal.completion.rcp.templates.types.MethodCall;
 import org.eclipse.recommenders.internal.completion.rcp.templates.types.PatternRecommendation;
-
-import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.google.common.collect.Lists;
 
 /**
  * Unit tests for covering the {@link CompletionProposalsBuilder} class.

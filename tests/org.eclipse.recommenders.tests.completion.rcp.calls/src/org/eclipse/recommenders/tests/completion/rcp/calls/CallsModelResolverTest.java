@@ -25,13 +25,14 @@ import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelResolver;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelResolver.OverridePolicy;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.IModelArchive;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelResolver.OverridePolicy;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.VersionRange;
 import org.junit.Test;
+
+import com.google.common.base.Optional;
 
 public class CallsModelResolverTest {
 
@@ -114,8 +115,8 @@ public class CallsModelResolverTest {
         }
 
         @Override
-        protected Option<Manifest> findManifest(final ClasspathDependencyInformation dependencyInfo) {
-            return Option.wrap(manifest);
+        protected Optional<Manifest> findManifest(final ClasspathDependencyInformation dependencyInfo) {
+            return Optional.fromNullable(manifest);
         }
 
         @Override
@@ -124,8 +125,8 @@ public class CallsModelResolverTest {
         }
 
         @Override
-        public Option<ClasspathDependencyInformation> tryExtractClasspathDependencyInfo(final File file) {
-            return Option.wrap(dependencyInfo);
+        public Optional<ClasspathDependencyInformation> tryExtractClasspathDependencyInfo(final File file) {
+            return Optional.fromNullable(dependencyInfo);
         }
     }
 }

@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.extdoc.rcp.view;
 import org.eclipse.recommenders.internal.extdoc.rcp.ProviderStore;
 import org.eclipse.recommenders.internal.extdoc.rcp.ProvidersComposite;
 import org.eclipse.recommenders.internal.extdoc.rcp.UpdateService;
-import org.eclipse.recommenders.internal.extdoc.rcp.view.ProvidersTableTest;
 import org.eclipse.recommenders.tests.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;

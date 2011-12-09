@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.commons.udc;
 
+import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.utils.Option.wrap;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,10 +19,10 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.VersionRange;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
 public class ModelSpecification {
@@ -68,8 +68,8 @@ public class ModelSpecification {
         return symbolicName;
     }
 
-    public Option<Date> getLastBuilt() {
-        return wrap(lastBuilt);
+    public Optional<Date> getLastBuilt() {
+        return fromNullable(lastBuilt);
     }
 
     public String[] getAliases() {

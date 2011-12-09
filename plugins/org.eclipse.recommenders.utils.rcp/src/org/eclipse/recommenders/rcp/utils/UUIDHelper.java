@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.rcp.utils;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static java.net.NetworkInterface.getNetworkInterfaces;
 import static org.eclipse.recommenders.utils.GenericEnumerationUtils.iterable;
-import static org.eclipse.recommenders.utils.Option.none;
-import static org.eclipse.recommenders.utils.Option.wrap;
 
 import java.net.NetworkInterface;
 import java.util.Enumeration;
@@ -23,15 +23,15 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.rcp.utils.internal.PreferencesInitalizer;
 import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
-import org.eclipse.recommenders.utils.Option;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
 public class UUIDHelper {
 
     public static String getUUID() {
-        final Option<String> uuid = lookupUUIDFromStore();
-        if (uuid.hasValue()) {
+        final Optional<String> uuid = lookupUUIDFromStore();
+        if (uuid.isPresent()) {
             return uuid.get();
         }
         final String newUuid = generateGlobalUUID();
@@ -39,14 +39,14 @@ public class UUIDHelper {
         return newUuid;
     }
 
-    private static Option<String> lookupUUIDFromStore() {
+    private static Optional<String> lookupUUIDFromStore() {
         final RecommendersUtilsPlugin plugin = RecommendersUtilsPlugin.getDefault();
         final IPreferenceStore prefStore = plugin.getPreferenceStore();
         final String uuid = prefStore.getString(PreferencesInitalizer.PROP_UUID);
         if (Strings.isNullOrEmpty(uuid)) {
-            return Option.none();
+            return Optional.absent();
         }
-        return Option.wrap(uuid);
+        return Optional.fromNullable(uuid);
     }
 
     private static void storeUUID(final String uuid) {
@@ -56,14 +56,14 @@ public class UUIDHelper {
     }
 
     public static String generateGlobalUUID() {
-        final Option<String> uuid = generateUUIDFromMacAddress();
-        if (!uuid.hasValue()) {
+        final Optional<String> uuid = generateUUIDFromMacAddress();
+        if (!uuid.isPresent()) {
             return UUID.randomUUID().toString();
         }
         return uuid.get();
     }
 
-    private static Option<String> generateUUIDFromMacAddress() {
+    private static Optional<String> generateUUIDFromMacAddress() {
         try {
             final Enumeration<NetworkInterface> e = getNetworkInterfaces();
             for (final NetworkInterface net : iterable(e)) {
@@ -75,13 +75,13 @@ public class UUIDHelper {
                 if (Strings.isNullOrEmpty(uuid)) {
                     continue;
                 }
-                return wrap(uuid);
+                return fromNullable(uuid);
             }
         } catch (final Exception e) {
             // this is odd:
             e.printStackTrace();
         }
-        return none();
+        return absent();
     }
 
     public static String generateUID() {

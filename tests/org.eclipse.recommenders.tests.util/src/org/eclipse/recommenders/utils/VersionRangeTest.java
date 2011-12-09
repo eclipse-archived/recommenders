@@ -16,8 +16,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.recommenders.utils.Version;
-import org.eclipse.recommenders.utils.VersionRange;
 import org.eclipse.recommenders.utils.VersionRange.VersionRangeBuilder;
 import org.junit.Test;
 

@@ -17,7 +17,6 @@ import org.eclipse.recommenders.extdoc.transport.types.ClassSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.transport.types.MethodSelfcallDirectives;
 import org.eclipse.recommenders.tests.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.extdoc.TestTypeUtils;
-
 import org.junit.Test;
 
 public final class SubclassingServerTest {

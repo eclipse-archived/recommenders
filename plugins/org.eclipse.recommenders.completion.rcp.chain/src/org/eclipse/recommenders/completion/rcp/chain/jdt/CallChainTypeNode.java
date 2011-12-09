@@ -1,6 +1,6 @@
 package org.eclipse.recommenders.completion.rcp.chain.jdt;
 
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Arrays;
 import java.util.LinkedList;

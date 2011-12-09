@@ -15,8 +15,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import org.eclipse.recommenders.utils.VersionedModuleName;
-import org.eclipse.recommenders.utils.VersionedModuleNameParser;
 import org.junit.Test;
 
 public class VersionedModuleNameParserTest {

@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.eclipse.recommenders.extdoc.rcp.IProvider;
 import org.eclipse.recommenders.internal.extdoc.rcp.ProviderStore;
-
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -14,7 +14,6 @@ import org.eclipse.recommenders.extdoc.transport.CodeExamplesServer;
 import org.eclipse.recommenders.extdoc.transport.types.CodeExamples;
 import org.eclipse.recommenders.tests.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.extdoc.TestTypeUtils;
-
 import org.junit.Test;
 
 public final class CodeExamplesServerTest {

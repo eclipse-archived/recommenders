@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.mining.extdocs.couch;
 
+import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrl;
 import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKey;
 import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKeyObject;
-import static org.eclipse.recommenders.utils.Option.wrap;
 
 import java.util.List;
 import java.util.Map;
@@ -26,11 +26,11 @@ import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.transport.types.ClassOverridePatterns;
 import org.eclipse.recommenders.extdoc.transport.types.MethodSelfcallDirectives;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -70,8 +70,8 @@ public class CouchDbDataAccess {
     }
 
     public void saveOrUpdate(final ClassOverrideDirectives directives) {
-        final Option<ClassOverrideDirectives> directivesOption = getClassOverrideDirectives(directives.getType());
-        if (directivesOption.hasValue()) {
+        final Optional<ClassOverrideDirectives> directivesOption = getClassOverrideDirectives(directives.getType());
+        if (directivesOption.isPresent()) {
             final ClassOverrideDirectives oldDirectives = directivesOption.get();
             directives._id = oldDirectives._id;
             directives._rev = oldDirectives._rev;
@@ -81,7 +81,7 @@ public class CouchDbDataAccess {
         directives._rev = result.rev;
     }
 
-    private Option<ClassOverrideDirectives> getClassOverrideDirectives(final ITypeName type) {
+    private Optional<ClassOverrideDirectives> getClassOverrideDirectives(final ITypeName type) {
         final Map<String, String> keyValuePairs = Maps.newLinkedHashMap();
         keyValuePairs.put("providerId", ClassOverrideDirectives.class.getSimpleName());
         keyValuePairs.put("type", type.getIdentifier());
@@ -89,12 +89,12 @@ public class CouchDbDataAccess {
         final GenericResultRowView<Key, Map<String, String>, ClassOverrideDirectives> resultView = client.doGetRequest(
                 url, new GenericType<GenericResultRowView<Key, Map<String, String>, ClassOverrideDirectives>>() {
                 });
-        return wrap(resultView.getFirstValue(null));
+        return fromNullable(resultView.getFirstValue(null));
     }
 
     public void saveOrUpdate(final ClassOverridePatterns pattern) {
-        final Option<ClassOverridePatterns> patternsOption = getClassOverridePatterns(pattern.getType());
-        if (patternsOption.hasValue()) {
+        final Optional<ClassOverridePatterns> patternsOption = getClassOverridePatterns(pattern.getType());
+        if (patternsOption.isPresent()) {
             final ClassOverridePatterns oldPattern = patternsOption.get();
             pattern._id = oldPattern._id;
             pattern._rev = oldPattern._rev;
@@ -104,7 +104,7 @@ public class CouchDbDataAccess {
         pattern._rev = result.rev;
     }
 
-    private Option<ClassOverridePatterns> getClassOverridePatterns(final ITypeName type) {
+    private Optional<ClassOverridePatterns> getClassOverridePatterns(final ITypeName type) {
         final Map<String, String> keyValuePairs = Maps.newLinkedHashMap();
         keyValuePairs.put("providerId", ClassOverridePatterns.class.getSimpleName());
         keyValuePairs.put("type", type.getIdentifier());
@@ -112,12 +112,13 @@ public class CouchDbDataAccess {
         final GenericResultRowView<Key, Map<String, String>, ClassOverridePatterns> resultView = client.doGetRequest(
                 url, new GenericType<GenericResultRowView<Key, Map<String, String>, ClassOverridePatterns>>() {
                 });
-        return wrap(resultView.getFirstValue(null));
+        return fromNullable(resultView.getFirstValue(null));
     }
 
     public void saveOrUpdate(final MethodSelfcallDirectives methodSelfcall) {
-        final Option<MethodSelfcallDirectives> patternsOption = getMethodSelfcallDirectives(methodSelfcall.getMethod());
-        if (patternsOption.hasValue()) {
+        final Optional<MethodSelfcallDirectives> patternsOption = getMethodSelfcallDirectives(methodSelfcall
+                .getMethod());
+        if (patternsOption.isPresent()) {
             final MethodSelfcallDirectives oldPattern = patternsOption.get();
             methodSelfcall._id = oldPattern._id;
             methodSelfcall._rev = oldPattern._rev;
@@ -127,7 +128,7 @@ public class CouchDbDataAccess {
         methodSelfcall._rev = result.rev;
     }
 
-    private Option<MethodSelfcallDirectives> getMethodSelfcallDirectives(final IMethodName method) {
+    private Optional<MethodSelfcallDirectives> getMethodSelfcallDirectives(final IMethodName method) {
         final Map<String, String> keyValuePairs = Maps.newLinkedHashMap();
         keyValuePairs.put("providerId", MethodSelfcallDirectives.class.getSimpleName());
         keyValuePairs.put("method", method.getIdentifier());
@@ -136,7 +137,7 @@ public class CouchDbDataAccess {
                 .doGetRequest(url,
                         new GenericType<GenericResultRowView<Key, Map<String, String>, MethodSelfcallDirectives>>() {
                         });
-        return wrap(resultView.getFirstValue(null));
+        return Optional.fromNullable(resultView.getFirstValue(null));
     }
 
     private static class Key {

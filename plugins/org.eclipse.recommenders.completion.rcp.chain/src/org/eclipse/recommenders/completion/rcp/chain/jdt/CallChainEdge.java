@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.completion.rcp.chain.jdt;
 
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Optional.fromNullable;
+import static com.google.common.base.Optional.fromNullable;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -20,7 +20,8 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
-import org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Optional;
+
+import com.google.common.base.Optional;
 
 public class CallChainEdge {
 

@@ -20,10 +20,10 @@ import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.utils.Bag;
 import org.eclipse.recommenders.utils.HashBag;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 public class ClassOverridePatternsGenerator {
@@ -36,7 +36,7 @@ public class ClassOverridePatternsGenerator {
         this.clusterer = clusterer;
     }
 
-    public Option<ClassOverridePatterns> generate(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
+    public Optional<ClassOverridePatterns> generate(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
         collectRawPatterns(cus);
         final List<MethodPattern> methodPatterns = clusterer.cluster(rawPatterns);
         return createOverridePatterns(superclass, methodPatterns);
@@ -61,13 +61,13 @@ public class ClassOverridePatternsGenerator {
         }
     }
 
-    private Option<ClassOverridePatterns> createOverridePatterns(final ITypeName superclass,
+    private Optional<ClassOverridePatterns> createOverridePatterns(final ITypeName superclass,
             final List<MethodPattern> methodPatterns) {
         if (methodPatterns.isEmpty()) {
-            return Option.none();
+            return Optional.absent();
         }
         final MethodPattern[] array = methodPatterns.toArray(new MethodPattern[0]);
         final ClassOverridePatterns p = ClassOverridePatterns.create(superclass, array);
-        return Option.wrap(p);
+        return Optional.fromNullable(p);
     }
 }

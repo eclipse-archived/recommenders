@@ -29,10 +29,10 @@ import org.apache.mahout.math.Vector;
 import org.apache.mahout.math.Vector.Element;
 import org.eclipse.recommenders.extdoc.transport.types.MethodPattern;
 import org.eclipse.recommenders.utils.Bag;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
@@ -143,8 +143,8 @@ public class OverridesClusterer {
         final LinkedList<MethodPattern> methodPatterns = Lists.newLinkedList();
         for (final Cluster c : cluster) {
             if (c.count() >= minClusterSize) {
-                final Option<MethodPattern> methodPattern = createMethodPattern(c);
-                if (methodPattern.hasValue()) {
+                final Optional<MethodPattern> methodPattern = createMethodPattern(c);
+                if (methodPattern.isPresent()) {
                     methodPatterns.add(methodPattern.get());
                 }
             }
@@ -152,7 +152,7 @@ public class OverridesClusterer {
         return methodPatterns;
     }
 
-    private Option<MethodPattern> createMethodPattern(final Cluster c) {
+    private Optional<MethodPattern> createMethodPattern(final Cluster c) {
         final TreeMap<IMethodName, Double> group = Maps.newTreeMap();
         for (final Iterator<Element> it = c.getCenter().iterateNonZero(); it.hasNext();) {
             final Element next = it.next();
@@ -164,9 +164,9 @@ public class OverridesClusterer {
             group.put(VmMethodName.get(name), d);
         }
         if (!group.isEmpty()) {
-            return Option.wrap(MethodPattern.create(c.count(), group));
+            return Optional.fromNullable(MethodPattern.create(c.count(), group));
         }
-        return Option.none();
+        return Optional.absent();
     }
 
 }

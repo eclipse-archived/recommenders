@@ -16,12 +16,15 @@ import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelp
 import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.createUnresolvedType;
 import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods;
 import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.findAllPublicStaticFieldsAndNonVoidNonPrimitiveMethods;
+import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.findTypeOfField;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMember;
@@ -30,13 +33,13 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
-import org.eclipse.jdt.internal.compiler.util.ObjectVector;
 import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
@@ -44,18 +47,27 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
-import org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Optional;
+import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
+import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver;
+import org.eclipse.recommenders.internal.completion.rcp.CompilerBindings;
+
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public class CallChainCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-    private JavaContentAssistInvocationContext context;
-    private InternalCompletionContext internalContext;
+    private IIntelligentCompletionContext recContext;
+    private InternalCompletionContext jdtCoreContext;
     private IType expectedType;
     private List<CallChainEdge> entrypoints;
     private List<ICompletionProposal> proposals;
+    private final IntelligentCompletionContextResolver contextResolver;
+    private JavaContentAssistInvocationContext jdtContext;
 
-    public CallChainCompletionProposalComputer() {
+    @Inject
+    public CallChainCompletionProposalComputer(final IntelligentCompletionContextResolver contextResolver) {
+        this.contextResolver = contextResolver;
     }
 
     @Override
@@ -84,22 +96,23 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
      * @return true iff the context could be initialized successfully, i.e., completion context is a java context, and
      *         the core context is an extended context
      */
-    private boolean initalizeContext(final ContentAssistInvocationContext completionContext) {
-        if (completionContext instanceof JavaContentAssistInvocationContext) {
-            this.context = (JavaContentAssistInvocationContext) completionContext;
-            internalContext = (InternalCompletionContext) context.getCoreContext();
+    private boolean initalizeContext(final ContentAssistInvocationContext context) {
+        if (context instanceof JavaContentAssistInvocationContext) {
+            this.jdtContext = (JavaContentAssistInvocationContext) context;
+            this.recContext = contextResolver.resolveContext(jdtContext);
+            this.jdtCoreContext = recContext.getCoreCompletionContext();
         }
-        return context != null && internalContext.isExtended();
+        return recContext != null && jdtContext != null && jdtCoreContext != null && jdtCoreContext.isExtended();
     }
 
     private boolean findExpectedType() {
-        expectedType = context.getExpectedType();
+        expectedType = jdtContext.getExpectedType();
         return expectedType != null;
     }
 
     private boolean findEntrypoints() {
         entrypoints = new LinkedList<CallChainEdge>();
-        final ASTNode completionNode = internalContext.getCompletionNode();
+        final ASTNode completionNode = recContext.getCompletionNode();
 
         if (completionNode instanceof CompletionOnQualifiedNameReference) {
             final CompletionOnQualifiedNameReference c = (CompletionOnQualifiedNameReference) completionNode;
@@ -112,9 +125,16 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
                 final IType type = createUnresolvedType((TypeBinding) binding);
                 addPublicStaticMembersToEntrypoints(type);
                 break;
+            case Binding.FIELD:
+                final IField field = createUnresolvedField((FieldBinding) binding);
+                final Optional<IType> oType = findTypeOfField(field);
+                if (oType.isPresent()) {
+                    addPublicMembersToEntrypoints(oType.get());
+                }
+                break;
             case Binding.LOCAL:
                 final ILocalVariable var = createUnresolvedLocaVariable((VariableBinding) binding,
-                        (JavaElement) internalContext.getEnclosingElement());
+                        findEnclosingElement());
                 addPublicMembersToEntrypoints(var);
             default:
                 break;
@@ -131,18 +151,39 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
                 break;
             case Binding.LOCAL:
                 final ILocalVariable var = createUnresolvedLocaVariable((VariableBinding) binding,
-                        (JavaElement) internalContext.getEnclosingElement());
+                        findEnclosingElement());
                 addPublicMembersToEntrypoints(var);
             default:
                 break;
             }
-        } else {
-
-            resolveEntrypoints(internalContext.getVisibleFields());
-            resolveEntrypoints(internalContext.getVisibleMethods());
-            resolveEntrypoints(internalContext.getVisibleLocalVariables());
+        } else if (completionNode instanceof CompletionOnSingleNameReference) {
+            resolveEntrypoints(recContext.getFieldDeclarations());
+            resolveEntrypoints(recContext.getLocalDeclarations());
+            resolveEntrypoints(recContext.getMethodDeclarations());
+            addAllInheritedPublicMembersToEntrypoints(findEnclosingType());
         }
         return !entrypoints.isEmpty();
+    }
+
+    private void addAllInheritedPublicMembersToEntrypoints(final IType type) {
+        final Collection<IMember> methodsAndFields = InternalAPIsHelper
+                .findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods(type);
+
+        for (final IMember m : methodsAndFields) {
+            if (m.getDeclaringType() != type) {
+                entrypoints.add(new CallChainEdge(m));
+            }
+        }
+    }
+
+    private JavaElement findEnclosingElement() {
+        final IJavaElement enclosing = jdtCoreContext.getEnclosingElement();
+        return (JavaElement) enclosing;
+    }
+
+    private IType findEnclosingType() {
+        final IJavaElement enclosing = jdtCoreContext.getEnclosingElement();
+        return (IType) enclosing.getAncestor(IJavaElement.TYPE).getPrimaryElement();
     }
 
     private void addPublicStaticMembersToEntrypoints(final IType type) {
@@ -172,14 +213,19 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private boolean passesPrefixCheck(final IMember m) {
-        final char[] token = context.getCoreContext().getToken();
-        final boolean prefixMatch = m.getElementName().startsWith(new String(token));
+        final String token = recContext.getPrefixToken();
+        final boolean prefixMatch = m.getElementName().startsWith(token);
         return prefixMatch;
     }
 
-    private void resolveEntrypoints(final ObjectVector elements) {
-        for (int i = elements.size(); i-- > 0;) {
-            final Binding binding = (Binding) elements.elementAt(i);
+    private void resolveEntrypoints(final Collection<? extends ASTNode> elements) {
+        for (final ASTNode decl : elements) {
+            final Optional<Binding> oBinding = CompilerBindings.getBinding(decl);
+            if (!oBinding.isPresent()) {
+                continue;
+            }
+
+            final Binding binding = oBinding.get();
             IJavaElement javaElement = null;
             switch (binding.kind()) {
             case Binding.TYPE:
@@ -191,8 +237,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
                 javaElement = createUnresolvedField((FieldBinding) binding);
                 break;
             case Binding.LOCAL:
-                javaElement = createUnresolvedLocaVariable((VariableBinding) binding,
-                        (JavaElement) internalContext.getEnclosingElement());
+                javaElement = createUnresolvedLocaVariable((VariableBinding) binding, findEnclosingElement());
                 break;
             default:
                 continue;
@@ -211,7 +256,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
         b.build(entrypoints);
         final List<List<CallChainEdge>> chains = b.findChains(expectedType);
         for (final List<CallChainEdge> chain : chains) {
-            final TemplateProposal completion = new CallChainCompletionTemplateBuilder().create(chain, context);
+            final TemplateProposal completion = new CallChainCompletionTemplateBuilder().create(chain, jdtContext);
             final CallChainCompletionProposal completionProposal = new CallChainCompletionProposal(completion, chain);
             proposals.add(completionProposal);
         }

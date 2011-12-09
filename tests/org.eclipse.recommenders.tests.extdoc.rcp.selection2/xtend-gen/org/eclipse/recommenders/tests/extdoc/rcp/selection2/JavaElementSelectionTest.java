@@ -15,11 +15,12 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.recommenders.tests.extdoc.rcp.selection2.XtendUtils;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
+import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.IntegerExtensions;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.eclipse.xtext.xtend2.lib.StringConcatenation;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -29,8 +30,8 @@ public class JavaElementSelectionTest {
   public void testTypeSelectionInTypeDeclaration() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("class Myc$lass {}");
-      final StringConcatenation code = _builder;
-      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(((String) null), ((Integer)1));
+      final CharSequence code = _builder;
+      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(((String) null), Integer.valueOf(1));
       List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
@@ -45,8 +46,8 @@ public class JavaElementSelectionTest {
       _builder.append("Str$ing s = new St$ring(\"\");");
       _builder.newLine();
       _builder.append("}");
-      final StringConcatenation code = _builder;
-      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;", ((Integer)2));
+      final CharSequence code = _builder;
+      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;", Integer.valueOf(2));
       List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
@@ -59,8 +60,8 @@ public class JavaElementSelectionTest {
       _builder.newLine();
       _builder.append("class Myclass extends L$ist {}");
       _builder.newLine();
-      final StringConcatenation code = _builder;
-      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/util/List<>;", ((Integer)1));
+      final CharSequence code = _builder;
+      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/util/List<>;", Integer.valueOf(1));
       List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
@@ -75,8 +76,8 @@ public class JavaElementSelectionTest {
       _builder.append("Str$ing s = new St$ring(\"\");");
       _builder.newLine();
       _builder.append("}");
-      final StringConcatenation code = _builder;
-      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;", ((Integer)2));
+      final CharSequence code = _builder;
+      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;", Integer.valueOf(2));
       List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
@@ -105,10 +106,10 @@ public class JavaElementSelectionTest {
       _builder.append("\t");
       _builder.newLine();
       _builder.append("}");
-      final StringConcatenation code = _builder;
-      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;.concat(Ljava/lang/String;)Ljava/lang/String;", ((Integer)1));
-      Pair<String,Integer> _operator_mappedTo_1 = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;.hashCode()I", ((Integer)1));
-      Pair<String,Integer> _operator_mappedTo_2 = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;.equals(Ljava/lang/Object;)Z", ((Integer)1));
+      final CharSequence code = _builder;
+      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;.concat(Ljava/lang/String;)Ljava/lang/String;", Integer.valueOf(1));
+      Pair<String,Integer> _operator_mappedTo_1 = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;.hashCode()I", Integer.valueOf(1));
+      Pair<String,Integer> _operator_mappedTo_2 = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;.equals(Ljava/lang/Object;)Z", Integer.valueOf(1));
       List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo, _operator_mappedTo_1, _operator_mappedTo_2);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
@@ -116,12 +117,16 @@ public class JavaElementSelectionTest {
   
   @Test
   @Ignore("Only for debugging the ui")
-  public void waitAlongTime() throws InterruptedException {
-    int _operator_multiply = IntegerExtensions.operator_multiply(((Integer)120), ((Integer)1000));
-    Thread.sleep(_operator_multiply);
+  public void waitAlongTime() {
+    try {
+      int _operator_multiply = IntegerExtensions.operator_multiply(120, 1000);
+      Thread.sleep(_operator_multiply);
+    } catch (Exception _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
-  public void exerciseAndVerify(final StringConcatenation code, final List<String> expected) {
+  public void exerciseAndVerify(final CharSequence code, final List<String> expected) {
       IWorkspace _workspace = ResourcesPlugin.getWorkspace();
       JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
       final JavaProjectFixture fixture = _javaProjectFixture;
@@ -136,16 +141,15 @@ public class JavaElementSelectionTest {
       final List<String> actual = _newArrayList;
       for (final Integer position : pos) {
         {
-          ASTNode _perform = NodeFinder.perform(cu, position, 0);
+          ASTNode _perform = NodeFinder.perform(cu, (position).intValue(), 0);
           final ASTNode selection = _perform;
-          final ASTNode selection_1 = selection;
           boolean matched = false;
           if (!matched) {
-            if (selection_1 instanceof SimpleName) {
-              final SimpleName selection_2 = (SimpleName) selection_1;
+            if (selection instanceof SimpleName) {
+              final SimpleName _simpleName = (SimpleName)selection;
               matched=true;
               {
-                IBinding _resolveBinding = selection_2.resolveBinding();
+                IBinding _resolveBinding = _simpleName.resolveBinding();
                 final IBinding binding = _resolveBinding;
                 IJavaElement _javaElement = binding.getJavaElement();
                 final IJavaElement javaElement = _javaElement;

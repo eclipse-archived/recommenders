@@ -21,12 +21,14 @@ import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.WorkingCopyOwner;
 import org.eclipse.jdt.internal.codeassist.CompletionEngine;
+import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionParser;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
@@ -152,6 +154,16 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
     }
 
     @Override
+    public Set<MethodDeclaration> getMethodDeclarations() {
+        return getNodeFinder().methodDeclarations;
+    }
+
+    @Override
+    public InternalCompletionContext getCoreCompletionContext() {
+        return completionRequestor.getCompletionContext();
+    }
+
+    @Override
     public final Set<CompletionProposal> getJdtProposals() {
         throw new IllegalAccessError();
     }
@@ -191,7 +203,7 @@ public class MockedIntelligentCompletionContext implements IIntelligentCompletio
 
     @Override
     public final ITypeName getReceiverType() {
-        return CompilerBindings.toTypeName(getNodeFinder().receiverType).getOrElse(null);
+        return CompilerBindings.toTypeName(getNodeFinder().receiverType).orNull();
     }
 
     @Override

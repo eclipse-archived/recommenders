@@ -24,8 +24,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.completion.rcp.calls,
  org.eclipse.recommenders.analysis,
  org.eclipse.recommenders.utils.rcp,
- org.eclipse.mylyn.wikitext.core,
- org.eclipse.mylyn.wikitext.mediawiki.core,
  org.eclipse.recommenders.injection,
  org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

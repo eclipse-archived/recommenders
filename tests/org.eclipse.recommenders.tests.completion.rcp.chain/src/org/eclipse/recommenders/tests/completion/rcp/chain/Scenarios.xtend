@@ -3,19 +3,20 @@ package org.eclipse.recommenders.tests.completion.rcp.chain
 import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver
 import org.eclipse.recommenders.completion.rcp.chain.jdt.CallChainCompletionProposal
+import org.eclipse.recommenders.completion.rcp.chain.jdt.CallChainCompletionProposalComputer
+import org.eclipse.recommenders.rcp.utils.JavaElementResolver
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.tests.jdt.TestJavaContentAssistContext
-import org.eclipse.xtext.xtend2.lib.StringConcatenation
+import org.junit.Ignore
 import org.junit.Test
 
 import static junit.framework.Assert.*
-import org.eclipse.recommenders.completion.rcp.chain.jdt.CallChainCompletionProposalComputer
-import org.junit.Ignore
  
-class Scenarios {
-
-
+class Scenarios { 
+  
+ 
 	@Test
 	def void testFindLocalAnchor(){
 		val code = '''
@@ -33,8 +34,8 @@ class Scenarios {
 			"pool submit"  // different args
 			))
 			
-		exercise(code, expected);
-	}
+		exercise(code, expected); 
+	} 
 	
 	@Test
 	def void testFindLocalAnchorWithIsExactMatch() {
@@ -105,7 +106,7 @@ class Scenarios {
 			ExecutorService pool[][][];
 			void test() {
 				Future future = $
-			}
+			} 
 		}
 		'''
 		var expected = w(newArrayList(
@@ -162,7 +163,7 @@ class Scenarios {
 				List<Object> findMe;
 				List<String> l = findMe.$
 			}
-		}''' 
+		}'''
 		
 		// need to def expectations
 		var expected = w(newArrayList(
@@ -265,16 +266,33 @@ class Scenarios {
 		exercise(code, expected);
 	}
 
-
 	
-	def exercise(StringConcatenation code, List<? extends List<String>> expected){
+	@Test
+	def void testCompletionOnFieldField(){
+		val code = '''
+		import java.awt.*;
+		public class MyClass {
+			Event e;
+			void test() {
+				Event evt = e.evt.$
+			}
+		}
+		'''
+		var expected = w(newArrayList(
+			"evt"
+			))
+			
+		exercise(code, expected);
+	}
+	
+	def exercise(CharSequence code, List<? extends List<String>> expected){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.createFileAndParseWithMarkers(code.toString, "MyClass.java")
 		val cu = struct.first;
 		val completionIndex = struct.second.head
 		val ctx = new TestJavaContentAssistContext(cu, completionIndex)
-		val sut = new CallChainCompletionProposalComputer()
-		
+		val sut = new CallChainCompletionProposalComputer(new IntelligentCompletionContextResolver(new JavaElementResolver()))
+		sut.sessionStarted
 		val proposals = sut.computeCompletionProposals(ctx, null) 
 		 for(proposal : proposals){
 			val names = (proposal as CallChainCompletionProposal).chainElementNames

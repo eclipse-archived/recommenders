@@ -13,7 +13,6 @@ package org.eclipse.recommenders.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.recommenders.utils.Version;
 import org.junit.Test;
 
 public class VersionTest {

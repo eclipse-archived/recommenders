@@ -16,7 +16,6 @@ import org.eclipse.recommenders.tests.extdoc.TestTypeUtils;
 import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
-
 import org.junit.Assert;
 import org.junit.Test;
 

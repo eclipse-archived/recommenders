@@ -12,7 +12,6 @@ package org.eclipse.recommenders.utils;
 
 import junit.framework.Assert;
 
-import org.eclipse.recommenders.utils.Hex;
 import org.junit.Test;
 
 public class HexTest {

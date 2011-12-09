@@ -10,13 +10,13 @@
  */
 package org.eclipse.recommenders.tests.completion.rcp.templates;
 
+import junit.framework.Assert;
+
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.recommenders.internal.completion.rcp.templates.code.MethodFormatter;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.utils.names.IMethodName;
-
-import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;

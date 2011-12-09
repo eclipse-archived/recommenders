@@ -10,6 +10,10 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.store;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,11 +31,11 @@ import org.eclipse.recommenders.commons.udc.ManifestMatchResult;
 import org.eclipse.recommenders.internal.analysis.archive.ArchiveDetailsExtractor;
 import org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule.UdcServer;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.Throws;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.UniformInterfaceException;
 
@@ -56,21 +60,21 @@ public class CallsModelResolver {
     }
 
     public void resolve(final File file, final CallsModelResolver.OverridePolicy overridePolicy) {
-        final Option<ClasspathDependencyInformation> dependencyInfo = findClasspathDependencyInformation(file,
+        final Optional<ClasspathDependencyInformation> dependencyInfo = findClasspathDependencyInformation(file,
                 overridePolicy);
-        if (dependencyInfo.hasValue()) {
+        if (dependencyInfo.isPresent()) {
             findModel(file, overridePolicy, dependencyInfo.get());
         }
     }
 
-    private Option<ClasspathDependencyInformation> findClasspathDependencyInformation(final File file,
+    private Optional<ClasspathDependencyInformation> findClasspathDependencyInformation(final File file,
             final OverridePolicy overridePolicy) {
         if (overridePolicy != CallsModelResolver.OverridePolicy.ALL
                 && dependencyStore.containsClasspathDependencyInfo(file)) {
-            return Option.wrap(dependencyStore.getClasspathDependencyInfo(file));
+            return fromNullable(dependencyStore.getClasspathDependencyInfo(file));
         } else {
-            final Option<ClasspathDependencyInformation> dependencyInfo = tryExtractClasspathDependencyInfo(file);
-            if (dependencyInfo.hasValue()) {
+            final Optional<ClasspathDependencyInformation> dependencyInfo = tryExtractClasspathDependencyInfo(file);
+            if (dependencyInfo.isPresent()) {
                 dependencyStore.putClasspathDependencyInfo(file, dependencyInfo.get());
             }
             return dependencyInfo;
@@ -85,16 +89,16 @@ public class CallsModelResolver {
         downloadAndRegisterModel(file, dependencyInfo);
     }
 
-    public Option<ClasspathDependencyInformation> tryExtractClasspathDependencyInfo(final File file) {
+    public Optional<ClasspathDependencyInformation> tryExtractClasspathDependencyInfo(final File file) {
         try {
             return extractClasspathDependencyInfo(file);
         } catch (final IOException e) {
             logger.warn("Unable to extract ClasspathDependencyInformation from package root '%s'", file, e);
-            return Option.none();
+            return Optional.absent();
         }
     }
 
-    private Option<ClasspathDependencyInformation> extractClasspathDependencyInfo(final File file) throws IOException {
+    private Optional<ClasspathDependencyInformation> extractClasspathDependencyInfo(final File file) throws IOException {
         if (isJarFile(file)) {
             final ArchiveDetailsExtractor extractor = new ArchiveDetailsExtractor(file);
             final ClasspathDependencyInformation dependencyInformation = new ClasspathDependencyInformation();
@@ -102,9 +106,9 @@ public class CallsModelResolver {
             dependencyInformation.version = extractor.extractVersion();
             dependencyInformation.jarFileFingerprint = extractor.createFingerprint();
             dependencyInformation.jarFileModificationDate = new Date(file.lastModified());
-            return Option.wrap(dependencyInformation);
+            return of(dependencyInformation);
         } else {
-            return Option.none();
+            return absent();
         }
     }
 
@@ -114,8 +118,8 @@ public class CallsModelResolver {
 
     public boolean downloadAndRegisterModel(final File dependencyFile,
             final ClasspathDependencyInformation dependencyInfo) {
-        final Option<Manifest> manifest = findManifest(dependencyInfo);
-        if (manifest.hasValue()) {
+        final Optional<Manifest> manifest = findManifest(dependencyInfo);
+        if (manifest.isPresent()) {
             try {
                 final File modelFile = downloadModel(manifest.get());
                 modelStore.register(modelFile);
@@ -131,10 +135,10 @@ public class CallsModelResolver {
         return false;
     }
 
-    protected Option<Manifest> findManifest(final ClasspathDependencyInformation dependencyInfo) {
+    protected Optional<Manifest> findManifest(final ClasspathDependencyInformation dependencyInfo) {
         final ManifestMatchResult matchResult = client.doPostRequest("manifest", dependencyInfo,
                 ManifestMatchResult.class);
-        return Option.wrap(matchResult.bestMatch);
+        return fromNullable(matchResult.bestMatch);
     }
 
     protected File downloadModel(final Manifest manifest) throws IOException {

@@ -29,13 +29,14 @@ import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.recommenders.extdoc.rcp.selection.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.extdoc.rcp.selection.JavaElementSelection;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.texteditor.ITextEditor;
+
+import com.google.common.base.Optional;
 
 @SuppressWarnings("restriction")
 final class ExtDocCodeAssistantHover {
@@ -145,8 +146,8 @@ final class ExtDocCodeAssistantHover {
             @Override
             protected IJavaElementSelection getSelection(final Object input) {
                 final IJavaElement element = ((JavadocBrowserInformationControlInput) input).getElement();
-                final Option<IJavaElementSelection> lastSelection = getUiManager().getLastSelection();
-                if (lastSelection.hasValue()) {
+                final Optional<IJavaElementSelection> lastSelection = getUiManager().getLastSelection();
+                if (lastSelection.isPresent()) {
                     return lastSelection.get().copy(element);
                 }
 

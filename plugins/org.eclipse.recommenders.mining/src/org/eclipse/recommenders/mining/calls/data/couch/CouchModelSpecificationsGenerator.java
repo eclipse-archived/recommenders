@@ -10,16 +10,19 @@
  */
 package org.eclipse.recommenders.mining.calls.data.couch;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+
 import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.recommenders.commons.udc.LibraryIdentifier;
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.VersionRange;
 import org.eclipse.recommenders.utils.VersionRange.VersionRangeBuilder;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
@@ -33,11 +36,11 @@ public class CouchModelSpecificationsGenerator implements Runnable {
         final Collection<ModelSpecification> modelSpecs = db.getModelSpecifications();
         final Collection<LibraryIdentifier> libraryIdentifiers = db.getLibraryIdentifiers();
         for (final LibraryIdentifier libraryIdentifier : libraryIdentifiers) {
-            final Option<ModelSpecification> modelSpecOption = findMatchingSpecificationsForLibraryId(
+            final Optional<ModelSpecification> modelSpecOption = findMatchingSpecificationsForLibraryId(
                     libraryIdentifier, modelSpecs);
 
             ModelSpecification modelSpec;
-            if (modelSpecOption.hasValue()) {
+            if (modelSpecOption.isPresent()) {
                 modelSpec = modelSpecOption.get();
                 modelSpec.addFingerprint(libraryIdentifier.fingerprint);
             } else {
@@ -48,14 +51,14 @@ public class CouchModelSpecificationsGenerator implements Runnable {
         }
     }
 
-    private Option<ModelSpecification> findMatchingSpecificationsForLibraryId(final LibraryIdentifier libId,
+    private Optional<ModelSpecification> findMatchingSpecificationsForLibraryId(final LibraryIdentifier libId,
             final Collection<ModelSpecification> modelSpecs) {
         for (final ModelSpecification modelSpec : modelSpecs) {
             if (isFingerprintIncludedInSpec(libId, modelSpec) || isNameAndVersionCompatible(libId, modelSpec)) {
-                return Option.wrap(modelSpec);
+                return fromNullable(modelSpec);
             }
         }
-        return Option.none();
+        return absent();
     }
 
     private boolean isFingerprintIncludedInSpec(final LibraryIdentifier libId, final ModelSpecification modelSpec) {

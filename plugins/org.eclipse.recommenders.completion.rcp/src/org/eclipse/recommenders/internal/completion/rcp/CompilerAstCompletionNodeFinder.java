@@ -144,51 +144,42 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     public Statement completionNode;
 
     /**
-     * One of {@link ReturnStatement}, {@link LocalDeclaration},
-     * {@link FieldDeclaration}, or <code>null</code>
+     * One of {@link ReturnStatement}, {@link LocalDeclaration}, {@link FieldDeclaration}, or <code>null</code>
      */
     public Statement completionNodeParent;
 
     /**
-     * The type of the receiver this completion event was triggered on, e.g,
-     * Button b = ...; b.|&lt;ctrl-space&gt; would set {@link #receiverType} to
-     * <code>Button</code>.
+     * The type of the receiver this completion event was triggered on, e.g, Button b = ...; b.|&lt;ctrl-space&gt; would
+     * set {@link #receiverType} to <code>Button</code>.
      */
     public TypeBinding receiverType;
 
     /**
-     * The name of the receiver - if it has one. When triggering code completion
-     * on <code>b.|&lt;ctrl-space&gt;</code> then {@link #receiverName} is 'b'.
-     * However, if code completion has been triggered on an implicit method
-     * return value like {@code getB().|&lt;ctrl-space&gt;} then
-     * {@link #receiverName} is null.
+     * The name of the receiver - if it has one. When triggering code completion on <code>b.|&lt;ctrl-space&gt;</code>
+     * then {@link #receiverName} is 'b'. However, if code completion has been triggered on an implicit method return
+     * value like {@code getB().|&lt;ctrl-space&gt;} then {@link #receiverName} is null.
      * <p>
-     * If code completion is triggered on a type like <code>PlatformUI</code>
-     * this variable holds the name of the type. <b>NOTE:</b> in the case of
-     * single names like <code>PlatformUI|&lt;^Space&gt </code> or
-     * <code>varName|&lt;^Space&gt</code> the reveiver type is typically NOT
-     * set! Be careful!
+     * If code completion is triggered on a type like <code>PlatformUI</code> this variable holds the name of the type.
+     * <b>NOTE:</b> in the case of single names like <code>PlatformUI|&lt;^Space&gt </code> or
+     * <code>varName|&lt;^Space&gt</code> the reveiver type is typically NOT set! Be careful!
      */
     public String receiverName;
 
     /**
-     * If {@link #expectsReturnType} is true, this completion request requires
-     * the completion to define a new local, i.e., in the case of method calls
-     * to have a return value.
+     * If {@link #expectsReturnType} is true, this completion request requires the completion to define a new local,
+     * i.e., in the case of method calls to have a return value.
      */
     public boolean expectsReturnType;
 
     /**
-     * if {@link #expectsReturnType} is true, then this value <b>might</b> hold
-     * a type binding of the expected return type. However, this might not be as
-     * easy and work in all cases and thus may be <code>null</code> even if
+     * if {@link #expectsReturnType} is true, then this value <b>might</b> hold a type binding of the expected return
+     * type. However, this might not be as easy and work in all cases and thus may be <code>null</code> even if
      * {@link #expectsReturnType} is true;
      */
     public TypeBinding expectedReturnType;
 
     /**
-     * This field is set whenever a completion is triggered on a type name like
-     * 'Button' etc.
+     * This field is set whenever a completion is triggered on a type name like 'Button' etc.
      * <p>
      * Example:
      * 
@@ -203,11 +194,9 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     public boolean expectsStaticMember;
 
     /**
-     * If the code completion event occurs as a method argument guessing
-     * completion (i.e., b.method(|&lt;ctrl-space&gt;), then
-     * {@link IntelligentCompletionContext#enclosingMethodCallSelector} contains
-     * the (unresolved and potentially ambiguous) name of the method call
-     * enclosing this completion event.
+     * If the code completion event occurs as a method argument guessing completion (i.e.,
+     * b.method(|&lt;ctrl-space&gt;), then {@link IntelligentCompletionContext#enclosingMethodCallSelector} contains the
+     * (unresolved and potentially ambiguous) name of the method call enclosing this completion event.
      * 
      * <p>
      * Example:
@@ -219,17 +208,15 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     public String enclosingMethodCallSelector;
 
     /**
-     * If the code completion event occurs as a method argument guessing as
-     * indicated by {@link #enclosingMethodCallSelector} being not
-     * <code>null</code>, this field holds the type binding that declares the
-     * enclosing method.
+     * If the code completion event occurs as a method argument guessing as indicated by
+     * {@link #enclosingMethodCallSelector} being not <code>null</code>, this field holds the type binding that declares
+     * the enclosing method.
      */
     public TypeBinding declaringTypeOfEnclosingMethodCall;
 
     /**
-     * If code completion was triggered on an implicit method return value, this
-     * field stores the method binding that defined this implicit (and unnamed)
-     * local variable.
+     * If code completion was triggered on an implicit method return value, this field stores the method binding that
+     * defined this implicit (and unnamed) local variable.
      * <p>
      * Example;
      * 
@@ -243,6 +230,8 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     public final Set<FieldDeclaration> fieldDeclarations = Sets.newHashSet();
     public final Set<LocalDeclaration> localDeclarations = Sets.newHashSet();
+
+    public Set<MethodDeclaration> methodDeclarations = Sets.newHashSet();
 
     public void clearState() {
         receiverDefinedByMethodReturn = null;
@@ -323,8 +312,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
              * 
              * </pre>
              * 
-             * TODO is this appropriate? Do we want to handle these events? or
-             * just discard error situations?
+             * TODO is this appropriate? Do we want to handle these events? or just discard error situations?
              */
             // if (c.binding instanceof ProblemBinding) {
             // final ProblemBinding problem = cast(c.binding);
@@ -458,8 +446,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     }
 
     /**
-     * the field declaration binding may be null in the case of an ill-defined
-     * field declaration (that doesn't compile).
+     * the field declaration binding may be null in the case of an ill-defined field declaration (that doesn't compile).
      */
     private boolean checkFieldTypeIsKnown(final FieldDeclaration fieldDeclaration) {
         return fieldDeclaration.binding != null;
@@ -837,6 +824,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     @Override
     public boolean visit(final MethodDeclaration methodDeclaration, final ClassScope scope) {
+        methodDeclarations.add(methodDeclaration);
         return true;
     }
 

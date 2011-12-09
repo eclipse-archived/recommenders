@@ -10,11 +10,12 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.eclipse.recommenders.utils.IOUtils;
 import org.junit.Test;
 
 public class IOUtilsTest {

@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.utils.Option.none;
-import static org.eclipse.recommenders.utils.Option.wrap;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import java.util.Set;
@@ -32,6 +32,7 @@ import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.WorkingCopyOwner;
 import org.eclipse.jdt.internal.codeassist.CompletionEngine;
+import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionParser;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
@@ -39,6 +40,7 @@ import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
@@ -57,9 +59,10 @@ import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+
+import com.google.common.base.Optional;
 
 @SuppressWarnings({ "restriction", "deprecation" })
 public class IntelligentCompletionContext implements IIntelligentCompletionContext {
@@ -195,6 +198,11 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
     }
 
     @Override
+    public InternalCompletionContext getCoreCompletionContext() {
+        return completionRequestor.getCompletionContext();
+    }
+
+    @Override
     public String getPrefixToken() {
         return token;
     }
@@ -217,6 +225,11 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
     @Override
     public Set<LocalDeclaration> getLocalDeclarations() {
         return astCompletionNodeFinder.localDeclarations;
+    }
+
+    @Override
+    public Set<MethodDeclaration> getMethodDeclarations() {
+        return astCompletionNodeFinder.methodDeclarations;
     }
 
     @Override
@@ -321,12 +334,12 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
 
     @Override
     public ITypeName getReceiverType() {
-        return CompilerBindings.toTypeName(astCompletionNodeFinder.receiverType).getOrElse(null);
+        return CompilerBindings.toTypeName(astCompletionNodeFinder.receiverType).orNull();
     }
 
     @Override
     public ITypeName getExpectedType() {
-        return CompilerBindings.toTypeName(astCompletionNodeFinder.expectedReturnType).getOrElse(null);
+        return CompilerBindings.toTypeName(astCompletionNodeFinder.expectedReturnType).orNull();
     }
 
     @Override
@@ -356,13 +369,13 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
         if (getReceiverName() != null && getReceiverType() != null) {
             return Variable.create(getReceiverName(), getReceiverType(), getEnclosingMethod());
         }
-        final Option<LocalDeclaration> match = findMatchingLocalVariable(getReceiverName());
-        if (!match.hasValue()) {
+        final Optional<LocalDeclaration> match = findMatchingLocalVariable(getReceiverName());
+        if (!match.isPresent()) {
             return null;
         }
         final LocalDeclaration local = match.get();
         final String name = String.valueOf(local.name);
-        final ITypeName type = CompilerBindings.toTypeName(local.type).getOrElse(null);
+        final ITypeName type = CompilerBindings.toTypeName(local.type).orNull();
         return Variable.create(name, type, getEnclosingMethod());
     }
 
@@ -378,49 +391,49 @@ public class IntelligentCompletionContext implements IIntelligentCompletionConte
 
     @Override
     public Variable findMatchingVariable(final String variableName) {
-        Option<? extends AbstractVariableDeclaration> match = findMatchingLocalVariable(getReceiverName());
-        if (!match.hasValue()) {
+        Optional<? extends AbstractVariableDeclaration> match = findMatchingLocalVariable(getReceiverName());
+        if (!match.isPresent()) {
             match = findMatchingFieldDeclaration(variableName);
-            if (!match.hasValue()) {
+            if (!match.isPresent()) {
                 // finally, try the given name??? XXX what's the meaning of this
                 // API call? Why don't use the given variable name directly?
                 match = findMatchingLocalVariable(variableName);
             }
 
         }
-        if (!match.hasValue()) {
+        if (!match.isPresent()) {
             return null;
         }
 
         final AbstractVariableDeclaration var = match.get();
         final String name = String.valueOf(var.name);
-        final Option<ITypeName> oType = CompilerBindings.toTypeName(var.type);
+        final Optional<ITypeName> oType = CompilerBindings.toTypeName(var.type);
 
-        if (!oType.hasValue()) {
+        if (!oType.isPresent()) {
             return null;
         }
         return Variable.create(name, oType.get(), getEnclosingMethod());
 
     }
 
-    private Option<LocalDeclaration> findMatchingLocalVariable(final String receiverName) {
+    private Optional<LocalDeclaration> findMatchingLocalVariable(final String receiverName) {
         for (final LocalDeclaration local : getLocalDeclarations()) {
             final String name = String.valueOf(local.name);
             if (name.equals(receiverName)) {
-                return wrap(local);
+                return fromNullable(local);
             }
         }
-        return none();
+        return absent();
     }
 
-    private Option<FieldDeclaration> findMatchingFieldDeclaration(final String receiverName) {
+    private Optional<FieldDeclaration> findMatchingFieldDeclaration(final String receiverName) {
         for (final FieldDeclaration field : getFieldDeclarations()) {
             final String name = String.valueOf(field.name);
             if (name.equals(receiverName)) {
-                return wrap(field);
+                return fromNullable(field);
             }
         }
-        return none();
+        return absent();
     }
 
     @Override

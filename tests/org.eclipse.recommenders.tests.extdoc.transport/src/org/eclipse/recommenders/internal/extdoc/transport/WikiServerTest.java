@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.extdoc.transport;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.extdoc.transport.WikiServer;
 import org.eclipse.recommenders.tests.extdoc.ServerUtils;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 

@@ -17,14 +17,13 @@ import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;
-import org.eclipse.recommenders.utils.Checks;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.TreeBag;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
 public class ClassOverrideDirectivesGenerator {
@@ -40,7 +39,7 @@ public class ClassOverrideDirectivesGenerator {
         this.minOverridesProbability = minOverridesProbability;
     }
 
-    public Option<ClassOverrideDirectives> generate(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
+    public Optional<ClassOverrideDirectives> generate(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
         this.superclass = superclass;
         this.overriddenMethods = newTreeBag();
         numberOfSubclasses = 0;
@@ -65,16 +64,16 @@ public class ClassOverrideDirectivesGenerator {
         }
     }
 
-    private Option<ClassOverrideDirectives> toDirective() {
+    private Optional<ClassOverrideDirectives> toDirective() {
         final ClassOverrideDirectives res = ClassOverrideDirectives.create(superclass, numberOfSubclasses,
                 overriddenMethods.asMap());
         try {
             res.validate();
         } catch (final Exception e) {
             log.debug("class overrides directives generation failed for '{}'", superclass);
-            return Option.none();
+            return Optional.absent();
         }
-        return Option.wrap(res);
+        return Optional.fromNullable(res);
     }
 
     private void filterInfrequentMethods() {

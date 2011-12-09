@@ -19,8 +19,8 @@ import junit.framework.Assert;
 
 import org.eclipse.recommenders.commons.mining.features.CallFeature;
 import org.eclipse.recommenders.commons.mining.features.DefinitionFeature;
-import org.eclipse.recommenders.commons.mining.features.FeatureVisitor;
 import org.eclipse.recommenders.commons.mining.features.Feature;
+import org.eclipse.recommenders.commons.mining.features.FeatureVisitor;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.junit.Before;

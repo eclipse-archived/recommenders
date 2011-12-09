@@ -12,7 +12,7 @@ package org.eclipse.recommenders.completion.rcp.chain.jdt;
 
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isPublic;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isStatic;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -50,8 +50,9 @@ import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
-import org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Optional;
 import org.eclipse.swt.graphics.Image;
+
+import com.google.common.base.Optional;
 
 public class InternalAPIsHelper {
 
@@ -201,6 +202,16 @@ public class InternalAPIsHelper {
             return Optional.fromNullable(res);
         } catch (final JavaModelException e) {
             // TODO log that exception
+            e.printStackTrace();
+            return Optional.absent();
+        }
+    }
+
+    public static Optional<IType> findTypeOfField(final IField field) {
+        try {
+            return findTypeFromSignature(field.getTypeSignature(), field);
+        } catch (final JavaModelException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
             return Optional.absent();
         }

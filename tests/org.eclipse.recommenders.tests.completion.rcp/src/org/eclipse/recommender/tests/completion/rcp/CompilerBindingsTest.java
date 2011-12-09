@@ -17,10 +17,11 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.recommenders.internal.completion.rcp.CompilerBindings;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.junit.Test;
+
+import com.google.common.base.Optional;
 
 public class CompilerBindingsTest {
 
@@ -28,15 +29,15 @@ public class CompilerBindingsTest {
     public void testCanParseSimpleType() {
         final ReferenceBinding mock = createSimpleBinding("Ltest/Class;");
 
-        final Option<ITypeName> actual = CompilerBindings.toTypeName(mock);
-        assertTrue(actual.hasValue());
+        final Optional<ITypeName> actual = CompilerBindings.toTypeName(mock);
+        assertTrue(actual.isPresent());
     }
 
     @Test
     public void testCanParsePrimitiveType() {
         final ReferenceBinding mock = createSimpleBinding("J");
 
-        final Option<ITypeName> actual = CompilerBindings.toTypeName(mock);
+        final Optional<ITypeName> actual = CompilerBindings.toTypeName(mock);
         assertEquals(VmTypeName.LONG, actual.get());
     }
 

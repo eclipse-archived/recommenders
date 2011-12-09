@@ -4,11 +4,16 @@ Bundle-Name: Code Recommenders: JDT Chain Completion
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.chain;singleton:=true
 Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.eclipse.jdt.core;bundle-version="3.8.0",
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.core.runtime,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
  org.eclipse.core.resources,
  org.eclipse.swt,
- org.eclipse.jface
+ org.eclipse.jface,
+ org.eclipse.recommenders.utils,
+ com.google.guava,
+ org.eclipse.recommenders.injection,
+ org.eclipse.recommenders.completion.rcp,
+ org.eclipse.recommenders.utils.rcp

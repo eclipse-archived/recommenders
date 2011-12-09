@@ -29,7 +29,6 @@ import org.eclipse.recommenders.mining.extdocs.ClassOverridePatternsGenerator;
 import org.eclipse.recommenders.mining.extdocs.OverridesClusterer;
 import org.eclipse.recommenders.utils.Bag;
 import org.eclipse.recommenders.utils.HashBag;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -37,6 +36,7 @@ import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -81,8 +81,9 @@ public class ClassOverridePatternsGeneratorTest {
         final OverridesClusterer clusterer = createDefaultClusterer();
         final ClassOverridePatternsGenerator sut = createSut(clusterer);
 
-        final Option<ClassOverridePatterns> patterns = sut.generate(TYPE_SUPERCLASS, new LinkedList<CompilationUnit>());
-        assertFalse(patterns.hasValue());
+        final Optional<ClassOverridePatterns> patterns = sut.generate(TYPE_SUPERCLASS,
+                new LinkedList<CompilationUnit>());
+        assertFalse(patterns.isPresent());
     }
 
     @Test
@@ -95,9 +96,10 @@ public class ClassOverridePatternsGeneratorTest {
 
         final OverridesClusterer clusterer = createClusterer(resultList);
         final ClassOverridePatternsGenerator sut = createSut(clusterer);
-        final Option<ClassOverridePatterns> patterns = sut.generate(TYPE_SUPERCLASS, new LinkedList<CompilationUnit>());
+        final Optional<ClassOverridePatterns> patterns = sut.generate(TYPE_SUPERCLASS,
+                new LinkedList<CompilationUnit>());
 
-        assertTrue(patterns.hasValue());
+        assertTrue(patterns.isPresent());
         final MethodPattern[] methodPatterns = patterns.get().getPatterns();
         assertEquals(1, methodPatterns.length);
         assertEquals(MethodPattern.create(2, pattern), methodPatterns[0]);

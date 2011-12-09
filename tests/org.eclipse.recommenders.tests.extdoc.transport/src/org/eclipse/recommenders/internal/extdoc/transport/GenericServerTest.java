@@ -17,12 +17,10 @@ import org.eclipse.recommenders.extdoc.rcp.feedback.IComment;
 import org.eclipse.recommenders.extdoc.rcp.feedback.IRating;
 import org.eclipse.recommenders.extdoc.rcp.feedback.IRatingSummary;
 import org.eclipse.recommenders.extdoc.rcp.feedback.IUserFeedbackServer;
-import org.eclipse.recommenders.internal.extdoc.transport.Rating;
 import org.eclipse.recommenders.tests.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.extdoc.ServerUtils;
 import org.eclipse.recommenders.tests.extdoc.TestTypeUtils;
 import org.eclipse.recommenders.utils.names.IName;
-
 import org.junit.Assert;
 import org.junit.Test;
 

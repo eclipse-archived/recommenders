@@ -15,7 +15,6 @@ import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.MockedIntell
 import org.eclipse.recommenders.tests.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.extdoc.TestJavaElementSelection;
 import org.eclipse.recommenders.tests.extdoc.TestTypeUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 

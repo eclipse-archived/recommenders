@@ -28,13 +28,14 @@ import org.eclipse.recommenders.extdoc.rcp.IProvider;
 import org.eclipse.recommenders.extdoc.rcp.ProviderUiUpdateJob;
 import org.eclipse.recommenders.extdoc.rcp.selection.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.extdoc.rcp.UpdateService.AbstractUpdateJob;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
+
+import com.google.common.base.Optional;
 
 abstract class AbstractHoverInformationControl extends AbstractInformationControl implements
         IInformationControlExtension2 {
@@ -92,8 +93,8 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
     }
 
     private void createContentControl(final Composite parent) {
-        final Option<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
-        if (site.hasValue()) {
+        final Optional<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
+        if (site.isPresent()) {
             providersComposite = new ProvidersComposite(parent, site.get().getWorkbenchWindow());
         }
     }
@@ -126,8 +127,8 @@ abstract class AbstractHoverInformationControl extends AbstractInformationContro
         toolbar.add(new Action("Open Input", ImageDescriptor.createFromImage(GOTO_ICON)) {
             @Override
             public void run() {
-                final Option<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
-                if (site.hasValue()) {
+                final Optional<IWorkbenchPartSite> site = uiManager.getWorkbenchSite();
+                if (site.isPresent()) {
                     new OpenAction(site.get()).run(new Object[] { lastSelection.getJavaElement() });
                 }
             }

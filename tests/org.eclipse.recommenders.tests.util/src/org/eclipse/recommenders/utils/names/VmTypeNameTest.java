@@ -15,10 +15,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.recommenders.utils.NamesTest;
-import org.eclipse.recommenders.utils.names.IPackageName;
-import org.eclipse.recommenders.utils.names.ITypeName;
-import org.eclipse.recommenders.utils.names.VmPackageName;
-import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.junit.Ignore;
 import org.junit.Test;
 

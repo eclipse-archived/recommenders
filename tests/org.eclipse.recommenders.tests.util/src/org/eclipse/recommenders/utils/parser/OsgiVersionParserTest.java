@@ -15,7 +15,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.recommenders.utils.Version;
-import org.eclipse.recommenders.utils.parser.OsgiVersionParser;
 import org.junit.Test;
 
 public class OsgiVersionParserTest {

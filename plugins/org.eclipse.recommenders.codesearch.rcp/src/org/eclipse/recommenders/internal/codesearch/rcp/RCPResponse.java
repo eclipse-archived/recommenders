@@ -16,7 +16,7 @@ import org.eclipse.recommenders.codesearch.Proposal;
 import org.eclipse.recommenders.codesearch.Request;
 import org.eclipse.recommenders.codesearch.Response;
 
-import com.google.inject.internal.util.Lists;
+import com.google.common.collect.Lists;
 
 public class RCPResponse {
 

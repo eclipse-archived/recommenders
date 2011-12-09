@@ -16,8 +16,8 @@ import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
-import org.eclipse.recommenders.internal.analysis.codeelements.TypeReference;
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey.Kind;
+import org.eclipse.recommenders.internal.analysis.codeelements.TypeReference;
 import org.eclipse.recommenders.internal.udc.CompilationUnitBuilder;
 import org.eclipse.recommenders.utils.names.IMethodName;
 

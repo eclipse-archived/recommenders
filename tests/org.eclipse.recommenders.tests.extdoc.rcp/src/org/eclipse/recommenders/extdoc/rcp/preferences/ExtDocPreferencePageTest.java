@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.extdoc.rcp.preferences;
 
-import org.eclipse.recommenders.extdoc.rcp.preferences.ExtDocPreferencePage;
 import org.eclipse.recommenders.tests.extdoc.ExtDocUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;

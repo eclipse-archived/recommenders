@@ -76,7 +76,7 @@ public class MetaDataResource {
 
     private Manifest findFingerprintMatch(final LibraryIdentifier libId) {
         final ModelSpecification modelSpec = dataAccess.getModelSpecificationByFingerprint(libId.fingerprint);
-        if (modelSpec == null || !modelSpec.getLastBuilt().hasValue()) {
+        if (modelSpec == null || !modelSpec.getLastBuilt().isPresent()) {
             return null;
         } else {
             return createManifest(modelSpec);
@@ -88,7 +88,7 @@ public class MetaDataResource {
                 .getModelSpecificationsByNameOrAlias(libraryIdentifier.name);
         final Collection<Manifest> potentialManifests = Lists.newLinkedList();
         for (final ModelSpecification modelSpec : modelSpecs) {
-            if (modelSpec.getLastBuilt().hasValue()) {
+            if (modelSpec.getLastBuilt().isPresent()) {
                 potentialManifests.add(createManifest(modelSpec));
             }
         }
@@ -98,7 +98,7 @@ public class MetaDataResource {
 
     private Manifest createManifest(final ModelSpecification modelSpec) {
 
-        final Date timestamp = modelSpec.getLastBuilt().hasValue() ? modelSpec.getLastBuilt().get() : null;
+        final Date timestamp = modelSpec.getLastBuilt().isPresent() ? modelSpec.getLastBuilt().get() : null;
         return new Manifest(modelSpec.getSymbolicName(), modelSpec.getVersionRange(), timestamp);
     }
 

@@ -10,17 +10,19 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp;
 
+import static com.google.common.base.Optional.fromNullable;
+
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.recommenders.extdoc.rcp.ExtDocPlugin;
 import org.eclipse.recommenders.extdoc.rcp.selection.selection.IExtendedSelectionListener;
 import org.eclipse.recommenders.extdoc.rcp.selection.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.extdoc.rcp.view.ExtDocView;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 /**
@@ -80,15 +82,15 @@ public final class UiManager implements IExtendedSelectionListener {
     /**
      * @return The default ExtDoc interface to the current workbench page.
      */
-    public Option<IWorkbenchPartSite> getWorkbenchSite() {
-        return Option.wrap(currentPartSite);
+    public Optional<IWorkbenchPartSite> getWorkbenchSite() {
+        return fromNullable(currentPartSite);
     }
 
     /**
      * @return The last user selection that has been observed by ExtDoc.
      */
-    public Option<IJavaElementSelection> getLastSelection() {
-        return Option.wrap(lastSelection);
+    public Optional<IJavaElementSelection> getLastSelection() {
+        return fromNullable(lastSelection);
     }
 
     @Override

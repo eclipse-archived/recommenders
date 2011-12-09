@@ -19,8 +19,6 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsJavaMethodCompletionProposal;
-import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsProposalContext;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -34,7 +34,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.SourceRange;
-import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsProposalContext;
 import org.junit.Test;
 
 public class SubwordsCompletionHighlightingTest {

@@ -95,7 +95,7 @@ class JavaElementSelectionTest {
 	def void waitAlongTime(){
 		Thread::sleep(120*1000)
 	}
-	def void exerciseAndVerify(StringConcatenation code, List<String> expected){
+	def void exerciseAndVerify(CharSequence code, List<String> expected){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.parseWithMarkers(code.toString, "MyClass.java")
 		val cu = struct.first;

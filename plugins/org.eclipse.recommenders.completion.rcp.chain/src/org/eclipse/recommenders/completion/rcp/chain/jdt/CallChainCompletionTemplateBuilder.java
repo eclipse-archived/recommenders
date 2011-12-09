@@ -23,7 +23,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.templates.Template;
-import org.eclipse.recommenders.completion.rcp.chain.jdt.deps.HashBag;
+import org.eclipse.recommenders.utils.HashBag;
 
 // TODO: field access may need to be qualified using "this." This is completely ignored ATM
 public class CallChainCompletionTemplateBuilder {
@@ -115,9 +115,8 @@ public class CallChainCompletionTemplateBuilder {
     }
 
     private void addArrayDimension() {
-        final String varname = "index";
         sb.append("[");
-        appendTemplateVariable(varname);
+        appendTemplateVariable("index");
         sb.append("]");
     }
 

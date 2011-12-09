@@ -11,8 +11,8 @@
 package org.eclipse.recommenders.completion.rcp.chain.jdt;
 
 import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Checks.cast;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Throws.throwCancelationException;
+import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Throws.throwCancelationException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +34,8 @@ import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.recommenders.completion.rcp.chain.jdt.deps.Optional;
+
+import com.google.common.base.Optional;
 
 public class CallChainGraphBuilder {
 

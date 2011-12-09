@@ -14,11 +14,13 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -37,9 +39,8 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 public interface IIntelligentCompletionContext {
 
     /**
-     * Returns the token preceding the location in front of the cursor position
-     * where the code completion event occurred. This token includes every valid
-     * Java identifier character until the first dot or space etc. occurs.
+     * Returns the token preceding the location in front of the cursor position where the code completion event
+     * occurred. This token includes every valid Java identifier character until the first dot or space etc. occurs.
      * 
      * <p>
      * Example:
@@ -52,8 +53,7 @@ public interface IIntelligentCompletionContext {
     public String getPrefixToken();
 
     /**
-     * The (internal) AST node representing completion node created by the
-     * completion completion parser.
+     * The (internal) AST node representing completion node created by the completion completion parser.
      * 
      * @see one of org.eclipse.jdt.internal.codeassist.complete
      * @see CompletionOnMessageSend
@@ -70,30 +70,29 @@ public interface IIntelligentCompletionContext {
     public Statement getCompletionNodeParent();
 
     /**
-     * Returns a set of all local variables declared in the method code
-     * completion was triggered in.
+     * Returns a set of all local variables declared in the method code completion was triggered in.
      * <p>
-     * Note, the objects returned by this method are compiler ast nodes. This
-     * API is very likely to change!
+     * Note, the objects returned by this method are compiler ast nodes. This API is very likely to change!
      * </p>
      */
     @Experimental
     Set<LocalDeclaration> getLocalDeclarations();
 
     /**
-     * Returns a set of all fields declared in the scope of this compilation
-     * unit( or just type?) completion was triggered in.
+     * Returns a set of all fields declared in the scope of this compilation unit( or just type?) completion was
+     * triggered in.
      * <p>
-     * Note, the objects returned by this method are compiler ast nodes. This
-     * API is very likely to change!
+     * Note, the objects returned by this method are compiler ast nodes. This API is very likely to change!
      * </p>
      */
     @Experimental
     Set<FieldDeclaration> getFieldDeclarations();
 
+    public Set<MethodDeclaration> getMethodDeclarations();
+
     /**
-     * Returns proposals made by the JDT. These proposals are allowed to be
-     * reused by completion engines. Changes to this set are not permitted.
+     * Returns proposals made by the JDT. These proposals are allowed to be reused by completion engines. Changes to
+     * this set are not permitted.
      */
     public Set<CompletionProposal> getJdtProposals();
 
@@ -127,8 +126,7 @@ public interface IIntelligentCompletionContext {
     public ITypeName getEnclosingType();
 
     /**
-     * Returns the static type of the receiver code completion was triggered on
-     * - if it could be resolved from AST.
+     * Returns the static type of the receiver code completion was triggered on - if it could be resolved from AST.
      * 
      */
     ITypeName getReceiverType();
@@ -151,9 +149,8 @@ public interface IIntelligentCompletionContext {
     String getReceiverName();
 
     /**
-     * Returns <code>true</code> if this completion event requests an expression
-     * that returns 'something'. If 'something' is known, it is made available
-     * under {@link #getExpectedType()}.
+     * Returns <code>true</code> if this completion event requests an expression that returns 'something'. If
+     * 'something' is known, it is made available under {@link #getExpectedType()}.
      * 
      * @return
      */
@@ -179,25 +176,21 @@ public interface IIntelligentCompletionContext {
     /**
      * Returns the original Java completion context provided by Eclipse.
      * <p>
-     * Please report reasons why you need the original context to the Code
-     * Recommenders team since this completion context is intended to replace
-     * the jdt context inside the Code Recommenders platform.
+     * Please report reasons why you need the original context to the Code Recommenders team since this completion
+     * context is intended to replace the jdt context inside the Code Recommenders platform.
      */
     @ReportUsage
     JavaContentAssistInvocationContext getOriginalContext();
 
     /**
-     * <b>NOTE:</b> This method returns a handle for a {@link Variable} which
-     * might be used to lookup real variable definitions of a
-     * {@link CompilationUnit}. Its methods will not return any receiver call
-     * sites etc. Just the name, the type (if known) and the method that
-     * declares this variable.
+     * <b>NOTE:</b> This method returns a handle for a {@link Variable} which might be used to lookup real variable
+     * definitions of a {@link CompilationUnit}. Its methods will not return any receiver call sites etc. Just the name,
+     * the type (if known) and the method that declares this variable.
      */
     public Variable getVariable();
 
     /**
-     * Utility method to convert JDT {@link CompletionProposal} internal
-     * proposals to {@link IJavaCompletionProposal}s.
+     * Utility method to convert JDT {@link CompletionProposal} internal proposals to {@link IJavaCompletionProposal}s.
      */
     public IJavaCompletionProposal toJavaCompletionProposal(CompletionProposal proposal);
 
@@ -208,13 +201,13 @@ public interface IIntelligentCompletionContext {
     public boolean isReceiverImplicitThis();
 
     /**
-     * Searches the list of locals and fields declared for exact match. This
-     * method may return <code>null</code>.
+     * Searches the list of locals and fields declared for exact match. This method may return <code>null</code>.
      * <p>
-     * Note, this method does not perform a search on inherited fields. Only
-     * declarations in "this" are considered.
+     * Note, this method does not perform a search on inherited fields. Only declarations in "this" are considered.
      * </p>
      */
     public Variable findMatchingVariable(final String variableName);
+
+    InternalCompletionContext getCoreCompletionContext();
 
 }

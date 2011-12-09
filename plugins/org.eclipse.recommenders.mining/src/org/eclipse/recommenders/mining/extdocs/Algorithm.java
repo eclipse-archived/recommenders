@@ -17,11 +17,11 @@ import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.transport.types.ClassOverridePatterns;
 import org.eclipse.recommenders.extdoc.transport.types.MethodSelfcallDirectives;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 
@@ -57,12 +57,12 @@ public class Algorithm implements Runnable {
             log.debug("Running extdoc analysis on {}.", superclass);
             final Iterable<CompilationUnit> cus = cuProvider.getCompilationUnits(superclass);
             try {
-                final Option<ClassOverrideDirectives> optDirective = directivesGenerator.generate(superclass, cus);
-                if (optDirective.hasValue()) {
+                final Optional<ClassOverrideDirectives> optDirective = directivesGenerator.generate(superclass, cus);
+                if (optDirective.isPresent()) {
                     consumer.consume(optDirective.get());
                 }
-                final Option<ClassOverridePatterns> optPattern = patternsGenerator.generate(superclass, cus);
-                if (optPattern.hasValue()) {
+                final Optional<ClassOverridePatterns> optPattern = patternsGenerator.generate(superclass, cus);
+                if (optPattern.isPresent()) {
                     consumer.consume(optPattern.get());
                 }
                 methodSelfcallGenerator.analyzeCompilationUnits(cus);

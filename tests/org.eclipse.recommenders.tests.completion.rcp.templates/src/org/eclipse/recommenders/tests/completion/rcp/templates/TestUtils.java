@@ -21,9 +21,6 @@ import org.eclipse.recommenders.internal.completion.rcp.templates.types.MethodCa
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 import org.mockito.Mockito;
 
 /**

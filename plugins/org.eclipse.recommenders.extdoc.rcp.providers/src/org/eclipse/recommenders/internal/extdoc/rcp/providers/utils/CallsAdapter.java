@@ -36,8 +36,8 @@ import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Provider;
-import com.google.inject.internal.util.Sets;
 
 @SuppressWarnings("restriction")
 public final class CallsAdapter {
@@ -123,9 +123,9 @@ public final class CallsAdapter {
         model.clearEvidence();
         model.setMethodContext(context == null ? null : context.getEnclosingMethodsFirstDeclaration());
         model.setObservedMethodCalls(typeName, invokedMethods);
-//        if (negateConstructors) {
-//            model.negateConstructors();
-//        }
+        // if (negateConstructors) {
+        // model.negateConstructors();
+        // }
         final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model.getRecommendedMethodCalls(0.01, 5);
         facade.releaseModel(model);
         return recommendedMethodCalls;

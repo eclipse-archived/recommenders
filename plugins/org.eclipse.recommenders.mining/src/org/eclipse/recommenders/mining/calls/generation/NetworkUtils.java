@@ -29,8 +29,8 @@ import org.apache.commons.math.stat.StatUtils;
 import org.apache.commons.math.util.MathUtils;
 import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
-import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 

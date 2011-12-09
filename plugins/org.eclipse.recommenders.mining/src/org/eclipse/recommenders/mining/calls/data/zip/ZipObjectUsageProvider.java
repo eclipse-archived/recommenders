@@ -10,8 +10,8 @@
  */
 package org.eclipse.recommenders.mining.calls.data.zip;
 
+import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.utils.GenericEnumerationUtils.iterable;
-import static org.eclipse.recommenders.utils.Option.wrap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,9 +27,9 @@ import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey
 import org.eclipse.recommenders.internal.analysis.codeelements.ReceiverCallSite;
 import org.eclipse.recommenders.mining.calls.AlgorithmParameters;
 import org.eclipse.recommenders.mining.calls.data.IObjectUsageProvider;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -48,15 +48,15 @@ public class ZipObjectUsageProvider implements IObjectUsageProvider {
         usages = Lists.newLinkedList();
 
         for (final ZipEntry entry : iterable(zip.entries())) {
-            final Option<CompilationUnit> option = loadCompilationUnit(entry);
-            if (option.hasValue()) {
+            final Optional<CompilationUnit> option = loadCompilationUnit(entry);
+            if (option.isPresent()) {
                 collectObjectUsages(option.get());
             }
         }
         return usages;
     }
 
-    private Option<CompilationUnit> loadCompilationUnit(final ZipEntry entry) {
+    private Optional<CompilationUnit> loadCompilationUnit(final ZipEntry entry) {
         CompilationUnit res = null;
         try {
             if (entry.getName().endsWith(".json")) {
@@ -67,7 +67,7 @@ public class ZipObjectUsageProvider implements IObjectUsageProvider {
             // log.warn(String.format("Failed to parse '%s' from zip '%s'",
             // entry, zip.getName()), e);
         }
-        return wrap(res);
+        return fromNullable(res);
     }
 
     private void collectObjectUsages(final CompilationUnit unit) {

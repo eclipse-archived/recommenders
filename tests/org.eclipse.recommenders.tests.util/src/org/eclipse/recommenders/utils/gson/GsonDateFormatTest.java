@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.junit.Test;
 
 public class GsonDateFormatTest {

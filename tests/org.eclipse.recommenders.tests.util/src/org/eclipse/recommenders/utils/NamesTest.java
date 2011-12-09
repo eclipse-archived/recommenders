@@ -14,7 +14,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.Names.PrimitiveType;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IPackageName;

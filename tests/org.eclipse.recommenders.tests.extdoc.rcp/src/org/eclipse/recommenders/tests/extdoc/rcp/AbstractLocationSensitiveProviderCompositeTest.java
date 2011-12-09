@@ -17,7 +17,6 @@ import org.eclipse.recommenders.tests.extdoc.ExtDocUtils;
 import org.eclipse.recommenders.tests.extdoc.TestTypeUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -10,30 +10,31 @@
  */
 package org.eclipse.recommenders.internal.analysis.codeelements;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.eclipse.recommenders.utils.Option;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * {@link CompilationUnit}s represent .class or .java files. All units MUST have
- * a primary type, i.e., a instance of {@link TypeDeclaration}. In addition,
- * primary types of source types may also have one or many nested types.
+ * {@link CompilationUnit}s represent .class or .java files. All units MUST have a primary type, i.e., a instance of
+ * {@link TypeDeclaration}. In addition, primary types of source types may also have one or many nested types.
  * <p>
- * {@link CompilationUnit#imports} is a pointer to the {@link TypeReference}s
- * used within this {@link CompilationUnit} as detected by the analyzer used
- * during analysis.
+ * {@link CompilationUnit#imports} is a pointer to the {@link TypeReference}s used within this {@link CompilationUnit}
+ * as detected by the analyzer used during analysis.
  */
 public class CompilationUnit implements ICodeElement {
 
@@ -123,12 +124,12 @@ public class CompilationUnit implements ICodeElement {
         }
     }
 
-    public Option<TypeDeclaration> findType(final ITypeName enclosingType) {
+    public Optional<TypeDeclaration> findType(final ITypeName enclosingType) {
         for (final TypeDeclaration decl : allTypes()) {
             if (decl.getName().equals(enclosingType)) {
-                return Option.wrap(decl);
+                return fromNullable(decl);
             }
         }
-        return Option.none();
+        return absent();
     }
 }

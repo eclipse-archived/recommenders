@@ -17,8 +17,6 @@ import static org.junit.Assert.assertNotSame;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.recommenders.utils.Bag;
-import org.eclipse.recommenders.utils.HashBag;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
