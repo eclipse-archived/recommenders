@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.completion.rcp.chain.jdt;
+package org.eclipse.recommenders.internal.completion.rcp.chain.jdt;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,28 +23,33 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
+/**
+ * This class basically delegates all events to a {@link TemplateProposal} but provides some auxilary methods for
+ * testing such as {@link #getChain()}, and {@link #getChainElementNames()} etc. It may be extended to track user click
+ * feedback to continuously improve chain completion.
+ */
 public class CallChainCompletionProposal implements IJavaCompletionProposal, ICompletionProposalExtension2 {
 
-    private final List<CallChainEdge> chain;
+    private final List<MemberEdge> chain;
     private final TemplateProposal completion;
 
-    public CallChainCompletionProposal(final List<CallChainEdge> chain, final int invocationOffset) {
+    public CallChainCompletionProposal(final List<MemberEdge> chain, final int invocationOffset) {
         this.chain = chain;
         completion = null;
     }
 
-    public CallChainCompletionProposal(final TemplateProposal completion, final List<CallChainEdge> chain) {
+    public CallChainCompletionProposal(final TemplateProposal completion, final List<MemberEdge> chain) {
         this.completion = completion;
         this.chain = chain;
     }
 
-    public List<CallChainEdge> getChain() {
+    public List<MemberEdge> getChain() {
         return chain;
     }
 
     public List<String> getChainElementNames() {
         final List<String> b = new LinkedList<String>();
-        for (final CallChainEdge edge : chain) {
+        for (final MemberEdge edge : chain) {
             b.add(edge.getEdgeElement().getElementName());
         }
         return b;

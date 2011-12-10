@@ -8,12 +8,12 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.completion.rcp.chain.jdt;
+package org.eclipse.recommenders.internal.completion.rcp.chain.jdt;
 
 import static org.eclipse.jdt.ui.JavaElementLabels.M_PARAMETER_NAMES;
 import static org.eclipse.jdt.ui.JavaElementLabels.M_PARAMETER_TYPES;
 import static org.eclipse.jdt.ui.JavaElementLabels.getElementLabel;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.createTemplateProposal;
+import static org.eclipse.recommenders.internal.completion.rcp.chain.jdt.InternalAPIsHelper.createTemplateProposal;
 
 import java.util.List;
 
@@ -26,12 +26,15 @@ import org.eclipse.jface.text.templates.Template;
 import org.eclipse.recommenders.utils.HashBag;
 
 // TODO: field access may need to be qualified using "this." This is completely ignored ATM
-public class CallChainCompletionTemplateBuilder {
+/**
+ * Creates the templates for a give call chain.
+ */
+public class CompletionTemplateBuilder {
 
     private HashBag<String> varNames;
     private StringBuilder sb;
 
-    public TemplateProposal create(final List<CallChainEdge> chain, final JavaContentAssistInvocationContext context) {
+    public TemplateProposal create(final List<MemberEdge> chain, final JavaContentAssistInvocationContext context) {
 
         final String title = createCompletionTitle(chain);
         final String body = createCompletionBody(chain);
@@ -40,9 +43,9 @@ public class CallChainCompletionTemplateBuilder {
         return createTemplateProposal(template, context);
     }
 
-    private static String createCompletionTitle(final List<CallChainEdge> chain) {
+    private static String createCompletionTitle(final List<MemberEdge> chain) {
         final StringBuilder sb = new StringBuilder();
-        for (final CallChainEdge edge : chain) {
+        for (final MemberEdge edge : chain) {
             switch (edge.getEdgeType()) {
             case FIELD:
             case LOCAL_VARIABLE:
@@ -65,10 +68,10 @@ public class CallChainCompletionTemplateBuilder {
         return sb.toString();
     }
 
-    private String createCompletionBody(final List<CallChainEdge> chain) {
+    private String createCompletionBody(final List<MemberEdge> chain) {
         varNames = HashBag.newHashBag();
         sb = new StringBuilder();
-        for (final CallChainEdge edge : chain) {
+        for (final MemberEdge edge : chain) {
             switch (edge.getEdgeType()) {
             case FIELD:
             case LOCAL_VARIABLE:
@@ -78,22 +81,7 @@ public class CallChainCompletionTemplateBuilder {
             case METHOD:
                 final IMethod method = edge.getEdgeElement();
                 appendIdentifier(method);
-                sb.append("(");
-                try {
-                    final String[] parameterNames = method.getParameterNames();
-                    for (final String paramName : parameterNames) {
-                        appendTemplateVariable(paramName);
-                        sb.append(", ");
-                    }
-                    if (parameterNames.length > 0) {
-                        deleteLastChar();
-                        deleteLastChar();
-                    }
-                } catch (final JavaModelException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                sb.append(")");
+                appendParameters(method);
             default:
                 break;
             }
@@ -108,16 +96,24 @@ public class CallChainCompletionTemplateBuilder {
         return sb.append(var.getElementName());
     }
 
-    private void appendArrayDimensions(final int dimension) {
-        for (int i = dimension; i-- > 0;) {
-            addArrayDimension();
+    private void appendParameters(final IMethod method) {
+        sb.append("(");
+        try {
+            final String[] parameterNames = method.getParameterNames();
+            for (final String paramName : parameterNames) {
+                appendTemplateVariable(paramName);
+                sb.append(", ");
+            }
+            if (parameterNames.length > 0) {
+                deleteLastChar();
+                deleteLastChar();
+            }
+        } catch (final JavaModelException e) {
+            // we can not handle that. log it.
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-    }
-
-    private void addArrayDimension() {
-        sb.append("[");
-        appendTemplateVariable("index");
-        sb.append("]");
+        sb.append(")");
     }
 
     private void appendTemplateVariable(final String varname) {
@@ -132,5 +128,17 @@ public class CallChainCompletionTemplateBuilder {
 
     private StringBuilder deleteLastChar() {
         return sb.deleteCharAt(sb.length() - 1);
+    }
+
+    private void appendArrayDimensions(final int dimension) {
+        for (int i = dimension; i-- > 0;) {
+            addArrayDimension();
+        }
+    }
+
+    private void addArrayDimension() {
+        sb.append("[");
+        appendTemplateVariable("index");
+        sb.append("]");
     }
 }

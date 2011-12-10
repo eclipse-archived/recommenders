@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.completion.rcp.chain.jdt;
+package org.eclipse.recommenders.internal.completion.rcp.chain.jdt;
 
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isPublic;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isStatic;
@@ -54,6 +54,9 @@ import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
 
+/**
+ * The dirty parts when working with jdt internals. all in one place.
+ */
 public class InternalAPIsHelper {
 
     private static final Util.BindingsToNodesMap EmptyNodeMap = new Util.BindingsToNodesMap() {
@@ -110,6 +113,33 @@ public class InternalAPIsHelper {
         return returnTypeAndSupertypes;
     }
 
+    public static boolean isVoid(final IMethod method) throws JavaModelException {
+        return Signature.SIG_VOID.equals(method.getReturnType());
+    }
+
+    public static boolean hasPrimitiveReturnType(final IMethod method) throws JavaModelException {
+        return !method.getReturnType().endsWith(";");
+    }
+
+    private static String createMethodKey(final IMethod method) throws JavaModelException {
+        final String signature = method.getSignature();
+        final String signatureWithoutReturnType = substringBeforeLast(signature, ")");
+        final String methodName = method.getElementName();
+        return methodName + signatureWithoutReturnType;
+    }
+
+    private static String substringBeforeLast(String typeSignature, final String separator) {
+        final int lastIndexOf = typeSignature.lastIndexOf(separator);
+        if (lastIndexOf > -1) {
+            typeSignature = typeSignature.substring(0, lastIndexOf);
+        }
+        return typeSignature;
+    }
+
+    private static String createFieldKey(final IField field) throws JavaModelException {
+        return field.getElementName() + field.getTypeSignature();
+    }
+
     /**
      * Returns a list of all public static fields and methods declared in the given class (but not its super-classes)
      * TODO: superclasses not, should we add this?
@@ -131,44 +161,6 @@ public class InternalAPIsHelper {
             e.printStackTrace();
         }
         return res;
-    }
-
-    public static boolean isVoid(final IMethod method) throws JavaModelException {
-        return Signature.SIG_VOID.equals(method.getReturnType());
-    }
-
-    public static boolean hasPrimitiveReturnType(final IMethod method) throws JavaModelException {
-        return !method.getReturnType().endsWith(";");
-    }
-
-    public static boolean isAssignable(final IType lhsType, final IType rhsType) {
-        ensureIsNotNull(lhsType);
-        ensureIsNotNull(rhsType);
-
-        try {
-            final IType[] supertypes = findAllSupertypesIncludeingArgument(rhsType);
-            for (final IType supertype : supertypes) {
-                if (supertype.equals(lhsType)) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (final JavaModelException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private static String createMethodKey(final IMethod method) throws JavaModelException {
-        final String signature = method.getSignature();
-        final String signatureWithoutReturnType = substringBeforeLast(signature, ")");
-        final String methodName = method.getElementName();
-        return methodName + signatureWithoutReturnType;
-    }
-
-    private static String createFieldKey(final IField field) throws JavaModelException {
-        return field.getElementName() + field.getTypeSignature();
     }
 
     public static TemplateProposal createTemplateProposal(final Template template,
@@ -194,6 +186,35 @@ public class InternalAPIsHelper {
         return JavaPlugin.getImageDescriptorRegistry().get(JavaPluginImages.DESC_MISC_PUBLIC);
     }
 
+    public static boolean isAssignable(final IType lhsType, final IType rhsType) {
+        ensureIsNotNull(lhsType);
+        ensureIsNotNull(rhsType);
+
+        try {
+            final IType[] supertypes = findAllSupertypesIncludeingArgument(rhsType);
+            for (final IType supertype : supertypes) {
+                if (supertype.equals(lhsType)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (final JavaModelException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static Optional<IType> findTypeOfField(final IField field) {
+        try {
+            return findTypeFromSignature(field.getTypeSignature(), field);
+        } catch (final JavaModelException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return Optional.absent();
+        }
+    }
+
     public static Optional<IType> findTypeFromSignature(final String typeSignature, final IJavaElement parent) {
         try {
             final String resolvedTypeSignature = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
@@ -207,16 +228,6 @@ public class InternalAPIsHelper {
         }
     }
 
-    public static Optional<IType> findTypeOfField(final IField field) {
-        try {
-            return findTypeFromSignature(field.getTypeSignature(), field);
-        } catch (final JavaModelException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return Optional.absent();
-        }
-    }
-
     public static String resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(String typeSignature,
             final IJavaElement parent) throws JavaModelException {
         typeSignature = typeSignature.replace('/', '.');
@@ -224,14 +235,6 @@ public class InternalAPIsHelper {
         typeSignature = JavaModelUtil.getResolvedTypeName(typeSignature, type);
         // NOT needed. Done by getResolvedTypeName typeSignature = StringUtils.substringBefore(typeSignature, "[");
         typeSignature = substringBeforeLast(typeSignature, "<");
-        return typeSignature;
-    }
-
-    private static String substringBeforeLast(String typeSignature, final String separator) {
-        final int lastIndexOf = typeSignature.lastIndexOf(separator);
-        if (lastIndexOf > -1) {
-            typeSignature = typeSignature.substring(0, lastIndexOf);
-        }
         return typeSignature;
     }
 

@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.completion.rcp.chain.jdt;
+package org.eclipse.recommenders.internal.completion.rcp.chain.jdt;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
@@ -23,10 +23,17 @@ import org.eclipse.jdt.core.Signature;
 
 import com.google.common.base.Optional;
 
-public class CallChainEdge {
+/**
+ * Represents a transition from Type A to Type B by some chain element ( {@link IField} access, {@link IMethod} call, or
+ * {@link ILocalVariable} (as entrypoints only)).
+ * 
+ * @see TypeNode
+ * @see GraphBuilder
+ */
+public class MemberEdge {
 
     public enum EdgeType {
-        METHOD, FIELD, LOCAL_VARIABLE, CAST
+        METHOD, FIELD, LOCAL_VARIABLE
     }
 
     private final IJavaElement element;
@@ -36,7 +43,7 @@ public class CallChainEdge {
     private EdgeType edgeType;
 
     // TODO I don't like var names sourceType javaelement... too generic
-    public CallChainEdge(final IType sourceType, final IJavaElement javaElement) {
+    public MemberEdge(final IType sourceType, final IJavaElement javaElement) {
         this.oSourceType = fromNullable(sourceType);
         ensureIsNotNull(javaElement);
         this.element = javaElement;
@@ -48,7 +55,7 @@ public class CallChainEdge {
         }
     }
 
-    public CallChainEdge(final IJavaElement unresolvedJavaElement) {
+    public MemberEdge(final IJavaElement unresolvedJavaElement) {
         this(null, unresolvedJavaElement);
     }
 
@@ -76,11 +83,29 @@ public class CallChainEdge {
     }
 
     /**
-     * Instance of {@link IMethod}, {@link IField}, {@link ILocalVariable}, or {@link IType}(if edge type is cast)
+     * Instance of {@link IMethod}, {@link IField}, or {@link ILocalVariable}
      */
     @SuppressWarnings("unchecked")
     public <T extends IJavaElement> T getEdgeElement() {
         return (T) element;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            switch (getEdgeElement().getElementType()) {
+            case IJavaElement.FIELD:
+                return ((IField) getEdgeElement()).getKey();
+            case IJavaElement.LOCAL_VARIABLE:
+                return ((ILocalVariable) getEdgeElement()).getHandleIdentifier();
+            case IJavaElement.METHOD:
+                final IMethod m = getEdgeElement();
+                return m.getElementName() + m.getSignature();
+            }
+        } catch (final JavaModelException e) {
+            return e.toString();
+        }
+        return super.toString();
     }
 
     public EdgeType getEdgeType() {
@@ -126,28 +151,10 @@ public class CallChainEdge {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof CallChainEdge) {
-            final CallChainEdge other = (CallChainEdge) obj;
+        if (obj instanceof MemberEdge) {
+            final MemberEdge other = (MemberEdge) obj;
             return element.equals(other.element);
         }
         return super.equals(obj);
-    }
-
-    @Override
-    public String toString() {
-        try {
-            switch (getEdgeElement().getElementType()) {
-            case IJavaElement.FIELD:
-                return ((IField) getEdgeElement()).getKey();
-            case IJavaElement.LOCAL_VARIABLE:
-                return ((ILocalVariable) getEdgeElement()).getHandleIdentifier();
-            case IJavaElement.METHOD:
-                final IMethod m = getEdgeElement();
-                return m.getElementName() + m.getSignature();
-            }
-        } catch (final JavaModelException e) {
-            return e.toString();
-        }
-        return super.toString();
     }
 }

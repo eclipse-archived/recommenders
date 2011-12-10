@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.completion.rcp.chain.jdt;
+package org.eclipse.recommenders.internal.completion.rcp.chain.jdt;
 
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
@@ -8,13 +8,16 @@ import java.util.List;
 
 import org.eclipse.jdt.core.IType;
 
-public class CallChainTypeNode {
+/**
+ * Represents an {@link IType} in the call chain graph
+ */
+public class TypeNode {
 
-    public List<CallChainEdge> incomingEdges = new LinkedList<CallChainEdge>();
+    public List<MemberEdge> incomingEdges = new LinkedList<MemberEdge>();
 
     public IType type;
 
-    public CallChainTypeNode(final IType type) {
+    public TypeNode(final IType type) {
         ensureIsNotNull(type);
         this.type = type;
     }

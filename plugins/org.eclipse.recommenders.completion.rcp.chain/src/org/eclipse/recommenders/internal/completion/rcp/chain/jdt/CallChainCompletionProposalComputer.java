@@ -8,15 +8,15 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.completion.rcp.chain.jdt;
+package org.eclipse.recommenders.internal.completion.rcp.chain.jdt;
 
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.createUnresolvedField;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.createUnresolvedLocaVariable;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.createUnresolvedMethod;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.createUnresolvedType;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.findAllPublicStaticFieldsAndNonVoidNonPrimitiveMethods;
-import static org.eclipse.recommenders.completion.rcp.chain.jdt.InternalAPIsHelper.findTypeOfField;
+import static org.eclipse.recommenders.internal.completion.rcp.chain.jdt.InternalAPIsHelper.createUnresolvedField;
+import static org.eclipse.recommenders.internal.completion.rcp.chain.jdt.InternalAPIsHelper.createUnresolvedLocaVariable;
+import static org.eclipse.recommenders.internal.completion.rcp.chain.jdt.InternalAPIsHelper.createUnresolvedMethod;
+import static org.eclipse.recommenders.internal.completion.rcp.chain.jdt.InternalAPIsHelper.createUnresolvedType;
+import static org.eclipse.recommenders.internal.completion.rcp.chain.jdt.InternalAPIsHelper.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods;
+import static org.eclipse.recommenders.internal.completion.rcp.chain.jdt.InternalAPIsHelper.findAllPublicStaticFieldsAndNonVoidNonPrimitiveMethods;
+import static org.eclipse.recommenders.internal.completion.rcp.chain.jdt.InternalAPIsHelper.findTypeOfField;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -60,7 +60,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     private IIntelligentCompletionContext recContext;
     private InternalCompletionContext jdtCoreContext;
     private IType expectedType;
-    private List<CallChainEdge> entrypoints;
+    private List<MemberEdge> entrypoints;
     private List<ICompletionProposal> proposals;
     private final IntelligentCompletionContextResolver contextResolver;
     private JavaContentAssistInvocationContext jdtContext;
@@ -111,7 +111,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private boolean findEntrypoints() {
-        entrypoints = new LinkedList<CallChainEdge>();
+        entrypoints = new LinkedList<MemberEdge>();
         final ASTNode completionNode = recContext.getCompletionNode();
 
         if (completionNode instanceof CompletionOnQualifiedNameReference) {
@@ -165,34 +165,24 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
         return !entrypoints.isEmpty();
     }
 
-    private void addAllInheritedPublicMembersToEntrypoints(final IType type) {
-        final Collection<IMember> methodsAndFields = InternalAPIsHelper
-                .findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods(type);
-
-        for (final IMember m : methodsAndFields) {
-            if (m.getDeclaringType() != type) {
-                entrypoints.add(new CallChainEdge(m));
+    private void addPublicStaticMembersToEntrypoints(final IType type) {
+        for (final IMember m : findAllPublicStaticFieldsAndNonVoidNonPrimitiveMethods(type)) {
+            if (passesPrefixCheck(m)) {
+                final MemberEdge edge = new MemberEdge(m);
+                entrypoints.add(edge);
             }
         }
+    }
+
+    private boolean passesPrefixCheck(final IMember m) {
+        final String token = recContext.getPrefixToken();
+        final boolean prefixMatch = m.getElementName().startsWith(token);
+        return prefixMatch;
     }
 
     private JavaElement findEnclosingElement() {
         final IJavaElement enclosing = jdtCoreContext.getEnclosingElement();
         return (JavaElement) enclosing;
-    }
-
-    private IType findEnclosingType() {
-        final IJavaElement enclosing = jdtCoreContext.getEnclosingElement();
-        return (IType) enclosing.getAncestor(IJavaElement.TYPE).getPrimaryElement();
-    }
-
-    private void addPublicStaticMembersToEntrypoints(final IType type) {
-        for (final IMember m : findAllPublicStaticFieldsAndNonVoidNonPrimitiveMethods(type)) {
-            if (passesPrefixCheck(m)) {
-                final CallChainEdge edge = new CallChainEdge(m);
-                entrypoints.add(edge);
-            }
-        }
     }
 
     private void addPublicMembersToEntrypoints(final ILocalVariable var) {
@@ -206,16 +196,10 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     private void addPublicMembersToEntrypoints(final IType type) {
         for (final IMember m : findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods(type)) {
             if (passesPrefixCheck(m)) {
-                final CallChainEdge edge = new CallChainEdge(m);
+                final MemberEdge edge = new MemberEdge(m);
                 entrypoints.add(edge);
             }
         }
-    }
-
-    private boolean passesPrefixCheck(final IMember m) {
-        final String token = recContext.getPrefixToken();
-        final boolean prefixMatch = m.getElementName().startsWith(token);
-        return prefixMatch;
     }
 
     private void resolveEntrypoints(final Collection<? extends ASTNode> elements) {
@@ -242,21 +226,37 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
             default:
                 continue;
             }
-            final CallChainEdge e = new CallChainEdge(javaElement);
+            final MemberEdge e = new MemberEdge(javaElement);
             if (e.getReturnType().isPresent()) {
                 entrypoints.add(e);
             }
         }
     }
 
+    private void addAllInheritedPublicMembersToEntrypoints(final IType type) {
+        final Collection<IMember> methodsAndFields = InternalAPIsHelper
+                .findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods(type);
+
+        for (final IMember m : methodsAndFields) {
+            if (m.getDeclaringType() != type) {
+                entrypoints.add(new MemberEdge(m));
+            }
+        }
+    }
+
+    private IType findEnclosingType() {
+        final IJavaElement enclosing = jdtCoreContext.getEnclosingElement();
+        return (IType) enclosing.getAncestor(IJavaElement.TYPE).getPrimaryElement();
+    }
+
     private void executeCallChainSearch() throws JavaModelException {
         proposals.clear();
 
-        final CallChainGraphBuilder b = new CallChainGraphBuilder();
+        final GraphBuilder b = new GraphBuilder();
         b.build(entrypoints);
-        final List<List<CallChainEdge>> chains = b.findChains(expectedType);
-        for (final List<CallChainEdge> chain : chains) {
-            final TemplateProposal completion = new CallChainCompletionTemplateBuilder().create(chain, jdtContext);
+        final List<List<MemberEdge>> chains = b.findChains(expectedType);
+        for (final List<MemberEdge> chain : chains) {
+            final TemplateProposal completion = new CompletionTemplateBuilder().create(chain, jdtContext);
             final CallChainCompletionProposal completionProposal = new CallChainCompletionProposal(completion, chain);
             proposals.add(completionProposal);
         }
