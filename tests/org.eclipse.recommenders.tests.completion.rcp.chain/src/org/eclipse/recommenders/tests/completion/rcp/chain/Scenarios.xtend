@@ -4,8 +4,8 @@ import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver
-import org.eclipse.recommenders.completion.rcp.chain.jdt.CallChainCompletionProposal
-import org.eclipse.recommenders.completion.rcp.chain.jdt.CallChainCompletionProposalComputer
+import org.eclipse.recommenders.internal.completion.rcp.chain.jdt.CallChainCompletionProposal
+import org.eclipse.recommenders.internal.completion.rcp.chain.jdt.CallChainCompletionProposalComputer
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.tests.jdt.TestJavaContentAssistContext
