@@ -1,20 +1,20 @@
 package org.eclipse.recommenders.tests.extdoc.rcp.selection2
 
+import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.XtendUtils.*
+
 import java.util.List
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.dom.NodeFinder
 import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
-import org.eclipse.xtext.xtend2.lib.StringConcatenation
 import org.junit.Ignore
 import org.junit.Test
 
 import static junit.framework.Assert.*
-import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.XtendUtils.*
 
 class JavaElementSelectionTest {
 
-
+ 
 	@Test
 	def void testTypeSelectionInTypeDeclaration() {
 		// note: this does not work since classpath cannot resolve this!
@@ -28,7 +28,7 @@ class JavaElementSelectionTest {
 	
 	@Test
 	def void testTypeSelectionsInMethodBody() {
-		val code = '''
+		val code = ''' 
 		class Myclass {
 			Str$ing s = new St$ring("");
 		}''' 

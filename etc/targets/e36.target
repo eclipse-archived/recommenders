@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders Development Environment" sequenceNumber="37">
+<target name="Code Recommenders Development Environment" sequenceNumber="39">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201111131155"/>
@@ -10,16 +10,14 @@
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtext.sdk.feature.group" version="2.1.1.v201111141332"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
+<unit id="org.eclipse.sdk.ide" version="3.6.2.M20110210-1200"/>
+<unit id="org.eclipse.epp.mpc.feature.group" version="1.0.1.v20100826-2143"/>
+<repository location="http://vandyk.st.informatik.tu-darmstadt.de/mirrors/helios"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="3.6.2.M20110210-1200"/>
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.6.1.v20100914-1218"/>
-<unit id="org.eclipse.epp.mpc.feature.group" version="1.0.1.v20100826-2143"/>
-<unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="3.4.3.v20110131-0200-e3x-8j9F7_FXiI9jRBM4_bFl96vsIL"/>
-<unit id="org.eclipse.mylyn.wikitext.sdk.feature.group" version="1.3.2.v20100916-0100-e3x-7U8M4FQCnvLuxi66SxLuukDef"/>
-<repository location="http://vandyk.st.informatik.tu-darmstadt.de/mirrors/helios"/>
+<unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.2.0.v201112071226"/>
+<unit id="org.eclipse.xtext.sdk.feature.group" version="2.2.0.v201112071226"/>
+<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>

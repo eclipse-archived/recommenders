@@ -1,21 +1,19 @@
 package org.eclipse.recommenders.tests.extdoc.rcp.selection2
 
 import java.util.List
-
 import org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionLocation
-import org.eclipse.xtext.xtend2.lib.StringConcatenation
 import org.junit.Test
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionLocation.*
 import static org.eclipse.recommenders.extdoc.rcp.selection2.JavaSelectionUtils.*
-import static org.eclipse.recommenders.tests.jdt.AstUtils.*
 import static org.eclipse.recommenders.tests.extdoc.rcp.selection2.XtendUtils.*
+import static org.eclipse.recommenders.tests.jdt.AstUtils.*
 
 class JavaSelectionLocationTest {
 
 
-	@Test
+	@Test 
 	def void testBeforePackageDeclaration () {
 		val code = ''' 
 		$pack$age org.$eclipse.recommenders.extdoc.rcp.selection2;$

@@ -4,7 +4,7 @@ import org.junit.Test
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.jdt.AstUtils.*
 class FindMarkersInAstTest {
-	
+	 
 	@Test
 	def void test001 () {
 	val code = '''$public class X extends Y {}'''

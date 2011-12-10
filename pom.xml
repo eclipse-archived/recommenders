@@ -80,7 +80,7 @@
 								<groupId>org.eclipse.recommenders</groupId>
 								<artifactId>targets</artifactId>
 								<version>${recommenders-version}</version>
-								<classifier>e36</classifier>
+								<classifier>e37</classifier>
 							</artifact>
 						</target>
 					</configuration>
