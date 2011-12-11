@@ -102,7 +102,7 @@ public final class JavadocProvider extends AbstractTitledProvider {
                     return element;
                 }
                 if (element instanceof IMethod) {
-                    final IJavaElement firstDeclaration = JdtUtils.getoverriddenMethod((IMethod) element);
+                    final IJavaElement firstDeclaration = JdtUtils.findOverriddenMethod((IMethod) element).orNull();
                     if (element.equals(firstDeclaration)) {
                         return null;
                     }

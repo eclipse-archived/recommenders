@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.rcp.utils.ast;
 
+import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.rcp.utils.ast.ASTNodeUtils.haveSameNumberOfParameters;
 import static org.eclipse.recommenders.rcp.utils.ast.ASTNodeUtils.haveSameParameterTypes;
 import static org.eclipse.recommenders.rcp.utils.ast.ASTNodeUtils.sameSimpleName;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
@@ -34,7 +36,7 @@ public class MethodDeclarationFinder {
         return new MethodDeclarationFinder(cu, methods).getMatches();
     }
 
-    public static MethodDeclaration find(final CompilationUnit cu, final IMethodName method) {
+    public static Optional<MethodDeclaration> find(final CompilationUnit cu, final IMethodName method) {
         return new MethodDeclarationFinder(cu, Collections.singleton(method)).getMatch();
     }
 
@@ -44,8 +46,8 @@ public class MethodDeclarationFinder {
         return !matches.isEmpty();
     }
 
-    public MethodDeclaration getMatch() {
-        return Iterables.getFirst(matches, null);
+    public Optional<MethodDeclaration> getMatch() {
+        return fromNullable(Iterables.getFirst(matches, null));
     }
 
     public Set<MethodDeclaration> getMatches() {

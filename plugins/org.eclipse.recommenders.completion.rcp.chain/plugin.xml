@@ -7,7 +7,7 @@
       <javaCompletionProposalComputer
             activate="true"
             categoryId="org.eclipse.recommenders.completion.rcp.chain.category"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.completion.rcp.chain.jdt.CallChainCompletionProposalComputer">
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.chain.CallChainCompletionProposalComputer">
       </javaCompletionProposalComputer>
    </extension>
    <extension

@@ -6,5 +6,12 @@ Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.completion.rcp.overrides
 Require-Bundle: org.eclipse.recommenders.tests,
- org.junit4
+ org.junit4,
+ org.eclipse.xtend2.lib,
+ com.google.inject,
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.mockito,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+

@@ -113,7 +113,7 @@ public class OpenSourceCodeInEditorJob extends WorkspaceJob {
         final String source = hit.getSource(new NullProgressMonitor());
         final ByteStorage storage = new ByteStorage(source, title);
 
-        final JavaEditor openJavaEditor = JdtUtils.openJavaEditor(storage);
+        final JavaEditor openJavaEditor = JdtUtils.openJavaEditor(storage).orNull();
         final SourceViewer s = (SourceViewer) openJavaEditor.getViewer();
         final ITextPresentationListener listener = new VariableUsagesHighlighter(s, request, hit, "");
         s.addTextPresentationListener(listener);

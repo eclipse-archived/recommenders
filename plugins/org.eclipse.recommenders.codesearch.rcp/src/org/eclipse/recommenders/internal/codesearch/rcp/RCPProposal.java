@@ -35,6 +35,8 @@ import org.eclipse.recommenders.rcp.utils.ast.TypeDeclarationFinder;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+import com.google.common.base.Optional;
+
 public class RCPProposal {
 
     public static RCPProposal newProposalFromServerProposal(final Proposal serverProposal,
@@ -80,7 +82,7 @@ public class RCPProposal {
         return lazyAst;
     }
 
-    public MethodDeclaration getAstMethodDeclaration(final IProgressMonitor monitor) {
+    public Optional<MethodDeclaration> getAstMethodDeclaration(final IProgressMonitor monitor) {
         if (getMethodName() == null) {
             return null;
         }
@@ -119,8 +121,8 @@ public class RCPProposal {
             final URI uri = getSummary().source;
             return uri.toURL();
         } catch (final MalformedURLException e) {
-            throw throwUnhandledException(
-                    e, "Source URL mapping failed for some internal reasons. Please report this error");
+            throw throwUnhandledException(e,
+                    "Source URL mapping failed for some internal reasons. Please report this error");
         }
     }
 

@@ -284,7 +284,8 @@ public class StatmentsBasedCodeSummaryBlock implements ICodeSummaryBlock {
     }
 
     private String computeSummaryTitle() {
-        final MethodDeclaration methodDeclaration = proposal.getAstMethodDeclaration(new NullProgressMonitor());
+        final MethodDeclaration methodDeclaration = proposal.getAstMethodDeclaration(new NullProgressMonitor())
+                .orNull();
         final String title = methodDeclaration != null ? ASTStringUtils.toQualifiedString(methodDeclaration) : Names
                 .vm2srcQualifiedMethod(proposal.getMethodName());
         return title;
@@ -301,7 +302,7 @@ public class StatmentsBasedCodeSummaryBlock implements ICodeSummaryBlock {
         ASTNode res = null;
         switch (result.getType()) {
         case METHOD:
-            res = result.getAstMethodDeclaration(new NullProgressMonitor());
+            res = result.getAstMethodDeclaration(new NullProgressMonitor()).orNull();
             if (res != null) {
                 return res;
             }
