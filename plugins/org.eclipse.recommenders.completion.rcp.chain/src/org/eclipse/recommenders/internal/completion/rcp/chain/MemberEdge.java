@@ -39,16 +39,16 @@ public class MemberEdge {
     }
 
     private final IJavaElement element;
-    private final Optional<IType> oSourceType;
+    private final Optional<IType> oInvokedOnType;
     private Optional<IType> oReturnType;
     private int dimension;
     private EdgeType edgeType;
 
     // TODO I don't like var names sourceType javaelement... too generic
-    public MemberEdge(final IType sourceType, final IJavaElement javaElement) {
-        this.oSourceType = fromNullable(sourceType);
-        ensureIsNotNull(javaElement);
-        this.element = javaElement;
+    public MemberEdge(final IType invokedOn, final IJavaElement member) {
+        this.oInvokedOnType = fromNullable(invokedOn);
+        ensureIsNotNull(member);
+        this.element = member;
         try {
             initializeReturnType();
         } catch (final JavaModelException e) {
@@ -57,8 +57,8 @@ public class MemberEdge {
         }
     }
 
-    public MemberEdge(final IJavaElement unresolvedJavaElement) {
-        this(null, unresolvedJavaElement);
+    public MemberEdge(final IJavaElement member) {
+        this(null, member);
     }
 
     private void initializeReturnType() throws JavaModelException {
@@ -123,7 +123,7 @@ public class MemberEdge {
      * For instance, the {@link #getEdgeElement()} may be defined in a superclass of the actual (#getSourceType()).
      */
     public Optional<IType> getSourceType() {
-        return oSourceType;
+        return oInvokedOnType;
     }
 
     public boolean isArray() {
@@ -143,7 +143,7 @@ public class MemberEdge {
     }
 
     public boolean isChainAnchor() {
-        return !oSourceType.isPresent();
+        return !oInvokedOnType.isPresent();
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension2;
 import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.recommenders.utils.annotations.Testing;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
@@ -33,6 +34,7 @@ public class CallChainCompletionProposal implements IJavaCompletionProposal, ICo
     private final List<MemberEdge> chain;
     private final TemplateProposal completion;
 
+    @Testing
     public CallChainCompletionProposal(final List<MemberEdge> chain, final int invocationOffset) {
         this.chain = chain;
         completion = null;
