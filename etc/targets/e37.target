@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders Development Environment" sequenceNumber="48">
+<target name="Code Recommenders Development Environment" sequenceNumber="49">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.7.1.M20110909-1335"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/mirrors/indigo"/>
 </location>
-
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201111131155"/>
 <unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201111131155"/>
 <unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201111131155"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head"/>
 </location>
-
-<!-- xtext -->
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.2.0.v201112071226"/>
-<unit id="org.eclipse.xtext.sdk.feature.group" version="2.2.0.v201112071226"/>
+<unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.2.1.v201112130541"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 </locations>
