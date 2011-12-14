@@ -221,7 +221,7 @@ public class JdtUtils {
     /**
      * Returns a list of all public instance methods and fields declared in the given type or any of its super-types
      */
-    public static Collection<IMember> findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods(final IType type) {
+    public static Collection<IMember> findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(final IType type) {
         final LinkedHashMap<String, IMember> tmp = new LinkedHashMap<String, IMember>();
 
         try {
@@ -254,9 +254,9 @@ public class JdtUtils {
 
     /**
      * Returns a list of all public static fields and methods declared in the given class (but not its super-classes)
-     * TODO: superclasses not, should we add this?
+     * TODO: superclasses not, should we add this? TODO Review: yes
      */
-    public static List<IMember> findAllPublicStaticFieldsAndNonVoidNonPrimitiveMethods(final IType type) {
+    public static List<IMember> findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(final IType type) {
         final List<IMember> res = new LinkedList<IMember>();
         try {
             for (final IMethod m : type.getMethods()) {

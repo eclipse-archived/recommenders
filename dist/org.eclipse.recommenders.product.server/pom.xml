@@ -5,11 +5,10 @@
 	<parent>
 		<groupId>org.eclipse.recommenders.repository</groupId>
 		<artifactId>org.eclipse.recommenders.repository.parent</artifactId>
-		<version>0.4.0-SNAPSHOT</version>
+		<version>0.5.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.eclipse.recommenders</groupId>
-	<artifactId>org.eclipse.recommenders.server.product</artifactId>
+	<artifactId>org.eclipse.recommenders.product.server</artifactId>
 	<packaging>eclipse-repository</packaging>
 
 	<build>

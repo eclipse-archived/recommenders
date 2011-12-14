@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.chain;
 
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods;
+import static org.eclipse.recommenders.rcp.utils.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Throws.throwCancelationException;
 
@@ -52,7 +52,7 @@ public class GraphBuilder {
      *      of for a single job one-by-one and not as a bulk operation, it might happen that the pool is shutdown before
      *      even the initial jobs were scheduled!
      */
-    private final AtomicInteger scheduledJobs = new AtomicInteger();
+    private final AtomicInteger numberOfScheduledJobs = new AtomicInteger();
 
     private final class VisitEdgeJob implements Callable<Void> {
         private final MemberEdge newEdge;
@@ -64,8 +64,8 @@ public class GraphBuilder {
         @Override
         public Void call() throws Exception {
             visitEdge(newEdge);
-            final int numberOfScheduledJobs = scheduledJobs.decrementAndGet();
-            if (numberOfScheduledJobs == 0) {
+            final int count = numberOfScheduledJobs.decrementAndGet();
+            if (count == 0) {
                 pool.shutdown();
             }
             return null;
@@ -103,7 +103,7 @@ public class GraphBuilder {
     private void scheduleNextIteration(final List<VisitEdgeJob> iteration) {
 
         // ATTENTION: increment all at once! Otherwise, the pool may be shutdown before the last job has been executed!
-        scheduledJobs.addAndGet(iteration.size());
+        numberOfScheduledJobs.addAndGet(iteration.size());
         for (final VisitEdgeJob job : iteration) {
             pool.submit(job);
         }
@@ -134,6 +134,7 @@ public class GraphBuilder {
     private void dsfTraverse(final LinkedHashSet<MemberEdge> incompleteChain, final MemberEdge edgeToTest) {
         terminateIfInterrupted();
 
+        // TODO Review: move to method
         if (incompleteChain.contains(edgeToTest)) {
             return;
         }
@@ -153,7 +154,6 @@ public class GraphBuilder {
         final TypeNode typeNode = nodes.get(accessedFrom);
 
         for (final MemberEdge nextEdgeToTest : typeNode.incomingEdges) {
-            // round n+1
             dsfTraverse(workingCopy, nextEdgeToTest);
         }
     }
@@ -214,7 +214,7 @@ public class GraphBuilder {
     private void addNewEdgesIntoWorklist(final MemberEdge edge, final IType returnType) throws JavaModelException {
         final List<VisitEdgeJob> nextIteration = new LinkedList<VisitEdgeJob>();
 
-        final Collection<IMember> allMethodsAndFields = findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods(returnType);
+        final Collection<IMember> allMethodsAndFields = findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(returnType);
         for (final IJavaElement element : allMethodsAndFields) {
             MemberEdge newEdge = null;
             switch (element.getElementType()) {

@@ -14,8 +14,8 @@ import static org.eclipse.recommenders.rcp.utils.JdtUtils.createUnresolvedField;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.createUnresolvedLocaVariable;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.createUnresolvedMethod;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.createUnresolvedType;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.findAllPublicStaticFieldsAndNonVoidNonPrimitiveMethods;
+import static org.eclipse.recommenders.rcp.utils.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods;
+import static org.eclipse.recommenders.rcp.utils.JdtUtils.findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeFromSignature;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeOfField;
 
@@ -103,6 +103,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
             this.recContext = contextResolver.resolveContext(jdtContext);
             this.jdtCoreContext = recContext.getCoreCompletionContext();
         }
+        // TODO Review: separate isInitilizable() ?
         return recContext != null && jdtContext != null && jdtCoreContext != null && jdtCoreContext.isExtended();
     }
 
@@ -115,6 +116,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
         entrypoints = new LinkedList<MemberEdge>();
         final ASTNode completionNode = recContext.getCompletionNode();
 
+        // TODO Review: split branches
         if (completionNode instanceof CompletionOnQualifiedNameReference) {
             final CompletionOnQualifiedNameReference c = (CompletionOnQualifiedNameReference) completionNode;
             final Binding binding = c.binding;
@@ -128,6 +130,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
                 break;
             case Binding.FIELD:
                 final IField field = createUnresolvedField((FieldBinding) binding);
+                // TODO Review: refactor oType -> optType ?
                 final Optional<IType> oType = findTypeOfField(field);
                 if (oType.isPresent()) {
                     addPublicMembersToEntrypoints(oType.get());
@@ -151,6 +154,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
                 addPublicMembersToEntrypoints(type);
                 break;
             case Binding.LOCAL:
+                // TODO Review: could this be a field?
                 final ILocalVariable var = createUnresolvedLocaVariable((VariableBinding) binding,
                         findEnclosingElement());
                 addPublicMembersToEntrypoints(var);
@@ -167,7 +171,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private void addPublicStaticMembersToEntrypoints(final IType type) {
-        for (final IMember m : findAllPublicStaticFieldsAndNonVoidNonPrimitiveMethods(type)) {
+        for (final IMember m : findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(type)) {
             if (passesPrefixCheck(m)) {
                 final MemberEdge edge = new MemberEdge(m);
                 entrypoints.add(edge);
@@ -195,7 +199,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private void addPublicMembersToEntrypoints(final IType type) {
-        for (final IMember m : findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods(type)) {
+        for (final IMember m : findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(type)) {
             if (passesPrefixCheck(m)) {
                 final MemberEdge edge = new MemberEdge(m);
                 entrypoints.add(edge);
@@ -235,7 +239,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private void addAllInheritedPublicMembersToEntrypoints(final IType type) {
-        final Collection<IMember> methodsAndFields = findAllPublicInstanceFieldsAndNonVoidNonPrimitiveMethods(type);
+        final Collection<IMember> methodsAndFields = findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(type);
 
         for (final IMember m : methodsAndFields) {
             if (m.getDeclaringType() != type) {

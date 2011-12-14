@@ -227,7 +227,7 @@ public class JavaSelectionUtils {
         }
 
         // handle a direct selection on a declaration node, i.e., the users select a whitespace as in
-        // "public � void do(){}":
+        // "public $ void do(){}":
         switch (node.getNodeType()) {
         case ASTNode.COMPILATION_UNIT:
         case ASTNode.TYPE_DECLARATION:
