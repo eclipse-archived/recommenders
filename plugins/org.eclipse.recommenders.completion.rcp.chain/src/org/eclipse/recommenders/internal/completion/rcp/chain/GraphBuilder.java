@@ -130,12 +130,10 @@ public class GraphBuilder {
 
     }
 
-    // TODO should we use bsf instead?
     private void dsfTraverse(final LinkedHashSet<MemberEdge> incompleteChain, final MemberEdge edgeToTest) {
         terminateIfInterrupted();
 
-        // TODO Review: move to method
-        if (incompleteChain.contains(edgeToTest)) {
+        if (introducesCycleIntoCallChain(incompleteChain, edgeToTest)) {
             return;
         }
 
@@ -150,12 +148,17 @@ public class GraphBuilder {
             return;
         }
 
-        final IType accessedFrom = edgeToTest.getSourceType().get();
+        final IType accessedFrom = edgeToTest.getReceiverType().get();
         final TypeNode typeNode = nodes.get(accessedFrom);
 
         for (final MemberEdge nextEdgeToTest : typeNode.incomingEdges) {
             dsfTraverse(workingCopy, nextEdgeToTest);
         }
+    }
+
+    private boolean introducesCycleIntoCallChain(final LinkedHashSet<MemberEdge> incompleteChain,
+            final MemberEdge edgeToTest) {
+        return incompleteChain.contains(edgeToTest);
     }
 
     private void terminateIfInterrupted() {
@@ -206,26 +209,29 @@ public class GraphBuilder {
     }
 
     private void registerNewNode(final IType returnType) {
-        // System.out.println("new node " + returnType);
         final TypeNode newNode = new TypeNode(returnType);
         nodes.put(returnType, newNode);
     }
 
     private void addNewEdgesIntoWorklist(final MemberEdge edge, final IType returnType) throws JavaModelException {
-        final List<VisitEdgeJob> nextIteration = new LinkedList<VisitEdgeJob>();
+        if (edge.getIterationDepth() >= maxdepth) {
+            return;
+        }
 
+        final int nextEdgeDepth = edge.getIterationDepth() + 1;
+        final List<VisitEdgeJob> nextIteration = new LinkedList<VisitEdgeJob>();
         final Collection<IMember> allMethodsAndFields = findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(returnType);
         for (final IJavaElement element : allMethodsAndFields) {
             MemberEdge newEdge = null;
             switch (element.getElementType()) {
             case IJavaElement.METHOD:
                 final IMethod m = (IMethod) element;
-                newEdge = new MemberEdge(returnType, m);
+                newEdge = new MemberEdge(returnType, m, nextEdgeDepth);
                 nextIteration.add(new VisitEdgeJob(newEdge));
                 break;
             case IJavaElement.FIELD:
                 final IField f = (IField) element;
-                newEdge = new MemberEdge(returnType, f);
+                newEdge = new MemberEdge(returnType, f, nextEdgeDepth);
                 nextIteration.add(new VisitEdgeJob(newEdge));
                 break;
             default:

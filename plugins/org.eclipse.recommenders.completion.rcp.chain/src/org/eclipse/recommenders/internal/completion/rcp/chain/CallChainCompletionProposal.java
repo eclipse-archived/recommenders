@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
 /**
- * This class basically delegates all events to a {@link TemplateProposal} but provides some auxilary methods for
+ * This class basically delegates all events to a {@link TemplateProposal} but provides some auxiliary methods for
  * testing such as {@link #getChain()}, and {@link #getChainElementNames()} etc. It may be extended to track user click
  * feedback to continuously improve chain completion.
  */

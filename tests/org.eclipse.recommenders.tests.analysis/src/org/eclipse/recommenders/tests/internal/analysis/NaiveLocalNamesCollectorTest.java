@@ -10,14 +10,12 @@
  */
 package org.eclipse.recommenders.tests.internal.analysis;
 
-import static java.lang.String.format;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 
 import names.Names__Field_To_Temp_Local;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.recommenders.internal.analysis.utils.LocalNamesCollectorNaiveEdition;
 import org.eclipse.recommenders.tests.wala.BundleClassloaderBasedClassHierarchy;
 import org.eclipse.recommenders.tests.wala.WalaTestUtils;
@@ -52,10 +50,7 @@ public class NaiveLocalNamesCollectorTest {
     private void verifyLocalNames(final String... expectedNames) {
         final Collection<String> expected = Lists.newArrayList(expectedNames);
         final Collection<String> actual = sut.getNames();
-        final Collection<String> diff = CollectionUtils.disjunction(actual, expected);
-        final String msg = format("Expected diff to be empty but found: %s", diff);
-        assertTrue(msg, diff.isEmpty());
-
+        assertEquals(expected, actual);
     }
 
     private void setupNameCollectors(final Class<?> testCase) throws InvalidClassFileException {

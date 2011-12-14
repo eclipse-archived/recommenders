@@ -21,7 +21,9 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
+import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
 
@@ -39,26 +41,30 @@ public class MemberEdge {
     }
 
     private final IJavaElement element;
-    private final Optional<IType> oInvokedOnType;
-    private Optional<IType> oReturnType;
+    /**
+     * the iteration number (==depth) this edge was found in the graph construction phase
+     */
+    private final int iterationDepth;
+    private final Optional<IType> optReceiverType;
+    private Optional<IType> optReturnType;
     private int dimension;
     private EdgeType edgeType;
 
     // TODO I don't like var names sourceType javaelement... too generic
-    public MemberEdge(final IType invokedOn, final IJavaElement member) {
-        this.oInvokedOnType = fromNullable(invokedOn);
+    public MemberEdge(final IType receiverType, final IJavaElement member, final int iterationDepth) {
         ensureIsNotNull(member);
+        this.optReceiverType = fromNullable(receiverType);
         this.element = member;
+        this.iterationDepth = iterationDepth;
         try {
             initializeReturnType();
         } catch (final JavaModelException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            RecommendersUtilsPlugin.log(e);
         }
     }
 
     public MemberEdge(final IJavaElement member) {
-        this(null, member);
+        this(null, member, 1);
     }
 
     private void initializeReturnType() throws JavaModelException {
@@ -81,7 +87,7 @@ public class MemberEdge {
             break;
         }
         dimension = Signature.getArrayCount(typeSignature.toCharArray());
-        oReturnType = findTypeFromSignature(typeSignature, element);
+        optReturnType = findTypeFromSignature(typeSignature, element);
     }
 
     /**
@@ -115,15 +121,21 @@ public class MemberEdge {
     }
 
     public Optional<IType> getReturnType() {
-        return oReturnType;
+        return optReturnType;
     }
 
     /**
-     * Note, the source or origin type is not necessarily identical to the declaring type of {@link #getEdgeElement()}!
-     * For instance, the {@link #getEdgeElement()} may be defined in a superclass of the actual (#getSourceType()).
+     * Note, the receiver type is not necessarily identical to the declaring type of {@link #getEdgeElement()}! For
+     * instance, a callchain may use a method {@code MyDialog.getWindowManager()} that's actually declared in its
+     * superclass {@link Dialog#getWindowManager()}. In that case, the receiver type is MyDialog whereas the declaring
+     * type is {@link Dialog}.
      */
-    public Optional<IType> getSourceType() {
-        return oInvokedOnType;
+    public Optional<IType> getReceiverType() {
+        return optReceiverType;
+    }
+
+    public int getIterationDepth() {
+        return iterationDepth;
     }
 
     public boolean isArray() {
@@ -136,14 +148,18 @@ public class MemberEdge {
 
     public boolean isAssignableTo(final IType lhsType) {
         ensureIsNotNull(lhsType);
-        if (oReturnType.isPresent()) {
-            return JdtUtils.isAssignable(lhsType, oReturnType.get());
+        if (optReturnType.isPresent()) {
+            return JdtUtils.isAssignable(lhsType, optReturnType.get());
         }
         return false;
     }
 
+    /**
+     * A {@link MemberEdge} is an anchor (or root) of a call chain, iff the receiver type is null. This is a convention.
+     * We could also store a receiver type (this in most cases) but it's not needed anywhere.
+     */
     public boolean isChainAnchor() {
-        return !oInvokedOnType.isPresent();
+        return !optReceiverType.isPresent();
     }
 
     @Override

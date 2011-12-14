@@ -21,7 +21,6 @@ Require-Bundle: org.apache.commons.lang3,
  org.eclipse.core.runtime,
  org.apache.commons.io,
  org.eclipse.recommenders.utils.gson,
- android4me.axmlprinter,
  org.slf4j.api,
  org.eclipse.recommenders.injection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

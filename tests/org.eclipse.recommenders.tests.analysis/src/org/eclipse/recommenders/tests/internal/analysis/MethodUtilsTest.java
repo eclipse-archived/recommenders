@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.recommenders.internal.analysis.utils.MethodUtils;
 import org.junit.Test;
 
@@ -68,7 +67,7 @@ public class MethodUtilsTest {
         // exercise
         final Collection<IMethod> actuals = MethodUtils.findAllDeclaredPublicInstanceMethodsWithImplementation(clazz);
         // verify
-        assertEquals(Collections.emptyList(), CollectionUtils.disjunction(expecteds, actuals));
+        assertEquals(expecteds, actuals);
     }
 
     @Test

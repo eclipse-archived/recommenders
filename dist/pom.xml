@@ -14,7 +14,7 @@
 
 	<modules>
 		<module>org.eclipse.recommenders.repository.rcp</module>
-		<!-- module>org.eclipse.recommenders.product.server</module -->
+		<module>org.eclipse.recommenders.product.server</module>
 	</modules>
 
 	<build>

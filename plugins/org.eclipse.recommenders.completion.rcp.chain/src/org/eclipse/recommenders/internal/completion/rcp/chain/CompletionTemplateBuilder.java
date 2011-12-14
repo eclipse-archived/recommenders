@@ -30,6 +30,8 @@ import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.recommenders.rcp.utils.JdtUtils;
+import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 import org.eclipse.recommenders.utils.HashBag;
 import org.eclipse.swt.graphics.Image;
 
@@ -41,9 +43,10 @@ public class CompletionTemplateBuilder {
 
     private HashBag<String> varNames;
     private StringBuilder sb;
+    private JavaContentAssistInvocationContext context;
 
     public TemplateProposal create(final List<MemberEdge> chain, final JavaContentAssistInvocationContext context) {
-
+        this.context = context;
         final String title = createCompletionTitle(chain);
         final String body = createCompletionBody(chain);
 
@@ -107,30 +110,33 @@ public class CompletionTemplateBuilder {
     private void appendParameters(final IMethod method) {
         sb.append("(");
         try {
-            final String[] parameterNames = method.getParameterNames();
-            for (final String paramName : parameterNames) {
-                appendTemplateVariable(paramName);
+            final String[] paramNames = method.getParameterNames();
+            final String[] paramTypes = method.getParameterTypes();
+            final int numberOfParams = paramNames.length;
+            for (int i = 0; i < numberOfParams; i++) {
+                appendTemplateVariable(paramNames[i], paramTypes[i]);
                 sb.append(", ");
             }
-            if (parameterNames.length > 0) {
+            if (numberOfParams > 0) {
                 deleteLastChar();
                 deleteLastChar();
             }
         } catch (final JavaModelException e) {
-            // we can not handle that. log it.
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            RecommendersUtilsPlugin.log(e);
         }
         sb.append(")");
     }
 
-    private void appendTemplateVariable(final String varname) {
+    private void appendTemplateVariable(final String varname, final String varType) {
         varNames.add(varname);
         sb.append("${").append(varname);
         final int count = varNames.count(varname);
         if (count > 1) {
             sb.append(count);
         }
+        final String resolvedTypeName = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
+                varType, context.getCompilationUnit());
+        // sb.append(":var(").append(resolvedTypeName).append(")");
         sb.append("}");
     }
 
@@ -146,7 +152,7 @@ public class CompletionTemplateBuilder {
 
     private void addArrayDimension() {
         sb.append("[");
-        appendTemplateVariable("index");
+        appendTemplateVariable("index", "I");
         sb.append("]");
     }
 

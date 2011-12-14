@@ -2,7 +2,8 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="id1"
+         id="ChainCompletionProposalComputer"
+         name="Code Recommenders: Call Chain Proposal Computer"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <javaCompletionProposalComputer
             activate="true"
@@ -12,7 +13,7 @@
    </extension>
    <extension
          id="org.eclipse.recommenders.completion.rcp.chain.category"
-         name="Call Chain Completion"
+         name="Call Chain Proposal Computer"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <proposalCategory
             icon="icons/view16/chain.gif">

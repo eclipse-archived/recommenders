@@ -20,8 +20,6 @@ import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -253,26 +251,38 @@ public class JdtUtils {
     }
 
     /**
-     * Returns a list of all public static fields and methods declared in the given class (but not its super-classes)
-     * TODO: superclasses not, should we add this? TODO Review: yes
+     * Returns a list of all public static fields and methods declared in the given class or any of its super-classes.
      */
-    public static List<IMember> findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(final IType type) {
-        final List<IMember> res = new LinkedList<IMember>();
-        try {
-            for (final IMethod m : type.getMethods()) {
-                if (isStatic(m) && isPublic(m) && !isVoid(m) && !hasPrimitiveReturnType(m)) {
-                    res.add(m);
+    public static Collection<IMember> findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(final IType type) {
+        final LinkedHashMap<String, IMember> tmp = new LinkedHashMap<String, IMember>();
+
+        for (final IType cur : findAllSupertypesIncludeingArgument(type)) {
+
+            try {
+                for (final IMethod m : cur.getMethods()) {
+                    if (!isStatic(m) || isVoid(m) || !isPublic(m) || hasPrimitiveReturnType(m)) {
+                        continue;
+                    }
+                    final String key = createMethodKey(m);
+                    if (!tmp.containsKey(key)) {
+                        tmp.put(key, m);
+                    }
                 }
-            }
-            for (final IField f : type.getFields()) {
-                if (isStatic(f) && isPublic(f)) {
-                    res.add(f);
+                for (final IField field : cur.getFields()) {
+                    if (!isPublic(field) || !isStatic(field)) {
+                        continue;
+                    }
+                    final String key = createFieldKey(field);
+                    if (!tmp.containsKey(key)) {
+                        tmp.put(key, field);
+                    }
                 }
+            } catch (final JavaModelException e) {
+                RecommendersUtilsPlugin.log(e);
             }
-        } catch (final JavaModelException e) {
-            log(e);
         }
-        return res;
+
+        return tmp.values();
     }
 
     private static IType[] findAllSupertypesIncludeingArgument(final IType returnType) {

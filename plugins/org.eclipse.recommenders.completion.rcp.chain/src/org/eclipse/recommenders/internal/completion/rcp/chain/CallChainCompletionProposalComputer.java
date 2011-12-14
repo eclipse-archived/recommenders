@@ -51,6 +51,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.internal.completion.rcp.CompilerBindings;
+import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
@@ -75,7 +76,8 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context,
             final IProgressMonitor monitor) {
 
-        if (!initalizeContext(context)) {
+        initalizeContexts(context);
+        if (!allRequiredContextsAvailable()) {
             return Collections.emptyList();
         }
         if (!findExpectedType()) {
@@ -87,8 +89,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
         try {
             executeCallChainSearch();
         } catch (final Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logError(e);
         }
         return proposals;
     }
@@ -97,13 +98,15 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
      * @return true iff the context could be initialized successfully, i.e., completion context is a java context, and
      *         the core context is an extended context
      */
-    private boolean initalizeContext(final ContentAssistInvocationContext context) {
+    private void initalizeContexts(final ContentAssistInvocationContext context) {
         if (context instanceof JavaContentAssistInvocationContext) {
             this.jdtContext = (JavaContentAssistInvocationContext) context;
             this.recContext = contextResolver.resolveContext(jdtContext);
             this.jdtCoreContext = recContext.getCoreCompletionContext();
         }
-        // TODO Review: separate isInitilizable() ?
+    }
+
+    private boolean allRequiredContextsAvailable() {
         return recContext != null && jdtContext != null && jdtCoreContext != null && jdtCoreContext.isExtended();
     }
 
@@ -114,60 +117,40 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
 
     private boolean findEntrypoints() {
         entrypoints = new LinkedList<MemberEdge>();
-        final ASTNode completionNode = recContext.getCompletionNode();
+        final ASTNode node = recContext.getCompletionNode();
 
-        // TODO Review: split branches
-        if (completionNode instanceof CompletionOnQualifiedNameReference) {
-            final CompletionOnQualifiedNameReference c = (CompletionOnQualifiedNameReference) completionNode;
-            final Binding binding = c.binding;
-            if (binding == null) {
-                return false;
-            }
-            switch (binding.kind()) {
-            case Binding.TYPE:
-                final IType type = createUnresolvedType((TypeBinding) binding);
-                addPublicStaticMembersToEntrypoints(type);
-                break;
-            case Binding.FIELD:
-                final IField field = createUnresolvedField((FieldBinding) binding);
-                // TODO Review: refactor oType -> optType ?
-                final Optional<IType> oType = findTypeOfField(field);
-                if (oType.isPresent()) {
-                    addPublicMembersToEntrypoints(oType.get());
-                }
-                break;
-            case Binding.LOCAL:
-                final ILocalVariable var = createUnresolvedLocaVariable((VariableBinding) binding,
-                        findEnclosingElement());
-                addPublicMembersToEntrypoints(var);
-            default:
-                break;
-            }
-        } else if (completionNode instanceof CompletionOnMemberAccess) {
-            final Binding binding = ((CompletionOnMemberAccess) completionNode).actualReceiverType;
-            if (binding == null) {
-                return false;
-            }
-            switch (binding.kind()) {
-            case Binding.TYPE:
-                final IType type = createUnresolvedType((TypeBinding) binding);
-                addPublicMembersToEntrypoints(type);
-                break;
-            case Binding.LOCAL:
-                // TODO Review: could this be a field?
-                final ILocalVariable var = createUnresolvedLocaVariable((VariableBinding) binding,
-                        findEnclosingElement());
-                addPublicMembersToEntrypoints(var);
-            default:
-                break;
-            }
-        } else if (completionNode instanceof CompletionOnSingleNameReference) {
-            resolveEntrypoints(recContext.getFieldDeclarations());
-            resolveEntrypoints(recContext.getLocalDeclarations());
-            resolveEntrypoints(recContext.getMethodDeclarations());
-            addAllInheritedPublicMembersToEntrypoints(findEnclosingType());
+        if (node instanceof CompletionOnQualifiedNameReference) {
+            findEntrypointsForCompletionOnQualifiedName((CompletionOnQualifiedNameReference) node);
+        } else if (node instanceof CompletionOnMemberAccess) {
+            findEntrypointsForCompletionOnMemberAccess((CompletionOnMemberAccess) node);
+        } else if (node instanceof CompletionOnSingleNameReference) {
+            findEntrypointsForCompletionOnSingleName();
         }
         return !entrypoints.isEmpty();
+    }
+
+    private void findEntrypointsForCompletionOnQualifiedName(final CompletionOnQualifiedNameReference node) {
+        final Binding b = node.binding;
+        if (b == null) {
+            return;
+        }
+        switch (b.kind()) {
+        case Binding.TYPE:
+            final IType type = createUnresolvedType((TypeBinding) b);
+            addPublicStaticMembersToEntrypoints(type);
+            break;
+        case Binding.FIELD:
+            final IField field = createUnresolvedField((FieldBinding) b);
+            final Optional<IType> optType = findTypeOfField(field);
+            if (optType.isPresent()) {
+                addPublicInstanceMembersToEntrypoints(optType.get());
+            }
+            break;
+        case Binding.LOCAL:
+            final ILocalVariable var = createUnresolvedLocaVariable((VariableBinding) b, findEnclosingElement());
+            addPublicInstanceMembersToEntrypoints(var);
+            break;
+        }
     }
 
     private void addPublicStaticMembersToEntrypoints(final IType type) {
@@ -190,15 +173,15 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
         return (JavaElement) enclosing;
     }
 
-    private void addPublicMembersToEntrypoints(final ILocalVariable var) {
-        final Optional<IType> oType = findTypeFromSignature(var.getTypeSignature(), var);
-        if (!oType.isPresent()) {
+    private void addPublicInstanceMembersToEntrypoints(final ILocalVariable var) {
+        final Optional<IType> optType = findTypeFromSignature(var.getTypeSignature(), var);
+        if (!optType.isPresent()) {
             return;
         }
-        addPublicMembersToEntrypoints(oType.get());
+        addPublicInstanceMembersToEntrypoints(optType.get());
     }
 
-    private void addPublicMembersToEntrypoints(final IType type) {
+    private void addPublicInstanceMembersToEntrypoints(final IType type) {
         for (final IMember m : findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(type)) {
             if (passesPrefixCheck(m)) {
                 final MemberEdge edge = new MemberEdge(m);
@@ -207,26 +190,53 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
         }
     }
 
+    private void findEntrypointsForCompletionOnMemberAccess(final CompletionOnMemberAccess node) {
+        final Binding b = node.actualReceiverType;
+        if (b == null) {
+            return;
+        }
+        switch (b.kind()) {
+        case Binding.TYPE:
+            final IType type = createUnresolvedType((TypeBinding) b);
+            // note: not static!
+            addPublicInstanceMembersToEntrypoints(type);
+            break;
+        case Binding.LOCAL:
+            // TODO Review: could this be a field?
+            final ILocalVariable var = createUnresolvedLocaVariable((VariableBinding) b, findEnclosingElement());
+            addPublicInstanceMembersToEntrypoints(var);
+        default:
+            break;
+        }
+    }
+
+    private void findEntrypointsForCompletionOnSingleName() {
+        resolveEntrypoints(recContext.getFieldDeclarations());
+        resolveEntrypoints(recContext.getLocalDeclarations());
+        resolveEntrypoints(recContext.getMethodDeclarations());
+        addAllInheritedPublicMembersToEntrypoints(findEnclosingType());
+    }
+
     private void resolveEntrypoints(final Collection<? extends ASTNode> elements) {
         for (final ASTNode decl : elements) {
-            final Optional<Binding> oBinding = CompilerBindings.getBinding(decl);
-            if (!oBinding.isPresent()) {
+            final Optional<Binding> optBinding = CompilerBindings.getBinding(decl);
+            if (!optBinding.isPresent()) {
                 continue;
             }
 
-            final Binding binding = oBinding.get();
+            final Binding b = optBinding.get();
             IJavaElement javaElement = null;
-            switch (binding.kind()) {
+            switch (b.kind()) {
             case Binding.TYPE:
                 break;
             case Binding.METHOD:
-                javaElement = createUnresolvedMethod((MethodBinding) binding);
+                javaElement = createUnresolvedMethod((MethodBinding) b);
                 break;
             case Binding.FIELD:
-                javaElement = createUnresolvedField((FieldBinding) binding);
+                javaElement = createUnresolvedField((FieldBinding) b);
                 break;
             case Binding.LOCAL:
-                javaElement = createUnresolvedLocaVariable((VariableBinding) binding, findEnclosingElement());
+                javaElement = createUnresolvedLocaVariable((VariableBinding) b, findEnclosingElement());
                 break;
             default:
                 continue;
@@ -264,6 +274,11 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
             final CallChainCompletionProposal completionProposal = new CallChainCompletionProposal(completion, chain);
             proposals.add(completionProposal);
         }
+    }
+
+    private void logError(final Exception e) {
+        RecommendersUtilsPlugin.logError(e, "Chain completion failed in %s.", jdtContext.getCompilationUnit()
+                .getElementName());
     }
 
     @Override

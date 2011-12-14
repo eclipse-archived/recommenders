@@ -58,7 +58,7 @@ class ScenariosTest {
 	}
 	
 	
-		
+
 	@Test
 	def void testFindFieldAnchor(){
 		val code = '''

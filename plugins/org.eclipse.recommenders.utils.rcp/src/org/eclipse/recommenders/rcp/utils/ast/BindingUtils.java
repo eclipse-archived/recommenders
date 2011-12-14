@@ -15,7 +15,6 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -37,8 +36,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 public class BindingUtils {
-
-    private static Logger log = Logger.getLogger(BindingUtils.class);
 
     @Inject
     private static JavaElementResolver resolver;
@@ -84,7 +81,6 @@ public class BindingUtils {
         // assertNotNull(b);
         final IJavaElement element = resolveJavaElementQuietly(b);
         if (!resolveSucceeded(element, IMethod.class)) {
-            log.warn("couldn't resolve IMethodBinding to IJavaElement");
             return null;
         }
         return (IMethod) element;
@@ -110,7 +106,6 @@ public class BindingUtils {
         try {
             return binding.getJavaElement();
         } catch (final RuntimeException e) {
-            log.warn("couldn't resolve ITypeBinding to IJavaElement", e);
         }
         return null;
     }
@@ -121,7 +116,6 @@ public class BindingUtils {
         } catch (final Exception e) {
             final String msg = format("java element resolver failed with %s: %s", method.getKey(), e.toString());
             System.out.println(msg);
-            log.warn(msg, e);
             return null;
         }
     }
@@ -132,7 +126,6 @@ public class BindingUtils {
         } catch (final Exception e) {
             final String msg = format("java element resolver failed with %s: %s", type.getKey(), e.toString());
             System.out.println(msg);
-            log.warn(msg, e);
             return null;
         }
     }
@@ -141,13 +134,14 @@ public class BindingUtils {
         final IMethodName ref = toMethodName(getMethod(b));
         if (ref == null && b != null) {
             try {
-            	// there is no matching source element (only a compiler-generated method)
+                // there is no matching source element (only a compiler-generated method)
                 final ITypeBinding declaringClass = b.getDeclaringClass();
                 final ITypeName typeName = toTypeName(declaringClass);
                 final String key = b.getKey();
-                 String methodName = key.substring(key.lastIndexOf(";.") + 2);
-                if(methodName.startsWith("("))
-                	methodName = "<init>" + methodName;
+                String methodName = key.substring(key.lastIndexOf(";.") + 2);
+                if (methodName.startsWith("(")) {
+                    methodName = "<init>" + methodName;
+                }
                 return VmMethodName.get(typeName.getIdentifier(), methodName);
             } catch (final Exception e) {
             }

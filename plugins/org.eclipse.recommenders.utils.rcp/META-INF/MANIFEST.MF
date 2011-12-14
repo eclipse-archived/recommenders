@@ -18,7 +18,6 @@ Require-Bundle: com.google.guava,
  org.eclipse.jface.text,
  org.eclipse.ui,
  org.eclipse.ui.editors,
- org.apache.log4j,
  org.eclipse.recommenders.injection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

@@ -20,7 +20,7 @@ Require-Bundle: org.eclipse.recommenders.utils,
  com.sun.jersey.client,
  com.sun.jersey.core,
  org.apache.commons.lang3,
- javax.servlet;bundle-version="2.5.0",
+ javax.servlet,
  org.slf4j.api,
  ch.qos.logback.classic,
  ch.qos.logback.core

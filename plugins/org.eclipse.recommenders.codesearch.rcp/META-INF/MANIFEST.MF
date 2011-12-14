@@ -28,7 +28,7 @@ Require-Bundle: org.eclipse.ui,
  com.sun.jersey.core,
  org.eclipse.recommenders.webclient,
  org.eclipse.recommenders.injection,
- org.apache.commons.io;bundle-version="2.0.1",
+ org.apache.commons.io,
  org.eclipse.ui.forms
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
