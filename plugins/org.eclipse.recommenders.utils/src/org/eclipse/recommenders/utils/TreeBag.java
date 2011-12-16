@@ -10,23 +10,40 @@
  */
 package org.eclipse.recommenders.utils;
 
+import java.util.Comparator;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.google.common.collect.Maps;
+public class TreeBag<T> extends HashBag<T> {
 
-public class TreeBag<T extends Comparable<T>> extends HashBag<T> {
+    private Comparator<T> comparator;
 
     public static <E extends Comparable<E>> TreeBag<E> newTreeBag() {
         return new TreeBag<E>();
     }
 
+    public static <E> TreeBag<E> newTreeBag(final Comparator<E> comparator) {
+        return new TreeBag<E>(comparator);
+    }
+
     protected TreeBag() {
-        super();
-        index = Maps.newTreeMap();
+        index = new TreeMap<T, Integer>();
+    }
+
+    protected TreeBag(final Comparator<T> comparator) {
+        this.comparator = comparator;
+        index = new TreeMap<T, Integer>(comparator);
     }
 
     @Override
     public TreeSet<T> elements() {
-        return new TreeSet<T>(index.keySet());
+        TreeSet<T> result;
+        if (comparator == null) {
+            result = new TreeSet<T>();
+        } else {
+            result = new TreeSet<T>(comparator);
+        }
+        result.addAll(index.keySet());
+        return result;
     }
 }

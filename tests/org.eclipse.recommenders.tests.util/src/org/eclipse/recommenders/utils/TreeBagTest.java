@@ -12,18 +12,63 @@ package org.eclipse.recommenders.utils;
 
 import static org.junit.Assert.assertArrayEquals;
 
+import java.util.Comparator;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.junit.Test;
 
 public class TreeBagTest {
 
-    Bag<String> sut = TreeBag.newTreeBag();
-
     @Test
     public void testKeysetOrder() {
-        String[] input = new String[] { "b", "c", "a" };
-        String[] expecteds = new String[] { "a", "b", "c" };
+        final Bag<String> sut = TreeBag.newTreeBag();
+        final String[] input = new String[] { "b", "c", "a" };
+        final String[] expecteds = new String[] { "a", "b", "c" };
         sut.addAll(input);
-        Object[] actuals = sut.elements().toArray();
+        final Object[] actuals = sut.elements().toArray();
         assertArrayEquals(expecteds, actuals);
+    }
+
+    @Test
+    public void testWithNonComparableData() {
+        final Bag<UncomparableType> sut = TreeBag.newTreeBag(createUncomparableTypeComparator());
+        final UncomparableType[] input = createUncomparableTypes("b", "c", "a");
+        final UncomparableType[] expecteds = createUncomparableTypes("a", "b", "c");
+        sut.addAll(input);
+        final Object[] actuals = sut.elements().toArray();
+        assertArrayEquals(expecteds, actuals);
+    }
+
+    private Comparator<UncomparableType> createUncomparableTypeComparator() {
+        return new Comparator<UncomparableType>() {
+            @Override
+            public int compare(final UncomparableType o1, final UncomparableType o2) {
+                return o1.comparableValue.compareTo(o2.comparableValue);
+            }
+        };
+    }
+
+    private UncomparableType[] createUncomparableTypes(final String... values) {
+        final UncomparableType[] result = new UncomparableType[values.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new UncomparableType();
+            result[i].comparableValue = values[i];
+        }
+        return result;
+    }
+
+    private static class UncomparableType {
+        private String comparableValue;
+
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this);
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj);
+        }
     }
 }
