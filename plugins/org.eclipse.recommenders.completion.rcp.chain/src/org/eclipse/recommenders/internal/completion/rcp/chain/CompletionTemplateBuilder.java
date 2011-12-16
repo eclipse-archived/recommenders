@@ -135,7 +135,7 @@ public class CompletionTemplateBuilder {
             sb.append(count);
         }
         final String resolvedTypeName = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
-                varType, context.getCompilationUnit());
+                varType, context.getCompilationUnit().findPrimaryType());
         // sb.append(":var(").append(resolvedTypeName).append(")");
         sb.append("}");
     }

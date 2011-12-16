@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) 2010 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */
 package org.eclipse.recommenders.internal.rcp.providers;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
@@ -21,8 +31,8 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.recommenders.rcp.Events.CompilationUnitAddedEvent;
-import org.eclipse.recommenders.rcp.Events.CompilationUnitSavedEvent;
 import org.eclipse.recommenders.rcp.Events.CompilationUnitRemovedEvent;
+import org.eclipse.recommenders.rcp.Events.CompilationUnitSavedEvent;
 import org.eclipse.recommenders.rcp.Events.JavaProjectClosedEvent;
 import org.eclipse.recommenders.rcp.Events.JavaProjectOpenedEvent;
 import org.eclipse.recommenders.rcp.utils.RCPUtils;

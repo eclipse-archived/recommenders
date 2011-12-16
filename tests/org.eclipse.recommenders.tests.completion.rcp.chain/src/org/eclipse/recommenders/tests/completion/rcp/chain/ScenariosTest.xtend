@@ -35,7 +35,7 @@ class ScenariosTest {
 			))
 			
 		exercise(code, expected); 
-	} 
+	}
 	
 	@Test
 	def void testFindLocalAnchorWithIsExactMatch() {

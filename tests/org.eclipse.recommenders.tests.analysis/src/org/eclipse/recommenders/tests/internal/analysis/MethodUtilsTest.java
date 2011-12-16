@@ -31,13 +31,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.recommenders.internal.analysis.utils.MethodUtils;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
@@ -59,15 +57,16 @@ public class MethodUtilsTest {
     public void testFindAllDeclaredPublicInstanceMethods() {
         // setup
         final IClass clazz = createClassMock();
-        final List<IMethod> expecteds = Lists.newArrayList(createPublicMethodMock(), createPublicFinalMethodMock());
+        final Set<IMethod> expecteds = Sets.newHashSet(createPublicMethodMock(), createPublicFinalMethodMock());
         final Set<IMethod> someMethods = Sets.newHashSet(createPublicConstructorMock(), createPrivateMethodMock(),
                 createPublicClinitMock(), createPublicNativeMock());
         someMethods.addAll(expecteds);
         mockClassGetDeclareMethods(clazz, someMethods);
         // exercise
-        final Collection<IMethod> actuals = MethodUtils.findAllDeclaredPublicInstanceMethodsWithImplementation(clazz);
+        final Collection<IMethod> actuals = Sets.newHashSet(MethodUtils
+                .findAllDeclaredPublicInstanceMethodsWithImplementation(clazz));
         // verify
-        assertEquals(expecteds, actuals);
+        assertEquals(actuals, expecteds);
     }
 
     @Test
