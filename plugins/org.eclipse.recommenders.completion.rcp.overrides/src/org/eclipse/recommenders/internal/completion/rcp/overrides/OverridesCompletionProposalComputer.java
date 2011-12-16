@@ -26,7 +26,7 @@ import org.eclipse.recommenders.completion.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;
-import org.eclipse.recommenders.internal.completion.rcp.CompilerBindings;
+import org.eclipse.recommenders.rcp.utils.CompilerBindings;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;

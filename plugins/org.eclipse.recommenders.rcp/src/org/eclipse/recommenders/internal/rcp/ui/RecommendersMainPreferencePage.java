@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp;
+package org.eclipse.recommenders.internal.rcp.ui;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;

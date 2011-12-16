@@ -18,7 +18,6 @@ import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelRe
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.RemoteResolverJobFactory;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ResolveCallsModelJob;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelResolver.OverridePolicy;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.parser.VersionParserFactory;
 import org.eclipse.swt.SWT;

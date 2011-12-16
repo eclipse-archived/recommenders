@@ -8,13 +8,10 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp;
+package org.eclipse.recommenders.internal.rcp.wiring;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Executor;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -27,10 +24,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
-import org.eclipse.recommenders.rcp.IArtifactStoreChangedListener;
+import org.eclipse.recommenders.internal.rcp.providers.CachingAstProvider;
+import org.eclipse.recommenders.internal.rcp.providers.JavaElementEventsProvider;
 import org.eclipse.recommenders.rcp.IAstProvider;
-import org.eclipse.recommenders.rcp.ICompilationUnitAnalyzer;
-import org.eclipse.recommenders.rcp.IEditorChangedListener;
 import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.ast.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.ast.ASTStringUtils;
@@ -38,32 +34,34 @@ import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.inject.AbstractModule;
+import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
-import com.google.inject.multibindings.Multibinder;
 
-@SuppressWarnings({ "rawtypes", "unused" })
+@SuppressWarnings("restriction")
 public class RecommendersModule extends AbstractModule implements Module {
-
-    private Multibinder<IEditorChangedListener> editorChangedListenerBinder;
-
-    private Multibinder<IArtifactStoreChangedListener> artifactStoreChangedListenerBinder;
-
-    private Multibinder<ICompilationUnitAnalyzer> compilationUnitAnalyzerBinder;
 
     @Override
     protected void configure() {
-        configureArtifactStore();
-        configureEditorTracker();
         configureJavaElementResolver();
         configureAstProvider();
-        configureBuilder();
+        initalizeSingletonServices();
+    }
+
+    private void initalizeSingletonServices() {
+        bind(ServicesInitializer.class).asEagerSingleton();
+    }
+
+    @Singleton
+    @Provides
+    public JavaElementEventsProvider provideJavaElementEventsProvider(final EventBus bus) {
+        final JavaElementEventsProvider p = new JavaElementEventsProvider(bus);
+        JavaCore.addElementChangedListener(p);
+        return p;
     }
 
     @Singleton
@@ -72,7 +70,6 @@ public class RecommendersModule extends AbstractModule implements Module {
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
         final ThreadPoolExecutor pool = new ThreadPoolExecutor(1, numberOfCores, 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>());
-        final Executor executor = MoreExecutors.getExitingExecutorService(pool);
         final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool);
         return bus;
     }
@@ -83,56 +80,11 @@ public class RecommendersModule extends AbstractModule implements Module {
         bind(IAstProvider.class).toInstance(p);
     }
 
-    private void configureArtifactStore() {
-        bind(JsonArtifactStore.class).in(Scopes.SINGLETON);
-        // bind(IArtifactStore.class).to(JsonArtifactStore.class).in(Scopes.SINGLETON);
-        compilationUnitAnalyzerBinder = Multibinder.newSetBinder(binder(), ICompilationUnitAnalyzer.class);
-        artifactStoreChangedListenerBinder = Multibinder.newSetBinder(binder(), IArtifactStoreChangedListener.class);
-    }
-
-    private void configureEditorTracker() {
-        bind(EditorTrackingService.class).in(Scopes.SINGLETON);
-        editorChangedListenerBinder = Multibinder.newSetBinder(binder(), IEditorChangedListener.class);
-    }
-
     private void configureJavaElementResolver() {
         bind(JavaElementResolver.class).in(Scopes.SINGLETON);
         requestStaticInjection(ASTStringUtils.class);
         requestStaticInjection(ASTNodeUtils.class);
         requestStaticInjection(BindingUtils.class);
-    }
-
-    private void configureBuilder() {
-        // bind(RecommendersBuilder.class);
-
-    }
-
-    @Provides
-    public List<IEditorChangedListener> providePrioritySortedEditorChangedListeners(
-            final Set<IEditorChangedListener> unsortedListeners) {
-        final List<IEditorChangedListener> sorted = Lists.newArrayList(unsortedListeners);
-        Collections.sort(sorted, new Comparator<IEditorChangedListener>() {
-
-            @Override
-            public int compare(final IEditorChangedListener o1, final IEditorChangedListener o2) {
-                return o1.getNotifcationPriority().compareTo(o2.getNotifcationPriority());
-            }
-        });
-        return sorted;
-    }
-
-    @Provides
-    public List<IArtifactStoreChangedListener> providePrioritySortedArtifactStoreChangedListener(
-            final Set<IArtifactStoreChangedListener> unsortedListeners) {
-        final List<IArtifactStoreChangedListener> sorted = Lists.newArrayList(unsortedListeners);
-        Collections.sort(sorted, new Comparator<IArtifactStoreChangedListener>() {
-
-            @Override
-            public int compare(final IArtifactStoreChangedListener o1, final IArtifactStoreChangedListener o2) {
-                return o1.getNotifcationPriority().compareTo(o2.getNotifcationPriority());
-            }
-        });
-        return sorted;
     }
 
     @Provides
@@ -159,4 +111,17 @@ public class RecommendersModule extends AbstractModule implements Module {
     public JavaModelManager provideJavaModelManger() {
         return JavaModelManager.getJavaModelManager();
     }
+
+    /*
+     * this is a bit odd. Used to initialize complex wired elements such as JavaElementsProvider etc.
+     */
+    public static class ServicesInitializer {
+
+        @Inject
+        private ServicesInitializer(final IAstProvider astProvider, final JavaElementEventsProvider eventsProvider) {
+            ensureIsNotNull(astProvider);
+            ensureIsNotNull(eventsProvider);
+        }
+    }
+
 }

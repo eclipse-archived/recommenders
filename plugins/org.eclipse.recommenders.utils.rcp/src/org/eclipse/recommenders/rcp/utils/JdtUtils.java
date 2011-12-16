@@ -16,12 +16,14 @@ import static com.google.common.base.Optional.of;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isPublic;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isStatic;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -122,9 +124,7 @@ public class JdtUtils {
         ensureIsNotNull(editor);
         ensureIsNotNull(selection);
         final Optional<ITypeRoot> input = getInput(editor);
-        if (input.isPresent()) {
-            return codeResolve(input.get(), selection);
-        }
+        if (input.isPresent()) { return codeResolve(input.get(), selection); }
         return EMPTY_RESULT;
     }
 
@@ -133,9 +133,7 @@ public class JdtUtils {
         final CompilationUnit ast = SharedASTProvider.getAST(typeRoot, SharedASTProvider.WAIT_YES, null);
         final IProblem[] problems = ast.getProblems();
         for (final IProblem problem : problems) {
-            if (problem.isError()) {
-                return true;
-            }
+            if (problem.isError()) { return true; }
         }
         return false;
     }
@@ -178,7 +176,7 @@ public class JdtUtils {
     private static String createMethodKey(final IMethod method) {
         try {
             final String signature = method.getSignature();
-            final String signatureWithoutReturnType = substringBeforeLast(signature, ")");
+            final String signatureWithoutReturnType = StringUtils.substringBeforeLast(signature, ")");
             final String methodName = method.getElementName();
             return methodName + signatureWithoutReturnType;
         } catch (final JavaModelException e) {
@@ -346,9 +344,7 @@ public class JdtUtils {
     public static Optional<ITypeName> findSuperclassName(final IType type) {
         try {
             final String superclassName = type.getSuperclassTypeSignature();
-            if (superclassName == null) {
-                return absent();
-            }
+            if (superclassName == null) { return absent(); }
             final String resolvedSuperclassName = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
                     superclassName, type);
             final String vmSuperclassName = toVMTypeDescriptor(resolvedSuperclassName);
@@ -398,13 +394,9 @@ public class JdtUtils {
 
     public static Optional<IWorkbenchPage> getActiveWorkbenchPage() {
         final IWorkbench workbench = PlatformUI.getWorkbench();
-        if (workbench == null) {
-            return absent();
-        }
+        if (workbench == null) { return absent(); }
         final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-        if (window == null) {
-            return absent();
-        }
+        if (window == null) { return absent(); }
         final IWorkbenchPage page = window.getActivePage();
         return of(page);
     }
@@ -435,9 +427,7 @@ public class JdtUtils {
      */
     public static Optional<IJavaElement> getElementAtOffset(final JavaEditor editor, final ITextSelection selection) {
         final Optional<ITypeRoot> input = getInput(editor);
-        if (input.isPresent()) {
-            return getElementAtOffset(input.get(), selection);
-        }
+        if (input.isPresent()) { return getElementAtOffset(input.get(), selection); }
         return absent();
     }
 
@@ -480,9 +470,7 @@ public class JdtUtils {
         ensureIsNotNull(rhsType);
         final IType[] supertypes = findAllSupertypesIncludeingArgument(rhsType);
         for (final IType supertype : supertypes) {
-            if (supertype.equals(lhsType)) {
-                return true;
-            }
+            if (supertype.equals(lhsType)) { return true; }
         }
         return false;
     }
@@ -513,9 +501,7 @@ public class JdtUtils {
 
     public static Optional<JavaEditor> openJavaEditor(final IEditorInput input) {
         final Optional<IWorkbenchPage> oPage = getActiveWorkbenchPage();
-        if (!oPage.isPresent()) {
-            return absent();
-        }
+        if (!oPage.isPresent()) { return absent(); }
         final IWorkbenchPage page = oPage.get();
         final IEditorPart editor = page.findEditor(input);
         if (editor instanceof JavaEditor) {
@@ -546,9 +532,7 @@ public class JdtUtils {
 
     public static Optional<ASTNode> resolveDeclarationNode(final JavaEditor editor) {
         final ITypeRoot root = EditorUtility.getEditorInputJavaElement(editor, true);
-        if (root == null) {
-            return Optional.absent();
-        }
+        if (root == null) { return Optional.absent(); }
         final CompilationUnit cuNode = SharedASTProvider.getAST(root, SharedASTProvider.WAIT_YES, null);
         final ITextSelection selection = getTextSelection(editor);
         final ASTNode activeDeclarationNode = findClosestMethodOrTypeDeclarationAroundOffset(cuNode, selection);
@@ -559,14 +543,23 @@ public class JdtUtils {
         return (T) element.getPrimaryElement();
     }
 
+    /**
+     * @param parent
+     *            must be an {@link IType} or something that has an {@link IType} as parent.
+     */
     public static String resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(String typeSignature,
             final IJavaElement parent) {
+        ensureIsNotNull(typeSignature);
+        ensureIsNotNull(parent);
         try {
             typeSignature = typeSignature.replace('/', '.');
-            final IType type = (IType) parent.getAncestor(IJavaElement.TYPE);
+            final IType type = (IType) (parent instanceof IType ? parent : parent.getAncestor(IJavaElement.TYPE));
+            if (type == null) {
+                throwIllegalArgumentException("parent could not be resolved to an IType: %s", parent);
+            }
             typeSignature = JavaModelUtil.getResolvedTypeName(typeSignature, type);
             // NOT needed. Done by getResolvedTypeName typeSignature = StringUtils.substringBefore(typeSignature, "[");
-            typeSignature = substringBeforeLast(typeSignature, "<");
+            typeSignature = StringUtils.substringBeforeLast(typeSignature, "<");
             return typeSignature;
         } catch (final JavaModelException e) {
             throw throwUnhandledException(e);
@@ -579,14 +572,6 @@ public class JdtUtils {
 
     public static void revealInEditor(final IEditorPart editor, final TypeDeclaration type) {
         EditorUtility.revealInEditor(editor, createRegion(type.getName()));
-    }
-
-    private static String substringBeforeLast(String typeSignature, final String separator) {
-        final int lastIndexOf = typeSignature.lastIndexOf(separator);
-        if (lastIndexOf > -1) {
-            typeSignature = typeSignature.substring(0, lastIndexOf);
-        }
-        return typeSignature;
     }
 
     private static String toVMTypeDescriptor(final String fqjdtName) {

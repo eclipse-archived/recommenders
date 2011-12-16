@@ -50,7 +50,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver;
-import org.eclipse.recommenders.internal.completion.rcp.CompilerBindings;
+import org.eclipse.recommenders.rcp.utils.CompilerBindings;
 import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;

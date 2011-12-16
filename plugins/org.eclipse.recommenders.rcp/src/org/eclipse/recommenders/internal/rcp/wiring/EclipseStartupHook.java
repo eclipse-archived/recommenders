@@ -8,23 +8,20 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp;
+package org.eclipse.recommenders.internal.rcp.wiring;
 
 import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.ui.IStartup;
 
 /**
- * This class belongs to the Eclipse startup extension of the code recommenders
- * plugin. This startup extension ensures that all code recommenders related
- * plugins are started as soon as possible but after the Eclipse UI has been
- * started.
+ * This class belongs to the Eclipse startup extension of the code recommenders plugin. This startup extension ensures
+ * that all code recommenders related plugins are started as soon as possible but after the Eclipse UI has been started.
  */
 public class EclipseStartupHook implements IStartup {
     /**
-     * This method gets called by Eclipse after the plugin's activator.start
-     * method. Without this method/class, however, this bundle wouldn't be
-     * activated... :-) Anyway, all important work takes place in
+     * This method gets called by Eclipse after the plugin's activator.start method. Without this method/class, however,
+     * this bundle wouldn't be activated... :-) Anyway, all important work takes place in
      * {@link RecommendersPlugin#start}.
      */
     @Override

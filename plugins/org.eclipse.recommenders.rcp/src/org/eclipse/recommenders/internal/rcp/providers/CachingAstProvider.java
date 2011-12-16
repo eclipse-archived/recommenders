@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.rcp;
+package org.eclipse.recommenders.internal.rcp.providers;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
 
@@ -28,6 +28,7 @@ import com.google.inject.Singleton;
 @Singleton
 public class CachingAstProvider implements IAstProvider, IElementChangedListener {
 
+    @SuppressWarnings("deprecation")
     private final Map<ICompilationUnit, CompilationUnit> cache = new MapMaker().maximumSize(20).makeMap();
 
     @Override

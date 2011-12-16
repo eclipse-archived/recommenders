@@ -101,6 +101,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         supportedCompletionRequests.add(CompletionOnSingleNameReference.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context,
             final IProgressMonitor monitor) {
@@ -295,6 +296,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     public void sessionStarted() {
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public List computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         return Collections.emptyList();

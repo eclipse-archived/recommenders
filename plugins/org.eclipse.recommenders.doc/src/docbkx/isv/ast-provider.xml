@@ -1,0 +1,13 @@
+<?xml version='1.0'?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
+<section id="isv-eventbus">
+    <title>IAstProvider</title>
+    <simpara>Code Recommenders offers an AST caching service that can be used by completion engines to get the last know
+        ast of a compilation unit.
+    </simpara>
+    <note>
+        <title>Needs verification.</title>
+        <para>Do we still need that? Why not use the AST that is send with the compilation unit?
+        </para>
+    </note>
+</section>

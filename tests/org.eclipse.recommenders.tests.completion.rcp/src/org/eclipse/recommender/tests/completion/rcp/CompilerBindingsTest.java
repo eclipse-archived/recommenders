@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.eclipse.recommenders.internal.completion.rcp.CompilerBindings;
+import org.eclipse.recommenders.rcp.utils.CompilerBindings;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.junit.Test;

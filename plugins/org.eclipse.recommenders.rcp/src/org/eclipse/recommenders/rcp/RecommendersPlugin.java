@@ -11,8 +11,6 @@
 package org.eclipse.recommenders.rcp;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.rcp.RecommendersDashboard;
 import org.eclipse.recommenders.utils.LoggingUtils;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -40,32 +38,11 @@ public class RecommendersPlugin extends AbstractUIPlugin {
         LoggingUtils.logWarning(null, getDefault(), format, args);
     }
 
-    // private Injector injector;
-
     @Override
     public void start(final BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
-        // initInjector();
     }
-
-    private void initInjector() {
-        InjectionService.getInstance().getInjector().getInstance(RecommendersDashboard.class);
-    }
-
-    //
-    // public Injector getInjector() {
-    // return injector;
-    // }
-
-    // public <T> T requestInstance(final Class<T> type) {
-    // final T res = injector.getInstance(type);
-    // return res;
-    // }
-
-    // public void requestInjectMembers(final Object obj) {
-    // injector.injectMembers(obj);
-    // }
 
     @Override
     public void stop(final BundleContext context) throws Exception {

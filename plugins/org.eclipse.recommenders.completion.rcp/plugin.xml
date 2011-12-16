@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-	<extension
-         id="org.eclipse.recommenders"
-         name="Code Recommenders Default Completion Engine"
-         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
-      <javaCompletionProposalComputer
-            activate="true"
-            categoryId="org.eclipse.recommenders.rcp.category.completion"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.IntelligentCompletionProposalComputer">
-      </javaCompletionProposalComputer>
-   </extension>
    <extension
          id="org.eclipse.recommenders.rcp.category.completion"
          name="Code Recommenders Proposals"
