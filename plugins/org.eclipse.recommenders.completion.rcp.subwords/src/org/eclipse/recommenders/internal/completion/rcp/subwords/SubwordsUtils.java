@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010 Darmstadt University of Technology.
+ * Copyright (c) 2011 Paul-Emmanuel Faidherbe.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Paul-Emmanuel Faidherbe - Completion proposals relevance benchmark
+ *    Johannes Lerch, Marcel Bruch - Added utility functions for proposal generation 
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
