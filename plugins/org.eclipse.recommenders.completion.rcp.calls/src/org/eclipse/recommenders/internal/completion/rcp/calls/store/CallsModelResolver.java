@@ -23,8 +23,6 @@ import java.util.Date;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.udc.ManifestMatchResult;
@@ -32,6 +30,8 @@ import org.eclipse.recommenders.internal.analysis.archive.ArchiveDetailsExtracto
 import org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule.UdcServer;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.Throws;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

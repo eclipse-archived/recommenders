@@ -37,12 +37,12 @@ import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.CallsAdapter
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.ContextFactory;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.MockedIntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;

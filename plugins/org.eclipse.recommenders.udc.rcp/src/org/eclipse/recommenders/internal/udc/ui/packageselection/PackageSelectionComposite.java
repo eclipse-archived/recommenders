@@ -21,7 +21,7 @@ package org.eclipse.recommenders.internal.udc.ui.packageselection;
  */
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.recommenders.rcp.utils.ScaleOneDimensionLayout;
+import org.eclipse.recommenders.utils.rcp.ScaleOneDimensionLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.GridData;

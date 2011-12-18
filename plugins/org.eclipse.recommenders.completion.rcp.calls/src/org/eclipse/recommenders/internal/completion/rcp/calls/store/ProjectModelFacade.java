@@ -33,12 +33,12 @@ import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.SearchableEnvironment;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.completion.rcp.calls.IObjectMethodCallsNet;
-import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
+import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 import com.google.common.collect.Sets;
 import com.google.inject.assistedinject.Assisted;

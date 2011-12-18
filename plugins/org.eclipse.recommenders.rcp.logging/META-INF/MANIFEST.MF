@@ -12,6 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  ch.qos.logback.core,
  org.eclipse.ui,
  org.eclipse.recommenders.utils,
- org.slf4j.api
+ org.slf4j.api,
+ org.eclipse.recommenders.utils.rcp
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

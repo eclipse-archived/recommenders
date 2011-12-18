@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
-import org.eclipse.recommenders.utils.StatusToString;
+import org.eclipse.recommenders.utils.rcp.StatusToString;
 
 import com.google.common.collect.Maps;
 import com.google.inject.BindingAnnotation;

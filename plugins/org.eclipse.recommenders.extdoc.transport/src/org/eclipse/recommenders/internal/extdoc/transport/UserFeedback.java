@@ -21,8 +21,8 @@ import org.eclipse.recommenders.extdoc.rcp.feedback.IComment;
 import org.eclipse.recommenders.extdoc.rcp.feedback.IRating;
 import org.eclipse.recommenders.extdoc.rcp.feedback.IRatingSummary;
 import org.eclipse.recommenders.extdoc.rcp.feedback.IUserFeedback;
-import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.rcp.UUIDHelper;
 
 import com.google.gson.annotations.SerializedName;
 

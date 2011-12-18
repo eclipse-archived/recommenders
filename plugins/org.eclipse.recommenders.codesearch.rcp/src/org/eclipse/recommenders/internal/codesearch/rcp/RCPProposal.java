@@ -30,10 +30,10 @@ import org.eclipse.recommenders.codesearch.SnippetSummary;
 import org.eclipse.recommenders.codesearch.SnippetType;
 import org.eclipse.recommenders.internal.codesearch.rcp.utils.CrASTUtil;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
-import org.eclipse.recommenders.rcp.utils.ast.MethodDeclarationFinder;
-import org.eclipse.recommenders.rcp.utils.ast.TypeDeclarationFinder;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.rcp.ast.MethodDeclarationFinder;
+import org.eclipse.recommenders.utils.rcp.ast.TypeDeclarationFinder;
 
 import com.google.common.base.Optional;
 

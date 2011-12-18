@@ -26,7 +26,6 @@ import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.PackageFragmentRoot;
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.utils.annotations.Provisional;
 import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -34,6 +33,7 @@ import org.eclipse.recommenders.utils.names.IName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmFieldName;
 import org.eclipse.recommenders.utils.names.VmPackageName;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
 import com.google.inject.Inject;
 

@@ -36,7 +36,7 @@ import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.RemoteResolverJobFactory;
-import org.eclipse.recommenders.rcp.utils.ScaleOneDimensionLayout;
+import org.eclipse.recommenders.utils.rcp.ScaleOneDimensionLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;

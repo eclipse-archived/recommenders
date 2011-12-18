@@ -16,7 +16,7 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver;
 import org.eclipse.recommenders.internal.completion.rcp.templates.TemplatesCompletionProposalComputer;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.junit.Assert;
 import org.junit.Test;
 

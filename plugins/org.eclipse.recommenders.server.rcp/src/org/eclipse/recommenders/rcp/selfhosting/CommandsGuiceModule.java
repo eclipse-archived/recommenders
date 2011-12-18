@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 import org.osgi.framework.Bundle;
 
 import com.google.inject.AbstractModule;

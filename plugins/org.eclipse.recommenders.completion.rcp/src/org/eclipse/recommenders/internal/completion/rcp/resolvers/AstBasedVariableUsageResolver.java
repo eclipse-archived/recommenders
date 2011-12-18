@@ -43,8 +43,8 @@ import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey.Kind;
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.rcp.IAstProvider;
-import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.rcp.ast.BindingUtils;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;

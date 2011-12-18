@@ -30,9 +30,9 @@ import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
-import org.eclipse.recommenders.rcp.utils.JdtUtils;
-import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
 import org.eclipse.recommenders.utils.HashBag;
+import org.eclipse.recommenders.utils.rcp.JdtUtils;
+import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 import org.eclipse.swt.graphics.Image;
 
 // TODO: field access may need to be qualified using "this." This is completely ignored ATM

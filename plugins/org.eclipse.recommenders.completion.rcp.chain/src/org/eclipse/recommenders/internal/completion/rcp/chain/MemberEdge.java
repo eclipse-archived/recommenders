@@ -11,8 +11,8 @@
 package org.eclipse.recommenders.internal.completion.rcp.chain;
 
 import static com.google.common.base.Optional.fromNullable;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeFromSignature;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.findTypeFromSignature;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -22,8 +22,8 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.recommenders.rcp.utils.JdtUtils;
-import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
+import org.eclipse.recommenders.utils.rcp.JdtUtils;
+import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
 

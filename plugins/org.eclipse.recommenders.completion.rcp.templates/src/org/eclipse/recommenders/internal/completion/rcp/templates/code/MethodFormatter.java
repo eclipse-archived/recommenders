@@ -19,12 +19,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IJavaModelStatusConstants;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
 /**
  * Generates the <code>String</code> representation of an {@link IMethod}.

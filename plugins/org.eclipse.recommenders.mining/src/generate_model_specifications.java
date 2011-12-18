@@ -8,10 +8,10 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.mining.calls.data.couch.CouchDbDataAccess;
 import org.eclipse.recommenders.mining.calls.data.couch.MergedModelSpecsGenerator;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.ExampleMode;

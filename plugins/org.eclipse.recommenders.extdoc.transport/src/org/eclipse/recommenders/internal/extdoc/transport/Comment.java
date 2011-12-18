@@ -13,8 +13,8 @@ package org.eclipse.recommenders.internal.extdoc.transport;
 import java.util.Date;
 
 import org.eclipse.recommenders.extdoc.rcp.feedback.IComment;
-import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.rcp.UUIDHelper;
 
 /**
  * A comment submitted by a user to a provider.

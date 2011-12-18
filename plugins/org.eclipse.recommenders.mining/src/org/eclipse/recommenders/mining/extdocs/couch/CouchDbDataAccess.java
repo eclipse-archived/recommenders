@@ -11,17 +11,14 @@
 package org.eclipse.recommenders.mining.extdocs.couch;
 
 import static com.google.common.base.Optional.fromNullable;
-import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrl;
-import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKey;
-import static org.eclipse.recommenders.commons.client.CouchUtils.createViewUrlWithKeyObject;
+import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrl;
+import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrlWithKey;
+import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrlWithKeyObject;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.recommenders.commons.client.GenericResultRowView;
-import org.eclipse.recommenders.commons.client.TransactionResult;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.transport.types.ClassOverridePatterns;
 import org.eclipse.recommenders.extdoc.transport.types.MethodSelfcallDirectives;
@@ -29,6 +26,9 @@ import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
+import org.eclipse.recommenders.webclient.GenericResultRowView;
+import org.eclipse.recommenders.webclient.TransactionResult;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;

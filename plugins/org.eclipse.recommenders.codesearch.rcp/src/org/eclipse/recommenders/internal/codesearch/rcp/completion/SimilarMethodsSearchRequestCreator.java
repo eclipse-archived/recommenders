@@ -33,11 +33,11 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.recommenders.codesearch.Request;
 import org.eclipse.recommenders.codesearch.RequestType;
-import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
-import org.eclipse.recommenders.rcp.utils.ast.TypeDeclarationInformationAnalyzer;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
+import org.eclipse.recommenders.utils.rcp.ast.BindingUtils;
+import org.eclipse.recommenders.utils.rcp.ast.TypeDeclarationInformationAnalyzer;
 
 import com.google.common.collect.Sets;
 

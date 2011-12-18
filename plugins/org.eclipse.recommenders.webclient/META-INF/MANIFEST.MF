@@ -4,7 +4,7 @@ Bundle-Name: Code Recommenders: Gson JAX-RS JSON Serializer (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.webclient
 Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Export-Package: org.eclipse.recommenders.commons.client
+Export-Package: org.eclipse.recommenders.webclient
 Require-Bundle: org.eclipse.recommenders.utils.gson,
  com.sun.jersey.core,
  org.eclipse.recommenders.utils,

@@ -20,11 +20,11 @@ import static org.mockito.Mockito.when;
 import java.util.Date;
 import java.util.HashSet;
 
-import org.eclipse.recommenders.commons.client.TransactionResult;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
 import org.eclipse.recommenders.mining.calls.data.couch.CouchDbDataAccess;
 import org.eclipse.recommenders.utils.VersionRange;
+import org.eclipse.recommenders.webclient.TransactionResult;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 import org.junit.Before;
 import org.junit.Test;
 

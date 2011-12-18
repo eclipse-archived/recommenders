@@ -16,7 +16,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.internal.completion.rcp.IntelligentCompletionContext;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
 import com.google.inject.Inject;
 

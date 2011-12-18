@@ -10,14 +10,14 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.chain;
 
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.createUnresolvedField;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.createUnresolvedLocaVariable;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.createUnresolvedMethod;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.createUnresolvedType;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeFromSignature;
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.findTypeOfField;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.createUnresolvedField;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.createUnresolvedLocaVariable;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.createUnresolvedMethod;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.createUnresolvedType;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.findTypeFromSignature;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.findTypeOfField;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,8 +50,8 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver;
-import org.eclipse.recommenders.rcp.utils.CompilerBindings;
-import org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin;
+import org.eclipse.recommenders.utils.rcp.CompilerBindings;
+import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;

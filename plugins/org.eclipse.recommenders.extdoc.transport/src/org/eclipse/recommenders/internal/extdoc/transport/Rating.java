@@ -13,8 +13,8 @@ package org.eclipse.recommenders.internal.extdoc.transport;
 import java.util.Date;
 
 import org.eclipse.recommenders.extdoc.rcp.feedback.IRating;
-import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.recommenders.utils.Checks;
+import org.eclipse.recommenders.utils.rcp.UUIDHelper;
 
 final class Rating implements IRating {
 

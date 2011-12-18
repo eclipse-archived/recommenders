@@ -19,16 +19,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.commons.client.NotFoundException;
-import org.eclipse.recommenders.commons.client.ResultObject;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.commons.udc.LibraryIdentifier;
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
 import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.server.udc.wiring.GuiceModule.UdcScope;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.NotFoundException;
+import org.eclipse.recommenders.webclient.ResultObject;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;

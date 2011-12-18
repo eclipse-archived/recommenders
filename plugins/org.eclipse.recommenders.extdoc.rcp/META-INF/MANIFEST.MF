@@ -33,7 +33,8 @@ Require-Bundle: org.eclipse.ui,
  com.google.guava,
  org.eclipse.jface.text,
  org.eclipse.recommenders.injection,
- org.eclipse.ui.editors
+ org.eclipse.ui.editors,
+ org.eclipse.recommenders.utils.rcp
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Implementation-Version: 0.2.0

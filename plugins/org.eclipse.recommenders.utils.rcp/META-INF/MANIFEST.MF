@@ -3,11 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: RCP Utils (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.utils.rcp;singleton:=true
 Bundle-Version: 0.5.0.qualifier
-Bundle-Activator: org.eclipse.recommenders.rcp.utils.internal.RecommendersUtilsPlugin
+Bundle-Activator: org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin
 Bundle-Vendor: Eclipse Code Recommenders
-Export-Package: org.eclipse.recommenders.rcp.utils,
- org.eclipse.recommenders.rcp.utils.ast,
- org.eclipse.recommenders.rcp.utils.internal
+Export-Package: org.eclipse.recommenders.utils.rcp,
+ org.eclipse.recommenders.utils.rcp.ast,
+ org.eclipse.recommenders.utils.rcp.internal
 Require-Bundle: com.google.guava,
  org.eclipse.recommenders.utils,
  org.eclipse.jdt.core,

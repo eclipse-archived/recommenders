@@ -15,9 +15,9 @@ import static org.eclipse.recommenders.internal.rcp.logging.LoggingActivator.BUN
 import static org.eclipse.recommenders.utils.Checks.ensureIsDirectory;
 import static org.eclipse.recommenders.utils.Checks.ensureIsFile;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.utils.LoggingUtils.newError;
-import static org.eclipse.recommenders.utils.LoggingUtils.newInfo;
-import static org.eclipse.recommenders.utils.LoggingUtils.newWarning;
+import static org.eclipse.recommenders.utils.rcp.LoggingUtils.newError;
+import static org.eclipse.recommenders.utils.rcp.LoggingUtils.newInfo;
+import static org.eclipse.recommenders.utils.rcp.LoggingUtils.newWarning;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
-@SuppressWarnings("restriction")
 public class LogbackConfigurationInitializer implements Callable<IStatus> {
     protected static final String LOGBACK_BUNDLE_ID = "ch.qos.logback.core";
     protected static final String PROP_LOGBACK_CONFIGURATION_FILE = "logback.configurationFile";
@@ -47,17 +46,14 @@ public class LogbackConfigurationInitializer implements Callable<IStatus> {
 
     private IStatus checkAndWarnConfigurationFileExists() {
         final File file = new File(getLogbackProperty()).getAbsoluteFile();
-        if (!file.isFile()) {
-            return newWarning(null, BUNDLE_ID, "failed to initialize logback logging for code recommenders", file);
-        }
+        if (!file.isFile()) { return newWarning(null, BUNDLE_ID,
+                "failed to initialize logback logging for code recommenders", file); }
         return OK_STATUS;
     }
 
     protected boolean isLogbackAlreadyLoaded() {
         final Bundle bundle = Platform.getBundle(LOGBACK_BUNDLE_ID);
-        if (bundle == null) {
-            return false;
-        }
+        if (bundle == null) { return false; }
         return Bundle.ACTIVE == bundle.getState();
     }
 

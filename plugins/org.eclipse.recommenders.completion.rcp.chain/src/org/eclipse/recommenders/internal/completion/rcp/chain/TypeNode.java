@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.core.IType;
-import org.eclipse.recommenders.rcp.utils.JdtUtils;
+import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 /**
  * Represents an {@link IType} in the call chain graph

@@ -17,9 +17,9 @@ import java.util.List;
 import org.eclipse.recommenders.extdoc.rcp.IProvider;
 import org.eclipse.recommenders.extdoc.rcp.IServerType;
 import org.eclipse.recommenders.internal.extdoc.transport.AbstractFeedbackServer;
-import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.names.IName;
+import org.eclipse.recommenders.utils.rcp.UUIDHelper;
 
 import com.google.gson.annotations.SerializedName;
 

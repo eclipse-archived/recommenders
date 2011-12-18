@@ -25,13 +25,17 @@ import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.recommenders.internal.rcp.providers.CachingAstProvider;
-import org.eclipse.recommenders.internal.rcp.providers.JavaElementEventsProvider;
+import org.eclipse.recommenders.internal.rcp.providers.JavaModelEventsProvider;
+import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionProvider;
 import org.eclipse.recommenders.rcp.IAstProvider;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
-import org.eclipse.recommenders.rcp.utils.ast.ASTNodeUtils;
-import org.eclipse.recommenders.rcp.utils.ast.ASTStringUtils;
-import org.eclipse.recommenders.rcp.utils.ast.BindingUtils;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
+import org.eclipse.recommenders.utils.rcp.ast.ASTNodeUtils;
+import org.eclipse.recommenders.utils.rcp.ast.ASTStringUtils;
+import org.eclipse.recommenders.utils.rcp.ast.BindingUtils;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 import com.google.common.eventbus.AsyncEventBus;
@@ -58,8 +62,8 @@ public class RecommendersModule extends AbstractModule implements Module {
 
     @Singleton
     @Provides
-    public JavaElementEventsProvider provideJavaElementEventsProvider(final EventBus bus) {
-        final JavaElementEventsProvider p = new JavaElementEventsProvider(bus);
+    public JavaModelEventsProvider provideJavaElementEventsProvider(final EventBus bus) {
+        final JavaModelEventsProvider p = new JavaModelEventsProvider(bus);
         JavaCore.addElementChangedListener(p);
         return p;
     }
@@ -78,6 +82,22 @@ public class RecommendersModule extends AbstractModule implements Module {
         final CachingAstProvider p = new CachingAstProvider();
         JavaCore.addElementChangedListener(p);
         bind(IAstProvider.class).toInstance(p);
+    }
+
+    @Provides
+    @Singleton
+    public static JavaSelectionProvider provideSelectionListener(final EventBus bus, final IWorkbench wb) {
+        final JavaSelectionProvider provider = new JavaSelectionProvider(bus);
+        Display.getDefault().asyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                final IWorkbenchWindow ww = wb.getActiveWorkbenchWindow();
+                final ISelectionService service = (ISelectionService) ww.getService(ISelectionService.class);
+                service.addPostSelectionListener(provider);
+            }
+        });
+        return provider;
     }
 
     private void configureJavaElementResolver() {
@@ -118,7 +138,8 @@ public class RecommendersModule extends AbstractModule implements Module {
     public static class ServicesInitializer {
 
         @Inject
-        private ServicesInitializer(final IAstProvider astProvider, final JavaElementEventsProvider eventsProvider) {
+        private ServicesInitializer(final IAstProvider astProvider, final JavaModelEventsProvider eventsProvider,
+                final JavaSelectionProvider selectionProvider) {
             ensureIsNotNull(astProvider);
             ensureIsNotNull(eventsProvider);
         }

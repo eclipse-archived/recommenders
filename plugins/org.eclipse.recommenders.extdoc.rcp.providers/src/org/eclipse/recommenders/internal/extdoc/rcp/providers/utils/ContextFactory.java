@@ -15,9 +15,9 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.recommenders.extdoc.rcp.selection.selection.IJavaElementSelection;
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
-import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 public final class ContextFactory {
 

@@ -34,8 +34,8 @@ import org.eclipse.recommenders.internal.extdoc.rcp.providers.swt.BrowserSizeWor
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.ElementResolver;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.MockedViewSite;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.VariableResolver;
-import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.names.IName;
+import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;

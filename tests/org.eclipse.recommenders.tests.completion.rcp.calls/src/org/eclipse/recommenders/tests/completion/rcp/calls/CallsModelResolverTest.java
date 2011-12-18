@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelResolver;
@@ -30,6 +29,7 @@ import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDep
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.IModelArchive;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.utils.VersionRange;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
 import org.junit.Test;
 
 import com.google.common.base.Optional;

@@ -37,9 +37,9 @@ import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration
 import org.eclipse.recommenders.internal.codesearch.rcp.CodesearchPlugin;
 import org.eclipse.recommenders.internal.codesearch.rcp.utils.CrASTUtil;
 import org.eclipse.recommenders.internal.codesearch.rcp.views.CodesearchController;
-import org.eclipse.recommenders.rcp.utils.UUIDHelper;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.rcp.UUIDHelper;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

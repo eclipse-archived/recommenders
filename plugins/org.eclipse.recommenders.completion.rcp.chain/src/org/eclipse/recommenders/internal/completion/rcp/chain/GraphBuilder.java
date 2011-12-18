@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.chain;
 
-import static org.eclipse.recommenders.rcp.utils.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Throws.throwCancelationException;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods;
 
 import java.util.Collection;
 import java.util.Collections;

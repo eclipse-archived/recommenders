@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.analysis.rcp;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.recommenders.utils.LoggingUtils;
+import org.eclipse.recommenders.utils.rcp.LoggingUtils;
 import org.osgi.framework.BundleContext;
 
 public class RcpAnalysisPlugin extends Plugin {

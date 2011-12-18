@@ -14,7 +14,7 @@ import org.eclipse.recommenders.codesearch.Feedback;
 import org.eclipse.recommenders.codesearch.ICodeSearchResource;
 import org.eclipse.recommenders.codesearch.Request;
 import org.eclipse.recommenders.codesearch.Response;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.inject.Inject;
 

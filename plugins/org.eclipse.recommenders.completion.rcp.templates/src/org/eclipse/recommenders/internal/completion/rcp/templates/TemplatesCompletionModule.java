@@ -15,7 +15,7 @@ import com.google.inject.Scopes;
 
 import org.eclipse.recommenders.internal.completion.rcp.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.completion.rcp.templates.code.MethodCallFormatter;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
 /**
  * Prepares the <code>Plugin</code> by injecting dependencies.

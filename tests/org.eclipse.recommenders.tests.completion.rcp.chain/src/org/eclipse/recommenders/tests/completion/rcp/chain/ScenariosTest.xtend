@@ -4,7 +4,7 @@ import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.tests.jdt.TestJavaContentAssistContext
 import org.junit.Ignore

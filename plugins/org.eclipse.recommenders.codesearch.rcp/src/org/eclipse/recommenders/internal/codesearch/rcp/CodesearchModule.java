@@ -11,9 +11,9 @@ package org.eclipse.recommenders.internal.codesearch.rcp;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.codesearch.client.CodeSearchClient;
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.internal.codesearch.rcp.views.CodesearchController;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;

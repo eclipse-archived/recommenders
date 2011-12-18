@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.completion.rcp;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.recommenders.utils.LoggingUtils;
+import org.eclipse.recommenders.utils.rcp.LoggingUtils;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 

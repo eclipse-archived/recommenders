@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.extdoc.rcp.IProvider;
 import org.eclipse.recommenders.extdoc.rcp.selection.selection.JavaElementLocation;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.utils.ElementResolver;
-import org.eclipse.recommenders.rcp.utils.JavaElementResolver;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.mockito.Mockito;

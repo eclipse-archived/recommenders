@@ -13,9 +13,9 @@ package org.eclipse.recommenders.extdoc.transport;
 import java.util.List;
 
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
 import org.eclipse.recommenders.extdoc.transport.types.WikiEntry;
 import org.eclipse.recommenders.internal.extdoc.transport.AbstractFeedbackServer;
+import org.eclipse.recommenders.webclient.GenericResultObjectView;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;

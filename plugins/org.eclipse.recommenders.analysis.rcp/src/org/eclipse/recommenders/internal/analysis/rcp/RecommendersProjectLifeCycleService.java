@@ -27,7 +27,7 @@ import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.recommenders.rcp.utils.RCPUtils;
+import org.eclipse.recommenders.utils.rcp.RCPUtils;
 
 public class RecommendersProjectLifeCycleService implements IElementChangedListener {
 

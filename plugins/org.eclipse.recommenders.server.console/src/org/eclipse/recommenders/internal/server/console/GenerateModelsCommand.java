@@ -25,7 +25,7 @@ import org.eclipse.recommenders.mining.calls.AlgorithmParameters;
 import org.eclipse.recommenders.mining.calls.data.couch.CouchGuiceModule;
 import org.eclipse.recommenders.mining.calls.data.couch.ModelSpecsGenerator;
 import org.eclipse.recommenders.server.ServerConfiguration;
-import org.eclipse.recommenders.utils.LoggingUtils;
+import org.eclipse.recommenders.utils.rcp.LoggingUtils;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

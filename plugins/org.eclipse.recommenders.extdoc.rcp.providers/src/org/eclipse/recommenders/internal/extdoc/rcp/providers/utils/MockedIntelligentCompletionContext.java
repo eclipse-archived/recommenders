@@ -47,10 +47,10 @@ import org.eclipse.recommenders.extdoc.rcp.selection.selection.IJavaElementSelec
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.completion.rcp.CompilerAstCompletionNodeFinder;
 import org.eclipse.recommenders.internal.completion.rcp.IntelligentCompletionRequestor;
-import org.eclipse.recommenders.rcp.utils.CompilerBindings;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.rcp.CompilerBindings;
 
 // TODO: Lots of methods taken from IntelligentCompletionContext.java
 @SuppressWarnings("restriction")

@@ -15,8 +15,8 @@ import java.net.URL;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
 
 public class ClientConfigurationPreferenceListener implements IPropertyChangeListener {
 

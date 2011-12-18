@@ -17,15 +17,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.recommenders.commons.client.ClientConfiguration;
-import org.eclipse.recommenders.commons.client.GenericResultObjectView;
-import org.eclipse.recommenders.commons.client.ServerErrorException;
-import org.eclipse.recommenders.commons.client.ServerUnreachableException;
-import org.eclipse.recommenders.commons.client.TransactionResult;
-import org.eclipse.recommenders.commons.client.WebServiceClient;
 import org.eclipse.recommenders.internal.extdoc.server.proxy.GuiceModule.ExtDocScope;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IName;
+import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.webclient.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.ServerErrorException;
+import org.eclipse.recommenders.webclient.ServerUnreachableException;
+import org.eclipse.recommenders.webclient.TransactionResult;
+import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
