@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-    <feature url="features/org.eclipse.recommenders.feature.codesearch.rcp_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.codesearch.rcp"
+    <!--feature url="features/org.eclipse.recommenders.feature.codesearch.rcp_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.codesearch.rcp"
         version="0.5.0.qualifier">
         <category name="sandbox"/>
-    </feature>
+    </feature-->
     <feature url="features/org.eclipse.recommenders.feature.codesearch.rcp.source_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.codesearch.rcp.source"
         version="0.5.0.qualifier">
         <category name="sources"/>
