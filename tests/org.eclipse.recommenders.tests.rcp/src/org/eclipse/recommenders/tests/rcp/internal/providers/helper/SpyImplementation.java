@@ -10,16 +10,16 @@
  */
 package org.eclipse.recommenders.tests.rcp.internal.providers.helper;
 
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.TYPE_DECLARATION;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION;
 
 import org.eclipse.jdt.core.IType;
-import org.eclipse.recommenders.rcp.events.JavaSelection;
-import org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionListener;
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionListener;
 
 public class SpyImplementation extends JavaSelectionListenerSpy {
 
     @JavaSelectionListener(TYPE_DECLARATION)
-    public void methodInSuperclass(final IType type, final JavaSelection selection) {
+    public void methodInSuperclass(final IType type, final JavaSelectionEvent selection) {
         recordEvent(selection);
     }
 }

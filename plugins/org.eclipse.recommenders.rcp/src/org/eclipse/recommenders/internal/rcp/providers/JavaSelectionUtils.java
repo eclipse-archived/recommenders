@@ -12,17 +12,17 @@ package org.eclipse.recommenders.internal.rcp.providers;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.FIELD_DECLARATION;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.METHOD_BODY;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.METHOD_DECLARATION;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.METHOD_DECLARATION_PARAMETER;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.METHOD_DECLARATION_RETURN;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.METHOD_DECLARATION_THROWS;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.TYPE_DECLARATION;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.TYPE_DECLARATION_EXTENDS;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.TYPE_DECLARATION_IMPLEMENTS;
-import static org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation.UNKNOWN;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.FIELD_DECLARATION;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_BODY;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION_PARAMETER;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION_RETURN;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION_THROWS;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION_EXTENDS;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION_IMPLEMENTS;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.UNKNOWN;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.findTypeRoot;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.log;
@@ -44,8 +44,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation;
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation;
 import org.eclipse.ui.IEditorPart;
 
 import com.google.common.base.Optional;
@@ -114,7 +113,9 @@ public class JavaSelectionUtils {
     public static Optional<IJavaElement> resolveJavaElementFromEditor(final JavaEditor editor, final int offset) {
         ensureIsNotNull(editor);
         final Optional<ITypeRoot> root = findTypeRoot(editor);
-        if (root.isPresent()) { return resolveJavaElementFromTypeRootInEditor(root.get(), offset); }
+        if (root.isPresent()) {
+            return resolveJavaElementFromTypeRootInEditor(root.get(), offset);
+        }
         return absent();
     }
 
@@ -148,45 +149,6 @@ public class JavaSelectionUtils {
         }
     }
 
-    /**
-     * Picks the first element of the structured selection and returns it iff it's an {@link IJavaElement} -
-     * {@link Optional#absent()} otherwise.
-     */
-    public static Optional<IJavaElement> resolveJavaElementFromViewer(final IStructuredSelection selection) {
-        ensureIsNotNull(selection);
-        final Object element = selection.getFirstElement();
-        if (element instanceof IJavaElement) { return of((IJavaElement) element); }
-        return absent();
-    }
-
-    public static JavaSelectionLocation resolveSelectionLocationFromViewer(final IJavaElement element) {
-        ensureIsNotNull(element);
-
-        switch (element.getElementType()) {
-        case IJavaElement.CLASS_FILE:
-        case IJavaElement.COMPILATION_UNIT:
-        case IJavaElement.PACKAGE_DECLARATION:
-        case IJavaElement.IMPORT_DECLARATION:
-        case IJavaElement.IMPORT_CONTAINER:
-        case IJavaElement.TYPE:
-            return TYPE_DECLARATION;
-        case IJavaElement.METHOD:
-        case IJavaElement.INITIALIZER:
-            return METHOD_DECLARATION;
-        case IJavaElement.FIELD:
-            return FIELD_DECLARATION;
-        case IJavaElement.LOCAL_VARIABLE:
-            // shouldn't happen in a viewer selection, right?
-            return METHOD_BODY;
-        case IJavaElement.JAVA_MODEL:
-        case IJavaElement.PACKAGE_FRAGMENT:
-        case IJavaElement.PACKAGE_FRAGMENT_ROOT:
-        case IJavaElement.ANNOTATION:
-        default:
-            return JavaSelectionLocation.UNKNOWN;
-        }
-    }
-
     public static JavaSelectionLocation resolveSelectionLocationFromAst(final CompilationUnit astRoot, final int offset) {
         ensureIsNotNull(astRoot);
         final ASTNode selectedNode = NodeFinder.perform(astRoot, offset, 0);
@@ -198,15 +160,14 @@ public class JavaSelectionUtils {
         return res;
     }
 
-    public static JavaSelectionLocation resolveSelectionLocationFromAstNode(ASTNode node) {
-        if (node == null) { return JavaSelectionLocation.UNKNOWN; }
-        // deal with special case that no parent exists: for instance, if empty spaces before the package declaration
-        // are selected, we translate this to type declaration:
-        ASTNode parent = node.getParent();
-        if (parent == null) { return JavaSelectionLocation.TYPE_DECLARATION; }
+    public static JavaSelectionLocation resolveSelectionLocationFromAstNode(final ASTNode node) {
+        if (node == null) {
+            return JavaSelectionLocation.UNKNOWN;
+        }
 
         // handle a direct selection on a declaration node, i.e., the users select a whitespace as in
         // "public $ void do(){}":
+        // TODO Review: create second(?) mapping
         switch (node.getNodeType()) {
         case ASTNode.COMPILATION_UNIT:
         case ASTNode.TYPE_DECLARATION:
@@ -219,12 +180,27 @@ public class JavaSelectionUtils {
         default:
         }
 
+        return resolveSelectionLocationFromNonMemberDeclarationNode(node);
+    }
+
+    /**
+     * some inner node that is not a method, a type or a field declaration node...
+     */
+    private static JavaSelectionLocation resolveSelectionLocationFromNonMemberDeclarationNode(ASTNode node) {
+        // deal with special case that no parent exists: for instance, if empty spaces before the package declaration
+        // are selected, we translate this to type declaration:
+        ASTNode parent = node.getParent();
+        if (parent == null) {
+            return JavaSelectionLocation.TYPE_DECLARATION;
+        }
         // we have a child node selected. Let's figure out which location this translates best:
         while (node != null) {
             final StructuralPropertyDescriptor locationInParent = node.getLocationInParent();
             switch (parent.getNodeType()) {
             case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
-                if (isVariableNameSelectionInFieldDeclaration(parent, locationInParent)) { return FIELD_DECLARATION; }
+                if (isVariableNameSelectionInFieldDeclaration(parent, locationInParent)) {
+                    return FIELD_DECLARATION;
+                }
                 break;
             case ASTNode.COMPILATION_UNIT:
             case ASTNode.TYPE_DECLARATION:
@@ -250,5 +226,34 @@ public class JavaSelectionUtils {
     private static JavaSelectionLocation mapLocationInParent(final StructuralPropertyDescriptor locationInParent) {
         final JavaSelectionLocation res = MAPPING.get(locationInParent);
         return res != null ? res : JavaSelectionLocation.UNKNOWN;
+    }
+
+    // TODO Review: rename method
+    public static JavaSelectionLocation resolveSelectionLocationFromJavaElement(final IJavaElement element) {
+        ensureIsNotNull(element);
+
+        switch (element.getElementType()) {
+        case IJavaElement.CLASS_FILE:
+        case IJavaElement.COMPILATION_UNIT:
+        case IJavaElement.PACKAGE_DECLARATION:
+        case IJavaElement.IMPORT_DECLARATION:
+        case IJavaElement.IMPORT_CONTAINER:
+        case IJavaElement.TYPE:
+            return TYPE_DECLARATION;
+        case IJavaElement.METHOD:
+        case IJavaElement.INITIALIZER:
+            return METHOD_DECLARATION;
+        case IJavaElement.FIELD:
+            return FIELD_DECLARATION;
+        case IJavaElement.LOCAL_VARIABLE:
+            // shouldn't happen in a viewer selection, right?
+            return METHOD_BODY;
+        case IJavaElement.JAVA_MODEL:
+        case IJavaElement.PACKAGE_FRAGMENT:
+        case IJavaElement.PACKAGE_FRAGMENT_ROOT:
+        case IJavaElement.ANNOTATION:
+        default:
+            return JavaSelectionLocation.UNKNOWN;
+        }
     }
 }

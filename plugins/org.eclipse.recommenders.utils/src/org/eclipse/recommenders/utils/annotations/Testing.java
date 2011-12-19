@@ -18,8 +18,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that the annotated type, method or field is there for testing
- * purpose.
+ * Indicates that the annotated type, method or field is somewhat 'special' for testing reasons. For instance, a
+ * method's visibility may be protected for testing purpose or the complete method may only exist to unit test the
+ * class...
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)

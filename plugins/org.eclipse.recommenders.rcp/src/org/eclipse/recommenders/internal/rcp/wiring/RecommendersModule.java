@@ -56,26 +56,11 @@ public class RecommendersModule extends AbstractModule implements Module {
         initalizeSingletonServices();
     }
 
-    private void initalizeSingletonServices() {
-        bind(ServicesInitializer.class).asEagerSingleton();
-    }
-
-    @Singleton
-    @Provides
-    public JavaModelEventsProvider provideJavaElementEventsProvider(final EventBus bus) {
-        final JavaModelEventsProvider p = new JavaModelEventsProvider(bus);
-        JavaCore.addElementChangedListener(p);
-        return p;
-    }
-
-    @Singleton
-    @Provides
-    public EventBus provideWorkspaceEventBus() {
-        final int numberOfCores = Runtime.getRuntime().availableProcessors();
-        final ThreadPoolExecutor pool = new ThreadPoolExecutor(1, numberOfCores, 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>());
-        final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool);
-        return bus;
+    private void configureJavaElementResolver() {
+        bind(JavaElementResolver.class).in(Scopes.SINGLETON);
+        requestStaticInjection(ASTStringUtils.class);
+        requestStaticInjection(ASTNodeUtils.class);
+        requestStaticInjection(BindingUtils.class);
     }
 
     private void configureAstProvider() {
@@ -84,9 +69,31 @@ public class RecommendersModule extends AbstractModule implements Module {
         bind(IAstProvider.class).toInstance(p);
     }
 
+    private void initalizeSingletonServices() {
+        bind(ServicesInitializer.class).asEagerSingleton();
+    }
+
+    @Singleton
+    @Provides
+    protected JavaModelEventsProvider provideJavaModelEventsProvider(final EventBus bus) {
+        final JavaModelEventsProvider p = new JavaModelEventsProvider(bus);
+        JavaCore.addElementChangedListener(p);
+        return p;
+    }
+
+    @Singleton
+    @Provides
+    protected EventBus provideWorkspaceEventBus() {
+        final int numberOfCores = Runtime.getRuntime().availableProcessors();
+        final ThreadPoolExecutor pool = new ThreadPoolExecutor(1, numberOfCores, 0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>());
+        final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool);
+        return bus;
+    }
+
     @Provides
     @Singleton
-    public static JavaSelectionProvider provideSelectionListener(final EventBus bus, final IWorkbench wb) {
+    protected JavaSelectionProvider provideJavaSelectionProvider(final EventBus bus, final IWorkbench wb) {
         final JavaSelectionProvider provider = new JavaSelectionProvider(bus);
         Display.getDefault().asyncExec(new Runnable() {
 
@@ -100,35 +107,28 @@ public class RecommendersModule extends AbstractModule implements Module {
         return provider;
     }
 
-    private void configureJavaElementResolver() {
-        bind(JavaElementResolver.class).in(Scopes.SINGLETON);
-        requestStaticInjection(ASTStringUtils.class);
-        requestStaticInjection(ASTNodeUtils.class);
-        requestStaticInjection(BindingUtils.class);
-    }
-
     @Provides
-    public IWorkspaceRoot provideWorkspaceRoot() {
+    protected IWorkspaceRoot provideWorkspaceRoot() {
         return ResourcesPlugin.getWorkspace().getRoot();
     }
 
     @Provides
-    public IWorkspace provideWorkspace() {
+    protected IWorkspace provideWorkspace() {
         return ResourcesPlugin.getWorkspace();
     }
 
     @Provides
-    public IWorkbench provideWorkbench() {
+    protected IWorkbench provideWorkbench() {
         return PlatformUI.getWorkbench();
     }
 
     @Provides
-    public IJavaModel provideJavaModel() {
+    protected IJavaModel provideJavaModel() {
         return JavaModelManager.getJavaModelManager().getJavaModel();
     }
 
     @Provides
-    public JavaModelManager provideJavaModelManger() {
+    protected JavaModelManager provideJavaModelManger() {
         return JavaModelManager.getJavaModelManager();
     }
 

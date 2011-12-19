@@ -28,7 +28,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionProvider;
-import org.eclipse.recommenders.rcp.events.JavaSelection;
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -42,7 +42,7 @@ public class JavaSelectionListenerTest {
     JavaSelectionProvider sut = new JavaSelectionProvider(new EventBus() {
         @Override
         public void post(final Object event) {
-            elements.add(((JavaSelection) event).getElement());
+            elements.add(((JavaSelectionEvent) event).getElement());
         };
     });
 

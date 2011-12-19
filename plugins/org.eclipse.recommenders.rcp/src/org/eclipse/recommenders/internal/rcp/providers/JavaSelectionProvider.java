@@ -11,9 +11,8 @@
 package org.eclipse.recommenders.internal.rcp.providers;
 
 import static org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils.resolveJavaElementFromEditor;
-import static org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils.resolveJavaElementFromViewer;
 import static org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils.resolveSelectionLocationFromAstNode;
-import static org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils.resolveSelectionLocationFromViewer;
+import static org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils.resolveSelectionLocationFromJavaElement;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.findAstNodeFromEditorSelection;
 
@@ -25,8 +24,9 @@ import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.recommenders.rcp.events.JavaSelection;
-import org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation;
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation;
+import org.eclipse.recommenders.utils.rcp.RCPUtils;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 
@@ -41,7 +41,7 @@ import com.google.common.eventbus.EventBus;
 public class JavaSelectionProvider implements ISelectionListener {
 
     private final EventBus bus;
-    private JavaSelection lastEvent = new JavaSelection(null, null);
+    private JavaSelectionEvent lastEvent = new JavaSelectionEvent(null, null);
 
     @Inject
     public JavaSelectionProvider(final EventBus bus) {
@@ -51,29 +51,37 @@ public class JavaSelectionProvider implements ISelectionListener {
     @Override
     public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
         if (selection instanceof IStructuredSelection) {
-            final IStructuredSelection s = (IStructuredSelection) selection;
-            final Optional<IJavaElement> element = resolveJavaElementFromViewer(s);
-            if (!element.isPresent()) { return; }
-            final JavaSelectionLocation location = resolveSelectionLocationFromViewer(element.get());
-            fireEventIfNew(element.get(), location, null);
-
+            handleSelectionFromViewer(selection);
         } else if (selection instanceof ITextSelection && part instanceof JavaEditor) {
-            final JavaEditor editor = cast(part);
-            final ITextSelection textSelection = cast(selection);
-            final Optional<IJavaElement> element = resolveJavaElementFromEditor(editor, textSelection);
-            if (!element.isPresent()) { return; }
-            final ASTNode node = findAstNodeFromEditorSelection(editor, textSelection).orNull();
-            final JavaSelectionLocation location = resolveSelectionLocationFromAstNode(node);
-            fireEventIfNew(element.get(), location, node);
+            handleSelectionInEditor(part, selection);
+        }
+    }
+
+    private void handleSelectionFromViewer(final ISelection selection) {
+        final Optional<IJavaElement> element = RCPUtils.first(selection);
+        if (element.isPresent()) {
+            final JavaSelectionLocation location = resolveSelectionLocationFromJavaElement(element.get());
+            fireEventIfNew(element.get(), location, null);
         }
     }
 
     private void fireEventIfNew(final IJavaElement element, final JavaSelectionLocation location,
             final ASTNode selectedNode) {
-        final JavaSelection event = new JavaSelection(element, location, selectedNode);
+        final JavaSelectionEvent event = new JavaSelectionEvent(element, location, selectedNode);
         if (!lastEvent.equals(event)) {
             lastEvent = event;
             bus.post(event);
+        }
+    }
+
+    private void handleSelectionInEditor(final IWorkbenchPart part, final ISelection selection) {
+        final JavaEditor editor = cast(part);
+        final ITextSelection textSelection = cast(selection);
+        final Optional<IJavaElement> element = resolveJavaElementFromEditor(editor, textSelection);
+        if (element.isPresent()) {
+            final ASTNode node = findAstNodeFromEditorSelection(editor, textSelection).orNull();
+            final JavaSelectionLocation location = resolveSelectionLocationFromAstNode(node);
+            fireEventIfNew(element.get(), location, node);
         }
     }
 }

@@ -6,7 +6,7 @@ import java.util.Set;
 import junit.framework.Assert;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils;
-import org.eclipse.recommenders.rcp.events.JavaSelection.JavaSelectionLocation;
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation;
 import org.eclipse.recommenders.tests.jdt.AstUtils;
 import org.eclipse.recommenders.tests.rcp.internal.providers.XtendUtils;
 import org.eclipse.recommenders.utils.Tuple;

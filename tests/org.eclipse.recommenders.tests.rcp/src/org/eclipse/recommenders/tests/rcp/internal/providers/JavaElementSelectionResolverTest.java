@@ -12,7 +12,6 @@ package org.eclipse.recommenders.tests.rcp.internal.providers;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
-import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -21,8 +20,6 @@ import static org.mockito.Mockito.when;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -75,24 +72,4 @@ public class JavaElementSelectionResolverTest {
         assertEquals(absent(), actual);
     }
 
-    @Test
-    public void testResolveFromStructuredSelection() {
-        final IStructuredSelection s = new StructuredSelection(SOME_ELEMENT);
-        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromViewer(s);
-        assertEquals(of(SOME_ELEMENT), actual);
-    }
-
-    @Test
-    public void testResolveFromStructuredSelectionWithNonJavaElement() {
-        final IStructuredSelection s = new StructuredSelection(new Object());
-        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromViewer(s);
-        assertEquals(absent(), actual);
-    }
-
-    @Test
-    public void testResolveFromStructuredSelectionWithNull() {
-        final IStructuredSelection s = new StructuredSelection(newArrayList());
-        final Optional<IJavaElement> actual = JavaSelectionUtils.resolveJavaElementFromViewer(s);
-        assertEquals(absent(), actual);
-    }
 }

@@ -6,8 +6,8 @@ import org.junit.Test
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.jdt.AstUtils.*
 import static org.eclipse.recommenders.tests.rcp.internal.providers.XtendUtils.*
-import static org.eclipse.recommenders.rcp.events.JavaSelection$JavaSelectionLocation.*
-import org.eclipse.recommenders.rcp.events.JavaSelection$JavaSelectionLocation
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent$JavaSelectionLocation.*
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent$JavaSelectionLocation 
 import static org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils.*
 
 class JavaSelectionLocationTest {
@@ -24,7 +24,7 @@ class JavaSelectionLocationTest {
 			TYPE_DECLARATION -> 5
 		) 
 		exerciseAndVerify(code, expected);
-	}
+	} 
  
 	
 	@Test
@@ -156,7 +156,7 @@ class JavaSelectionLocationTest {
 
 
 
-	def private exerciseAndVerify(CharSequence code, List<JavaSelectionLocation> expected){
+	def private exerciseAndVerify(CharSequence code, List<org.eclipse.recommenders.rcp.events.JavaSelectionEvent$JavaSelectionLocation> expected){
 		
 		val markers = createAstWithMarkers(code.toString)
 		val cu = markers.first

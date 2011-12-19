@@ -17,31 +17,31 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.recommenders.rcp.events.JavaSelection;
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 
 public class JavaSelectionListenerSpy {
 
-    private final List<JavaSelection> events = newArrayList();
+    private final List<JavaSelectionEvent> events = newArrayList();
 
-    public List<JavaSelection> get() {
+    public List<JavaSelectionEvent> get() {
         return events;
     }
 
-    public void recordEvent(final JavaSelection s) {
+    public void recordEvent(final JavaSelectionEvent s) {
         events.add(s);
     }
 
-    public void verifyContains(final JavaSelection selection) {
+    public void verifyContains(final JavaSelectionEvent selection) {
         assertTrue(events.contains(selection));
     }
 
-    public void verifyNotContains(final JavaSelection selection) {
+    public void verifyNotContains(final JavaSelectionEvent selection) {
         assertFalse(events.contains(selection));
     }
 
-    public void verifyContains(final JavaSelection wanted, final int expectedNum) {
+    public void verifyContains(final JavaSelectionEvent wanted, final int expectedNum) {
         int actualNum = 0;
-        for (final JavaSelection s : events) {
+        for (final JavaSelectionEvent s : events) {
             if (s.equals(wanted)) {
                 actualNum++;
             }

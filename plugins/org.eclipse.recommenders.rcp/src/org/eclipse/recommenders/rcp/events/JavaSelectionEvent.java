@@ -28,20 +28,20 @@ import com.google.common.base.Optional;
  * Contains all required information about the user's selection of a java element in the perspective (e.g. Editor,
  * Package Explorer, Outline, ...).
  */
-public class JavaSelection {
+public class JavaSelectionEvent {
 
     private final IJavaElement element;
     private final JavaSelectionLocation location;
-    private final ASTNode selection;
+    private final Optional<ASTNode> selection;
 
-    public JavaSelection(final IJavaElement element, final JavaSelectionLocation location) {
+    public JavaSelectionEvent(final IJavaElement element, final JavaSelectionLocation location) {
         this(element, location, null);
     }
 
-    public JavaSelection(final IJavaElement element, final JavaSelectionLocation location, final ASTNode selection) {
+    public JavaSelectionEvent(final IJavaElement element, final JavaSelectionLocation location, final ASTNode selection) {
         this.element = element;
         this.location = location;
-        this.selection = selection;
+        this.selection = fromNullable(selection);
     }
 
     public IJavaElement getElement() {
@@ -52,14 +52,8 @@ public class JavaSelection {
         return location;
     }
 
-    public boolean hasSelectedNode() {
-        return selection != null;
-    }
-
-    // review: should we throw an exception if selection ==null instead of using Optional. There is a hasSelectedNode
-    // method that should be called before.
     public Optional<ASTNode> getSelectedNode() {
-        return fromNullable(selection);
+        return selection;
     }
 
     @Override

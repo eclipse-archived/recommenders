@@ -30,12 +30,12 @@ import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitAdded;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitChanged;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitRemoved;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitSaved;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectClosed;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectOpened;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitAddedEvent;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitChangedEvent;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitRemovedEvent;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitSavedEvent;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectClosedEvent;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectOpenedEvent;
 import org.eclipse.recommenders.utils.annotations.Testing;
 import org.eclipse.recommenders.utils.rcp.RCPUtils;
 
@@ -70,35 +70,10 @@ public class JavaModelEventsProvider implements IElementChangedListener {
         }
 
         if (isProjectChangedEvent(delta)) {
-            final IJavaProject javaProject = cast(delta.getElement());
-            if (isProjectOpenedEvent(delta)) {
-                fireProjectOpenedEvent(javaProject);
-            } else if (isProjectClosedEvent(delta)) {
-                fireProjectClosedEvent(javaProject);
-            }
+            processProjectChangedEvent(delta);
         } else if (isCompilationUnitChangedEvent(delta)) {
-            final ICompilationUnit cu = cast(delta.getElement());
-            switch (delta.getKind()) {
-            case IJavaElementDelta.ADDED:
-                fireCompilationUnitAddedEvent(cu);
-                break;
-            case IJavaElementDelta.CHANGED:
-                if (isCompilationUnitSavedEvent(delta)) {
-                    fireCompilationUnitSavedEvent(cu);
-                } else {
-                    fireCompilationUnitChangedEvent(cu);
-                }
-                break;
-            case IJavaElementDelta.REMOVED:
-                fireCompilationUnitRemovedEvent(cu);
-                break;
-            }
+            processCompilationUnitChangedEvent(delta);
         }
-    }
-
-    private boolean isCompilationUnitSavedEvent(final IJavaElementDelta delta) {
-        final int flags = delta.getFlags() & IJavaElementDelta.F_PRIMARY_RESOURCE;
-        return flags > 0;
     }
 
     private boolean isChildAffectedByChange(final IJavaElementDelta delta) {
@@ -111,14 +86,23 @@ public class JavaModelEventsProvider implements IElementChangedListener {
         return javaProject != null && changedElement == javaProject;
     }
 
+    private void processProjectChangedEvent(final IJavaElementDelta delta) {
+        final IJavaProject javaProject = cast(delta.getElement());
+        if (isProjectOpenedEvent(delta)) {
+            fireProjectOpenedEvent(javaProject);
+        } else if (isProjectClosedEvent(delta)) {
+            fireProjectClosedEvent(javaProject);
+        }
+    }
+
     private boolean isProjectOpenedEvent(final IJavaElementDelta delta) {
         final boolean added = (delta.getKind() & IJavaElementDelta.ADDED) != 0;
         final boolean opened = (delta.getFlags() & IJavaElementDelta.F_OPENED) != 0;
         return added || opened;
     }
 
-    public void fireProjectOpenedEvent(final IJavaProject javaProject) {
-        bus.post(new JavaProjectOpened(javaProject));
+    private void fireProjectOpenedEvent(final IJavaProject javaProject) {
+        bus.post(new JavaProjectOpenedEvent(javaProject));
     }
 
     private boolean isProjectClosedEvent(final IJavaElementDelta delta) {
@@ -127,8 +111,8 @@ public class JavaModelEventsProvider implements IElementChangedListener {
         return removed || closed;
     }
 
-    public void fireProjectClosedEvent(final IJavaProject javaProject) {
-        bus.post(new JavaProjectClosed(javaProject));
+    private void fireProjectClosedEvent(final IJavaProject javaProject) {
+        bus.post(new JavaProjectClosedEvent(javaProject));
     }
 
     private boolean isCompilationUnitChangedEvent(final IJavaElementDelta delta) {
@@ -136,28 +120,52 @@ public class JavaModelEventsProvider implements IElementChangedListener {
         return element instanceof ICompilationUnit;
     }
 
+    private void processCompilationUnitChangedEvent(final IJavaElementDelta delta) {
+        final ICompilationUnit cu = cast(delta.getElement());
+        switch (delta.getKind()) {
+        case IJavaElementDelta.ADDED:
+            fireCompilationUnitAddedEvent(cu);
+            break;
+        case IJavaElementDelta.CHANGED:
+            if (isCompilationUnitSavedEvent(delta)) {
+                fireCompilationUnitSavedEvent(cu);
+            } else {
+                fireCompilationUnitChangedEvent(cu);
+            }
+            break;
+        case IJavaElementDelta.REMOVED:
+            fireCompilationUnitRemovedEvent(cu);
+            break;
+        }
+    }
+
     private void fireCompilationUnitAddedEvent(final ICompilationUnit cu) {
-        bus.post(new CompilationUnitAdded(cu));
+        bus.post(new CompilationUnitAddedEvent(cu));
+    }
+
+    private boolean isCompilationUnitSavedEvent(final IJavaElementDelta delta) {
+        final int flags = delta.getFlags() & IJavaElementDelta.F_PRIMARY_RESOURCE;
+        return flags > 0;
     }
 
     private void fireCompilationUnitSavedEvent(final ICompilationUnit cu) {
-        bus.post(new CompilationUnitSaved(cu));
+        bus.post(new CompilationUnitSavedEvent(cu));
     }
 
     private void fireCompilationUnitChangedEvent(final ICompilationUnit cu) {
-        bus.post(new CompilationUnitChanged(cu));
+        bus.post(new CompilationUnitChangedEvent(cu));
     }
 
     private void fireCompilationUnitRemovedEvent(final ICompilationUnit cu) {
-        bus.post(new CompilationUnitRemoved(cu));
+        bus.post(new CompilationUnitRemovedEvent(cu));
     }
 
-    @Testing("override this method for testing")
+    @Testing("visibility set to protected to allow unit testing (mocking workspace)")
     protected Set<IProject> getAllOpenProjects() {
         return RCPUtils.getAllOpenProjects();
     }
 
-    IJavaProject toJavaProject(final IProject project) {
+    private IJavaProject toJavaProject(final IProject project) {
         return JavaCore.create(project);
     }
 

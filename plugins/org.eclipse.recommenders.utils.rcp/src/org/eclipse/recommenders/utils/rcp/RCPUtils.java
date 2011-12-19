@@ -28,6 +28,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
 public class RCPUtils {
@@ -52,16 +53,17 @@ public class RCPUtils {
         return (T) (type.isInstance(element) ? element : null);
     }
 
+    public static <T> Optional<T> first(final ISelection s) {
+        final T element = unsafeFirstElement(s);
+        return Optional.fromNullable(element);
+    }
+
     public static IWorkbenchPage getActiveWorkbenchPage() {
         ensureIsNotNull(Display.getCurrent(), "not called from ui thread");
         final IWorkbench workbench = PlatformUI.getWorkbench();
-        if (workbench == null) {
-            return null;
-        }
+        if (workbench == null) { return null; }
         final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-        if (window == null) {
-            return null;
-        }
+        if (window == null) { return null; }
         final IWorkbenchPage page = window.getActivePage();
         return page;
     }
