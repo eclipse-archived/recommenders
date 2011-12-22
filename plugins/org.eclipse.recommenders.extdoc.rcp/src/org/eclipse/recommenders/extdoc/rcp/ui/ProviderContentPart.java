@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011 Sebastian Proksch.
+ * Copyright (c) 2010, 2011 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,7 +36,6 @@ import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderNotAvailabl
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderOrderChangedEvent;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderSelectionEvent;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.RenderNowEvent;
-import org.eclipse.recommenders.extdoc.rcp.scheduling.IExtdocCompositeProvider;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -55,7 +54,7 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 
 @SuppressWarnings("restriction")
-public class ProviderContentPart implements IExtdocCompositeProvider {
+public class ProviderContentPart {
 
     private final List<Provider> providers;
 
@@ -144,12 +143,10 @@ public class ProviderContentPart implements IExtdocCompositeProvider {
         l.setText("waiting for selection...");
     }
 
-    @Override
     public Composite getRenderingArea(Provider p) {
         return providerAreas.get(p).getContentArea();
     }
 
-    @Override
     public void createNewRenderingPanel() {
         renderingPanel = new Composite(stack, SWT.NONE);
         renderingPanel.setBackground(renderingPanel.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));

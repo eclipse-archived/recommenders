@@ -1,23 +1,21 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: new extdoc view
+Bundle-Name: Code Recommenders: Extdoc View (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.extdoc.rcp;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.5.0.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- com.google.guava,
- com.google.inject,
  org.eclipse.recommenders.rcp,
  org.eclipse.jdt.core,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.injection,
- org.mockito,
  org.eclipse.jdt.ui,
- org.eclipse.jface.text;bundle-version="3.7.1",
- org.eclipse.ui.editors;bundle-version="3.7.0",
- org.eclipse.recommenders.analysis;bundle-version="0.4.0",
- org.eclipse.recommenders.utils.rcp;bundle-version="0.4.0",
- org.eclipse.core.resources;bundle-version="3.7.100",
- org.apache.commons.lang3;bundle-version="3.0.0",
- org.eclipse.core.expressions;bundle-version="3.4.300"
+ org.eclipse.jface.text,
+ org.eclipse.recommenders.analysis,
+ org.eclipse.recommenders.utils.rcp,
+ org.apache.commons.lang3,
+ org.eclipse.core.expressions,
+ org.eclipse.ui.editors,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Eclipse Code Recommenders

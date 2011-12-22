@@ -33,6 +33,7 @@ import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderFinishedLat
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderNotAvailableEvent;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderStartedEvent;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.RenderNowEvent;
+import org.eclipse.recommenders.extdoc.rcp.ui.ProviderContentPart;
 import org.eclipse.recommenders.extdoc.rcp.Provider;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -54,18 +55,18 @@ public class ProviderExecutionScheduler {
 
     private final List<Provider> providers;
     private final SubscriptionManager subscriptionManager;
-    private final IExtdocCompositeProvider compositeProvider;
+    private final ProviderContentPart contentPart;
     private EventBus extdocBus;
 
     private Boolean isAlreadyRendered = false;
     private JavaSelectionEvent currentSelection;
 
     public ProviderExecutionScheduler(List<Provider> providers, SubscriptionManager subscriptionManager,
-            IExtdocCompositeProvider compositeProvider, EventBus extdocBus) {
+            ProviderContentPart coontentPart, EventBus extdocBus) {
         this.providers = providers;
         this.extdocBus = extdocBus;
         this.subscriptionManager = subscriptionManager;
-        this.compositeProvider = compositeProvider;
+        this.contentPart = coontentPart;
 
         pool = createListeningThreadPool(NUMBER_OF_THREADS);
         futures = newHashMap();
@@ -90,7 +91,7 @@ public class ProviderExecutionScheduler {
                 continue;
             }
 
-            Composite composite = compositeProvider.getRenderingArea(provider);
+            Composite composite = contentPart.getRenderingArea(provider);
             Optional<Method> optMethod = subscriptionManager.findFirstSubscribedMethod(provider, selection);
 
             if (optMethod.isPresent()) {
@@ -114,7 +115,7 @@ public class ProviderExecutionScheduler {
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
-                compositeProvider.createNewRenderingPanel();
+                contentPart.createNewRenderingPanel();
             }
         });
     }
@@ -147,7 +148,7 @@ public class ProviderExecutionScheduler {
             return;
         }
 
-        Composite composite = compositeProvider.getRenderingArea(e.provider);
+        Composite composite = contentPart.getRenderingArea(e.provider);
         Optional<Method> optMethod = subscriptionManager.findFirstSubscribedMethod(e.provider, currentSelection);
 
         if (optMethod.isPresent()) {
