@@ -1,51 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="org.eclipse.recommenders.rcp.extdoc.provider" name="org.eclipse.recommenders.rcp.extdoc.provider" schema="schema/org.eclipse.recommenders.rcp.extdoc.provider.exsd"/>
- <extension
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipse.recommenders.rcp.category.views"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.extdoc.rcp.ui.ExtdocView"
+            icon="icons/extdoc.png"
+            id="org.eclipse.recommenders.extdoc.rcp.ExtdocView"
+            name="Extdoc View"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
          point="org.eclipse.recommenders.injection.modules">
       <module
-            class="org.eclipse.recommenders.internal.extdoc.rcp.ExtDocModule">
+            class="org.eclipse.recommenders.extdoc.rcp.ExtdocModule">
       </module>
    </extension>
-     <extension
-           point="org.eclipse.recommenders.commons.selection.listener">
-        <listener
-              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.UiManager">
-        </listener>
-     </extension>
-	<extension
-	      point="org.eclipse.ui.views">
-	   <view
-	         allowMultiple="false"
-	         category="org.eclipse.recommenders.rcp.category.views"
-	         class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.view.ExtDocView"
-	         icon="icons/full/eview16/extdoc.png"
-	         id="org.eclipse.recommenders.internal.rcp.extdoc.views.ExtDocView"
-	         name="ExtDoc"
-	         restorable="true">
-	   </view>
-	</extension>
-     <extension
-           point="org.eclipse.jdt.ui.javaEditorTextHovers">
-        <hover
-              class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.ExtDocHover"
-              id="org.eclipse.recommenders.internal.rcp.extdoc.swt.ExtDocHover">
-        </hover>
-     </extension>
-	<extension
-           point="org.eclipse.ui.preferencePages">
-        <page
-              class="org.eclipse.recommenders.extdoc.rcp.preferences.ExtDocPreferencePage"
-              id="org.eclipse.recommenders.rcp.category.extdoc.preferences"
-              name="ExtDoc"
-              category="org.eclipse.recommenders.rcp.category.preferences" >
-        </page>
-     </extension>
-     <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="org.eclipse.recommenders.extdoc.rcp.preferences.PreferenceInitializer">
-      </initializer>
-   </extension>
+
 </plugin>
