@@ -27,7 +27,7 @@ import org.apache.mahout.common.distance.WeightedDistanceMeasure;
 import org.apache.mahout.math.RandomAccessSparseVector;
 import org.apache.mahout.math.Vector;
 import org.apache.mahout.math.Vector.Element;
-import org.eclipse.recommenders.extdoc.transport.types.MethodPattern;
+import org.eclipse.recommenders.extdoc.MethodPattern;
 import org.eclipse.recommenders.utils.Bag;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;

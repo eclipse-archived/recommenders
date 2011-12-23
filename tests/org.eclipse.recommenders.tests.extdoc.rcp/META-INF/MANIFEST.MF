@@ -5,9 +5,6 @@ Bundle-SymbolicName: org.eclipse.recommenders.tests.extdoc.rcp;singleton:=true
 Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.extdoc.rcp
-Require-Bundle: org.eclipse.ui,
- org.junit4,
- org.eclipse.recommenders.tests.extdoc,
- org.mockito,
- org.eclipse.recommenders.extdoc.transport
+Require-Bundle: org.junit4,
+ org.mockito
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

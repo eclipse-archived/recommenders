@@ -15,11 +15,11 @@ Require-Bundle: org.mockito,
  org.apache.commons.lang3,
  org.eclipse.recommenders.jayes.serialization,
  org.eclipse.recommenders.analysis,
- org.eclipse.recommenders.extdoc.transport,
  org.hamcrest,
  org.slf4j.api,
  org.apache.mahout,
  org.eclipse.recommenders.webclient,
  com.sun.jersey.client,
- org.eclipse.recommenders.utils.gson
+ org.eclipse.recommenders.utils.gson,
+ org.eclipse.recommenders.extdoc
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

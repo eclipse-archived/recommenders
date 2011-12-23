@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.HashMap;
 
-import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
+import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;

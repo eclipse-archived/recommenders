@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.recommenders.extdoc.transport.types.MethodSelfcallDirectives;
+import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;

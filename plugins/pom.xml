@@ -29,7 +29,7 @@
 		<module>org.eclipse.recommenders.codesearch.rcp</module>
 		<module>org.eclipse.recommenders.codesearch.server</module>
 
-
+		<module>org.eclipse.recommenders.extdoc</module>
 		<module>org.eclipse.recommenders.extdoc.rcp</module>
 
 		<module>org.eclipse.recommenders.injection</module>

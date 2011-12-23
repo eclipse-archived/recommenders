@@ -13,9 +13,9 @@ package org.eclipse.recommenders.mining.extdocs;
 
 import java.util.List;
 
-import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
-import org.eclipse.recommenders.extdoc.transport.types.ClassOverridePatterns;
-import org.eclipse.recommenders.extdoc.transport.types.MethodSelfcallDirectives;
+import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
+import org.eclipse.recommenders.extdoc.ClassOverridePatterns;
+import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.slf4j.Logger;

@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.recommenders.extdoc.transport.types.ClassOverridePatterns;
-import org.eclipse.recommenders.extdoc.transport.types.MethodPattern;
+import org.eclipse.recommenders.extdoc.ClassOverridePatterns;
+import org.eclipse.recommenders.extdoc.MethodPattern;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;

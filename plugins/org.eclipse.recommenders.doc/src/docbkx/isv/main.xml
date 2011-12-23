@@ -6,4 +6,5 @@
     <xi:include href="ast-provider.xml"/>
     <xi:include href="java-element-events-provider.xml"/>
     <xi:include href="chain-completion.xml"/>
+    <xi:include href="extdoc.xml"/>
 </chapter>

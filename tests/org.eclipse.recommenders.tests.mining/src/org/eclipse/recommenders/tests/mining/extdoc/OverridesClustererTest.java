@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.recommenders.extdoc.transport.types.MethodPattern;
+import org.eclipse.recommenders.extdoc.MethodPattern;
 import org.eclipse.recommenders.mining.extdocs.OverridesClusterer;
 import org.eclipse.recommenders.utils.Bag;
 import org.eclipse.recommenders.utils.HashBag;

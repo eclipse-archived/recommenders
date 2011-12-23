@@ -29,8 +29,8 @@ Require-Bundle: org.eclipse.recommenders.udc,
  org.kohsuke.args4j,
  org.eclipse.recommenders.webclient,
  com.sun.jersey.client,
- org.eclipse.recommenders.extdoc.transport,
  org.slf4j.api,
  org.eclipse.recommenders.injection,
- org.apache.mahout
+ org.apache.mahout,
+ org.eclipse.recommenders.extdoc
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

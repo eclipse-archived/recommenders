@@ -13,7 +13,7 @@ package org.eclipse.recommenders.mining.extdocs;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 
-import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
+import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;

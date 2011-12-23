@@ -10,9 +10,9 @@
  */
 package org.eclipse.recommenders.mining.extdocs.couch;
 
-import org.eclipse.recommenders.extdoc.transport.types.ClassOverrideDirectives;
-import org.eclipse.recommenders.extdoc.transport.types.ClassOverridePatterns;
-import org.eclipse.recommenders.extdoc.transport.types.MethodSelfcallDirectives;
+import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
+import org.eclipse.recommenders.extdoc.ClassOverridePatterns;
+import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.mining.extdocs.IExtdocDirectiveConsumer;
 import org.eclipse.recommenders.mining.extdocs.couch.CouchGuiceModule.Output;
 

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.recommenders.extdoc.transport.types.MethodSelfcallDirectives;
+import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
