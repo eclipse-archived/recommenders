@@ -12,7 +12,6 @@ Require-Bundle: org.junit4,
  org.hamcrest,
  org.eclipse.recommenders.tests,
  org.eclipse.recommenders.completion.rcp,
- javax.inject,
  org.objenesis,
  org.mockito
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

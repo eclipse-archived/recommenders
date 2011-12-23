@@ -1,6 +1,6 @@
 /**
+ * Copyright (c) 2010, 2011 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
- * Copyright (c) 2011 Sebastian Proksch.
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.recommenders.extdoc.rcp.Provider;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.NewSelectionEvent;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderActivationEvent;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderDeactivationEvent;
@@ -34,7 +35,6 @@ import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderNotAvailabl
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.ProviderStartedEvent;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.Events.RenderNowEvent;
 import org.eclipse.recommenders.extdoc.rcp.ui.ProviderContentPart;
-import org.eclipse.recommenders.extdoc.rcp.Provider;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -61,8 +61,8 @@ public class ProviderExecutionScheduler {
     private Boolean isAlreadyRendered = false;
     private JavaSelectionEvent currentSelection;
 
-    public ProviderExecutionScheduler(List<Provider> providers, SubscriptionManager subscriptionManager,
-            ProviderContentPart coontentPart, EventBus extdocBus) {
+    public ProviderExecutionScheduler(final List<Provider> providers, final SubscriptionManager subscriptionManager,
+            final ProviderContentPart coontentPart, final EventBus extdocBus) {
         this.providers = providers;
         this.extdocBus = extdocBus;
         this.subscriptionManager = subscriptionManager;
@@ -72,32 +72,32 @@ public class ProviderExecutionScheduler {
         futures = newHashMap();
     }
 
-    private static ListeningExecutorService createListeningThreadPool(int numberOfThreads) {
-        ExecutorService pool = newFixedThreadPool(numberOfThreads);
-        ListeningExecutorService listeningPool = listeningDecorator(pool);
+    private static ListeningExecutorService createListeningThreadPool(final int numberOfThreads) {
+        final ExecutorService pool = newFixedThreadPool(numberOfThreads);
+        final ListeningExecutorService listeningPool = listeningDecorator(pool);
         return listeningPool;
     }
 
-    public void scheduleOnSelection(JavaSelectionEvent selection) {
+    public void scheduleOnSelection(final JavaSelectionEvent selection) {
         this.currentSelection = selection;
         createNewRenderingPanelInUiThread();
         postInUiThread(new NewSelectionEvent(selection));
         // TODO incrementable latch?
-        CountDownLatch latch = new CountDownLatch(providers.size());
+        final CountDownLatch latch = new CountDownLatch(providers.size());
 
-        for (Provider provider : providers) {
+        for (final Provider provider : providers) {
             if (!provider.isEnabled()) {
                 latch.countDown();
                 continue;
             }
 
-            Composite composite = contentPart.getRenderingArea(provider);
-            Optional<Method> optMethod = subscriptionManager.findFirstSubscribedMethod(provider, selection);
+            final Composite composite = contentPart.getRenderingArea(provider);
+            final Optional<Method> optMethod = subscriptionManager.findFirstSubscribedMethod(provider, selection);
 
             if (optMethod.isPresent()) {
-                OnSelectionCallable callable = new OnSelectionCallable(provider, optMethod.get(), selection, composite,
-                        latch);
-                ListenableFuture<?> future = pool.submit(callable);
+                final OnSelectionCallable callable = new OnSelectionCallable(provider, optMethod.get(), selection,
+                        composite, latch);
+                final ListenableFuture<?> future = pool.submit(callable);
                 futures.put(provider, future);
 
             } else {
@@ -120,17 +120,17 @@ public class ProviderExecutionScheduler {
         });
     }
 
-    private void blockUntilAllFinishedOrRenderTimeout(CountDownLatch l) {
+    private void blockUntilAllFinishedOrRenderTimeout(final CountDownLatch l) {
         try {
             l.await(SECONDS_FOR_RENDER_TIMEOUT, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private void postProviderDelayedEventsForLateProviders() {
-        for (Provider provider : providers) {
-            Future<?> future = futures.get(provider);
+        for (final Provider provider : providers) {
+            final Future<?> future = futures.get(provider);
             if (future != null && !future.isDone()) {
                 postInUiThread(new ProviderDelayedEvent(provider));
             }
@@ -143,18 +143,18 @@ public class ProviderExecutionScheduler {
     }
 
     @Subscribe
-    public void handle(ProviderActivationEvent e) {
+    public void handle(final ProviderActivationEvent e) {
         if (isRunning(e.provider)) {
             return;
         }
 
-        Composite composite = contentPart.getRenderingArea(e.provider);
-        Optional<Method> optMethod = subscriptionManager.findFirstSubscribedMethod(e.provider, currentSelection);
+        final Composite composite = contentPart.getRenderingArea(e.provider);
+        final Optional<Method> optMethod = subscriptionManager.findFirstSubscribedMethod(e.provider, currentSelection);
 
         if (optMethod.isPresent()) {
-            OnActivationCallable callable = new OnActivationCallable(e.provider, optMethod.get(), currentSelection,
-                    composite);
-            ListenableFuture<?> future = pool.submit(callable);
+            final OnActivationCallable callable = new OnActivationCallable(e.provider, optMethod.get(),
+                    currentSelection, composite);
+            final ListenableFuture<?> future = pool.submit(callable);
             futures.put(e.provider, future);
 
         } else {
@@ -162,13 +162,13 @@ public class ProviderExecutionScheduler {
         }
     }
 
-    private boolean isRunning(Provider p) {
+    private boolean isRunning(final Provider p) {
         return futures.containsKey(p);
     }
 
     @Subscribe
-    public void handle(ProviderDeactivationEvent e) {
-        Future<?> future = futures.get(e.provider);
+    public void handle(final ProviderDeactivationEvent e) {
+        final Future<?> future = futures.get(e.provider);
         if (future != null) {
             future.cancel(true);
             // // TODO Review: is needed?
@@ -197,7 +197,8 @@ public class ProviderExecutionScheduler {
         private final JavaSelectionEvent selection;
         private final Composite composite;
 
-        public OnActivationCallable(Provider provider, Method method, JavaSelectionEvent selection, Composite composite) {
+        public OnActivationCallable(final Provider provider, final Method method, final JavaSelectionEvent selection,
+                final Composite composite) {
             this.provider = provider;
             this.method = method;
             this.selection = selection;
@@ -215,9 +216,9 @@ public class ProviderExecutionScheduler {
                 } else {
                     postInUiThread(new ProviderFinishedEvent(provider));
                 }
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 // this happens on cancel request. don't propagate
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 postInUiThread(new ProviderFailedEvent(provider, e));
             }
 
@@ -240,8 +241,8 @@ public class ProviderExecutionScheduler {
     private class OnSelectionCallable extends OnActivationCallable {
         private final CountDownLatch latch;
 
-        public OnSelectionCallable(Provider provider, Method method, JavaSelectionEvent selection, Composite composite,
-                CountDownLatch latch) {
+        public OnSelectionCallable(final Provider provider, final Method method, final JavaSelectionEvent selection,
+                final Composite composite, final CountDownLatch latch) {
             super(provider, method, selection, composite);
             this.latch = latch;
         }
