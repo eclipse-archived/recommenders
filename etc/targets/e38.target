@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="e38" sequenceNumber="17">
+<target name="e38" sequenceNumber="18">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.8.0.I20111027-1800"/>
@@ -12,9 +12,9 @@
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201112221634"/>
-<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201112221634"/>
-<unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201112221634"/>
+<unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201112231012"/>
+<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201112231012"/>
+<unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201112231012"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head"/>
 </location>
 </locations>

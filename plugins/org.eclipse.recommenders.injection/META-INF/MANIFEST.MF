@@ -9,7 +9,5 @@ Export-Package: org.eclipse.recommenders.injection,
 Require-Bundle: com.google.guava,
  org.eclipse.core.runtime,
  javax.inject;bundle-version="[1.0.0,2.0.0)";visibility:=reexport,
- com.google.inject.assistedinject;bundle-version="3.0.0";visibility:=reexport,
- com.google.inject.multibindings;bundle-version="3.0.0";visibility:=reexport,
  com.google.inject;bundle-version="3.0.0";visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
