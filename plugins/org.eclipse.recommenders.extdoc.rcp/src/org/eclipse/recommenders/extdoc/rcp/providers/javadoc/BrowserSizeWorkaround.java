@@ -16,13 +16,16 @@ import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 public final class BrowserSizeWorkaround {
 
-    public static final int MS_UNTIL_RESCALE = 500;
+    public static final int MILLIS_UNTIL_RESCALE = 500;
 
     private static final int MINIMUM_HEIGHT = 1;
 
@@ -57,7 +60,7 @@ public final class BrowserSizeWorkaround {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(MS_UNTIL_RESCALE);
+                    Thread.sleep(MILLIS_UNTIL_RESCALE);
                 } catch (final InterruptedException e) {
                     throw new IllegalStateException(e);
                 }
@@ -69,7 +72,7 @@ public final class BrowserSizeWorkaround {
     private void setHeightAndTriggerLayout(final int height) {
         gridData.heightHint = height;
         gridData.minimumHeight = height;
-        UiUtils.layoutParents(browser.getParent());
+        layoutParents(browser.getParent());
     }
 
     private void registerProgressListener() {
@@ -113,6 +116,32 @@ public final class BrowserSizeWorkaround {
                 }
                 final int height = (int) Math.ceil(((Double) result).doubleValue());
                 setHeightAndTriggerLayout(height);
+            }
+        }
+    }
+
+    /**
+     * @param composite
+     *            The composite for which all children will be disposed.
+     */
+    public static void disposeChildren(final Composite composite) {
+        if (composite.isDisposed()) {
+            return;
+        }
+        for (final Control child : composite.getChildren()) {
+            child.dispose();
+        }
+    }
+
+    public static void layoutParents(final Composite composite) {
+        for (Composite parent = composite; parent != null; parent = parent.getParent()) {
+            // TODO: REVIEW MB: Johannes, this is confusing me. why is the
+            // parentsParentsParent needed? create a separate method for this?
+            final Composite theParentsParent = parent.getParent();
+            final Composite theParentsParentsParent = theParentsParent.getParent();
+            if (theParentsParentsParent == null || parent instanceof ScrolledComposite) {
+                theParentsParent.layout(true, true);
+                break;
             }
         }
     }

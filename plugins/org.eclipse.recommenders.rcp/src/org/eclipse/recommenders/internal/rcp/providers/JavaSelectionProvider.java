@@ -32,6 +32,7 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 /**
  * Controls which events get fired over the event bus. It internally keeps track of the last selection to prevent the
@@ -46,6 +47,15 @@ public class JavaSelectionProvider implements ISelectionListener {
     @Inject
     public JavaSelectionProvider(final EventBus bus) {
         this.bus = bus;
+        bus.register(this);
+    }
+
+    /**
+     * other parties may send other selection events. we should update our internal state based on this information.
+     */
+    @Subscribe
+    public void onExternalJavaSelectionChange(final JavaSelectionEvent newSelectionEvent) {
+        lastEvent = newSelectionEvent;
     }
 
     @Override

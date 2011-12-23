@@ -50,7 +50,7 @@ public class ExtdocModule extends AbstractModule {
 
     @Provides
     @Singleton
-    List<Provider> provideProviders(ExtdocIconLoader iconLoader) {
+    List<Provider> provideProviders(final ExtdocIconLoader iconLoader, final/* workspace bus */EventBus workspaceBus) {
         // IConfigurationElement[] elements =
         // getExtensionRegistry().getConfigurationElementsFor(EXTENSION_ID);
         //
@@ -67,13 +67,13 @@ public class ExtdocModule extends AbstractModule {
         // e.printStackTrace();
         // }
         // }
-        List<Provider> providers = Lists.newArrayList();
+        final List<Provider> providers = Lists.newArrayList();
         providers.add(new FastProvider(iconLoader));
         providers.add(new SlowProvider(iconLoader));
         providers.add(new SlowAndFailingProvider(iconLoader));
         providers.add(new VerySlowProvider(iconLoader));
         providers.add(new TooSlowProvider(iconLoader));
-        providers.add(new JavadocProvider(iconLoader));
+        providers.add(new JavadocProvider(iconLoader, workspaceBus));
 
         return providers;
     }

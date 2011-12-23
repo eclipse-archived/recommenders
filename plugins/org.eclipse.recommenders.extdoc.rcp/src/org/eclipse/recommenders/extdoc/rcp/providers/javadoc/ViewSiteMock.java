@@ -1,12 +1,12 @@
 /**
- * Copyright (c) 2011 Stefan Henss.
+ * Copyright (c) 2010, 2011 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Stefan Henss - initial API and implementation.
+ *    Marcel Bruch - initial API and implementation.
  */
 package org.eclipse.recommenders.extdoc.rcp.providers.javadoc;
 
@@ -43,12 +43,12 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.services.IServiceLocator;
 
 @SuppressWarnings({ "deprecation", "rawtypes" })
-public final class MockedViewSite implements IViewSite {
+public final class ViewSiteMock implements IViewSite {
 
     private ISelectionProvider selectionProvider;
     private final IWorkbenchWindow workbenchWindow;
 
-    public MockedViewSite(final IWorkbenchWindow workbenchWindow) {
+    public ViewSiteMock(final IWorkbenchWindow workbenchWindow) {
         this.workbenchWindow = workbenchWindow;
     }
 
@@ -269,5 +269,4 @@ public final class MockedViewSite implements IViewSite {
     public String getSecondaryId() {
         return null;
     }
-
 }

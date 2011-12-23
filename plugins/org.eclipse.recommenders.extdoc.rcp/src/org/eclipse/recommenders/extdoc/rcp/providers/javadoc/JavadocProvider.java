@@ -11,45 +11,38 @@
  */
 package org.eclipse.recommenders.extdoc.rcp.providers.javadoc;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.ILocalVariable;
-import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.ui.infoviews.JavadocView;
-import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.recommenders.extdoc.rcp.Provider;
 import org.eclipse.recommenders.extdoc.rcp.ProviderDescription;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.SubscriptionManager.JavaSelectionListener;
 import org.eclipse.recommenders.extdoc.rcp.ui.ExtdocIconLoader;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
-import org.eclipse.recommenders.utils.names.ITypeName;
-import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public final class JavadocProvider extends Provider {
 
-    private ProviderDescription description;
+    private final ProviderDescription description;
 
-    private IWorkbenchWindow activeWorkbenchWindow;
-    private ExtendedJavadocView javadoc;
+    private final IWorkbenchWindow activeWorkbenchWindow;
+    private JavadocViewPart javadoc;
+
+    private final EventBus workspaceBus;
 
     @Inject
-    public JavadocProvider(ExtdocIconLoader iconLoader) {
+    public JavadocProvider(final ExtdocIconLoader iconLoader, final EventBus workspaceBus) {
+        this.workspaceBus = workspaceBus;
         activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         description = new ProviderDescription("JavadocProvider", iconLoader.getImage("provider.javadoc.gif"));
     }
@@ -59,136 +52,57 @@ public final class JavadocProvider extends Provider {
         return description;
     }
 
-    @JavaSelectionListener
-    public void displayProposalsForType(IJavaElement element, JavaSelectionEvent selection, final Composite parent)
-            throws InterruptedException {
+    /*
+     * NOTE: this provider is an example provider. There is actually no need to create dispatch methods for each of
+     * these java elements separately. We just do this for demo purpose.
+     */
 
-        final IJavaElement javaElement = findDocumentedJavaElement(element);
+    @JavaSelectionListener
+    public void onPackageSelection(final IPackageFragment pkg, final JavaSelectionEvent selection,
+            final Composite parent) {
+        render(pkg, parent);
+    }
+
+    @JavaSelectionListener
+    public void onCompilationUnitSelection(final ITypeRoot root, final JavaSelectionEvent selection,
+            final Composite parent) {
+        render(root, parent);
+    }
+
+    @JavaSelectionListener
+    public void onTypeSelection(final IType type, final JavaSelectionEvent selection, final Composite parent) {
+        render(type, parent);
+    }
+
+    @JavaSelectionListener
+    public void onMethodSelection(final IMethod method, final JavaSelectionEvent selection, final Composite parent) {
+        render(method, parent);
+    }
+
+    @JavaSelectionListener
+    public void onFieldSelection(final IField field, final JavaSelectionEvent selection, final Composite parent) {
+        render(field, parent);
+    }
+
+    private void render(final IJavaElement element, final Composite parent) {
         runSyncInUiThread(new Runnable() {
             @Override
             public void run() {
-                javadoc = new ExtendedJavadocView(parent, activeWorkbenchWindow);
+                javadoc = new JavadocViewPart(parent, activeWorkbenchWindow, element, workspaceBus);
                 if (javadoc.getControl() instanceof Browser) {
                     new BrowserSizeWorkaround((Browser) javadoc.getControl());
                 }
-                javadoc.setInput(javaElement);
+                javadoc.setInput(element);
             }
         });
-        Thread.sleep(BrowserSizeWorkaround.MS_UNTIL_RESCALE + 50);
+        waitForBrowserSizeWorkaround();
     }
 
-    private static IJavaElement findDocumentedJavaElement(final IJavaElement element) {
+    private void waitForBrowserSizeWorkaround() {
         try {
-            if (element == null) {
-                return null;
-            }
-
-            if (element instanceof ILocalVariable) {
-                ITypeName typeName = VariableResolver.resolveTypeSignature((ILocalVariable) element);
-                return ElementResolver.toJdtType(typeName);
-            }
-
-            if (hasJavadocInSource(element) || canGetAttachedJavadoc(element)) {
-                return element;
-            }
-
-            if (element instanceof IMethod) {
-                final Optional<IMethod> firstDeclaration = JdtUtils.findOverriddenMethod((IMethod) element);
-                if (firstDeclaration.isPresent()) {
-                    if (!element.equals(firstDeclaration)) {
-                        return findDocumentedJavaElement(firstDeclaration.get());
-                    }
-                }
-            }
-        } catch (final JavaModelException e) {
-            // blubb
-        }
-
-        return element;
-    }
-
-    private static boolean canGetAttachedJavadoc(IJavaElement element) throws JavaModelException {
-        return element.getAttachedJavadoc(null) != null;
-    }
-
-    private static boolean hasJavadocInSource(IJavaElement element) throws JavaModelException {
-        // try {
-        if (element instanceof IMember) {
-            IMember member = (IMember) element;
-            return member.getJavadocRange() != null;
-        } else {
-            return false;
-        }
-        // } catch (RuntimeException e) {
-        // return false;
-        // }
-    }
-
-    private static final class ExtendedJavadocView extends JavadocView {
-
-        public ExtendedJavadocView(final Composite parent, final IWorkbenchWindow window) {
-            setSite(new MockedViewSite(window));
-            createPartControl(parent);
-        }
-
-        @Override
-        protected Control getControl() {
-            return super.getControl();
-        }
-
-        @Override
-        public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
-            // Ignore, we set the selection.
-        }
-
-        @Override
-        protected Object computeInput(final IWorkbenchPart part, final ISelection selection, final IJavaElement input,
-                final IProgressMonitor monitor) {
-            final Object defaultInput = super.computeInput(part, selection, input, monitor);
-            if (defaultInput instanceof String) {
-                final String javaDocHtml = (String) defaultInput;
-                String beforeTitle = StringUtils.substringBefore(javaDocHtml, "<h5>");
-                String afterTitle = StringUtils.substringAfter(javaDocHtml, "</h5>");
-                if (afterTitle.startsWith("<br>")) {
-                    afterTitle = afterTitle.substring(4);
-                }
-                String replacedHtml = removeMarginOfBodyElement(beforeTitle) + afterTitle;
-                // System.out.println(replacedHtml);
-
-                replacedHtml = isHtmlBodyEmpty(replacedHtml);
-                return replacedHtml;
-            }
-            return defaultInput;
-        }
-
-        private String removeMarginOfBodyElement(String markUp) {
-
-            markUp = markUp.replaceAll("\n", " ");
-
-            Pattern pattern = Pattern.compile(".*(body.*\\{.*\\}).*");
-            Matcher matcher = pattern.matcher(markUp);
-
-            if (matcher.matches()) {
-                String toReplace = matcher.group(1);
-                String replacement = "body { overflow: auto; margin: 0; } p { margin: 3px 0; }";
-                markUp = markUp.replace(toReplace, replacement);
-            }
-            return markUp;
-        }
-
-        private String isHtmlBodyEmpty(String markUp) {
-            Pattern pattern = Pattern.compile(".*((<body.*?>)(.*?)<\\/body>).*");
-            Matcher matcher = pattern.matcher(markUp);
-            if (matcher.matches()) {
-                String content = matcher.group(3);
-                // System.out.println("matched: " + content);
-                if (content.equals("")) {
-                    content = "<em>Note: No javadoc available</em>";
-                    markUp = markUp.replace(matcher.group(1), matcher.group(2) + content + "</body>");
-                }
-            }
-
-            return markUp;
+            Thread.sleep(BrowserSizeWorkaround.MILLIS_UNTIL_RESCALE + 50);
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

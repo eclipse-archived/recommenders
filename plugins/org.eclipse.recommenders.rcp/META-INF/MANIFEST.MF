@@ -5,8 +5,9 @@ Bundle-SymbolicName: org.eclipse.recommenders.rcp;singleton:=true
 Bundle-Version: 0.5.0.qualifier
 Bundle-Activator: org.eclipse.recommenders.rcp.RecommendersPlugin
 Bundle-Vendor: Eclipse Code Recommenders
-Export-Package: org.eclipse.recommenders.rcp,
- org.eclipse.recommenders.rcp.events
+Export-Package: org.eclipse.recommenders.internal.rcp.providers,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.recommenders.rcp.events;x-friends=org.eclipse.recommenders.extdoc.rcp
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core,
