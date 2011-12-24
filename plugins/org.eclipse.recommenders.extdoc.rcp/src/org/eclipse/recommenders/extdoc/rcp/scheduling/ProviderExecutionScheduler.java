@@ -60,6 +60,7 @@ public class ProviderExecutionScheduler {
 
     private Boolean isAlreadyRendered = false;
     private JavaSelectionEvent currentSelection;
+    private CountDownLatch latch;
 
     public ProviderExecutionScheduler(final List<Provider> providers, final SubscriptionManager subscriptionManager,
             final ProviderContentPart coontentPart, final EventBus extdocBus) {
@@ -82,8 +83,7 @@ public class ProviderExecutionScheduler {
         this.currentSelection = selection;
         createNewRenderingPanelInUiThread();
         postInUiThread(new NewSelectionEvent(selection));
-        // TODO incrementable latch?
-        final CountDownLatch latch = new CountDownLatch(providers.size());
+        latch = new CountDownLatch(providers.size());
 
         for (final Provider provider : providers) {
             if (!provider.isEnabled()) {
@@ -171,14 +171,19 @@ public class ProviderExecutionScheduler {
         final Future<?> future = futures.get(e.provider);
         if (future != null) {
             future.cancel(true);
-            // // TODO Review: is needed?
-            // postInUiThread(new ProviderExecutionCancelledEvent(e.provider));
         }
     }
 
     public void dispose() {
         pool.shutdownNow();
         extdocBus = new EventBus();
+        countLatchToZero();
+    }
+
+    private void countLatchToZero() {
+        for (int i = 0; i < providers.size(); i++) {
+            latch.countDown();
+        }
     }
 
     private void postInUiThread(final Object event) {

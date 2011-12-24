@@ -39,6 +39,8 @@ public class ExtdocModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(ExtdocIconLoader.class).in(Scopes.SINGLETON);
+        bind(PreferencesFacade.class).in(Scopes.SINGLETON);
+        bind(ProviderConfigurationPersistenceService.class).in(Scopes.SINGLETON);
     }
 
     @Provides
@@ -50,7 +52,15 @@ public class ExtdocModule extends AbstractModule {
 
     @Provides
     @Singleton
-    List<Provider> provideProviders(final ExtdocIconLoader iconLoader, final/* workspace bus */EventBus workspaceBus) {
+    List<Provider> provideProviders(ExtdocIconLoader iconLoader, @Extdoc EventBus extdocBus,
+            final/* workspace bus */EventBus workspaceBus, ProviderConfigurationPersistenceService providerService) {
+        List<Provider> providers = findAllRegisteredProviders(iconLoader, workspaceBus);
+        providerService.initializeProviderConfiguration(providers);
+        extdocBus.register(providerService);
+        return providers;
+    }
+
+    private List<Provider> findAllRegisteredProviders(ExtdocIconLoader iconLoader, EventBus workspaceBus) {
         // IConfigurationElement[] elements =
         // getExtensionRegistry().getConfigurationElementsFor(EXTENSION_ID);
         //
@@ -74,7 +84,6 @@ public class ExtdocModule extends AbstractModule {
         providers.add(new VerySlowProvider(iconLoader));
         providers.add(new TooSlowProvider(iconLoader));
         providers.add(new JavadocProvider(iconLoader, workspaceBus));
-
         return providers;
     }
 

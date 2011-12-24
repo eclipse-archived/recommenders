@@ -13,19 +13,21 @@ package org.eclipse.recommenders.extdoc.rcp.ui;
 import java.util.List;
 
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.recommenders.extdoc.rcp.Provider;
 import org.eclipse.recommenders.extdoc.rcp.ExtdocModule.Extdoc;
+import org.eclipse.recommenders.extdoc.rcp.PreferencesFacade;
+import org.eclipse.recommenders.extdoc.rcp.Provider;
+import org.eclipse.recommenders.extdoc.rcp.ProviderConfigurationPersistenceService;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.ProviderExecutionScheduler;
 import org.eclipse.recommenders.extdoc.rcp.scheduling.SubscriptionManager;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IMemento;
-import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -35,54 +37,49 @@ public class ExtdocView extends ViewPart {
     private final EventBus workspaceBus;
     private final EventBus extdocBus;
     private final SubscriptionManager subscriptionManager;
-    private final ExtdocIconLoader iconLoader;
     private final List<Provider> providers;
-
-    private ProviderOverviewPart overviewPart;
-    private ProviderContentPart contentPart;
+    private final PreferencesFacade preferences;
+    private final ProviderOverviewPart overviewPart;
+    private final ProviderContentPart contentPart;
 
     private ProviderExecutionScheduler scheduler;
     private SashForm sashForm;
 
     @Inject
     public ExtdocView(EventBus workspaceBus, @Extdoc EventBus extdocBus, SubscriptionManager subscriptionManager,
-            ExtdocIconLoader iconLoader, List<Provider> providers) {
+            ExtdocIconLoader iconLoader, List<Provider> providers, PreferencesFacade preferences,
+            ProviderOverviewPart overviewPart, ProviderContentPart contentPart,
+            ProviderConfigurationPersistenceService ps) {
         this.workspaceBus = workspaceBus;
         this.extdocBus = extdocBus;
         this.subscriptionManager = subscriptionManager;
-        this.iconLoader = iconLoader;
         this.providers = providers;
+        this.preferences = preferences;
+        this.overviewPart = overviewPart;
+        this.contentPart = contentPart;
     }
 
     @Override
     public void createPartControl(Composite parent) {
-        createSashForm(parent);
-
-        overviewPart = new ProviderOverviewPart(extdocBus, providers, iconLoader);
-        overviewPart.createControl(sashForm);
-        contentPart = new ProviderContentPart(providers);
-        contentPart.createControl(sashForm);
-
+        createUiElements(parent);
         subscribeToEventBusses();
     }
 
-    private void createSashForm(Composite parent) {
+    private void createUiElements(Composite parent) {
         sashForm = new SashForm(parent, SWT.SMOOTH);
         sashForm.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+
+        overviewPart.createControl(sashForm);
+        contentPart.createControl(sashForm);
+
+        sashForm.setWeights(preferences.loadSashWeights());
+        sashForm.addDisposeListener(new DisposeListener() {
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                preferences.storeSashWeights(sashForm.getWeights());
+            }
+        });
     }
-
-    @Override
-    public void init(IViewSite site, IMemento memento) throws PartInitException {
-        super.init(site, memento);
-
-        // TODO load settings
-        // sashForm.setWeights(preferences.getSashWeights());
-    }
-
-//    @Override
-//    public void saveState(IMemento memento) {
-//        preferences.setSashWeights(sashForm.getWeights());
-//    }
 
     @Override
     public void dispose() {
@@ -93,14 +90,7 @@ public class ExtdocView extends ViewPart {
 
     @Override
     public void setFocus() {
-        // TODO: check if this is needed
-    }
-
-    @Subscribe
-    public void handle(JavaSelectionEvent selection) {
-        disposeScheduler();
-        scheduler = new ProviderExecutionScheduler(providers, subscriptionManager, contentPart, extdocBus);
-        scheduler.scheduleOnSelection(selection);
+        // TODO: check if this is needed to enable scrolling or something
     }
 
     private void disposeScheduler() {
@@ -121,5 +111,17 @@ public class ExtdocView extends ViewPart {
         extdocBus.unregister(contentPart);
         extdocBus.unregister(overviewPart);
         workspaceBus.unregister(this);
+    }
+
+    @Subscribe
+    @AllowConcurrentEvents
+    public void onSelection(JavaSelectionEvent selection) {
+        disposeScheduler();
+        syncScheduling(selection);
+    }
+
+    private synchronized void syncScheduling(JavaSelectionEvent selection) {
+        scheduler = new ProviderExecutionScheduler(providers, subscriptionManager, contentPart, extdocBus);
+        scheduler.scheduleOnSelection(selection);
     }
 }

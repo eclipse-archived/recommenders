@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.TableItem;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 
 public class ProviderOverviewPart {
 
@@ -51,6 +52,7 @@ public class ProviderOverviewPart {
     private Table table;
     private Map<Provider, TableItem> provider2item = Maps.newHashMap();
 
+    @Inject
     public ProviderOverviewPart(@Extdoc EventBus bus, List<Provider> providers, ExtdocIconLoader iconLoader) {
         this.bus = bus;
         this.providers = providers;

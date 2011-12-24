@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public class ProviderContentPart {
@@ -79,6 +80,7 @@ public class ProviderContentPart {
     private GridLayoutFactory defaultGridLayoutFactory = GridLayoutFactory.fillDefaults().spacing(0, 0);
     private GridDataFactory defaultGridDataFactory = GridDataFactory.fillDefaults().grab(true, true);
 
+    @Inject
     public ProviderContentPart(List<Provider> providers) {
         this.providers = providers;
 
