@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.common.collect.Maps;
@@ -85,6 +86,13 @@ public class HashBag<T> implements Bag<T> {
     }
 
     @Override
+    public void addAll(final Map<? extends T, Integer> col) {
+        for (final Entry<? extends T, Integer> pair : col.entrySet()) {
+            add(pair.getKey(), pair.getValue());
+        }
+    }
+
+    @Override
     public void addAll(final T... elements) {
         for (final T element : elements) {
             add(element, 1);
@@ -115,9 +123,8 @@ public class HashBag<T> implements Bag<T> {
     }
 
     /**
-     * @return a key set with keys sorted by frequency in ascending order. Note:
-     *         This list is not backed up by the bag nor are changes to this
-     *         list propagated to the bag.
+     * @return a key set with keys sorted by frequency in ascending order. Note: This list is not backed up by the bag
+     *         nor are changes to this list propagated to the bag.
      */
     public List<T> elementsOrderedByFrequency() {
         final ArrayList<T> res = new ArrayList<T>(index.keySet());

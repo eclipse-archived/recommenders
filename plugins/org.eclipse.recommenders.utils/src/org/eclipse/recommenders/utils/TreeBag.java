@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.utils;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -24,6 +25,12 @@ public class TreeBag<T> extends HashBag<T> {
 
     public static <E> TreeBag<E> newTreeBag(final Comparator<E> comparator) {
         return new TreeBag<E>(comparator);
+    }
+
+    public static <E extends Comparable<E>> TreeBag<E> newTreeBag(final Map<E, Integer> values) {
+        final TreeBag<E> res = new TreeBag<E>();
+        res.addAll(values);
+        return res;
     }
 
     protected TreeBag() {

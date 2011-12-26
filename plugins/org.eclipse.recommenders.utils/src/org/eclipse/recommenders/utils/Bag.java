@@ -23,8 +23,7 @@ public interface Bag<T> extends Iterable<T> {
     public abstract void add(final T element);
 
     /**
-     * Adds the given elements to this bag and increases the counter to
-     * count(key)+frequency.
+     * Adds the given elements to this bag and increases the counter to count(key)+frequency.
      */
     public abstract void add(final T element, final int count);
 
@@ -46,6 +45,11 @@ public interface Bag<T> extends Iterable<T> {
     public abstract void addAll(Bag<? extends T> bag);
 
     /**
+     * Adds all given elements to this bag with the frequency given as values in the map.
+     */
+    public void addAll(Map<? extends T, Integer> col);
+
+    /**
      * @return the count how often the given object was added to this bag before
      */
     public abstract int count(final Object elements);
@@ -57,9 +61,8 @@ public interface Bag<T> extends Iterable<T> {
     public abstract Iterator<T> iterator();
 
     /**
-     * @return a copy of the bag's (distinct) set of elements, i.e., a set
-     *         without any duplicates. Note, changes to this key set are not
-     *         propagates to the bag.
+     * @return a copy of the bag's (distinct) set of elements, i.e., a set without any duplicates. Note, changes to this
+     *         key set are not propagates to the bag.
      */
     public abstract Set<T> elements();
 
@@ -69,24 +72,21 @@ public interface Bag<T> extends Iterable<T> {
     public abstract int elementsCount();
 
     /**
-     * Removes one element multiple times from the bag. The multiplicity is
-     * given by parameter frequency. If the element count is 0 after removing
-     * the element the Bag itself will not contain element anymore.
+     * Removes one element multiple times from the bag. The multiplicity is given by parameter frequency. If the element
+     * count is 0 after removing the element the Bag itself will not contain element anymore.
      */
     public abstract void remove(final T element, final int frequency);
 
     /**
-     * Clears the given element completely from the bag (it does not decrease
-     * the counter by one).
+     * Clears the given element completely from the bag (it does not decrease the counter by one).
      */
     public abstract void removeAll(final T element);
 
     public abstract void remove(Bag<? extends T> bag);
 
     /**
-     * @return the total number of elements stored in this bag. This sums up the
-     *         frequency of each unique object stored in the key set of this
-     *         bag.
+     * @return the total number of elements stored in this bag. This sums up the frequency of each unique object stored
+     *         in the key set of this bag.
      * 
      * @see #elementsCount()
      */
@@ -103,10 +103,10 @@ public interface Bag<T> extends Iterable<T> {
     public abstract boolean contains(T element);
 
     /**
-     * Returns the bag's content in a new map. Changes to this map are not
-     * reflected by this bag.
+     * Returns the bag's content in a new map. Changes to this map are not reflected by this bag.
      */
     public Map<T, Integer> asMap();
 
     public boolean isEmpty();
+
 }

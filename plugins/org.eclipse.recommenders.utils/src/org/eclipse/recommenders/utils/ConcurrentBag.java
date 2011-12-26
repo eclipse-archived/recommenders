@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -93,6 +94,13 @@ public class ConcurrentBag<T> implements Bag<T> {
     }
 
     @Override
+    public void addAll(final Map<? extends T, Integer> col) {
+        for (final Entry<? extends T, Integer> pair : col.entrySet()) {
+            add(pair.getKey(), pair.getValue());
+        }
+    }
+
+    @Override
     public void addAll(final Bag<? extends T> bag) {
         for (final T element : bag) {
             add(element, bag.count(element));
@@ -116,9 +124,8 @@ public class ConcurrentBag<T> implements Bag<T> {
     }
 
     /**
-     * @return a key set with keys sorted by frequency in ascending order. Note:
-     *         This list is not backed up by the bag nor are changes to this
-     *         list propagated to the bag.
+     * @return a key set with keys sorted by frequency in ascending order. Note: This list is not backed up by the bag
+     *         nor are changes to this list propagated to the bag.
      */
     public List<T> elementsOrderedByFrequency() {
         final ArrayList<T> res = new ArrayList<T>(index.keySet());
@@ -235,4 +242,5 @@ public class ConcurrentBag<T> implements Bag<T> {
     public boolean isEmpty() {
         return index.isEmpty();
     }
+
 }
