@@ -14,11 +14,6 @@ import static com.google.common.base.Optional.fromNullable;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -64,14 +59,6 @@ public class JavaSelectionEvent {
     @Override
     public int hashCode() {
         return reflectionHashCode(this);
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public static @interface JavaSelectionListener {
-
-        JavaSelectionLocation[] value() default {};
-
     }
 
     public static enum JavaSelectionLocation {

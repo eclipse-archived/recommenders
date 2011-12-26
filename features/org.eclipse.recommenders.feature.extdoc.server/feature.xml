@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.recommenders.feature.extdoc.server"
-      label="Code Recommenders: ExtDoc CouchDB Proxy Server (Incubation)"
+      label="Code Recommenders: Extdoc Server (Incubation)"
       version="0.5.0.qualifier">
 
    <description url="http://www.eclipse.org/recommenders/">
@@ -17,7 +17,14 @@
    </license>
 
    <plugin
-         id="org.eclipse.recommenders.extdoc.server.proxy"
+         id="org.eclipse.recommenders.extdoc.server"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.extdoc"
          download-size="0"
          install-size="0"
          version="0.0.0"

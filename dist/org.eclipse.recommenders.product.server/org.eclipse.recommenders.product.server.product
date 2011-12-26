@@ -14,14 +14,16 @@
       <feature id="org.eclipse.recommenders.feature.server"/>
       <feature id="org.eclipse.recommenders.feature.server.rootfiles"/>
       <feature id="org.eclipse.recommenders.feature.codesearch.server"/>
+      <feature id="org.eclipse.recommenders.feature.extdoc.server"/>
       <feature id="org.eclipse.recommenders.feature.udc.server"/>
    </features>
 
    <configurations>
       <plugin id="org.eclipse.equinox.http.jetty" autoStart="true" startLevel="2" />
-      <plugin id="org.eclipse.recommenders.server.codesearch" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.recommenders.server.console" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.recommenders.server.udc" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.recommenders.codesearch.server" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.recommenders.extdoc.server" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.recommenders.udc.server" autoStart="true" startLevel="3" />
       <property name="eclipse.ignoreApp" value="true" />
       <property name="org.eclipse.equinox.http.jetty.http.port" value="29750" />
       <property name="org.eclipse.recommenders.server.http.baseurl" value="http://recommenders1.st.informatik.tu-darmstadt.de:29750/codesearch" />

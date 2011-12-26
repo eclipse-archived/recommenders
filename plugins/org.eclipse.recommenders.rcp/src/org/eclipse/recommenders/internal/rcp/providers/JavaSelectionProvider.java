@@ -68,7 +68,7 @@ public class JavaSelectionProvider implements ISelectionListener {
     }
 
     private void handleSelectionFromViewer(final ISelection selection) {
-        final Optional<IJavaElement> element = RCPUtils.first(selection);
+        final Optional<IJavaElement> element = RCPUtils.safeFirstElement(selection, IJavaElement.class);
         if (element.isPresent()) {
             final JavaSelectionLocation location = resolveSelectionLocationFromJavaElement(element.get());
             fireEventIfNew(element.get(), location, null);

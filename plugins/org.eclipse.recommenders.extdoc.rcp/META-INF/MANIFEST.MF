@@ -16,6 +16,9 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang3,
  org.eclipse.core.expressions,
  org.eclipse.ui.editors,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.eclipse.recommenders.webclient,
+ org.eclipse.recommenders.extdoc,
+ org.eclipse.recommenders.utils.gson
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Eclipse Code Recommenders

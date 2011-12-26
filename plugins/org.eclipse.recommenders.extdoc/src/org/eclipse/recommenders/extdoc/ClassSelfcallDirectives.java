@@ -12,6 +12,8 @@ package org.eclipse.recommenders.extdoc;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -48,4 +50,10 @@ public final class ClassSelfcallDirectives {
         Checks.ensureIsGreaterOrEqualTo(numberOfSubclasses, 1, null);
         Checks.ensureIsFalse(calls.isEmpty(), "empty self-calls not allowed");
     }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
 }

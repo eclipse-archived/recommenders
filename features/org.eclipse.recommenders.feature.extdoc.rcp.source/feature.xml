@@ -30,13 +30,6 @@
    </license>
 
    <plugin
-         id="org.eclipse.recommenders.extdoc.rcp.selection.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.recommenders.extdoc.rcp.source"
          download-size="0"
          install-size="0"
@@ -44,14 +37,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.extdoc.rcp.providers.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.extdoc.transport.source"
+         id="org.eclipse.recommenders.extdoc.source"
          download-size="0"
          install-size="0"
          version="0.0.0"

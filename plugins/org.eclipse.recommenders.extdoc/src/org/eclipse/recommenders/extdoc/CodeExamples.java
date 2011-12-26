@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.extdoc;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -41,4 +43,10 @@ public final class CodeExamples {
         Checks.ensureIsNotNull(method);
         Checks.ensureIsTrue(examples.length > 0);
     }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
 }

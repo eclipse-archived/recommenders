@@ -48,7 +48,13 @@ public class LoggingUtils {
 
     public static void log(final IStatus status, final Plugin plugin) {
         final ILog log = plugin.getLog();
-        log.log(status);
+        try {
+            // this fails sometimes with an NPE in
+            // org.eclipse.core.internal.runtime.Log.isLoggable(Log.java:101)
+            log.log(status);
+        } catch (final Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     public static void log(final CoreException exception, final Plugin plugin) {

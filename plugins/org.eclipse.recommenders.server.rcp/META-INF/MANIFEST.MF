@@ -26,6 +26,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.rcp.logging,
  org.eclipse.recommenders.utils.rcp,
  org.eclipse.recommenders.injection,
- org.eclipse.recommenders.server.console
+ org.eclipse.recommenders.server.console,
+ org.eclipse.recommenders.extdoc.server
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

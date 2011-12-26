@@ -9,6 +9,8 @@
  */
 package org.eclipse.recommenders.utils.rcp;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.List;
@@ -48,9 +50,9 @@ public class RCPUtils {
         return (T) asStructuredSelection(s).getFirstElement();
     }
 
-    public static <T> T safeFirstElement(final ISelection s, final Class<T> type) {
+    public static <T> Optional<T> safeFirstElement(final ISelection s, final Class<T> type) {
         final Object element = asStructuredSelection(s).getFirstElement();
-        return (T) (type.isInstance(element) ? element : null);
+        return (Optional<T>) (type.isInstance(element) ? of(element) : absent());
     }
 
     public static <T> Optional<T> first(final ISelection s) {
@@ -61,9 +63,13 @@ public class RCPUtils {
     public static IWorkbenchPage getActiveWorkbenchPage() {
         ensureIsNotNull(Display.getCurrent(), "not called from ui thread");
         final IWorkbench workbench = PlatformUI.getWorkbench();
-        if (workbench == null) { return null; }
+        if (workbench == null) {
+            return null;
+        }
         final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-        if (window == null) { return null; }
+        if (window == null) {
+            return null;
+        }
         final IWorkbenchPage page = window.getActivePage();
         return page;
     }

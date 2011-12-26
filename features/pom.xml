@@ -30,8 +30,11 @@
         <module>org.eclipse.recommenders.feature.completion.rcp.chain</module>
         <module>org.eclipse.recommenders.feature.completion.rcp.chain.source</module>
 
+
 		<module>org.eclipse.recommenders.feature.extdoc.rcp</module>
 		<module>org.eclipse.recommenders.feature.extdoc.rcp.source</module>
+        <module>org.eclipse.recommenders.feature.extdoc.server</module>
+        <module>org.eclipse.recommenders.feature.extdoc.server.source</module>
 
 		<module>org.eclipse.recommenders.feature.udc.rcp</module>
 		<module>org.eclipse.recommenders.feature.udc.rcp.source</module>
