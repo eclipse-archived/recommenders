@@ -53,7 +53,7 @@ public class ProviderExecutionScheduler {
     private final ListeningExecutorService pool;
     private final Map<ExtdocProvider, Future<?>> futures;
 
-    private final List<ExtdocProvider> extdocProviders;
+    private final List<ExtdocProvider> providers;
     private final SubscriptionManager subscriptionManager;
     private final ProviderContentPart contentPart;
     private EventBus extdocBus;
@@ -62,10 +62,10 @@ public class ProviderExecutionScheduler {
     private JavaSelectionEvent currentSelection;
     private CountDownLatch latch;
 
-    public ProviderExecutionScheduler(final List<ExtdocProvider> extdocProviders,
+    public ProviderExecutionScheduler(final List<ExtdocProvider> providers,
             final SubscriptionManager subscriptionManager, final ProviderContentPart coontentPart,
             final EventBus extdocBus) {
-        this.extdocProviders = extdocProviders;
+        this.providers = providers;
         this.extdocBus = extdocBus;
         this.subscriptionManager = subscriptionManager;
         this.contentPart = coontentPart;
@@ -84,9 +84,9 @@ public class ProviderExecutionScheduler {
         this.currentSelection = selection;
         createNewRenderingPanelInUiThread();
         postInUiThread(new NewSelectionEvent(selection));
-        latch = new CountDownLatch(extdocProviders.size());
+        latch = new CountDownLatch(providers.size());
 
-        for (final ExtdocProvider provider : extdocProviders) {
+        for (final ExtdocProvider provider : providers) {
             if (!provider.isEnabled()) {
                 latch.countDown();
                 continue;
@@ -130,7 +130,7 @@ public class ProviderExecutionScheduler {
     }
 
     private void postProviderDelayedEventsForLateProviders() {
-        for (final ExtdocProvider provider : extdocProviders) {
+        for (final ExtdocProvider provider : providers) {
             final Future<?> future = futures.get(provider);
             if (future != null && !future.isDone()) {
                 postInUiThread(new ProviderDelayedEvent(provider));
@@ -144,7 +144,7 @@ public class ProviderExecutionScheduler {
     }
 
     @Subscribe
-    public void handle(final ProviderActivationEvent e) {
+    public void onEvent(final ProviderActivationEvent e) {
         if (isRunning(e.provider)) {
             return;
         }
@@ -168,7 +168,7 @@ public class ProviderExecutionScheduler {
     }
 
     @Subscribe
-    public void handle(final ProviderDeactivationEvent e) {
+    public void onEvent(final ProviderDeactivationEvent e) {
         final Future<?> future = futures.get(e.provider);
         if (future != null) {
             future.cancel(true);
@@ -182,7 +182,7 @@ public class ProviderExecutionScheduler {
     }
 
     private void countLatchToZero() {
-        for (int i = 0; i < extdocProviders.size(); i++) {
+        for (int i = 0; i < providers.size(); i++) {
             latch.countDown();
         }
     }

@@ -16,8 +16,6 @@ import static org.eclipse.recommenders.internal.extdoc.rcp.ui.SwtUtils.createLab
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.eclipse.jdt.core.IMethod;
@@ -28,6 +26,7 @@ import org.eclipse.recommenders.extdoc.ClassSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
+import org.eclipse.recommenders.internal.extdoc.rcp.ui.SwtUtils;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocModule.Extdoc;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.Names;
@@ -39,7 +38,6 @@ import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.recommenders.webclient.NotFoundException;
 import org.eclipse.recommenders.webclient.WebServiceClient;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
@@ -47,7 +45,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 public final class SubclassingDirectivesProvider extends ExtdocProvider {
@@ -116,20 +113,41 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
         }
     }
 
-    private final class NotFoundRunnable implements Runnable {
-        /**
-         * 
-         */
-        private final Composite parent;
-
-        private NotFoundRunnable(final Composite parent) {
-            this.parent = parent;
+    static String percentageToRecommendationPhrase(final int percentage) {
+        if (percentage >= 95) {
+            return "always";
+        } else if (percentage >= 65) {
+            return "usually";
+        } else if (percentage >= 25) {
+            return "sometimes";
+        } else if (percentage >= 10) {
+            return "occasionally";
+        } else {
+            return "rarely";
         }
+    }
 
-        @Override
-        public void run() {
-            createLabel(parent, "No subclassing directives available.", false);
-        }
+    Link createMethodLink(final Composite parent, final IMethodName method) {
+        final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
+        final String tooltip = Names.vm2srcQualifiedMethod(method);
+
+        final Link link = new Link(parent, SWT.NONE);
+        link.setText(text);
+        link.setBackground(SwtUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+        link.setToolTipText(tooltip);
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                final IMethod jdtMethod = resolver.toJdtMethod(method);
+                if (jdtMethod != null) {
+                    final JavaSelectionEvent event = new JavaSelectionEvent(jdtMethod, METHOD_DECLARATION);
+                    workspaceBus.post(event);
+                } else {
+                    link.setEnabled(false);
+                }
+            }
+        });
+        return link;
     }
 
     // ========================================================================
@@ -141,10 +159,7 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
         private final IType type;
         private final ClassOverrideDirectives directive;
         private final Composite parent;
-
-        private final StringBuilder text = new StringBuilder();
         private Composite container;
-        private final List<StyleRange> ranges = Lists.newLinkedList();
 
         public TypeOverrideDirectivesRenderer(final IType type, final ClassOverrideDirectives directive,
                 final Composite parent) {
@@ -181,48 +196,14 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
                 final int frequency = b.count(method);
                 final int percentage = (int) Math.round(frequency * 100.0d / numberOfSubclasses);
 
-                createLabel(group, "   " + addRecommendationLevel(percentage), true, false, SWT.COLOR_BLACK, true);
+                createLabel(group, "   " + percentageToRecommendationPhrase(percentage), true, false, SWT.COLOR_BLACK,
+                        true);
                 createLabel(group, "override", false);
                 createMethodLink(group, method);
                 createLabel(group, format(" -   (%d %% - %d times)", percentage, frequency), true);
             }
         }
 
-        private void createMethodLink(final Composite group, final IMethodName method) {
-            final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
-            final String tooltip = Names.vm2srcQualifiedMethod(method);
-
-            final Link link = new Link(group, SWT.NONE);
-            link.setText(text);
-            link.setBackground(group.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-            link.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(final SelectionEvent e) {
-                    final IMethod jdtMethod = resolver.toJdtMethod(method);
-                    if (jdtMethod != null) {
-                        final JavaSelectionEvent event = new JavaSelectionEvent(jdtMethod, METHOD_DECLARATION);
-                        workspaceBus.post(event);
-                    } else {
-                        link.setEnabled(false);
-                    }
-                }
-            });
-            link.setToolTipText(tooltip);
-        }
-    }
-
-    static String addRecommendationLevel(final int percentage) {
-        if (percentage >= 95) {
-            return "always";
-        } else if (percentage >= 65) {
-            return "usually";
-        } else if (percentage >= 25) {
-            return "sometimes";
-        } else if (percentage >= 10) {
-            return "occasionally";
-        } else {
-            return "rarely";
-        }
     }
 
     private class TypeSelfcallDirectivesRenderer implements Runnable {
@@ -230,10 +211,7 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
         private final IType type;
         private final ClassSelfcallDirectives directive;
         private final Composite parent;
-
-        private final StringBuilder text = new StringBuilder();
         private Composite container;
-        private final List<StyleRange> ranges = Lists.newLinkedList();
 
         public TypeSelfcallDirectivesRenderer(final IType type, final ClassSelfcallDirectives selfcalls,
                 final Composite parent) {
@@ -270,35 +248,13 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
                 final int frequency = b.count(method);
                 final int percentage = (int) Math.round(frequency * 100.0d / numberOfSubclasses);
 
-                createLabel(group, "   " + addRecommendationLevel(percentage), true, false, SWT.COLOR_BLACK, true);
+                createLabel(group, "   " + percentageToRecommendationPhrase(percentage), true, false, SWT.COLOR_BLACK,
+                        true);
                 createLabel(group, "override", false);
                 createMethodLink(group, method);
                 createLabel(group, format(" -   (%d %% - %d times)", percentage, frequency), true);
             }
         }
-
-        private void createMethodLink(final Composite group, final IMethodName method) {
-            final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
-            final String tooltip = Names.vm2srcQualifiedMethod(method);
-
-            final Link link = new Link(group, SWT.NONE);
-            link.setText(text);
-            link.setBackground(group.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-            link.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(final SelectionEvent e) {
-                    final IMethod jdtMethod = resolver.toJdtMethod(method);
-                    if (jdtMethod != null) {
-                        final JavaSelectionEvent event = new JavaSelectionEvent(jdtMethod, METHOD_DECLARATION);
-                        workspaceBus.post(event);
-                    } else {
-                        link.setEnabled(false);
-                    }
-                }
-            });
-            link.setToolTipText(tooltip);
-        }
-
     }
 
     private class MethodSelfcallDirectivesRenderer implements Runnable {
@@ -344,33 +300,12 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
                 final int frequency = b.count(method);
                 final int percentage = (int) Math.round(frequency * 100.0d / numberOfSubclasses);
 
-                createLabel(group, "   " + addRecommendationLevel(percentage), true, false, SWT.COLOR_BLACK, true);
+                createLabel(group, "   " + percentageToRecommendationPhrase(percentage), true, false, SWT.COLOR_BLACK,
+                        true);
                 createLabel(group, "call", false);
                 createMethodLink(group, method);
                 createLabel(group, format(" -   (%d %% - %d times)", percentage, frequency), true);
             }
-        }
-
-        private void createMethodLink(final Composite group, final IMethodName method) {
-            final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
-            final String tooltip = Names.vm2srcQualifiedMethod(method);
-
-            final Link link = new Link(group, SWT.NONE);
-            link.setText(text);
-            link.setBackground(group.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-            link.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(final SelectionEvent e) {
-                    final IMethod jdtMethod = resolver.toJdtMethod(method);
-                    if (jdtMethod != null) {
-                        final JavaSelectionEvent event = new JavaSelectionEvent(jdtMethod, METHOD_DECLARATION);
-                        workspaceBus.post(event);
-                    } else {
-                        link.setEnabled(false);
-                    }
-                }
-            });
-            link.setToolTipText(tooltip);
         }
     }
 }

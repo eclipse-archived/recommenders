@@ -60,6 +60,7 @@ public class ExtdocModule extends AbstractModule {
     @Singleton
     @Extdoc
     WebServiceClient provideExtdocWebserviceClient() {
+        // TODO: make a listening client configuration that responds to preference changes.
         final ClientConfiguration config = ClientConfiguration.create("http://localhost:29750/extdoc");
         return new WebServiceClient(config);
     }

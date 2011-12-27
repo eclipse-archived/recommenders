@@ -41,33 +41,33 @@ public class SubscriptionManager {
     private final Multimap<Subscription, Tuple<ExtdocProvider, Method>> subscriptions = HashMultimap.create();
 
     @Inject
-    public SubscriptionManager(final List<ExtdocProvider> extdocProviders) {
-        ensureIsNotNull(extdocProviders);
-        for (final ExtdocProvider p : extdocProviders) {
+    public SubscriptionManager(final List<ExtdocProvider> providers) {
+        ensureIsNotNull(providers);
+        for (final ExtdocProvider p : providers) {
             register(p);
         }
     }
 
-    private void register(final ExtdocProvider extdocProvider) {
+    private void register(final ExtdocProvider provider) {
 
-        final Set<Tuple<Method, JavaSelectionSubscriber>> annotatedMethods = findAnnotatedMethods(extdocProvider);
+        final Set<Tuple<Method, JavaSelectionSubscriber>> annotatedMethods = findAnnotatedMethods(provider);
 
         if (annotatedMethods.isEmpty()) {
             throwIllegalArgumentException("no listeners found");
         }
 
         for (final Tuple<Method, JavaSelectionSubscriber> t : annotatedMethods) {
-            addSubscription(extdocProvider, t.getFirst(), t.getSecond());
+            addSubscription(provider, t.getFirst(), t.getSecond());
         }
     }
 
-    private Set<Tuple<Method, JavaSelectionSubscriber>> findAnnotatedMethods(final ExtdocProvider extdocProvider) {
+    private Set<Tuple<Method, JavaSelectionSubscriber>> findAnnotatedMethods(final ExtdocProvider provider) {
 
         final Set<Tuple<Method, JavaSelectionSubscriber>> methods = newHashSet();
 
         // TODO Review: test that overridden methods are not called twice
 
-        final Class<?> clazz = extdocProvider.getClass();
+        final Class<?> clazz = provider.getClass();
         for (final Method m : clazz.getMethods()) {
             final JavaSelectionSubscriber annotation = m.getAnnotation(JavaSelectionSubscriber.class);
             if (annotation != null) {
@@ -114,11 +114,11 @@ public class SubscriptionManager {
         }
     }
 
-    private void addSubscription(final ExtdocProvider extdocProvider, final Method method, final JavaSelectionSubscriber annotation) {
+    private void addSubscription(final ExtdocProvider provider, final Method method, final JavaSelectionSubscriber annotation) {
         final JavaSelectionLocation[] locs = annotation.value();
         final Class<?> javaElementType = method.getParameterTypes()[0];
 
-        final Tuple<ExtdocProvider, Method> subscriber = newTuple(extdocProvider, method);
+        final Tuple<ExtdocProvider, Method> subscriber = newTuple(provider, method);
 
         if (locs.length == 0) {
             final Subscription subscription = Subscription.create(javaElementType, null);
@@ -134,12 +134,12 @@ public class SubscriptionManager {
     /**
      * returns the first matching method for a given provider and selection event - or <em>absent</em> if none is found
      */
-    public Optional<Method> findFirstSubscribedMethod(final ExtdocProvider extdocProvider, final JavaSelectionEvent selection) {
+    public Optional<Method> findFirstSubscribedMethod(final ExtdocProvider provider, final JavaSelectionEvent selection) {
         for (final Subscription s : subscriptions.keySet()) {
 
             if (s.isInterestedIn(selection)) {
                 for (final Tuple<ExtdocProvider, Method> t : subscriptions.get(s)) {
-                    if (extdocProvider.equals(t.getFirst())) {
+                    if (provider.equals(t.getFirst())) {
                         return of(t.getSecond());
                     }
                 }

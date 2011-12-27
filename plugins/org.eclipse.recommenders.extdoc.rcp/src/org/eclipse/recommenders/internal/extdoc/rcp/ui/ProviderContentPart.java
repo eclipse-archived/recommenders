@@ -60,7 +60,7 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public class ProviderContentPart {
 
-    private final List<ExtdocProvider> extdocProviders;
+    private final List<ExtdocProvider> providers;
 
     private Composite stack;
     private StackLayout stackLayout;
@@ -84,8 +84,8 @@ public class ProviderContentPart {
     private final GridDataFactory defaultGridDataFactory = GridDataFactory.fillDefaults().grab(true, true);
 
     @Inject
-    public ProviderContentPart(final List<ExtdocProvider> extdocProviders) {
-        this.extdocProviders = extdocProviders;
+    public ProviderContentPart(final List<ExtdocProvider> providers) {
+        this.providers = providers;
 
         providerAreas = Maps.newHashMap();
         labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
@@ -159,7 +159,7 @@ public class ProviderContentPart {
 
         createSelectionInfoArea();
 
-        for (final ExtdocProvider p : extdocProviders) {
+        for (final ExtdocProvider p : providers) {
             final ProviderArea providerArea = new ProviderArea(p);
             providerArea.createControl(renderingPanel);
             providerAreas.put(p, providerArea);
@@ -179,7 +179,7 @@ public class ProviderContentPart {
     }
 
     @Subscribe
-    public void handle(final NewSelectionEvent e) {
+    public void onEvent(final NewSelectionEvent e) {
         updateSelectionStatus(e.selection);
     }
 
@@ -197,7 +197,7 @@ public class ProviderContentPart {
     }
 
     @Subscribe
-    public void handle(final RenderNowEvent e) {
+    public void onEvent(final RenderNowEvent e) {
         makeRenderingPanelVisible();
         relayout();
         scrollToTop();
@@ -228,26 +228,26 @@ public class ProviderContentPart {
     }
 
     @Subscribe
-    public void handle(final ProviderNotAvailableEvent e) {
+    public void onEvent(final ProviderNotAvailableEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
         area.hide();
     }
 
     @Subscribe
-    public void handle(final ProviderSelectionEvent e) {
+    public void onEvent(final ProviderSelectionEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
         scrollingComposite.setOrigin(area.getLocation());
     }
 
     @Subscribe
-    public void handle(final ProviderFinishedEvent e) {
+    public void onEvent(final ProviderFinishedEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
         area.showContent();
         visiblePanel.layout();
     }
 
     @Subscribe
-    public void handle(final ProviderDelayedEvent e) {
+    public void onEvent(final ProviderDelayedEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
         area.setStatus("provider is delayed...");
         area.showStatus();
@@ -263,7 +263,7 @@ public class ProviderContentPart {
     // }
 
     @Subscribe
-    public void handle(final ProviderFinishedLateEvent e) {
+    public void onEvent(final ProviderFinishedLateEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
         final String statusMessage = "provider finished late <a>show</a>";
         area.setStatusWithCallback(statusMessage, new SelectionAdapter() {
@@ -280,7 +280,7 @@ public class ProviderContentPart {
     }
 
     @Subscribe
-    public void handle(final ProviderFailedEvent e) {
+    public void onEvent(final ProviderFailedEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
         final String statusMessage = "provider failed <a>show exception</a>";
         area.setStatusWithCallback(statusMessage, new SelectionAdapter() {
@@ -320,7 +320,7 @@ public class ProviderContentPart {
     }
 
     @Subscribe
-    public void handle(final ProviderOrderChangedEvent e) {
+    public void onEvent(final ProviderOrderChangedEvent e) {
         System.out.printf("order changed: %d, %d", e.oldIndex, e.newIndex);
 
         final ProviderArea areaToMove = providerAreas.get(e.provider);
@@ -337,7 +337,7 @@ public class ProviderContentPart {
     }
 
     @Subscribe
-    public void handle(final ProviderDeactivationEvent e) {
+    public void onEvent(final ProviderDeactivationEvent e) {
         System.out.println("cleaning up provider area after deactivation...");
         final ProviderArea area = providerAreas.get(e.provider);
         area.hide();

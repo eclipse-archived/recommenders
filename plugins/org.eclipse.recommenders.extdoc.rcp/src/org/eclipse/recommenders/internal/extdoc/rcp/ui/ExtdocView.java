@@ -37,7 +37,7 @@ public class ExtdocView extends ViewPart {
     private final EventBus workspaceBus;
     private final EventBus extdocBus;
     private final SubscriptionManager subscriptionManager;
-    private final List<ExtdocProvider> extdocProviders;
+    private final List<ExtdocProvider> providers;
     private final PreferencesFacade preferences;
     private final ProviderOverviewPart overviewPart;
     private final ProviderContentPart contentPart;
@@ -48,13 +48,13 @@ public class ExtdocView extends ViewPart {
     @Inject
     public ExtdocView(final EventBus workspaceBus, @Extdoc final EventBus extdocBus,
             final SubscriptionManager subscriptionManager, final ExtdocIconLoader iconLoader,
-            final List<ExtdocProvider> extdocProviders, final PreferencesFacade preferences,
+            final List<ExtdocProvider> providers, final PreferencesFacade preferences,
             final ProviderOverviewPart overviewPart, final ProviderContentPart contentPart,
             final ProviderConfigurationPersistenceService ps) {
         this.workspaceBus = workspaceBus;
         this.extdocBus = extdocBus;
         this.subscriptionManager = subscriptionManager;
-        this.extdocProviders = extdocProviders;
+        this.providers = providers;
         this.preferences = preferences;
         this.overviewPart = overviewPart;
         this.contentPart = contentPart;
@@ -116,13 +116,13 @@ public class ExtdocView extends ViewPart {
 
     @Subscribe
     @AllowConcurrentEvents
-    public void onSelection(final JavaSelectionEvent selection) {
+    public void onJavaSelection(final JavaSelectionEvent selection) {
         disposeScheduler();
         syncScheduling(selection);
     }
 
     private synchronized void syncScheduling(final JavaSelectionEvent selection) {
-        scheduler = new ProviderExecutionScheduler(extdocProviders, subscriptionManager, contentPart, extdocBus);
+        scheduler = new ProviderExecutionScheduler(providers, subscriptionManager, contentPart, extdocBus);
         scheduler.scheduleOnSelection(selection);
     }
 }

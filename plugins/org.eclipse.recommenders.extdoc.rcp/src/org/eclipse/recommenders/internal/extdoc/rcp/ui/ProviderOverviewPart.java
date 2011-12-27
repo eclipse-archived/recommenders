@@ -46,17 +46,17 @@ import com.google.inject.Inject;
 public class ProviderOverviewPart {
 
     private final EventBus bus;
-    private final List<ExtdocProvider> extdocProviders;
+    private final List<ExtdocProvider> providers;
     private final ExtdocIconLoader iconLoader;
 
     private Table table;
     private final Map<ExtdocProvider, TableItem> provider2item = Maps.newHashMap();
 
     @Inject
-    public ProviderOverviewPart(@Extdoc final EventBus bus, final List<ExtdocProvider> extdocProviders,
+    public ProviderOverviewPart(@Extdoc final EventBus bus, final List<ExtdocProvider> providers,
             final ExtdocIconLoader iconLoader) {
         this.bus = bus;
-        this.extdocProviders = extdocProviders;
+        this.providers = providers;
         this.iconLoader = iconLoader;
     }
 
@@ -69,7 +69,7 @@ public class ProviderOverviewPart {
         table.addListener(SWT.Selection,
                 createListenerThatSeparatesCheckAndSelectionEventsAndPropagatesThemToTheSelectedItem());
 
-        for (final ExtdocProvider p : extdocProviders) {
+        for (final ExtdocProvider p : providers) {
             final TableItem item = createItemForProvider(p);
             provider2item.put(p, item);
         }
@@ -126,12 +126,12 @@ public class ProviderOverviewPart {
         handler.addListener(new OrderChangedListener() {
             @Override
             public void orderChanged(final int oldIndex, final int newIndex) {
-                final ExtdocProvider providerReference = extdocProviders.get(newIndex);
-                final ExtdocProvider movedProvider = extdocProviders.remove(oldIndex);
-                extdocProviders.add(newIndex, movedProvider);
+                final ExtdocProvider providerReference = providers.get(newIndex);
+                final ExtdocProvider movedProvider = providers.remove(oldIndex);
+                providers.add(newIndex, movedProvider);
                 bus.post(new ProviderOrderChangedEvent(movedProvider, providerReference, oldIndex, newIndex));
 
-                for (final ExtdocProvider p : extdocProviders) {
+                for (final ExtdocProvider p : providers) {
                     final TableItem oldItem = provider2item.get(p);
                     final TableItem newItem = createItemForProvider(p);
                     provider2item.put(p, newItem);
@@ -145,8 +145,8 @@ public class ProviderOverviewPart {
     }
 
     @Subscribe
-    public void handle(final NewSelectionEvent e) {
-        for (final ExtdocProvider p : extdocProviders) {
+    public void onEvent(final NewSelectionEvent e) {
+        for (final ExtdocProvider p : providers) {
             final TableItem oldItem = provider2item.get(p);
             provider2item.put(p, createItemForProvider(p));
             oldItem.dispose();
@@ -154,44 +154,44 @@ public class ProviderOverviewPart {
     }
 
     @Subscribe
-    public void handle(final ProviderNotAvailableEvent e) {
+    public void onEvent(final ProviderNotAvailableEvent e) {
         final TableItem tableItem = provider2item.get(e.provider);
         tableItem.setImage(iconLoader.getImage(Icon.NOT_AVAILABLE));
         tableItem.setForeground(new Color(table.getDisplay(), 180, 180, 180));
     }
 
     @Subscribe
-    public void handle(final ProviderDeactivationEvent e) {
+    public void onEvent(final ProviderDeactivationEvent e) {
         final TableItem tableItem = provider2item.get(e.provider);
         tableItem.setImage(e.provider.getDescription().getImage());
     }
 
     @Subscribe
-    public void handle(final ProviderStartedEvent e) {
+    public void onEvent(final ProviderStartedEvent e) {
         final TableItem tableItem = provider2item.get(e.provider);
         tableItem.setImage(iconLoader.getImage(Icon.STARTED));
     }
 
     @Subscribe
-    public void handle(final ProviderFinishedEvent e) {
+    public void onEvent(final ProviderFinishedEvent e) {
         final TableItem tableItem = provider2item.get(e.provider);
         tableItem.setImage(e.provider.getDescription().getImage());
     }
 
     @Subscribe
-    public void handle(final ProviderDelayedEvent e) {
+    public void onEvent(final ProviderDelayedEvent e) {
         final TableItem tableItem = provider2item.get(e.provider);
         tableItem.setImage(iconLoader.getImage(Icon.DELAYED));
     }
 
     @Subscribe
-    public void handle(final ProviderFinishedLateEvent e) {
+    public void onEvent(final ProviderFinishedLateEvent e) {
         final TableItem tableItem = provider2item.get(e.provider);
         tableItem.setImage(e.provider.getDescription().getImage());
     }
 
     @Subscribe
-    public void handle(final ProviderFailedEvent e) {
+    public void onEvent(final ProviderFailedEvent e) {
         final TableItem tableItem = provider2item.get(e.provider);
         tableItem.setImage(iconLoader.getImage(Icon.FAILED));
     }

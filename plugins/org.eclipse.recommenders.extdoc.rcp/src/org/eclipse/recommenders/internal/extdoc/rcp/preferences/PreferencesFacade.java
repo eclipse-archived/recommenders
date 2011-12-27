@@ -34,17 +34,17 @@ public class PreferencesFacade {
         preferences = InstanceScope.INSTANCE.getNode(ExtdocPlugin.PLUGIN_ID);
     }
 
-    public void storeOrderedProviders(final List<ExtdocProvider> extdocProviders) {
-        final String[] providerNames = getProviderNames(extdocProviders);
+    public void storeOrderedProviders(final List<ExtdocProvider> providers) {
+        final String[] providerNames = getProviderNames(providers);
         final String toSave = createString(providerNames);
         preferences.put(PROVIDER_NAMES, toSave);
         flush();
     }
 
-    private static String[] getProviderNames(final List<ExtdocProvider> extdocProviders) {
-        final String[] names = new String[extdocProviders.size()];
+    private static String[] getProviderNames(final List<ExtdocProvider> providers) {
+        final String[] names = new String[providers.size()];
         int i = 0;
-        for (final ExtdocProvider p : extdocProviders) {
+        for (final ExtdocProvider p : providers) {
             names[i] = p.getDescription().getName();
             i++;
         }
@@ -77,16 +77,16 @@ public class PreferencesFacade {
         return true;
     }
 
-    public void storeProviderEnablement(final List<ExtdocProvider> extdocProviders) {
-        final String[] disabledProviderNames = getDisabledProviderNames(extdocProviders);
+    public void storeProviderEnablement(final List<ExtdocProvider> providers) {
+        final String[] disabledProviderNames = getDisabledProviderNames(providers);
         final String toSave = createString(disabledProviderNames);
         preferences.put(DISABLED_PROVIDERS, toSave);
         flush();
     }
 
-    private String[] getDisabledProviderNames(final List<ExtdocProvider> extdocProviders) {
+    private String[] getDisabledProviderNames(final List<ExtdocProvider> providers) {
         final List<String> disabledProviders = new ArrayList<String>();
-        for (final ExtdocProvider p : extdocProviders) {
+        for (final ExtdocProvider p : providers) {
             if (!p.isEnabled()) {
                 disabledProviders.add(p.getDescription().getName());
             }

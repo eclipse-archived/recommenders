@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Link;
 
 public class ProviderArea {
 
-    private final ExtdocProvider extdocProvider;
+    private final ExtdocProvider provider;
 
     private Composite container;
 
@@ -41,8 +41,8 @@ public class ProviderArea {
     private final GridLayoutFactory layoutFactory = GridLayoutFactory.fillDefaults().spacing(0, 0);
     private final GridDataFactory layoutDataFactory = GridDataFactory.fillDefaults().grab(true, false);
 
-    public ProviderArea(final ExtdocProvider extdocProvider) {
-        this.extdocProvider = extdocProvider;
+    public ProviderArea(final ExtdocProvider provider) {
+        this.provider = provider;
 
     }
 
@@ -62,8 +62,8 @@ public class ProviderArea {
     private void createTitleArea() {
         title = createComposite(container);
 
-        final String providerName = extdocProvider.getDescription().getName();
-        final Image providerImage = extdocProvider.getDescription().getImage();
+        final String providerName = provider.getDescription().getName();
+        final Image providerImage = provider.getDescription().getImage();
 
         final CLabel l = new CLabel(title, SWT.NONE);
         l.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
