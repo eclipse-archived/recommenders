@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.completion.rcp.chain;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.utils.Throws.throwCancelationException;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods;
 
 import java.util.Collection;
@@ -22,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -34,8 +34,11 @@ import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.recommenders.utils.Throws;
+import org.eclipse.recommenders.utils.Tuple;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 /**
  * A graph builder creates the call chain graph from a list of given entry points. It uses an internal
@@ -111,23 +114,70 @@ public class GraphBuilder {
 
     private void awaitPoolTermination() {
         try {
-            pool.awaitTermination(4, TimeUnit.SECONDS);
+            pool.awaitTermination(3, TimeUnit.SECONDS);
         } catch (final InterruptedException e) {
             // no logging intended
         }
     }
 
-    public List<List<MemberEdge>> findChains(final IType expectedType) {
-        for (final TypeNode node : nodes.values()) {
-            if (node.isAssignable(expectedType)) {
-                for (final MemberEdge edge : node.incomingEdges) {
+    public void findChains(final IType expectedType) {
+        try {
+            for (final TypeNode node : nodes.values()) {
+                if (node.isAssignable(expectedType)) {
+                    final List<Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */>> iteration = Lists
+                            .newLinkedList();
                     final LinkedHashSet<MemberEdge> anchor = new LinkedHashSet<MemberEdge>();
-                    dsfTraverse(anchor, edge);
+                    for (final MemberEdge nextEdgeToTest : node.incomingEdges) {
+                        iteration.add(Tuple.newTuple(anchor, nextEdgeToTest));
+                    }
+                    bsfTraverse(iteration);
                 }
             }
+        } catch (final CancellationException e) {
+            // don't report but return what has been found so far.
         }
-        return chains;
+    }
 
+    /**
+     * Returns the potentially incomplete list of call chains that could be found before a time out happened. The
+     * contents of this list are mutable and may change as the search makes progress.
+     * 
+     */
+    public List<List<MemberEdge>> getChains() {
+        return chains;
+    }
+
+    private void bsfTraverse(
+            final List<Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */>> iteration) {
+
+        final List<Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */>> nextIteration = Lists
+                .newLinkedList();
+        for (final Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */> t : iteration) {
+            terminateIfInterrupted();
+            final LinkedHashSet<MemberEdge> incompleteChain = t.getFirst();
+            final MemberEdge edgeToTest = t.getSecond();
+            if (introducesCycleIntoCallChain(incompleteChain, edgeToTest)) {
+                continue;
+            }
+
+            final LinkedHashSet<MemberEdge> workingCopy = createWorkingCopyWithNewEdge(incompleteChain, edgeToTest);
+
+            if (reachedCallChainMaxLengthLimit(workingCopy)) {
+                continue;
+            }
+
+            if (edgeToTest.isChainAnchor()) {
+                registerCopyOfSuccessfullyCompletedChain(workingCopy);
+                continue;
+            }
+
+            final IType accessedFrom = edgeToTest.getReceiverType().get();
+            final TypeNode typeNode = nodes.get(accessedFrom);
+            for (final MemberEdge nextEdgeToTest : typeNode.incomingEdges) {
+                nextIteration.add(Tuple.newTuple(workingCopy, nextEdgeToTest));
+            }
+        }
+        bsfTraverse(nextIteration);
     }
 
     private void dsfTraverse(final LinkedHashSet<MemberEdge> incompleteChain, final MemberEdge edgeToTest) {
@@ -163,7 +213,8 @@ public class GraphBuilder {
 
     private void terminateIfInterrupted() {
         if (Thread.interrupted()) {
-            throwCancelationException();
+            // System.out.println("ignoring terminate");
+            Throws.throwCancelationException();
         }
     }
 

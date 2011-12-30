@@ -62,6 +62,10 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
     @Override
     public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         initializeContexts(context);
+
+        if (!isExtendedContext()) {
+            return Collections.emptyList();
+        }
         if (!findEnclosingType()) {
             return Collections.emptyList();
         }
@@ -72,6 +76,10 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
         computeRecommendations();
         computeProposals();
         return proposals;
+    }
+
+    private boolean isExtendedContext() {
+        return jdtContext.getCoreContext().isExtended();
     }
 
     private void initializeContexts(final ContentAssistInvocationContext context) {

@@ -31,7 +31,6 @@ import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.recommenders.utils.HashBag;
-import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 import org.eclipse.swt.graphics.Image;
 
@@ -134,8 +133,8 @@ public class CompletionTemplateBuilder {
         if (count > 1) {
             sb.append(count);
         }
-        final String resolvedTypeName = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
-                varType, context.getCompilationUnit().findPrimaryType());
+        // final String resolvedTypeName = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
+        // varType, context.getCompilationUnit().findPrimaryType()).or("null");
         // sb.append(":var(").append(resolvedTypeName).append(")");
         sb.append("}");
     }

@@ -126,7 +126,9 @@ public class JdtUtils {
         ensureIsNotNull(editor);
         ensureIsNotNull(selection);
         final Optional<ITypeRoot> input = getInput(editor);
-        if (input.isPresent()) { return codeResolve(input.get(), selection); }
+        if (input.isPresent()) {
+            return codeResolve(input.get(), selection);
+        }
         return EMPTY_RESULT;
     }
 
@@ -135,7 +137,9 @@ public class JdtUtils {
         final CompilationUnit ast = SharedASTProvider.getAST(typeRoot, SharedASTProvider.WAIT_YES, null);
         final IProblem[] problems = ast.getProblems();
         for (final IProblem problem : problems) {
-            if (problem.isError()) { return true; }
+            if (problem.isError()) {
+                return true;
+            }
         }
         return false;
     }
@@ -346,10 +350,15 @@ public class JdtUtils {
     public static Optional<ITypeName> findSuperclassName(final IType type) {
         try {
             final String superclassName = type.getSuperclassTypeSignature();
-            if (superclassName == null) { return absent(); }
-            final String resolvedSuperclassName = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
+            if (superclassName == null) {
+                return absent();
+            }
+            final Optional<String> opt = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
                     superclassName, type);
-            final String vmSuperclassName = toVMTypeDescriptor(resolvedSuperclassName);
+            if (!opt.isPresent()) {
+                return absent();
+            }
+            final String vmSuperclassName = toVMTypeDescriptor(opt.get());
             final ITypeName vmTypeName = VmTypeName.get(vmSuperclassName);
             return of(vmTypeName);
         } catch (final Exception e) {
@@ -361,6 +370,9 @@ public class JdtUtils {
         ensureIsNotNull(type);
         try {
             final String superclassTypeSignature = type.getSuperclassTypeSignature();
+            if (superclassTypeSignature == null) {
+                return absent();
+            }
             return findTypeFromSignature(superclassTypeSignature, type);
         } catch (final JavaModelException e) {
             log(e);
@@ -369,10 +381,15 @@ public class JdtUtils {
     }
 
     public static Optional<IType> findTypeFromSignature(final String typeSignature, final IJavaElement parent) {
+        ensureIsNotNull(typeSignature);
+        ensureIsNotNull(parent);
         try {
-            final String resolvedTypeSignature = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
-                    typeSignature, parent);
-            final IType res = parent.getJavaProject().findType(resolvedTypeSignature);
+            final Optional<String> opt = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(typeSignature,
+                    parent);
+            if (!opt.isPresent()) {
+                return absent();
+            }
+            final IType res = parent.getJavaProject().findType(opt.get());
             return Optional.fromNullable(res);
         } catch (final JavaModelException e) {
             log(e);
@@ -396,9 +413,13 @@ public class JdtUtils {
 
     public static Optional<IWorkbenchPage> getActiveWorkbenchPage() {
         final IWorkbench workbench = PlatformUI.getWorkbench();
-        if (workbench == null) { return absent(); }
+        if (workbench == null) {
+            return absent();
+        }
         final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-        if (window == null) { return absent(); }
+        if (window == null) {
+            return absent();
+        }
         final IWorkbenchPage page = window.getActivePage();
         return of(page);
     }
@@ -429,7 +450,9 @@ public class JdtUtils {
      */
     public static Optional<IJavaElement> getElementAtOffset(final JavaEditor editor, final ITextSelection selection) {
         final Optional<ITypeRoot> input = getInput(editor);
-        if (input.isPresent()) { return getElementAtOffset(input.get(), selection); }
+        if (input.isPresent()) {
+            return getElementAtOffset(input.get(), selection);
+        }
         return absent();
     }
 
@@ -472,7 +495,9 @@ public class JdtUtils {
         ensureIsNotNull(rhsType);
         final IType[] supertypes = findAllSupertypesIncludeingArgument(rhsType);
         for (final IType supertype : supertypes) {
-            if (supertype.equals(lhsType)) { return true; }
+            if (supertype.equals(lhsType)) {
+                return true;
+            }
         }
         return false;
     }
@@ -503,7 +528,9 @@ public class JdtUtils {
 
     public static Optional<JavaEditor> openJavaEditor(final IEditorInput input) {
         final Optional<IWorkbenchPage> oPage = getActiveWorkbenchPage();
-        if (!oPage.isPresent()) { return absent(); }
+        if (!oPage.isPresent()) {
+            return absent();
+        }
         final IWorkbenchPage page = oPage.get();
         final IEditorPart editor = page.findEditor(input);
         if (editor instanceof JavaEditor) {
@@ -534,7 +561,9 @@ public class JdtUtils {
 
     public static Optional<ASTNode> resolveDeclarationNode(final JavaEditor editor) {
         final ITypeRoot root = EditorUtility.getEditorInputJavaElement(editor, true);
-        if (root == null) { return Optional.absent(); }
+        if (root == null) {
+            return Optional.absent();
+        }
         final CompilationUnit cuNode = SharedASTProvider.getAST(root, SharedASTProvider.WAIT_YES, null);
         final ITextSelection selection = getTextSelection(editor);
         final ASTNode activeDeclarationNode = findClosestMethodOrTypeDeclarationAroundOffset(cuNode, selection);
@@ -549,8 +578,8 @@ public class JdtUtils {
      * @param parent
      *            must be an {@link IType} or something that has an {@link IType} as parent.
      */
-    public static String resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(String typeSignature,
-            final IJavaElement parent) {
+    public static Optional<String> resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
+            String typeSignature, final IJavaElement parent) {
         ensureIsNotNull(typeSignature);
         ensureIsNotNull(parent);
         try {
@@ -562,7 +591,7 @@ public class JdtUtils {
             typeSignature = JavaModelUtil.getResolvedTypeName(typeSignature, type);
             // NOT needed. Done by getResolvedTypeName typeSignature = StringUtils.substringBefore(typeSignature, "[");
             typeSignature = StringUtils.substringBeforeLast(typeSignature, "<");
-            return typeSignature;
+            return fromNullable(typeSignature);
         } catch (final JavaModelException e) {
             throw throwUnhandledException(e);
         }
@@ -583,7 +612,9 @@ public class JdtUtils {
     public static Optional<ASTNode> findAstNodeFromEditorSelection(final JavaEditor editor,
             final ITextSelection textSelection) {
         final Optional<ITypeRoot> root = findTypeRoot(editor);
-        if (!root.isPresent()) { return Optional.absent(); }
+        if (!root.isPresent()) {
+            return Optional.absent();
+        }
         final CompilationUnit astRoot = getAST(root.get(), WAIT_YES, null);
         final ASTNode node = org.eclipse.jdt.core.dom.NodeFinder.perform(astRoot, textSelection.getOffset(), 0);
         return Optional.fromNullable(node);

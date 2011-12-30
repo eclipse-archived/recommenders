@@ -3,7 +3,6 @@ package org.eclipse.recommenders.tests.completion.rcp.overrides;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import junit.framework.Assert;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -18,36 +17,70 @@ import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
-import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
-import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.junit.Test;
 
 @SuppressWarnings("all")
-public class CompletionScenarios {
+public class OverridesCompletionProposalComputerSmokeTest {
   @Test
-  public void testFindLocalAnchor() {
+  public void test01() {
       StringConcatenation _builder = new StringConcatenation();
-      _builder.append("import java.util.concurrent.*;");
-      _builder.newLine();
       _builder.append("public class MyClass extends Object{");
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("public int hashCode(){return 0;}");
       _builder.newLine();
       _builder.append("\t");
       _builder.append("$");
       _builder.newLine();
-      _builder.append("}");
+      _builder.append("\t");
+      _builder.append("@Override$");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("pu$blic$ bool$ean eq$uals(O$bject $o$){");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("int $i = $o$.$ha$shCode$();");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("retur$n$ $f$alse;");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("$}$");
+      _builder.newLine();
+      _builder.append("$}$");
       _builder.newLine();
       final CharSequence code = _builder;
-      ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList("equals");
-      List<List<String>> _w = this.w(((String[])Conversions.unwrapArray(_newArrayList, String.class)));
-      List<List<String>> expected = _w;
-      this.exercise(code, expected);
+      this.exercise(code);
   }
   
-  public void exercise(final CharSequence code, final List<? extends List<String>> expected) {
+  @Test
+  public void test02() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("publ$ic cl$ass MyCla$ss{");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("$");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("@Override$");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("pu$blic$ bool$ean eq$uals(O$bject $o$){");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("int $i = $o$.$ha$shCode$();");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("retur$n$ $f$alse;");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("$}$");
+      _builder.newLine();
+      _builder.append("$}$");
+      _builder.newLine();
+      final CharSequence code = _builder;
+      this.exercise(code);
+  }
+  
+  public void exercise(final CharSequence code) {
     try {
       {
         IWorkspace _workspace = ResourcesPlugin.getWorkspace();
@@ -59,30 +92,21 @@ public class CompletionScenarios {
         ICompilationUnit _first = struct.getFirst();
         final ICompilationUnit cu = _first;
         Set<Integer> _second = struct.getSecond();
-        Integer _head = IterableExtensions.<Integer>head(_second);
-        final Integer completionIndex = _head;
-        TestJavaContentAssistContext _testJavaContentAssistContext = new TestJavaContentAssistContext(cu, (completionIndex).intValue());
-        final TestJavaContentAssistContext ctx = _testJavaContentAssistContext;
-        JavaElementResolver _javaElementResolver = new JavaElementResolver();
-        final JavaElementResolver resolver = _javaElementResolver;
-        InstantOverridesRecommender _get = MockRecommender.get();
-        final InstantOverridesRecommender recommender = _get;
-        IntelligentCompletionContextResolver _intelligentCompletionContextResolver = new IntelligentCompletionContextResolver(resolver);
-        OverridesCompletionProposalComputer _overridesCompletionProposalComputer = new OverridesCompletionProposalComputer(recommender, _intelligentCompletionContextResolver, resolver);
-        final OverridesCompletionProposalComputer sut = _overridesCompletionProposalComputer;
-        sut.sessionStarted();
-        List _computeCompletionProposals = sut.computeCompletionProposals(ctx, null);
-        final List proposals = _computeCompletionProposals;
-        for (final Object proposal : proposals) {
+        for (final Integer completionIndex : _second) {
+          {
+            TestJavaContentAssistContext _testJavaContentAssistContext = new TestJavaContentAssistContext(cu, (completionIndex).intValue());
+            final TestJavaContentAssistContext ctx = _testJavaContentAssistContext;
+            JavaElementResolver _javaElementResolver = new JavaElementResolver();
+            final JavaElementResolver resolver = _javaElementResolver;
+            InstantOverridesRecommender _get = MockRecommender.get();
+            final InstantOverridesRecommender recommender = _get;
+            IntelligentCompletionContextResolver _intelligentCompletionContextResolver = new IntelligentCompletionContextResolver(resolver);
+            OverridesCompletionProposalComputer _overridesCompletionProposalComputer = new OverridesCompletionProposalComputer(recommender, _intelligentCompletionContextResolver, resolver);
+            final OverridesCompletionProposalComputer sut = _overridesCompletionProposalComputer;
+            sut.sessionStarted();
+            sut.computeCompletionProposals(ctx, null);
+          }
         }
-        StringConcatenation _builder = new StringConcatenation();
-        _builder.append(" ");
-        _builder.append("some expected values were not found ");
-        _builder.append(expected, " ");
-        _builder.append(" ");
-        String _string_1 = _builder.toString();
-        boolean _isEmpty = expected.isEmpty();
-        Assert.assertTrue(_string_1, _isEmpty);
       }
     } catch (Exception _e) {
       throw Exceptions.sneakyThrow(_e);

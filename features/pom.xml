@@ -14,6 +14,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+        <module>org.eclipse.recommenders.feature.rcp</module>
 
 		<module>org.eclipse.recommenders.feature.codesearch.rcp</module>
 		<module>org.eclipse.recommenders.feature.codesearch.rcp.source</module>

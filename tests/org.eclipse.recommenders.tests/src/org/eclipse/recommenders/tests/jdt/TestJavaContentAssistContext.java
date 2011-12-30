@@ -46,6 +46,9 @@ public class TestJavaContentAssistContext extends JavaContentAssistInvocationCon
     @Override
     public CharSequence computeIdentifierPrefix() throws BadLocationException {
         final char[] prefix = getCoreContext().getToken();
+        if (prefix == null) {
+            return "";
+        }
         return String.valueOf(prefix);
     }
 

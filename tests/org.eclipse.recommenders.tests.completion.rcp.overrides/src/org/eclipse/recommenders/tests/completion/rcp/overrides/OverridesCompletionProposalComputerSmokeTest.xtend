@@ -12,39 +12,52 @@ import org.junit.Test
 import static junit.framework.Assert.*
 import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer
  
-class CompletionScenarios { 
+class OverridesCompletionProposalComputerSmokeTest { 
   
  
 	@Test
-	def void testFindLocalAnchor(){
+	def void test01(){
 		val code = '''
-		import java.util.concurrent.*;
 		public class MyClass extends Object{
-			public int hashCode(){return 0;}
 			$
-		}
+			@Override$
+			pu$blic$ bool$ean eq$uals(O$bject $o$){
+				int $i = $o$.$ha$shCode$();
+				retur$n$ $f$alse;
+			$}$
+		$}$
 		'''
-		var expected = w(newArrayList(
-			"equals"
-			))
-			
-		exercise(code, expected); 
+		
+		exercise(code); 
 	} 
 	
-	def exercise(CharSequence code, List<? extends List<String>> expected){
+	@Test
+	def void test02(){
+		val code = '''
+		publ$ic cl$ass MyCla$ss{
+			$
+			@Override$
+			pu$blic$ bool$ean eq$uals(O$bject $o$){
+				int $i = $o$.$ha$shCode$();
+				retur$n$ $f$alse;
+			$}$
+		$}$
+		'''
+		exercise(code); 
+	} 
+	
+	def exercise(CharSequence code){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::workspace,"test")
 		val struct = fixture.createFileAndParseWithMarkers(code.toString, "MyClass.java")
 		val cu = struct.first;
-		val completionIndex = struct.second.head
-		val ctx = new TestJavaContentAssistContext(cu, completionIndex)
-		val resolver = new JavaElementResolver()
-		val recommender = MockRecommender::get
-		val sut = new OverridesCompletionProposalComputer(recommender, new IntelligentCompletionContextResolver(resolver),resolver)
-		sut.sessionStarted
-		val proposals = sut.computeCompletionProposals(ctx, null) 
-		 for(proposal : proposals){
-		} 
-		assertTrue(''' some expected values were not found «expected» '''.toString, expected.empty)
+		for(completionIndex : struct.second){
+			val ctx = new TestJavaContentAssistContext(cu, completionIndex)
+			val resolver = new JavaElementResolver()
+			val recommender = MockRecommender::get
+			val sut = new OverridesCompletionProposalComputer(recommender, new IntelligentCompletionContextResolver(resolver),resolver)
+			sut.sessionStarted
+			sut.computeCompletionProposals(ctx, null)
+		}
 	}
 	
 	def l(String spaceSeparatedElementNames){ 

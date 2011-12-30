@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IField;
@@ -54,6 +56,7 @@ import org.eclipse.recommenders.utils.rcp.CompilerBindings;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
@@ -66,6 +69,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     private List<ICompletionProposal> proposals;
     private final IntelligentCompletionContextResolver contextResolver;
     private JavaContentAssistInvocationContext jdtContext;
+    private String error;
 
     @Inject
     public CallChainCompletionProposalComputer(final IntelligentCompletionContextResolver contextResolver) {
@@ -265,15 +269,29 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
 
     private void executeCallChainSearch() throws JavaModelException {
         proposals.clear();
-
         final GraphBuilder b = new GraphBuilder();
-        b.build(entrypoints);
-        final List<List<MemberEdge>> chains = b.findChains(expectedType);
+        final List<List<MemberEdge>> chains = b.getChains();
+        try {
+            new SimpleTimeLimiter().callWithTimeout(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    b.build(entrypoints);
+                    b.findChains(expectedType);
+                    return null;
+                }
+            }, 3500, TimeUnit.MILLISECONDS, true);
+        } catch (final Exception e) {
+            setError("Timeout limit hit during call chain computation.");
+        }
         for (final List<MemberEdge> chain : chains) {
             final TemplateProposal completion = new CompletionTemplateBuilder().create(chain, jdtContext);
             final CallChainCompletionProposal completionProposal = new CallChainCompletionProposal(completion, chain);
             proposals.add(completionProposal);
         }
+    }
+
+    private void setError(final String errorMessage) {
+        this.error = errorMessage;
     }
 
     private void logError(final Exception e) {
@@ -290,11 +308,12 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     @Override
     public void sessionStarted() {
         proposals = new LinkedList<ICompletionProposal>();
+        setError(null);
     }
 
     @Override
     public String getErrorMessage() {
-        return null;
+        return error;
     }
 
     @Override

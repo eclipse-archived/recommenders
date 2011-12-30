@@ -53,6 +53,7 @@ public class MemberEdge {
     // TODO I don't like var names sourceType javaelement... too generic
     public MemberEdge(final IType receiverType, final IJavaElement member, final int iterationDepth) {
         ensureIsNotNull(member);
+        ensureIsMemberTypeOrLocalVariable(member);
         this.optReceiverType = fromNullable(receiverType);
         this.element = member;
         this.iterationDepth = iterationDepth;
@@ -61,6 +62,10 @@ public class MemberEdge {
         } catch (final JavaModelException e) {
             RecommendersUtilsPlugin.log(e);
         }
+    }
+
+    private void ensureIsMemberTypeOrLocalVariable(final IJavaElement element) {
+
     }
 
     public MemberEdge(final IJavaElement member) {
