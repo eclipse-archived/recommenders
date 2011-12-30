@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<!-- just for debugging and to make the build work -->
+<plugin>
+ <extension point="org.eclipse.help.toc">
+      <toc
+            file="target/classes/toc.xml"
+            primary="true"/>
+      <index
+            path="target/classes/index.xml">
+      </index>
+   </extension>
+</plugin>

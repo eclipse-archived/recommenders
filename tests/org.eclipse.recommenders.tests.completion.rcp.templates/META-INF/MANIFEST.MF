@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Tests for Templates Completion (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.tests.completion.rcp.templates
+Bundle-Version: 0.5.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.completion.rcp.templates
+Require-Bundle: org.junit4,
+ org.eclipse.jdt.ui,
+ org.eclipse.jdt.core,
+ org.eclipse.jface.text,
+ org.hamcrest,
+ org.eclipse.recommenders.tests,
+ org.eclipse.recommenders.completion.rcp,
+ org.objenesis,
+ org.mockito
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

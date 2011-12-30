@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="ChainCompletionProposalComputer"
+         name="Code Recommenders: Call Chain Proposal Computer"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="false"
+            categoryId="org.eclipse.recommenders.completion.rcp.chain.category"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.chain.CallChainCompletionProposalComputer">
+      </javaCompletionProposalComputer>
+   </extension>
+   <extension
+         id="org.eclipse.recommenders.completion.rcp.chain.category"
+         name="Call Chain Proposal Computer"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <proposalCategory
+            icon="icons/view16/chain.gif">
+      </proposalCategory>
+   </extension>
+</plugin>

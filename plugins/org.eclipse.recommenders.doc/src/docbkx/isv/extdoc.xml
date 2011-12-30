@@ -1,0 +1,71 @@
+<?xml version='1.0'?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
+<section id="isv-extdoc">
+    <title>Extdoc</title>
+    <section>
+        <title>Design Overview for Extdoc</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="media/figures/isv/extdoc/design.png"/>
+            </imageobject>
+            <caption>overview</caption>
+        </mediaobject>
+        <para>
+            <orderedlist>
+                <title>Class Responsibilities</title>
+                <listitem>
+                    <simpara>
+                        <classname>GlobalDispatcher</classname>: global dispatcher for java selection events in the workspace.
+                    </simpara>
+                </listitem>
+                <listitem>
+                    <simpara>
+                        <classname>ExtdocView</classname>: central controller; manages the registering and unregistering of all components on the <classname>EventBus</classname>; coordinates the creation and execution of provider tasks; listens for selection events and delegates them to the subscription manager
+                    </simpara>
+                </listitem>
+                <listitem>
+                    <simpara>
+                        <classname>SubscriptionManager</classname>: manages provider subscriptions for specific java selections.
+                        On selections a list of <classname>Call</classname>s is returned, which wrap the method invocation for all affected
+                        subscriptions.
+                    </simpara>
+                </listitem>
+               <listitem>
+                    <simpara>
+                        <classname>Call</classname>: capsulates a reflective method invocation including the full argument list.
+                    </simpara>
+                </listitem>
+                <listitem>
+                    <simpara>
+                        <classname>RequestManager</classname>: capsulates the threaded scheduling of the provider tasks. Maximum execution times
+                        are checked and the according events are fired to the <classname>EventBus</classname>.
+                    </simpara>
+                </listitem>
+            </orderedlist>
+        </para>
+    </section>
+    <section>
+        <title>Conceptual View on the Call Scheduling</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="media/figures/isv/extdoc/scheduling.png"/>
+            </imageobject>
+            <caption>overview</caption>
+        </mediaobject>
+	</section>
+    <section>
+        <title>Layout of the ExtdocView</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="media/figures/isv/extdoc/layout.png"/>
+            </imageobject>
+            <caption>overview</caption>
+        </mediaobject>
+	</section>
+<section>
+	<title>Layout of the ExtdocView</title>
+	<para>
+		asd
+	</para>
+</section>
+</section>

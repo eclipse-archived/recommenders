@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: »THIS FILE IS REPLACED DURING BUILD« (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.doc;singleton:=true
+Bundle-Version: 0.5.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.help

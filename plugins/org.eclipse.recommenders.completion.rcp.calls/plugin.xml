@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.recommenders.injection.modules">
+      <module
+            class="org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule">
+      </module>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.recommenders.internal.completion.rcp.calls.CallsRecommendation"
+            class="org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+   </extension>
+   <extension
+         id="org.eclipse.recommenders"
+         name="Code Recommenders Calls Proposals"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.eclipse.recommenders.rcp.category.completion"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionProposalComputer">
+      </javaCompletionProposalComputer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.recommenders.rcp.category.preferences"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.calls.preferences.CallsCompletionPreferencePage"
+            id="org.eclipse.recommenders.calls.rcp.dependencies"
+            name="Calls">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.recommenders.internal.completion.rcp.calls.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+
+</plugin>

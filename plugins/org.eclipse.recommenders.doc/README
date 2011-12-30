@@ -1,0 +1,2 @@
+Please note that "plugin.xml" is replaced by a generated plugin.xml file
+during docbook build! This file exists only to stop the eclipse builder from complaining.

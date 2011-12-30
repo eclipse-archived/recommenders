@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Server Commons (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.server
+Bundle-Version: 0.5.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.server
+Require-Bundle: com.sun.jersey.core,
+ com.sun.jersey.server,
+ javax.servlet,
+ org.eclipse.recommenders.utils,
+ org.eclipse.recommenders.injection
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

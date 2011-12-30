@@ -1,0 +1,233 @@
+<?xml version='1.0'?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
+<chapter>
+    <title>New and Noteworthy</title>
+    <section>
+        <title>v0.5</title>
+        <para></para>
+    </section>
+    <section>
+        <title>v0.4</title>
+        <para></para>
+    </section>
+    <section>
+        <title>v0.3</title>
+        <section>
+            <title>Subwords Completion</title>
+            <para>Sometimes you just don't know the complete name of a method - or entering its full name from the first
+                character? Subwords is here to assist.
+            </para>
+            <section>
+                <title>Completion on method calls:</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.3/subwords-completion-on-method-calls.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on variables:</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.3/subwords-completion-on-variables.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on method overrides:</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.3/subwords-completion-on-method-overrides.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+        </section>
+        <para>
+            Subwords has been mainly developed by Paul-Emmanuel Faidherbe and contributed to Eclipse Code Recommenders.
+            Thank you Paul-Emmanuel!
+            <note>
+                <title>Subwords currently has some limitations:</title>
+                <para> It doesn't support dynamic reranking of proposals with better/larger overlaps. It only works in
+                    the scenarios shown above. Typename completions are yet not possible. You may find more limitations
+                    as you go. Please send your feature requests and bugs to Bugzilla. A thread discussing this
+                    contribution is here: https://bugs.eclipse.org/bugs/show_bug.cgi?id=350000
+                </para>
+            </note>
+        </para>
+    </section>
+    <section>
+        <title>v0.2</title>
+        <section>
+            <title>Chain Completion</title>
+            <para>
+                How many times did you ask yourself
+                <emphasis>"How do I get an instance of X?"</emphasis>
+                And how much time did you spent with shimming from one method call to another to find a call chain
+                returning the type you were looking for?
+            </para>
+            <para> Clearly, by far too long. Code Recommenders' new chain completion engine supports you in finding all
+                applicable call chains and thus saves you lots of time when learning new APIs. How does it work? In a
+                nutshell, Code Recommenders takes the current context code completion was triggered in and starts a
+                search on all local variables, fields and methods of the enclosing class recursively until a path to the
+                requested type is found (or a time out occurred :D). If it could find some valid paths, it generates
+                ready-to-use code snippets the developer can immediately insert into her code. Look at the screenshots
+                below for some examples:
+            </para>
+            <section>
+                <title>
+                    Completion on
+                    <code>this</code>
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.2/chain-completion-on-IStatusLineManager.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on static types
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.2/chain-completion-on-platformui.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on method returns
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.2/chain-completion-on-method-return.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion with type cast
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.2/chain-completion-with-cast.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+        </section>
+        <section>
+            <title>Templates Completion Engine</title>
+            <para> Have you ever wondered how to deal with a new framework's objects? Or got tired by continuously
+                writing the same procedures, e.g. instantiating an object and calling a bunch of setters!? For this
+                Eclipse contains standard-templates but they are only few and writing new is time-consuming and often
+                difficult to do.
+            </para>
+            <para> Our templates completion engine provides templates dynamically created on completion requests. They
+                are not manually crafted but obtained from frequent patterns found in real-life framework usage, i.e.
+                you are instantly served with the most common practices. For this not only the object type is
+                considered, but also what has already been done with the variable itself - our templates are
+                context-sensitive! You can see how they adopt to different occasion in the following screenshots. With
+                this the new templates completion engine provides valuable dynamic shortcuts for frequent code blocks
+                and is also able to guide framework novices with relevant examples.
+            </para>
+            <section>
+                <title>Completion for Local Declaration
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.2/template-completion-on-button-declaration.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Dynamic Pattern Completion
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata
+                            fileref="media/figures/new-and-noteworthy/v0.2/template-completion-on-button-with-observed-calls.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+        </section>
+    </section>
+    <section>
+        <title>v0.1</title>
+        <section>
+            <title>Calls Completion</title>
+            <section>
+                <title>Completion on Declared Variables</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.1/completion-on-field.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on This</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.1/completion-on-this.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on Anonymous Method Returns</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.1/completion-on-method-return.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion from Anonymous Inner Classes</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.1/completion-on-local-from-nested.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>On-the-fly Code Analysis</title>
+                <para> Code Recommenders performs several static analyses on your code whenever you save your editor
+                    contents. However, sometimes you work a while with a dirty editor (i.e., editor contains un-safed
+                    changes). If code completion now was triggered on variables added after the last save code
+                    recommenders couldn't make any recommendations for these variables. This update now contains an
+                    on-the-fly analyzer that performs a flat analysis of your current method body whenever code
+                    completion is triggered on a previously unknown variable based on the information it obtains from
+                    the JDT AST.
+                </para>
+            </section>
+            <section>
+                <title>Performance Improvements</title>
+                <para> Code Completion's performance has been improve quite a lot. However, the loading of recommender
+                    models may take a second and thus may slow down your code completion on the first load. After the
+                    models are loaded, code completion usually takes between 10 to 50 ms.
+                </para>
+            </section>
+        </section>
+        <section>
+            <title>Overrides Completion</title>
+            <section>
+                <title>Completion on Class Body</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/new-and-noteworthy/v0.1/completion-on-class-body.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+        </section>
+        <section>
+            <title>Eclipse Help
+            </title>
+            <para> Code Recommenders follows the model of EGit and Mylyn and maintains its user and developer guides as
+                well as its new and noteworthy release notes in wiki.eclipse.org. This allows developers and users
+                likewise to edit and comment on existing documentation. The latest version of these wiki pages are
+                automatically integrated into the latest Eclipse Help plug-in and changes are available immediately to
+                you.
+            </para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="media/figures/new-and-noteworthy/v0.1/eclipse-help-user.png"/>
+                </imageobject>
+            </mediaobject>
+        </section>
+    </section>
+</chapter>

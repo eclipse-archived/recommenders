@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Tests for Overrides Code Completion (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.tests.completion.rcp.overrides
+Bundle-Version: 0.5.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.completion.rcp.overrides
+Require-Bundle: com.google.guava,
+ org.eclipse.core.resources,
+ org.eclipse.recommenders.tests,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend2.lib,
+ org.junit4,
+ org.mockito
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+

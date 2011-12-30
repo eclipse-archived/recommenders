@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Object Usage Templates (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.templates;singleton:=true
+Bundle-Version: 0.5.0.qualifier
+Bundle-ClassPath: .,
+ /metadata
+Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.internal.completion.rcp.templates,
+ org.eclipse.recommenders.internal.completion.rcp.templates.types
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.jdt.core,
+ org.eclipse.recommenders.analysis,
+ org.eclipse.recommenders.utils,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.recommenders.completion.rcp,
+ org.eclipse.recommenders.utils.rcp,
+ org.apache.commons.lang3,
+ org.eclipse.jdt.ui,
+ org.eclipse.recommenders.completion.rcp.calls,
+ org.eclipse.recommenders.injection
+Eclipse-LazyStart: true
+Implementation-Version: 0.1.0
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

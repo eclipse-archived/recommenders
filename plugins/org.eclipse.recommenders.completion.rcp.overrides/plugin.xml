@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.recommenders.injection.modules">
+      <module
+            class="org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesModule">
+      </module>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesRecommendation"
+            class="org.eclipse.recommenders.internal.completion.rcp.overrides.AdapterFactory">
+         <adapter
+               type="org.eclipse.ui.model.IWorkbenchAdapter">
+         </adapter>
+      </factory>
+   </extension>
+	 <extension
+         id="org.eclipse.recommenders.rcp.category.completion.overrides"
+         name="Code Recommenders Overrides Proposals"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.eclipse.recommenders.rcp.category.completion"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer">
+      </javaCompletionProposalComputer>
+   </extension>
+   
+</plugin>

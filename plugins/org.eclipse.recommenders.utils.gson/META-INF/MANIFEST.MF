@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Commons Gson Utils (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.utils.gson
+Bundle-Version: 0.5.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.utils.gson
+Require-Bundle: com.google.gson;bundle-version="2.0.0";visibility:=reexport,
+ org.eclipse.recommenders.utils,
+ com.google.guava
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: javax.xml.bind

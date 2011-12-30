@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<parent>
+		<groupId>org.eclipse.recommenders.plugin</groupId>
+		<artifactId>org.eclipse.recommenders.plugin.parent</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.eclipse.recommenders.completion.rcp.overrides</artifactId>
+	<packaging>eclipse-plugin</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.savage7.maven.plugins</groupId>
+				<artifactId>maven-external-dependency-plugin</artifactId>
+				<version>0.4</version>
+				<configuration>
+					<artifactItems>
+
+						<artifactItem>
+							<groupId>org.eclipse.recommenders</groupId>
+							<artifactId>rcp.codecompletion.overrides.models</artifactId>
+							<version>0.3.0</version>
+							<packaging>zip</packaging>
+							<downloadUrl>
+								http://recommenders1.st.informatik.tu-darmstadt.de/updates/models/overrides-models.{packaging}
+							</downloadUrl>
+							<!-- checksum>671a3d4431df7e9ce29c08f7fcd7533d</checksum -->
+						</artifactItem>
+
+					</artifactItems>
+
+				</configuration>
+				<executions>
+					<execution>
+						<id>clean-external-dependencies</id>
+						<phase>clean</phase>
+						<goals>
+							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:clean-external -->
+							<goal>clean-external</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>resolve-install-external-dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:resolve-external -->
+							<goal>resolve-external</goal>
+
+							<!-- mvn com.savage7.maven.plugins:maven-external-dependency-plugin:install-external -->
+							<goal>install-external</goal>
+						</goals>
+					</execution>
+
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.eclipse.recommenders</groupId>
+									<artifactId>rcp.codecompletion.overrides.models</artifactId>
+									<version>0.3.0</version>
+									<type>zip</type>
+									<outputDirectory>data/</outputDirectory>
+									<destFileName>models.zip</destFileName>
+								</artifactItem>
+							</artifactItems>
+							<!-- other configurations here -->
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

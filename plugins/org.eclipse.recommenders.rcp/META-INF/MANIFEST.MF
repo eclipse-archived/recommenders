@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: RCP (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.rcp;singleton:=true
+Bundle-Version: 0.5.0.qualifier
+Bundle-Activator: org.eclipse.recommenders.rcp.RecommendersPlugin
+Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.internal.rcp.providers,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.recommenders.rcp.events;x-friends=org.eclipse.recommenders.extdoc.rcp
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.core.resources,
+ org.eclipse.ui.editors,
+ com.google.guava;bundle-version="[10.0.0,11.0.0)";visibility:=reexport,
+ org.apache.commons.lang3,
+ org.eclipse.recommenders.utils.rcp,
+ org.eclipse.recommenders.utils,
+ org.eclipse.recommenders.utils.gson,
+ org.eclipse.recommenders.analysis,
+ org.eclipse.ui.ide,
+ org.eclipse.recommenders.injection,
+ org.eclipse.jface.text
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

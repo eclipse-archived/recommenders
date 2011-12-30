@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.recommenders.feature.server.rcp"
+      label="Code Recommenders: Self-hosting Platform (Incubation)"
+      version="0.5.0.qualifier"
+      provider-name="Eclipse Code Recommenders">
+
+   <description url="http://www.eclipse.org/recommenders/">
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <includes
+         id="org.eclipse.recommenders.feature.server"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.recommenders.feature.codesearch.server"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.recommenders.feature.udc.server"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.recommenders.rcp.logging"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.server.rcp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.mining"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.udc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.recommenders.udc.rcp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.recommenders.server.setup"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>

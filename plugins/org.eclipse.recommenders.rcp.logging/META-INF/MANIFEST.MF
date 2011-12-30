@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Logging (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.rcp.logging;singleton:=true
+Bundle-Version: 0.5.0.qualifier
+Bundle-ClassPath: .
+Bundle-Activator: org.eclipse.recommenders.internal.rcp.logging.LoggingActivator
+Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.internal.rcp.logging
+Require-Bundle: org.eclipse.core.runtime,
+ ch.qos.logback.classic,
+ ch.qos.logback.core,
+ org.eclipse.ui,
+ org.eclipse.recommenders.utils,
+ org.slf4j.api,
+ org.eclipse.recommenders.utils.rcp
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
