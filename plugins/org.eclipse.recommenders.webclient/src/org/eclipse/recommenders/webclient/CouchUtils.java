@@ -19,6 +19,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.results.ResultObject;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;

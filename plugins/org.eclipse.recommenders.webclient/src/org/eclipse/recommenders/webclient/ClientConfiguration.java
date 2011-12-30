@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.webclient;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.google.inject.Singleton;
 
 @Singleton
@@ -36,5 +38,10 @@ public class ClientConfiguration {
             newBaseUrl += "/";
         }
         this.baseUrl = newBaseUrl;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

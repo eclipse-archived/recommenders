@@ -1,3 +1,5 @@
+package org.eclipse.recommenders.webclient.results;
+
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
@@ -8,13 +10,19 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.webclient;
 
-public class NotFoundException extends InvalidRequestException {
-    private static final long serialVersionUID = 1L;
+import javax.xml.bind.annotation.XmlRootElement;
 
-    public NotFoundException(final Throwable e) {
-        super(e);
+@XmlRootElement
+public class ResultObject<T> {
+
+    public static <T> ResultObject<T> create(final String id, final T value) {
+        final ResultObject<T> res = new ResultObject<T>();
+        res.id = id;
+        res.value = value;
+        return res;
     }
 
+    public String id;
+    public T value;
 }

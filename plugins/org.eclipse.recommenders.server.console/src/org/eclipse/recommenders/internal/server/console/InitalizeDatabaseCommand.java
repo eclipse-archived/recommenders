@@ -28,9 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.recommenders.internal.server.console.ConsoleGuiceModule.LocalCouchdb;
-import org.eclipse.recommenders.webclient.NotFoundException;
-import org.eclipse.recommenders.webclient.TransactionResult;
 import org.eclipse.recommenders.webclient.WebServiceClient;
+import org.eclipse.recommenders.webclient.exceptions.NotFoundException;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.google.common.io.Files;
 import com.google.inject.Inject;

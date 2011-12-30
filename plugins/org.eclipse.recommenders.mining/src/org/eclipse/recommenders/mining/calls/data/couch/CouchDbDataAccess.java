@@ -24,9 +24,9 @@ import org.eclipse.recommenders.commons.udc.LibraryIdentifier;
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
 import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.webclient.CouchUtils;
-import org.eclipse.recommenders.webclient.GenericResultObjectView;
-import org.eclipse.recommenders.webclient.TransactionResult;
 import org.eclipse.recommenders.webclient.WebServiceClient;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -84,19 +84,19 @@ public class CouchDbDataAccess {
 
     public List<ObjectUsage> getObjectUsages(final Set<String> fingerprints) {
 
-    	final List<ObjectUsage> result = Lists.newLinkedList();
+        final List<ObjectUsage> result = Lists.newLinkedList();
         for (final String fingerprint : fingerprints) {
-            Collection<ObjectUsage> objectUsages = getObjectUsages(fingerprint);
-//            System.out.printf("%s: %d\n", fingerprint, objectUsages.size());
+            final Collection<ObjectUsage> objectUsages = getObjectUsages(fingerprint);
+            // System.out.printf("%s: %d\n", fingerprint, objectUsages.size());
             result.addAll(objectUsages);
         }
         return result;
     }
 
     private Collection<ObjectUsage> getObjectUsages(final String fingerprint) {
-    	// TODO remove stale
-         final String url = CouchUtils.createViewUrlWithKey("objectUsages", "byFingerprint", fingerprint)
-                + "&reduce=false";//&stale=ok";
+        // TODO remove stale
+        final String url = CouchUtils.createViewUrlWithKey("objectUsages", "byFingerprint", fingerprint)
+                + "&reduce=false";// &stale=ok";
         final GenericResultObjectView<ObjectUsage> queryResult = client.doGetRequest(url,
                 new GenericType<GenericResultObjectView<ObjectUsage>>() {
                 });
@@ -107,6 +107,6 @@ public class CouchDbDataAccess {
         final TransactionResult result = client.doPostRequest("", modelSpec, TransactionResult.class);
         modelSpec._id = result.id;
         modelSpec._rev = result.rev;
-//        System.out.println("");
+        // System.out.println("");
     }
 }

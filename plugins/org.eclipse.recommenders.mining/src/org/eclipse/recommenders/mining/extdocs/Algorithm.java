@@ -12,6 +12,7 @@
 package org.eclipse.recommenders.mining.extdocs;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.ClassOverridePatterns;
@@ -53,19 +54,21 @@ public class Algorithm implements Runnable {
     public void run() {
         log.info("Running Extdocs model generation (class-overrides-directives, class-overrides-patterns and method self-calls. No class self-calls yet.)");
         methodSelfcallGenerator.initialize();
-        for (final ITypeName superclass : superclassProvider.getSuperclasses()) {
-            log.debug("Running extdoc analysis on {}.", superclass);
+
+        for (final ITypeName superclass : getSuperclasses()) {
+            log.info("Running extdoc analysis on {}.", superclass);
             final Iterable<CompilationUnit> cus = cuProvider.getCompilationUnits(superclass);
             try {
-                final Optional<ClassOverrideDirectives> optDirective = directivesGenerator.generate(superclass, cus);
-                if (optDirective.isPresent()) {
-                    consumer.consume(optDirective.get());
-                }
-                final Optional<ClassOverridePatterns> optPattern = patternsGenerator.generate(superclass, cus);
-                if (optPattern.isPresent()) {
-                    consumer.consume(optPattern.get());
-                }
+
+                generateOverrideDirectives(superclass, cus);
+                generateOverridePatterns(superclass, cus);
                 methodSelfcallGenerator.analyzeCompilationUnits(cus);
+
+                int i = 0;
+                for (final CompilationUnit cu : cus) {
+                    i++;
+                }
+                log.info("{} done, {} compilation units processed.", superclass, i);
             } catch (final JsonParseException e) {
                 log.warn("Entry already exists: %s", e.getMessage());
             } catch (final RuntimeException e) {
@@ -75,11 +78,37 @@ public class Algorithm implements Runnable {
             }
         }
 
+        generateMethodSelfcalls();
+        log.info("Finished extdoc model generation.");
+    }
+
+    private Set<ITypeName> getSuperclasses() {
+        log.debug("requesting superclasses...");
+        final Set<ITypeName> superclasses = superclassProvider.getSuperclasses();
+        return superclasses;
+    }
+
+    private void generateOverrideDirectives(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
+        log.debug("generating override directives...");
+        final Optional<ClassOverrideDirectives> optDirective = directivesGenerator.generate(superclass, cus);
+        if (optDirective.isPresent()) {
+            consumer.consume(optDirective.get());
+        }
+    }
+
+    private void generateOverridePatterns(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
+        log.debug("generating override patterns...");
+        final Optional<ClassOverridePatterns> optPattern = patternsGenerator.generate(superclass, cus);
+        if (optPattern.isPresent()) {
+            consumer.consume(optPattern.get());
+        }
+    }
+
+    private void generateMethodSelfcalls() {
+        log.debug("generating method selfcalls...");
         final List<MethodSelfcallDirectives> methodSelfcalls = methodSelfcallGenerator.generate();
         for (final MethodSelfcallDirectives methodSelfcallDirectives : methodSelfcalls) {
             consumer.consume(methodSelfcallDirectives);
         }
-
-        log.info("Finished extdoc model generation.");
     }
 }

@@ -8,13 +8,12 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.webclient;
+package org.eclipse.recommenders.webclient.exceptions;
 
-public class UnauthorizedAccessException extends InvalidRequestException {
-
+public class NotFoundException extends InvalidRequestException {
     private static final long serialVersionUID = 1L;
 
-    public UnauthorizedAccessException(final Throwable e) {
+    public NotFoundException(final Throwable e) {
         super(e);
     }
 

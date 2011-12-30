@@ -8,12 +8,13 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.webclient;
+package org.eclipse.recommenders.webclient.results;
 
-public class InvalidRequestException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+public class TransactionResult {
 
-    public InvalidRequestException(final Throwable e) {
-        super(e);
-    }
+    public String id;
+    public boolean ok;
+    public String rev;
+    public String error;
+    public String reason;
 }

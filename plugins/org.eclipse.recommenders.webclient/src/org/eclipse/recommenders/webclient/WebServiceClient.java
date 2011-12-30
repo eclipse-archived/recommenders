@@ -16,13 +16,17 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+
+import org.eclipse.recommenders.webclient.exceptions.ConflictException;
+import org.eclipse.recommenders.webclient.exceptions.NotFoundException;
+import org.eclipse.recommenders.webclient.exceptions.ServerErrorException;
+import org.eclipse.recommenders.webclient.exceptions.ServerUnreachableException;
+import org.eclipse.recommenders.webclient.exceptions.UnauthorizedAccessException;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
@@ -34,6 +38,7 @@ import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class WebServiceClient {
 
@@ -42,7 +47,7 @@ public class WebServiceClient {
     private final ClientConfiguration configuration;
     private final Client client;
     private final Map<String, Cookie> cookies = new LinkedHashMap<String, Cookie>();
-    private final List<String> queryParameters = new LinkedList<String>();
+    private final MultivaluedMapImpl queryParameters = new MultivaluedMapImpl();
     private boolean gzipCompression = false;
 
     @Inject
@@ -61,26 +66,18 @@ public class WebServiceClient {
         this.gzipCompression = gzipCompression;
     }
 
+    public WebResource createResource(final String path) {
+        final String url = getBaseUrl() + path;
+        final WebResource resource = client.resource(url);
+        return resource;
+    }
+
     public Builder createRequestBuilder(final String path) {
-        final String fullPath = appendQueryParameters(getBaseUrl() + path);
-        final WebResource resource = client.resource(fullPath);
+        final WebResource resource = createResource(path).queryParams(queryParameters);
         Builder builder = resource.accept(MediaType.APPLICATION_JSON_TYPE);
         builder = builder.type(MediaType.APPLICATION_JSON);
         builder = addCookies(builder);
         return builder;
-    }
-
-    private String appendQueryParameters(final String path) {
-        final StringBuilder builder = new StringBuilder(path);
-        for (final String parameter : queryParameters) {
-            if (builder.indexOf("?") >= 0) {
-                builder.append("&");
-            } else {
-                builder.append("?");
-            }
-            builder.append(parameter);
-        }
-        return builder.toString();
     }
 
     private Builder addCookies(final Builder builder) {
@@ -228,8 +225,7 @@ public class WebServiceClient {
         }
     }
 
-    public void addQueryParameter(final String parameter) {
-        queryParameters.add(parameter);
+    public void addQueryParameter(final String key, final String value) {
+        queryParameters.add(key, value);
     }
-
 }

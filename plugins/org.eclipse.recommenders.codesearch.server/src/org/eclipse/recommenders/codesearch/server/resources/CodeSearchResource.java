@@ -34,7 +34,7 @@ import org.eclipse.recommenders.internal.codesearch.server.RequestLogEntry;
 import org.eclipse.recommenders.internal.codesearch.server.lucene.LuceneSearchResult;
 import org.eclipse.recommenders.internal.codesearch.server.lucene.LuceneSearchService;
 import org.eclipse.recommenders.utils.Checks;
-import org.eclipse.recommenders.webclient.TransactionResult;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;

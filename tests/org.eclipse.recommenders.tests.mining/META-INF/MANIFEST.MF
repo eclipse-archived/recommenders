@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Mining Tools Tests (Incubation)
+Bundle-Name: Code Recommenders: Mining Tools Tests
 Bundle-SymbolicName: org.eclipse.recommenders.tests.mining
 Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Export-Package: org.eclipse.recommenders.tests.commons.mining.utils
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.mockito,
  org.objenesis,
  org.junit4,
@@ -19,7 +19,8 @@ Require-Bundle: org.mockito,
  org.slf4j.api,
  org.apache.mahout,
  org.eclipse.recommenders.webclient,
+ com.sun.jersey.core,
  com.sun.jersey.client,
  org.eclipse.recommenders.utils.gson,
  org.eclipse.recommenders.extdoc
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.recommenders.tests.commons.mining.utils

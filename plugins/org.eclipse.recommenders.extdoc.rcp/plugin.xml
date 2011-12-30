@@ -32,5 +32,20 @@
             name="Subclassing Directives">
       </provider>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.recommenders.rcp.category.preferences"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.preferences.ExtdocPreferencePage"
+            id="org.eclipse.recommenders.extdoc.rcp.page1"
+            name="Extdoc">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

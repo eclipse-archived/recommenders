@@ -22,3 +22,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.utils.gson
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Activator: org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocPlugin
+Bundle-ActivationPolicy: lazy

@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.webclient;
+package org.eclipse.recommenders.webclient.results;
 
 public class ResultRow<Key, Doc, Value> {
 

@@ -28,10 +28,10 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.webclient.ClientConfiguration;
-import org.eclipse.recommenders.webclient.GenericResultObjectView;
-import org.eclipse.recommenders.webclient.ServerErrorException;
-import org.eclipse.recommenders.webclient.ServerUnreachableException;
 import org.eclipse.recommenders.webclient.WebServiceClient;
+import org.eclipse.recommenders.webclient.exceptions.ServerErrorException;
+import org.eclipse.recommenders.webclient.exceptions.ServerUnreachableException;
+import org.eclipse.recommenders.webclient.results.GenericResultObjectView;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

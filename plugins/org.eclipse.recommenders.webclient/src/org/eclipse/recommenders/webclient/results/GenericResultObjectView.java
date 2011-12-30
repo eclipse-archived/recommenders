@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.webclient;
+package org.eclipse.recommenders.webclient.results;
 
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
@@ -11,18 +11,23 @@ package org.eclipse.recommenders.webclient;
  *    Johannes Lerch - initial API and implementation.
  */
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class ResultObject<T> {
+public class GenericResultObjectView<T> {
 
-    public static <T> ResultObject<T> create(final String id, final T value) {
-        final ResultObject<T> res = new ResultObject<T>();
-        res.id = id;
-        res.value = value;
-        return res;
+    public int total_rows;
+    public int offset;
+    public List<ResultObject<T>> rows;
+
+    public List<T> getTransformedResult() {
+        final List<T> result = new LinkedList<T>();
+        for (final ResultObject<T> obj : rows) {
+            result.add(obj.value);
+        }
+        return result;
     }
-
-    public String id;
-    public T value;
 }

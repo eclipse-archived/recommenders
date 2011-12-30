@@ -12,7 +12,6 @@ package org.eclipse.recommenders.mining.extdocs.couch;
 
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrl;
-import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrlWithKey;
 import static org.eclipse.recommenders.webclient.CouchUtils.createViewUrlWithKeyObject;
 
 import java.util.List;
@@ -26,15 +25,17 @@ import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
-import org.eclipse.recommenders.webclient.GenericResultRowView;
-import org.eclipse.recommenders.webclient.TransactionResult;
 import org.eclipse.recommenders.webclient.WebServiceClient;
+import org.eclipse.recommenders.webclient.results.GenericResultRowView;
+import org.eclipse.recommenders.webclient.results.SimpleView;
+import org.eclipse.recommenders.webclient.results.TransactionResult;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.WebResource;
 
 public class CouchDbDataAccess {
 
@@ -61,12 +62,11 @@ public class CouchDbDataAccess {
     }
 
     public Iterable<CompilationUnit> getCompilationUnitsForSuperclass(final ITypeName superclass) {
-        final String url = createViewUrlWithKey("compilationunits", "bySuperclass", superclass.getIdentifier())
-                + "&reduce=false&include_docs=true";
-        final GenericResultRowView<Object, CompilationUnit, Object> resultView = client.doGetRequest(url,
-                new GenericType<GenericResultRowView<Object, CompilationUnit, Object>>() {
-                });
-        return resultView.getTransformedDocs();
+        final WebResource resource = client.createResource("/_design/compilationunits/_view/bySuperclass");
+        final String key = superclass.getIdentifier();
+        final GenericType<SimpleView<CompilationUnit>> docType = new GenericType<SimpleView<CompilationUnit>>() {
+        };
+        return new DocumentsByKey<CompilationUnit>(resource, key, docType);
     }
 
     public void saveOrUpdate(final ClassOverrideDirectives directives) {

@@ -43,12 +43,6 @@ public class MethodSelfcallDirectivesGenerator {
         globalImlementorsCounter = TreeBag.newTreeBag();
     }
 
-    public void analyzeCompilationUnits(final Iterable<CompilationUnit> cus) {
-        for (final CompilationUnit cu : cus) {
-            analyzeCompilationUnit(cu);
-        }
-    }
-
     public List<MethodSelfcallDirectives> generate() {
         final List<MethodSelfcallDirectives> res = Lists.newLinkedList();
         for (final Entry<IMethodName, TreeBag<IMethodName>> entry : globalSupermethodsIndex.entrySet()) {
@@ -65,30 +59,38 @@ public class MethodSelfcallDirectivesGenerator {
         return res;
     }
 
+    public void analyzeCompilationUnits(final Iterable<CompilationUnit> cus) {
+        for (final CompilationUnit cu : cus) {
+            analyzeCompilationUnit(cu);
+        }
+    }
+
     private void analyzeCompilationUnit(final CompilationUnit cu) {
         final TypeDeclaration subclass = cu.primaryType;
         for (final MethodDeclaration method : subclass.methods) {
             if (method.firstDeclaration == null) {
                 continue;
             }
-            final IMethodName superMethodName = method.firstDeclaration;
             final Set<IMethodName> observedSelfCalls = Sets.newHashSet();
             for (final ObjectInstanceKey obj : method.objects) {
-                if (!obj.isThis()) {
-                    continue;
+                if (obj.isThis()) {
+                    for (final ReceiverCallSite callsite : obj.receiverCallSites) {
+                        observedSelfCalls.add(callsite.targetMethod);
+                    }
+                    registerSelfCalls(method.firstDeclaration, observedSelfCalls);
                 }
-                for (final ReceiverCallSite callsite : obj.receiverCallSites) {
-                    observedSelfCalls.add(callsite.targetMethod);
-                }
-                TreeBag<IMethodName> globalSelfCalls = globalSupermethodsIndex.get(superMethodName);
-                if (globalSelfCalls == null) {
-                    globalSelfCalls = TreeBag.newTreeBag();
-                    globalSupermethodsIndex.put(superMethodName, globalSelfCalls);
-                }
-                globalSelfCalls.addAll(observedSelfCalls);
-                globalImlementorsCounter.add(method.firstDeclaration);
             }
         }
+    }
+
+    private void registerSelfCalls(IMethodName firstDeclaration, Set<IMethodName> observedSelfCalls) {
+        TreeBag<IMethodName> globalSelfCalls = globalSupermethodsIndex.get(firstDeclaration);
+        if (globalSelfCalls == null) {
+            globalSelfCalls = TreeBag.newTreeBag();
+            globalSupermethodsIndex.put(firstDeclaration, globalSelfCalls);
+        }
+        globalSelfCalls.addAll(observedSelfCalls);
+        globalImlementorsCounter.add(firstDeclaration);
     }
 
     private MethodSelfcallDirectives toDirective(final IMethodName superMethod, final TreeBag<IMethodName> value) {

@@ -177,7 +177,9 @@ public class GraphBuilder {
                 nextIteration.add(Tuple.newTuple(workingCopy, nextEdgeToTest));
             }
         }
-        bsfTraverse(nextIteration);
+        if (!nextIteration.isEmpty()) {
+            bsfTraverse(nextIteration);
+        }
     }
 
     private void dsfTraverse(final LinkedHashSet<MemberEdge> incompleteChain, final MemberEdge edgeToTest) {

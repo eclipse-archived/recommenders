@@ -20,8 +20,10 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProviderDescription;
+import org.eclipse.recommenders.internal.extdoc.rcp.preferences.PreferenceConstants;
 import org.eclipse.recommenders.internal.extdoc.rcp.preferences.PreferencesFacade;
 import org.eclipse.recommenders.internal.extdoc.rcp.preferences.ProviderConfigurationPersistenceService;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocIconLoader;
@@ -59,9 +61,23 @@ public class ExtdocModule extends AbstractModule {
     @Provides
     @Singleton
     @Extdoc
-    WebServiceClient provideExtdocWebserviceClient() {
-        // TODO: make a listening client configuration that responds to preference changes.
-        final ClientConfiguration config = ClientConfiguration.create("http://localhost:29750/extdoc");
+    IPreferenceStore providePreferenceStore() {
+        return ExtdocPlugin.getDefault().getPreferenceStore();
+    }
+
+    @Provides
+    @Singleton
+    @Extdoc
+    ClientConfiguration provideWebserviceClientConfig(@Extdoc final IPreferenceStore store) {
+        final String baseurl = store.getString(PreferenceConstants.WEBSERVICE_HOST);
+        final ClientConfiguration config = ClientConfiguration.create(baseurl);
+        return config;
+    }
+
+    @Provides
+    @Singleton
+    @Extdoc
+    WebServiceClient provideExtdocWebserviceClient(@Extdoc final ClientConfiguration config) {
         return new WebServiceClient(config);
     }
 

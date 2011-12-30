@@ -22,6 +22,7 @@
 		<module>org.eclipse.recommenders.feature.codesearch.server.source</module>
 
 
+
 		<module>org.eclipse.recommenders.feature.completion.rcp</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.source</module>
 
@@ -42,7 +43,6 @@
 		<module>org.eclipse.recommenders.feature.udc.server</module>
 		<module>org.eclipse.recommenders.feature.udc.server.source</module>
 
-		<!-- <module>org.eclipse.recommenders.feature.server</module> -->
 		<module>org.eclipse.recommenders.feature.server</module>
 		<module>org.eclipse.recommenders.feature.server.rootfiles</module>
 
