@@ -12,6 +12,7 @@ package org.eclipse.recommenders.utils.rcp;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -100,18 +101,23 @@ public class CompilerBindings {
         if (binding == null) {
             return absent();
         }
-        final String uniqueKey = String.valueOf(binding.computeUniqueKey());
-        final String qualifiedMethodName = StringUtils.substringBefore(uniqueKey, "(").replace(";.", ".");
-        final String[] parameterTypes = Signature.getParameterTypes(uniqueKey);
-        final String returnType = Signature.getReturnType(uniqueKey);
-        final StringBuilder sb = new StringBuilder();
-        sb.append(qualifiedMethodName).append("(");
-        for (final String parameter : parameterTypes) {
-            sb.append(parameter);
+        try {
+            final String uniqueKey = String.valueOf(binding.computeUniqueKey());
+            final String qualifiedMethodName = StringUtils.substringBefore(uniqueKey, "(").replace(";.", ".");
+            final String[] parameterTypes = Signature.getParameterTypes(uniqueKey);
+            final String returnType = Signature.getReturnType(uniqueKey);
+            final StringBuilder sb = new StringBuilder();
+            sb.append(qualifiedMethodName).append("(");
+            for (final String parameter : parameterTypes) {
+                sb.append(parameter);
+            }
+            sb.append(")").append(returnType);
+            final IMethodName res = VmMethodName.get(sb.toString());
+            return of(res);
+        } catch (final RuntimeException e) {
+            // if the signature could not be parsed by JDT (because it it incomplete!):
+            return absent();
         }
-        sb.append(")").append(returnType);
-        final IMethodName res = VmMethodName.get(sb.toString());
-        return fromNullable(res);
     }
 
     @Override
