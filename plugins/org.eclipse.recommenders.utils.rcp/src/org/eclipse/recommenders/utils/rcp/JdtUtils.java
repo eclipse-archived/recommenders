@@ -362,7 +362,8 @@ public class JdtUtils {
             final ITypeName vmTypeName = VmTypeName.get(vmSuperclassName);
             return of(vmTypeName);
         } catch (final Exception e) {
-            throw throwUnhandledException(e);
+            log(e);
+            return absent();
         }
     }
 
@@ -593,7 +594,8 @@ public class JdtUtils {
             typeSignature = StringUtils.substringBeforeLast(typeSignature, "<");
             return fromNullable(typeSignature);
         } catch (final JavaModelException e) {
-            throw throwUnhandledException(e);
+            log(e);
+            return absent();
         }
     }
 
