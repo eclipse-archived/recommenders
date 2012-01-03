@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Label;
 public final class VerySlowProvider extends ExtdocProvider {
 
     @JavaSelectionSubscriber(JavaSelectionLocation.METHOD_BODY)
-    public void displayProposalsForType(final IJavaElement element, final JavaSelectionEvent selection,
+    public Status displayProposalsForType(final IJavaElement element, final JavaSelectionEvent selection,
             final Composite parent) throws InterruptedException {
         Thread.sleep(3000);
         runSyncInUiThread(new Runnable() {
@@ -32,5 +32,6 @@ public final class VerySlowProvider extends ExtdocProvider {
                 l.setText("Veeeery slow provider was here! :>");
             }
         });
+        return Status.OK;
     }
 }

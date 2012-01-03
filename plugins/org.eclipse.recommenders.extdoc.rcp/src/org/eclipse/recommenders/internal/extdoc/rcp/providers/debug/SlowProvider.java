@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Label;
 public final class SlowProvider extends ExtdocProvider {
 
     @JavaSelectionSubscriber
-    public void displayProposalsForType(final IJavaElement element, final JavaSelectionEvent selection,
+    public Status displayProposalsForType(final IJavaElement element, final JavaSelectionEvent selection,
             final Composite parent) throws InterruptedException {
         Thread.sleep(1000);
         runSyncInUiThread(new Runnable() {
@@ -31,5 +31,6 @@ public final class SlowProvider extends ExtdocProvider {
                 l.setText("Slooooow provider was here! :>");
             }
         });
+        return Status.OK;
     }
 }

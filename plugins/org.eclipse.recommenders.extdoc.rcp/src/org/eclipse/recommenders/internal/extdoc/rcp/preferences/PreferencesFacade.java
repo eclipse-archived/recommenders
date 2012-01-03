@@ -52,11 +52,15 @@ public class PreferencesFacade {
     }
 
     private String createString(final String[] names) {
-        String out = "";
-        for (final String name : names) {
-            out += "," + name;
+        if (names.length > 0) {
+            String out = "";
+            for (final String name : names) {
+                out += "," + name;
+            }
+            return out.substring(1);
+        } else {
+            return "";
         }
-        return out.substring(1);
     }
 
     public String[] loadOrderedProviderNames() {

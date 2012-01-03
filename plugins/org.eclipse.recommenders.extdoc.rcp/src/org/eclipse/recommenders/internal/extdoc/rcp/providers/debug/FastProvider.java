@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Label;
 public final class FastProvider extends ExtdocProvider {
 
     @JavaSelectionSubscriber(JavaSelectionLocation.METHOD_BODY)
-    public void displayProposalsForType(final IJavaElement element, final JavaSelectionEvent selection,
+    public Status displayProposalsForType(final IJavaElement element, final JavaSelectionEvent selection,
             final Composite parent) {
 
         // ... logic that does not need to run in the ui thread
@@ -34,5 +34,6 @@ public final class FastProvider extends ExtdocProvider {
                 l.setText("fast provider was here! :>");
             }
         });
+        return Status.OK;
     }
 }

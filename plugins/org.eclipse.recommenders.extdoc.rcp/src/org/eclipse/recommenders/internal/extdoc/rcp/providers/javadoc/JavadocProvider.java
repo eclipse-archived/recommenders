@@ -55,33 +55,38 @@ public final class JavadocProvider extends ExtdocProvider {
      */
 
     @JavaSelectionSubscriber
-    public void onPackageSelection(final IPackageFragment pkg, final JavaSelectionEvent selection,
+    public Status onPackageSelection(final IPackageFragment pkg, final JavaSelectionEvent selection,
             final Composite parent) {
         render(pkg, parent);
+        return Status.OK;
     }
 
     @JavaSelectionSubscriber
-    public void onCompilationUnitSelection(final ITypeRoot root, final JavaSelectionEvent selection,
+    public Status onCompilationUnitSelection(final ITypeRoot root, final JavaSelectionEvent selection,
             final Composite parent) {
         render(root, parent);
-    }
+        return Status.OK;
+  }
 
     @JavaSelectionSubscriber
-    public void onTypeSelection(final IType type, final JavaSelectionEvent selection, final Composite parent) {
+    public Status onTypeSelection(final IType type, final JavaSelectionEvent selection, final Composite parent) {
         render(type, parent);
-    }
+        return Status.OK;
+  }
 
     @JavaSelectionSubscriber
-    public void onMethodSelection(final IMethod method, final JavaSelectionEvent selection, final Composite parent) {
+    public Status onMethodSelection(final IMethod method, final JavaSelectionEvent selection, final Composite parent) {
         render(method, parent);
-    }
+        return Status.OK;
+  }
 
     @JavaSelectionSubscriber
-    public void onFieldSelection(final IField field, final JavaSelectionEvent selection, final Composite parent) {
+    public Status onFieldSelection(final IField field, final JavaSelectionEvent selection, final Composite parent) {
         render(field, parent);
-    }
+        return Status.OK;
+   }
 
-    private void render(final IJavaElement element, final Composite parent) {
+    private Status render(final IJavaElement element, final Composite parent) {
         runSyncInUiThread(new Runnable() {
             @Override
             public void run() {
@@ -122,13 +127,14 @@ public final class JavadocProvider extends ExtdocProvider {
 
         });
         waitForBrowserSizeWorkaround();
-    }
+        return Status.OK;
+   }
 
     private void waitForBrowserSizeWorkaround() {
         try {
             Thread.sleep(BrowserSizeWorkaround.MILLIS_UNTIL_RESCALE + 50);
         } catch (final InterruptedException e) {
-            e.printStackTrace();
+            // could happen if new selection happens before finish
         }
     }
 }

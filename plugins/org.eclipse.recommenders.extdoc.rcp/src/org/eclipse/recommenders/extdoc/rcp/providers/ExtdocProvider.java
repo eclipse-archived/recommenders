@@ -15,6 +15,10 @@ import org.eclipse.swt.widgets.Display;
 
 public abstract class ExtdocProvider {
 
+    public enum Status {
+        OK, NOT_AVAILABLE
+    }
+    
     private boolean isEnabled = true;
     private ExtdocProviderDescription description;
 

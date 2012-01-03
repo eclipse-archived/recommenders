@@ -20,9 +20,10 @@ import org.eclipse.swt.widgets.Composite;
 public final class SlowAndFailingProvider extends ExtdocProvider {
 
     @JavaSelectionSubscriber
-    public void displayProposalsForType(final IJavaElement element, final JavaSelectionEvent selection,
+    public Status displayProposalsForType(final IJavaElement element, final JavaSelectionEvent selection,
             final Composite parent) throws InterruptedException {
         Thread.sleep(1500);
         Throws.throwNotImplemented();
+        return Status.OK;
     }
 }

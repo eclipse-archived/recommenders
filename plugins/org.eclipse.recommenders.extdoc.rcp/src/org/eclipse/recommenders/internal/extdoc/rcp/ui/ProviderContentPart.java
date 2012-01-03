@@ -125,13 +125,16 @@ public class ProviderContentPart {
         scrolledContent.addListener(SWT.Resize, new Listener() {
             @Override
             public void handleEvent(final Event event) {
-                // handle window or view resize properly
-                final Point size = scrolledContent.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-                scrollingComposite.setMinSize(size);
+                resizeScrolledComposite();
             }
         });
 
         scrollingComposite.setContent(scrolledContent);
+    }
+
+    private void resizeScrolledComposite() {
+        final Point size = scrolledContent.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+        scrollingComposite.setMinSize(size);
     }
 
     private void createStack() {
@@ -217,20 +220,21 @@ public class ProviderContentPart {
     }
 
     private void relayout() {
-
-        // TODO kann das was rausfliegen?
-        scrolledContent.notifyListeners(SWT.RESIZE, new Event());
-        container.layout();
-        selectionStatus.getParent().layout();
-        scrollingComposite.layout();
-        scrolledContent.layout();
-
+        visiblePanel.layout();
+        resizeScrolledComposite();
     }
 
     @Subscribe
     public void onEvent(final ProviderNotAvailableEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
-        area.hide();
+
+        if (e.hasFinishedLate) {
+            area.setStatus("provider finished without data");
+            area.showStatus();
+        } else {
+            area.hide();
+        }
+        relayout();
     }
 
     @Subscribe
@@ -243,7 +247,7 @@ public class ProviderContentPart {
     public void onEvent(final ProviderFinishedEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
         area.showContent();
-        visiblePanel.layout();
+        relayout();
     }
 
     @Subscribe
@@ -251,16 +255,8 @@ public class ProviderContentPart {
         final ProviderArea area = providerAreas.get(e.provider);
         area.setStatus("provider is delayed...");
         area.showStatus();
-        visiblePanel.layout();
+        relayout();
     }
-
-    // @Subscribe
-    // public void handle(ProviderStartedOnActivationEvent e) {
-    // ProviderArea area = providerAreas.get(e.provider);
-    // area.setStatus("manually activated...");
-    // area.showStatus();
-    // visiblePanel.layout();
-    // }
 
     @Subscribe
     public void onEvent(final ProviderFinishedLateEvent e) {
@@ -270,12 +266,10 @@ public class ProviderContentPart {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 area.showContent();
-                visiblePanel.layout();
+                relayout();
             }
         });
         area.showStatus();
-        visiblePanel.layout();
-
         relayout();
     }
 
@@ -286,9 +280,11 @@ public class ProviderContentPart {
         area.setStatusWithCallback(statusMessage, new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent event) {
-                // REVIEW: TODO: printing the potentially LARGE stacktrace looked odd... details view of ErrorDialog is
+                // REVIEW: TODO: printing the potentially LARGE stacktrace
+                // looked odd... details view of ErrorDialog is
                 // odd too. What to do?
-                // final String details = Throwables.getStackTraceAsString(e.exception);
+                // final String details =
+                // Throwables.getStackTraceAsString(e.exception);
                 final String providerName = e.provider.getDescription().getName();
 
                 final String dialogTitle = format("Extdoc Provider Failure", providerName);
@@ -316,7 +312,7 @@ public class ProviderContentPart {
             }
         });
         area.showStatus();
-        visiblePanel.layout();
+        relayout();
     }
 
     @Subscribe
@@ -332,17 +328,15 @@ public class ProviderContentPart {
         } else {
             areaToMove.moveBelow(areaRef);
         }
-
-        visiblePanel.layout();
+        relayout();
     }
 
     @Subscribe
     public void onEvent(final ProviderDeactivationEvent e) {
-        System.out.println("cleaning up provider area after deactivation...");
         final ProviderArea area = providerAreas.get(e.provider);
         area.hide();
         area.cleanup();
         area.layout();
-        visiblePanel.layout();
+        relayout();
     }
 }

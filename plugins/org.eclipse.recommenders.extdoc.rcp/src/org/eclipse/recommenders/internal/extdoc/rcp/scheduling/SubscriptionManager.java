@@ -25,9 +25,11 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
+import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider.Status;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation;
+import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.swt.widgets.Composite;
 
@@ -71,7 +73,7 @@ public class SubscriptionManager {
         for (final Method m : clazz.getMethods()) {
             final JavaSelectionSubscriber annotation = m.getAnnotation(JavaSelectionSubscriber.class);
             if (annotation != null) {
-                ensureCorrectMethodParameters(m);
+                ensureCorrectMethodSignature(m);
                 methods.add(newTuple(m, annotation));
             }
         }
@@ -79,12 +81,13 @@ public class SubscriptionManager {
         return methods;
     }
 
-    private static void ensureCorrectMethodParameters(final Method m) {
+    private static void ensureCorrectMethodSignature(final Method m) {
         final Class<?>[] params = m.getParameterTypes();
         ensureParameterLengthIsThree(params, m);
         ensureFirstParameterTypeIsJavaElement(params, m);
         ensureSecondParameterTypeIsJavaSelectionEvent(params, m);
         ensureThirdParameterTypeIsComposite(params, m);
+        ensureThatAStatusIsReturned(m);
     }
 
     private static void ensureParameterLengthIsThree(final Class<?>[] params, final Method m) {
@@ -114,7 +117,14 @@ public class SubscriptionManager {
         }
     }
 
-    private void addSubscription(final ExtdocProvider provider, final Method method, final JavaSelectionSubscriber annotation) {
+    private static void ensureThatAStatusIsReturned(Method m) {
+        Class<?> actualType = m.getReturnType();
+        Class<?> expectedType = Status.class;
+        Checks.ensureEquals(actualType, expectedType, "subscribing methods need to return " + expectedType);
+    }
+
+    private void addSubscription(final ExtdocProvider provider, final Method method,
+            final JavaSelectionSubscriber annotation) {
         final JavaSelectionLocation[] locs = annotation.value();
         final Class<?> javaElementType = method.getParameterTypes()[0];
 
@@ -132,7 +142,8 @@ public class SubscriptionManager {
     }
 
     /**
-     * returns the first matching method for a given provider and selection event - or <em>absent</em> if none is found
+     * returns the first matching method for a given provider and selection
+     * event - or <em>absent</em> if none is found
      */
     public Optional<Method> findFirstSubscribedMethod(final ExtdocProvider provider, final JavaSelectionEvent selection) {
         for (final Subscription s : subscriptions.keySet()) {

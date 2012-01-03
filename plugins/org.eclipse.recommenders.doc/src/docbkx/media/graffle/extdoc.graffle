@@ -26,7 +26,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2011-12-23 11:48:39 +0000</string>
+	<string>2012-01-03 14:06:47 +0000</string>
 	<key>Modifier</key>
 	<string>Sebastian Proksch</string>
 	<key>NotesVisible</key>
@@ -60,7 +60,7 @@
 		<key>NSPaperName</key>
 		<array>
 			<string>string</string>
-			<string>F7A5475E-0F20-48BE-8EDD-437A8CEA1FF4</string>
+			<string>62F396D8-BDF4-42B1-B534-1FE4A06F6F77</string>
 		</array>
 		<key>NSPaperSize</key>
 		<array>
@@ -126,7 +126,7 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{308.03378, 172.2674}, {122, 38}}</string>
+					<string>{{308.03381, 172.2674}, {122, 38}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -187,7 +187,7 @@ JavaSelectionEvents}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{505.56458, 172.3484}, {71, 38}}</string>
+					<string>{{505.55518, 171.04672}, {71, 38}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -258,8 +258,8 @@ composites}</string>
 					<integer>190</integer>
 					<key>Points</key>
 					<array>
-						<string>{500.68527, 151.11935}</string>
-						<string>{582.32159, 232.45187}</string>
+						<string>{501.40814, 151.11935}</string>
+						<string>{581.56396, 229.82022}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -281,7 +281,7 @@ composites}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{814.18097, 190.81709}, {124, 182}}</string>
+					<string>{{809.36194, 199.00002}, {125, 154}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -322,19 +322,18 @@ composites}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\fs24 \cf0 listen: NewSelection\
-Activate\
-deactivate\
-rendernow\
-notavailable\
-providerSelectionEvent\
-providerFinishedEvent\
-providerLate\
-startedAfterActiva\
-FinishedLate\
-failed\
-orderchanged\
-deactivation}</string>
+\f0\i\fs24 \cf0 listen:
+\i0 \
+NewSelection\
+ProviderDeactivation\
+ProviderDelayed\
+ProviderFailed\
+ProviderFinished\
+ProviderFinishedLate\
+ProviderNotAvailable\
+ProviderOrderChanged\
+ProviderSelection\
+RenderNow}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -343,7 +342,7 @@ deactivation}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{408.11749, 430.19238}, {112, 182}}</string>
+					<string>{{405.11749, 421.5954}, {118, 210}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -384,19 +383,24 @@ deactivation}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\fs24 \cf0 listen:\
+\f0\i\fs24 \cf0 listen:\
+
+\i0 NewSelection\
+ProviderDeactivation\
+ProviderDelayed\
+ProviderFailed\
+ProviderFinished\
+ProviderFinishedLate\
 ProviderNotAvailable\
-Started\
-delayed\
-failed\
-finshied\
-finishedLate\
+ProviderStarted\
 \
- post:\
-OrderChange\
-activation\
-Deactivation\
-}</string>
+
+\i post:
+\i0 \
+ProviderActivation\
+ProviderDeactivation\
+ProviderOrderChange\
+ProviderSelection}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -405,7 +409,7 @@ Deactivation\
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{182, 33.069855}, {112, 154}}</string>
+					<string>{{188.27667, 48}, {115, 126}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -443,22 +447,19 @@ Deactivation\
 						<key>Text</key>
 						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf230
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
 
-\f0\fs24 \cf0 StartedOnActivation\
-RequestStarted\
-RFinished\
-RFInishedLate\
-RFailed\
-RKilled\
-RequestDelayed\
+\f0\i\fs24 \cf0 post:
+\i0 \
+NewSelection\
 RenderNow\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
-\cf2 ProviderNotAvailabel\
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
-\cf0 ProviderActivation\
-NewSelection}</string>
+ProviderStarted\
+ProviderFailed\
+ProviderFinished\
+ProviderFInishedLate\
+ProviderDelayed\
+ProviderNotAvailable}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -579,7 +580,7 @@ NewSelection}</string>
 providesProviders\
 bindCallScheduler\
 bindSubscriptionManager\
-}</string>
+"PreferencePersistenceManager"}</string>
 								<key>VerticalPad</key>
 								<integer>0</integer>
 							</dict>
@@ -611,8 +612,8 @@ bindSubscriptionManager\
 					<integer>141</integer>
 					<key>Points</key>
 					<array>
-						<string>{441.76599, 408.54825}</string>
-						<string>{399.75644, 408.54889}</string>
+						<string>{441.76599, 408.54813}</string>
+						<string>{399.75644, 408.54822}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -678,8 +679,8 @@ bindSubscriptionManager\
 					<integer>138</integer>
 					<key>Points</key>
 					<array>
-						<string>{781.15094, 274.2363}</string>
-						<string>{755.94763, 273.68961}</string>
+						<string>{778.73907, 271.83679}</string>
+						<string>{746.59436, 271.89041}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -705,7 +706,7 @@ bindSubscriptionManager\
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{781.64868, 265.01007}, {18.883591, 18.883591}}</string>
+					<string>{{779.23914, 262.37842}, {18.883591, 18.883591}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -812,8 +813,8 @@ bindSubscriptionManager\
 					<integer>118</integer>
 					<key>Points</key>
 					<array>
-						<string>{573.61804, 102.11937}</string>
-						<string>{625.97876, 102.11937}</string>
+						<string>{573.61804, 102.11936}</string>
+						<string>{625.97876, 102.11936}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -845,8 +846,8 @@ bindSubscriptionManager\
 					<integer>115</integer>
 					<key>Points</key>
 					<array>
-						<string>{449.01654, 272.62848}</string>
-						<string>{493.00952, 272.85864}</string>
+						<string>{449.01657, 272.20062}</string>
+						<string>{502.36282, 272.33197}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -908,7 +909,7 @@ bindSubscriptionManager\
 					<key>Points</key>
 					<array>
 						<string>{313.94308, 250.82022}</string>
-						<string>{406.17365, 151.11935}</string>
+						<string>{406.17368, 151.11935}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -940,8 +941,8 @@ bindSubscriptionManager\
 					<integer>105</integer>
 					<key>Points</key>
 					<array>
-						<string>{720.47858, 577.94177}</string>
-						<string>{814.18091, 578.3493}</string>
+						<string>{720.47858, 577.61456}</string>
+						<string>{814.18091, 577.70276}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -1237,8 +1238,8 @@ extdocProviders : List&lt;Provider&gt;}</string>
 					<integer>89</integer>
 					<key>Points</key>
 					<array>
-						<string>{624.47858, 316.45187}</string>
-						<string>{624.47858, 359.5481}</string>
+						<string>{624.47858, 313.82022}</string>
+						<string>{624.47864, 359.54807}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -1598,7 +1599,7 @@ showContent()}</string>
 					<array>
 						<dict>
 							<key>Bounds</key>
-							<string>{{493.00952, 232.45187}, {262.93814, 14}}</string>
+							<string>{{502.36279, 229.82022}, {244.2316, 14}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -1625,7 +1626,7 @@ showContent()}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-\f0\b\fs24 \cf0 ProviderContentsPart}</string>
+\f0\b\fs24 \cf0 ProviderContentPart}</string>
 								<key>VerticalPad</key>
 								<integer>0</integer>
 							</dict>
@@ -1634,7 +1635,7 @@ showContent()}</string>
 						</dict>
 						<dict>
 							<key>Bounds</key>
-							<string>{{493.00952, 246.45187}, {262.93814, 42}}</string>
+							<string>{{502.36279, 243.82022}, {244.2316, 42}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -1674,7 +1675,7 @@ extdocProviders : Set&lt;Provider&gt;}</string>
 						</dict>
 						<dict>
 							<key>Bounds</key>
-							<string>{{493.00952, 288.45187}, {262.93814, 28}}</string>
+							<string>{{502.36279, 285.82022}, {244.2316, 28}}</string>
 							<key>Class</key>
 							<string>ShapedGraphic</string>
 							<key>FitText</key>
@@ -2376,7 +2377,62 @@ dispose()}</string>
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{94.032471, 267.81845}, {239.35016, 25.19058}}</string>
+					<string>{{397, 306}, {31, 43}}</string>
+					<key>Class</key>
+					<string>ShapedGraphic</string>
+					<key>FitText</key>
+					<string>YES</string>
+					<key>Flow</key>
+					<string>Resize</string>
+					<key>FontInfo</key>
+					<dict>
+						<key>Font</key>
+						<string>Helvetica</string>
+						<key>Size</key>
+						<real>12</real>
+					</dict>
+					<key>ID</key>
+					<integer>20</integer>
+					<key>Shape</key>
+					<string>Rectangle</string>
+					<key>Style</key>
+					<dict>
+						<key>fill</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>shadow</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+						<key>stroke</key>
+						<dict>
+							<key>Draws</key>
+							<string>NO</string>
+						</dict>
+					</dict>
+					<key>Text</key>
+					<dict>
+						<key>Pad</key>
+						<integer>0</integer>
+						<key>Text</key>
+						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf230
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
+
+\f0\fs72 \cf0 ...}</string>
+						<key>VerticalPad</key>
+						<integer>0</integer>
+					</dict>
+					<key>Wrap</key>
+					<string>NO</string>
+				</dict>
+				<dict>
+					<key>Bounds</key>
+					<string>{{94.032471, 255.8546}, {239.35016, 20.14554}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2415,7 +2471,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{94.032471, 237.94958}, {239.35016, 25.19058}}</string>
+					<string>{{94.032471, 231.96761}, {239.35016, 20.14554}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2454,7 +2510,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{94.032471, 208.0807}, {239.35016, 25.19058}}</string>
+					<string>{{94.032471, 208.08075}, {239.35016, 20.14554}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2493,7 +2549,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{82.660614, 184.36771}, {262.09387, 211.60088}}</string>
+					<string>{{82.660614, 184.36768}, {262.09387, 154.63232}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2519,7 +2575,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{61, 121.75111}, {614, 25.19058}}</string>
+					<string>{{397.5, 186.31628}, {255, 18.53244}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2527,20 +2583,7 @@ dispose()}</string>
 					<key>Shape</key>
 					<string>Rectangle</string>
 					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Color</key>
-							<dict>
-								<key>b</key>
-								<string>0.956543</string>
-								<key>g</key>
-								<string>0.956543</string>
-								<key>r</key>
-								<string>0.956543</string>
-							</dict>
-						</dict>
-					</dict>
+					<dict/>
 					<key>Text</key>
 					<dict>
 						<key>Pad</key>
@@ -2551,14 +2594,14 @@ dispose()}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs24 \cf0 SelectionInfo}</string>
+\f0\fs24 \cf0 SelectionStatus}</string>
 						<key>VerticalPad</key>
 						<integer>8</integer>
 					</dict>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{61.000015, 156.65814}, {299.99997, 249.74666}}</string>
+					<string>{{61.000015, 156.65814}, {299.99997, 198.34186}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2590,7 +2633,7 @@ dispose()}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs24 \cf0 ExtdocOverview}</string>
+\f0\fs24 \cf0 ProviderOverviewPart}</string>
 						<key>VerticalPad</key>
 						<integer>8</integer>
 					</dict>
@@ -2599,33 +2642,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{397, 356.38342}, {255, 39.585197}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>ID</key>
-					<integer>11</integer>
-					<key>Shape</key>
-					<string>Rectangle</string>
-					<key>Style</key>
-					<dict/>
-					<key>Text</key>
-					<dict>
-						<key>Align</key>
-						<integer>0</integer>
-						<key>Pad</key>
-						<integer>30</integer>
-						<key>Text</key>
-						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf230
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
-
-\f0\fs24 \cf0 Provider Area ...}</string>
-					</dict>
-				</dict>
-				<dict>
-					<key>Bounds</key>
-					<string>{{397, 308.88116}, {255, 39.585197}}</string>
+					<string>{{397, 301.83533}, {255, 20.14554}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2639,7 +2656,7 @@ dispose()}</string>
 						<key>Align</key>
 						<integer>0</integer>
 						<key>Pad</key>
-						<integer>30</integer>
+						<integer>20</integer>
 						<key>Text</key>
 						<string>{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf230
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
@@ -2651,7 +2668,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{502.86642, 266.05716}, {136.24541, 25.19058}}</string>
+					<string>{{502.86642, 269.11688}, {136.24541, 16.988457}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2686,7 +2703,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{502.86642, 230.07063}, {136.24541, 25.19058}}</string>
+					<string>{{502.86642, 244.84778}, {136.24541, 16.988457}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2721,7 +2738,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{502.86642, 194.08408}, {136.24541, 25.19058}}</string>
+					<string>{{502.86642, 220.57849}, {136.24541, 16.988457}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2756,7 +2773,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{397, 184.36774}, {255, 116.5964}}</string>
+					<string>{{397, 214.02588}, {255, 78.632256}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2782,7 +2799,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{375, 156.65814}, {300, 249.74666}}</string>
+					<string>{{375, 156.65814}, {300, 198.34186}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -2814,7 +2831,7 @@ dispose()}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs24 \cf0 ExtdocContent}</string>
+\f0\fs24 \cf0 ProviderContentPart}</string>
 						<key>VerticalPad</key>
 						<integer>8</integer>
 					</dict>
@@ -2823,7 +2840,7 @@ dispose()}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{42, 94}, {653, 325}}</string>
+					<string>{{42, 127}, {650, 246}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -3884,15 +3901,6 @@ dispose()}</string>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
 					<integer>28</integer>
-					<key>Line</key>
-					<dict>
-						<key>ID</key>
-						<integer>16</integer>
-						<key>Position</key>
-						<real>0.43375286459922791</real>
-						<key>RotationType</key>
-						<integer>4</integer>
-					</dict>
 					<key>Rotation</key>
 					<real>341.58694458007812</real>
 					<key>Shape</key>
@@ -4466,7 +4474,7 @@ dispose()}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
-\f0\fs24 \cf0 RequestManager}</string>
+\f0\fs24 \cf0 ExecutionScheduler}</string>
 						<key>VerticalPad</key>
 						<integer>0</integer>
 					</dict>
@@ -4570,7 +4578,7 @@ dispose()}</string>
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{1440, 304}, {1280, 820}}</string>
+		<string>{{259, 58}, {1261, 820}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>
@@ -4584,7 +4592,7 @@ dispose()}</string>
 		<key>SidebarWidth</key>
 		<integer>126</integer>
 		<key>VisibleRegion</key>
-		<string>{{46, 0}, {1125, 651}}</string>
+		<string>{{31, 0}, {1106, 651}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>

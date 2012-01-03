@@ -81,9 +81,16 @@ public class Events {
 
     public static class ProviderNotAvailableEvent {
         public final ExtdocProvider provider;
+        public final boolean hasFinishedLate;
 
         public ProviderNotAvailableEvent(final ExtdocProvider provider) {
             this.provider = provider;
+            hasFinishedLate = false;
+        }
+
+        public ProviderNotAvailableEvent(final ExtdocProvider provider, final boolean hasFinishedLate) {
+            this.provider = provider;
+            this.hasFinishedLate = hasFinishedLate;
         }
     }
 

@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.extdoc.rcp.scheduling;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.util.concurrent.MoreExecutors.listeningDecorator;
 import static java.util.concurrent.Executors.newFixedThreadPool;
+import static org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider.Status.NOT_AVAILABLE;
+import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
+import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider.Status;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.NewSelectionEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderActivationEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderDeactivationEvent;
@@ -72,6 +75,7 @@ public class ProviderExecutionScheduler {
 
         pool = createListeningThreadPool(NUMBER_OF_THREADS);
         futures = newHashMap();
+        extdocBus.register(this);
     }
 
     private static ListeningExecutorService createListeningThreadPool(final int numberOfThreads) {
@@ -177,6 +181,7 @@ public class ProviderExecutionScheduler {
 
     public void dispose() {
         pool.shutdownNow();
+        extdocBus.unregister(this);
         extdocBus = new EventBus();
         countLatchToZero();
     }
@@ -216,8 +221,10 @@ public class ProviderExecutionScheduler {
             postInUiThread(new ProviderStartedEvent(provider));
 
             try {
-                invokeProvider();
-                if (isTooLate()) {
+                Status returnStatus = invokeProvider();
+                if (NOT_AVAILABLE.equals(returnStatus)) {
+                    postInUiThread(new ProviderNotAvailableEvent(provider, isTooLate()));
+                } else if (isTooLate()) {
                     postInUiThread(new ProviderFinishedLateEvent(provider));
                 } else {
                     postInUiThread(new ProviderFinishedEvent(provider));
@@ -236,11 +243,13 @@ public class ProviderExecutionScheduler {
             return false;
         }
 
-        private void invokeProvider() throws Exception {
+        private Status invokeProvider() throws Exception {
             if (!method.isAccessible()) {
                 method.setAccessible(true);
             }
-            method.invoke(provider, selection.getElement(), selection, composite);
+            Object returnValue = method.invoke(provider, selection.getElement(), selection, composite);
+            Status status = cast(returnValue);
+            return status;
         }
     }
 

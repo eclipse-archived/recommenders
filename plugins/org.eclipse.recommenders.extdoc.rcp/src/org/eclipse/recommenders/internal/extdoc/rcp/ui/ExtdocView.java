@@ -101,14 +101,12 @@ public class ExtdocView extends ViewPart {
     }
 
     private void subscribeToEventBusses() {
-        extdocBus.register(this);
         extdocBus.register(contentPart);
         extdocBus.register(overviewPart);
         workspaceBus.register(this);
     }
 
     private void unsubscribeFromEventBusses() {
-        extdocBus.unregister(this);
         extdocBus.unregister(contentPart);
         extdocBus.unregister(overviewPart);
         workspaceBus.unregister(this);

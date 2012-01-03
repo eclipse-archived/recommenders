@@ -63,17 +63,19 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public void onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent) {
+    public Status onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent) {
         final IType type = root.findPrimaryType();
         if (type != null) {
             onTypeSelection(type, event, parent);
         }
-    }
+        return Status.OK;
+   }
 
     @JavaSelectionSubscriber
-    public void onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent) {
+    public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent) {
         renderClassOverrideDirectives(type, parent);
         renderClassSelfcallDirectives(type, parent);
+        return Status.OK;
     }
 
     private void renderClassOverrideDirectives(final IType type, final Composite parent) {
@@ -99,7 +101,7 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public void onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
+    public Status onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
 
         for (IMethod current = method; current != null; current = JdtUtils.findOverriddenMethod(current).orNull()) {
             try {
@@ -111,7 +113,8 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
             } catch (final NotFoundException e) {
             }
         }
-    }
+        return Status.OK;
+  }
 
     static String percentageToRecommendationPhrase(final int percentage) {
         if (percentage >= 95) {
