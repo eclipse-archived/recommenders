@@ -33,6 +33,74 @@
         <module>features</module>
         <module>dist</module>
     </modules>
+    <profiles>
+    	<profile>
+    		<id>e37</id>
+    		<build>
+    			<plugins>
+    				<plugin>
+	                    <groupId>org.eclipse.tycho</groupId>
+	                    <artifactId>target-platform-configuration</artifactId>
+	                    <version>${tycho-version}</version>
+	                    <configuration>
+	                        <target>
+	                            <artifact>
+	                                <groupId>org.eclipse.recommenders</groupId>
+	                                <artifactId>targets</artifactId>
+	                                <version>${recommenders-version}</version>
+	                                <classifier>e37</classifier>
+	                            </artifact>
+	                        </target>
+	                    </configuration>
+	                </plugin>
+    			</plugins>
+    		</build>
+    	</profile>
+    	<profile>
+    		<id>e38</id>
+    		<build>
+    			<plugins>
+    				<plugin>
+	                    <groupId>org.eclipse.tycho</groupId>
+	                    <artifactId>target-platform-configuration</artifactId>
+	                    <version>${tycho-version}</version>
+	                    <configuration>
+	                        <target>
+	                            <artifact>
+	                                <groupId>org.eclipse.recommenders</groupId>
+	                                <artifactId>targets</artifactId>
+	                                <version>${recommenders-version}</version>
+	                                <classifier>e38</classifier>
+	                            </artifact>
+	                        </target>
+	                    </configuration>
+	                </plugin>
+    			</plugins>
+    		</build>
+    	</profile>
+    	<profile>
+    		<id>e42</id>
+    		<build>
+    			<plugins>
+    				<plugin>
+	                    <groupId>org.eclipse.tycho</groupId>
+	                    <artifactId>target-platform-configuration</artifactId>
+	                    <version>${tycho-version}</version>
+	                    <configuration>
+	                        <target>
+	                            <artifact>
+	                                <groupId>org.eclipse.recommenders</groupId>
+	                                <artifactId>targets</artifactId>
+	                                <version>${recommenders-version}</version>
+	                                <classifier>e42</classifier>
+	                            </artifact>
+	                        </target>
+	                    </configuration>
+	                </plugin>
+    			</plugins>
+    		</build>
+    	</profile>
+    </profiles>
     <build>
         <!-- MB: Why do we need this here (and not in pluginManagement)? Because of the P2 repos? -->
         <plugins>
@@ -57,24 +125,6 @@
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <!-- we build code recommenders using target platforms only. We have to keep the target platform aynway 
-                        to work with it inside Eclipse. This way, we have to ensure consistency. As a side effect, the build seems to speed up since 
-                        the update sites are not queried on every build. -->
-                    <groupId>org.eclipse.tycho</groupId>
-                    <artifactId>target-platform-configuration</artifactId>
-                    <version>${tycho-version}</version>
-                    <configuration>
-                        <target>
-                            <artifact>
-                                <groupId>org.eclipse.recommenders</groupId>
-                                <artifactId>targets</artifactId>
-                                <version>${recommenders-version}</version>
-                                <classifier>e37</classifier>
-                            </artifact>
-                        </target>
                     </configuration>
                 </plugin>
                 <plugin>
