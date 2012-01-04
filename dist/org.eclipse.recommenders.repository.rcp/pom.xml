@@ -35,11 +35,15 @@
 								<goals>
 									<goal>pack</goal>
 								</goals>
+								<configuration>
+									<inputFile>${project.build.directory}/${project.artifactId}.zip</inputFile>
+								</configuration>
 							</execution>
 							<!-- Sign the p2 repository -->
 							<execution>
 								<id>sign</id>
 								<configuration>
+								<inputFile>${project.build.directory}/${project.artifactId}.zip</inputFile>
 									<signerInputDirectory>/home/data/httpd/download-staging.priv/technology/recommenders</signerInputDirectory>
 								</configuration>
 								<phase>package</phase>
