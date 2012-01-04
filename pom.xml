@@ -103,12 +103,20 @@
 		</profile>
 		<profile>
 			<id>build-server</id>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>eclipse</id>
+					<layout>default</layout>
+					<url>http://maven.eclipse.org/nexus/content/groups/public/</url>
+					<snapshots><enabled>false</enabled></snapshots>
+				</pluginRepository>
+			</pluginRepositories>
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.eclipse.dash.m4e</groupId>
+						<groupId>org.eclipse.dash.maven</groupId>
 						<artifactId>eclipse-signing-maven-plugin</artifactId>
-						<version>1.0.4</version>
+						<version>1.0.5</version>
 						<executions>
 							<!-- Pack the p2 repository. -->
 							<execution>
