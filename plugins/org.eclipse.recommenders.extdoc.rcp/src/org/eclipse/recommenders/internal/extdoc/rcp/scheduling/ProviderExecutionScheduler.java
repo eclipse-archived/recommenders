@@ -23,6 +23,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
@@ -76,6 +77,10 @@ public class ProviderExecutionScheduler {
         pool = createListeningThreadPool(NUMBER_OF_THREADS);
         futures = newHashMap();
         extdocBus.register(this);
+
+        // ensure latch is always initialized to handle race condition in case
+        // of an early dispose
+        latch = new CountDownLatch(providers.size());
     }
 
     private static ListeningExecutorService createListeningThreadPool(final int numberOfThreads) {
@@ -88,7 +93,6 @@ public class ProviderExecutionScheduler {
         this.currentSelection = selection;
         createNewRenderingPanelInUiThread();
         postInUiThread(new NewSelectionEvent(selection));
-        latch = new CountDownLatch(providers.size());
 
         for (final ExtdocProvider provider : providers) {
             if (!provider.isEnabled()) {
@@ -102,9 +106,12 @@ public class ProviderExecutionScheduler {
             if (optMethod.isPresent()) {
                 final OnSelectionCallable callable = new OnSelectionCallable(provider, optMethod.get(), selection,
                         composite, latch);
-                final ListenableFuture<?> future = pool.submit(callable);
-                futures.put(provider, future);
-
+                try {
+                    final ListenableFuture<?> future = pool.submit(callable);
+                    futures.put(provider, future);
+                } catch (RejectedExecutionException e) {
+                    // happens if scheduler is already disposed
+                }
             } else {
                 postInUiThread(new ProviderNotAvailableEvent(provider));
                 latch.countDown();

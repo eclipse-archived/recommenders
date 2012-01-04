@@ -94,9 +94,12 @@ public class ExtdocView extends ViewPart {
         // TODO: check if this is needed to enable scrolling or something
     }
 
+    // it might be necessary to add a lock here... a synchronized method is not
+    // possible as this method would block the "syncScheduling" method
     private void disposeScheduler() {
         if (scheduler != null) {
             scheduler.dispose();
+            scheduler = null;
         }
     }
 
