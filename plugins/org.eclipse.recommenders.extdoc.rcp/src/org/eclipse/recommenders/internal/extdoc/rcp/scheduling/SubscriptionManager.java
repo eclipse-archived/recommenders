@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.extdoc.rcp.scheduling;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
-import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
 import static org.eclipse.recommenders.utils.Tuple.newTuple;
@@ -34,13 +34,13 @@ import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.swt.widgets.Composite;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 
 public class SubscriptionManager {
 
-    private final Multimap<Subscription, Tuple<ExtdocProvider, Method>> subscriptions = HashMultimap.create();
+    private final Multimap<Subscription, Tuple<ExtdocProvider, Method>> subscriptions = LinkedHashMultimap.create();
 
     @Inject
     public SubscriptionManager(final List<ExtdocProvider> providers) {
@@ -65,7 +65,7 @@ public class SubscriptionManager {
 
     private Set<Tuple<Method, JavaSelectionSubscriber>> findAnnotatedMethods(final ExtdocProvider provider) {
 
-        final Set<Tuple<Method, JavaSelectionSubscriber>> methods = newHashSet();
+        final Set<Tuple<Method, JavaSelectionSubscriber>> methods = newLinkedHashSet();
 
         // TODO Review: test that overridden methods are not called twice
 
