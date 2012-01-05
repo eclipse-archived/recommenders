@@ -18,7 +18,7 @@
         <module>org.eclipse.recommenders.tests.completion.rcp.chain</module>
         <module>org.eclipse.recommenders.tests.completion.rcp.overrides</module>
         <module>org.eclipse.recommenders.tests.completion.rcp.subwords</module>
-        <module>org.eclipse.recommenders.tests.completion.rcp.templates</module>
+        <!-- module>org.eclipse.recommenders.tests.completion.rcp.templates</module -->
         <module>org.eclipse.recommenders.tests.extdoc.rcp</module>
         <module>org.eclipse.recommenders.tests.jayes</module>
         <module>org.eclipse.recommenders.tests.mining</module>

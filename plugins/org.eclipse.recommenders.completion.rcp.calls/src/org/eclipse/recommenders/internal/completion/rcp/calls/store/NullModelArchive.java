@@ -15,7 +15,7 @@ import static org.eclipse.recommenders.utils.Throws.throwIllegalStateException;
 import java.io.IOException;
 
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.completion.rcp.calls.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 public class NullModelArchive implements IModelArchive {

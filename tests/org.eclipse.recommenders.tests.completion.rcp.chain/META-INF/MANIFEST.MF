@@ -13,6 +13,7 @@ Require-Bundle: org.junit4,
  org.eclipse.recommenders.completion.rcp,
  org.eclipse.recommenders.utils.rcp,
  org.apache.commons.lang3,
- org.eclipse.xtend2.lib
+ org.eclipse.xtend2.lib,
+ org.mockito
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 

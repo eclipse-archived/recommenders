@@ -15,20 +15,27 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.Flags;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.MethodProposalInfo;
+import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
+import org.eclipse.jdt.ui.text.java.CompletionProposalLabelProvider;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.completion.rcp.CompletionProposalDecorator;
-import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
-import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
+import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.recommenders.utils.names.VmMethodName;
-import org.eclipse.recommenders.utils.rcp.CompilerBindings;
+import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
@@ -38,24 +45,22 @@ import com.google.inject.Inject;
 
 @SuppressWarnings({ "unchecked", "rawtypes", "restriction" })
 public class OverridesCompletionProposalComputer implements IJavaCompletionProposalComputer {
+
+    private final IRecommendersCompletionContextFactory ctxFactory;
     private final InstantOverridesRecommender recommender;
-    private final IntelligentCompletionContextResolver contextResolver;
     private final JavaElementResolver jdtCache;
 
-    private JavaContentAssistInvocationContext jdtContext;
-    private IIntelligentCompletionContext recContext;
+    private IRecommendersCompletionContext ctx;
+    private IType enclosingType;
+    private IType supertype;
     private List<OverridesRecommendation> recommendations;
     private List<IJavaCompletionProposal> proposals;
 
-    private IType enclosingType;
-    private IType supertype;
-    private List<IMethodName> declaredMethods;
-
     @Inject
     public OverridesCompletionProposalComputer(final InstantOverridesRecommender recommender,
-            final IntelligentCompletionContextResolver contextResolver, final JavaElementResolver jdtCache) {
+            final IRecommendersCompletionContextFactory ctxFactory, final JavaElementResolver jdtCache) {
         this.recommender = recommender;
-        this.contextResolver = contextResolver;
+        this.ctxFactory = ctxFactory;
         this.jdtCache = jdtCache;
     };
 
@@ -63,35 +68,31 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
     public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         initializeContexts(context);
 
-        if (!isExtendedContext()) {
-            return Collections.emptyList();
-        }
         if (!findEnclosingType()) {
             return Collections.emptyList();
         }
         if (!findSuperclass()) {
             return Collections.emptyList();
         }
-        findAllDeclaredMethods();
-        computeRecommendations();
-        computeProposals();
+        if (!hasModel()) {
+            return Collections.emptyList();
+        }
+        try {
+            computeRecommendations();
+            computeProposals();
+        } catch (final Exception e) {
+            RecommendersPlugin.logError(e, "Exception caught in overrides completion proposal computer.");
+            return Collections.emptyList();
+        }
         return proposals;
     }
 
-    private boolean isExtendedContext() {
-        return jdtContext.getCoreContext().isExtended();
-    }
-
     private void initializeContexts(final ContentAssistInvocationContext context) {
-        jdtContext = (JavaContentAssistInvocationContext) context;
-        recContext = contextResolver.resolveContext(jdtContext);
+        ctx = ctxFactory.create((JavaContentAssistInvocationContext) context);
     }
 
     private boolean findEnclosingType() {
-        final IJavaElement enclosingElement = jdtContext.getCoreContext().getEnclosingElement();
-        if (enclosingElement instanceof IType) {
-            enclosingType = (IType) enclosingElement;
-        }
+        enclosingType = ctx.getEnclosingType().orNull();
         return enclosingType != null;
     }
 
@@ -100,61 +101,95 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
         return supertype != null;
     }
 
-    /**
-     * Note, we just take every method we can find. there is no need to check whether it actually overrides a method in
-     * a supertype. If not, the compiler would complain.
-     */
-    private void findAllDeclaredMethods() {
-        declaredMethods = Lists.newLinkedList();
-        for (final MethodDeclaration methodDeclaration : recContext.getMethodDeclarations()) {
-            final Optional<IMethodName> methodName = CompilerBindings.toMethodName(methodDeclaration.binding);
-            if (methodName.isPresent()) {
-                declaredMethods.add(methodName.get());
-            }
-        }
+    private boolean hasModel() {
+        return recommender.isSuperclassSupported();
     }
 
-    private void computeRecommendations() {
-        final TypeDeclaration query = TypeDeclaration.create(null, jdtCache.toRecType(supertype));
-        for (final IMethodName name : declaredMethods) {
-            query.methods.add(org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration.create(name));
-        }
+    private void computeRecommendations() throws JavaModelException {
+        final TypeDeclaration query = computeQuery();
         recommendations = recommender.createRecommendations(query);
+    }
+
+    private TypeDeclaration computeQuery() throws JavaModelException {
+        final TypeDeclaration query = TypeDeclaration.create(null, jdtCache.toRecType(supertype));
+        for (final IMethod m : enclosingType.getMethods()) {
+            final Optional<IMethod> superMethod = JdtUtils.findOverriddenMethod(m);
+            if (superMethod.isPresent()) {
+                final IMethodName recMethod = jdtCache.toRecMethod(m);
+                final IMethodName recSuperMethod = jdtCache.toRecMethod(superMethod.get());
+                final MethodDeclaration create = MethodDeclaration.create(recMethod);
+                create.superDeclaration = recSuperMethod;
+                query.methods.add(create);
+            }
+        }
+        return query;
     }
 
     private void computeProposals() {
         proposals = Lists.newLinkedList();
-        createFilteredOverridesRecommendations();
-    }
-
-    private void createFilteredOverridesRecommendations() {
-        for (final CompletionProposal eclProposal : recContext.getJdtProposals()) {
-            switch (eclProposal.getKind()) {
-            case CompletionProposal.METHOD_DECLARATION:
-                createOverrideProposalIfRecommended(eclProposal);
+        final String prefix = ctx.getPrefix();
+        for (final OverridesRecommendation r : recommendations) {
+            if (!r.method.getName().startsWith(prefix)) {
+                continue;
             }
-        }
-    }
 
-    private void createOverrideProposalIfRecommended(final CompletionProposal eclProposal) {
-        final VmMethodName ref = getProposalKeyAsVmMethodName(eclProposal);
-        for (final OverridesRecommendation recommendation : recommendations) {
-            if (ref.getSignature().equals(recommendation.method.getSignature())) {
-                final IJavaCompletionProposal javaProposal = recContext.toJavaCompletionProposal(eclProposal);
-                final CompletionProposalDecorator decoratedProposal = new CompletionProposalDecorator(javaProposal,
-                        recommendation);
-                proposals.add(decoratedProposal);
+            final IMethod method = jdtCache.toJdtMethod(r.method);
+            if (method == null) {
+                continue;
             }
-        }
-    }
 
-    private VmMethodName getProposalKeyAsVmMethodName(final CompletionProposal eclProposal) {
-        String key = String.valueOf(eclProposal.getKey()).replaceAll(";\\.", ".");
-        final int exceptionSeparator = key.indexOf("|");
-        if (exceptionSeparator != -1) {
-            key = key.substring(0, exceptionSeparator);
+            final int start = ctx.getInvocationOffset() - prefix.length();
+            final int end = ctx.getInvocationOffset();
+            final CompletionProposal proposal = JdtUtils.createProposal(method, CompletionProposal.METHOD_DECLARATION,
+                    start, end, end);
+
+            final StringBuffer sb = new StringBuffer();
+            try {
+                sb.append(Flags.toString(method.getFlags()));
+                sb.append(" ");
+                sb.append(Signature.getSignatureSimpleName(method.getReturnType()));
+                sb.append(" ");
+                sb.append(method.getElementName());
+                sb.append("(");
+                final String[] parameterTypes = method.getParameterTypes();
+                for (final String param : parameterTypes) {
+                    final String name = Signature.getSignatureSimpleName(param);
+                    sb.append(name);
+                    sb.append(" %, ");
+                }
+                if (parameterTypes.length > 0) {
+                    sb.delete(sb.length() - 2, sb.length());
+                }
+                sb.append(")");
+            } catch (final JavaModelException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            proposal.setCompletion(sb.toString().toCharArray());
+            proposal.setRelevance(100 + (int) Math.rint(r.probability * 100));
+
+            final CompletionProposalLabelProvider fLabelProvider = new CompletionProposalLabelProvider();
+            final StyledString createStyledLabel = fLabelProvider.createStyledLabel(proposal);
+            final String[] parameterTypes = method.getParameterTypes();
+            final String[] proposalParameterTypes = new String[parameterTypes.length];
+            try {
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    proposalParameterTypes[i] = Signature.toString(parameterTypes[i]);
+                }
+            } catch (final IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            final JavaCompletionProposal javaProposal = new OverrideCompletionProposal(ctx.getProject(),
+                    ctx.getCompilationUnit(), method.getElementName(), proposalParameterTypes, start, ctx.getPrefix()
+                            .length(), createStyledLabel, String.valueOf(proposal.getCompletion()));
+            javaProposal.setImage(fLabelProvider.createImageDescriptor(proposal).createImage());
+            javaProposal.setProposalInfo(new MethodProposalInfo(ctx.getProject(), proposal));
+            javaProposal.setRelevance(proposal.getRelevance() << 20);
+
+            final CompletionProposalDecorator decorator = new CompletionProposalDecorator(javaProposal, r.probability);
+            proposals.add(decorator);
         }
-        return VmMethodName.get(key);
     }
 
     @Override

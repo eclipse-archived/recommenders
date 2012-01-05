@@ -109,6 +109,7 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
+                <version>${tycho-version}</version>
 			</plugin>
 		</plugins>
 		<pluginManagement>

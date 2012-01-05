@@ -3,16 +3,14 @@ package org.eclipse.recommenders.tests.completion.rcp.chain
 import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver
-import org.eclipse.recommenders.utils.rcp.JavaElementResolver
+import org.eclipse.recommenders.internal.completion.rcp.chain.CallChainCompletionProposal
+import org.eclipse.recommenders.internal.completion.rcp.chain.CallChainCompletionProposalComputer
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.tests.jdt.TestJavaContentAssistContext
 import org.junit.Ignore
 import org.junit.Test
 
 import static junit.framework.Assert.*
-import org.eclipse.recommenders.internal.completion.rcp.chain.CallChainCompletionProposalComputer
-import org.eclipse.recommenders.internal.completion.rcp.chain.CallChainCompletionProposal
  
 class ScenariosTest { 
   
@@ -36,7 +34,7 @@ class ScenariosTest {
 			
 		exercise(code, expected); 
 	}
-	
+	 
 	@Test
 	def void testFindLocalAnchorWithIsExactMatch() {
 		// well, not really an exact match...!
@@ -292,7 +290,8 @@ class ScenariosTest {
 		val cu = struct.first;
 		val completionIndex = struct.second.head
 		val ctx = new TestJavaContentAssistContext(cu, completionIndex)
-		val sut = new CallChainCompletionProposalComputer(new IntelligentCompletionContextResolver(new JavaElementResolver()))
+		
+		val sut = new CallChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock())
 		sut.sessionStarted
 		val proposals = sut.computeCompletionProposals(ctx, null) 
 		 for(proposal : proposals){

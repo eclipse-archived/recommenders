@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.store;
 
-import static org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule.CALLS_STORE_LOCATION;
+import static org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CALLS_STORE_LOCATION;
 
 import java.io.File;
 import java.io.IOException;

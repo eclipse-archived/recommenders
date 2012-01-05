@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.preferences;
 
-import static org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionPlugin.PLUGIN_ID;
+import static org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin.PLUGIN_ID;
 
 import java.io.File;
 import java.util.List;

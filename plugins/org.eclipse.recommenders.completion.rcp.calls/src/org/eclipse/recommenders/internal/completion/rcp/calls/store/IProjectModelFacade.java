@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.store;
 import java.io.File;
 import java.util.Set;
 
-import org.eclipse.recommenders.internal.completion.rcp.calls.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 public interface IProjectModelFacade {

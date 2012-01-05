@@ -3,14 +3,11 @@ package org.eclipse.recommenders.tests.completion.rcp.overrides
 import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.recommenders.completion.rcp.IntelligentCompletionContextResolver
-import org.eclipse.recommenders.utils.rcp.JavaElementResolver
+import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.tests.jdt.TestJavaContentAssistContext
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.junit.Test
-
-import static junit.framework.Assert.*
-import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer
  
 class OverridesCompletionProposalComputerSmokeTest { 
   
@@ -54,7 +51,7 @@ class OverridesCompletionProposalComputerSmokeTest {
 			val ctx = new TestJavaContentAssistContext(cu, completionIndex)
 			val resolver = new JavaElementResolver()
 			val recommender = MockRecommender::get
-			val sut = new OverridesCompletionProposalComputer(recommender, new IntelligentCompletionContextResolver(resolver),resolver)
+			val sut = new OverridesCompletionProposalComputer(recommender, new RecommendersCompletionContextFactoryMock(),resolver)
 			sut.sessionStarted
 			sut.computeCompletionProposals(ctx, null)
 		}

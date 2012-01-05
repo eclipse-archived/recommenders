@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="e38" sequenceNumber="22">
+<target name="e38" sequenceNumber="23">
 <locations>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="3.8.0.I20111027-1800"/>
-<repository location="http://download.eclipse.org/eclipse/updates/3.8milestones/"/>
-</location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201112231012"/>
 <unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201112231012"/>
@@ -17,6 +13,10 @@
 <unit id="org.eclipse.xtext.xbase.feature.group" version="2.2.1.v201112130541"/>
 <unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.2.1.v201112130541"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="3.8.0.I20111209-1447"/>
+<repository location="http://download.eclipse.org/eclipse/updates/3.8milestones/"/>
 </location>
 </locations>
 </target>

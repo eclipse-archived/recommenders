@@ -20,8 +20,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
-import org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule.UdcServer;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.UdcServer;
 import org.eclipse.recommenders.webclient.ClientConfiguration;
 import org.eclipse.recommenders.webclient.WebServiceClient;
 

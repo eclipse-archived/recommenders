@@ -171,11 +171,15 @@ public class JavaElementResolver {
 
     public IMethod toJdtMethod(final IMethodName recMethod) {
         ensureIsNotNull(recMethod);
+        // failedRecMethods.clear()
         if (failedRecMethods.contains(recMethod)) {
             return null;
         }
 
         IMethod jdtMethod = (IMethod) cache.get(recMethod);
+        if (jdtMethod != null && !jdtMethod.exists()) {
+            jdtMethod = null;
+        }
         if (jdtMethod == null) {
             jdtMethod = resolveMethod(recMethod);
             if (jdtMethod == null) {
@@ -197,8 +201,8 @@ public class JavaElementResolver {
     }
 
     /**
-     * Returns null if we fail to resolve all types used in the method
-     * signature, for instance generic return types etc...
+     * Returns null if we fail to resolve all types used in the method signature, for instance generic return types
+     * etc...
      */
     public IMethodName toRecMethod(IMethod jdtMethod) {
         ensureIsNotNull(jdtMethod);
@@ -254,8 +258,8 @@ public class JavaElementResolver {
             final IMethod jdtMethod = JavaModelUtil.findMethodInHierarchy(hierarchy, jdtType, recMethod.getName(),
                     jdtParamTypes, recMethod.isInit());
             return jdtMethod;
-        } catch (final JavaModelException e) {
-            throw throwUnhandledException(e);
+        } catch (final Exception e) {
+            return null;
         }
     }
 
@@ -265,9 +269,8 @@ public class JavaElementResolver {
 
     private String[] createJDTParameterTypeStrings(final IMethodName method) {
         /*
-         * Note, JDT expects declared-types (also declared array-types) given as
-         * parameters to (i) use dots as separator, and (ii) end with a
-         * semicolon. this conversion is done here:
+         * Note, JDT expects declared-types (also declared array-types) given as parameters to (i) use dots as
+         * separator, and (ii) end with a semicolon. this conversion is done here:
          */
         final ITypeName[] paramTypes = method.getParameterTypes();
         final String[] jdtParamTypes = new String[paramTypes.length];

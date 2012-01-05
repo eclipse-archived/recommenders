@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.store;
 import java.io.Closeable;
 
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.completion.rcp.calls.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 public interface IModelArchive extends Closeable {

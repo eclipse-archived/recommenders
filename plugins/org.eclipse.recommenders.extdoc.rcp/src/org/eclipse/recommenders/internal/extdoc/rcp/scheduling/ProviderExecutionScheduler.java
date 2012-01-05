@@ -271,9 +271,12 @@ public class ProviderExecutionScheduler {
 
         @Override
         public Void call() throws Exception {
-            super.call();
-            latch.countDown();
-            return null;
+            try {
+                super.call();
+                return null;
+            } finally {
+                latch.countDown();
+            }
         }
 
         @Override

@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -92,6 +93,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 
 @SuppressWarnings({ "restriction", "unchecked", "deprecation" })
 public class JdtUtils {
@@ -102,6 +104,74 @@ public class JdtUtils {
         }
     };
     private static final IJavaElement[] EMPTY_RESULT = new IJavaElement[0];
+
+    private static Predicate<IField> STATIC_PUBLIC_FIELDS_ONLY_FILTER = new Predicate<IField>() {
+
+        @Override
+        public boolean apply(final IField m) {
+            try {
+                // filter these:
+                return !isStatic(m) || !isPublic(m);
+            } catch (final JavaModelException e) {
+                // filter!
+                return true;
+            }
+        }
+    };
+    private static Predicate<IField> PUBLIC_FIELDS_ONLY_FILTER = new Predicate<IField>() {
+
+        @Override
+        public boolean apply(final IField m) {
+            try {
+                // filter these:
+                return isStatic(m) || !isPublic(m);
+            } catch (final JavaModelException e) {
+                // filter!
+                return true;
+            }
+        }
+    };
+    private static Predicate<IMethod> STATIC_PUBLIC_METHODS_ONLY_FILTER = new Predicate<IMethod>() {
+
+        @Override
+        public boolean apply(final IMethod m) {
+            try {
+                // filter these:
+                return !isStatic(m) || !isPublic(m);
+            } catch (final JavaModelException e) {
+                // filter!
+                return true;
+            }
+        }
+    };
+
+    private static Predicate<IMethod> PUBLIC_INSTANCE_METHODS_ONLY_FILTER = new Predicate<IMethod>() {
+
+        @Override
+        public boolean apply(final IMethod m) {
+            try {
+                // filter these:
+                return isStatic(m) || !isPublic(m) || m.isConstructor();
+            } catch (final JavaModelException e) {
+                // filter!
+                return true;
+            }
+        }
+    };
+
+    private static Predicate<IMethod> STATIC_NON_VOID_NON_PRIMITIVE_PUBLIC_METHODS_FILTER = new Predicate<IMethod>() {
+
+        @Override
+        public boolean apply(final IMethod m) {
+            try {
+                // filter these:
+                return !isStatic(m) || isVoid(m) || !isPublic(m) || hasPrimitiveReturnType(m);
+            } catch (final JavaModelException e) {
+                // filter!
+                return true;
+            }
+        }
+    };
 
     private static IJavaElement[] codeResolve(final ITypeRoot root, final ITextSelection selection) {
         reconcileIfCompilationUnit(root);
@@ -254,26 +324,36 @@ public class JdtUtils {
         return tmp.values();
     }
 
+    public static Collection<IMember> findAllPublicInstanceFieldsAndPublicInstanceMethods(final IType type) {
+        return findAllRelevanFieldsAndMethods(type, PUBLIC_FIELDS_ONLY_FILTER, PUBLIC_INSTANCE_METHODS_ONLY_FILTER);
+    }
+
     /**
      * Returns a list of all public static fields and methods declared in the given class or any of its super-classes.
      */
     public static Collection<IMember> findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(final IType type) {
-        final LinkedHashMap<String, IMember> tmp = new LinkedHashMap<String, IMember>();
 
+        return findAllRelevanFieldsAndMethods(type, STATIC_PUBLIC_FIELDS_ONLY_FILTER,
+                STATIC_NON_VOID_NON_PRIMITIVE_PUBLIC_METHODS_FILTER);
+    }
+
+    public static Collection<IMember> findAllRelevanFieldsAndMethods(final IType type,
+            final Predicate<IField> fieldFilter, final Predicate<IMethod> methodFilter) {
+        final LinkedHashMap<String, IMember> tmp = new LinkedHashMap<String, IMember>();
         for (final IType cur : findAllSupertypesIncludeingArgument(type)) {
 
             try {
-                for (final IMethod m : cur.getMethods()) {
-                    if (!isStatic(m) || isVoid(m) || !isPublic(m) || hasPrimitiveReturnType(m)) {
+                for (final IMethod method : cur.getMethods()) {
+                    if (methodFilter.apply(method)) {
                         continue;
                     }
-                    final String key = createMethodKey(m);
+                    final String key = createMethodKey(method);
                     if (!tmp.containsKey(key)) {
-                        tmp.put(key, m);
+                        tmp.put(key, method);
                     }
                 }
                 for (final IField field : cur.getFields()) {
-                    if (!isPublic(field) || !isStatic(field)) {
+                    if (fieldFilter.apply(field)) {
                         continue;
                     }
                     final String key = createFieldKey(field);
@@ -287,6 +367,11 @@ public class JdtUtils {
         }
 
         return tmp.values();
+
+    }
+
+    public static Collection<IMember> findAllPublicStaticFieldsAndStaticMethods(final IType type) {
+        return findAllRelevanFieldsAndMethods(type, STATIC_PUBLIC_FIELDS_ONLY_FILTER, STATIC_PUBLIC_METHODS_ONLY_FILTER);
     }
 
     private static IType[] findAllSupertypesIncludeingArgument(final IType returnType) {
@@ -621,4 +706,95 @@ public class JdtUtils {
         final ASTNode node = org.eclipse.jdt.core.dom.NodeFinder.perform(astRoot, textSelection.getOffset(), 0);
         return Optional.fromNullable(node);
     }
+
+    public static CompletionProposal createProposal(final IMethod method, final int CompletionProposalType,
+            final int startIndex, final int endIndex, final int invocationIndex) {
+
+        final JdtCompletionProposal proposal = new JdtCompletionProposal(CompletionProposalType, invocationIndex);
+        try {
+
+            final IType declaringType = method.getDeclaringType();
+            final String returnType = method.getReturnType();
+
+            final char[] declaringTypeFullyQualifiedSourceName = declaringType.getFullyQualifiedName().toCharArray();
+            final char[][] parameterTypeNames = toSimpleCharArray(method.getParameterTypes());
+            final char[][] parameterPackageNames = toQualifierCharArray(parameterTypeNames);
+
+            final char[] completion = (method.getElementName() + "()").toCharArray();
+            final char[][] parameterNames = toSimpleCharArray(method.getParameterNames());
+
+            final char[] declaringClassSignature = declaringType.getKey().replace('/', '.').toCharArray();
+
+            final char[] declarationPackageName = Signature.getSignatureQualifier(declaringClassSignature);
+            // dot separate package - not L no ;
+            proposal.setDeclarationPackageName(declarationPackageName);
+
+            // starts with L, uses '.', ends with ;
+            proposal.setDeclarationKey(declaringClassSignature);
+            // starts with L, uses '.', ends with ;
+            proposal.setDeclarationSignature(declaringClassSignature);
+            // ??? simple name only?
+            final char[] declarationTypeName = declaringType.getElementName().toCharArray();
+            proposal.setDeclarationTypeName(declarationTypeName);
+
+            final char[] name = method.getElementName().toCharArray();
+            proposal.setName(name);
+
+            final char[] methodSignature = method.getSignature().replace('/', '.').toCharArray();
+            // (Lorg.e.Type;I)V
+            proposal.setSignature(methodSignature);
+            // proposal.setKey(method.getHandleIdentifier().toCharArray());
+
+            // simple package names:
+            proposal.setParameterPackageNames(parameterPackageNames);
+
+            // simple type names
+            proposal.setParameterTypeNames(parameterTypeNames);
+
+            final char[] methodReturnTypeQualifiedPackageName = Signature.getSignatureQualifier(returnType)
+                    .toCharArray();
+
+            // package name?
+            proposal.setPackageName(methodReturnTypeQualifiedPackageName);
+
+            final char[] methodReturnTypeQualifiedSourceName = Signature.getSimpleName(returnType).toCharArray();
+            // simple type name?
+            proposal.setTypeName(methodReturnTypeQualifiedSourceName);
+
+            proposal.setCompletion(completion);
+
+            proposal.setFlags(method.getFlags());
+
+            proposal.setReplaceRange(startIndex, endIndex);
+
+            proposal.setTokenRange(startIndex, endIndex);
+
+            proposal.setRelevance(8);
+            if (parameterNames != null) {
+                proposal.setParameterNames(parameterNames);
+            }
+
+        } catch (final JavaModelException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return proposal;
+    }
+
+    private static char[][] toQualifierCharArray(final char[][] parameterTypeNames) {
+        final char[][] res = new char[parameterTypeNames.length][];
+        for (int i = 0; i < parameterTypeNames.length; i++) {
+            res[i] = Signature.getQualifier(parameterTypeNames[i]);
+        }
+        return res;
+    }
+
+    private static char[][] toSimpleCharArray(final String[] parameterNames) {
+        final char[][] res = new char[parameterNames.length][];
+        for (int i = 0; i < parameterNames.length; i++) {
+            res[i] = Signature.getSimpleName(parameterNames[i]).toCharArray();
+        }
+        return res;
+    }
+
 }

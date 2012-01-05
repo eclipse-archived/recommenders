@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.preferences;
 
-import static org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionPlugin.PLUGIN_ID;
+import static org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin.PLUGIN_ID;
 
 import java.io.File;
 
@@ -35,10 +35,10 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
-import org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionPlugin;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.RemoteResolverJobFactory;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin;
 import org.eclipse.recommenders.utils.rcp.ScaleOneDimensionLayout;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;

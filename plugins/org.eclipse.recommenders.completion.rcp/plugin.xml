@@ -12,7 +12,7 @@
    <extension
          point="org.eclipse.recommenders.injection.modules">
       <module
-            class="org.eclipse.recommenders.internal.completion.rcp.IntelligentCompletionModule">
+            class="org.eclipse.recommenders.internal.completion.rcp.GuiceModule">
       </module>
    </extension>
  </plugin>

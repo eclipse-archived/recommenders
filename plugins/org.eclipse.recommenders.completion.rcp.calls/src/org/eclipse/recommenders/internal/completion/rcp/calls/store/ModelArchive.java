@@ -21,7 +21,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.completion.rcp.calls.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.utils.gson.GsonUtil;

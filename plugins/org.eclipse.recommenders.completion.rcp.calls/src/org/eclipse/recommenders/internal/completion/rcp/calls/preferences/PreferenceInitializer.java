@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionPlugin;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 

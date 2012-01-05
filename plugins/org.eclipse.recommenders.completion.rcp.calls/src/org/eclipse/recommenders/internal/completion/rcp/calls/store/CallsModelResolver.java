@@ -27,7 +27,7 @@ import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.udc.ManifestMatchResult;
 import org.eclipse.recommenders.internal.analysis.archive.ArchiveDetailsExtractor;
-import org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule.UdcServer;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.UdcServer;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.webclient.ClientConfiguration;

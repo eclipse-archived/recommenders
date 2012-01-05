@@ -40,11 +40,11 @@ public class VmMethodName implements IMethodName {
     }
 
     /**
-     * Creates a new {@link VmMethodName} from the given method argument but
-     * replaces the declaring type by the given new base type.
+     * Creates a new {@link VmMethodName} from the given method argument but replaces the declaring type by the given
+     * new base type.
      * <p>
-     * Example: vmMethodName = "Ljava/lang/String.wait()V", vmBaseTypeName =
-     * "Ljava/lang/Object" --&gt; res = "Ljava/lang/Object.wait()".
+     * Example: vmMethodName = "Ljava/lang/String.wait()V", vmBaseTypeName = "Ljava/lang/Object" --&gt; res =
+     * "Ljava/lang/Object.wait()".
      * 
      * @param vmBaseTypeName
      * @param vmMethodName
@@ -72,6 +72,8 @@ public class VmMethodName implements IMethodName {
         final String replacement = vmFullQualifiedMethodName.replaceAll("<.*?>", "");
         return replacement;
     }
+
+    public static final IMethodName NULL = VmMethodName.get("L_null.null()V");
 
     // public static String removeGenerics(final String typeName) {
     // return StringUtils.substringBefore(typeName, "<");

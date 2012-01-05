@@ -50,7 +50,7 @@ public class InstantOverridesRecommender {
         return readRecommendations();
     }
 
-    private boolean isSuperclassSupported() {
+    public boolean isSuperclassSupported() {
         return modelStore.hasModel(superclass);
     }
 

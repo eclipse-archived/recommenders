@@ -17,9 +17,14 @@ import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension2;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension3;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension4;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension6;
 import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.utils.annotations.Testing;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -29,7 +34,8 @@ import org.eclipse.swt.graphics.Point;
  * testing such as {@link #getChain()}, and {@link #getChainElementNames()} etc. It may be extended to track user click
  * feedback to continuously improve chain completion.
  */
-public class CallChainCompletionProposal implements IJavaCompletionProposal, ICompletionProposalExtension2 {
+public class CallChainCompletionProposal implements IJavaCompletionProposal, ICompletionProposalExtension2,
+        ICompletionProposalExtension3, ICompletionProposalExtension4, ICompletionProposalExtension6 {
 
     private final List<MemberEdge> chain;
     private final TemplateProposal completion;
@@ -120,5 +126,30 @@ public class CallChainCompletionProposal implements IJavaCompletionProposal, ICo
     @Override
     public String toString() {
         return completion.getDisplayString();
+    }
+
+    @Override
+    public StyledString getStyledDisplayString() {
+        return completion.getStyledDisplayString();
+    }
+
+    @Override
+    public boolean isAutoInsertable() {
+        return completion.isAutoInsertable();
+    }
+
+    @Override
+    public IInformationControlCreator getInformationControlCreator() {
+        return completion.getInformationControlCreator();
+    }
+
+    @Override
+    public CharSequence getPrefixCompletionText(final IDocument document, final int completionOffset) {
+        return completion.getPrefixCompletionText(document, completionOffset);
+    }
+
+    @Override
+    public int getPrefixCompletionStart(final IDocument document, final int completionOffset) {
+        return completion.getPrefixCompletionStart(document, completionOffset);
     }
 }

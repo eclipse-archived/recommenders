@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.Set;
 
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
+import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -23,25 +24,35 @@ import com.google.common.collect.Sets;
 
 public class ObjectUsage {
 
-	public static final ITypeName UNKNOWN_TYPE = VmTypeName.get("LNull");
-	public static final IMethodName UNKNOWN_METHOD = VmMethodName.get("LNull.null()V");
-	public static final DefinitionSite.Kind UNKNOWN_KIND = DefinitionSite.Kind.UNKNOWN;
+    public static ObjectUsage newObjectUsageWithDefaults() {
+        final ObjectUsage res = new ObjectUsage();
+        res.type = UNKNOWN_TYPE;
+        res.contextFirst = UNKNOWN_METHOD;
+        res.contextSuper = UNKNOWN_METHOD;
+        res.definition = UNKNOWN_METHOD;
+        res.kind = Kind.UNKNOWN;
+        return res;
+    }
 
-	public static final IMethodName NO_METHOD = VmMethodName.get("LNone.none()V"); // param/fields
-	public static final IMethodName DUMMY_METHOD = VmMethodName.get("LDummy.dummy()V"); // crash prevention
+    public static final ITypeName UNKNOWN_TYPE = VmTypeName.get("LNull");
+    public static final IMethodName UNKNOWN_METHOD = VmMethodName.get("LNull.null()V");
+    public static final DefinitionSite.Kind UNKNOWN_KIND = DefinitionSite.Kind.UNKNOWN;
 
-	public Date cuCreationTimestamp;
-	public ITypeName type;
+    public static final IMethodName NO_METHOD = VmMethodName.get("LNone.none()V"); // param/fields
+    public static final IMethodName DUMMY_METHOD = VmMethodName.get("LDummy.dummy()V"); // crash prevention
 
-	public IMethodName contextSuper;
-	public IMethodName contextFirst;
-	public Set<IMethodName> calls = Sets.newHashSet();
-	public DefinitionSite.Kind kind;
-	public IMethodName definition;
+    public Date cuCreationTimestamp;
+    public ITypeName type;
 
-	@Override
-	public String toString() {
-		return "ObjectUsage [type=" + type + ", contextSuper=" + contextSuper + ", contextFirst=" + contextFirst
-				+ ", calls=" + calls + ", kind=" + kind + ", def=" + definition + "]";
-	}
+    public IMethodName contextSuper;
+    public IMethodName contextFirst;
+    public Set<IMethodName> calls = Sets.newHashSet();
+    public DefinitionSite.Kind kind;
+    public IMethodName definition;
+
+    @Override
+    public String toString() {
+        return "ObjectUsage [type=" + type + ", contextSuper=" + contextSuper + ", contextFirst=" + contextFirst
+                + ", calls=" + calls + ", kind=" + kind + ", def=" + definition + "]";
+    }
 }

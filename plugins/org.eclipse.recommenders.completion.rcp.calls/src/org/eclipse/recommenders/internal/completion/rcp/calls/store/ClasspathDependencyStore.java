@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.completion.rcp.calls.CallsCompletionModule.ClasspathDependencyStoreLocation;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.ClasspathDependencyStoreLocation;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 
 import com.google.common.collect.Maps;

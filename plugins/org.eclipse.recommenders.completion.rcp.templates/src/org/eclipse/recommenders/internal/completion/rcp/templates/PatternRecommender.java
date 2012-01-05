@@ -58,8 +58,8 @@ public final class PatternRecommender {
 
     /**
      * @param usageResolvers
-     *            A set of resolvers which are able to compute a variable's type
-     *            and preceding method invocations from a given context.
+     *            A set of resolvers which are able to compute a variable's type and preceding method invocations from a
+     *            given context.
      */
     @Inject
     public PatternRecommender(final ProjectServices projectServices,
@@ -70,10 +70,8 @@ public final class PatternRecommender {
 
     /**
      * @param targetVariable
-     *            The variable information which could be extracted from the
-     *            completion context.
-     * @return The {@link PatternRecommendation}s holding information for the
-     *         templates to be displayed.
+     *            The variable information which could be extracted from the completion context.
+     * @return The {@link PatternRecommendation}s holding information for the templates to be displayed.
      */
     public ImmutableSet<PatternRecommendation> computeRecommendations(final CompletionTargetVariable targetVariable) {
         final Builder<PatternRecommendation> recommendations = ImmutableSet.builder();
@@ -100,8 +98,7 @@ public final class PatternRecommender {
     /**
      * @param targetVariable
      *            The variable on which the completion request was invoked.
-     * @return True, if a new variable is to be constructed or an existing's
-     *         usage could be resolved.
+     * @return True, if a new variable is to be constructed or an existing's usage could be resolved.
      */
     private boolean canFindVariableUsage(final CompletionTargetVariable targetVariable) {
         if (context.getVariable() == null) {
@@ -112,8 +109,7 @@ public final class PatternRecommender {
     }
 
     /**
-     * @return True, if a provided {@link IVariableUsageResolver} was able to
-     *         resolve the variable usage.
+     * @return True, if a provided {@link IVariableUsageResolver} was able to resolve the variable usage.
      */
     private boolean canResolveVariableUsage() {
         for (final IVariableUsageResolver resolver : usageResolvers.get()) {
@@ -127,11 +123,9 @@ public final class PatternRecommender {
 
     /**
      * @param receiverType
-     *            The type for which suitable models should be found. Can be
-     *            fully qualified and simple.
-     * @return Empty set when no model could be found. One-element set when the
-     *         type is fully qualified. Multiple elements when the type is
-     *         simple (i.e. it matches several classes).
+     *            The type for which suitable models should be found. Can be fully qualified and simple.
+     * @return Empty set when no model could be found. One-element set when the type is fully qualified. Multiple
+     *         elements when the type is simple (i.e. it matches several classes).
      */
     private ImmutableSet<IObjectMethodCallsNet> findModelsForType(final ITypeName receiverType) {
         final Builder<IObjectMethodCallsNet> models = ImmutableSet.builder();
@@ -158,8 +152,7 @@ public final class PatternRecommender {
     }
 
     /**
-     * Updates the model with respect to the context and the observed method
-     * invocations on the target variable.
+     * Updates the model with respect to the context and the observed method invocations on the target variable.
      */
     private void updateModel(final IObjectMethodCallsNet model, final boolean needsConstructor) {
         model.clearEvidence();
@@ -188,8 +181,7 @@ public final class PatternRecommender {
     /**
      * @param constructorRequired
      *            True, if patterns without constructors should be filtered out.
-     * @return The most probable patterns regarding the updated model, limited
-     *         to the size of <code>MAX_PATTERNS</code>.
+     * @return The most probable patterns regarding the updated model, limited to the size of <code>MAX_PATTERNS</code>.
      */
     private ImmutableSet<PatternRecommendation> computeRecommendationsForModel(final boolean constructorRequired,
             final IObjectMethodCallsNet model) {
@@ -206,8 +198,7 @@ public final class PatternRecommender {
     }
 
     /**
-     * @return Most probable pattern names and their probabilities, trimmed to
-     *         the size of <code>MAX_PATTERNS</code>.
+     * @return Most probable pattern names and their probabilities, trimmed to the size of <code>MAX_PATTERNS</code>.
      */
     private static ImmutableList<Tuple<String, Double>> findMostLikelyPatterns(final IObjectMethodCallsNet model) {
         List<Tuple<String, Double>> patterns = model.getPatternsWithProbability();
@@ -219,10 +210,8 @@ public final class PatternRecommender {
 
     /**
      * @param patternName
-     *            The internal pattern name, used to identify the pattern inside
-     *            the pattern store.
-     * @return The methods which shall be invoked by the template built from the
-     *         given pattern.
+     *            The internal pattern name, used to identify the pattern inside the pattern store.
+     * @return The methods which shall be invoked by the template built from the given pattern.
      */
     private static ImmutableList<IMethodName> getMethodCallsForPattern(final String patternName,
             final IObjectMethodCallsNet model) {
@@ -236,15 +225,13 @@ public final class PatternRecommender {
 
     /**
      * @param patternMethods
-     *            The methods of a given pattern as received from the mode
-     *            store.
+     *            The methods of a given pattern as received from the mode store.
      * @param constructorRequired
      *            True, if patterns without constructors should be filtered out.
-     * @return True, if methods exist and they either contain a constructor or a
-     *         constructor is not required.
+     * @return True, if methods exist and they either contain a constructor or a constructor is not required.
      */
     private boolean shouldKeepPattern(final List<IMethodName> patternMethods, final boolean constructorRequired) {
-        if (patternMethods.isEmpty() || constructorRequired && !patternMethods.get(0).isInit()) {
+        if (patternMethods.isEmpty() || (constructorRequired && !patternMethods.get(0).isInit())) {
             return false;
         }
         if (constructorRequired || context.getReceiverType() == null) {
@@ -260,8 +247,7 @@ public final class PatternRecommender {
     }
 
     /**
-     * A {@link Predicate} which filters out patterns not surpassing a minimum
-     * probability threshold.
+     * A {@link Predicate} which filters out patterns not surpassing a minimum probability threshold.
      */
     static final class PatternProbabilityFilter implements Predicate<Tuple<String, Double>> {
         @Override
@@ -271,8 +257,8 @@ public final class PatternRecommender {
     }
 
     /**
-     * A {@link Comparator} sorting patterns in their probabilities descending
-     * order or by their name in case of same probabilities.
+     * A {@link Comparator} sorting patterns in their probabilities descending order or by their name in case of same
+     * probabilities.
      */
     static final class PatternSorter implements Comparator<Tuple<String, Double>>, Serializable {
 

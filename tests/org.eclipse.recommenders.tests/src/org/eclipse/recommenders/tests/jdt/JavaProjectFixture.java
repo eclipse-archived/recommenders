@@ -130,7 +130,7 @@ public class JavaProjectFixture {
         return cu;
     }
 
-    public Tuple<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final String contentWithMarkers,
+    public Tuple<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers,
             final String fileName) throws CoreException {
         final IProject project = javaProject.getProject();
         final IPath path = new Path(fileName);
@@ -154,7 +154,7 @@ public class JavaProjectFixture {
         return newTuple(cu, markers);
     }
 
-    public Tuple<String, Set<Integer>> findMarkers(final String content) {
+    public Tuple<String, Set<Integer>> findMarkers(final CharSequence content) {
         final Set<Integer> markers = Sets.newTreeSet();
         int pos = 0;
         final StringBuilder sb = new StringBuilder(content);
