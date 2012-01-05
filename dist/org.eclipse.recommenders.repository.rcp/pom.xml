@@ -83,12 +83,13 @@
 								</goals>
 								<configuration>
 									<tasks>
-										<delete includeemptydirs="false">
+										<delete includeemptydirs="false" failonerror="false">
 											<fileset
 												dir="/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}">
 												<include name="**" />
 											</fileset>
 										</delete>
+										<mkdir dir="/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}" />
 										<copy includeemptydirs="false"
 											todir="/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}">
 											<fileset dir="target/checksumFix">
