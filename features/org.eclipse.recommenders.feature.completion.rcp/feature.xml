@@ -83,13 +83,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.completion.rcp.templates"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.recommenders.completion.rcp.overrides"
          download-size="0"
          install-size="0"
