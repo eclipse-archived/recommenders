@@ -7,5 +7,6 @@ Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.extdoc.rcp
 Require-Bundle: org.junit4,
  org.mockito,
- org.objenesis
+ org.objenesis,
+ org.eclipse.equinox.ds
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

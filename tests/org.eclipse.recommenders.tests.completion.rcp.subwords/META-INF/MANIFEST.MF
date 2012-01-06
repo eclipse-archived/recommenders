@@ -8,5 +8,6 @@ Fragment-Host: org.eclipse.recommenders.completion.rcp.subwords
 Require-Bundle: org.eclipse.recommenders.tests,
  org.junit4,
  org.mockito,
- org.objenesis
+ org.objenesis,
+ org.eclipse.equinox.ds
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

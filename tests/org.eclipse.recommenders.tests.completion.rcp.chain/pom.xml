@@ -18,7 +18,6 @@
                     <useUIThread>true</useUIThread>
                     <appArgLine>-XstartOnFirstThread</appArgLine>
                     <product>org.eclipse.sdk.ide</product>
-                    <application>org.eclipse.ui.ide.workbench</application>
                     <dependencies combine.children="append">
                         <dependency>
                             <type>eclipse-plugin</type>

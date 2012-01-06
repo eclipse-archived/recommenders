@@ -19,7 +19,8 @@
         <module>org.eclipse.recommenders.analysis.wala</module>
 
 		<module>org.eclipse.recommenders.completion.rcp</module>
-        <module>org.eclipse.recommenders.completion.rcp.e37</module>
+		<module>org.eclipse.recommenders.completion.rcp.e37</module>
+		<module>org.eclipse.recommenders.completion.rcp.e38</module>
         <module>org.eclipse.recommenders.completion.rcp.calls</module>
         <module>org.eclipse.recommenders.completion.rcp.chain</module>
 		<module>org.eclipse.recommenders.completion.rcp.overrides</module>

@@ -13,5 +13,6 @@ Require-Bundle: org.junit4,
  org.eclipse.recommenders.tests,
  org.eclipse.recommenders.completion.rcp,
  org.objenesis,
- org.mockito
+ org.mockito,
+ org.eclipse.equinox.ds
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

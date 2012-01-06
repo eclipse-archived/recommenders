@@ -12,7 +12,7 @@ package org.eclipse.recommenders.rcp.selfhosting;
 
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
-import java.util.Properties;
+import java.util.Hashtable;
 
 import org.eclipse.equinox.http.jetty.JettyConfigurator;
 import org.eclipse.equinox.http.jetty.JettyConstants;
@@ -42,8 +42,7 @@ public class Startup implements IStartup {
     }
 
     private void startHttpService() throws Exception {
-
-        final Properties settings = new Properties();
+        final Hashtable<String, Object> settings = new Hashtable<String, Object>();
         settings.put(JettyConstants.HTTP_PORT, ServerConfiguration.DEFAULT_HTTP_PORT);
         JettyConfigurator.startServer(Activator.JETTY_ID, settings);
     }
