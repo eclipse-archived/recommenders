@@ -95,6 +95,9 @@
 											<fileset dir="target/checksumFix">
 												<include name="**" />
 											</fileset>
+											<fileset dir="./">
+												<include name="*.php" />
+											</fileset>
 										</copy>
 									</tasks>
 								</configuration>
