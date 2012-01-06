@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Completion API for Eclipse 3.7
-Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.e37
+Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.e37;singleton:=true
 Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclispe Code Recommenders
 Fragment-Host: org.eclipse.recommenders.completion.rcp;bundle-version="0.5.0"
