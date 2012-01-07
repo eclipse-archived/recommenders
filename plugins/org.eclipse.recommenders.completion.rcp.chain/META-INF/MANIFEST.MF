@@ -17,4 +17,5 @@ Require-Bundle: com.google.guava,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.injection,
  org.eclipse.recommenders.completion.rcp,
- org.eclipse.recommenders.utils.rcp
+ org.eclipse.recommenders.utils.rcp,
+ org.eclipse.ui.editors

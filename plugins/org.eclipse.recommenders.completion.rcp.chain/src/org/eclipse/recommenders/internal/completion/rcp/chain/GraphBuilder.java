@@ -153,7 +153,7 @@ public class GraphBuilder {
         final List<Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */>> nextIteration = Lists
                 .newLinkedList();
         for (final Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */> t : iteration) {
-            terminateIfInterrupted();
+            // terminateIfInterrupted();
             final LinkedHashSet<MemberEdge> incompleteChain = t.getFirst();
             final MemberEdge edgeToTest = t.getSecond();
             if (introducesCycleIntoCallChain(incompleteChain, edgeToTest)) {

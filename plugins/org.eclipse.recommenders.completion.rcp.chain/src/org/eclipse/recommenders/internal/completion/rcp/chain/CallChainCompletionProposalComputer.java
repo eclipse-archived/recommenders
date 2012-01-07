@@ -163,7 +163,8 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private JavaElement findEnclosingElement() {
-        final IJavaElement enclosing = ctx.getEnclosingElement();
+        // should be save to call .get() here:
+        final IJavaElement enclosing = ctx.getEnclosingElement().get();
         return (JavaElement) enclosing;
     }
 
@@ -212,11 +213,20 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
 
     private void resolveEntrypoints(final Collection<? extends IJavaElement> elements) {
         for (final IJavaElement decl : elements) {
+            if (!matchesPrefixToken(decl)) {
+                continue;
+            }
             final MemberEdge e = new MemberEdge(decl);
             if (e.getReturnType().isPresent()) {
                 entrypoints.add(e);
             }
         }
+    }
+
+    private boolean matchesPrefixToken(final IJavaElement decl) {
+        String prefix = ctx.getPrefix();
+        String elementName = decl.getElementName();
+        return elementName.startsWith(prefix);
     }
 
     private void executeCallChainSearch() throws JavaModelException {
