@@ -26,7 +26,6 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.util.ObjectVector;
 import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.recommenders.internal.completion.rcp.BaseRecommendersCompletionContext;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 import com.google.common.collect.Lists;
@@ -77,7 +76,7 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
         final List<ILocalVariable> res = Lists.newArrayListWithCapacity(v.size);
         for (int i = v.size(); i-- > 0;) {
             final LocalVariableBinding b = cast(v.elementAt(i));
-            final JavaElement parent = (JavaElement) getEnclosingElement();
+            final JavaElement parent = (JavaElement) getEnclosingElement().get();
             final ILocalVariable f = JdtUtils.createUnresolvedLocaVariable(b, parent);
             res.add(f);
         }

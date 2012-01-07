@@ -38,7 +38,7 @@ public interface IRecommendersCompletionContext {
 
     Optional<IType> getEnclosingType();
 
-    IJavaElement getEnclosingElement();
+    Optional<IJavaElement> getEnclosingElement();
 
     ICompilationUnit getCompilationUnit();
 
@@ -84,5 +84,7 @@ public interface IRecommendersCompletionContext {
     IJavaProject getProject();
 
     Optional<IType> getClosestEnclosingType();
+
+    boolean hasEnclosingElement();
 
 }

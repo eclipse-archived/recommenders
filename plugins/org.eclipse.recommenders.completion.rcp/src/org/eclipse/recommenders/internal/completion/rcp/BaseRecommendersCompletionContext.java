@@ -60,6 +60,20 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         return coreContext;
     }
 
+    // public Optional<InternalExtendedCompletionContext> getExtendedContext() {
+    // try {
+    // final Field ctxField = coreContext.getClass().getDeclaredField("extendedContext");
+    // ctxField.setAccessible(true);
+    // final InternalExtendedCompletionContext extendedContext = cast(ctxField.get(coreContext));
+    // final Field cuField = extendedContext.getClass().getDeclaredField("compilationUnitDeclaration");
+    // cuField.setAccessible(true);
+    // final CompilationUnitDeclaration cu = cast(cuField.get(extendedContext));
+    // return fromNullable(extendedContext);
+    // } catch (final Exception e) {
+    // throw throwUnhandledException(e);
+    // }
+    // }
+
     @Override
     public JavaContentAssistInvocationContext getJavaContext() {
         return javaContext;
@@ -84,7 +98,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<IMethod> getEnclosingMethod() {
-        final IJavaElement enclosing = getEnclosingElement();
+        final IJavaElement enclosing = getEnclosingElement().orNull();
         if (enclosing instanceof IMethod) {
             return of((IMethod) enclosing);
         } else {
@@ -94,7 +108,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<IType> getEnclosingType() {
-        final IJavaElement enclosing = getEnclosingElement();
+        final IJavaElement enclosing = getEnclosingElement().orNull();
         if (enclosing instanceof IType) {
             return of((IType) enclosing);
         } else {
@@ -103,13 +117,24 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     }
 
     @Override
-    public IJavaElement getEnclosingElement() {
-        return coreContext.getEnclosingElement();
+    public Optional<IJavaElement> getEnclosingElement() {
+        if (coreContext.isExtended()) {
+            return of(coreContext.getEnclosingElement());
+        }
+        return absent();
+    }
+
+    @Override
+    public boolean hasEnclosingElement() {
+        return getEnclosingElement().isPresent();
     }
 
     @Override
     public Optional<IType> getClosestEnclosingType() {
-        final IJavaElement enclosing = getEnclosingElement();
+        if (!hasEnclosingElement()) {
+            absent();
+        }
+        final IJavaElement enclosing = getEnclosingElement().get();
         if (enclosing instanceof IType) {
             return of((IType) enclosing);
         } else {

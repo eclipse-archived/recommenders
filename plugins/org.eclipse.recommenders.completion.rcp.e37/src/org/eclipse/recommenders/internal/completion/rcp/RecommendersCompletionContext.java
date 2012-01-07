@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.completion.rcp;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -200,10 +201,13 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
 
     @Override
     public List<ILocalVariable> getVisibleLocals() {
+        if (!hasEnclosingElement()) {
+            return Collections.emptyList();
+        }
         final List<ILocalVariable> res = Lists.newArrayList();
         for (final LocalDeclaration d : astCompletionNodeFinder.localDeclarations) {
             final LocalVariableBinding b = d.binding;
-            final JavaElement parent = (JavaElement) getEnclosingElement();
+            final JavaElement parent = (JavaElement) getEnclosingElement().get();
             final ILocalVariable f = JdtUtils.createUnresolvedLocaVariable(b, parent);
             res.add(f);
         }
