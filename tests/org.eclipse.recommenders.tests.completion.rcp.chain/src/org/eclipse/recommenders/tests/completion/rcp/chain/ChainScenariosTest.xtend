@@ -12,7 +12,7 @@ import org.junit.Test
 
 import static junit.framework.Assert.*
  
-class ScenariosTest { 
+class ChainScenariosTest { 
   
  
 	@Test
@@ -284,6 +284,24 @@ class ScenariosTest {
 		exercise(code, expected);
 	}
 	
+	@Test
+	def void testPrefixFilter(){
+		val code = '''
+		import java.awt.*;
+		public class MyClass {
+			Event evt;
+			Event aevt;
+			void test() {
+				Event evt = a$
+			}
+		}
+		'''
+		var expected = w(newArrayList(
+			"aevt","aevt evt"
+			))
+			
+		exercise(code, expected);
+	}
 	def exercise(CharSequence code, List<? extends List<String>> expected){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.createFileAndParseWithMarkers(code.toString, "MyClass.java")
