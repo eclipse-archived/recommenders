@@ -510,6 +510,17 @@ public class JdtUtils {
         return of(page);
     }
 
+    public static Optional<JavaEditor> getActiveJavaEditor() {
+        Optional<IWorkbenchPage> page = getActiveWorkbenchPage();
+        if (page.isPresent()) {
+            IEditorPart editor = page.get().getActiveEditor();
+            if (editor instanceof JavaEditor) {
+                return of((JavaEditor) editor);
+            }
+        }
+        return absent();
+    }
+
     private static Optional<IJavaElement> getElementAtOffset(final ITypeRoot input, final ITextSelection selection) {
         IJavaElement res = null;
         try {
