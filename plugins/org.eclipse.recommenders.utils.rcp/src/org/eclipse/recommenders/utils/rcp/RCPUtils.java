@@ -34,8 +34,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
 public class RCPUtils {
-    public static StructuredSelection asStructuredSelection(final ISelection selection) {
-        return (StructuredSelection) (isStructured(selection) ? selection : StructuredSelection.EMPTY);
+    public static IStructuredSelection asStructuredSelection(final ISelection selection) {
+        return (IStructuredSelection) (isStructured(selection) ? selection : StructuredSelection.EMPTY);
     }
 
     public static boolean isStructured(final ISelection selection) {
