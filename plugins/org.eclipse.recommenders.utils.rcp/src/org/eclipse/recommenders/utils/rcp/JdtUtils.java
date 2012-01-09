@@ -21,11 +21,13 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -806,6 +808,27 @@ public class JdtUtils {
             res[i] = Signature.getSimpleName(parameterNames[i]).toCharArray();
         }
         return res;
+    }
+
+    public static Optional<File> getLocation(final IPackageFragmentRoot packageRoot) {
+        File res = null;
+        final IResource resource = packageRoot.getResource();
+        if (resource != null) {
+            if (resource.getLocation() == null) {
+                res = resource.getRawLocation().toFile().getAbsoluteFile();
+            } else {
+                res = resource.getLocation().toFile().getAbsoluteFile();
+            }
+        }
+        if (packageRoot.isExternal()) {
+            res = packageRoot.getPath().toFile().getAbsoluteFile();
+        }
+
+        // if the file (for whatever reasons) does not exist, skip it.
+        if (res != null && !res.exists()) {
+            res = null;
+        }
+        return Optional.fromNullable(res);
     }
 
 }
