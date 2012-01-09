@@ -36,6 +36,7 @@ public class Events {
 
     public static class ManifestResolutionRequested extends InternalEvent {
         public ClasspathDependencyInformation dependency;
+        public boolean manuallyTriggered;
     }
 
     public static class ManifestResolutionFinished extends InternalEvent {

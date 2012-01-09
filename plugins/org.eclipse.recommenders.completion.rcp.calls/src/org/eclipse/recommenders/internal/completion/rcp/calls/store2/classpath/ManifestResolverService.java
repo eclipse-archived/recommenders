@@ -40,8 +40,7 @@ public class ManifestResolverService {
     protected void fireNewManifestMappingCreated(final Manifest manifest, final ManifestResolutionRequested request) {
         ManifestResolutionFinished e = new ManifestResolutionFinished();
         e.dependency = request.dependency;
-        // TODO XXX manual=true/false! this needs to me checked. Who is responsible to set this flag?
-        e.manifestResolverInfo = new ManifestResolverInfo(manifest, false);
+        e.manifestResolverInfo = new ManifestResolverInfo(manifest, request.manuallyTriggered);
         bus.post(e);
     }
 
