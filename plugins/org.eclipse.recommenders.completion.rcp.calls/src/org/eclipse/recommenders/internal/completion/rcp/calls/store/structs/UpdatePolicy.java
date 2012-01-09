@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.store;
+package org.eclipse.recommenders.internal.completion.rcp.calls.store.structs;
 
 public enum UpdatePolicy {
     DEFAULT, NEVER, MANUAL, AUTOMATIC

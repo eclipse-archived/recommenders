@@ -14,10 +14,10 @@ import java.io.File;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelResolver;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.RemoteResolverJobFactory;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ResolveCallsModelJob;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.CallsModelResolver;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.RemoteResolverJobFactory;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.ResolveCallsModelJob;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.parser.VersionParserFactory;
 import org.eclipse.swt.SWT;

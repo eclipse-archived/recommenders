@@ -205,7 +205,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
                 final double probability = probabilities[indexForTrue];
 
                 if (probability >= minProbabilityThreshold) {
-                    res.add(Tuple.create(method, probability));
+                    res.add(Tuple.newTuple(method, probability));
                 }
             }
         }
@@ -258,7 +258,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
             if (0.01 > p) {
                 continue;
             }
-            res.add(Tuple.create(outcome, p));
+            res.add(Tuple.newTuple(outcome, p));
         }
         return res;
     }
@@ -282,4 +282,5 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         }
         return result;
     }
+
 }

@@ -15,8 +15,8 @@ import static org.eclipse.recommenders.internal.completion.rcp.calls.wiring.Call
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.RemoteResolverJobFactory;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.UpdateAllModelsJob;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.RemoteResolverJobFactory;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.UpdateAllModelsJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;

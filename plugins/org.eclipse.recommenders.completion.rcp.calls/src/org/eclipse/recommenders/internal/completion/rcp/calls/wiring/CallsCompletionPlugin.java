@@ -10,8 +10,12 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.wiring;
 
+import java.io.IOException;
+
 import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
+import org.eclipse.recommenders.utils.rcp.LoggingUtils;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -36,14 +40,25 @@ public class CallsCompletionPlugin extends AbstractUIPlugin {
 
     @Override
     public void stop(final BundleContext context) throws Exception {
+        closeOldDepStore();
+        closeNewDepStore();
         plugin = null;
-        storeDependencyInfo();
         super.stop(context);
     }
 
-    private void storeDependencyInfo() {
+    private void closeOldDepStore() {
         final Injector injector = InjectionService.getInstance().getInjector();
         final ClasspathDependencyStore dependencyStore = injector.getInstance(ClasspathDependencyStore.class);
         dependencyStore.store();
+
+    }
+
+    private void closeNewDepStore() {
+        try {
+            final Injector injector = InjectionService.getInstance().getInjector();
+            injector.getInstance(CallModelStore.class).close();
+        } catch (IOException e) {
+            LoggingUtils.logError(e, this, "Exception while closing dependency store.");
+        }
     }
 }

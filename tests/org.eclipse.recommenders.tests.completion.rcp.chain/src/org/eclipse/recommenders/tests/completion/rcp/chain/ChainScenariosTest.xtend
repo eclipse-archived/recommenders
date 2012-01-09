@@ -3,8 +3,8 @@ package org.eclipse.recommenders.tests.completion.rcp.chain
 import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.recommenders.internal.completion.rcp.chain.CallChainCompletionProposal
-import org.eclipse.recommenders.internal.completion.rcp.chain.CallChainCompletionProposalComputer
+import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposal
+import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.tests.jdt.TestJavaContentAssistContext
 import org.junit.Ignore
@@ -309,11 +309,11 @@ class ChainScenariosTest {
 		val completionIndex = struct.second.head
 		val ctx = new TestJavaContentAssistContext(cu, completionIndex)
 		
-		val sut = new CallChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock())
+		val sut = new org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock())
 		sut.sessionStarted
 		val proposals = sut.computeCompletionProposals(ctx, null) 
 		 for(proposal : proposals){
-			val names = (proposal as CallChainCompletionProposal).chainElementNames
+			val names = (proposal as org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposal).getChainElementNames
 			assertTrue('''couldn't find «names» in expected.'''.toString, expected.remove(names))
 		} 
 		assertTrue(''' some expected values were not found «expected» '''.toString, expected.empty)

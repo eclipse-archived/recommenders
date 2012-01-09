@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
-import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.UdcServer;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CallModelsServer;
 import org.eclipse.recommenders.webclient.ClientConfiguration;
 import org.eclipse.recommenders.webclient.WebServiceClient;
 
@@ -33,7 +33,7 @@ public class CompilationUnitServerExporter implements ICompilationUnitExporter {
     private IProgressMonitor monitor;
 
     @Inject
-    public CompilationUnitServerExporter(@UdcServer final ClientConfiguration config) {
+    public CompilationUnitServerExporter(@CallModelsServer final ClientConfiguration config) {
         wsClient = new WebServiceClient(config);
         wsClient.enableGzipCompression(true);
     }

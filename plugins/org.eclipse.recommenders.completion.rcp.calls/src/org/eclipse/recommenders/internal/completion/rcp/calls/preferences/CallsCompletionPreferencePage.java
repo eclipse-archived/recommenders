@@ -37,7 +37,7 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.RemoteResolverJobFactory;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.RemoteResolverJobFactory;
 import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin;
 import org.eclipse.recommenders.utils.rcp.ScaleOneDimensionLayout;
 import org.eclipse.swt.SWT;

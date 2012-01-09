@@ -8,23 +8,23 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.store;
+package org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath;
 
 import java.util.Date;
 
 import org.eclipse.recommenders.commons.udc.Manifest;
 
-public class ManifestResolvementInformation {
+public class ManifestResolverInfo {
 
     private Manifest manifest;
     private boolean manualResolved;
     private Date timestamp;
 
-    protected ManifestResolvementInformation() {
+    protected ManifestResolverInfo() {
         // for deserialization
     }
 
-    public ManifestResolvementInformation(final Manifest manifest, final boolean manualResolved) {
+    public ManifestResolverInfo(final Manifest manifest, final boolean manualResolved) {
         this.manifest = manifest;
         this.manualResolved = manualResolved;
         timestamp = new Date();

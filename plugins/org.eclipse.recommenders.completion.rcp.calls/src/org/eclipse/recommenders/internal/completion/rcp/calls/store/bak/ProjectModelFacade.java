@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.store;
+package org.eclipse.recommenders.internal.completion.rcp.calls.store.bak;
 
 import java.io.File;
 import java.util.Set;
@@ -33,6 +33,11 @@ import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.SearchableEnvironment;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.FragmentResolver;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.IModelArchive;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchive;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.Throws;

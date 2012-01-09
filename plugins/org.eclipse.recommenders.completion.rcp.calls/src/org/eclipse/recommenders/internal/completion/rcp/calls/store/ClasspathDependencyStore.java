@@ -23,7 +23,8 @@ import javax.inject.Singleton;
 
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.ClasspathDependencyStoreLocation;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.structs.ManifestResolvementInformation;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.DependencyStoreLocation;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 
 import com.google.common.collect.Maps;
@@ -40,7 +41,7 @@ public class ClasspathDependencyStore {
     private final Map<File, ManifestResolvementInformation> resource2manifestInfo = Maps.newConcurrentMap();
 
     @Inject
-    public ClasspathDependencyStore(@ClasspathDependencyStoreLocation final File persistanceLocation) {
+    public ClasspathDependencyStore(@DependencyStoreLocation final File persistanceLocation) {
         this.persistanceLocation = persistanceLocation;
         dependencyInfoFile = new File(persistanceLocation, "dependencies.json");
         manifestIdFile = new File(persistanceLocation, "manifests.json");

@@ -42,8 +42,8 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.IProjectModelFacade;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ProjectServices;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.bak.IProjectModelFacade;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.bak.ProjectServices;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -59,7 +59,7 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-    private static final int MAX_NUM_PROPOSALS = 5;
+    // private static final int MAX_NUM_PROPOSALS = 5;
     private static final double MIN_PROBABILITY_THRESHOLD = 0.1d;
 
     @SuppressWarnings("serial")

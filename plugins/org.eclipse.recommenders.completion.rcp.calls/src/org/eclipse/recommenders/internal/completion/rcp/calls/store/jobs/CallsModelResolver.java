@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.store;
+package org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
@@ -27,7 +27,10 @@ import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.udc.ManifestMatchResult;
 import org.eclipse.recommenders.internal.analysis.archive.ArchiveDetailsExtractor;
-import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.UdcServer;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.IModelArchive;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CallModelsServer;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.webclient.ClientConfiguration;
@@ -52,7 +55,7 @@ public class CallsModelResolver {
 
     @Inject
     public CallsModelResolver(final ClasspathDependencyStore dependencyStore, final ModelArchiveStore modelStore,
-            @UdcServer final ClientConfiguration config) {
+            @CallModelsServer final ClientConfiguration config) {
         this.dependencyStore = dependencyStore;
         this.modelStore = modelStore;
         client = new WebServiceClient(config);

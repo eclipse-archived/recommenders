@@ -8,14 +8,12 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.store;
+package org.eclipse.recommenders.internal.completion.rcp.calls.net;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
-import org.eclipse.recommenders.internal.completion.rcp.calls.net.BayesNetWrapper;
-import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 public class BinarySmileCallsNetLoader {

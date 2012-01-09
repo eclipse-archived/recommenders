@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChange
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.UpdateAllModelsJob;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.UpdateAllModelsJob;
 import org.eclipse.recommenders.internal.udc.PreferenceKeys;
 import org.eclipse.recommenders.internal.udc.PreferenceUtil;
 import org.eclipse.recommenders.internal.udc.UpdateCompletedListener;

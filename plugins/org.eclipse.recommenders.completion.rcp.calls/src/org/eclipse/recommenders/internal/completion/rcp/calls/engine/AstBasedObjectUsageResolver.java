@@ -268,6 +268,7 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean visit(final VariableDeclarationStatement node) {
         for (final VariableDeclarationFragment f : (List<VariableDeclarationFragment>) node.fragments()) {

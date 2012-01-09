@@ -16,6 +16,10 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.CallsModelResolver;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.RemoteResolverJobFactory;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.ResolveCallsModelJob;
+
 import com.google.common.collect.Sets;
 
 @Singleton

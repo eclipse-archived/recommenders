@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.store;
+package org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs;
 
 import static org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CALLS_STORE_LOCATION;
 
@@ -26,6 +26,7 @@ import javax.inject.Named;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchive;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.VersionRange;
 

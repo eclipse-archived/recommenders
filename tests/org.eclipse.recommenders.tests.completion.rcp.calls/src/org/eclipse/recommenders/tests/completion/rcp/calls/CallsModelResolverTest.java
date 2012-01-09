@@ -23,8 +23,8 @@ import java.util.Date;
 
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelResolver;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelResolver.OverridePolicy;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.CallsModelResolver;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.CallsModelResolver.OverridePolicy;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.IModelArchive;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;

@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.UdcServer;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CallModelsServer;
 import org.eclipse.recommenders.webclient.ClientConfiguration;
 import org.eclipse.recommenders.webclient.WebServiceClient;
 
@@ -32,7 +32,7 @@ public class UploadClasspathDependencyInfosJob extends Job {
 
     @Inject
     public UploadClasspathDependencyInfosJob(final ClasspathDependencyStore dependencyStore,
-            @UdcServer final ClientConfiguration config) {
+            @CallModelsServer final ClientConfiguration config) {
         super("Uploading dependency meta data");
         this.dependencyStore = dependencyStore;
         client = new WebServiceClient(config);

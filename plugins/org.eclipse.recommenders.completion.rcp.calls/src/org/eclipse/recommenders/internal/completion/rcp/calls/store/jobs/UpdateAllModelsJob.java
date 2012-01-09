@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.store;
+package org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs;
 
 import java.io.File;
 import java.util.Set;
@@ -20,7 +20,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.CallsModelResolver.OverridePolicy;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.CallsModelResolver.OverridePolicy;
 
 public class UpdateAllModelsJob extends WorkspaceJob {
 

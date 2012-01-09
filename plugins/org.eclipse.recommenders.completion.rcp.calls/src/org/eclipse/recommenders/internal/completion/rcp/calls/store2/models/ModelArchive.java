@@ -8,8 +8,9 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.store;
+package org.eclipse.recommenders.internal.completion.rcp.calls.store2.models;
 
+import static org.eclipse.recommenders.utils.Checks.ensureExists;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.io.File;
@@ -21,19 +22,17 @@ import java.util.zip.ZipFile;
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.completion.rcp.calls.net.BinarySmileCallsNetLoader;
-import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
-public class ModelArchive implements IModelArchive {
+public class ModelArchive<T extends IModel> implements IModelArchive<T> {
 
     private static final String MANIFEST_FILENAME = "manifest.json";
     private static final String MODEL_POSTFIX = ".data";
 
-    private final BinarySmileCallsNetLoader loader;
+    private final IModelLoader<T> modelLoader;
     private ZipFile zipFile;
     private Manifest manifest;
     private File file;
@@ -47,13 +46,15 @@ public class ModelArchive implements IModelArchive {
         return pool;
     }
 
-    public ModelArchive(final File file) {
-        this.file = file;
-        loader = new BinarySmileCallsNetLoader();
+    public ModelArchive(final File file, final IModelLoader<T> modelLoader) {
+        ensureExists(file);
+        this.file = ensureIsNotNull(file);
+        this.modelLoader = ensureIsNotNull(modelLoader);
         open();
         readManifest();
     }
 
+    @Override
     public void open() {
         try {
             zipFile = new ZipFile(file);
@@ -87,18 +88,19 @@ public class ModelArchive implements IModelArchive {
         return zipFile.getEntry(getFilenameFromType(name)) != null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public IObjectMethodCallsNet acquireModel(final ITypeName name) {
+    public T acquireModel(final ITypeName name) {
         Checks.ensureIsTrue(hasModel(name));
         try {
-            return (IObjectMethodCallsNet) pool.borrowObject(name);
+            return (T) pool.borrowObject(name);
         } catch (final Exception e) {
             throw Throws.throwUnhandledException(e);
         }
     }
 
     @Override
-    public void releaseModel(final IObjectMethodCallsNet model) {
+    public void releaseModel(final T model) {
         try {
             pool.returnObject(model.getType(), model);
         } catch (final Exception e) {
@@ -106,10 +108,10 @@ public class ModelArchive implements IModelArchive {
         }
     }
 
-    private IObjectMethodCallsNet loadModel(final ITypeName name) {
+    private T loadModel(final ITypeName name) {
         final ZipEntry entry = zipFile.getEntry(getFilenameFromType(name));
         try {
-            return loader.load(name, zipFile.getInputStream(entry));
+            return modelLoader.load(name, zipFile.getInputStream(entry));
         } catch (final IOException e) {
             throw Throws.throwUnhandledException(e, "Unable to load model for type '%s' from file '%s'", name,
                     file.getAbsolutePath());
@@ -121,10 +123,12 @@ public class ModelArchive implements IModelArchive {
         zipFile.close();
     }
 
+    @Override
     public File getFile() {
         return file;
     }
 
+    @Override
     public void setFile(final File file) {
         this.file = file;
     }
@@ -148,9 +152,10 @@ public class ModelArchive implements IModelArchive {
         public void destroyObject(final Object arg0, final Object arg1) throws Exception {
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public void activateObject(final Object typeName, final Object callsNet) throws Exception {
-            ((IObjectMethodCallsNet) callsNet).clearEvidence();
+        public void activateObject(final Object typeName, final Object net) throws Exception {
+            ((T) net).clearEvidence();
         }
     }
 

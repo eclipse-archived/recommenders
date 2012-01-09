@@ -8,11 +8,13 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.store;
+package org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs;
 
-import org.eclipse.jdt.core.IJavaProject;
+import java.io.File;
 
-public interface ProjectModelFacadeFactory {
+import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.CallsModelResolver.OverridePolicy;
 
-    ProjectModelFacade create(IJavaProject javaProject);
+public interface RemoteResolverJobFactory {
+
+    ResolveCallsModelJob create(File file, CallsModelResolver.OverridePolicy reresolve);
 }
