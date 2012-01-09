@@ -30,12 +30,12 @@ import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitAddedEvent;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitChangedEvent;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitRemovedEvent;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitSavedEvent;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectClosedEvent;
-import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectOpenedEvent;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitAdded;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitChanged;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitRemoved;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitSaved;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectClosed;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectOpened;
 import org.eclipse.recommenders.utils.annotations.Testing;
 import org.eclipse.recommenders.utils.rcp.RCPUtils;
 
@@ -102,7 +102,7 @@ public class JavaModelEventsProvider implements IElementChangedListener {
     }
 
     private void fireProjectOpenedEvent(final IJavaProject javaProject) {
-        bus.post(new JavaProjectOpenedEvent(javaProject));
+        bus.post(new JavaProjectOpened(javaProject));
     }
 
     private boolean isProjectClosedEvent(final IJavaElementDelta delta) {
@@ -112,7 +112,7 @@ public class JavaModelEventsProvider implements IElementChangedListener {
     }
 
     private void fireProjectClosedEvent(final IJavaProject javaProject) {
-        bus.post(new JavaProjectClosedEvent(javaProject));
+        bus.post(new JavaProjectClosed(javaProject));
     }
 
     private boolean isCompilationUnitChangedEvent(final IJavaElementDelta delta) {
@@ -140,7 +140,7 @@ public class JavaModelEventsProvider implements IElementChangedListener {
     }
 
     private void fireCompilationUnitAddedEvent(final ICompilationUnit cu) {
-        bus.post(new CompilationUnitAddedEvent(cu));
+        bus.post(new CompilationUnitAdded(cu));
     }
 
     private boolean isCompilationUnitSavedEvent(final IJavaElementDelta delta) {
@@ -149,15 +149,15 @@ public class JavaModelEventsProvider implements IElementChangedListener {
     }
 
     private void fireCompilationUnitSavedEvent(final ICompilationUnit cu) {
-        bus.post(new CompilationUnitSavedEvent(cu));
+        bus.post(new CompilationUnitSaved(cu));
     }
 
     private void fireCompilationUnitChangedEvent(final ICompilationUnit cu) {
-        bus.post(new CompilationUnitChangedEvent(cu));
+        bus.post(new CompilationUnitChanged(cu));
     }
 
     private void fireCompilationUnitRemovedEvent(final ICompilationUnit cu) {
-        bus.post(new CompilationUnitRemovedEvent(cu));
+        bus.post(new CompilationUnitRemoved(cu));
     }
 
     @Testing("visibility set to protected to allow unit testing (mocking workspace)")

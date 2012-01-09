@@ -25,9 +25,9 @@ public class JavaModelEvents {
 
     }
 
-    public static final class CompilationUnitAddedEvent extends CompilationUnitDeltaEvent {
+    public static final class CompilationUnitAdded extends CompilationUnitDeltaEvent {
 
-        public CompilationUnitAddedEvent(final ICompilationUnit cu) {
+        public CompilationUnitAdded(final ICompilationUnit cu) {
             super(cu);
         }
     }
@@ -35,46 +35,47 @@ public class JavaModelEvents {
     /**
      * Fine-grained event that occurs whenever a compilation unit is changed/edited. Note, this is a very frequent
      * event. If you want to be informed whenever the compilation unit is saved (written to disc) subscribe for the
-     * {@link CompilationUnitSavedEvent}.
+     * {@link CompilationUnitSaved}.
      */
-    public static final class CompilationUnitChangedEvent extends CompilationUnitDeltaEvent {
+    public static final class CompilationUnitChanged extends CompilationUnitDeltaEvent {
 
-        public CompilationUnitChangedEvent(final ICompilationUnit cu) {
+        public CompilationUnitChanged(final ICompilationUnit cu) {
             super(cu);
         }
     }
 
-    public static final class CompilationUnitSavedEvent extends CompilationUnitDeltaEvent {
+    public static final class CompilationUnitSaved extends CompilationUnitDeltaEvent {
 
-        public CompilationUnitSavedEvent(final ICompilationUnit cu) {
+        public CompilationUnitSaved(final ICompilationUnit cu) {
             super(cu);
         }
     }
 
-    public static final class CompilationUnitRemovedEvent extends CompilationUnitDeltaEvent {
+    public static final class CompilationUnitRemoved extends CompilationUnitDeltaEvent {
 
-        public CompilationUnitRemovedEvent(final ICompilationUnit cu) {
+        public CompilationUnitRemoved(final ICompilationUnit cu) {
             super(cu);
         }
     }
 
-    public static final class JavaProjectClosedEvent {
+    public static final class JavaProjectClosed {
         public final IJavaProject project;
 
-        public JavaProjectClosedEvent(final IJavaProject javaProject) {
+        public JavaProjectClosed(final IJavaProject javaProject) {
             this.project = javaProject;
         }
 
     }
 
-    public static final class JavaProjectOpenedEvent {
+    public static final class JavaProjectOpened {
 
         public final IJavaProject project;
 
-        public JavaProjectOpenedEvent(final IJavaProject javaProject) {
+        public JavaProjectOpened(final IJavaProject javaProject) {
             this.project = javaProject;
         }
-
     }
+
+    // TODO: classpath changed event (add/remove)
 
 }

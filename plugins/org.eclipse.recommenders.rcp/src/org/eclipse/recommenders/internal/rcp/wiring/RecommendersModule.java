@@ -82,6 +82,7 @@ public class RecommendersModule extends AbstractModule implements Module {
 
     @Singleton
     @Provides
+    // @Workspace
     protected EventBus provideWorkspaceEventBus() {
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
         final ExecutorService pool = Executors.newFixedThreadPool(numberOfCores + 1);
@@ -131,8 +132,7 @@ public class RecommendersModule extends AbstractModule implements Module {
     }
 
     /*
-     * this is a bit odd. Used to initialize complex wired elements such as
-     * JavaElementsProvider etc.
+     * this is a bit odd. Used to initialize complex wired elements such as JavaElementsProvider etc.
      */
     public static class ServicesInitializer {
 
