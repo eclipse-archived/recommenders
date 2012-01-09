@@ -119,7 +119,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     @Override
     public Optional<IJavaElement> getEnclosingElement() {
         if (coreContext.isExtended()) {
-            return of(coreContext.getEnclosingElement());
+            return fromNullable(coreContext.getEnclosingElement());
         }
         return absent();
     }
