@@ -32,6 +32,7 @@ import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ProviderExecutionSchedulerTest {
@@ -48,6 +49,7 @@ public class ProviderExecutionSchedulerTest {
     }
 
     @Test
+    @Ignore
     public void assertTestIsNotRunInUIThread() {
         Thread actual = Thread.currentThread();
         Thread unexpected = Display.getDefault().getThread();
@@ -216,17 +218,17 @@ public class ProviderExecutionSchedulerTest {
         assertTrue(duration < RENDER_TIMEOUT);
     }
 
-    private void createSchedulerAndFireSelection(ExtdocProviderHelper... providers) {
+    private void createSchedulerAndFireSelection(final ExtdocProviderHelper... providers) {
         sut = fixture.createScheduler(providers);
         sut.scheduleOnSelection(SELECTION);
     }
 
-    private void createSchedulerFireSelectionAndWait(ExtdocProviderHelper... providers) {
+    private void createSchedulerFireSelectionAndWait(final ExtdocProviderHelper... providers) {
         createSchedulerAndFireSelection(providers);
         waitForFinish();
     }
 
-    private void createSchedulerFireAsActivationAndWait(ExtdocProviderHelper... providers) {
+    private void createSchedulerFireAsActivationAndWait(final ExtdocProviderHelper... providers) {
         for (ExtdocProvider provider : providers) {
             provider.setEnabled(false);
         }
@@ -246,15 +248,16 @@ public class ProviderExecutionSchedulerTest {
             Throws.throwUnhandledException(e);
         }
 
-        while (Display.getDefault().readAndDispatch())
+        while (Display.getDefault().readAndDispatch()) {
             ;
+        }
     }
 
-    private void assertExecution(ExtdocProviderHelper provider) {
+    private void assertExecution(final ExtdocProviderHelper provider) {
         provider.assertExecution(1);
     }
 
-    private void assertParameters(ExtdocProviderHelper provider) {
+    private void assertParameters(final ExtdocProviderHelper provider) {
         Composite composite = fixture.getComposite(provider);
         provider.assertParameters(SELECTION, composite);
     }
