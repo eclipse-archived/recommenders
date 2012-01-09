@@ -35,6 +35,11 @@
 									<type>target</type>
 									<classifier>e37</classifier>
 								</artifact>
+                                <artifact>
+                                    <file>e3x.target</file>
+                                    <type>target</type>
+                                    <classifier>e3x</classifier>
+                                </artifact>
 								<artifact>
 									<file>e42.target</file>
 									<type>target</type>
