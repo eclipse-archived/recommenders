@@ -15,7 +15,9 @@ import static com.google.common.util.concurrent.MoreExecutors.listeningDecorator
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider.Status.NOT_AVAILABLE;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderSt
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.RenderNowEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ProviderContentPart;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
+import org.eclipse.recommenders.utils.annotations.Testing;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
@@ -51,8 +54,9 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 
 public class ProviderExecutionScheduler {
 
+    @Testing("visibility allows to set test values")
+    protected static int RENDER_TIMEOUT_IN_MS = 2000;
     private static final int NUMBER_OF_THREADS = 7;
-    private static final int SECONDS_FOR_RENDER_TIMEOUT = 2;
 
     private final ListeningExecutorService pool;
     private final Map<ExtdocProvider, Future<?>> futures;
@@ -67,12 +71,12 @@ public class ProviderExecutionScheduler {
     private CountDownLatch latch;
 
     public ProviderExecutionScheduler(final List<ExtdocProvider> providers,
-            final SubscriptionManager subscriptionManager, final ProviderContentPart coontentPart,
+            final SubscriptionManager subscriptionManager, final ProviderContentPart contentPart,
             final EventBus extdocBus) {
         this.providers = providers;
         this.extdocBus = extdocBus;
         this.subscriptionManager = subscriptionManager;
-        this.contentPart = coontentPart;
+        this.contentPart = contentPart;
 
         pool = createListeningThreadPool(NUMBER_OF_THREADS);
         futures = newHashMap();
@@ -118,7 +122,7 @@ public class ProviderExecutionScheduler {
             }
         }
 
-        blockUntilAllFinishedOrRenderTimeout(latch);
+        blockUntilAllFinishedOrRenderTimeout();
         postProviderDelayedEventsForLateProviders();
         triggerRenderNow();
     }
@@ -132,11 +136,11 @@ public class ProviderExecutionScheduler {
         });
     }
 
-    private void blockUntilAllFinishedOrRenderTimeout(final CountDownLatch l) {
+    protected void blockUntilAllFinishedOrRenderTimeout() {
         try {
-            l.await(SECONDS_FOR_RENDER_TIMEOUT, TimeUnit.SECONDS);
+            latch.await(RENDER_TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException e) {
-            e.printStackTrace();
+            throwUnhandledException(e);
         }
     }
 
@@ -238,6 +242,9 @@ public class ProviderExecutionScheduler {
                 }
             } catch (final InterruptedException e) {
                 // this happens on cancel request. don't propagate
+            } catch (final InvocationTargetException e) {
+                // unwrap to increase testability
+                postInUiThread(new ProviderFailedEvent(provider, e.getTargetException()));
             } catch (final Exception e) {
                 postInUiThread(new ProviderFailedEvent(provider, e));
             }

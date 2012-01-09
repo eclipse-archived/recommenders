@@ -18,7 +18,7 @@ public abstract class ExtdocProvider {
     public enum Status {
         OK, NOT_AVAILABLE
     }
-    
+
     private boolean isEnabled = true;
     private ExtdocProviderDescription description;
 
@@ -26,15 +26,15 @@ public abstract class ExtdocProvider {
         this.description = description;
     }
 
-    public final ExtdocProviderDescription getDescription() {
+    public ExtdocProviderDescription getDescription() {
         return description;
     }
 
-    public final boolean isEnabled() {
+    public boolean isEnabled() {
         return isEnabled;
     }
 
-    public final void setEnabled(final boolean isEnabled) {
+    public void setEnabled(final boolean isEnabled) {
         this.isEnabled = isEnabled;
     }
 
@@ -66,5 +66,4 @@ public abstract class ExtdocProvider {
             }
         }
     }
-
 }

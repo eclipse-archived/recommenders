@@ -288,14 +288,14 @@ public class ProviderContentPart {
                 final String providerName = e.provider.getDescription().getName();
 
                 final String dialogTitle = format("Extdoc Provider Failure", providerName);
-                final String errorMessage = findFirstNonNullErrorMessage(e.exception);
-                final String rootCauseMessage = Throwables.getRootCause(e.exception).getMessage();
+                final String errorMessage = findFirstNonNullErrorMessage(e.throwable);
+                final String rootCauseMessage = Throwables.getRootCause(e.throwable).getMessage();
 
-                final Status status = new Status(IStatus.ERROR, ExtdocPlugin.PLUGIN_ID, errorMessage, e.exception);
+                final Status status = new Status(IStatus.ERROR, ExtdocPlugin.PLUGIN_ID, errorMessage, e.throwable);
                 final String message = format(
                         "Provider %s failed with the following message: %s - %s\n\nSee error log for more details.",
                         providerName, errorMessage, rootCauseMessage);
-                RecommendersPlugin.logError(e.exception, message);
+                RecommendersPlugin.logError(new Exception(e.throwable), message);
                 ErrorDialog.openError(container.getShell(), dialogTitle, message, status);
             }
 

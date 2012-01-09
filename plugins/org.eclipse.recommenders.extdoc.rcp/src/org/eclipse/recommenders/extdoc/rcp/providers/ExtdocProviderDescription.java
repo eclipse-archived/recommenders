@@ -29,9 +29,4 @@ public class ExtdocProviderDescription {
     public Image getImage() {
         return image;
     }
-
-    @Override
-    public String toString() {
-        return String.format("provider-%s(%d)", getName(), hashCode());
-    }
 }

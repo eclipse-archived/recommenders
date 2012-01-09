@@ -10,11 +10,27 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.scheduling;
 
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
+import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
+
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 
 public class Events {
-    public static class NewSelectionEvent {
+
+    public static abstract class ExtdocEvent {
+        @Override
+        public boolean equals(Object obj) {
+            return reflectionEquals(this, obj);
+        }
+
+        @Override
+        public int hashCode() {
+            return reflectionHashCode(this);
+        }
+    }
+
+    public static class NewSelectionEvent extends ExtdocEvent {
 
         public final JavaSelectionEvent selection;
 
@@ -23,7 +39,7 @@ public class Events {
         }
     }
 
-    public static class ProviderActivationEvent {
+    public static class ProviderActivationEvent extends ExtdocEvent {
 
         public final ExtdocProvider provider;
 
@@ -32,7 +48,7 @@ public class Events {
         }
     }
 
-    public static class ProviderDeactivationEvent {
+    public static class ProviderDeactivationEvent extends ExtdocEvent {
 
         public final ExtdocProvider provider;
 
@@ -41,7 +57,7 @@ public class Events {
         }
     }
 
-    public static class ProviderDelayedEvent {
+    public static class ProviderDelayedEvent extends ExtdocEvent {
 
         public final ExtdocProvider provider;
 
@@ -50,18 +66,18 @@ public class Events {
         }
     }
 
-    public static class ProviderFailedEvent {
+    public static class ProviderFailedEvent extends ExtdocEvent {
 
         public final ExtdocProvider provider;
-        public final Exception exception;
+        public final Throwable throwable;
 
-        public ProviderFailedEvent(final ExtdocProvider provider, final Exception e) {
+        public ProviderFailedEvent(final ExtdocProvider provider, final Throwable throwable) {
             this.provider = provider;
-            this.exception = e;
+            this.throwable = throwable;
         }
     }
 
-    public static class ProviderFinishedEvent {
+    public static class ProviderFinishedEvent extends ExtdocEvent {
 
         public final ExtdocProvider provider;
 
@@ -70,7 +86,7 @@ public class Events {
         }
     }
 
-    public static class ProviderFinishedLateEvent {
+    public static class ProviderFinishedLateEvent extends ExtdocEvent {
 
         public final ExtdocProvider provider;
 
@@ -79,7 +95,7 @@ public class Events {
         }
     }
 
-    public static class ProviderNotAvailableEvent {
+    public static class ProviderNotAvailableEvent extends ExtdocEvent {
         public final ExtdocProvider provider;
         public final boolean hasFinishedLate;
 
@@ -94,7 +110,7 @@ public class Events {
         }
     }
 
-    public static class ProviderOrderChangedEvent {
+    public static class ProviderOrderChangedEvent extends ExtdocEvent {
 
         public final ExtdocProvider provider;
         public final ExtdocProvider reference;
@@ -110,7 +126,7 @@ public class Events {
         }
     }
 
-    public static class ProviderSelectionEvent {
+    public static class ProviderSelectionEvent extends ExtdocEvent {
 
         public final ExtdocProvider provider;
 
@@ -119,7 +135,7 @@ public class Events {
         }
     }
 
-    public static class ProviderStartedEvent {
+    public static class ProviderStartedEvent extends ExtdocEvent {
 
         public final ExtdocProvider provider;
 
@@ -128,6 +144,6 @@ public class Events {
         }
     }
 
-    public static class RenderNowEvent {
+    public static class RenderNowEvent extends ExtdocEvent {
     }
 }
