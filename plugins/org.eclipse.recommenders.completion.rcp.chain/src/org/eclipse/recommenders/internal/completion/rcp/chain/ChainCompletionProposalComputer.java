@@ -20,8 +20,10 @@ import static org.eclipse.recommenders.utils.rcp.JdtUtils.findTypeOfField;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -56,8 +58,15 @@ import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
-public class CallChainCompletionProposalComputer implements IJavaCompletionProposalComputer {
+public class ChainCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
+    private final Set<String> excludedTypes = new HashSet<String>() {
+        {
+            add("java.lang.Object");
+            add("java.lang.String");
+        }
+
+    };
     private IRecommendersCompletionContext ctx;
     private IType expectedType;
     private List<MemberEdge> entrypoints;
@@ -66,7 +75,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
     private final IRecommendersCompletionContextFactory ctxFactory;
 
     @Inject
-    public CallChainCompletionProposalComputer(final IRecommendersCompletionContextFactory ctxFactory) {
+    public ChainCompletionProposalComputer(final IRecommendersCompletionContextFactory ctxFactory) {
         this.ctxFactory = ctxFactory;
     }
 
@@ -106,7 +115,14 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
 
     private boolean findExpectedType() {
         expectedType = ctx.getExpectedType().orNull();
-        return expectedType != null;
+        if (expectedType == null) {
+            return false;
+        }
+        if (excludedTypes.contains(expectedType.getFullyQualifiedName())) {
+            expectedType = null;
+            return false;
+        }
+        return true;
     }
 
     private boolean findEntrypoints() {
@@ -247,7 +263,7 @@ public class CallChainCompletionProposalComputer implements IJavaCompletionPropo
         }
         for (final List<MemberEdge> chain : chains) {
             final TemplateProposal completion = new CompletionTemplateBuilder().create(chain, ctx.getJavaContext());
-            final CallChainCompletionProposal completionProposal = new CallChainCompletionProposal(completion, chain);
+            final ChainCompletionProposal completionProposal = new ChainCompletionProposal(completion, chain);
             proposals.add(completionProposal);
         }
     }

@@ -279,6 +279,9 @@ public class GraphBuilder {
             switch (element.getElementType()) {
             case IJavaElement.METHOD:
                 final IMethod m = (IMethod) element;
+                if (isToStringMethod(m)) {
+                    break;
+                }
                 newEdge = new MemberEdge(returnType, m, nextEdgeDepth);
                 nextIteration.add(new VisitEdgeJob(newEdge));
                 break;
@@ -292,5 +295,9 @@ public class GraphBuilder {
             }
         }
         scheduleNextIteration(nextIteration);
+    }
+
+    private boolean isToStringMethod(final IMethod m) throws JavaModelException {
+        return m.getElementName().equals("toString") && m.getSignature().equals("()java.lang.String;");
     }
 }
