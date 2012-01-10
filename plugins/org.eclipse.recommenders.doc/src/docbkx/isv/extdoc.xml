@@ -178,6 +178,78 @@
 	<!-- ############################################################################ -->
 
 	<section>
+		<title>Workflow: Processing of a Java Selection Event</title>
+		<orderedlist>
+			<listitem>
+				<para>
+					A
+					<classname>JavaSelectionEvent</classname>
+					is posted to the extdoc view.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					A new
+					<classname>ProviderExecutionScheduler</classname>
+					is created and the old one is disposed.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The
+					<classname>SubscriptionManager</classname>
+					is used to identify the providers that are interested in the
+					selection.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					A new (hidden) rendering panel is created in the
+					<classname>ProviderContentPart</classname>
+					.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					For each provider the new content area is requested and used as a
+					parameter for the provider execution. This is done by the
+					<classname>ProviderExecutionScheduler</classname>
+					in multiple threads.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The
+					<classname>ProviderOverviewPart</classname>
+					updates the provider icons according to the posted execution events
+					of all providers.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The
+					<classname>ProviderContentPart</classname>
+					listen for the resulting events and update their displayed data
+					accordingly. On finish events the hidden content area of the
+					provider is shown, delay and fail events lead to a status message.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The
+					<classname>ProviderContentPart</classname>
+					listens for the
+					<classname>RenderNowEvent</classname>
+					and switches the rendering panel to the new foreground panel if it
+					is posted.
+				</para>
+			</listitem>
+		</orderedlist>
+	</section>
+
+	<!-- ############################################################################ -->
+
+	<section>
 		<title>Example of a provider execution scheduling</title>
 		<mediaobject>
 			<imageobject>
@@ -185,12 +257,116 @@
 					format="png" />
 			</imageobject>
 		</mediaobject>
-		<para>This example shows how is the happy path (TODO: beschreiben)
-		</para>
-		<para>additionally: NotAvailableEvents</para>
 		<para>
-			additionally: OrderChanged, De-/Activation, ProviderSelection
-			(for jump)
+			This example is a conceptual view onto the events that are
+			posted
+			during the provider execution. For this example it is assumed
+			that
+			three providers are registered:
+			<orderedlist>
+				<listitem>
+					<para>P1 is a fast provider that terminates correctly.</para>
+				</listitem>
+				<listitem>
+					<para>P2 is a provider that crashes on execution with an
+						exception.
+					</para>
+				</listitem>
+				<listitem>
+					<para>P3 is a provider that terminates correctly but takes very
+						long.
+					</para>
+				</listitem>
+			</orderedlist>
+			The entry point is the
+			<methodname>schedule(selection)</methodname>
+			call from the extdoc view. The current selection is provided as a
+			parameter and a
+			<classname>NewSelectionEvent</classname>
+			is posted. Based on the selection
+			all subscribed provider methods are
+			queried from the
+			<classname>SubscriptionManager</classname>
+			. A
+			<classname>ProviderStartedEvent</classname>
+			is posted for each provider and the execution is started in separate
+			threads. Additionally a timeout is started to be able to guarantee a
+			maximum rendering time for the Extdoc view.
+		</para>
+		<para>
+			P1 finishes first and the successful execution triggers the posting
+			of a
+			<classname>ProiderFinishedEvent</classname>
+			. The event contains the corresponding provider. P2 crashes on
+			execution and the caught exception triggers a
+			<classname>ProviderFailedEvent</classname>
+			. Also P3 is not finished yet the render timeout is reached so the
+			next event is a
+			<classname>RenderNowEvent</classname>
+			companied by
+			<classname>ProviderDelayedEvent</classname>
+			s for all still running providers.
+			. P3 terminaes successfully after
+			this and a
+			<classname>ProviderFinishedLateEvent</classname>
+			is posted.
+		</para>
+		<para>
+			In addition to the normal execution events it is possible that a
+			provider is not interested in a selection. This is possible in two
+			different ways:
+			<orderedlist>
+				<listitem>
+					<para>
+						If a provider is not subscribed to a selection the
+						<classname>SubscriptionManager</classname>
+						does not find a suitable method.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						A provider might detect during the execution that no data is
+						available to successfully process the selection. In this case a
+						<classname>Status.NOT_AVAILABLE</classname>
+						can be returned.
+					</para>
+				</listitem>
+			</orderedlist>
+			In both cases a
+			<classname>ProviderNotAvailableEvent</classname>
+			is posted for the provider.
+		</para>
+		<para>
+			Several other events exist:
+			<orderedlist>
+				<listitem>
+					<para>
+						<classname>ProviderOrderChangedEvent</classname>
+						: indicates a reordering of the providers
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<classname>ProviderDe-/ActivationEvent</classname>
+						: posted if providers are enabled/disabled. Both are consumed by
+						the
+						<classname>ProviderExecutionScheduler</classname>
+						. Activation events lead to the execution of the provider with the
+						last selection, deactivation events cancel the running provider.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<classname>ProviderSelectionEvent</classname>
+						: if providers are selected in the overview the content shuld
+						&quot;jump&quot; to their positions in the content. This event is
+						used to indicate such a selection and is irrelevant for the
+						execution scheduler.
+					</para>
+				</listitem>
+			</orderedlist>
+			All these are posted from the UI components and not from the
+			scheduler.
 		</para>
 	</section>
 
