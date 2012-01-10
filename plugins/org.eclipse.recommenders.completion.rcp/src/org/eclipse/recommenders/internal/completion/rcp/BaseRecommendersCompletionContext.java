@@ -16,6 +16,7 @@ import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
+import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -38,9 +39,11 @@ import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 import com.google.common.base.Optional;
@@ -49,30 +52,37 @@ import com.google.common.base.Optional;
 public abstract class BaseRecommendersCompletionContext implements IRecommendersCompletionContext {
 
     private final JavaContentAssistInvocationContext javaContext;
-    private final InternalCompletionContext coreContext;
+    private InternalCompletionContext coreContext;
 
     public BaseRecommendersCompletionContext(final JavaContentAssistInvocationContext jdtContext) {
         this.javaContext = jdtContext;
         this.coreContext = cast(jdtContext.getCoreContext());
+        if (!coreContext.isExtended()) {
+            requestExtendedContext();
+        }
+    }
+
+    private void requestExtendedContext() {
+        ICompilationUnit cu = getCompilationUnit();
+        CompletionProposalCollector collector = new CompletionProposalCollector(cu) {
+            @Override
+            public void acceptContext(final CompletionContext context) {
+                super.acceptContext(context);
+                coreContext = (InternalCompletionContext) context;
+            }
+        };
+        collector.setInvocationContext(javaContext);
+        collector.setRequireExtendedContext(true);
+        try {
+            cu.codeComplete(getInvocationOffset(), collector);
+        } catch (JavaModelException e) {
+            RecommendersPlugin.log(e);
+        }
     }
 
     public InternalCompletionContext getCoreContext() {
         return coreContext;
     }
-
-    // public Optional<InternalExtendedCompletionContext> getExtendedContext() {
-    // try {
-    // final Field ctxField = coreContext.getClass().getDeclaredField("extendedContext");
-    // ctxField.setAccessible(true);
-    // final InternalExtendedCompletionContext extendedContext = cast(ctxField.get(coreContext));
-    // final Field cuField = extendedContext.getClass().getDeclaredField("compilationUnitDeclaration");
-    // cuField.setAccessible(true);
-    // final CompilationUnitDeclaration cu = cast(cuField.get(extendedContext));
-    // return fromNullable(extendedContext);
-    // } catch (final Exception e) {
-    // throw throwUnhandledException(e);
-    // }
-    // }
 
     @Override
     public JavaContentAssistInvocationContext getJavaContext() {
