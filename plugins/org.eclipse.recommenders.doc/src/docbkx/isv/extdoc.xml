@@ -1,71 +1,413 @@
 <?xml version='1.0'?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
-<section id="isv-extdoc">
-    <title>Extdoc</title>
-    <section>
-        <title>Design Overview for Extdoc</title>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="media/figures/isv/extdoc/design.png"/>
-            </imageobject>
-            <caption>overview</caption>
-        </mediaobject>
-        <para>
-            <orderedlist>
-                <title>Class Responsibilities</title>
-                <listitem>
-                    <simpara>
-                        <classname>GlobalDispatcher</classname>: global dispatcher for java selection events in the workspace.
-                    </simpara>
-                </listitem>
-                <listitem>
-                    <simpara>
-                        <classname>ExtdocView</classname>: central controller; manages the registering and unregistering of all components on the <classname>EventBus</classname>; coordinates the creation and execution of provider tasks; listens for selection events and delegates them to the subscription manager
-                    </simpara>
-                </listitem>
-                <listitem>
-                    <simpara>
-                        <classname>SubscriptionManager</classname>: manages provider subscriptions for specific java selections.
-                        On selections a list of <classname>Call</classname>s is returned, which wrap the method invocation for all affected
-                        subscriptions.
-                    </simpara>
-                </listitem>
-               <listitem>
-                    <simpara>
-                        <classname>Call</classname>: capsulates a reflective method invocation including the full argument list.
-                    </simpara>
-                </listitem>
-                <listitem>
-                    <simpara>
-                        <classname>RequestManager</classname>: capsulates the threaded scheduling of the provider tasks. Maximum execution times
-                        are checked and the according events are fired to the <classname>EventBus</classname>.
-                    </simpara>
-                </listitem>
-            </orderedlist>
-        </para>
-    </section>
-    <section>
-        <title>Conceptual View on the Call Scheduling</title>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="media/figures/isv/extdoc/scheduling.png"/>
-            </imageobject>
-            <caption>overview</caption>
-        </mediaobject>
+<section xml:id="isv-extdoc123">
+	<title>Extdoc</title>
+	<section>
+		<title>Design Overview for Extdoc</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="media/figures/isv/extdoc/design.png"
+					format="png" />
+			</imageobject>
+		</mediaobject>
+
+		<variablelist>
+			<title>Class Responsibilities</title>
+
+			<varlistentry>
+				<term>ExtdocView</term>
+				<listitem>
+					<para>
+						central controller; manages the registering and unregistering of
+						all components on the
+						<classname>EventBus</classname>
+						;
+						listens for selection events and delegates them to the
+						<classname>ProviderExecutionScheduler</classname>
+						. Uses
+						<classname>ProviderConfigurationPersistenceService</classname>
+						to persist the width of the
+						<classname>Sash</classname>
+						(vertical separator between overview and content).
+					</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
+				<term>SubscriptionManager</term>
+				<listitem>
+					<para>
+						Manages the subscriptions for specific java selections of all
+						registered providers.
+						Can be queried to return a matching
+						<classname>java.lang.reflect.Method</classname>
+						for a given provider that should be called for the selection. No
+						guarantees are provided
+						which method is returned if multiple
+						methods of a provider overlap.
+					</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
+				<term>ProviderExecutionScheduler</term>
+				<listitem>
+					<para>
+						Manages the multithreaded execution of all providers. To indicate
+						the status of
+						the execution corresponding execution events are
+						posted to the
+						<classname>EventBus</classname>
+						.
+					</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
+				<term>ExtdocProvider</term>
+				<listitem>
+					<para>
+						Extdoc providers are the entities of the extdoc view that bring
+						the real content. Providers are registered via the extension point
+						<classname>org.eclipse.recommenders.extdoc.rcp.provider
+						</classname>
+						.
+					</para>
+					<para>
+						The content is provided through methods that are annotated with a
+						<classname>@JavaSelectionSubscriber</classname>
+						annotation. More details on
+						this and an example provider is given
+						in a
+						<link linkend="extdoc-example-provider">later section</link>
+					</para>
+					<para>
+						<classname>ExtdocProvider</classname>
+						provide an
+						<classname>ExtdocProviderDescriptor</classname>
+						to access their
+					</para>
+					<para>
+						A single
+						<classname>List&lt;ExtdocProvider&gt;</classname>
+						is injected to all entities that need to know the providers.
+					</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
+				<term>ProviderOverviewPart</term>
+				<listitem>
+					<para>
+						darstellung des status aktivierung / deaktivierung order
+						change insb. das
+						management in der liste
+					</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
+				<term>ProviderContentPart</term>
+				<listitem>
+					<para>
+						manages the displayed content. A new (background) rendering
+						panel
+						can be created and the corresponding
+						<classname>Composite</classname>
+						can be accessed for each provider.
+					</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
+				<term>ProviderArea</term>
+				<listitem>
+					<para>
+						Helper class for the visualization of the providers. Mainly
+						accessed by the
+						<classname>ProviderContentPart</classname>
+						it can be used to set a status or to show the contents of
+						a
+						provider when it is completely rendered.
+					</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
+				<term>ProviderConfigurationPersistenceService</term>
+				<listitem>
+					<para>
+						This entity is left out in the diagram. It is registered on the
+						<classname>EventBus</classname>
+						and used to persist the provider configuration to disc on change.
+						The provider configuration consists of the order of all providers
+						and of a list of all disabled providers.
+					</para>
+				</listitem>
+			</varlistentry>
+
+			<varlistentry>
+				<term>PreferencesFacade</term>
+				<listitem>
+					<para>
+						This entity is left out in the diagram. It directly accesses
+						Eclipses singletons to be able to load and save preferences. A
+						low-level API is provided to load/store:
+						<orderedlist>
+							<listitem>
+								<para>order of the providers</para>
+							</listitem>
+							<listitem>
+								<para>disabled providers</para>
+							</listitem>
+							<listitem>
+								<para>position of the sash in the Extdoc view</para>
+							</listitem>
+						</orderedlist>
+						This entity is mainly used to increase the testability of all
+						entities that make use of it as they do not need to access
+						Eclipses singletons and this class can be exchanged with a mock
+						for testing.
+					</para>
+				</listitem>
+			</varlistentry>
+
+		</variablelist>
 	</section>
-    <section>
-        <title>Layout of the ExtdocView</title>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="media/figures/isv/extdoc/layout.png"/>
-            </imageobject>
-            <caption>overview</caption>
-        </mediaobject>
+
+	<!-- ############################################################################ -->
+
+	<section>
+		<title>Example of a provider execution scheduling</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="media/figures/isv/extdoc/scheduling.png"
+					format="png" />
+			</imageobject>
+		</mediaobject>
+		<para>This example shows how is the happy path (TODO: beschreiben)
+		</para>
+		<para>additionally: NotAvailableEvents</para>
+		<para>
+			additionally: OrderChanged, De-/Activation, ProviderSelection
+			(for jump)
+		</para>
 	</section>
-<section>
-	<title>Layout of the ExtdocView</title>
-	<para>
-		asd
-	</para>
-</section>
+
+	<!-- ############################################################################ -->
+
+	<section>
+		<title>Layout of the ExtdocView</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="media/figures/isv/extdoc/layout.png"
+					format="png" />
+			</imageobject>
+		</mediaobject>
+		<orderedlist>
+			<title>Description of the Layout</title>
+			<listitem>
+				<simpara>
+					<classname>ExtdocView</classname>
+					: Central view that is registered with Eclipse and container for
+					all sub content parts.
+				</simpara>
+			</listitem>
+			<listitem>
+				<simpara>
+					<classname>ProviderOverviewPart</classname>
+					: Manages an overview of all available Extdoc providers in a table.
+					Each provider can be de-/activated by un-/checking the associated
+					<classname>ProviderItem</classname>
+					. The order of the providers can be changed through drag and drop.
+				</simpara>
+			</listitem>
+			<listitem>
+				<simpara>
+					<classname>ProviderContentPart</classname>
+					: Manages a scrolling stack of content panes. Allows to create a
+					new (background) rendering
+					<classname>Composite</classname>
+					that contains
+					<classname>ProviderArea</classname>
+					s for all providers.
+				</simpara>
+				<para>
+					The
+					<classname>ProviderContentPart</classname>
+					is registered on the
+					<classname>EventBus</classname>
+					and subscribes all provider related events.
+					Depending on the
+					execution status a providers area is shown or the status is set.
+				</para>
+			</listitem>
+			<listitem>
+				<simpara>
+					<classname>ContentPane (Composite)</classname>
+					simple composite that contains all rendered content for a selection
+				</simpara>
+			</listitem>
+			<listitem>
+				<simpara>
+					<classname>ProviderArea</classname>
+					: area that is associated with an Extdoc provider. Allows to set an
+					(optionally clickable) status and to show the rendered content.
+					All
+					sub elements are plain SWT components and with the exception of the
+					content that is provided to the
+					<classname>ExtdocProvider</classname>
+					all are hidden to the outside. Renders a title for the associated
+					provider.
+				</simpara>
+			</listitem>
+			<listitem>
+				<simpara>
+					<classname>TitleArea (Composite)</classname>
+					status for a providers. It is used at the moment to show delay in
+					execution or to show execution failures.
+				</simpara>
+			</listitem>
+			<listitem>
+				<simpara>
+					<classname>StatusArea (Composite)</classname>
+					status for a providers. It is used at the moment to show delay in
+					execution or to show execution failures.
+				</simpara>
+			</listitem>
+			<listitem>
+				<simpara>
+					<classname>ContentArea (Composite)</classname>
+					Composite that contains the rendered results of the corresponding
+					provider.
+				</simpara>
+			</listitem>
+		</orderedlist>
+	</section>
+
+	<!-- ############################################################################ -->
+
+	<section xml:id="extdoc-example-provider">
+		<title>Sources of an example provider</title>
+		<para>
+			An
+			<classname>ExtdocProvider</classname>
+			is registered on the
+			<classname>SubscriptionManager</classname>
+			.
+			To be recognized as an provider its methods need to be annotated
+			with a
+			<classname>JavaSelectionSubsriber</classname>
+			annotation. The parameter list of such methods is fixed:
+			<orderedlist>
+				<listitem>
+					<para>
+						a
+						<classname>IJavaElement</classname>
+						(or a subclass of it)
+						defines for which elements this methods
+						provides some content.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						the fired
+						<classname>JavaSelectionEvent</classname>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						a
+						<classname>Composite</classname>
+						into which the contents should be rendered
+					</para>
+				</listitem>
+			</orderedlist>
+			Three examples are shown in the following diagram.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="media/figures/isv/extdoc/exampleProvider.png"
+					format="png" />
+			</imageobject>
+		</mediaobject>
+		<para>
+			The simplest case is shown in the method
+			<methodname>example(...)</methodname>
+			. The annotation indicates that it is interested in all
+			<classname>JavaSelectionEvents</classname>
+			. Because the first parameter is an
+			<classname>IJavaElement</classname>
+			(the super class of all selectable java elements) the method is
+			executed for all possible events.
+		</para>
+		<para>
+			It is possible to use the annotation and the
+			<classname>IJavaElement</classname>
+			as a filter
+			to be able to write more specialized provider methods. An
+			example of this is given in method
+			<methodname>unavailableProvider(...)</methodname>
+			.
+			The annotation take optional arguments to specify locations for
+			which a selection should be processed.
+			It is possible to provide
+			multiple locations, i.e.:
+			<methodname>@JavaSelectionSubscriber({METHOD_BODY, TYPE_DECLARATION})
+			</methodname>
+			.
+			The events are also matched by the selected java element so it is
+			possible to only subscribe for
+			<classname>IType</classname>
+			selections if it is used as the first parameter.
+		</para>
+		<para>
+			<emphasis>Word of caution:</emphasis>
+			if method subscriptions overlap (like it is in this example) only on
+			method is called on an event. No guarantees are given which one.
+		</para>
+		<para>
+			The providers are executed in their own thread so it is
+			necessary to
+			switch to the UI thread for the rendering.
+			Take a look on the two
+			parts of the
+			<methodname>example(...)</methodname>
+			method.
+			All non-UI related information gathering should be done in the
+			provider thread.
+			After that a
+			<classname>Runnable</classname>
+			can be executed with the helper method
+			<methodname>runSyncInUiThread(...)</methodname>
+			. By doing so exceptions that are thrown in the runnable are bubbled
+			out of the
+			<classname>Runnable</classname>
+			and rethrown in the provider thread.
+			The execution is run sync so that
+			the providers does not finish until the rendering is complete.
+		</para>
+		<para>
+			A provider can return an
+			<classname>ExtdocProvider.Status</classname>
+			to indicate its processing status.
+			A normal execution returns
+			<classname>Status.OK</classname>
+			.
+			If it is not possible to process the current selection (i.e. because
+			the provider has no data available), it is possible to return
+			<classname>Status.NOT_AVAILABLE</classname>
+			.
+			The provider status is then handled by the UI as if it is not
+			subscribed even if it has already started processing.
+		</para>
+		<para>
+			It is feasible to throw an exception in a provider as shown in method
+			<methodname>errorCase(...)</methodname>
+			.
+			In this case the provider is shown as failed in the UI and a link is
+			shown that opens a dialog with a stacktrace and the message from the
+			exception.
+		</para>
+	</section>
 </section>

@@ -132,3 +132,8 @@ div.navheader {
 div.navfooter {
     display: none;
 }
+
+.term {
+	font-family: "Courier New";
+	font-weight: normal;
+}

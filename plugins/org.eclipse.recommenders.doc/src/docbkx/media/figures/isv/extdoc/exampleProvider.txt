@@ -1,0 +1,25 @@
+public class ExampleProvider extends ExtdocProvider {
+
+    @JavaSelectionSubscriber
+    public Status example(IJavaElement e, JavaSelectionEvent s, Composite c) {
+        // code that is not ui related
+        runSyncInUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // code that is ui related
+            }
+        });
+        return Status.OK;
+    }
+
+    @JavaSelectionSubscriber(JavaSelectionLocation.METHOD_BODY)
+    public Status unavailableProvider(IType t, JavaSelectionEvent s, Composite c) {
+        // ...
+        return Status.NOT_AVAILABLE;
+    }
+
+    @JavaSelectionSubscriber
+    public Status errorCase(IJavaElement e, JavaSelectionEvent s, Composite c) throws Exception {
+        throw new Exception("something went wrong");
+    }
+}
