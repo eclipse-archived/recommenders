@@ -67,8 +67,6 @@ public class SubscriptionManager {
 
         final Set<Tuple<Method, JavaSelectionSubscriber>> methods = newLinkedHashSet();
 
-        // TODO Review: test that overridden methods are not called twice
-
         final Class<?> clazz = provider.getClass();
         for (final Method m : clazz.getMethods()) {
             final JavaSelectionSubscriber annotation = m.getAnnotation(JavaSelectionSubscriber.class);
@@ -142,10 +140,12 @@ public class SubscriptionManager {
     }
 
     /**
-     * returns the first matching method for a given provider and selection
-     * event - or <em>absent</em> if none is found
+     * Returns a method of the given provider that is subscribed for the
+     * selection event - or <em>absent</em> if none is found. If the
+     * subscription of multiple methods overlaps, no guarantee is given which
+     * method is returned
      */
-    public Optional<Method> findFirstSubscribedMethod(final ExtdocProvider provider, final JavaSelectionEvent selection) {
+    public Optional<Method> findSubscribedMethod(final ExtdocProvider provider, final JavaSelectionEvent selection) {
         for (final Subscription s : subscriptions.keySet()) {
 
             if (s.isInterestedIn(selection)) {

@@ -105,7 +105,7 @@ public class ProviderExecutionScheduler {
             }
 
             final Composite composite = contentPart.getRenderingArea(provider);
-            final Optional<Method> optMethod = subscriptionManager.findFirstSubscribedMethod(provider, selection);
+            final Optional<Method> optMethod = subscriptionManager.findSubscribedMethod(provider, selection);
 
             if (optMethod.isPresent()) {
                 final OnSelectionCallable callable = new OnSelectionCallable(provider, optMethod.get(), selection,
@@ -165,7 +165,7 @@ public class ProviderExecutionScheduler {
         }
 
         final Composite composite = contentPart.getRenderingArea(e.provider);
-        final Optional<Method> optMethod = subscriptionManager.findFirstSubscribedMethod(e.provider, currentSelection);
+        final Optional<Method> optMethod = subscriptionManager.findSubscribedMethod(e.provider, currentSelection);
 
         if (optMethod.isPresent()) {
             final OnActivationCallable callable = new OnActivationCallable(e.provider, optMethod.get(),

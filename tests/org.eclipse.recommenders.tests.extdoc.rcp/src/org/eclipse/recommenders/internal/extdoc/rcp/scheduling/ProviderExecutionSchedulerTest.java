@@ -32,7 +32,6 @@ import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ProviderExecutionSchedulerTest {
@@ -49,7 +48,6 @@ public class ProviderExecutionSchedulerTest {
     }
 
     @Test
-    @Ignore
     public void assertTestIsNotRunInUIThread() {
         Thread actual = Thread.currentThread();
         Thread unexpected = Display.getDefault().getThread();
@@ -248,9 +246,10 @@ public class ProviderExecutionSchedulerTest {
             Throws.throwUnhandledException(e);
         }
 
-        while (Display.getDefault().readAndDispatch()) {
-            ;
-        }
+        // needed to run as junit (non plugin) test
+        // while (Display.getDefault().readAndDispatch()) {
+        // ;
+        // }
     }
 
     private void assertExecution(final ExtdocProviderHelper provider) {

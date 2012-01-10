@@ -38,7 +38,6 @@ import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.Subscripti
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.base.Optional;
@@ -72,7 +71,7 @@ public class SubscriptionManagerTest {
 
         for (JavaSelectionEvent selection : POOL) {
             for (ExtdocProvider provider : providers) {
-                Optional<Method> optMethod = sut.findFirstSubscribedMethod(provider, selection);
+                Optional<Method> optMethod = sut.findSubscribedMethod(provider, selection);
                 if (optMethod.isPresent()) {
                     String methodName = optMethod.get().getName();
                     verifier.addResult(selection, provider, methodName);
@@ -195,50 +194,6 @@ public class SubscriptionManagerTest {
     }
 
     @Test
-    @Ignore
-    public void listenersWithOverlappingJavaElementsReturnTheFirstMatch() {
-        provider = new ExtdocProvider() {
-            @JavaSelectionSubscriber
-            public Status m1(final IMethod e, final JavaSelectionEvent s, final Composite parent) {
-                return null;
-            }
-
-            @JavaSelectionSubscriber(METHOD_BODY)
-            public Status m2(final IMethod e, final JavaSelectionEvent s, final Composite parent) {
-                return null;
-            }
-        };
-
-        setupAndPerformAllSelections();
-
-        assertSubscription(METHOD_IN_METHOD_DECLARATION, "m1");
-        assertSubscription(METHOD_IN_METHOD_BODY, "m1");
-        verifier.assertNoMoreSubscriptions();
-    }
-
-    @Test
-    @Ignore
-    public void listenersWithOverlappingLocationsReturnTheFirstMatch() {
-
-        provider = new ExtdocProvider() {
-            @JavaSelectionSubscriber(TYPE_DECLARATION)
-            public Status m1(final IJavaElement type, final JavaSelectionEvent selection, final Composite parent) {
-                return null;
-            }
-
-            @JavaSelectionSubscriber(TYPE_DECLARATION)
-            public Status m2(final IType type, final JavaSelectionEvent selection, final Composite parent) {
-                return null;
-            }
-        };
-
-        setupAndPerformAllSelections();
-
-        assertSubscription(TYPE_IN_TYPE_DECLARATION, "m1");
-        verifier.assertNoMoreSubscriptions();
-    }
-
-    // @Test
     public void listenersCanBeRegisteredInSubclasses() {
 
         // anonymous subclass of an existing listener with subscriptions
