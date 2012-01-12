@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.tests.jdt;
+package org.eclipse.recommenders.tests.completion.rcp;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -20,15 +20,16 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.recommenders.tests.jdt.SimpleCompletionRequestor;
 import org.eclipse.ui.IEditorPart;
 
-public class TestJavaContentAssistContext extends JavaContentAssistInvocationContext {
+public class JavaContentAssistContextMock extends JavaContentAssistInvocationContext {
 
     private final ICompilationUnit cu;
     private SimpleCompletionRequestor requestor;
     private final int completionOffset;
 
-    public TestJavaContentAssistContext(final ICompilationUnit cu, final int completionOffset)
+    public JavaContentAssistContextMock(final ICompilationUnit cu, final int completionOffset)
             throws JavaModelException {
         super(createTextViewer(cu), completionOffset, mock(IEditorPart.class));
         this.cu = cu;

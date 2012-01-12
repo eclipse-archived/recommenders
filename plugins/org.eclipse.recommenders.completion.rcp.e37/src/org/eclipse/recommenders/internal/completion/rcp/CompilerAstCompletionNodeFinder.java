@@ -144,7 +144,8 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
     public Statement completionNode;
 
     /**
-     * One of {@link ReturnStatement}, {@link LocalDeclaration}, {@link FieldDeclaration}, or <code>null</code>
+     * One of {@link ReturnStatement}, {@link LocalDeclaration}, {@link FieldDeclaration}, {@link MessageSend}, or
+     * <code>null</code>
      */
     public Statement completionNodeParent;
 
@@ -335,8 +336,22 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             final CompletionOnMessageSend node = storeCompletionNode(messageSend);
             evaluateCompletionOnMessageSend(node);
             return false;
+        } else if (doArgumentsContainCompletionNode(messageSend)) {
+            completionNodeParent = messageSend;
         }
         return true;
+    }
+
+    private boolean doArgumentsContainCompletionNode(final MessageSend messageSend) {
+        if (messageSend.arguments == null) {
+            return false;
+        }
+        for (Expression arg : messageSend.arguments) {
+            if (arg instanceof CompletionOnQualifiedNameReference) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void evaluateCompletionOnMessageSend(final CompletionOnMessageSend c) {

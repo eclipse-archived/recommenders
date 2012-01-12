@@ -6,7 +6,7 @@
  * 
  * Contributors:
  */
-package org.eclipse.recommender.tests.completion.rcp;
+package org.eclipse.recommenders.tests.completion.rcp;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;

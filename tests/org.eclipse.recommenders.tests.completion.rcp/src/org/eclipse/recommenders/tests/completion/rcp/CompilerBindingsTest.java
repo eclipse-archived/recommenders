@@ -8,7 +8,7 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-package org.eclipse.recommender.tests.completion.rcp;
+package org.eclipse.recommenders.tests.completion.rcp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

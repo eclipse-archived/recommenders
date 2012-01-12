@@ -15,6 +15,7 @@ Require-Bundle: org.junit4,
  org.apache.commons.lang3,
  org.eclipse.xtend2.lib,
  org.mockito,
- org.eclipse.equinox.ds
+ org.eclipse.equinox.ds,
+ org.eclipse.recommenders.tests.completion.rcp
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 

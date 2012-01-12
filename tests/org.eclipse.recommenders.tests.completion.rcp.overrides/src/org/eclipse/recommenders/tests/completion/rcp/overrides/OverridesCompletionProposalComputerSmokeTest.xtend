@@ -4,8 +4,8 @@ import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer
+import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
-import org.eclipse.recommenders.tests.jdt.TestJavaContentAssistContext
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.junit.Test
  
@@ -48,7 +48,7 @@ class OverridesCompletionProposalComputerSmokeTest {
 		val struct = fixture.createFileAndParseWithMarkers(code.toString, "MyClass.java")
 		val cu = struct.first;
 		for(completionIndex : struct.second){
-			val ctx = new TestJavaContentAssistContext(cu, completionIndex)
+			val ctx = new JavaContentAssistContextMock(cu, completionIndex)
 			val resolver = new JavaElementResolver()
 			val recommender = MockRecommender::get
 			val sut = new OverridesCompletionProposalComputer(recommender, new RecommendersCompletionContextFactoryMock(),resolver)

@@ -9,10 +9,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.InstantOverridesRecommender;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer;
+import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.overrides.MockRecommender;
 import org.eclipse.recommenders.tests.completion.rcp.overrides.RecommendersCompletionContextFactoryMock;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
-import org.eclipse.recommenders.tests.jdt.TestJavaContentAssistContext;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -94,8 +94,8 @@ public class OverridesCompletionProposalComputerSmokeTest {
         Set<Integer> _second = struct.getSecond();
         for (final Integer completionIndex : _second) {
           {
-            TestJavaContentAssistContext _testJavaContentAssistContext = new TestJavaContentAssistContext(cu, (completionIndex).intValue());
-            final TestJavaContentAssistContext ctx = _testJavaContentAssistContext;
+            JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (completionIndex).intValue());
+            final JavaContentAssistContextMock ctx = _javaContentAssistContextMock;
             JavaElementResolver _javaElementResolver = new JavaElementResolver();
             final JavaElementResolver resolver = _javaElementResolver;
             InstantOverridesRecommender _get = MockRecommender.get();
