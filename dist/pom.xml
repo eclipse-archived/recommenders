@@ -13,7 +13,9 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>org.eclipse.recommenders.repository.rcp</module>
+		<module>org.eclipse.recommenders.repository.rcp.train</module>
+        <module>org.eclipse.recommenders.repository.rcp.devel</module>
+        <module>org.eclipse.recommenders.repository.rcp.release</module>
 		<module>org.eclipse.recommenders.product.server</module>
 	</modules>
 

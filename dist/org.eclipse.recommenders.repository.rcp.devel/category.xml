@@ -25,6 +25,6 @@
       <category name="sources"/>
    </feature>
    <category-def name="main" label="Eclipse Code Recommenders - Main"/>
-   <category-def name="sandbox" label="Eclipse Code Recommenders - Sandbox"/>
    <category-def name="sources" label="Eclipse Code Recommenders - Sources"/>
+   <category-def name="sandbox" label="Eclipse Code Recommenders - Sandbox"/>
 </site>
