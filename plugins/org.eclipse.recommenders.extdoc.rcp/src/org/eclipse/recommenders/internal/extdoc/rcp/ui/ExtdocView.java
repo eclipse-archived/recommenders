@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
@@ -43,6 +45,7 @@ public class ExtdocView extends ViewPart {
     private final ProviderContentPart contentPart;
 
     private ProviderExecutionScheduler scheduler;
+    private final Lock schedulerLock = new ReentrantLock();
     private SashForm sashForm;
 
     @Inject
@@ -119,11 +122,16 @@ public class ExtdocView extends ViewPart {
     @AllowConcurrentEvents
     public void onJavaSelection(final JavaSelectionEvent selection) {
         disposeScheduler();
-        syncScheduling(selection);
+        scheduleNewSelection(selection);
     }
 
-    private synchronized void syncScheduling(final JavaSelectionEvent selection) {
-        scheduler = new ProviderExecutionScheduler(providers, subscriptionManager, contentPart, extdocBus);
-        scheduler.scheduleOnSelection(selection);
+    private void scheduleNewSelection(final JavaSelectionEvent selection) {
+        try {
+            schedulerLock.lock();
+            scheduler = new ProviderExecutionScheduler(providers, subscriptionManager, contentPart, extdocBus);
+            scheduler.scheduleOnSelection(selection);
+        } finally {
+            schedulerLock.unlock();
+        }
     }
 }
