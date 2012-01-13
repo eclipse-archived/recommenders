@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.source_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.source" version="0.5.0.qualifier">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.subwords_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.subwords" version="0.5.0.qualifier">
+      <category name="main"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.subwords.source_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.subwords.source" version="0.5.0.qualifier">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.extdoc.rcp_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.extdoc.rcp" version="0.5.0.qualifier">
+      <category name="main"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.extdoc.rcp.source_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.extdoc.rcp.source" version="0.5.0.qualifier">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.chain_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.chain" version="0.5.0.qualifier">
+      <category name="main"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.chain.source_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.chain.source" version="0.5.0.qualifier">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.e37_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.e37" version="0.5.0.qualifier">
+      <category name="main"/>
+   </feature>
+   <category-def name="main" label="Code Recommenders - Eclipse 3.7"/>
+   <category-def name="sources" label="Eclipse Code Recommenders - Sources"/>
+   <category-def name="sandbox" label="Eclipse Code Recommenders - Sandbox"/>
+</site>
