@@ -99,14 +99,14 @@
                                     <tasks>
                                         <delete includeemptydirs="false" failonerror="false">
                                             <fileset
-                                                dir="/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}">
+                                                dir="/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}/train">
                                                 <include name="**"/>
                                             </fileset>
                                         </delete>
                                         <mkdir
-                                            dir="/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}"/>
+                                            dir="/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}/train"/>
                                         <copy includeemptydirs="false"
-                                            todir="/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}">
+                                            todir="/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}/train">
                                             <fileset dir="target/checksumFix">
                                                 <include name="**"/>
                                             </fileset>
