@@ -12,8 +12,8 @@
 
 -->
 <feature
-      id="org.eclipse.recommenders.feature.completion.rcp"
-      label="Code Recommenders: Intelligent Code Completion (Incubation)"
+      id="org.eclipse.recommenders.feature.completion.rcp.e37"
+      label="Code Recommenders: Intelligent Code Completion Eclipse 3.7 (Incubation)"
       version="0.5.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
@@ -125,7 +125,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.completion.rcp.e38"
+         id="org.eclipse.recommenders.completion.rcp.e37"
          download-size="0"
          install-size="0"
          version="0.0.0"

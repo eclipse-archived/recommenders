@@ -6,5 +6,5 @@ Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclispe Code Recommenders
 Fragment-Host: org.eclipse.recommenders.completion.rcp;bundle-version="0.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.eclipse.jdt.core;bundle-version="[3.7.0,3.8.0)",
+Require-Bundle: org.eclipse.jdt.core;bundle-version="[3.6.0,3.8.0)",
  org.apache.commons.lang3
