@@ -21,7 +21,6 @@
                 <version>${tycho-version}</version>
                 <configuration>
                     <repositoryName>Code Recommenders: Eclipse 4.2 Head</repositoryName>
-                    <includeAllDependencies>true</includeAllDependencies>
                 </configuration>
             </plugin>
         </plugins>
