@@ -11,7 +11,7 @@
     <packaging>eclipse-repository</packaging>
     <properties>
         <source>${project.build.directory}/repository</source>
-        <target>/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}/head</target>
+        <target>/home/data/httpd/download.eclipse.org/recommenders/updates/head/e42</target>
     </properties>
     <build>
         <plugins>

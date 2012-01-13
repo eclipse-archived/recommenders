@@ -11,7 +11,7 @@
     <packaging>eclipse-repository</packaging>
     <properties>
         <source>${project.build.directory}/repository</source>
-        <target>/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}/dev</target>
+        <target>/home/data/httpd/download.eclipse.org/recommenders/updates/dev/e37</target>
     </properties>
     <build>
         <plugins>
