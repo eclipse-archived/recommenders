@@ -48,6 +48,8 @@
 
 		<module>org.eclipse.recommenders.feature.server</module>
 		<module>org.eclipse.recommenders.feature.server.rootfiles</module>
+        <module>org.eclipse.recommenders.feature.3rd.orbit</module>
+        <module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>
 
 	</modules>
 
