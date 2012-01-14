@@ -149,7 +149,9 @@ public class GraphBuilder {
 
     private void bsfTraverse(
             final List<Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */>> iteration) {
-
+        if (isMaxNumberOfChainsLimitReached()) {
+            return;
+        }
         final List<Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */>> nextIteration = Lists
                 .newLinkedList();
         for (final Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */> t : iteration) {
@@ -180,6 +182,10 @@ public class GraphBuilder {
         if (!nextIteration.isEmpty()) {
             bsfTraverse(nextIteration);
         }
+    }
+
+    private boolean isMaxNumberOfChainsLimitReached() {
+        return 20 >= chains.size();
     }
 
     private void dsfTraverse(final LinkedHashSet<MemberEdge> incompleteChain, final MemberEdge edgeToTest) {
