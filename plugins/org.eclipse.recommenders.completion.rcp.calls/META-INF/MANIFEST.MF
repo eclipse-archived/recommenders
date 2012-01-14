@@ -34,7 +34,9 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.recommenders.internal.completion.rcp.calls.store,
+Export-Package: org.eclipse.recommenders.internal.completion.rcp.calls.engine,
+ org.eclipse.recommenders.internal.completion.rcp.calls.net,
+ org.eclipse.recommenders.internal.completion.rcp.calls.store,
  org.eclipse.recommenders.internal.completion.rcp.calls.store.bak,
  org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs,
  org.eclipse.recommenders.internal.completion.rcp.calls.store.structs,

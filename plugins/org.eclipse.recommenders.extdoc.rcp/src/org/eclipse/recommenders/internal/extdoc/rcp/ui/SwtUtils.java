@@ -222,4 +222,11 @@ public final class SwtUtils {
         return COLORCACHE.get(color);
     }
 
+    public static Composite createComposite(final Composite parent) {
+        Composite container = new Composite(parent, SWT.NO_BACKGROUND);
+        container.setLayout(new GridLayout());
+        container.setLayoutData(GridDataFactory.fillDefaults().create());
+        return container;
+    }
+
 }

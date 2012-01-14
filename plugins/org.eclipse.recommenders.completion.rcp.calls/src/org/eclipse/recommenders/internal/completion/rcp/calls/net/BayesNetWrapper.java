@@ -156,7 +156,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public void setDefinition(final IMethodName newDefinition) {
-        final String identifier = newDefinition.getIdentifier();
+        final String identifier = newDefinition == null ? NetworkUtils.STATE_DUMMY_DEF : newDefinition.getIdentifier();
         if (definitionNode.getOutcomes().contains(identifier)) {
             junctionTreeAlgorithm.addEvidence(definitionNode, identifier);
         }

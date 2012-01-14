@@ -116,6 +116,9 @@ public class ProviderContentPart {
         scrollingComposite.setLayoutData(defaultGridDataFactory.create());
         scrollingComposite.setExpandVertical(true);
         scrollingComposite.setExpandHorizontal(true);
+        scrollingComposite.getVerticalBar().setIncrement(50);
+        scrollingComposite.getHorizontalBar().setIncrement(50);
+
     }
 
     private void createScrolledContent() {

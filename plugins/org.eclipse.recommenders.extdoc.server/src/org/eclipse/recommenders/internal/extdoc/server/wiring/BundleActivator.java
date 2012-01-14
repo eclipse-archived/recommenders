@@ -58,7 +58,8 @@ public class BundleActivator implements org.osgi.framework.BundleActivator {
             serviceActivator = child.getInstance(WebserviceActivator.class);
             try {
                 serviceActivator.start();
-                log.info("Started Code Recommenders extdoc server.");
+                Object property = serviceRef.getProperty("http.port");
+                log.info("Started Code Recommenders extdoc server on port {}.", property);
             } catch (final Exception e) {
                 throw new RuntimeException(e);
             }

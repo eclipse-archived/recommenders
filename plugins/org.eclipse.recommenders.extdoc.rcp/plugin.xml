@@ -27,9 +27,24 @@
             name="Javadoc">
       </provider>
       <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing.SubclassingDirectivesProvider"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing.OverridesProvider"
             image="icons/provider.subclassing.gif"
-            name="Subclassing Directives">
+            name="Overrides">
+      </provider>
+     <provider
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing.SelfCallsProvider"
+            image="icons/provider.subclassing-patterns.gif"
+            name="Self Calls">
+      </provider>
+     <provider
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.examples.ExamplesProvider"
+            image="icons/provider.examples.gif"
+            name="Snippets">
+      </provider>
+     <provider
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.CallsProvider"
+            image="icons/provider.calls.png"
+            name="Calls (Dynamic)">
       </provider>
    </extension>
    <extension

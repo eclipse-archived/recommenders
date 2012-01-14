@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.ClassOverridePatterns;
 import org.eclipse.recommenders.extdoc.ClassSelfcallDirectives;
+import org.eclipse.recommenders.extdoc.CodeExamples;
 import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.internal.extdoc.server.wiring.GuiceModule.ExtDocScope;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -124,6 +125,13 @@ public class CouchDataAccess {
     public Optional<ClassOverridePatterns> getClassOverridePatterns(final ITypeName type) {
         final ClassOverridePatterns res = getProviderContent(ClassOverridePatterns.class.getSimpleName(), type,
                 new GenericType<GenericResultObjectView<ClassOverridePatterns>>() {
+                });
+        return fromNullable(res);
+    }
+
+    public Optional<CodeExamples> getCodeExamples(final ITypeName type) {
+        final CodeExamples res = getProviderContent(CodeExamples.class.getSimpleName(), type,
+                new GenericType<GenericResultObjectView<CodeExamples>>() {
                 });
         return fromNullable(res);
     }

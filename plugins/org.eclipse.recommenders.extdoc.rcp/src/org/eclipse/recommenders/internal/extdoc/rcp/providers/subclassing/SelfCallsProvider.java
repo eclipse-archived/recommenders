@@ -21,13 +21,12 @@ import javax.inject.Inject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.ClassSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
+import org.eclipse.recommenders.internal.extdoc.rcp.providers.ExtdocResourceProxy;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.SwtUtils;
-import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocModule.Extdoc;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.TreeBag;
@@ -35,8 +34,6 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
-import org.eclipse.recommenders.webclient.WebServiceClient;
-import org.eclipse.recommenders.webclient.exceptions.NotFoundException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -47,16 +44,16 @@ import org.eclipse.swt.widgets.Link;
 
 import com.google.common.eventbus.EventBus;
 
-public final class SubclassingDirectivesProvider extends ExtdocProvider {
+public final class SelfCallsProvider extends ExtdocProvider {
 
-    private final WebServiceClient webclient;
+    private final ExtdocResourceProxy proxy;
     private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
 
     @Inject
-    public SubclassingDirectivesProvider(@Extdoc final WebServiceClient webclient, final JavaElementResolver resolver,
+    public SelfCallsProvider(final ExtdocResourceProxy proxy, final JavaElementResolver resolver,
             final EventBus workspaceBus) {
-        this.webclient = webclient;
+        this.proxy = proxy;
         this.resolver = resolver;
         this.workspaceBus = workspaceBus;
 
@@ -66,55 +63,35 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
     public Status onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent) {
         final IType type = root.findPrimaryType();
         if (type != null) {
-            onTypeSelection(type, event, parent);
+            return onTypeSelection(type, event, parent);
         }
-        return Status.OK;
-   }
+        return Status.NOT_AVAILABLE;
+    }
 
     @JavaSelectionSubscriber
     public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent) {
-        renderClassOverrideDirectives(type, parent);
-        renderClassSelfcallDirectives(type, parent);
+        final ITypeName typeName = resolver.toRecType(type);
+        final ClassSelfcallDirectives selfcalls = proxy.findClassSelfcallDirectives(typeName);
+        if (selfcalls == null) {
+            return Status.NOT_AVAILABLE;
+        }
+        runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, selfcalls, parent));
         return Status.OK;
-    }
-
-    private void renderClassOverrideDirectives(final IType type, final Composite parent) {
-        try {
-            final ITypeName typeName = resolver.toRecType(type);
-            final ClassOverrideDirectives overrides = webclient.doPostRequest("class-overrides", typeName,
-                    ClassOverrideDirectives.class);
-            runSyncInUiThread(new TypeOverrideDirectivesRenderer(type, overrides, parent));
-        } catch (final NotFoundException e) {
-            // TODO: responds to 404 sever reply AND service(!) not reachable!
-        }
-    }
-
-    private void renderClassSelfcallDirectives(final IType type, final Composite parent) {
-        try {
-            final ITypeName typeName = resolver.toRecType(type);
-            final ClassSelfcallDirectives selfcalls = webclient.doPostRequest("class-selfcalls", typeName,
-                    ClassSelfcallDirectives.class);
-            runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, selfcalls, parent));
-        } catch (final NotFoundException e) {
-            // TODO: responds to 404 sever reply AND service(!) not reachable!
-        }
     }
 
     @JavaSelectionSubscriber
     public Status onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
 
         for (IMethod current = method; current != null; current = JdtUtils.findOverriddenMethod(current).orNull()) {
-            try {
-                final IMethodName methodName = resolver.toRecMethod(current);
-                final MethodSelfcallDirectives selfcalls = webclient.doPostRequest("method-selfcalls", methodName,
-                        MethodSelfcallDirectives.class);
+            final IMethodName methodName = resolver.toRecMethod(current);
+            final MethodSelfcallDirectives selfcalls = proxy.findMethodSelfcallDirectives(methodName);
+            if (selfcalls != null) {
                 runSyncInUiThread(new MethodSelfcallDirectivesRenderer(method, selfcalls, parent));
-                break;
-            } catch (final NotFoundException e) {
+                return Status.OK;
             }
         }
-        return Status.OK;
-  }
+        return Status.NOT_AVAILABLE;
+    }
 
     static String percentageToRecommendationPhrase(final int percentage) {
         if (percentage >= 95) {
@@ -151,62 +128,6 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
             }
         });
         return link;
-    }
-
-    // ========================================================================
-    // TODO: Review the renderer code is redundant and needs refactoring after all providers have been written to
-    // identify more common parts.
-
-    private class TypeOverrideDirectivesRenderer implements Runnable {
-
-        private final IType type;
-        private final ClassOverrideDirectives directive;
-        private final Composite parent;
-        private Composite container;
-
-        public TypeOverrideDirectivesRenderer(final IType type, final ClassOverrideDirectives directive,
-                final Composite parent) {
-            this.type = type;
-            this.directive = directive;
-            this.parent = parent;
-        }
-
-        @Override
-        public void run() {
-            createContainer();
-            addHeader();
-            addDirectives();
-        }
-
-        private void createContainer() {
-            container = new Composite(parent, SWT.NO_BACKGROUND);
-            container.setLayout(new GridLayout());
-        }
-
-        private void addHeader() {
-            final String message = format("Based on %d direct subclasses of %s, we created the following statistics:",
-                    directive.getNumberOfSubclasses(), type.getElementName());
-            new Label(container, SWT.NONE).setText(message);
-        }
-
-        private void addDirectives() {
-            final int numberOfSubclasses = directive.getNumberOfSubclasses();
-            final TreeBag<IMethodName> b = newTreeBag(directive.getOverrides());
-
-            final Composite group = createGridComposite(container, 4, 0, 0, 0, 0);
-            for (final IMethodName method : b.elementsOrderedByFrequency()) {
-
-                final int frequency = b.count(method);
-                final int percentage = (int) Math.round(frequency * 100.0d / numberOfSubclasses);
-
-                createLabel(group, "   " + percentageToRecommendationPhrase(percentage), true, false, SWT.COLOR_BLACK,
-                        true);
-                createLabel(group, "override", false);
-                createMethodLink(group, method);
-                createLabel(group, format(" -   (%d %% - %d times)", percentage, frequency), true);
-            }
-        }
-
     }
 
     private class TypeSelfcallDirectivesRenderer implements Runnable {
@@ -288,7 +209,8 @@ public final class SubclassingDirectivesProvider extends ExtdocProvider {
         }
 
         private void addHeader() {
-            final String message = format("Based on %d direct implementors of %s we created the following statistics:",
+            final String message = format(
+                    "Based on %d direct implementors of %s we created the following statistics. Implementors...",
                     directive.getNumberOfDefinitions(), method.getElementName());
             new Label(container, SWT.NONE).setText(message);
         }
