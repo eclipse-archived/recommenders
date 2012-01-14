@@ -9,12 +9,8 @@
    <feature url="features/org.eclipse.recommenders.feature.completion.rcp.e37_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.e37" version="0.5.0.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.3rd.orbit_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.orbit" version="0.5.0.qualifier">
-      <category name="3rd"/>
-   </feature>
-   <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonorbit_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.5.0.qualifier">
-      <category name="3rd"/>
-   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.3rd.orbit_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.orbit" version="0.5.0.qualifier"/>
+   <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonorbit_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.5.0.qualifier"/>
    <feature url="features/org.eclipse.recommenders.feature.completion.rcp.chain.e37_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.chain.e37" version="0.5.0.qualifier">
       <category name="main"/>
    </feature>
@@ -22,5 +18,4 @@
       <category name="main"/>
    </feature>
    <category-def name="main" label="Code Recommenders - Eclipse 3.7"/>
-   <category-def name="3rd" label="Eclipse Code Recommenders - Dependencies (don&apos;t install)"/>
 </site>
