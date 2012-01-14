@@ -27,6 +27,9 @@
    <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonorbit_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.5.0.qualifier">
       <category name="3rd"/>
    </feature>
+   <feature url="features/org.eclipse.recommenders.feature.rcp_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.rcp" version="0.5.0.qualifier">
+      <category name="main"/>
+   </feature>
    <category-def name="main" label="Eclipse Code Recommenders - Juno Release"/>
    <category-def name="sources" label="Eclipse Code Recommenders - Sources"/>
    <category-def name="3rd" label="Code Recommenders: 3rd Party Dependencies"/>

@@ -12,7 +12,7 @@
 
 -->
 <feature
-      id="org.eclipse.recommenders.feature.completion.rcp.chain"
+      id="org.eclipse.recommenders.feature.completion.rcp.chain.e37"
       label="Code Recommenders: Chain Completion (Incubation)"
       version="0.5.0.qualifier"
       provider-name="Eclipse Code Recommenders">
@@ -30,8 +30,8 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.recommenders.feature.completion.rcp"/>
       <import feature="org.eclipse.recommenders.feature.rcp"/>
+      <import feature="org.eclipse.recommenders.feature.completion.rcp.e37"/>
    </requires>
 
    <plugin
@@ -49,7 +49,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.completion.rcp.e38"
+         id="org.eclipse.recommenders.completion.rcp.e37"
          download-size="0"
          install-size="0"
          version="0.0.0"

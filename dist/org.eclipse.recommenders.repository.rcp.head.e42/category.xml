@@ -30,6 +30,9 @@
    <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonorbit_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.5.0.qualifier">
       <category name="3rd"/>
    </feature>
+   <feature url="features/org.eclipse.recommenders.feature.rcp_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.rcp" version="0.5.0.qualifier">
+      <category name="main"/>
+   </feature>
    <category-def name="sources" label="Code Recommenders - Sources"/>
    <category-def name="main" label="Eclipse Code Recommenders - Eclipse 4.2"/>
    <category-def name="3rd" label="Eclipse Code Recommenders - Dependencies (don&apos;t install)"/>  <category-def name="main" label="Code Recommenders - Eclipse 3.7"/>

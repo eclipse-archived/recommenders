@@ -29,9 +29,9 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.recommenders.feature.rcp"
-         version="0.0.0"/>
+   <requires>
+      <import feature="org.eclipse.recommenders.feature.rcp"/>
+   </requires>
 
    <plugin
          id="org.eclipse.recommenders.extdoc.rcp"
