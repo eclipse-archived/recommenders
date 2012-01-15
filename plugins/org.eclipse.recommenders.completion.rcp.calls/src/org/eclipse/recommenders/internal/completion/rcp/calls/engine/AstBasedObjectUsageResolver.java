@@ -62,7 +62,7 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
 
     @Override
     public boolean visit(final MethodInvocation node) {
-        if (receiverExpressionMatchesVarname(node.getExpression()) || isReceiverThis(node)) {
+        if (receiverExpressionMatchesVarname(node.getExpression()) || (isThis() && isReceiverThis(node))) {
             final IMethodBinding b = node.resolveMethodBinding();
             registerMethodCallOnReceiver(b);
         }

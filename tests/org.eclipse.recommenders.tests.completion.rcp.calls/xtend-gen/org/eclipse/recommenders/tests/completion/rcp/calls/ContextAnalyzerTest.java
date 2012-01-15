@@ -52,6 +52,17 @@ public class ContextAnalyzerTest {
   }
   
   @Test
+  public void testCallsOnParam01() {
+      CharSequence _classbody = this.classbody("\n\t\tpublic void m1(String s$){\n\t\t\thashCode();\n\t\t}\n\t\t");
+      final CharSequence code = _classbody;
+      ObjectUsage _exercise = this.exercise(code, "s");
+      final ObjectUsage res = _exercise;
+      ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList();
+      this.assertCalls(res, _newArrayList);
+      this.assertDef(res, "m1");
+  }
+  
+  @Test
   public void testCallsOnThisAndSuper() {
       CharSequence _methodbody = this.methodbody("\n\t\t\thashCode();\n\t\t\tsuper.wait();\n\t\t\tthis.equals(null);\n\t\t\t");
       final CharSequence code = _methodbody;

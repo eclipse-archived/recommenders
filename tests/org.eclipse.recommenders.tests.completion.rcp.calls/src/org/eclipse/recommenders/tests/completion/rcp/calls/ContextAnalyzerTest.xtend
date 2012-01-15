@@ -42,6 +42,19 @@ class ContextAnalyzerTest {
 		res.assertDef("<init>")
 	}
 	
+	@Test
+	def void testCallsOnParam01(){
+		// this test ensures that not accicentially calls on this are collected for parameter (as happend)
+		val code = classbody('
+		public void m1(String s$){
+			hashCode();
+		}
+		')
+		val res = exercise(code,"s")
+		res.assertCalls(newArrayList());
+		res.assertDef("m1")
+	}
+	
 	
 	@Test
 	def void testCallsOnThisAndSuper(){
