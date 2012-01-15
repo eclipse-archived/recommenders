@@ -28,6 +28,9 @@
         </profile>
         <profile>
             <id>e42</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <modules>
                 <module>org.eclipse.recommenders.repository.rcp.head.e42</module>
                 <module>org.eclipse.recommenders.repository.rcp.dev.e42</module>
