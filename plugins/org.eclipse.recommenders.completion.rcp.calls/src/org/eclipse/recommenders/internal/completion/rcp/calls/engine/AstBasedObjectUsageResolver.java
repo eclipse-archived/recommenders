@@ -234,6 +234,10 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
         }
         if (b.isParameter()) {
             res.kind = Kind.PARAMETER;
+            final IMethodName method = BindingUtils.toMethodName(b.getDeclaringMethod());
+            if (method != null) {
+                res.definition = method;
+            }
         } else if (b.isField()) {
             res.kind = Kind.FIELD;
         } else {

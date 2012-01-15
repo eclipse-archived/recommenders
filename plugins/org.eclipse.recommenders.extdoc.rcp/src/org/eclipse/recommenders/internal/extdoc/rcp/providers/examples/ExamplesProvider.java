@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.examples;
 
-import static org.eclipse.recommenders.internal.extdoc.rcp.ui.SwtUtils.createSourceCodeArea;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createSourceCodeArea;
 
 import javax.inject.Inject;
 

@@ -52,7 +52,7 @@ final class SourceCodeArea extends JavaSourceViewer {
         super(parent, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
 
         configure(configuration);
-        getTextWidget().setFont(SwtUtils.CODEFONT);
+        getTextWidget().setFont(ExtdocUtils.CODEFONT);
         setEditable(false);
         getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 0).create());
     }

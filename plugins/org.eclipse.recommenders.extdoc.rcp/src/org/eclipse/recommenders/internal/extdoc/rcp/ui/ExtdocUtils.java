@@ -40,14 +40,14 @@ import org.eclipse.swt.widgets.Text;
  * Several shortcuts for creating SWT components in the Extdoc default way.
  */
 // TODO: Review these methods. not sure they are still the defaults
-public final class SwtUtils {
+public final class ExtdocUtils {
 
     static final Font CODEFONT = JFaceResources.getTextFont();
     private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 
     private static final Map<Integer, Color> COLORCACHE = new HashMap<Integer, Color>();
 
-    private SwtUtils() {
+    private ExtdocUtils() {
     }
 
     public static Composite createGridComposite(final Composite parent, final int columns, final int hSpacing,
@@ -202,6 +202,20 @@ public final class SwtUtils {
         return link;
     }
 
+    public static String percentageToRecommendationPhrase(final int percentage) {
+        if (percentage >= 95) {
+            return "always";
+        } else if (percentage >= 65) {
+            return "usually";
+        } else if (percentage >= 25) {
+            return "sometimes";
+        } else if (percentage >= 10) {
+            return "occasionally";
+        } else {
+            return "rarely";
+        }
+    }
+
     public static void createSourceCodeArea(final Composite parent, final String snippet) {
         new SourceCodeArea(parent).setCode(snippet);
     }
@@ -222,9 +236,10 @@ public final class SwtUtils {
         return COLORCACHE.get(color);
     }
 
-    public static Composite createComposite(final Composite parent) {
+    public static Composite createComposite(final Composite parent, final int numColumns) {
         Composite container = new Composite(parent, SWT.NO_BACKGROUND);
-        container.setLayout(new GridLayout());
+        container.setLayout(GridLayoutFactory.fillDefaults().margins(10, 0).spacing(0, 0).numColumns(numColumns)
+                .create());
         container.setLayoutData(GridDataFactory.fillDefaults().create());
         return container;
     }

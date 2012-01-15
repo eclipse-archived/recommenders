@@ -17,6 +17,7 @@ import static org.eclipse.jdt.internal.corext.util.JdtFlags.isPublic;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isStatic;
 import static org.eclipse.jdt.ui.SharedASTProvider.WAIT_YES;
 import static org.eclipse.jdt.ui.SharedASTProvider.getAST;
+import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
@@ -49,6 +50,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
@@ -79,6 +81,7 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.recommenders.utils.Names;
+import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
@@ -656,6 +659,18 @@ public class JdtUtils {
                 }
             }
         }
+    }
+
+    public static Optional<IMethod> resolveMethod(@Nullable final MethodDeclaration node) {
+        if (node == null) {
+            return absent();
+        }
+        IMethodBinding b = node.resolveBinding();
+        if (b == null) {
+            return absent();
+        }
+        IMethod method = cast(b.getJavaElement());
+        return Optional.fromNullable(method);
     }
 
     public static Optional<ASTNode> resolveDeclarationNode(final JavaEditor editor) {

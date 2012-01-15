@@ -14,8 +14,9 @@ import static com.google.common.collect.Collections2.filter;
 import static com.google.common.collect.Lists.newLinkedList;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static org.eclipse.recommenders.internal.extdoc.rcp.ui.SwtUtils.createGridComposite;
-import static org.eclipse.recommenders.internal.extdoc.rcp.ui.SwtUtils.createLabel;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createGridComposite;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.percentageToRecommendationPhrase;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 
@@ -35,7 +36,7 @@ import org.eclipse.recommenders.extdoc.MethodPattern;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.ExtdocResourceProxy;
-import org.eclipse.recommenders.internal.extdoc.rcp.ui.SwtUtils;
+import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.TreeBag;
@@ -106,27 +107,13 @@ public final class OverridesProvider extends ExtdocProvider {
         return false;
     }
 
-    static String percentageToRecommendationPhrase(final int percentage) {
-        if (percentage >= 95) {
-            return "always";
-        } else if (percentage >= 65) {
-            return "usually";
-        } else if (percentage >= 25) {
-            return "sometimes";
-        } else if (percentage >= 10) {
-            return "occasionally";
-        } else {
-            return "rarely";
-        }
-    }
-
     Link createMethodLink(final Composite parent, final IMethodName method) {
         final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
         final String tooltip = Names.vm2srcQualifiedMethod(method);
 
         final Link link = new Link(parent, SWT.NONE);
         link.setText(text);
-        link.setBackground(SwtUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+        link.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
         link.setToolTipText(tooltip);
         link.addSelectionListener(new SelectionAdapter() {
             @Override

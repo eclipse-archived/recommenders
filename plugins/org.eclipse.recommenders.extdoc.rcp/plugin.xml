@@ -44,7 +44,7 @@
      <provider
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.CallsProvider"
             image="icons/provider.calls.png"
-            name="Calls (Dynamic)">
+            name="Calls Recommender">
       </provider>
    </extension>
    <extension
