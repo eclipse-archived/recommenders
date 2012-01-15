@@ -185,7 +185,8 @@ public class GraphBuilder {
     }
 
     private boolean isMaxNumberOfChainsLimitReached() {
-        return 20 >= chains.size();
+        boolean hasMoreElementsThanNeeded = chains.size() >= 20;
+        return hasMoreElementsThanNeeded;
     }
 
     private void dsfTraverse(final LinkedHashSet<MemberEdge> incompleteChain, final MemberEdge edgeToTest) {
