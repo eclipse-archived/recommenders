@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.completion.rcp.chain;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Throws.throwCancelationException;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods;
 
 import java.util.Collection;
@@ -149,9 +150,8 @@ public class GraphBuilder {
 
     private void bsfTraverse(
             final List<Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */>> iteration) {
-        if (isMaxNumberOfChainsLimitReached()) {
-            return;
-        }
+        cancelIfMaxNumberOfChainsLimitIsReadched();
+
         final List<Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */>> nextIteration = Lists
                 .newLinkedList();
         for (final Tuple<LinkedHashSet<MemberEdge> /* incompleteChain */, MemberEdge /* edgeToTest */> t : iteration) {
@@ -184,9 +184,11 @@ public class GraphBuilder {
         }
     }
 
-    private boolean isMaxNumberOfChainsLimitReached() {
+    private void cancelIfMaxNumberOfChainsLimitIsReadched() {
         boolean hasMoreElementsThanNeeded = chains.size() >= 20;
-        return hasMoreElementsThanNeeded;
+        if (hasMoreElementsThanNeeded) {
+            throwCancelationException();
+        }
     }
 
     private void dsfTraverse(final LinkedHashSet<MemberEdge> incompleteChain, final MemberEdge edgeToTest) {
