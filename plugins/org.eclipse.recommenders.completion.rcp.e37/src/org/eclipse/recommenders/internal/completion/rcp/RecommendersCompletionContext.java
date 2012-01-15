@@ -220,8 +220,10 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
         final List<IMethod> res = Lists.newArrayList();
         for (final MethodDeclaration d : astCompletionNodeFinder.methodDeclarations) {
             final MethodBinding b = d.binding;
-            final IMethod f = JdtUtils.createUnresolvedMethod(b);
-            res.add(f);
+            if (b != null) {
+                final IMethod f = JdtUtils.createUnresolvedMethod(b);
+                res.add(f);
+            }
         }
         addInheritedMembers(res, IJavaElement.METHOD);
         return res;
