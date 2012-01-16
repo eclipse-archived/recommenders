@@ -98,7 +98,7 @@ public class SubwordsUtils {
                 // if upper case than match words containing this uppercase
                 // letter only - the developer might have a clue what she is
                 // looking for...
-                sb.append(c);
+                sb.append("(").append(c).append(")");
             } else {
                 // if not just search for any proposal containing this letter in
                 // upper case OR lower case.
