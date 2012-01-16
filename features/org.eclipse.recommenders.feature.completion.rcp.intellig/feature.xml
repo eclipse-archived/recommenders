@@ -12,7 +12,7 @@
 
 -->
 <feature
-      id="org.eclipse.recommenders.feature.completion.rcp"
+      id="org.eclipse.recommenders.feature.completion.rcp.intellig"
       label="Code Recommenders: Intelligent Code Completion (Incubation)"
       version="0.5.0.qualifier"
       provider-name="Eclipse Code Recommenders">

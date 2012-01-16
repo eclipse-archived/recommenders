@@ -14,16 +14,8 @@
         <profile>
             <id>e3x</id>
             <modules>
-                <!-- for historic reasons: jenkins is not updated yet: -->
-                <module>org.eclipse.recommenders.repository.rcp</module>
                 <module>org.eclipse.recommenders.repository.rcp.head.e37</module>
                 <module>org.eclipse.recommenders.repository.rcp.dev.e37</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>server</id>
-            <modules>
-                <module>org.eclipse.recommenders.product.server</module>
             </modules>
         </profile>
         <profile>
@@ -33,8 +25,14 @@
             </activation>
             <modules>
                 <module>org.eclipse.recommenders.repository.rcp.head.e42</module>
-                <module>org.eclipse.recommenders.repository.rcp.dev.e42</module>
                 <module>org.eclipse.recommenders.repository.rcp.train.e42</module>
+                <module>org.eclipse.recommenders.repository.rcp.dev.e42</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>server</id>
+            <modules>
+                <module>org.eclipse.recommenders.product.server</module>
             </modules>
         </profile>
     </profiles>

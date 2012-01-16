@@ -1,54 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<parent>
-		<groupId>org.eclipse.recommenders.repository</groupId>
-		<artifactId>org.eclipse.recommenders.repository.parent</artifactId>
-		<version>0.5.0-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.eclipse.recommenders.product.server</artifactId>
-	<packaging>eclipse-repository</packaging>
-
-	<build>
-		<plugins>
-
-			<plugin>
-
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho-version}</version>
-				<configuration>
-					<resolver>p2</resolver>
-					<environments>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86</arch>
-						</environment>
-					</environments>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-p2-director-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<executions>
-					<execution>
-						<id>materialize-products</id>
-						<goals>
-							<goal>materialize-products</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>archive-products</id>
-						<goals>
-							<goal>archive-products</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <parent>
+        <groupId>org.eclipse.recommenders.repository</groupId>
+        <artifactId>org.eclipse.recommenders.repository.parent</artifactId>
+        <version>0.5.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.eclipse.recommenders.product.server</artifactId>
+    <packaging>eclipse-repository</packaging>
+    <properties>
+        <source>${project.build.directory}/products</source>
+        <target>/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}/server</target>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>target-platform-configuration</artifactId>
+                <version>${tycho-version}</version>
+                <configuration>
+                    <resolver>p2</resolver>
+                    <environments>
+                        <environment>
+                            <os>linux</os>
+                            <ws>gtk</ws>
+                            <arch>x86</arch>
+                        </environment>
+                    </environments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-p2-director-plugin</artifactId>
+                <version>${tycho-version}</version>
+                <executions>
+                    <execution>
+                        <id>materialize-products</id>
+                        <goals>
+                            <goal>materialize-products</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>archive-products</id>
+                        <goals>
+                            <goal>archive-products</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>build-server</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <delete includeemptydirs="false" failonerror="false">
+                                            <fileset dir="${target}">
+                                                <include name="**"/>
+                                            </fileset>
+                                        </delete>
+                                        <mkdir dir="${target}"/>
+                                        <copy includeemptydirs="false" todir="${target}">
+                                            <fileset dir="${source}">
+                                                <include name="**.zip"/>
+                                            </fileset>
+                                            <fileset dir="./">
+                                                <include name="*.php"/>
+                                            </fileset>
+                                        </copy>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
