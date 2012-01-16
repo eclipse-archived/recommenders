@@ -51,6 +51,7 @@ import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.recommenders.utils.rcp.ast.MethodDeclarationFinder;
+import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -58,6 +59,8 @@ import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
+
+    private static final int BASIS_RELEVANCE = 1600;
 
     // private static final int MAX_NUM_PROPOSALS = 5;
     private static final double MIN_PROBABILITY_THRESHOLD = 0.1d;
@@ -224,7 +227,9 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             final int end = ctx.getInvocationOffset();
             final CompletionProposal proposal = JdtUtils.createProposal(method, CompletionProposal.METHOD_REF, start,
                     end, end);
-            proposal.setRelevance(100 + (int) Math.rint(r.probability * 100));
+            int proposalPercentage = (int) Math.rint(r.probability * 100);
+            int rating = BASIS_RELEVANCE + proposalPercentage;
+            proposal.setRelevance(rating);
 
             final ParameterGuessingProposal javaProposal = ParameterGuessingProposal.createProposal(proposal,
                     ctx.getJavaContext(), true);
@@ -232,13 +237,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             proposals.add(decorator);
         }
         if (!proposals.isEmpty()) {
-            proposals.add(new JavaCompletionProposal("", ctx.getInvocationOffset(), 0, null,
-                    "-------  ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>  ----  (-(-_(-_-)_-)-)  -------", 1600) {
-                @Override
-                protected boolean isPrefix(final String prefix, final String string) {
-                    return true;
-                }
-            });
+            proposals.add(new SeparatorProposal("", ctx.getInvocationOffset(), 0, null, "--------------",
+                    BASIS_RELEVANCE));
         }
     }
 
@@ -269,5 +269,17 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     @Override
     public void sessionEnded() {
+    }
+
+    private final class SeparatorProposal extends JavaCompletionProposal {
+        private SeparatorProposal(final String replacementString, final int replacementOffset,
+                final int replacementLength, final Image image, final String displayString, final int relevance) {
+            super(replacementString, replacementOffset, replacementLength, image, displayString, relevance);
+        }
+
+        @Override
+        protected boolean isPrefix(final String prefix, final String string) {
+            return true;
+        }
     }
 }
