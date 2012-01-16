@@ -32,5 +32,13 @@
             class="org.eclipse.recommenders.internal.completion.rcp.calls.preferences.PreferenceInitializer">
       </initializer>
    </extension>
+      <extension
+         point="org.eclipse.recommenders.extdoc.rcp.provider">
+     <provider
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.calls.extdoc.CallsProvider"
+            image="icons/obj16/calls.png"
+            name="Calls Recommender">
+      </provider>
+   </extension>
 
 </plugin>
