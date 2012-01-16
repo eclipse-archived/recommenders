@@ -51,7 +51,6 @@ import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.recommenders.utils.rcp.ast.MethodDeclarationFinder;
-import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -237,8 +236,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             proposals.add(decorator);
         }
         if (!proposals.isEmpty()) {
-            proposals.add(new SeparatorProposal("", ctx.getInvocationOffset(), 0, null, "--------------",
-                    BASIS_RELEVANCE));
+            proposals.add(new SeparatorProposal(ctx.getInvocationOffset()));
         }
     }
 
@@ -272,9 +270,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private final class SeparatorProposal extends JavaCompletionProposal {
-        private SeparatorProposal(final String replacementString, final int replacementOffset,
-                final int replacementLength, final Image image, final String displayString, final int relevance) {
-            super(replacementString, replacementOffset, replacementLength, image, displayString, relevance);
+        private SeparatorProposal(final int replacementOffset) {
+            super("", replacementOffset, 0, null, "--------------", BASIS_RELEVANCE);
         }
 
         @Override
