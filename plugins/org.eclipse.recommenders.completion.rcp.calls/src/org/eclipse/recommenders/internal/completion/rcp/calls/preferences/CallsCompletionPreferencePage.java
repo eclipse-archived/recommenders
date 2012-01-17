@@ -68,9 +68,9 @@ public class CallsCompletionPreferencePage extends PreferencePage implements IWo
     private Text webserviceBaseurl;
 
     @Inject
-    public CallsCompletionPreferencePage(final DependencyInfoStore dependencyStore, final CallModelStore archiveStore) {
-        this.dependencyStore = dependencyStore;
+    public CallsCompletionPreferencePage(final CallModelStore archiveStore) {
         this.archiveStore = archiveStore;
+        this.dependencyStore = archiveStore.getDependencyInfoStore();
         noDefaultAndApplyButton();
         setDescription("All dependencies of your open and Recommenders enabled projects are listed below. "
                 + "Select an entry to edit the name and version of a dependency. "

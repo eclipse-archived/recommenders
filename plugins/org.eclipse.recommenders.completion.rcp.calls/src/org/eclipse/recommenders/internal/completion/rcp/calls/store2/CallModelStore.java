@@ -78,4 +78,8 @@ public class CallModelStore implements Closeable {
     public void close() throws IOException {
         depStore.close();
     }
+
+    public DependencyInfoStore getDependencyInfoStore() {
+        return depStore;
+    }
 }
