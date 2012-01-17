@@ -37,6 +37,7 @@ import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
+import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
@@ -337,9 +338,14 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     @Override
     public Optional<IType> getReceiverType() {
         final Optional<TypeBinding> opt = findReceiverTypeBinding();
-        if (opt.isPresent()) {
-            return of(JdtUtils.createUnresolvedType(opt.get()));
+        if (!opt.isPresent()) {
+            return absent();
         }
-        return absent();
+        TypeBinding b = opt.get();
+        if (b instanceof MissingTypeBinding) {
+            return absent();
+        }
+        return of(JdtUtils.createUnresolvedType(b));
+
     }
 }

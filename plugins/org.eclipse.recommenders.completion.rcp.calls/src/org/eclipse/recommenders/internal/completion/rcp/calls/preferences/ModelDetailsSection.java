@@ -14,51 +14,40 @@ import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchive;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.CallsModelResolver;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.RemoteResolverJobFactory;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.ResolveCallsModelJob;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.structs.ManifestResolvementInformation;
-import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.ManifestResolverInfo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 
+import com.google.common.base.Optional;
+
 public class ModelDetailsSection extends AbstractDependencySection {
 
-    private final ClasspathDependencyStore dependencyStore;
+    private final DependencyInfoStore dependencyStore;
     private Text nameText;
     private Text versionsText;
     private Text timestampText;
     private Button reresolveButton;
     private File file;
-    private final RemoteResolverJobFactory jobFactory;
     private Button selectModelButton;
     private final PreferencePage preferencePage;
-    private final ModelArchiveStore archiveStore;
     private Text resolvedTimestampText;
     private Text resolvingStrategyText;
     private Button deleteModelButton;
 
     public ModelDetailsSection(final PreferencePage preferencePage, final Composite parent,
-            final ClasspathDependencyStore dependencyStore, final ModelArchiveStore archiveStore,
-            final RemoteResolverJobFactory jobFactory) {
+            final DependencyInfoStore dependencyStore) {
         super(preferencePage, parent, "Matched model");
         this.preferencePage = preferencePage;
         this.dependencyStore = dependencyStore;
-        this.archiveStore = archiveStore;
-        this.jobFactory = jobFactory;
     }
 
     @Override
@@ -94,13 +83,17 @@ public class ModelDetailsSection extends AbstractDependencySection {
 
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                if (file == null) {
-                    return;
-                }
-                final ManifestResolvementInformation resolvementInfo = dependencyStore.getManifestResolvementInfo(file);
-                final Manifest manifest = resolvementInfo.getManifest();
-                dependencyStore.invalidateManifest(file);
-                archiveStore.removeModelArchive(manifest);
+                // if (file == null) {
+                // return;
+                // }
+                // Optional<ManifestResolverInfo> opt = dependencyStore.getManifestResolverInfo(file);
+                // if (!opt.isPresent()) {
+                // return;
+                // }
+                // final ManifestResolverInfo resolvementInfo = opt.get();
+                // final Manifest manifest = resolvementInfo.getManifest();
+                // dependencyStore.invalidateManifest(file);
+                // archiveStore.removeModelArchive(manifest);
             }
         });
         deleteModelButton.setToolTipText("Remove model from store.");
@@ -109,10 +102,11 @@ public class ModelDetailsSection extends AbstractDependencySection {
     public void selectFile(final File file) {
         this.file = file;
         setButtonsEnabled(file != null);
-        if (file == null || !dependencyStore.containsManifest(file)) {
+        Optional<ManifestResolverInfo> opt = dependencyStore.getManifestResolverInfo(file);
+        if (!opt.isPresent()) {
             resetTexts();
         } else {
-            final ManifestResolvementInformation resolvementInfo = dependencyStore.getManifestResolvementInfo(file);
+            final ManifestResolverInfo resolvementInfo = opt.get();
             final Manifest manifest = resolvementInfo.getManifest();
             nameText.setText(manifest.getName());
             versionsText.setText(manifest.getVersionRange().toString());
@@ -130,14 +124,14 @@ public class ModelDetailsSection extends AbstractDependencySection {
         return new SelectionListener() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                if (file != null) {
-                    if (e.getSource() == reresolveButton) {
-                        reresolveModel();
-                    } else if (e.getSource() == selectModelButton) {
-                        selectModelFile();
-                        selectFile(file);
-                    }
-                }
+                // if (file != null) {
+                // if (e.getSource() == reresolveButton) {
+                // reresolveModel();
+                // } else if (e.getSource() == selectModelButton) {
+                // selectModelFile();
+                // selectFile(file);
+                // }
+                // }
             }
 
             @Override
@@ -146,36 +140,36 @@ public class ModelDetailsSection extends AbstractDependencySection {
         };
     }
 
-    private void reresolveModel() {
-        final ResolveCallsModelJob job = jobFactory.create(file, CallsModelResolver.OverridePolicy.MANIFEST);
-        job.schedule();
-        reresolveButton.setEnabled(false);
-    }
+    // private void reresolveModel() {
+    // final ResolveCallsModelJob job = jobFactory.create(file, CallsModelResolver.OverridePolicy.MANIFEST);
+    // job.schedule();
+    // reresolveButton.setEnabled(false);
+    // }
 
     private void selectModelFile() {
-        final FileDialog dialog = new FileDialog(preferencePage.getShell(), SWT.SINGLE);
-        dialog.setFilterExtensions(new String[] { "*.zip" });
-        dialog.setFilterNames(new String[] { "Model files" });
-        final String selection = dialog.open();
-        if (selection != null) {
-            final File file = new File(selection);
-            if (file.exists()) {
-                registerModel(file);
-            }
-        }
+        // final FileDialog dialog = new FileDialog(preferencePage.getShell(), SWT.SINGLE);
+        // dialog.setFilterExtensions(new String[] { "*.zip" });
+        // dialog.setFilterNames(new String[] { "Model files" });
+        // final String selection = dialog.open();
+        // if (selection != null) {
+        // final File file = new File(selection);
+        // if (file.exists()) {
+        // registerModel(file);
+        // }
+        // }
     }
 
-    private void registerModel(final File modelFile) {
-        try {
-            final File temp = File.createTempFile("model.", ".zip");
-            FileUtils.copyFile(modelFile, temp);
-            final ModelArchive modelArchive = new ModelArchive(temp);
-            final Manifest manifest = modelArchive.getManifest();
-            archiveStore.register(modelArchive);
-            dependencyStore.putManifest(file, manifest, true);
-        } catch (final Exception e) {
-            preferencePage.setErrorMessage("Selected file could not be used as model.");
-            RecommendersPlugin.logError(e, "Selected file could not be used as model.");
-        }
-    }
+    // private void registerModel(final File modelFile) {
+    // try {
+    // final File temp = File.createTempFile("model.", ".zip");
+    // FileUtils.copyFile(modelFile, temp);
+    // final ModelArchive modelArchive = new ModelArchive(temp);
+    // final Manifest manifest = modelArchive.getManifest();
+    // archiveStore.register(modelArchive);
+    // dependencyStore.putManifest(file, manifest, true);
+    // } catch (final Exception e) {
+    // preferencePage.setErrorMessage("Selected file could not be used as model.");
+    // RecommendersPlugin.logError(e, "Selected file could not be used as model.");
+    // }
+    // }
 }

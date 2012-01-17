@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.udc;
 
-import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.UpdateAllModelsJob;
 import org.eclipse.ui.IStartup;
 
 public class UpdateModelsDelegate implements IStartup {
@@ -29,9 +27,9 @@ public class UpdateModelsDelegate implements IStartup {
     }
 
     private void startUpdateJob() {
-        final UpdateAllModelsJob job = InjectionService.getInstance().requestInstance(UpdateAllModelsJob.class);
-        job.addJobChangeListener(new UpdateCompletedListener());
-        job.schedule();
+        // final UpdateAllModelsJob job = InjectionService.getInstance().requestInstance(UpdateAllModelsJob.class);
+        // job.addJobChangeListener(new UpdateCompletedListener());
+        // job.schedule();
     }
 
     private boolean isTimeToUpdate() {

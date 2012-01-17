@@ -11,7 +11,6 @@ Require-Bundle: org.apache.commons.lang3,
  com.google.guava,
  org.eclipse.recommenders.utils,
  org.eclipse.core.runtime,
- org.apache.commons.io,
  org.eclipse.recommenders.utils.gson,
  org.slf4j.api
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

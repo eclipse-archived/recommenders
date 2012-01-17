@@ -24,15 +24,8 @@ import javax.inject.Singleton;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.internal.analysis.rcp.IRecommendersProjectLifeCycleListener;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.ClientConfigurationPreferenceListener;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.IModelArchiveStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.bak.ProjectModelFacadeFactory;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.bak.ProjectServices;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.RemoteResolverJobFactory;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallsModelLoader;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoComputerService;
@@ -49,10 +42,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
-import com.google.inject.Scopes;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.multibindings.Multibinder;
-import com.google.inject.name.Names;
 
 public class CallsCompletionModule extends AbstractModule {
 
@@ -62,8 +51,6 @@ public class CallsCompletionModule extends AbstractModule {
     @Override
     protected void configure() {
         configurePreferences();
-        configureProjectServices();
-        configureArchiveModelStore();
         store2Configure();
     }
 
@@ -76,27 +63,6 @@ public class CallsCompletionModule extends AbstractModule {
         final IPreferenceStore store = CallsCompletionPlugin.getDefault().getPreferenceStore();
         store.addPropertyChangeListener(new ClientConfigurationPreferenceListener(config, store));
         bind(ClientConfiguration.class).annotatedWith(CallModelsServer.class).toInstance(config);
-    }
-
-    private void configureProjectServices() {
-        bind(ProjectServices.class).in(Scopes.SINGLETON);
-        final Multibinder<IRecommendersProjectLifeCycleListener> multibinder = Multibinder.newSetBinder(binder(),
-                IRecommendersProjectLifeCycleListener.class);
-        multibinder.addBinding().to(ProjectServices.class);
-    }
-
-    private void configureArchiveModelStore() {
-        bind(IModelArchiveStore.class).to(ModelArchiveStore.class).in(Scopes.SINGLETON);
-
-        final IPath stateLocation = Platform.getStateLocation(FrameworkUtil.getBundle(getClass()));
-        File modelStoreLocation = new File(stateLocation.toFile(), MODEL_VERSION + "/models/");
-        File dependencyStoreLocation = new File(stateLocation.toFile(), MODEL_VERSION + "/dependencyIndex/");
-        bind(File.class).annotatedWith(Names.named(CALLS_STORE_LOCATION)).toInstance(modelStoreLocation);
-        bind(File.class).annotatedWith(ModelsStoreLocation.class).toInstance(modelStoreLocation);
-        bind(File.class).annotatedWith(DependencyStoreLocation.class).toInstance(dependencyStoreLocation);
-        bind(ClasspathDependencyStore.class).in(Scopes.SINGLETON);
-        install(new FactoryModuleBuilder().build(ProjectModelFacadeFactory.class));
-        install(new FactoryModuleBuilder().build(RemoteResolverJobFactory.class));
     }
 
     @Provides

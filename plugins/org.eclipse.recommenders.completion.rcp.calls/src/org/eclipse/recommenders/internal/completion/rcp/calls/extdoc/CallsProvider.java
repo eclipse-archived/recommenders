@@ -10,34 +10,36 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.extdoc;
 
+import static java.lang.String.format;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.resolveMethod;
 
 import java.util.Collection;
+import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.AstBasedObjectUsageResolver;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.bak.IProjectModelFacade;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.bak.ProjectServices;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.annotations.Experimental;
 import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.swt.SWT;
@@ -56,31 +58,28 @@ import com.google.common.eventbus.EventBus;
 @Experimental
 public final class CallsProvider extends ExtdocProvider {
 
-    private final ProjectServices projectServices;
+    private final CallModelStore modelStore;
     private final JavaElementResolver jdtResolver;
     private final EventBus workspaceBus;
-    private IJavaProject javaProject;
     private IType receiverType;
     private IObjectMethodCallsNet model;
 
     @Inject
-    public CallsProvider(final ProjectServices projectServices, final JavaElementResolver jdtResolver,
+    public CallsProvider(final CallModelStore modelStore, final JavaElementResolver jdtResolver,
             final EventBus workspaceBus) {
-        this.projectServices = projectServices;
+        this.modelStore = modelStore;
         this.jdtResolver = jdtResolver;
         this.workspaceBus = workspaceBus;
     }
 
     @JavaSelectionSubscriber
-    public Status onVariableSelection(final ILocalVariable type, final JavaSelectionEvent event, final Composite parent) {
+    public Status onVariableSelection(final ILocalVariable var, final JavaSelectionEvent event, final Composite parent) {
         Optional<ASTNode> opt = event.getSelectedNode();
         if (!opt.isPresent()) {
             return Status.NOT_AVAILABLE;
         }
 
-        javaProject = type.getJavaProject();
-        String typeSignature = type.getTypeSignature();
-        Optional<IType> varType = JdtUtils.findTypeFromSignature(typeSignature, type);
+        Optional<IType> varType = findVariableType(var);
         if (!varType.isPresent()) {
             return Status.NOT_AVAILABLE;
         }
@@ -90,27 +89,45 @@ public final class CallsProvider extends ExtdocProvider {
             return Status.NOT_AVAILABLE;
         }
         ASTNode node = opt.get();
-        Optional<MethodDeclaration> optMethodDeclaration = findEnclosingMethod(node);
-        Optional<IMethod> optMethod = JdtUtils.resolveMethod(optMethodDeclaration.orNull());
-        if (!optMethod.isPresent()) {
+
+        Optional<MethodDeclaration> optAstMethod = findEnclosingMethod(node);
+        Optional<IMethod> optJdtMethod = resolveMethod(optAstMethod.orNull());
+        if (!optJdtMethod.isPresent()) {
             return Status.NOT_AVAILABLE;
         }
 
         final AstBasedObjectUsageResolver r = new AstBasedObjectUsageResolver();
-        final ObjectUsage usage = r.findObjectUsage(type.getElementName(), optMethodDeclaration.get());
-        IMethod first = JdtUtils.findFirstDeclaration(optMethod.get());
+        ObjectUsage usage = r.findObjectUsage(var.getElementName(), optAstMethod.get());
+        IMethod first = JdtUtils.findFirstDeclaration(optJdtMethod.get());
         usage.contextFirst = jdtResolver.toRecMethod(first);
         if (usage.kind == Kind.PARAMETER) {
             usage.definition = usage.contextFirst;
         }
         model.setQuery(usage);
+
+        // XXX MB: this is dark force code... need to clean it up after provider layout fixed.
         final Collection<Tuple<IMethodName, Double>> methodCalls = model.getRecommendedMethodCalls(0.05d);
+        final IMethodName ctx = model.getActiveContext();
+        final IMethodName def = model.getActiveDefinition();
+        final Kind kind = model.getActiveKind();
+        final Set<IMethodName> calls = model.getActiveCalls();
         releaseModel();
         runSyncInUiThread(new Runnable() {
 
             @Override
             public void run() {
                 Composite container = ExtdocUtils.createComposite(parent, 4);
+                Label preamble2 = new Label(container, SWT.NONE);
+                preamble2.setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0).create());
+                if (methodCalls.isEmpty()) {
+                    preamble2.setText(format("For %s %s no recommendations are made.", receiverType.getElementName(),
+                            var.getElementName()));
+                } else {
+                    preamble2.setText(format("For %s %s the following recommendations are made:",
+                            receiverType.getElementName(), var.getElementName()));
+                }
+                new Label(container, SWT.NONE).setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0)
+                        .hint(SWT.DEFAULT, 1).create());
                 for (Tuple<IMethodName, Double> rec : methodCalls) {
                     int percentage = (int) Math.rint(rec.getSecond() * 100);
                     createLabel(container, ExtdocUtils.percentageToRecommendationPhrase(percentage), true, false,
@@ -124,16 +141,33 @@ public final class CallsProvider extends ExtdocProvider {
                 createLabel(container, "", false);
                 createLabel(container, "", false);
                 createLabel(container, "", false);
-                if (usage.definition != null) {
+
+                Label preamble = new Label(container, SWT.NONE);
+                preamble.setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 5).create());
+                String text = format(
+                        "Proposals were computed based on variable type '%s' in '%s'.",
+                        receiverType.getElementName(),
+                        ctx == VmMethodName.NULL ? "untrained context" : Names.vm2srcSimpleTypeName(ctx
+                                .getDeclaringType()) + "." + Names.vm2srcSimpleMethod(ctx));
+                preamble.setText(text);
+
+                new Label(container, SWT.NONE).setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 5)
+                        .hint(SWT.DEFAULT, 1).create());
+
+                if (def != null) {
                     createLabel(container, "defined by", true, false, SWT.COLOR_DARK_GRAY, false);
-                    createLabel(container, " call", false, false, SWT.COLOR_DARK_GRAY, false);
-                    createMethodLink(container, usage.definition);
-                    createLabel(container, "- " + usage.kind.toString().toLowerCase(), true, false,
-                            SWT.COLOR_DARK_GRAY, false);
+                    createLabel(container, "", false, false, SWT.COLOR_DARK_GRAY, false);
+                    if (def == VmMethodName.NULL) {
+                        createLabel(container, "untrained definition", false, false, SWT.COLOR_DARK_GRAY, false);
+                    } else {
+                        createMethodLink(container, def);
+                    }
+                    createLabel(container, "- " + kind.toString().toLowerCase(), true, false, SWT.COLOR_DARK_GRAY,
+                            false);
 
                 }
 
-                for (IMethodName observedCall : usage.calls) {
+                for (IMethodName observedCall : calls) {
                     createLabel(container, "observed", true, false, SWT.COLOR_DARK_GRAY, false);
 
                     createLabel(container, " call", false, false, SWT.COLOR_DARK_GRAY, false);
@@ -168,6 +202,12 @@ public final class CallsProvider extends ExtdocProvider {
         return Status.OK;
     }
 
+    private Optional<IType> findVariableType(final ILocalVariable type) {
+        String typeSignature = type.getTypeSignature();
+        Optional<IType> varType = JdtUtils.findTypeFromSignature(typeSignature, type);
+        return varType;
+    }
+
     private Optional<MethodDeclaration> findEnclosingMethod(final ASTNode node) {
         MethodDeclaration declaringNode = null;
         for (ASTNode p = node; p != null; p = p.getParent()) {
@@ -180,18 +220,13 @@ public final class CallsProvider extends ExtdocProvider {
     }
 
     private boolean acquireModel() {
-        final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
-        final ITypeName recReceiverType = jdtResolver.toRecType(receiverType);
-        if (modelFacade.hasModel(recReceiverType)) {
-            model = modelFacade.acquireModel(recReceiverType);
-        }
+        model = modelStore.aquireModel(receiverType).orNull();
         return model != null;
     }
 
     private void releaseModel() {
         if (model != null) {
-            final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
-            modelFacade.releaseModel(model);
+            modelStore.releaseModel(model);
             model = null;
         }
     }

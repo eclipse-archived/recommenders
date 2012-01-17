@@ -35,9 +35,8 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.RemoteResolverJobFactory;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin;
 import org.eclipse.recommenders.utils.rcp.ScaleOneDimensionLayout;
 import org.eclipse.swt.SWT;
@@ -54,24 +53,23 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+import com.google.common.base.Optional;
+
 public class CallsCompletionPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
     private static final int MIN_WIDTH_DETAILS_SECTION = 100;
     private static final int MIN_WIDTH_TABLE = 200;
 
-    private final ClasspathDependencyStore dependencyStore;
+    private final DependencyInfoStore dependencyStore;
     private DependencyDetailsSection dependencyDetailsSection;
     private ModelDetailsSection modelDetailsSection;
     private CommandSection commandSection;
-    private final RemoteResolverJobFactory jobFactory;
-    private final ModelArchiveStore archiveStore;
+    private final CallModelStore archiveStore;
     private Text webserviceBaseurl;
 
     @Inject
-    public CallsCompletionPreferencePage(final ClasspathDependencyStore dependencyStore,
-            final RemoteResolverJobFactory jobFactory, final ModelArchiveStore archiveStore) {
+    public CallsCompletionPreferencePage(final DependencyInfoStore dependencyStore, final CallModelStore archiveStore) {
         this.dependencyStore = dependencyStore;
-        this.jobFactory = jobFactory;
         this.archiveStore = archiveStore;
         noDefaultAndApplyButton();
         setDescription("All dependencies of your open and Recommenders enabled projects are listed below. "
@@ -193,12 +191,13 @@ public class CallsCompletionPreferencePage extends PreferencePage implements IWo
             }
 
             private boolean hasDependencyInformation(final File file) {
-                if (dependencyStore.containsClasspathDependencyInfo(file)) {
-                    final ClasspathDependencyInformation dependencyInfo = dependencyStore
-                            .getClasspathDependencyInfo(file);
-                    if (!dependencyInfo.symbolicName.isEmpty() && !dependencyInfo.version.isUnknown()) {
-                        return true;
-                    }
+                Optional<ClasspathDependencyInformation> opt = dependencyStore.getDependencyInfo(file);
+                if (!opt.isPresent()) {
+                    return false;
+                }
+                final ClasspathDependencyInformation info = opt.get();
+                if (!info.symbolicName.isEmpty() && !info.version.isUnknown()) {
+                    return true;
                 }
                 return false;
             }
@@ -220,7 +219,7 @@ public class CallsCompletionPreferencePage extends PreferencePage implements IWo
             }
 
             private boolean hasModel(final File file) {
-                return dependencyStore.containsManifest(file);
+                return dependencyStore.getManifest(file).isPresent();
             }
         });
     }
@@ -246,9 +245,9 @@ public class CallsCompletionPreferencePage extends PreferencePage implements IWo
         setGridData(detailsSection, MIN_WIDTH_DETAILS_SECTION);
         detailsSection.setLayout(new GridLayout(1, true));
 
-        dependencyDetailsSection = new DependencyDetailsSection(this, detailsSection, dependencyStore, jobFactory);
-        modelDetailsSection = new ModelDetailsSection(this, detailsSection, dependencyStore, archiveStore, jobFactory);
-        commandSection = new CommandSection(detailsSection, dependencyStore, jobFactory);
+        dependencyDetailsSection = new DependencyDetailsSection(this, detailsSection, dependencyStore);
+        modelDetailsSection = new ModelDetailsSection(this, detailsSection, dependencyStore);
+        commandSection = new CommandSection(detailsSection, dependencyStore);
     }
 
     private void setGridData(final Control control, final int minimumWidth) {

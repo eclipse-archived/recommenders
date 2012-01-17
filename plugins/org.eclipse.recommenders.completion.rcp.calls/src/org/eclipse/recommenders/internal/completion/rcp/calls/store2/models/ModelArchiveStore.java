@@ -10,11 +10,11 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.store2.models;
 
+import static org.eclipse.recommenders.utils.Checks.ensureIsNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -33,7 +33,7 @@ import com.google.common.eventbus.Subscribe;
 public class ModelArchiveStore<T extends IModel> {
 
     private final File storageLocation;
-    private final Map<Manifest, IModelArchive> index = Maps.newConcurrentMap();
+    private final Map<Manifest, IModelArchive> index;;
     private final EventBus bus;
     private final IModelLoader<T> modelLoader;
 
@@ -41,8 +41,18 @@ public class ModelArchiveStore<T extends IModel> {
         this.storageLocation = storageLocation;
         this.bus = bus;
         this.modelLoader = modelLoader;
+        this.index = Maps.newConcurrentMap();
         storageLocation.mkdirs();
         initializeArchiveIndex();
+    }
+
+    @VisibleForTesting
+    protected ModelArchiveStore(final Map<Manifest, IModelArchive> index, final IModelLoader<T> modelLoader,
+            final EventBus bus) {
+        this.bus = bus;
+        this.index = index;
+        this.modelLoader = modelLoader;
+        this.storageLocation = null;
     }
 
     public IModelArchive getModelArchive(final Manifest manifest) {
@@ -59,19 +69,8 @@ public class ModelArchiveStore<T extends IModel> {
         fireNewArchiveRegistered(archive);
     }
 
-    @Subscribe
-    public void onEvent(final ManifestResolutionFinished e) {
-        if (isNewManifest(e)) {
-            requestModelArchiveDownload(e);
-        }
-    }
-
     @VisibleForTesting
-    protected void move(final File source, final File destination) throws IOException {
-        FileUtils.moveFile(source, destination);
-    }
-
-    private ModelArchive registerArchive(final ModelArchiveDownloadFinished event) {
+    protected ModelArchive registerArchive(final ModelArchiveDownloadFinished event) {
         @SuppressWarnings("unchecked")
         ModelArchive archive = new ModelArchive(event.archive, modelLoader);
         Manifest manifest = archive.getManifest();
@@ -80,6 +79,38 @@ public class ModelArchiveStore<T extends IModel> {
         moveArchive(archive, destination);
         registerInIndex(archive, manifest);
         return archive;
+    }
+
+    private File computeModelFile(final Manifest manifest) {
+        return new File(storageLocation, manifest.getIdentifier() + ".zip").getAbsoluteFile();
+    }
+
+    private void moveArchive(final IModelArchive archive, final File destination) {
+        try {
+            archive.close();
+            final File source = archive.getFile();
+            move(source, destination);
+            archive.setFile(destination);
+            archive.open();
+        } catch (IOException e) {
+            throwUnhandledException(e);
+        }
+    }
+
+    @VisibleForTesting
+    protected void move(final File source, final File destination) throws IOException {
+        FileUtils.moveFile(source, destination);
+    }
+
+    private void registerInIndex(final IModelArchive archive, final Manifest manifest) {
+        ensureIsNull(index.put(manifest, archive));
+    }
+
+    @Subscribe
+    public void onEvent(final ManifestResolutionFinished e) {
+        if (isNewManifest(e)) {
+            requestModelArchiveDownload(e);
+        }
     }
 
     private boolean isNewManifest(final ManifestResolutionFinished e) {
@@ -94,26 +125,16 @@ public class ModelArchiveStore<T extends IModel> {
         bus.post(request);
     }
 
-    private void registerInIndex(final IModelArchive archive, final Manifest manifest) {
-        index.put(manifest, archive);
-    }
-
-    private File computeModelFile(final Manifest manifest) {
-        return new File(storageLocation, manifest.getIdentifier() + ".zip").getAbsoluteFile();
-    }
-
     private void fireNewArchiveRegistered(final IModelArchive archive) {
         ModelArchiveRegistered e = new ModelArchiveRegistered();
         e.archive = archive;
         bus.post(e);
-        System.out.printf("%s: new model for %s (%s) - %s\n", new Date(), archive.getManifest().getName(),
-                archive.getFile(), FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(archive.getFile())));
     }
 
     @SuppressWarnings("unchecked")
     private IModelArchive findOrCreateArchiveAndRegister(final Manifest manifest) {
-        IModelArchive<T> archive;
         final File file = computeModelFile(manifest);
+        IModelArchive<T> archive;
         if (file.exists()) {
             archive = new ModelArchive(file, modelLoader);
         } else {
@@ -133,18 +154,6 @@ public class ModelArchiveStore<T extends IModel> {
             registerInIndex(archive, manifest);
         }
 
-    }
-
-    private void moveArchive(final IModelArchive archive, final File destination) {
-        try {
-            archive.close();
-            final File source = archive.getFile();
-            move(source, destination);
-            archive.setFile(destination);
-            archive.open();
-        } catch (IOException e) {
-            throwUnhandledException(e);
-        }
     }
 
 }

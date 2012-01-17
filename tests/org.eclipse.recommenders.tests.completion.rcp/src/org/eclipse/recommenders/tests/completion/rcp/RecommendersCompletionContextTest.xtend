@@ -9,6 +9,7 @@ import org.junit.Test
 import static junit.framework.Assert.*
 import org.eclipse.jdt.internal.compiler.ast.MessageSend
 import org.eclipse.jdt.internal.compiler.ast.ASTNode
+import com.google.common.base.Optional
  
 class RecommendersCompletionContextTest { 
   
@@ -29,6 +30,18 @@ class RecommendersCompletionContextTest {
 		
 		assertCompletionNode(sut, typeof(CompletionOnQualifiedNameReference));
 		assertCompletionNodeParent(sut, typeof(MessageSend));
+	}
+	
+	
+	@Test
+	def void test03(){
+		val code = methodbody('String s1 = new String();
+			s1.
+			String s2 = new String();
+			s2.$')
+		val sut = exercise(code)
+		// check is absent but no exception is thrown
+		assertEquals(Optional::absent(),sut.receiverType);		
 	}
 	
 	def private assertCompletionNode(IRecommendersCompletionContext sut, Class<?> type){

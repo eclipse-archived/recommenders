@@ -14,10 +14,7 @@ import java.io.File;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.CallsModelResolver;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.RemoteResolverJobFactory;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.ResolveCallsModelJob;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoStore;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.parser.VersionParserFactory;
 import org.eclipse.swt.SWT;
@@ -29,24 +26,24 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 
+import com.google.common.base.Optional;
+
 public class DependencyDetailsSection extends AbstractDependencySection {
 
-    private final ClasspathDependencyStore dependencyStore;
+    private final DependencyInfoStore dependencyStore;
     private Text nameText;
     private Text versionText;
     private Text fingerprintText;
     private Button openDirectoryButton;
     private File file;
     private Button reresolveButton;
-    private final RemoteResolverJobFactory jobFactory;
     private Button saveButton;
 
     public DependencyDetailsSection(final PreferencePage preferencePage, final Composite parent,
-            final ClasspathDependencyStore dependencyStore, final RemoteResolverJobFactory jobFactory) {
+            final DependencyInfoStore dependencyStore) {
         super(preferencePage, parent, "Dependency details");
 
         this.dependencyStore = dependencyStore;
-        this.jobFactory = jobFactory;
     }
 
     @Override
@@ -77,15 +74,15 @@ public class DependencyDetailsSection extends AbstractDependencySection {
         return new SelectionListener() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                if (file != null) {
-                    if (e.getSource() == openDirectoryButton) {
-                        openDirectory();
-                    } else if (e.getSource() == reresolveButton) {
-                        reresolveDependency();
-                    } else if (e.getSource() == saveButton) {
-                        save();
-                    }
-                }
+                // if (file != null) {
+                // if (e.getSource() == openDirectoryButton) {
+                // openDirectory();
+                // } else if (e.getSource() == reresolveButton) {
+                // reresolveDependency();
+                // } else if (e.getSource() == saveButton) {
+                // save();
+                // }
+                // }
             }
 
             @Override
@@ -96,11 +93,12 @@ public class DependencyDetailsSection extends AbstractDependencySection {
 
     public void selectFile(final File file) {
         this.file = file;
-        if (file == null || !dependencyStore.containsClasspathDependencyInfo(file)) {
+        Optional<ClasspathDependencyInformation> opt = dependencyStore.getDependencyInfo(file);
+        if (!opt.isPresent()) {
             resetTexts();
             setButtonsEnabled(false);
         } else {
-            final ClasspathDependencyInformation dependencyInfo = dependencyStore.getClasspathDependencyInfo(file);
+            final ClasspathDependencyInformation dependencyInfo = opt.get();
             nameText.setText(dependencyInfo.symbolicName);
             versionText.setText(getVersionText(dependencyInfo.version));
             fingerprintText.setText(dependencyInfo.jarFileFingerprint);
@@ -121,16 +119,16 @@ public class DependencyDetailsSection extends AbstractDependencySection {
         Program.launch(openFile.getAbsolutePath());
     }
 
-    private void reresolveDependency() {
-        dependencyStore.invalidateClasspathDependencyInfo(file);
-        scheduleResolvingJob();
-        reresolveButton.setEnabled(false);
-    }
+    // private void reresolveDependency() {
+    // dependencyStore.invalidateClasspathDependencyInfo(file);
+    // scheduleResolvingJob();
+    // reresolveButton.setEnabled(false);
+    // }
 
-    private void scheduleResolvingJob() {
-        final ResolveCallsModelJob job = jobFactory.create(file, CallsModelResolver.OverridePolicy.ALL);
-        job.schedule();
-    }
+    // private void scheduleResolvingJob() {
+    // final ResolveCallsModelJob job = jobFactory.create(file, CallsModelResolver.OverridePolicy.ALL);
+    // job.schedule();
+    // }
 
     @Override
     protected void validate(final PreferencePage preferencePage) {
@@ -145,23 +143,23 @@ public class DependencyDetailsSection extends AbstractDependencySection {
         }
     }
 
-    private void save() {
-        final ClasspathDependencyInformation dependencyInfo = dependencyStore.getClasspathDependencyInfo(file);
-        if (dependencyInfo != null) {
-            final String name = nameText.getText().trim();
-            final String versionString = versionText.getText().trim();
-            try {
-                final Version version = parseVersion(versionString);
-                dependencyInfo.symbolicName = name;
-                dependencyInfo.version = version;
-                dependencyStore.putClasspathDependencyInfo(file, dependencyInfo);
-                dependencyStore.invalidateManifest(file);
-                scheduleResolvingJob();
-                selectFile(file);
-            } catch (final RuntimeException e) {
-            }
-        }
-    }
+    // private void save() {
+    // final ClasspathDependencyInformation dependencyInfo = dependencyStore.getClasspathDependencyInfo(file);
+    // if (dependencyInfo != null) {
+    // final String name = nameText.getText().trim();
+    // final String versionString = versionText.getText().trim();
+    // try {
+    // final Version version = parseVersion(versionString);
+    // dependencyInfo.symbolicName = name;
+    // dependencyInfo.version = version;
+    // dependencyStore.putClasspathDependencyInfo(file, dependencyInfo);
+    // dependencyStore.invalidateManifest(file);
+    // scheduleResolvingJob();
+    // selectFile(file);
+    // } catch (final RuntimeException e) {
+    // }
+    // }
+    // }
 
     private Version parseVersion(final String versionString) {
         if (versionString.length() != 0) {

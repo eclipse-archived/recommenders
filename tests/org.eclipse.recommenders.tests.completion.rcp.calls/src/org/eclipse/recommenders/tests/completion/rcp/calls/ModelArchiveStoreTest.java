@@ -11,88 +11,100 @@
 package org.eclipse.recommenders.tests.completion.rcp.calls;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.recommenders.commons.udc.Manifest;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchive;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ModelArchiveStore;
-import org.eclipse.recommenders.utils.Version;
-import org.eclipse.recommenders.utils.VersionRange;
-import org.eclipse.recommenders.utils.VersionRange.VersionRangeBuilder;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ManifestResolutionFinished;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ModelArchiveDownloadFinished;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ModelArchiveDownloadRequested;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ModelArchiveRegistered;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.ManifestResolverInfo;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.IModel;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.IModelArchive;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.ModelArchive;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.ModelArchiveStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.NullModelArchive;
 import org.junit.Test;
-import org.mockito.InOrder;
 import org.mockito.Mockito;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.io.Files;
 
 public class ModelArchiveStoreTest {
 
-    private static final Manifest manifest = createManifest();
-    private static File storeLocation = new File("/test/store/location");
-    private static File expectedDestinationFile = new File(storeLocation, manifest.getIdentifier() + ".zip")
-            .getAbsoluteFile();
+    static final Manifest MANIFEST = new Manifest() {
+    };
+    static final ManifestResolverInfo MANIFEST_RESOLVER_INFO = new ManifestResolverInfo(MANIFEST, false);
+
+    EventBus bus = Mockito.mock(EventBus.class);
 
     @Test
-    public void testOffer() throws IOException {
-        // setup:
-        final RenameVerificationMock renameVerificationMock = mock(RenameVerificationMock.class);
-        final ModelArchiveStore sut = new MockModelArchiveStore(storeLocation, renameVerificationMock);
-        final File file = mockFile();
-        final ModelArchive archive = mockArchive(file);
-        // exercise:
-        sut.register(archive);
-        // verify:
-        final InOrder inOrder = inOrder(archive, file, renameVerificationMock);
-        inOrder.verify(archive).close();
-        inOrder.verify(renameVerificationMock).rename(expectedDestinationFile);
-        inOrder.verify(archive).open();
-        assertEquals(archive, sut.getModelArchive(manifest));
+    public void testDownloadRequestOnNewManifest() {
+        ManifestResolutionFinished e = new ManifestResolutionFinished();
+        e.manifestResolverInfo = MANIFEST_RESOLVER_INFO;
+        ModelArchiveStore<IModel> sut = createSimpleStore();
+        sut.onEvent(e);
+        Mockito.verify(bus).post(Mockito.any(ModelArchiveDownloadRequested.class));
     }
 
-    private File mockFile() {
-        final File file = mock(File.class);
-        when(file.exists()).thenReturn(false);
-        when(file.renameTo(Mockito.any(File.class))).thenReturn(true);
-        return file;
+    private ModelArchiveStore<IModel> createSimpleStore() {
+        ModelArchiveStore<IModel> store = new ModelArchiveStore<IModel>(Files.createTempDir(), null, bus) {
+            @Override
+            protected ModelArchive registerArchive(final ModelArchiveDownloadFinished event) {
+                return mock(ModelArchive.class);
+            }
+        };
+        return store;
     }
 
-    private ModelArchive mockArchive(final File file) {
-        final ModelArchive archive = mock(ModelArchive.class);
-
-        when(archive.getManifest()).thenReturn(manifest);
-        when(archive.getFile()).thenReturn(file);
-
-        return archive;
+    private ModelArchiveStore<IModel> createSimpleStore(final Map<Manifest, IModelArchive> index) {
+        ModelArchiveStore<IModel> store = new ModelArchiveStore<IModel>(index, null, bus) {
+            @Override
+            protected ModelArchive registerArchive(final ModelArchiveDownloadFinished event) {
+                return mock(ModelArchive.class);
+            }
+        };
+        return store;
     }
 
-    private static Manifest createManifest() {
-        final VersionRange range = new VersionRangeBuilder().minInclusive(Version.create(3, 6))
-                .maxExclusive(Version.create(3, 7)).build();
-        final GregorianCalendar calendar = new GregorianCalendar(2011, 5, 12, 12, 30);
-        final Manifest manifest = new Manifest("org.eclipse.test", range, calendar.getTime());
-        return manifest;
+    @Test
+    public void testNoDownloadRequestOnKnownManifest() {
+
+        ModelArchiveStore<IModel> sut = createSimpleStore(new HashMap<Manifest, IModelArchive>() {
+            {
+                put(MANIFEST, mock(IModelArchive.class));
+            }
+        });
+
+        ManifestResolutionFinished e = new ManifestResolutionFinished();
+        e.manifestResolverInfo = MANIFEST_RESOLVER_INFO;
+        sut.onEvent(e);
+
+        verifyZeroInteractions(bus);
     }
 
-    private static class MockModelArchiveStore extends ModelArchiveStore {
-        private final RenameVerificationMock renameVerificationMock;
+    @Test
+    public void testRegistrationEvent() {
+        ModelArchiveStore<IModel> sut = createSimpleStore();
+        ModelArchiveDownloadFinished e = new ModelArchiveDownloadFinished();
 
-        public MockModelArchiveStore(final File modelArchivesLocation,
-                final RenameVerificationMock renameVerificationMock) {
-            super(modelArchivesLocation);
-            this.renameVerificationMock = renameVerificationMock;
-        }
+        sut.onEvent(e);
 
-        @Override
-        protected void move(final File source, final File destination) throws IOException {
-            renameVerificationMock.rename(destination);
-        }
+        verify(bus).post(Mockito.any(ModelArchiveRegistered.class));
     }
 
-    public static interface RenameVerificationMock {
-        void rename(File file);
+    @Test
+    public void testGetModelForUnknownManifest() {
+        ModelArchiveStore<IModel> sut = createSimpleStore();
+        IModelArchive actual = sut.getModelArchive(MANIFEST);
+
+        assertEquals(NullModelArchive.NULL, actual);
+        verifyZeroInteractions(bus);
     }
+
 }

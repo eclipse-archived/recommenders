@@ -14,9 +14,7 @@ import static org.eclipse.recommenders.internal.completion.rcp.calls.wiring.Call
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.RemoteResolverJobFactory;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.jobs.UpdateAllModelsJob;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -30,14 +28,11 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class CommandSection {
 
-    private final ClasspathDependencyStore dependencyStore;
+    private final DependencyInfoStore dependencyStore;
     private Button reresolveButton;
-    private final RemoteResolverJobFactory jobFactory;
 
-    public CommandSection(final Composite parent, final ClasspathDependencyStore dependencyStore,
-            final RemoteResolverJobFactory jobFactory) {
+    public CommandSection(final Composite parent, final DependencyInfoStore dependencyStore) {
         this.dependencyStore = dependencyStore;
-        this.jobFactory = jobFactory;
 
         final Composite group = createGroup(parent);
         createButtons(group);
@@ -69,8 +64,8 @@ public class CommandSection {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 reresolveButton.setEnabled(false);
-                final UpdateAllModelsJob job = new UpdateAllModelsJob(dependencyStore, jobFactory);
-                job.schedule();
+                // final UpdateAllModelsJob job = new UpdateAllModelsJob(dependencyStore, jobFactory);
+                // job.schedule();
             }
 
             @Override

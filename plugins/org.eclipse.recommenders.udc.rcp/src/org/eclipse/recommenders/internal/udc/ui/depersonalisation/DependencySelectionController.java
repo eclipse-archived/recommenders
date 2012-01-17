@@ -30,7 +30,6 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.bak.ProjectServices;
 import org.eclipse.recommenders.internal.udc.PreferenceUtil;
 import org.eclipse.recommenders.internal.udc.ui.TreeComposite;
 import org.eclipse.recommenders.internal.udc.ui.TreeCompositeController;
@@ -41,7 +40,6 @@ import com.google.common.collect.Sets;
 public class DependencySelectionController extends TreeCompositeController {
 
     @Inject
-    ProjectServices projectServices;
     private Set<File> dependencies;
 
     public DependencySelectionController(final TreeComposite composite) {

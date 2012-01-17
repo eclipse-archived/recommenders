@@ -17,6 +17,7 @@ import java.util.SortedSet;
 
 import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
+import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.IModel;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.annotations.Nullable;
@@ -30,6 +31,7 @@ public interface IObjectMethodCallsNet extends IModel {
 
     public abstract void setCalled(final IMethodName calledMethod);
 
+    @Override
     public abstract void clearEvidence();
 
     public abstract void setMethodContext(final IMethodName newActiveMethodContext);
@@ -55,4 +57,12 @@ public interface IObjectMethodCallsNet extends IModel {
     public abstract Collection<IMethodName> getMethodCalls();
 
     public abstract Collection<IMethodName> getContexts();
+
+    public abstract IMethodName getActiveContext();
+
+    public abstract IMethodName getActiveDefinition();
+
+    public abstract Kind getActiveKind();
+
+    public abstract Set<IMethodName> getActiveCalls();
 }

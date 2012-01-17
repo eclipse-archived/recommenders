@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -31,6 +32,7 @@ import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
+import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
@@ -38,8 +40,6 @@ import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -47,7 +47,6 @@ import com.google.common.collect.Sets;
 
 public class BayesNetWrapper implements IObjectMethodCallsNet {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ITypeName typeName;
 
     private JunctionTreeAlgorithm junctionTreeAlgorithm;
@@ -173,7 +172,6 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public void setQuery(final ObjectUsage query) {
-        logger.info("query: " + query);
         clearEvidence();
         setMethodContext(query.contextFirst);
         setKind(query.kind);
@@ -208,11 +206,6 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
                     res.add(Tuple.newTuple(method, probability));
                 }
             }
-        }
-
-        logger.info("recommended: ");
-        for (final Tuple<IMethodName, Double> t : res) {
-            logger.info(t.getFirst() + ": " + t.getSecond());
         }
 
         return res;
@@ -281,6 +274,47 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
             result.add(VmMethodName.get(outcome));
         }
         return result;
+    }
+
+    @Override
+    public IMethodName getActiveContext() {
+        return computeMethodNameFromState(contextNode);
+    }
+
+    private IMethodName computeMethodNameFromState(final BayesNode node) {
+        String stateId = junctionTreeAlgorithm.getEvidence().get(node);
+        if (stateId == null) {
+            return VmMethodName.NULL;
+        }
+        return VmMethodName.get(stateId);
+    }
+
+    @Override
+    public IMethodName getActiveDefinition() {
+        return computeMethodNameFromState(definitionNode);
+    }
+
+    @Override
+    public Kind getActiveKind() {
+        String stateId = junctionTreeAlgorithm.getEvidence().get(kindNode);
+        if (stateId == null) {
+            return Kind.UNKNOWN;
+        }
+        return Kind.valueOf(stateId);
+    }
+
+    @Override
+    public Set<IMethodName> getActiveCalls() {
+        TreeSet<IMethodName> res = Sets.newTreeSet();
+        Map<BayesNode, String> evidence = junctionTreeAlgorithm.getEvidence();
+        for (BayesNode methodNode : callNodes.values()) {
+            if (evidence.containsKey(methodNode)) {
+                res.add(VmMethodName.get(methodNode.getName()));
+            }
+        }
+        // remove the NULL that may have been introduced by res.add(compute...)
+        res.remove(VmMethodName.NULL);
+        return res;
     }
 
 }

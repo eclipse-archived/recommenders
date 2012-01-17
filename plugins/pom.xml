@@ -51,7 +51,8 @@
 		<module>org.eclipse.recommenders.server.setup</module>
 
 		<module>org.eclipse.recommenders.udc</module>
-		<module>org.eclipse.recommenders.udc.rcp</module>
+        <!-- Skip until refactorings in core are done: -->
+<!-- 		<module>org.eclipse.recommenders.udc.rcp</module> -->
 		<module>org.eclipse.recommenders.udc.server</module>
 
 		<module>org.eclipse.recommenders.utils</module>

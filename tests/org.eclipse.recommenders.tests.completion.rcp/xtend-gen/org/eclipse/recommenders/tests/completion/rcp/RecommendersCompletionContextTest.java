@@ -1,10 +1,12 @@
 package org.eclipse.recommenders.tests.completion.rcp;
 
+import com.google.common.base.Optional;
 import java.util.Set;
 import junit.framework.Assert;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
@@ -36,6 +38,17 @@ public class RecommendersCompletionContextTest {
       final IRecommendersCompletionContext sut = _exercise;
       this.assertCompletionNode(sut, org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference.class);
       this.assertCompletionNodeParent(sut, org.eclipse.jdt.internal.compiler.ast.MessageSend.class);
+  }
+  
+  @Test
+  public void test03() {
+      CharSequence _methodbody = this.methodbody("String s1 = new String();\n\t\t\ts1.\n\t\t\tString s2 = new String();\n\t\t\ts2.$");
+      final CharSequence code = _methodbody;
+      IRecommendersCompletionContext _exercise = this.exercise(code);
+      final IRecommendersCompletionContext sut = _exercise;
+      Optional<?> _absent = Optional.absent();
+      Optional<IType> _receiverType = sut.getReceiverType();
+      Assert.assertEquals(_absent, _receiverType);
   }
   
   private void assertCompletionNode(final IRecommendersCompletionContext sut, final Class<?> type) {

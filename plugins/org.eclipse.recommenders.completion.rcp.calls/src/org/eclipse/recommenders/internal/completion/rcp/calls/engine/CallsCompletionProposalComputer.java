@@ -21,7 +21,6 @@ import java.util.SortedSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -42,11 +41,9 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.bak.IProjectModelFacade;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.bak.ProjectServices;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
@@ -74,7 +71,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         }
     };
 
-    private final ProjectServices projectServices;
+    private final CallModelStore modelStore;
     private final IRecommendersCompletionContextFactory ctxFactory;
     private final JavaElementResolver jdtResolver;
 
@@ -87,9 +84,9 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private LinkedList<CallsRecommendation> recommendations;
 
     @Inject
-    public CallsCompletionProposalComputer(final ProjectServices projectServices,
-            final JavaElementResolver jdtResolver, final IRecommendersCompletionContextFactory ctxFactory) {
-        this.projectServices = projectServices;
+    public CallsCompletionProposalComputer(final CallModelStore modelStore, final JavaElementResolver jdtResolver,
+            final IRecommendersCompletionContextFactory ctxFactory) {
+        this.modelStore = modelStore;
         this.jdtResolver = jdtResolver;
         this.ctxFactory = ctxFactory;
     }
@@ -139,13 +136,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean acquireModel() {
-        final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
-        final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
-
-        final ITypeName recReceiverType = jdtResolver.toRecType(receiverType);
-        if (modelFacade.hasModel(recReceiverType)) {
-            model = modelFacade.acquireModel(recReceiverType);
-        }
+        model = modelStore.aquireModel(receiverType).orNull();
         return model != null;
     }
 
@@ -242,9 +233,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private void releaseModel() {
         if (model != null) {
-            final IJavaProject javaProject = ctx.getCompilationUnit().getJavaProject();
-            final IProjectModelFacade modelFacade = projectServices.getModelFacade(javaProject);
-            modelFacade.releaseModel(model);
+            modelStore.releaseModel(model);
             model = null;
         }
     }

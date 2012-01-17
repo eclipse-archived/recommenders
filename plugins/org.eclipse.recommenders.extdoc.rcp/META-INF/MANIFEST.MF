@@ -11,16 +11,13 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.injection,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
- org.eclipse.recommenders.analysis,
  org.eclipse.recommenders.utils.rcp,
  org.apache.commons.lang3,
  org.eclipse.core.expressions,
- org.eclipse.ui.editors,
  org.eclipse.core.resources,
  org.eclipse.recommenders.webclient,
  org.eclipse.recommenders.extdoc,
- org.eclipse.recommenders.utils.gson,
- org.eclipse.recommenders.udc
+ org.eclipse.ui.editors
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Eclipse Code Recommenders
 Bundle-Activator: org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocPlugin

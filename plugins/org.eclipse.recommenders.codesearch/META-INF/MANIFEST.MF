@@ -11,7 +11,6 @@ Require-Bundle: org.eclipse.recommenders.utils,
  com.google.gson,
  org.apache.commons.lang3,
  org.eclipse.recommenders.webclient,
- com.sun.jersey.client,
  org.eclipse.recommenders.injection
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
