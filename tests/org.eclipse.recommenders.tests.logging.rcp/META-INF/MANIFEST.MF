@@ -6,5 +6,6 @@ Bundle-Version: 0.5.0.qualifier
 Fragment-Host: org.eclipse.recommenders.rcp.logging
 Require-Bundle: org.junit4,
  org.mockito,
+ org.hamcrest,
  org.objenesis
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

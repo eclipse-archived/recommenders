@@ -8,5 +8,6 @@ Fragment-Host: org.eclipse.recommenders.analysis.rcp
 Require-Bundle: org.junit4,
  org.apache.commons.io,
  org.mockito,
- org.objenesis
+ org.objenesis,
+ org.hamcrest
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

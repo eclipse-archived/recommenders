@@ -24,7 +24,7 @@ public abstract class AbstractExtdocGuiceModule extends AbstractModule {
     protected void configure() {
         bind(AlgorithmParameters.class).toInstance(arguments);
         bind(ClassOverrideDirectivesGenerator.class).toInstance(new ClassOverrideDirectivesGenerator(0.05));
-        bind(OverridesClusterer.class).toInstance(new OverridesClusterer(5));
+        // bind(OverridesClusterer.class).toInstance(new OverridesClusterer(5));
         bind(MethodSelfcallDirectivesGenerator.class).toInstance(new MethodSelfcallDirectivesGenerator(0.05));
     }
 

@@ -38,8 +38,11 @@ public class ClassOverridePatternsGenerator {
 
     public Optional<ClassOverridePatterns> generate(final ITypeName superclass, final Iterable<CompilationUnit> cus) {
         collectRawPatterns(cus);
-        final List<MethodPattern> methodPatterns = clusterer.cluster(rawPatterns);
-        return createOverridePatterns(superclass, methodPatterns);
+        // XXX TODO: NEED to fix that for mahout
+        
+//        final List<MethodPattern> methodPatterns = clusterer.cluster(rawPatterns);
+//        return createOverridePatterns(superclass, methodPatterns);
+        return Optional.absent();
     }
 
     private void collectRawPatterns(final Iterable<CompilationUnit> cus) {

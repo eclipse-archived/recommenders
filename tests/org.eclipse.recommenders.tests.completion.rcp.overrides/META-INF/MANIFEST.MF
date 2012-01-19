@@ -13,6 +13,7 @@ Require-Bundle: com.google.guava,
  org.eclipse.xtend2.lib,
  org.junit4,
  org.mockito,
+ org.hamcrest,
  org.eclipse.equinox.ds
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 

@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="e3x" sequenceNumber="25">
+<target name="e3x" sequenceNumber="40">
 <locations>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201112231012"/>
-<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201112231012"/>
-<unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201112231012"/>
-<repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head"/>
-</location>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.jdt.feature.group" version="3.7.1.r371_v20110810-0800-7z8gFcoFMLfTabvKsR5Qm9rBGEBK"/>
-<repository location="http://vandyk.st.informatik.tu-darmstadt.de/mirrors/indigo"/>
-</location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtext.xbase.feature.group" version="2.2.1.v201112130541"/>
 <unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.2.1.v201112130541"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.sdk.ide" version="3.7.1.M20110909-1335"/>
+<repository location="http://download.eclipse.org/releases/indigo"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201190735"/>
+<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201201190735"/>
+<repository location="http://download.eclipse.org/recommenders/updates/3rd/"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.jdt.feature.group" version="3.8.0.v20111130-1318-8-8lFnfFNOfwRQFKyWVBz0c89B15"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20111122-1556-7P7OFvNFLWUl76ponNOCoeY"/>
+<unit id="org.eclipse.equinox.executable" version="3.6.0.v20111122-1556-7P7OFvNFLWUl76ponNOCoeY"/>
 <unit id="org.eclipse.sdk.ide" version="3.8.0.I20111209-1447"/>
 <unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.8.0.v20111114-2124-9Q7dFb8FRWt32-_vXXd00E_mbe9G"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.8milestones/"/>
-</location>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.5.0.v20110530-7P7NFUFFLWUl76mart"/>
-<repository location="http://vandyk.st.informatik.tu-darmstadt.de/mirrors/indigo-deltapack"/>
 </location>
 </locations>
 </target>

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders Development Environment" sequenceNumber="82">
+<target name="Code Recommenders Development Environment" sequenceNumber="85">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.3rd.testing.feature.feature.group" version="0.1.0.201112231012"/>
-<unit id="org.eclipse.recommenders.3rd.feature.feature.group" version="0.1.0.201112231012"/>
-<unit id="org.eclipse.recommenders.3rd.feature.source.feature.group" version="0.1.0.201112231012"/>
-<repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head"/>
+<unit id="org.eclipse.sdk.ide" version="4.2.0.I20120110-2200"/>
+<unit id="org.eclipse.emf.ecore.feature.group" version="2.8.0.v20111209-0930"/>
+<unit id="org.eclipse.emf.common.feature.group" version="2.8.0.v20111209-0930"/>
+<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.1.0.v20111122-1412-8294FkWFWmE7ghRDsLclrek"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.2-I-builds/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtext.xbase.feature.group" version="2.2.1.v201112130541"/>
@@ -17,19 +18,17 @@
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.executable" version="3.6.0.v20111122-1556-7P7OFvNFLWUl76sUqHOCz0ZV"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20111122-1556-7P7OFvNFLWUl76sUqHOCz0ZV"/>
-<unit id="org.eclipse.equinox.core.sdk.feature.group" version="3.8.0.v20111214-1556-85FAaG3oFoYTlccUSby3Lt0h"/>
+<unit id="org.eclipse.equinox.core.sdk.feature.group" version="3.8.0.v20120106-1613-85FAaG3oFoYTlceSQc03Luz0l"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.8-I-builds"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.jdt.feature.group" version="3.7.1.r371_v20110810-0800-7z8gFcoFMLfTabvKsR5Qm9rBGEBK"/>
-<repository location="http://vandyk.st.informatik.tu-darmstadt.de/mirrors/indigo"/>
+<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201190735"/>
+<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201201190735"/>
+<repository location="http://download.eclipse.org/recommenders/updates/3rd/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.2.0.I20120110-2200"/>
-<unit id="org.eclipse.emf.ecore.feature.group" version="2.8.0.v20111209-0930"/>
-<unit id="org.eclipse.emf.common.feature.group" version="2.8.0.v20111209-0930"/>
-<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.1.0.v20111122-1412-8294FkWFWmE7ghRDsLclrek"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.2-I-builds/"/>
+<unit id="org.eclipse.jdt.feature.group" version="3.7.1.r371_v20110810-0800-7z8gFcoFMLfTabvKsR5Qm9rBGEBK"/>
+<repository location="http://download.eclipse.org/releases/indigo"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
