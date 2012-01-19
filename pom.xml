@@ -34,6 +34,12 @@
     </modules>
     <profiles>
         <profile>
+            <id>build-server</id>
+            <properties>
+                <build-alias>b${env.BUILD_NUMBER}</build-alias>
+            </properties>
+        </profile>
+        <profile>
             <id>e3x</id>
             <build>
                 <plugins>
@@ -84,18 +90,9 @@
     <build>
         <!-- MB: Why do we need this here (and not in pluginManagement)? Because of the P2 repos? -->
         <plugins>
-            <plugin>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.3.1</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.tycho</groupId>
-                <artifactId>target-platform-configuration</artifactId>
-                <version>${tycho-version}</version>
-            </plugin>
+            <!-- <plugin> <artifactId>maven-install-plugin</artifactId> <version>2.3.1</version> <configuration> < </configuration> 
+                </plugin> <plugin> <groupId>org.eclipse.tycho</groupId> <artifactId>target-platform-configuration</artifactId> <version>${tycho-version}</version> 
+                </plugin> -->
         </plugins>
         <pluginManagement>
             <plugins>

@@ -17,6 +17,10 @@
       %license
    </license>
 
+   <requires>
+      <import feature="org.eclipse.equinox.server.jetty" version="1.1.0.v20111206-1542-8077BgD-hQ888B5A47FGA"/>
+   </requires>
+
    <plugin
          id="org.eclipse.recommenders.server"
          download-size="0"

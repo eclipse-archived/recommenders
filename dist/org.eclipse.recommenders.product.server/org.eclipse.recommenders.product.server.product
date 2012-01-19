@@ -3,8 +3,27 @@
 
 <product name="Recommenders Server Product" uid="org.eclipse.recommenders.product.server" id="dummy" version="0.5.0.qualifier" useFeatures="true" includeLaunchers="false">
 
+
    <configIni use="">
    </configIni>
+
+   <launcherArgs>
+   </launcherArgs>
+
+   <windowImages/>
+
+
+   <launcher>
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+
+   <vm>
+   </vm>
+
 
    <plugins>
    </plugins>
@@ -15,8 +34,8 @@
       <feature id="org.eclipse.recommenders.feature.codesearch.server"/>
       <feature id="org.eclipse.recommenders.feature.extdoc.server"/>
       <feature id="org.eclipse.recommenders.feature.udc.server"/>
-      <feature id="org.eclipse.recommenders.feature.3rd.orbit" version="0.5.0.qualifier"/>
-      <feature id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.5.0.qualifier"/>
+      <feature id="org.eclipse.recommenders.feature.3rd.orbit"/>
+      <feature id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit"/>
    </features>
 
    <configurations>
