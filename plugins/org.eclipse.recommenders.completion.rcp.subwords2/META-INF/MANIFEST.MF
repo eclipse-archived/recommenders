@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Subwords Variable Name Matcher (Incubation)
+Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.subwords2;singleton:=true
+Bundle-Version: 0.5.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.recommenders.completion.rcp,
+ org.eclipse.jface.text,
+ org.eclipse.recommenders.injection
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

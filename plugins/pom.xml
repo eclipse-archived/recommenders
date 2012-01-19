@@ -25,6 +25,7 @@
         <module>org.eclipse.recommenders.completion.rcp.chain</module>
 		<module>org.eclipse.recommenders.completion.rcp.overrides</module>
 		<module>org.eclipse.recommenders.completion.rcp.subwords</module>
+		<module>org.eclipse.recommenders.completion.rcp.subwords2</module>
 		<!-- module>org.eclipse.recommenders.completion.rcp.templates</module -->
 
 		<module>org.eclipse.recommenders.codesearch</module>

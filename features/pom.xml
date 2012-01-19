@@ -31,6 +31,7 @@
 
 		<module>org.eclipse.recommenders.feature.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.subwords.source</module>
+		<module>org.eclipse.recommenders.feature.completion.rcp.subwords2</module>
 
         <module>org.eclipse.recommenders.feature.completion.rcp.chain</module>
         <module>org.eclipse.recommenders.feature.completion.rcp.chain.source</module>
