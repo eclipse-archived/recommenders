@@ -146,4 +146,16 @@ public class CompilerBindings {
         }
         return fromNullable(b);
     }
+
+    public static Optional<String> getVariableName(final Binding node) {
+        if (node == null) {
+            return absent();
+        }
+        switch (node.kind()) {
+        case Binding.FIELD:
+        case Binding.LOCAL:
+            return of(String.valueOf(node.shortReadableName()));
+        }
+        return absent();
+    }
 }

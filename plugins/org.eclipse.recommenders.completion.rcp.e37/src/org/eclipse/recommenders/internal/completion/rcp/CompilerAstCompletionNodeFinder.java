@@ -549,6 +549,19 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     @Override
     public boolean visit(final Assignment assignment, final BlockScope scope) {
+        if (assignment.expression == null) {
+            return true;
+        }
+        if (assignment.expression instanceof AllocationExpression) {
+            return true;
+
+        } else if (assignment.expression instanceof CompletionOnSingleNameReference) {
+            completionNodeParent = assignment;
+            return true;
+        } else if (assignment.expression instanceof CompletionOnQualifiedNameReference) {
+            completionNodeParent = assignment;
+            return true;
+        }
         return true;
     }
 
