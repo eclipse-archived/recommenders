@@ -42,8 +42,8 @@
         <module>org.eclipse.recommenders.feature.extdoc.server</module>
         <module>org.eclipse.recommenders.feature.extdoc.server.source</module>
 
-		<module>org.eclipse.recommenders.feature.udc.rcp</module>
-		<module>org.eclipse.recommenders.feature.udc.rcp.source</module>
+<!-- 		<module>org.eclipse.recommenders.feature.udc.rcp</module> -->
+<!-- 		<module>org.eclipse.recommenders.feature.udc.rcp.source</module> -->
 		<module>org.eclipse.recommenders.feature.udc.server</module>
 		<module>org.eclipse.recommenders.feature.udc.server.source</module>
 
