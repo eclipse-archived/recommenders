@@ -85,6 +85,13 @@
         <!-- MB: Why do we need this here (and not in pluginManagement)? Because of the P2 repos? -->
         <plugins>
             <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho-version}</version>

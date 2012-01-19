@@ -4,7 +4,7 @@
 <target name="Code Recommenders Development Environment" sequenceNumber="85">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.2.0.I20120110-2200"/>
+<unit id="org.eclipse.sdk.ide" version="4.2.0.I20120118-2200"/>
 <unit id="org.eclipse.emf.ecore.feature.group" version="2.8.0.v20111209-0930"/>
 <unit id="org.eclipse.emf.common.feature.group" version="2.8.0.v20111209-0930"/>
 <unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.1.0.v20111122-1412-8294FkWFWmE7ghRDsLclrek"/>

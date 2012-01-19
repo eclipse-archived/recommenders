@@ -25,43 +25,4 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>build-server</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>deploy</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <delete includeemptydirs="false" failonerror="false">
-                                            <fileset dir="${target}">
-                                                <include name="**"/>
-                                            </fileset>
-                                        </delete>
-                                        <mkdir dir="${target}"/>
-                                        <copy includeemptydirs="false" todir="${target}">
-                                            <fileset dir="${source}">
-                                                <include name="**"/>
-                                            </fileset>
-                                            <fileset dir="./">
-                                                <include name="*.php"/>
-                                            </fileset>
-                                        </copy>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

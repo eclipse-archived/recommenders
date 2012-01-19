@@ -23,7 +23,6 @@
         <module>org.eclipse.recommenders.tests.jayes</module>
         <module>org.eclipse.recommenders.tests.mining</module>
         <module>org.eclipse.recommenders.tests.rcp</module>
-        <module>org.eclipse.recommenders.tests.udc.rcp</module>
         <module>org.eclipse.recommenders.tests.udc.server</module>
         <module>org.eclipse.recommenders.tests.util</module>
         <module>org.eclipse.recommenders.tests.webclient</module>
