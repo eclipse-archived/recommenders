@@ -52,7 +52,7 @@ public class CouchDBAccessService {
 
     public boolean isAvailable() {
         try {
-            final Object result = client.doGetRequest("", Object.class);
+            final Object result = getClient().doGetRequest("", Object.class);
             return result != null;
         } catch (final RuntimeException e) {
             return false;
@@ -60,7 +60,7 @@ public class CouchDBAccessService {
     }
 
     protected String getRevision(final String id) {
-        final ClientResponse response = client.createRequestBuilder(id).head();
+        final ClientResponse response = getClient().createRequestBuilder(id).head();
         if (response.getHeaders().containsKey("Etag")) {
             final List<String> etags = response.getHeaders().get("Etag");
             if (etags.size() > 0) {
@@ -98,19 +98,19 @@ public class CouchDBAccessService {
             }
         }
         final UpdateQuery query = new UpdateQuery(unitsToAddOrUpdate);
-        client.doPostRequest("_bulk_docs", query);
+        getClient().doPostRequest("_bulk_docs", query);
     }
 
     private CompilationUnit getCompilationUnit(final String id) {
         try {
-            return client.doGetRequest(id, CompilationUnit.class);
+            return getClient().doGetRequest(id, CompilationUnit.class);
         } catch (final NotFoundException e) {
             return null;
         }
     }
 
     public Collection<LibraryIdentifier> getLibraryIdentifiers() {
-        final GenericResultObjectView<LibraryIdentifier> result = client.doGetRequest(
+        final GenericResultObjectView<LibraryIdentifier> result = getClient().doGetRequest(
                 "_design/metaData/_view/libraryIdentifier",
                 new GenericType<GenericResultObjectView<LibraryIdentifier>>() {
                 });
@@ -118,7 +118,7 @@ public class CouchDBAccessService {
     }
 
     public LibraryIdentifier getLibraryIdentifierForFingerprint(final String fingerprint) {
-        final GenericResultObjectView<LibraryIdentifier> result = client.doGetRequest(
+        final GenericResultObjectView<LibraryIdentifier> result = getClient().doGetRequest(
                 "_design/metaData/_view/libraryIdentifier?key=" + escapedQuotation + fingerprint + escapedQuotation,
                 new GenericType<GenericResultObjectView<LibraryIdentifier>>() {
                 });
@@ -130,7 +130,7 @@ public class CouchDBAccessService {
     }
 
     public Collection<LibraryIdentifier> getLibraryIdentifiersForSymbolicName(final String symbolicName) {
-        final GenericResultObjectView<LibraryIdentifier> result = client.doGetRequest(
+        final GenericResultObjectView<LibraryIdentifier> result = getClient().doGetRequest(
                 "_design/metaData/_view/libraryIdentifierByName?key=" + escapedQuotation
                         + WebServiceClient.encode(symbolicName) + escapedQuotation,
                 new GenericType<GenericResultObjectView<LibraryIdentifier>>() {
@@ -147,7 +147,7 @@ public class CouchDBAccessService {
     }
 
     private Collection<ObjectUsage> getObjectUsages(final String fingerprint) {
-        final GenericResultObjectView<ObjectUsage> queryResult = client.doGetRequest(
+        final GenericResultObjectView<ObjectUsage> queryResult = getClient().doGetRequest(
                 "_design/objectUsages/_view/byFingerprint?reduce=false&key=" + escapedQuotation + fingerprint
                         + escapedQuotation, new GenericType<GenericResultObjectView<ObjectUsage>>() {
                 });
@@ -165,7 +165,7 @@ public class CouchDBAccessService {
     private int getNumberOfObjectUsages(final String fingerprint) {
         final String path = "_design/objectUsages/_view/byFingerprint?reduce=true&key=" + escapedQuotation
                 + fingerprint + escapedQuotation;
-        final GenericResultObjectView<Integer> queryResult = client.doGetRequest(path,
+        final GenericResultObjectView<Integer> queryResult = getClient().doGetRequest(path,
                 new GenericType<GenericResultObjectView<Integer>>() {
                 });
         if (queryResult.rows.size() == 1) {
@@ -187,7 +187,7 @@ public class CouchDBAccessService {
     }
 
     private Date getLatestTimestampForFingerprint(final String fingerprint) {
-        final GenericResultObjectView<Date> queryResult = client.doGetRequest(
+        final GenericResultObjectView<Date> queryResult = getClient().doGetRequest(
                 "_design/objectUsages/_view/latestTimestampByFingerprint?key=" + escapedQuotation + fingerprint
                         + escapedQuotation, new GenericType<GenericResultObjectView<Date>>() {
                 });
@@ -199,7 +199,7 @@ public class CouchDBAccessService {
     }
 
     public Collection<ModelSpecification> getModelSpecifications() {
-        final GenericResultObjectView<ModelSpecification> queryResult = client.doGetRequest(
+        final GenericResultObjectView<ModelSpecification> queryResult = getClient().doGetRequest(
                 "_design/metaData/_view/modelSpecifications",
                 new GenericType<GenericResultObjectView<ModelSpecification>>() {
                 });
@@ -207,7 +207,7 @@ public class CouchDBAccessService {
     }
 
     public Collection<ModelSpecification> getModelSpecificationsByNameOrAlias(final String symbolicName) {
-        final GenericResultObjectView<ModelSpecification> queryResult = client.doGetRequest(
+        final GenericResultObjectView<ModelSpecification> queryResult = getClient().doGetRequest(
                 "_design/metaData/_view/modelSpecificationsIncludeAlias?key=" + escapedQuotation
                         + WebServiceClient.encode(symbolicName) + escapedQuotation,
                 new GenericType<GenericResultObjectView<ModelSpecification>>() {
@@ -216,7 +216,7 @@ public class CouchDBAccessService {
     }
 
     public ModelSpecification getModelSpecificationByFingerprint(final String fingerprint) {
-        final GenericResultObjectView<ModelSpecification> queryResult = client.doGetRequest(
+        final GenericResultObjectView<ModelSpecification> queryResult = getClient().doGetRequest(
                 "_design/metaData/_view/modelSpecificationByFingerprint?key=" + escapedQuotation + fingerprint
                         + escapedQuotation, new GenericType<GenericResultObjectView<ModelSpecification>>() {
                 });
@@ -228,6 +228,10 @@ public class CouchDBAccessService {
     }
 
     public void save(final LibraryIdentifier libraryIdentifier) {
-        client.doPostRequest("", libraryIdentifier);
+        getClient().doPostRequest("", libraryIdentifier);
+    }
+
+    public WebServiceClient getClient() {
+        return client;
     }
 }
