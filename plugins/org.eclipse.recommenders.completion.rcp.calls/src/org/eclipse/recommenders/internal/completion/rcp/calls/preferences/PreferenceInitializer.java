@@ -18,7 +18,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
     // private static final String SERVER_URL =
     // "http://137.248.121.220:29757/udc/";
-    private static final String SERVER_URL = "http://recommenders1.st.informatik.tu-darmstadt.de/udc/";
+    private static final String SERVER_URL = "http://213.133.100.41/udc/";
 
     @Override
     public void initializeDefaultPreferences() {

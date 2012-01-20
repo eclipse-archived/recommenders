@@ -18,7 +18,7 @@ import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocModule.Extdoc;
 
 public final class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static final String SERVER_URL = "http://recommenders1.st.informatik.tu-darmstadt.de/extdoc/";
+    private static final String SERVER_URL = "http://213.133.100.41/extdoc/";
     private final IPreferenceStore store;
 
     @Inject
