@@ -9,4 +9,3 @@ Require-Bundle: com.google.gson;bundle-version="2.0.0";visibility:=reexport,
  org.eclipse.recommenders.utils,
  com.google.guava
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: javax.xml.bind
