@@ -17,6 +17,10 @@
       %license
    </license>
 
+   <requires>
+      <import feature="org.eclipse.recommenders.feature.server"/>
+   </requires>
+
    <plugin
          id="org.eclipse.recommenders.udc.server"
          download-size="0"

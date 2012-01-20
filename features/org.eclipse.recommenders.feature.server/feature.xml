@@ -17,36 +17,6 @@
       %license
    </license>
 
-   <requires>
-      <import plugin="com.sun.jersey.core"/>
-      <import plugin="com.sun.jersey.server"/>
-      <import plugin="javax.servlet"/>
-      <import plugin="com.google.guava"/>
-      <import plugin="org.apache.commons.lang3"/>
-      <import plugin="com.sun.jersey.client" version="1.8.0" match="greaterOrEqual"/>
-      <import plugin="com.sun.jersey.core" version="1.8.0" match="greaterOrEqual"/>
-      <import plugin="com.google.gson"/>
-      <import plugin="com.google.gson" version="2.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.slf4j.api"/>
-      <import plugin="javax.inject" version="1.0.0" match="compatible"/>
-      <import plugin="com.google.inject" version="3.0.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.commons.io"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.recommenders.mining"/>
-      <import plugin="org.eclipse.recommenders.utils.rcp"/>
-      <import plugin="org.eclipse.equinox.p2.console"/>
-      <import plugin="org.apache.felix.gogo.runtime"/>
-      <import plugin="org.eclipse.osgi.services"/>
-      <import plugin="org.eclipse.equinox.http.servlet"/>
-      <import plugin="org.eclipse.jetty.http"/>
-      <import plugin="org.eclipse.jetty.io"/>
-      <import plugin="org.eclipse.jetty.server"/>
-      <import plugin="org.eclipse.jetty.servlet"/>
-      <import plugin="org.eclipse.jetty.util"/>
-   </requires>
-
    <plugin
          id="org.eclipse.recommenders.server"
          download-size="0"
@@ -110,21 +80,44 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.felix.gogo.shell"
+         id="com.google.inject"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.equinox.console"
+         id="com.google.inject.assistedinject"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.inject.multibindings"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="com.sun.jersey.client"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.equinox.http.jetty"
+         id="com.sun.jersey.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.sun.jersey.server"
          download-size="0"
          install-size="0"
          version="0.0.0"

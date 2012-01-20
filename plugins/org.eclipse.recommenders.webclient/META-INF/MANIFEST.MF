@@ -9,8 +9,8 @@ Require-Bundle: com.google.guava,
  org.eclipse.recommenders.injection,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.utils.gson,
- com.sun.jersey.client;bundle-version="1.8.0";visibility:=reexport,
- com.sun.jersey.core;bundle-version="1.8.0";visibility:=reexport
+ com.sun.jersey.client;visibility:=reexport,
+ com.sun.jersey.core;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.recommenders.webclient,
  org.eclipse.recommenders.webclient.exceptions,

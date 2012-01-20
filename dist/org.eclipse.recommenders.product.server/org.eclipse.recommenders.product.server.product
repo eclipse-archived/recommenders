@@ -30,8 +30,7 @@
       <feature id="org.eclipse.recommenders.feature.codesearch.server"/>
       <feature id="org.eclipse.recommenders.feature.extdoc.server"/>
       <feature id="org.eclipse.recommenders.feature.udc.server"/>
-      <feature id="org.eclipse.recommenders.feature.3rd.orbit"/>
-      <feature id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit"/>
+      <feature id="org.eclipse.equinox.server.jetty"/>
    </features>
 
    <configurations>

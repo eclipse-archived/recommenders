@@ -17,6 +17,11 @@
       %license
    </license>
 
+   <requires>
+      <import plugin="org.slf4j.api" version="1.6.1" match="equivalent"/>
+      <import plugin="org.eclipse.osgi"/>
+   </requires>
+
    <plugin
          id="org.apache.commons.io"
          download-size="0"
@@ -83,13 +88,6 @@
 
    <plugin
          id="javax.inject"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="javax.servlet"
          download-size="0"
          install-size="0"
          version="0.0.0"

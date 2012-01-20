@@ -17,5 +17,6 @@ Require-Bundle: org.eclipse.swt,
  org.objenesis,
  org.eclipse.recommenders.analysis.wala,
  org.eclipse.recommenders.injection,
- org.hamcrest
+ org.hamcrest,
+ org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
