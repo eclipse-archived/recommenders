@@ -216,8 +216,9 @@ public class JavaElementResolver {
                 final String[] unresolvedParameterTypes = jdtMethod.getParameterTypes();
                 final String[] resolvedParameterTypes = new String[unresolvedParameterTypes.length];
                 for (int i = resolvedParameterTypes.length; i-- > 0;) {
-                    resolvedParameterTypes[i] = JavaModelUtil.getResolvedTypeName(unresolvedParameterTypes[i],
-                            jdtDeclaringType);
+                    resolvedParameterTypes[i] = JdtUtils
+                            .resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
+                                    unresolvedParameterTypes[i], jdtDeclaringType).or("V");
                 }
                 String resolvedReturnType = null;
                 final String unresolvedReturnType = jdtMethod.getReturnType();

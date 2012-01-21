@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.utils.rcp.ast;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
 import static java.lang.String.format;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
@@ -25,6 +27,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.internal.core.TypeParameter;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -32,6 +35,7 @@ import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
@@ -40,11 +44,14 @@ public class BindingUtils {
     @Inject
     private static JavaElementResolver resolver;
 
-    public static IType getVariableType(final IVariableBinding b) {
-        return b == null ? null : getType(b.getType());
+    public static Optional<IType> getVariableType(final IVariableBinding b) {
+        if (b == null) {
+            return absent();
+        }
+        return getType(b.getType());
     }
 
-    public static IType getMethodReturn(final IMethodBinding b) {
+    public static Optional<IType> getMethodReturn(final IMethodBinding b) {
         // assertNotNull(b);
         final ITypeBinding returnType = b.getReturnType();
         return getType(returnType);
@@ -55,15 +62,20 @@ public class BindingUtils {
         final ITypeBinding[] paramBindings = b.getParameterTypes();
         final IType[] paramTypes = new IType[paramBindings.length];
         for (int i = paramBindings.length; i-- > 0;) {
-            paramTypes[i] = getType(paramBindings[i]);
+            paramTypes[i] = getType(paramBindings[i]).orNull();
         }
         return paramTypes;
     }
 
-    public static IType getType(final ITypeBinding b) {
-        // assertNotNull(b);
-        final IJavaElement element = resolveJavaElementQuietly(b);
-        return (IType) (resolveSucceeded(element, IType.class) ? element : null);
+    public static Optional<IType> getType(final ITypeBinding b) {
+        IJavaElement element = resolveJavaElementQuietly(b);
+        if (element instanceof IType) {
+            return of((IType) element);
+        } else if (element instanceof TypeParameter) {
+            // do nothing.
+            // how should we deal with <T extends S>?
+        }
+        return absent();
     }
 
     public static ITypeName toTypeName(@Nullable final Type type) {
@@ -150,7 +162,11 @@ public class BindingUtils {
     }
 
     public static ITypeName toTypeName(final ITypeBinding b) {
-        final ITypeName ref = toTypeName(getType(b));
+        Optional<IType> type = getType(b);
+        if (!type.isPresent()) {
+            return VmTypeName.NULL;
+        }
+        final ITypeName ref = toTypeName(type.get());
         if (ref == null && b != null) {
             try {
                 if (b.isPrimitive()) {

@@ -848,5 +848,4 @@ public class JdtUtils {
         }
         return Optional.fromNullable(res);
     }
-
 }
