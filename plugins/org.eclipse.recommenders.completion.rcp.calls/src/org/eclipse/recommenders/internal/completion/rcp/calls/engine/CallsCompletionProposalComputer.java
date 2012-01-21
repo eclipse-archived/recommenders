@@ -35,7 +35,9 @@ import org.eclipse.jdt.internal.ui.text.java.ParameterGuessingProposal;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension2;
 import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
@@ -83,6 +85,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private List<ICompletionProposal> proposals;
     private LinkedList<CallsRecommendation> recommendations;
 
+    private JavaContentAssistInvocationContext javaContext;
+
     @Inject
     public CallsCompletionProposalComputer(final CallModelStore modelStore, final JavaElementResolver jdtResolver,
             final IRecommendersCompletionContextFactory ctxFactory) {
@@ -117,7 +121,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private void initalize(final ContentAssistInvocationContext javaContext) {
-        ctx = ctxFactory.create((JavaContentAssistInvocationContext) javaContext);
+        this.javaContext = (JavaContentAssistInvocationContext) javaContext;
+        ctx = ctxFactory.create(this.javaContext);
         query = ObjectUsage.newObjectUsageWithDefaults();
     }
 
@@ -265,7 +270,22 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
         @Override
         protected boolean isPrefix(final String prefix, final String string) {
-            return true;
+            // remove this proposal as soon as none of our proposal can be applied anymore:
+            for (ICompletionProposal p : proposals) {
+                // skip me myself
+                if (p == this) {
+                    continue;
+                }
+                if (p instanceof ICompletionProposalExtension2) {
+                    ICompletionProposalExtension2 p2 = (ICompletionProposalExtension2) p;
+                    IDocument doc = javaContext.getDocument();
+                    int newOffset = javaContext.getInvocationOffset() + prefix.length();
+                    if (p2.validate(doc, newOffset, null)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }
