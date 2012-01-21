@@ -11,7 +11,9 @@
 package org.eclipse.recommenders.internal.completion.rcp.subwords2;
 
 import static java.lang.String.valueOf;
+import static org.eclipse.jdt.core.Signature.getReturnType;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -78,11 +80,29 @@ public class AssignmentVarnameMatchCompletionProposalComputer extends JavaComple
                 if (name == null) {
                     return;
                 }
+
                 String s = valueOf(name).toLowerCase();
                 if (s.contains(varName)) {
+                    if (isVoidMethod(proposal)) {
+                        return;
+                    }
+
                     proposal.setRelevance(BASIS_RELEVANCE + proposal.getRelevance());
                     super.accept(proposal);
                 }
+            }
+
+            private boolean isVoidMethod(final CompletionProposal proposal) {
+                if (proposal.getKind() != CompletionProposal.METHOD_REF) {
+                    return false;
+                }
+
+                char[] returnType = getReturnType(proposal.getSignature());
+                if (Arrays.equals(returnType, new char[] { 'V' })) {
+                    return true;
+                }
+
+                return false;
             }
         };
         return c;
