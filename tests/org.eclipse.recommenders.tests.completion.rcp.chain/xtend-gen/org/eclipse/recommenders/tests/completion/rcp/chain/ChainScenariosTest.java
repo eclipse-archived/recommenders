@@ -294,6 +294,32 @@ public class ChainScenariosTest {
       this.exercise(code, expected);
   }
   
+  @Test
+  public void testCompletionOnEnumDoesNotThrowNPE() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("import java.lang.annotation.*;");
+      _builder.newLine();
+      _builder.append("import java.util.*;");
+      _builder.newLine();
+      _builder.append("class MyClass {");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("void m(){");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("String s = Annotation.$");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("}");
+      final CharSequence code = _builder;
+      ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList();
+      List<List<String>> _w = this.w(((String[])Conversions.unwrapArray(_newArrayList, String.class)));
+      List<List<String>> expected = _w;
+      this.exercise(code, expected);
+  }
+  
   /**
    * we had some trouble with supertype hierarchy. This test that we do not generate
    * any chains that return a supertype of the requested type (ExecutorService in this case)

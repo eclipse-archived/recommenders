@@ -54,7 +54,6 @@ class ChainScenariosTest {
 	}
 	
 	
-
 	@Test
 	def void testFindFieldAnchor(){
 		val code = '''
@@ -218,6 +217,22 @@ class ChainScenariosTest {
 			"m",
 			"m subList"
 			))
+		exercise(code, expected);
+	}
+	
+	@Test
+	def void testCompletionOnEnumDoesNotThrowNPE() {
+		val code = '''
+		import java.lang.annotation.*;
+		import java.util.*;
+		class MyClass {
+			void m(){
+				String s = Annotation.$
+			}
+		}''' 
+		
+		// don't expect anything.
+		var expected = w(newArrayList())
 		exercise(code, expected);
 	}
 	
