@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -60,8 +61,10 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
         final List<IField> res = Lists.newArrayListWithCapacity(v.size);
         for (int i = v.size(); i-- > 0;) {
             final FieldBinding b = cast(v.elementAt(i));
-            final IField f = JdtUtils.createUnresolvedField(b);
-            res.add(f);
+            final Optional<IField> f = JdtUtils.createUnresolvedField(b);
+            if (f.isPresent()) {
+                res.add(f.get());
+            }
         }
         return res;
     }
@@ -93,8 +96,10 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
         final List<IMethod> res = Lists.newArrayListWithCapacity(v.size);
         for (int i = v.size(); i-- > 0;) {
             final MethodBinding b = cast(v.elementAt(i));
-            final IMethod f = JdtUtils.createUnresolvedMethod(b);
-            res.add(f);
+            final Optional<IMethod> f = JdtUtils.createUnresolvedMethod(b);
+            if (f.isPresent()) {
+                res.add(f.get());
+            }
         }
         return res;
     }

@@ -345,7 +345,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         if (b instanceof MissingTypeBinding) {
             return absent();
         }
-        return of(JdtUtils.createUnresolvedType(b));
+        return JdtUtils.createUnresolvedType(b);
 
     }
 }

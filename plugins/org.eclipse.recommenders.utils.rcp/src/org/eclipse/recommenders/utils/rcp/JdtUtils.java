@@ -270,9 +270,9 @@ public class JdtUtils {
         return new Region(node.getStartPosition(), node.getLength());
     }
 
-    public static IField createUnresolvedField(final FieldBinding compilerBinding) {
+    public static Optional<IField> createUnresolvedField(final FieldBinding compilerBinding) {
         ensureIsNotNull(compilerBinding);
-        return (IField) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
+        return fromNullable((IField) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP));
     }
 
     public static ILocalVariable createUnresolvedLocaVariable(final VariableBinding compilerBinding,
@@ -286,13 +286,13 @@ public class JdtUtils {
                 compilerBinding.isParameter());
     }
 
-    public static IMethod createUnresolvedMethod(final MethodBinding compilerBinding) {
+    public static Optional<IMethod> createUnresolvedMethod(final MethodBinding compilerBinding) {
         ensureIsNotNull(compilerBinding);
-        return (IMethod) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
+        return fromNullable((IMethod) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP));
     }
 
-    public static IType createUnresolvedType(final TypeBinding compilerBinding) {
-        return (IType) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
+    public static Optional<IType> createUnresolvedType(final TypeBinding compilerBinding) {
+        return fromNullable((IType) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP));
     }
 
     /**

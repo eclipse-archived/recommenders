@@ -146,12 +146,17 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         }
         switch (b.kind()) {
         case Binding.TYPE:
-            final IType type = createUnresolvedType((TypeBinding) b);
-            addPublicStaticMembersToEntrypoints(type);
+            final Optional<IType> type = createUnresolvedType((TypeBinding) b);
+            if (type.isPresent()) {
+                addPublicStaticMembersToEntrypoints(type.get());
+            }
             break;
         case Binding.FIELD:
-            final IField field = createUnresolvedField((FieldBinding) b);
-            final Optional<IType> optType = findTypeOfField(field);
+            final Optional<IField> field = createUnresolvedField((FieldBinding) b);
+            if (!field.isPresent()) {
+                break;
+            }
+            final Optional<IType> optType = findTypeOfField(field.get());
             if (optType.isPresent()) {
                 addPublicInstanceMembersToEntrypoints(optType.get());
             }
@@ -208,9 +213,11 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         }
         switch (b.kind()) {
         case Binding.TYPE:
-            final IType type = createUnresolvedType((TypeBinding) b);
+            final Optional<IType> type = createUnresolvedType((TypeBinding) b);
             // note: not static!
-            addPublicInstanceMembersToEntrypoints(type);
+            if (type.isPresent()) {
+                addPublicInstanceMembersToEntrypoints(type.get());
+            }
             break;
         case Binding.LOCAL:
             // TODO Review: could this be a field?

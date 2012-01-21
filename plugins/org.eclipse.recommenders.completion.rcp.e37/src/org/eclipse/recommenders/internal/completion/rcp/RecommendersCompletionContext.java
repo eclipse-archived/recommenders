@@ -174,8 +174,10 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
         final List<IField> res = Lists.newArrayList();
         for (final FieldDeclaration d : astCompletionNodeFinder.fieldDeclarations) {
             final FieldBinding b = d.binding;
-            final IField f = JdtUtils.createUnresolvedField(b);
-            res.add(f);
+            final Optional<IField> opt = JdtUtils.createUnresolvedField(b);
+            if (opt.isPresent()) {
+                res.add(opt.get());
+            }
         }
         addInheritedMembers(res, IJavaElement.FIELD);
         return res;
@@ -221,8 +223,10 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
         for (final MethodDeclaration d : astCompletionNodeFinder.methodDeclarations) {
             final MethodBinding b = d.binding;
             if (b != null) {
-                final IMethod f = JdtUtils.createUnresolvedMethod(b);
-                res.add(f);
+                final Optional<IMethod> opt = JdtUtils.createUnresolvedMethod(b);
+                if (opt.isPresent()) {
+                    res.add(opt.get());
+                }
             }
         }
         addInheritedMembers(res, IJavaElement.METHOD);
