@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.rcp;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.recommenders.utils.rcp.LoggingUtils;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -36,6 +37,10 @@ public class RecommendersPlugin extends AbstractUIPlugin {
 
     public static void logWarning(final String format, final Object... args) {
         LoggingUtils.logWarning(null, getDefault(), format, args);
+    }
+
+    public static void log(final IStatus res) {
+        LoggingUtils.log(res, getDefault());
     }
 
     @Override
