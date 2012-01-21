@@ -140,7 +140,7 @@ public final class BrowserSizeWorkaround {
             final Composite theParentsParent = parent.getParent();
             final Composite theParentsParentsParent = theParentsParent.getParent();
             if (theParentsParentsParent == null || parent instanceof ScrolledComposite) {
-                theParentsParent.layout(true, true);
+                theParentsParent.layout(true);
                 break;
             }
         }

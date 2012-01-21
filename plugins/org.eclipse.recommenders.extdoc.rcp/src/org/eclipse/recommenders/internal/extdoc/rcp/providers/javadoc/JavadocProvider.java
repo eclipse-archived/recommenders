@@ -66,25 +66,25 @@ public final class JavadocProvider extends ExtdocProvider {
             final Composite parent) {
         render(root, parent);
         return Status.OK;
-  }
+    }
 
     @JavaSelectionSubscriber
     public Status onTypeSelection(final IType type, final JavaSelectionEvent selection, final Composite parent) {
         render(type, parent);
         return Status.OK;
-  }
+    }
 
     @JavaSelectionSubscriber
     public Status onMethodSelection(final IMethod method, final JavaSelectionEvent selection, final Composite parent) {
         render(method, parent);
         return Status.OK;
-  }
+    }
 
     @JavaSelectionSubscriber
     public Status onFieldSelection(final IField field, final JavaSelectionEvent selection, final Composite parent) {
         render(field, parent);
         return Status.OK;
-   }
+    }
 
     private Status render(final IJavaElement element, final Composite parent) {
         runSyncInUiThread(new Runnable() {
@@ -128,7 +128,7 @@ public final class JavadocProvider extends ExtdocProvider {
         });
         waitForBrowserSizeWorkaround();
         return Status.OK;
-   }
+    }
 
     private void waitForBrowserSizeWorkaround() {
         try {
