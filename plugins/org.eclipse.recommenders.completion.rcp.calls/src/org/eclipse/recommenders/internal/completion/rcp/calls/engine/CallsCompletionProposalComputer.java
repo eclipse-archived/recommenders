@@ -46,6 +46,7 @@ import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodC
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
@@ -195,15 +196,33 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
                 .getRecommendedMethodCalls(MIN_PROBABILITY_THRESHOLD);
 
         final Variable var = Variable.create(receiverName, jdtResolver.toRecType(receiverType), null);
+
+        boolean expectsReturnType = ctx.getExpectedTypeSignature().isPresent();
+        boolean expectsNonPrimitiveReturnType = ctx.getExpectedType().isPresent();
+        boolean expectsPrimitive = !expectsNonPrimitiveReturnType;
+
         for (final Tuple<IMethodName, Double> recommended : recommendedMethodCalls) {
+
             final IMethodName method = recommended.getFirst();
             final Double probability = recommended.getSecond();
-            if (ctx.getExpectedType().isPresent() && method.isVoid()) {
-                continue;
+
+            if (expectsReturnType) {
+                ITypeName returnType = method.getReturnType();
+                if (method.isVoid()) {
+                    continue;
+                }
+                if (expectsPrimitive && !samePrimitiveType(returnType, ctx.getExpectedTypeSignature().or(""))) {
+                    continue;
+                }
             }
             final CallsRecommendation recommendation = CallsRecommendation.create(var, method, probability);
             recommendations.add(recommendation);
         }
+    }
+
+    private boolean samePrimitiveType(final ITypeName returnType, final String lhs) {
+        String rhs = returnType.getIdentifier();
+        return rhs.equals(lhs);
     }
 
     private void createProspsals() {
