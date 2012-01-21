@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.store2.models;
 
-import static org.eclipse.recommenders.utils.Checks.ensureIsNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import java.io.File;
@@ -103,7 +102,10 @@ public class ModelArchiveStore<T extends IModel> {
     }
 
     private void registerInIndex(final IModelArchive archive, final Manifest manifest) {
-        ensureIsNull(index.put(manifest, archive));
+        IModelArchive old = index.put(manifest, archive);
+        if (old != null) {
+            System.out.println("overriding old model with new: " + old.getManifest() + " new " + manifest);
+        }
     }
 
     @Subscribe
