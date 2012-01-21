@@ -125,6 +125,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         this.javaContext = (JavaContentAssistInvocationContext) javaContext;
         ctx = ctxFactory.create(this.javaContext);
         query = ObjectUsage.newObjectUsageWithDefaults();
+        proposals = Lists.newLinkedList();
     }
 
     private boolean isCompletionRequestSupported() {
@@ -264,7 +265,6 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     @Override
     public void sessionStarted() {
-        proposals = Lists.newLinkedList();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
