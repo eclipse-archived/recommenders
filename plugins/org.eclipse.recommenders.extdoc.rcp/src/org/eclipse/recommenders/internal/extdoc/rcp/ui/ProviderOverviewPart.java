@@ -27,11 +27,9 @@ import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderNo
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderOrderChangedEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderSelectionEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderStartedEvent;
-import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocIconLoader.Icon;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.OrderChangeHandler.OrderChangedListener;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocModule.Extdoc;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -155,44 +153,44 @@ public class ProviderOverviewPart {
 
     @Subscribe
     public void onEvent(final ProviderNotAvailableEvent e) {
-        final TableItem tableItem = provider2item.get(e.provider);
-        tableItem.setImage(iconLoader.getImage(Icon.NOT_AVAILABLE));
-        tableItem.setForeground(new Color(table.getDisplay(), 180, 180, 180));
+        // final TableItem tableItem = provider2item.get(e.provider);
+        // tableItem.setImage(iconLoader.getImage(Icon.NOT_AVAILABLE));
+        // tableItem.setForeground(new Color(table.getDisplay(), 180, 180, 180));
     }
 
     @Subscribe
     public void onEvent(final ProviderDeactivationEvent e) {
-        final TableItem tableItem = provider2item.get(e.provider);
-        tableItem.setImage(e.provider.getDescription().getImage());
+        // final TableItem tableItem = provider2item.get(e.provider);
+        // tableItem.setImage(e.provider.getDescription().getImage());
     }
 
     @Subscribe
     public void onEvent(final ProviderStartedEvent e) {
-        final TableItem tableItem = provider2item.get(e.provider);
-        tableItem.setImage(iconLoader.getImage(Icon.STARTED));
+        // final TableItem tableItem = provider2item.get(e.provider);
+        // tableItem.setImage(iconLoader.getImage(Icon.STARTED));
     }
 
     @Subscribe
     public void onEvent(final ProviderFinishedEvent e) {
-        final TableItem tableItem = provider2item.get(e.provider);
-        tableItem.setImage(e.provider.getDescription().getImage());
+        // final TableItem tableItem = provider2item.get(e.provider);
+        // tableItem.setImage(e.provider.getDescription().getImage());
     }
 
     @Subscribe
     public void onEvent(final ProviderDelayedEvent e) {
-        final TableItem tableItem = provider2item.get(e.provider);
-        tableItem.setImage(iconLoader.getImage(Icon.DELAYED));
+        // final TableItem tableItem = provider2item.get(e.provider);
+        // tableItem.setImage(iconLoader.getImage(Icon.DELAYED));
     }
 
     @Subscribe
     public void onEvent(final ProviderFinishedLateEvent e) {
-        final TableItem tableItem = provider2item.get(e.provider);
-        tableItem.setImage(e.provider.getDescription().getImage());
+        // final TableItem tableItem = provider2item.get(e.provider);
+        // tableItem.setImage(e.provider.getDescription().getImage());
     }
 
     @Subscribe
     public void onEvent(final ProviderFailedEvent e) {
-        final TableItem tableItem = provider2item.get(e.provider);
-        tableItem.setImage(iconLoader.getImage(Icon.FAILED));
+        // final TableItem tableItem = provider2item.get(e.provider);
+        // tableItem.setImage(iconLoader.getImage(Icon.FAILED));
     }
 }
