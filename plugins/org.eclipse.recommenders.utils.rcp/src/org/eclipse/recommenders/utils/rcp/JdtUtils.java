@@ -468,7 +468,7 @@ public class JdtUtils {
                 return absent();
             }
             return findTypeFromSignature(superclassTypeSignature, type);
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             log(e);
             return absent();
         }
