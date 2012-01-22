@@ -43,7 +43,6 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.AST;
@@ -117,7 +116,7 @@ public class JdtUtils {
             try {
                 // filter these:
                 return !isStatic(m) || !isPublic(m);
-            } catch (final JavaModelException e) {
+            } catch (final Exception e) {
                 // filter!
                 return true;
             }
@@ -130,7 +129,7 @@ public class JdtUtils {
             try {
                 // filter these:
                 return isStatic(m) || !isPublic(m);
-            } catch (final JavaModelException e) {
+            } catch (final Exception e) {
                 // filter!
                 return true;
             }
@@ -143,7 +142,7 @@ public class JdtUtils {
             try {
                 // filter these:
                 return !isStatic(m) || !isPublic(m);
-            } catch (final JavaModelException e) {
+            } catch (final Exception e) {
                 // filter!
                 return true;
             }
@@ -157,7 +156,7 @@ public class JdtUtils {
             try {
                 // filter these:
                 return isStatic(m) || !isPublic(m) || m.isConstructor();
-            } catch (final JavaModelException e) {
+            } catch (final Exception e) {
                 // filter!
                 return true;
             }
@@ -171,7 +170,7 @@ public class JdtUtils {
             try {
                 // filter these:
                 return !isStatic(m) || isVoid(m) || !isPublic(m) || hasPrimitiveReturnType(m);
-            } catch (final JavaModelException e) {
+            } catch (final Exception e) {
                 // filter!
                 return true;
             }
@@ -182,7 +181,7 @@ public class JdtUtils {
         reconcileIfCompilationUnit(root);
         try {
             return root.codeSelect(selection.getOffset(), selection.getLength());
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             log(e);
         }
         return EMPTY_RESULT;
@@ -239,7 +238,7 @@ public class JdtUtils {
     private static String createFieldKey(final IField field) {
         try {
             return field.getElementName() + field.getTypeSignature();
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             throw throwUnhandledException(e);
         }
     }
@@ -260,7 +259,7 @@ public class JdtUtils {
             final String signatureWithoutReturnType = StringUtils.substringBeforeLast(signature, ")");
             final String methodName = method.getElementName();
             return methodName + signatureWithoutReturnType;
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             throw throwUnhandledException(e);
         }
     }
@@ -326,7 +325,7 @@ public class JdtUtils {
                     }
                 }
             }
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             log(e);
         }
         return tmp.values();
@@ -369,8 +368,8 @@ public class JdtUtils {
                         tmp.put(key, field);
                     }
                 }
-            } catch (final JavaModelException e) {
-                RecommendersUtilsPlugin.log(e);
+            } catch (final Exception e) {
+                log(e);
             }
         }
 
@@ -388,7 +387,7 @@ public class JdtUtils {
             typeHierarchy = SuperTypeHierarchyCache.getTypeHierarchy(returnType);
             final IType[] allSupertypes = typeHierarchy.getAllSupertypes(returnType);
             return ArrayUtils.add(allSupertypes, 0, returnType);
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             log(e);
             return new IType[0];
         }
@@ -434,8 +433,8 @@ public class JdtUtils {
                     .getMethodOverrideTester(jdtDeclaringType);
             final IMethod overriddenMethod = methodOverrideTester.findOverriddenMethod(jdtMethod, false);
             return fromNullable(overriddenMethod);
-        } catch (final JavaModelException e) {
-            RecommendersUtilsPlugin.log(e);
+        } catch (final Exception e) {
+            log(e);
             return absent();
         }
     }
@@ -485,7 +484,7 @@ public class JdtUtils {
             }
             final IType res = parent.getJavaProject().findType(opt.get());
             return Optional.fromNullable(res);
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             log(e);
             return Optional.absent();
         }
@@ -494,7 +493,7 @@ public class JdtUtils {
     public static Optional<IType> findTypeOfField(final IField field) {
         try {
             return findTypeFromSignature(field.getTypeSignature(), field);
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             log(e);
             return Optional.absent();
         }
@@ -535,7 +534,7 @@ public class JdtUtils {
             final ITypeRoot root = input;
             reconcileIfCompilationUnit(root);
             res = root.getElementAt(selection.getOffset());
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             log(e);
         }
         if (res == null) {
@@ -590,7 +589,7 @@ public class JdtUtils {
     public static boolean hasPrimitiveReturnType(final IMethod method) {
         try {
             return !method.getReturnType().endsWith(";");
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             throw throwUnhandledException(e);
         }
     }
@@ -610,7 +609,7 @@ public class JdtUtils {
     public static boolean isJavaClass(final IType type) {
         try {
             return type.isClass();
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             throw throwUnhandledException(e);
         }
     }
@@ -618,7 +617,7 @@ public class JdtUtils {
     public static boolean isVoid(final IMethod method) {
         try {
             return Signature.SIG_VOID.equals(method.getReturnType());
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             throw throwUnhandledException(e);
         }
     }
@@ -657,7 +656,7 @@ public class JdtUtils {
             if (cunit.isWorkingCopy()) {
                 try {
                     JavaModelUtil.reconcile(cunit);
-                } catch (final JavaModelException e) {
+                } catch (final Exception e) {
                     log(e);
                 }
             }
@@ -709,7 +708,7 @@ public class JdtUtils {
             // NOT needed. Done by getResolvedTypeName typeSignature = StringUtils.substringBefore(typeSignature, "[");
             typeSignature = StringUtils.substringBeforeLast(typeSignature, "<");
             return fromNullable(typeSignature);
-        } catch (final JavaModelException e) {
+        } catch (final Exception e) {
             log(e);
             return absent();
         }
@@ -805,9 +804,8 @@ public class JdtUtils {
                 proposal.setParameterNames(parameterNames);
             }
 
-        } catch (final JavaModelException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (final Exception e) {
+            log(e);
         }
         return proposal;
     }
