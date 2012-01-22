@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.DependencyResolutionFinished;
@@ -30,6 +31,7 @@ import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.Depe
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ManifestResolutionFinished;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ManifestResolutionRequested;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.JarPackageFragmentRootAdded;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectOpened;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
@@ -42,6 +44,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.reflect.TypeToken;
 
+@SuppressWarnings("restriction")
 public class DependencyInfoStore implements Closeable {
 
     private final BiMap<File, ClasspathDependencyInformation> dependencyInfos = HashBiMap.create();
@@ -168,6 +171,15 @@ public class DependencyInfoStore implements Closeable {
             }
         } catch (JavaModelException x) {
             RecommendersPlugin.log(x);
+        }
+    }
+
+    @Subscribe
+    public void onEvent(final JarPackageFragmentRootAdded e) {
+        JarPackageFragmentRoot r = e.root;
+        Optional<File> location = JdtUtils.getLocation(r);
+        if (isInterestingPackageFragmentRoot(r, location)) {
+            requestDependencyInfoResolution(r, location.get());
         }
     }
 

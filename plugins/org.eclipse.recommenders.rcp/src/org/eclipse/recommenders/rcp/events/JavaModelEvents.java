@@ -12,6 +12,7 @@ package org.eclipse.recommenders.rcp.events;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 
 public class JavaModelEvents {
 
@@ -76,6 +77,23 @@ public class JavaModelEvents {
         }
     }
 
+    public static final class JarPackageFragmentRootAdded {
+
+        public JarPackageFragmentRoot root;
+
+        public JarPackageFragmentRootAdded(final JarPackageFragmentRoot root) {
+            this.root = root;
+        }
+    }
+
+    public static final class JarPackageFragmentRootRemoved {
+
+        public JarPackageFragmentRoot root;
+
+        public JarPackageFragmentRootRemoved(final JarPackageFragmentRoot root) {
+            this.root = root;
+        }
+    }
     // TODO: classpath changed event (add/remove)
 
 }

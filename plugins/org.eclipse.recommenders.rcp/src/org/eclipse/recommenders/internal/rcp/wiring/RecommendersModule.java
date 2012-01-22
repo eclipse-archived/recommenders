@@ -74,8 +74,8 @@ public class RecommendersModule extends AbstractModule implements Module {
 
     @Singleton
     @Provides
-    protected JavaModelEventsProvider provideJavaModelEventsProvider(final EventBus bus) {
-        final JavaModelEventsProvider p = new JavaModelEventsProvider(bus);
+    protected JavaModelEventsProvider provideJavaModelEventsProvider(final EventBus bus, final IWorkspaceRoot workspace) {
+        final JavaModelEventsProvider p = new JavaModelEventsProvider(bus, workspace);
         JavaCore.addElementChangedListener(p);
         return p;
     }

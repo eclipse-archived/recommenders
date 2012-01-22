@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.rcp.providers;
 
+import static org.eclipse.jdt.core.IJavaElementDelta.F_ADDED_TO_CLASSPATH;
+import static org.eclipse.jdt.core.IJavaElementDelta.F_REMOVED_FROM_CLASSPATH;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Set;
@@ -17,6 +19,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,26 +32,30 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitAdded;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitChanged;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitRemoved;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.CompilationUnitSaved;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.JarPackageFragmentRootAdded;
+import org.eclipse.recommenders.rcp.events.JavaModelEvents.JarPackageFragmentRootRemoved;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectClosed;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectOpened;
-import org.eclipse.recommenders.utils.annotations.Testing;
-import org.eclipse.recommenders.utils.rcp.RCPUtils;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("restriction")
 public class JavaModelEventsProvider implements IElementChangedListener {
 
     private final EventBus bus;
+    private final IWorkspaceRoot workspace;
 
     @Inject
-    public JavaModelEventsProvider(final EventBus bus) {
+    public JavaModelEventsProvider(final EventBus bus, final IWorkspaceRoot workspace) {
         this.bus = bus;
+        this.workspace = workspace;
         simulateProjectOpenEvents();
     }
 
@@ -73,6 +80,8 @@ public class JavaModelEventsProvider implements IElementChangedListener {
             processProjectChangedEvent(delta);
         } else if (isCompilationUnitChangedEvent(delta)) {
             processCompilationUnitChangedEvent(delta);
+        } else if (isJarPackageFragementRootChangedEvent(delta)) {
+            processJarPackageFragementRootChangedEvent(delta);
         }
     }
 
@@ -160,9 +169,50 @@ public class JavaModelEventsProvider implements IElementChangedListener {
         bus.post(new CompilationUnitRemoved(cu));
     }
 
-    @Testing("visibility set to protected to allow unit testing (mocking workspace)")
-    protected Set<IProject> getAllOpenProjects() {
-        return RCPUtils.getAllOpenProjects();
+    private boolean isJarPackageFragementRootChangedEvent(final IJavaElementDelta delta) {
+        final IJavaElement changedElement = delta.getElement();
+        return changedElement instanceof JarPackageFragmentRoot;
+    }
+
+    private void processJarPackageFragementRootChangedEvent(final IJavaElementDelta delta) {
+        switch (delta.getKind()) {
+        case IJavaElementDelta.ADDED:
+            fireJarPackageFragementRootAddedEvent(delta);
+            return;
+
+        case IJavaElementDelta.REMOVED:
+            fireJarPackageFragementRootRemoved(delta);
+            return;
+
+        case IJavaElementDelta.CHANGED:
+            switch (delta.getFlags()) {
+            case F_ADDED_TO_CLASSPATH:
+                fireJarPackageFragementRootAddedEvent(delta);
+                return;
+            case F_REMOVED_FROM_CLASSPATH:
+                fireJarPackageFragementRootRemoved(delta);
+                return;
+            }
+        }
+    }
+
+    private void fireJarPackageFragementRootAddedEvent(final IJavaElementDelta delta) {
+        bus.post(new JarPackageFragmentRootAdded((JarPackageFragmentRoot) (delta.getElement())));
+    }
+
+    private void fireJarPackageFragementRootRemoved(final IJavaElementDelta delta) {
+        bus.post(new JarPackageFragmentRootRemoved((JarPackageFragmentRoot) (delta.getElement())));
+    }
+
+    private Set<IProject> getAllOpenProjects() {
+        final Set<IProject> result = Sets.newHashSet();
+        final IProject[] projects = workspace.getProjects();
+        for (final IProject project : projects) {
+            if (project.isAccessible()) {
+                result.add(project);
+            }
+        }
+        return result;
     }
 
     private IJavaProject toJavaProject(final IProject project) {
