@@ -54,14 +54,6 @@ public class JavaProjectFixture {
         createParser();
     }
 
-    private void createParser() {
-        parser = ASTParser.newParser(AST.JLS3);
-        // parser.setEnvironment(...) enables bindings resolving
-        parser.setProject(javaProject); // enables bindings and IJavaElement resolving
-        parser.setKind(ASTParser.K_COMPILATION_UNIT);
-        parser.setResolveBindings(true);
-    }
-
     private void createJavaProject(final IWorkspace workspace, final String projectName) {
         final IProject project = workspace.getRoot().getProject(projectName);
         final IWorkspaceRunnable populate = new IWorkspaceRunnable() {
@@ -117,6 +109,33 @@ public class JavaProjectFixture {
         javaProject = JavaCore.create(project);
     }
 
+    private void createParser() {
+        parser = ASTParser.newParser(AST.JLS3);
+        // parser.setEnvironment(...) enables bindings resolving
+        parser.setProject(javaProject); // enables bindings and IJavaElement resolving
+        parser.setKind(ASTParser.K_COMPILATION_UNIT);
+        parser.setResolveBindings(true);
+    }
+
+    public Tuple<CompilationUnit, Set<Integer>> parseWithMarkers(final String content, final String fileName) {
+        final Tuple<String, Set<Integer>> contentMarkersPair = findMarkers(content);
+        final String contentWoMarkers = contentMarkersPair.getFirst();
+        final Set<Integer> markers = contentMarkersPair.getSecond();
+        final CompilationUnit cu = parse(contentWoMarkers, fileName);
+        return newTuple(cu, markers);
+    }
+
+    public Tuple<String, Set<Integer>> findMarkers(final CharSequence content) {
+        final Set<Integer> markers = Sets.newTreeSet();
+        int pos = 0;
+        final StringBuilder sb = new StringBuilder(content);
+        while ((pos = sb.indexOf(MARKER, pos)) != -1) {
+            sb.delete(pos, pos + 1);
+            markers.add(pos);
+        }
+        return newTuple(sb.toString(), markers);
+    }
+
     /**
      * @param fileName
      *            should match the name of the primary type given in the content, i.e., if content = "class X {}" �
@@ -144,25 +163,6 @@ public class JavaProjectFixture {
         file.create(is, true, null);
         final ICompilationUnit cu = (ICompilationUnit) javaProject.findElement(path);
         return Tuple.newTuple(cu, content.getSecond());
-    }
-
-    public Tuple<CompilationUnit, Set<Integer>> parseWithMarkers(final String content, final String fileName) {
-        final Tuple<String, Set<Integer>> contentMarkersPair = findMarkers(content);
-        final String contentWoMarkers = contentMarkersPair.getFirst();
-        final Set<Integer> markers = contentMarkersPair.getSecond();
-        final CompilationUnit cu = parse(contentWoMarkers, fileName);
-        return newTuple(cu, markers);
-    }
-
-    public Tuple<String, Set<Integer>> findMarkers(final CharSequence content) {
-        final Set<Integer> markers = Sets.newTreeSet();
-        int pos = 0;
-        final StringBuilder sb = new StringBuilder(content);
-        while ((pos = sb.indexOf(MARKER, pos)) != -1) {
-            sb.delete(pos, pos + 1);
-            markers.add(pos);
-        }
-        return newTuple(sb.toString(), markers);
     }
 
     public String removeMarkers(final String content) {
