@@ -136,7 +136,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private boolean findReceiver() {
         receiverName = ctx.getReceiverName();
         receiverType = ctx.getReceiverType().orNull();
-        if (receiverType == null && receiverName.isEmpty()) {
+        if ((receiverType == null) && receiverName.isEmpty()) {
             // receiver may be this!
         }
         return receiverType != null;
@@ -198,9 +198,9 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
         final Variable var = Variable.create(receiverName, jdtResolver.toRecType(receiverType), null);
 
-        boolean expectsReturnType = ctx.getExpectedTypeSignature().isPresent();
-        boolean expectsNonPrimitiveReturnType = ctx.getExpectedType().isPresent();
-        boolean expectsPrimitive = !expectsNonPrimitiveReturnType;
+        final boolean expectsReturnType = ctx.getExpectedTypeSignature().isPresent();
+        final boolean expectsNonPrimitiveReturnType = ctx.getExpectedType().isPresent();
+        final boolean expectsPrimitive = !expectsNonPrimitiveReturnType;
 
         for (final Tuple<IMethodName, Double> recommended : recommendedMethodCalls) {
 
@@ -208,7 +208,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             final Double probability = recommended.getSecond();
 
             if (expectsReturnType) {
-                ITypeName returnType = method.getReturnType();
+                final ITypeName returnType = method.getReturnType();
                 if (method.isVoid()) {
                     continue;
                 }
@@ -222,7 +222,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean samePrimitiveType(final ITypeName returnType, final String lhs) {
-        String rhs = returnType.getIdentifier();
+        final String rhs = returnType.getIdentifier();
         return rhs.equals(lhs);
     }
 
@@ -242,8 +242,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             final int end = ctx.getInvocationOffset();
             final CompletionProposal proposal = JdtUtils.createProposal(method, CompletionProposal.METHOD_REF, start,
                     end, end);
-            int proposalPercentage = (int) Math.rint(r.probability * 100);
-            int rating = BASIS_RELEVANCE + proposalPercentage;
+            final int proposalPercentage = (int) Math.rint(r.probability * 100);
+            final int rating = BASIS_RELEVANCE + proposalPercentage;
             proposal.setRelevance(rating);
 
             final ParameterGuessingProposal javaProposal = ParameterGuessingProposal.createProposal(proposal,
@@ -290,15 +290,15 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         @Override
         protected boolean isPrefix(final String prefix, final String string) {
             // remove this proposal as soon as none of our proposal can be applied anymore:
-            for (ICompletionProposal p : proposals) {
+            for (final ICompletionProposal p : proposals) {
                 // skip me myself
                 if (p == this) {
                     continue;
                 }
                 if (p instanceof ICompletionProposalExtension2) {
-                    ICompletionProposalExtension2 p2 = (ICompletionProposalExtension2) p;
-                    IDocument doc = javaContext.getDocument();
-                    int newOffset = javaContext.getInvocationOffset() + prefix.length();
+                    final ICompletionProposalExtension2 p2 = (ICompletionProposalExtension2) p;
+                    final IDocument doc = javaContext.getDocument();
+                    final int newOffset = javaContext.getInvocationOffset() + prefix.length();
                     if (p2.validate(doc, newOffset, null)) {
                         return true;
                     }

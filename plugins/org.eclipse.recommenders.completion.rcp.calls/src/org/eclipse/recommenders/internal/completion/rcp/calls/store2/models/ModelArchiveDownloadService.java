@@ -60,9 +60,9 @@ public class ModelArchiveDownloadService {
             @Override
             public void run() {
                 try {
-                    File archive = downloadModel(e.manifest);
+                    final File archive = downloadModel(e.manifest);
                     fireModelArchiveDownloaded(archive, e);
-                } catch (IOException e1) {
+                } catch (final IOException e1) {
                     RecommendersPlugin.logError(e1, "Exception occurred during model download for %s", e);
                 }
             }
@@ -70,7 +70,7 @@ public class ModelArchiveDownloadService {
     }
 
     private void fireModelArchiveDownloaded(final File archive, final ModelArchiveDownloadRequested e) {
-        ModelArchiveDownloadFinished event = new ModelArchiveDownloadFinished();
+        final ModelArchiveDownloadFinished event = new ModelArchiveDownloadFinished();
         event.archive = archive;
         bus.post(event);
     }
@@ -78,7 +78,7 @@ public class ModelArchiveDownloadService {
     protected File downloadModel(final Manifest manifest) throws IOException {
         // this is not exactly sexy but produces a nice output in Eclipse's progress view:
         final File temp = File.createTempFile("download.", ".zip");
-        WorkspaceJob job = new WorkspaceJob("Downloading recommendation model") {
+        final WorkspaceJob job = new WorkspaceJob("Downloading recommendation model") {
 
             @SuppressWarnings("restriction")
             @Override
@@ -95,7 +95,7 @@ public class ModelArchiveDownloadService {
 
                     return Status.OK_STATUS;
 
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     return StatusUtil.newStatus(CallsCompletionPlugin.PLUGIN_ID, e);
                 } finally {
                     monitor.done();
@@ -105,7 +105,7 @@ public class ModelArchiveDownloadService {
         job.schedule();
         try {
             job.join();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             // don't report. user cancel or workspace shutdown
         }
         return temp;

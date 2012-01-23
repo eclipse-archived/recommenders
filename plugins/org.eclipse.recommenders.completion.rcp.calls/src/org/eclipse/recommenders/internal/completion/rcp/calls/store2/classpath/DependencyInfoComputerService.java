@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
-import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
+import org.eclipse.recommenders.commons.udc.DependencyInformation;
 import org.eclipse.recommenders.internal.analysis.archive.ArchiveDetailsExtractor;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.DependencyResolutionFinished;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.DependencyResolutionRequested;
@@ -44,7 +44,7 @@ public class DependencyInfoComputerService {
      * it's an disk-IO heavy computation. More than one thread will probably not give any performance gains here.
      */
     private final ExecutorService pool = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
-            .setPriority(Thread.MIN_PRIORITY).setNameFormat("Recommenders-%d").build());
+            .setPriority(Thread.MIN_PRIORITY).setNameFormat("Recommenders-dependency-computer-%d").build());
 
     /**
      * Helper used to ignore {@link IPackageFragmentRoot}s that have been requested already. Relies on
@@ -78,12 +78,12 @@ public class DependencyInfoComputerService {
 
     private void resolveDependency(final DependencyResolutionRequested e) {
         try {
-            Optional<File> location = getLocation(e.fragmentRoot);
+            final Optional<File> location = getLocation(e.fragmentRoot);
             if (!location.isPresent()) {
                 return;
             }
-            File file = location.get();
-            Optional<ClasspathDependencyInformation> info = computeDependencyInfo(file);
+            final File file = location.get();
+            final Optional<DependencyInformation> info = computeDependencyInfo(file);
             if (info.isPresent()) {
                 fireDone(e.fragmentRoot, info.get(), file);
             }
@@ -93,17 +93,17 @@ public class DependencyInfoComputerService {
         }
     }
 
-    private Optional<ClasspathDependencyInformation> computeDependencyInfo(final File file) {
-        ClasspathDependencyInformation res = null;
+    private Optional<DependencyInformation> computeDependencyInfo(final File file) {
+        DependencyInformation res = null;
         if (isJarFile(file)) {
             try {
                 final ArchiveDetailsExtractor extractor = new ArchiveDetailsExtractor(file);
-                res = new ClasspathDependencyInformation();
+                res = new DependencyInformation();
                 res.symbolicName = extractor.extractName();
                 res.version = extractor.extractVersion();
                 res.jarFileFingerprint = extractor.createFingerprint();
                 res.jarFileModificationDate = new Date(file.lastModified());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 RecommendersPlugin.logError(e, "Extracing jar information failed wiht exception.");
             }
         }
@@ -114,10 +114,9 @@ public class DependencyInfoComputerService {
         return file.getName().endsWith(".jar");
     }
 
-    protected void fireDone(final IPackageFragmentRoot fragmentRoot, final ClasspathDependencyInformation dependency,
+    protected void fireDone(final IPackageFragmentRoot fragmentRoot, final DependencyInformation dependency,
             final File fileLocation) {
-        DependencyResolutionFinished event = new DependencyResolutionFinished();
-        event.fragmentRoot = fragmentRoot;
+        final DependencyResolutionFinished event = new DependencyResolutionFinished();
         event.fragmentLocation = fileLocation;
         event.dependency = dependency;
         bus.post(event);

@@ -282,7 +282,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
     }
 
     private IMethodName computeMethodNameFromState(final BayesNode node) {
-        String stateId = junctionTreeAlgorithm.getEvidence().get(node);
+        final String stateId = junctionTreeAlgorithm.getEvidence().get(node);
         if (stateId == null) {
             return VmMethodName.NULL;
         }
@@ -296,7 +296,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public Kind getActiveKind() {
-        String stateId = junctionTreeAlgorithm.getEvidence().get(kindNode);
+        final String stateId = junctionTreeAlgorithm.getEvidence().get(kindNode);
         if (stateId == null) {
             return Kind.UNKNOWN;
         }
@@ -305,9 +305,9 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public Set<IMethodName> getActiveCalls() {
-        TreeSet<IMethodName> res = Sets.newTreeSet();
-        Map<BayesNode, String> evidence = junctionTreeAlgorithm.getEvidence();
-        for (BayesNode methodNode : callNodes.values()) {
+        final TreeSet<IMethodName> res = Sets.newTreeSet();
+        final Map<BayesNode, String> evidence = junctionTreeAlgorithm.getEvidence();
+        for (final BayesNode methodNode : callNodes.values()) {
             if (evidence.containsKey(methodNode)) {
                 res.add(VmMethodName.get(methodNode.getName()));
             }

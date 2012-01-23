@@ -102,7 +102,7 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
     private boolean isReceiverThis(final MethodInvocation mi) {
         final Expression expression = mi.getExpression();
         // standard case:
-        if (expression == null && !isStatic(mi)) {
+        if ((expression == null) && !isStatic(mi)) {
             return true;
         }
         // qualified call: this.method()
@@ -224,7 +224,7 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
     }
 
     private void evaluateVariableBinding(final IVariableBinding b) {
-        if (b == null || !matchesVarname(b) || isVartypeKnown()) {
+        if ((b == null) || !matchesVarname(b) || isVartypeKnown()) {
             return;
         }
         res.type = toTypeName(b.getType());
@@ -310,7 +310,7 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
 
     private Optional<IVariableBinding> findReceiver(final MethodInvocation call) {
         final Expression exp = call.getExpression();
-        if (exp == null && !isStatic(call)) {
+        if ((exp == null) && !isStatic(call)) {
             // might be this! but not necessarily! --> static imports!
             return of((IVariableBinding) new ThisVariableBinding());
         }

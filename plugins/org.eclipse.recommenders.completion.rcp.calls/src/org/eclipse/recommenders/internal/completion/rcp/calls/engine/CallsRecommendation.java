@@ -33,9 +33,8 @@ public class CallsRecommendation implements IRecommendation, Comparable<CallsRec
     }
 
     /**
-     * Returns the recommendation with the higher probability first. If both
-     * compilationUnits2recommendationsIndex have the same probability it
-     * returns the recommendation with the lexigraphically lower method name.
+     * Returns the recommendation with the higher probability first. If both compilationUnits2recommendationsIndex have
+     * the same probability it returns the recommendation with the lexigraphically lower method name.
      */
     @Override
     public int compareTo(final CallsRecommendation other) {

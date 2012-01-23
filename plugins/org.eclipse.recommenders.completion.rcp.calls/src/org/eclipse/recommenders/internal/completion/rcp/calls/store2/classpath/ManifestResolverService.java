@@ -42,7 +42,7 @@ public class ManifestResolverService {
     }
 
     protected void fireNewManifestMappingCreated(final Manifest manifest, final ManifestResolutionRequested request) {
-        ManifestResolutionFinished e = new ManifestResolutionFinished();
+        final ManifestResolutionFinished e = new ManifestResolutionFinished();
         e.dependency = request.dependency;
         e.manifestResolverInfo = new ManifestResolverInfo(manifest, request.manuallyTriggered);
         bus.post(e);
@@ -59,7 +59,7 @@ public class ManifestResolverService {
                     if (matchResult.bestMatch != null) {
                         fireNewManifestMappingCreated(matchResult.bestMatch, e);
                     }
-                } catch (Exception x) {
+                } catch (final Exception x) {
                     RecommendersPlugin.logError(x, "Failed to resolve manifest for archive '%s'", e.dependency);
                 }
             }

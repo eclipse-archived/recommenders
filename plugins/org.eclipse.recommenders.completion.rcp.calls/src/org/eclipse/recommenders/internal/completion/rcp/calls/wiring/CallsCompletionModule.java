@@ -87,7 +87,7 @@ public class CallsCompletionModule extends AbstractModule {
         callBus.register(depInfoComputer);
         callBus.register(manifestResolver);
         callBus.register(modelDownloader);
-        return new CallModelStore(depStore, modelStore, jdtCache);
+        return new CallModelStore(depStore, depInfoComputer, modelStore, manifestResolver, modelDownloader, jdtCache);
     }
 
     @BindingAnnotation

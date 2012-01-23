@@ -22,7 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
+import org.eclipse.recommenders.commons.udc.DependencyInformation;
 import org.eclipse.recommenders.commons.udc.LibraryIdentifier;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.udc.ManifestMatchResult;
@@ -48,7 +48,7 @@ public class MetaDataResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @POST
     @Path("/dependencyInfo")
-    public void registerClasspathDependencyInfo(final ClasspathDependencyInformation dependencyInfo) {
+    public void registerClasspathDependencyInfo(final DependencyInformation dependencyInfo) {
         findOrCreateLibraryIdentifier(dependencyInfo);
     }
 
@@ -56,7 +56,7 @@ public class MetaDataResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @POST
     @Path("manifest")
-    public ManifestMatchResult searchManifest(final ClasspathDependencyInformation dependencyInfo) {
+    public ManifestMatchResult searchManifest(final DependencyInformation dependencyInfo) {
         log.debug("Received search request for {}.", dependencyInfo);
 
         final LibraryIdentifier libraryIdentifier = findOrCreateLibraryIdentifier(dependencyInfo);
@@ -102,7 +102,7 @@ public class MetaDataResource {
         return new Manifest(modelSpec.getSymbolicName(), modelSpec.getVersionRange(), timestamp);
     }
 
-    private LibraryIdentifier findOrCreateLibraryIdentifier(final ClasspathDependencyInformation dependencyInfo) {
+    private LibraryIdentifier findOrCreateLibraryIdentifier(final DependencyInformation dependencyInfo) {
         ensureIsNotNull(dependencyInfo);
         ensureIsNotEmpty(dependencyInfo.jarFileFingerprint,
                 "ClasspathDependencyInformation must at least contain a fingerprint.");
@@ -119,7 +119,7 @@ public class MetaDataResource {
         return libraryIdentifier;
     }
 
-    private LibraryIdentifier createDefaultLibraryIdentifier(final ClasspathDependencyInformation dependencyInfo) {
+    private LibraryIdentifier createDefaultLibraryIdentifier(final DependencyInformation dependencyInfo) {
         final String symbolicName = dependencyInfo.symbolicName;
         if (symbolicName != null && !symbolicName.isEmpty()) {
             final Version version = dependencyInfo.version == null ? Version.UNKNOWN : dependencyInfo.version;

@@ -36,14 +36,14 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.google.common.collect.Lists;
 
-public abstract class AbstractDependencySection {
+public abstract class AbstractSection {
 
     private final List<Text> texts = Lists.newLinkedList();
     private final List<Button> buttons = Lists.newLinkedList();
     private final PreferencePage preferencePage;
     protected File file;
 
-    public AbstractDependencySection(final PreferencePage preferencePage, final Composite parent, final String title) {
+    public AbstractSection(final PreferencePage preferencePage, final Composite parent, final String title) {
         this.preferencePage = preferencePage;
         final Composite group = createGroup(parent, title);
         createDetailsContainer(group);
@@ -58,7 +58,7 @@ public abstract class AbstractDependencySection {
         return section;
     }
 
-    protected abstract void createDetailsContainer(Composite group);
+    protected abstract void createDetailsContainer(final Composite group);
 
     private void createButtonContainer(final Composite parent) {
         final Composite container = new Composite(parent, SWT.NONE);
@@ -68,7 +68,7 @@ public abstract class AbstractDependencySection {
         createButtons(container);
     }
 
-    protected abstract void createButtons(Composite parent);
+    protected abstract void createButtons(final Composite parent);
 
     protected Label createLabel(final Composite parent, final String text) {
         final Label label = new Label(parent, SWT.NONE);

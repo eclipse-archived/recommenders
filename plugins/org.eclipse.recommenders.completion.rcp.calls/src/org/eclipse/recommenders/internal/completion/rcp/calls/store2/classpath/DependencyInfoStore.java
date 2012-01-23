@@ -24,7 +24,7 @@ import java.util.Set;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
-import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
+import org.eclipse.recommenders.commons.udc.DependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.DependencyResolutionFinished;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.DependencyResolutionRequested;
@@ -47,7 +47,7 @@ import com.google.gson.reflect.TypeToken;
 @SuppressWarnings("restriction")
 public class DependencyInfoStore implements Closeable {
 
-    private final BiMap<File, ClasspathDependencyInformation> dependencyInfos = HashBiMap.create();
+    private final BiMap<File, DependencyInformation> dependencyInfos = HashBiMap.create();
     private final Map<File, ManifestResolverInfo> manifestInfos = Maps.newConcurrentMap();
     private final EventBus bus;
     private final File storageLocation;
@@ -63,7 +63,7 @@ public class DependencyInfoStore implements Closeable {
     }
 
     private void initialize() {
-        initializeMap(dependenciesFile, dependencyInfos, new TypeToken<Map<File, ClasspathDependencyInformation>>() {
+        initializeMap(dependenciesFile, dependencyInfos, new TypeToken<Map<File, DependencyInformation>>() {
         });
         initializeMap(manifestsFile, manifestInfos, new TypeToken<Map<File, ManifestResolverInfo>>() {
         });
@@ -75,28 +75,28 @@ public class DependencyInfoStore implements Closeable {
                 final Map<File, T> deserializedMap = GsonUtil.deserialize(f, token.getType());
                 map.putAll(deserializedMap);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    public Optional<ClasspathDependencyInformation> getDependencyInfo(final File file) {
+    public Optional<DependencyInformation> getDependencyInfo(final File file) {
         ensureFileInfosStillConsistent(file);
         return fromNullable(dependencyInfos.get(file));
     }
 
     public Optional<ManifestResolverInfo> getManifestResolverInfo(final File file) {
         ensureFileInfosStillConsistent(file);
-        ManifestResolverInfo info = manifestInfos.get(file);
+        final ManifestResolverInfo info = manifestInfos.get(file);
         return fromNullable(info);
     }
 
     public Optional<Manifest> getManifest(final File file) {
         ensureFileInfosStillConsistent(file);
-        Optional<ManifestResolverInfo> opt = getManifestResolverInfo(file);
+        final Optional<ManifestResolverInfo> opt = getManifestResolverInfo(file);
         if (opt.isPresent()) {
-            ManifestResolverInfo info = opt.get();
+            final ManifestResolverInfo info = opt.get();
             return of(info.getManifest());
         }
         return absent();
@@ -108,7 +108,7 @@ public class DependencyInfoStore implements Closeable {
 
     @Subscribe
     public void onEvent(final DependencyResolutionFinished e) {
-        boolean isNewDependency = isNewDependencyInfo(e);
+        final boolean isNewDependency = isNewDependencyInfo(e);
         registerDependency(e);
         if (isNewDependency) {
             requestManifestResolution(e);
@@ -120,13 +120,12 @@ public class DependencyInfoStore implements Closeable {
     }
 
     private void requestManifestResolution(final DependencyResolutionFinished e) {
-        ManifestResolutionRequested request = new ManifestResolutionRequested();
-        request.dependency = e.dependency;
+        final ManifestResolutionRequested request = new ManifestResolutionRequested(e.dependency);
         bus.post(request);
     }
 
     private void ensureFileInfosStillConsistent(final File file) {
-        final ClasspathDependencyInformation info = dependencyInfos.get(file);
+        final DependencyInformation info = dependencyInfos.get(file);
         if (info == null) {
             return;
         } else if (hasFileChanged(file, info)) {
@@ -135,7 +134,7 @@ public class DependencyInfoStore implements Closeable {
         }
     }
 
-    private boolean hasFileChanged(final File file, final ClasspathDependencyInformation dependencyInformation) {
+    private boolean hasFileChanged(final File file, final DependencyInformation dependencyInformation) {
         return file.lastModified() != dependencyInformation.jarFileModificationDate.getTime();
     }
 
@@ -149,7 +148,7 @@ public class DependencyInfoStore implements Closeable {
     }
 
     private void registerManifest(final ManifestResolutionFinished e) {
-        File file = dependencyInfos.inverse().get(e.dependency);
+        final File file = dependencyInfos.inverse().get(e.dependency);
         manifestInfos.put(file, e.manifestResolverInfo);
     }
 
@@ -163,21 +162,21 @@ public class DependencyInfoStore implements Closeable {
     @Subscribe
     public void onEvent(final JavaProjectOpened e) {
         try {
-            for (IPackageFragmentRoot r : e.project.getAllPackageFragmentRoots()) {
-                Optional<File> location = JdtUtils.getLocation(r);
+            for (final IPackageFragmentRoot r : e.project.getAllPackageFragmentRoots()) {
+                final Optional<File> location = JdtUtils.getLocation(r);
                 if (isInterestingPackageFragmentRoot(r, location)) {
                     requestDependencyInfoResolution(r, location.get());
                 }
             }
-        } catch (JavaModelException x) {
+        } catch (final JavaModelException x) {
             RecommendersPlugin.log(x);
         }
     }
 
     @Subscribe
     public void onEvent(final JarPackageFragmentRootAdded e) {
-        JarPackageFragmentRoot r = e.root;
-        Optional<File> location = JdtUtils.getLocation(r);
+        final JarPackageFragmentRoot r = e.root;
+        final Optional<File> location = JdtUtils.getLocation(r);
         if (isInterestingPackageFragmentRoot(r, location)) {
             requestDependencyInfoResolution(r, location.get());
         }
@@ -192,8 +191,7 @@ public class DependencyInfoStore implements Closeable {
     }
 
     private void requestDependencyInfoResolution(final IPackageFragmentRoot r, final File file) {
-        DependencyResolutionRequested e = new DependencyResolutionRequested();
-        e.fragmentRoot = r;
+        final DependencyResolutionRequested e = new DependencyResolutionRequested(r);
         bus.post(e);
     }
 }

@@ -28,12 +28,12 @@ import com.google.common.base.Optional;
 public class ModelStoreMock extends CallModelStore {
 
     public ModelStoreMock() {
-        super(null, null, null);
+        super(null, null, null, null, null, null);
     }
 
     @Override
     public Optional<IObjectMethodCallsNet> aquireModel(final IType type) {
-        IObjectMethodCallsNet net = Mockito.mock(IObjectMethodCallsNet.class);
+        final IObjectMethodCallsNet net = Mockito.mock(IObjectMethodCallsNet.class);
         when(net.getRecommendedMethodCalls(anyDouble())).thenReturn(new TreeSet<Tuple<IMethodName, Double>>() {
             {
                 add(Tuple.newTuple(VmMethodName.NULL, 0.8d));

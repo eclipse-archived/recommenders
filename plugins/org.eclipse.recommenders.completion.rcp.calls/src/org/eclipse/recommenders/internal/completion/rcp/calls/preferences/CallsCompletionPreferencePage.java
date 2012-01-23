@@ -34,7 +34,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
+import org.eclipse.recommenders.commons.udc.DependencyInformation;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin;
@@ -61,15 +61,15 @@ public class CallsCompletionPreferencePage extends PreferencePage implements IWo
     private static final int MIN_WIDTH_TABLE = 200;
 
     private final DependencyInfoStore dependencyStore;
-    private DependencyDetailsSection dependencyDetailsSection;
+    private DependencyInfoSection dependencyInfoSection;
     private ModelDetailsSection modelDetailsSection;
     private CommandSection commandSection;
-    private final CallModelStore archiveStore;
+    private final CallModelStore modelStore;
     private Text webserviceBaseurl;
 
     @Inject
     public CallsCompletionPreferencePage(final CallModelStore archiveStore) {
-        this.archiveStore = archiveStore;
+        this.modelStore = archiveStore;
         this.dependencyStore = archiveStore.getDependencyInfoStore();
         noDefaultAndApplyButton();
         setDescription("All dependencies of your open and Recommenders enabled projects are listed below. "
@@ -191,11 +191,11 @@ public class CallsCompletionPreferencePage extends PreferencePage implements IWo
             }
 
             private boolean hasDependencyInformation(final File file) {
-                Optional<ClasspathDependencyInformation> opt = dependencyStore.getDependencyInfo(file);
+                final Optional<DependencyInformation> opt = dependencyStore.getDependencyInfo(file);
                 if (!opt.isPresent()) {
                     return false;
                 }
-                final ClasspathDependencyInformation info = opt.get();
+                final DependencyInformation info = opt.get();
                 if (!info.symbolicName.isEmpty() && !info.version.isUnknown()) {
                     return true;
                 }
@@ -245,9 +245,9 @@ public class CallsCompletionPreferencePage extends PreferencePage implements IWo
         setGridData(detailsSection, MIN_WIDTH_DETAILS_SECTION);
         detailsSection.setLayout(new GridLayout(1, true));
 
-        dependencyDetailsSection = new DependencyDetailsSection(this, detailsSection, dependencyStore);
-        modelDetailsSection = new ModelDetailsSection(this, detailsSection, dependencyStore);
-        commandSection = new CommandSection(detailsSection, dependencyStore);
+        dependencyInfoSection = new DependencyInfoSection(this, detailsSection, modelStore);
+        modelDetailsSection = new ModelDetailsSection(this, detailsSection, modelStore);
+        commandSection = new CommandSection(detailsSection, modelStore);
     }
 
     private void setGridData(final Control control, final int minimumWidth) {
@@ -261,7 +261,7 @@ public class CallsCompletionPreferencePage extends PreferencePage implements IWo
     }
 
     private void selectFile(final File file) {
-        dependencyDetailsSection.selectFile(file);
+        dependencyInfoSection.selectFile(file);
         modelDetailsSection.selectFile(file);
     }
 

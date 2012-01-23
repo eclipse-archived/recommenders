@@ -12,8 +12,13 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.preferences;
 
 import static org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin.PLUGIN_ID;
 
+import java.io.File;
+
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.recommenders.commons.udc.DependencyInformation;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ManifestResolutionRequested;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -28,11 +33,13 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class CommandSection {
 
-    private final DependencyInfoStore dependencyStore;
+    private final CallModelStore modelStore;
     private Button reresolveButton;
+    private final DependencyInfoStore depStore;
 
-    public CommandSection(final Composite parent, final DependencyInfoStore dependencyStore) {
-        this.dependencyStore = dependencyStore;
+    public CommandSection(final Composite parent, final CallModelStore modelStore) {
+        this.modelStore = modelStore;
+        this.depStore = modelStore.getDependencyInfoStore();
 
         final Composite group = createGroup(parent);
         createButtons(group);
@@ -64,8 +71,10 @@ public class CommandSection {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 reresolveButton.setEnabled(false);
-                // final UpdateAllModelsJob job = new UpdateAllModelsJob(dependencyStore, jobFactory);
-                // job.schedule();
+                for (final File f : modelStore.getDependencyInfoStore().getFiles()) {
+                    final DependencyInformation info = depStore.getDependencyInfo(f).get();
+                    modelStore.getManifestResolverService().onEvent(new ManifestResolutionRequested(info));
+                }
             }
 
             @Override

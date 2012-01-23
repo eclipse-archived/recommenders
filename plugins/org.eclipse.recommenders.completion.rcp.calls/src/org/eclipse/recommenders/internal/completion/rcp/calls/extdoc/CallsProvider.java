@@ -91,12 +91,12 @@ public final class CallsProvider extends ExtdocProvider {
 
     private Status handle(final IJavaElement variable, final String elementName, final String typeSignature,
             final JavaSelectionEvent event, final Composite parent) {
-        Optional<ASTNode> opt = event.getSelectedNode();
+        final Optional<ASTNode> opt = event.getSelectedNode();
         if (!opt.isPresent()) {
             return Status.NOT_AVAILABLE;
         }
 
-        Optional<IType> varType = findVariableType(typeSignature, variable);
+        final Optional<IType> varType = findVariableType(typeSignature, variable);
         if (!varType.isPresent()) {
             return Status.NOT_AVAILABLE;
         }
@@ -105,17 +105,17 @@ public final class CallsProvider extends ExtdocProvider {
         if (!acquireModel()) {
             return Status.NOT_AVAILABLE;
         }
-        ASTNode node = opt.get();
+        final ASTNode node = opt.get();
 
-        Optional<MethodDeclaration> optAstMethod = findEnclosingMethod(node);
-        Optional<IMethod> optJdtMethod = resolveMethod(optAstMethod.orNull());
+        final Optional<MethodDeclaration> optAstMethod = findEnclosingMethod(node);
+        final Optional<IMethod> optJdtMethod = resolveMethod(optAstMethod.orNull());
         if (!optJdtMethod.isPresent()) {
             return Status.NOT_AVAILABLE;
         }
 
         final AstBasedObjectUsageResolver r = new AstBasedObjectUsageResolver();
-        ObjectUsage usage = r.findObjectUsage(variable.getElementName(), optAstMethod.get());
-        IMethod first = JdtUtils.findFirstDeclaration(optJdtMethod.get());
+        final ObjectUsage usage = r.findObjectUsage(variable.getElementName(), optAstMethod.get());
+        final IMethod first = JdtUtils.findFirstDeclaration(optJdtMethod.get());
         usage.contextFirst = jdtResolver.toRecMethod(first);
         if (usage.kind == Kind.PARAMETER) {
             usage.definition = usage.contextFirst;
@@ -134,7 +134,7 @@ public final class CallsProvider extends ExtdocProvider {
     }
 
     private Optional<IType> findVariableType(final String typeSignature, final IJavaElement parent) {
-        Optional<IType> varType = JdtUtils.findTypeFromSignature(typeSignature, parent);
+        final Optional<IType> varType = JdtUtils.findTypeFromSignature(typeSignature, parent);
         return varType;
     }
 
@@ -184,8 +184,8 @@ public final class CallsProvider extends ExtdocProvider {
 
         @Override
         public void run() {
-            Composite container = ExtdocUtils.createComposite(parent, 4);
-            Label preamble2 = new Label(container, SWT.NONE);
+            final Composite container = ExtdocUtils.createComposite(parent, 4);
+            final Label preamble2 = new Label(container, SWT.NONE);
             preamble2.setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0).create());
             if (methodCalls.isEmpty()) {
                 preamble2.setText(format("For %s %s no recommendations are made.", receiverType.getElementName(),
@@ -196,8 +196,8 @@ public final class CallsProvider extends ExtdocProvider {
             }
             new Label(container, SWT.NONE).setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0)
                     .hint(SWT.DEFAULT, 1).create());
-            for (Tuple<IMethodName, Double> rec : methodCalls) {
-                int percentage = (int) Math.rint(rec.getSecond() * 100);
+            for (final Tuple<IMethodName, Double> rec : methodCalls) {
+                final int percentage = (int) Math.rint(rec.getSecond() * 100);
                 createLabel(container, ExtdocUtils.percentageToRecommendationPhrase(percentage), true, false,
                         SWT.COLOR_BLACK, false);
 
@@ -210,9 +210,9 @@ public final class CallsProvider extends ExtdocProvider {
             createLabel(container, "", false);
             createLabel(container, "", false);
 
-            Label preamble = new Label(container, SWT.NONE);
+            final Label preamble = new Label(container, SWT.NONE);
             preamble.setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 5).create());
-            String text = format("Proposals were computed based on variable type '%s' in '%s'.",
+            final String text = format("Proposals were computed based on variable type '%s' in '%s'.",
                     receiverType.getElementName(),
                     ctx == VmMethodName.NULL ? "untrained context" : Names.vm2srcSimpleTypeName(ctx.getDeclaringType())
                             + "." + Names.vm2srcSimpleMethod(ctx));
@@ -233,7 +233,7 @@ public final class CallsProvider extends ExtdocProvider {
 
             }
 
-            for (IMethodName observedCall : calls) {
+            for (final IMethodName observedCall : calls) {
                 createLabel(container, "observed", true, false, SWT.COLOR_DARK_GRAY, false);
 
                 createLabel(container, " call", false, false, SWT.COLOR_DARK_GRAY, false);

@@ -16,7 +16,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.recommenders.utils.Version;
 
-public class ClasspathDependencyInformation {
+public class DependencyInformation {
 
     public String symbolicName;
     public Version version;
@@ -28,9 +28,9 @@ public class ClasspathDependencyInformation {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
     }
 
-    public static ClasspathDependencyInformation create(final String symbolicName, final Version version,
+    public static DependencyInformation create(final String symbolicName, final Version version,
             final String jarFingerprint) {
-        final ClasspathDependencyInformation res = new ClasspathDependencyInformation();
+        final DependencyInformation res = new DependencyInformation();
         res.symbolicName = symbolicName;
         res.version = version;
         res.jarFileFingerprint = jarFingerprint;

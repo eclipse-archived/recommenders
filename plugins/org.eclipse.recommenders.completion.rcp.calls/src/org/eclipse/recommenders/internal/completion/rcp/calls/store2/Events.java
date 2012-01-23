@@ -17,7 +17,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
+import org.eclipse.recommenders.commons.udc.DependencyInformation;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.ManifestResolverInfo;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.IModelArchive;
@@ -25,27 +25,57 @@ import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.IMod
 public class Events {
 
     public static class DependencyResolutionRequested extends InternalEvent {
+
         public IPackageFragmentRoot fragmentRoot;
+
+        public DependencyResolutionRequested(final IPackageFragmentRoot fragmentRoot) {
+            this.fragmentRoot = fragmentRoot;
+        }
     }
 
     public static class DependencyResolutionFinished extends InternalEvent {
-        public IPackageFragmentRoot fragmentRoot;
-        public ClasspathDependencyInformation dependency;
+        public DependencyResolutionFinished() {
+        }
+
+        public DependencyResolutionFinished(final DependencyInformation info, final File location) {
+            dependency = info;
+            fragmentLocation = location;
+        }
+
+        // public IPackageFragmentRoot fragmentRoot;
+        public DependencyInformation dependency;
         public File fragmentLocation;
     }
 
     public static class ManifestResolutionRequested extends InternalEvent {
-        public ClasspathDependencyInformation dependency;
+        public DependencyInformation dependency;
         public boolean manuallyTriggered;
+
+        public ManifestResolutionRequested(final DependencyInformation dependencyInfo) {
+            this(dependencyInfo, false);
+        }
+
+        public ManifestResolutionRequested(final DependencyInformation dependencyInfo, final boolean manuallyTriggered) {
+            dependency = dependencyInfo;
+            this.manuallyTriggered = manuallyTriggered;
+        }
+
     }
 
     public static class ManifestResolutionFinished extends InternalEvent {
-        public ClasspathDependencyInformation dependency;
+        public DependencyInformation dependency;
         public ManifestResolverInfo manifestResolverInfo;
     }
 
     public static class ModelArchiveDownloadRequested extends InternalEvent {
+
         public Manifest manifest;
+
+        public ModelArchiveDownloadRequested(final Manifest manifest) {
+            super();
+            this.manifest = manifest;
+        }
+
     }
 
     public static class ModelArchiveDownloadFinished extends InternalEvent {

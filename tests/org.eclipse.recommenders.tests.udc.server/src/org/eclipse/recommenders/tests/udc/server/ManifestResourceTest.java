@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.eclipse.recommenders.commons.udc.ClasspathDependencyInformation;
+import org.eclipse.recommenders.commons.udc.DependencyInformation;
 import org.eclipse.recommenders.commons.udc.LibraryIdentifier;
 import org.eclipse.recommenders.commons.udc.ManifestMatchResult;
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
@@ -41,11 +41,11 @@ public class ManifestResourceTest {
     private static String JFACE_SYMBOLIC_NAME = "org.eclipse.jface";
     private static ModelSpecification jfaceModel_3_6 = new ModelSpecification(JFACE_SYMBOLIC_NAME, new String[0],
             vi36_e37, new Date(100), new HashSet<String>());
-    private static ClasspathDependencyInformation jface_3_6 = ClasspathDependencyInformation.create(
+    private static DependencyInformation jface_3_6 = DependencyInformation.create(
             JFACE_SYMBOLIC_NAME, v36, "123456789");
-    private static ClasspathDependencyInformation jface_unknown = ClasspathDependencyInformation.create(
+    private static DependencyInformation jface_unknown = DependencyInformation.create(
             JFACE_SYMBOLIC_NAME, null, "123456789");
-    private static ClasspathDependencyInformation unknownFingerprint = ClasspathDependencyInformation.create(null,
+    private static DependencyInformation unknownFingerprint = DependencyInformation.create(null,
             null, "123456789");
 
     @Test
@@ -122,7 +122,7 @@ public class ManifestResourceTest {
         assertNull(matchResult.bestMatch);
     }
 
-    private LibraryIdentifier createLibraryIdentifier(final ClasspathDependencyInformation dependencyInfo) {
+    private LibraryIdentifier createLibraryIdentifier(final DependencyInformation dependencyInfo) {
         return new LibraryIdentifier(dependencyInfo.symbolicName, dependencyInfo.version,
                 dependencyInfo.jarFileFingerprint);
     }

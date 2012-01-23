@@ -64,15 +64,15 @@ public class ModelArchiveStore<T extends IModel> {
 
     @Subscribe
     public void onEvent(final ModelArchiveDownloadFinished event) {
-        ModelArchive archive = registerArchive(event);
+        final ModelArchive archive = registerArchive(event);
         fireNewArchiveRegistered(archive);
     }
 
     @VisibleForTesting
     protected ModelArchive registerArchive(final ModelArchiveDownloadFinished event) {
         @SuppressWarnings("unchecked")
-        ModelArchive archive = new ModelArchive(event.archive, modelLoader);
-        Manifest manifest = archive.getManifest();
+        final ModelArchive archive = new ModelArchive(event.archive, modelLoader);
+        final Manifest manifest = archive.getManifest();
         final File destination = computeModelFile(manifest);
         destination.delete();
         moveArchive(archive, destination);
@@ -91,7 +91,7 @@ public class ModelArchiveStore<T extends IModel> {
             move(source, destination);
             archive.setFile(destination);
             archive.open();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throwUnhandledException(e);
         }
     }
@@ -102,7 +102,7 @@ public class ModelArchiveStore<T extends IModel> {
     }
 
     private void registerInIndex(final IModelArchive archive, final Manifest manifest) {
-        IModelArchive old = index.put(manifest, archive);
+        final IModelArchive old = index.put(manifest, archive);
         if (old != null) {
             System.out.println("overriding old model with new: " + old.getManifest() + " new " + manifest);
         }
@@ -116,19 +116,19 @@ public class ModelArchiveStore<T extends IModel> {
     }
 
     private boolean isNewManifest(final ManifestResolutionFinished e) {
-        Manifest manifest = e.manifestResolverInfo.getManifest();
-        boolean known = index.containsKey(manifest);
+        final Manifest manifest = e.manifestResolverInfo.getManifest();
+        final boolean known = index.containsKey(manifest);
         return !known;
     }
 
     private void requestModelArchiveDownload(final ManifestResolutionFinished e) {
-        ModelArchiveDownloadRequested request = new ModelArchiveDownloadRequested();
-        request.manifest = e.manifestResolverInfo.getManifest();
+        final ModelArchiveDownloadRequested request = new ModelArchiveDownloadRequested(
+                e.manifestResolverInfo.getManifest());
         bus.post(request);
     }
 
     private void fireNewArchiveRegistered(final IModelArchive archive) {
-        ModelArchiveRegistered e = new ModelArchiveRegistered();
+        final ModelArchiveRegistered e = new ModelArchiveRegistered();
         e.archive = archive;
         bus.post(e);
     }
@@ -147,12 +147,12 @@ public class ModelArchiveStore<T extends IModel> {
     }
 
     private void initializeArchiveIndex() {
-        for (File f : storageLocation.listFiles()) {
+        for (final File f : storageLocation.listFiles()) {
             if (f.isDirectory() || !f.getName().endsWith(".zip")) {
                 continue;
             }
-            ModelArchive archive = new ModelArchive(f, modelLoader);
-            Manifest manifest = archive.getManifest();
+            final ModelArchive archive = new ModelArchive(f, modelLoader);
+            final Manifest manifest = archive.getManifest();
             registerInIndex(archive, manifest);
         }
 

@@ -48,7 +48,7 @@ public class CallsCompletionPlugin extends AbstractUIPlugin {
         try {
             final Injector injector = InjectionService.getInstance().getInjector();
             injector.getInstance(CallModelStore.class).close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LoggingUtils.logError(e, this, "Exception while closing dependency store.");
         }
     }
