@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc;
 
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
@@ -140,7 +141,7 @@ public final class BrowserSizeWorkaround {
             final Composite theParentsParent = parent.getParent();
             final Composite theParentsParentsParent = theParentsParent.getParent();
             if (theParentsParentsParent == null || parent instanceof ScrolledComposite) {
-                theParentsParent.layout(true);
+                theParentsParent.layout(new Control[] { composite }, SWT.CHANGED);
                 break;
             }
         }
