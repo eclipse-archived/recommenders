@@ -36,9 +36,13 @@ import org.eclipse.ui.internal.misc.StatusUtil;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class ModelArchiveDownloadService {
-    private final ExecutorService pool = Executors.newFixedThreadPool(5);
+    private final ExecutorService pool = Executors.newFixedThreadPool(
+            5,
+            new ThreadFactoryBuilder().setPriority(Thread.MIN_PRIORITY)
+                    .setNameFormat("Recommenders-Model-Downloader-%d").build());
 
     private final WebServiceClient client;
     private final EventBus bus;

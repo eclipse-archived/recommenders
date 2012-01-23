@@ -33,6 +33,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 @Singleton
 @SuppressWarnings("restriction")
@@ -42,7 +43,8 @@ public class DependencyInfoComputerService {
      * Single-threaded executor used to compute fingerprints etc. for package fragment root. Single-threaded because
      * it's an disk-IO heavy computation. More than one thread will probably not give any performance gains here.
      */
-    private final ExecutorService pool = Executors.newSingleThreadExecutor();
+    private final ExecutorService pool = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
+            .setPriority(Thread.MIN_PRIORITY).setNameFormat("Recommenders-%d").build());
 
     /**
      * Helper used to ignore {@link IPackageFragmentRoot}s that have been requested already. Relies on

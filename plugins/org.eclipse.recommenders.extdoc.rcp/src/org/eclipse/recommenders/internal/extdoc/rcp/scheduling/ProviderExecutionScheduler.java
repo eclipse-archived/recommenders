@@ -51,6 +51,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class ProviderExecutionScheduler {
 
@@ -68,7 +69,7 @@ public class ProviderExecutionScheduler {
 
     private Boolean isAlreadyRendered = false;
     private JavaSelectionEvent currentSelection;
-    private CountDownLatch latch;
+    private final CountDownLatch latch;
 
     public ProviderExecutionScheduler(final List<ExtdocProvider> providers,
             final SubscriptionManager subscriptionManager, final ProviderContentPart contentPart,
@@ -88,7 +89,9 @@ public class ProviderExecutionScheduler {
     }
 
     private static ListeningExecutorService createListeningThreadPool(final int numberOfThreads) {
-        final ExecutorService pool = newFixedThreadPool(numberOfThreads);
+        final ExecutorService pool = newFixedThreadPool(numberOfThreads,
+                new ThreadFactoryBuilder().setPriority(Thread.MIN_PRIORITY).setNameFormat("Recommenders-extdoc-%d")
+                        .build());
         final ListeningExecutorService listeningPool = listeningDecorator(pool);
         return listeningPool;
     }

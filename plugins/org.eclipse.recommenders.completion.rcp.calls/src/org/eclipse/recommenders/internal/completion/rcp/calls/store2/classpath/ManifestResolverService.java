@@ -23,10 +23,14 @@ import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class ManifestResolverService {
 
-    private final ExecutorService pool = Executors.newFixedThreadPool(5);
+    private final ExecutorService pool = Executors.newFixedThreadPool(
+            5,
+            new ThreadFactoryBuilder().setPriority(Thread.MIN_PRIORITY)
+                    .setNameFormat("Recommenders-manifest-resolver-%d").build());
 
     private final EventBus bus;
     private final WebServiceClient client;

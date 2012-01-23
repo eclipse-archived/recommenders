@@ -39,6 +39,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -85,7 +86,8 @@ public class RecommendersModule extends AbstractModule implements Module {
     // @Workspace
     protected EventBus provideWorkspaceEventBus() {
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
-        final ExecutorService pool = Executors.newFixedThreadPool(numberOfCores + 1);
+        final ExecutorService pool = Executors.newFixedThreadPool(numberOfCores + 1, new ThreadFactoryBuilder()
+                .setPriority(Thread.MIN_PRIORITY).setNameFormat("Recommenders-workpace-bus-%d").build());
         final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool);
         return bus;
     }
