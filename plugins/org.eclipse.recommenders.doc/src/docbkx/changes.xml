@@ -1,0 +1,380 @@
+<?xml version='1.0'?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
+<chapter id="changes">
+    <title>New and Noteworthy</title>
+    <section>
+        <title>v0.5</title>
+        <subtitle>Planned for 2012-02-XX, first official release. Formal review needs to be scheduled.</subtitle>
+        <section>
+            <title>Bugzilla Summaries</title>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        List of
+                        <ulink url="http://goo.gl/g96bt">closed bugs</ulink>
+                        for v0.5.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        List of
+                        <ulink url="http://goo.gl/7JfIM">open bugs</ulink>
+                        for v0.5.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        List of
+                        <ulink url="http://goo.gl/8QG32">all plan items</ulink>
+                        for v1.0.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+        <section>
+            <title>New Feature Namespaces</title>
+            <simpara>
+                We outgrew our initial naming scheme. For v0.5 we changed the namespace of our features and plug-ins
+                completely. As result, using the update manager wont work as expected. You have to uninstall previous
+                versions and install code recommenders from one of our
+                <ulink url="http://eclipse.org/recommenders/download/">update sites</ulink>
+                .
+            </simpara>
+        </section>
+        <section>
+            <title>Removal of Project Builder and Nature</title>
+            <para>
+                Earlier version of Code Recommenders required to
+                <emphasis>activate</emphasis>
+                Recommenders on a per-project basis. This activation added a
+                <emphasis>builder</emphasis>
+                to the project that analyzed file changes whenever Eclipse decided to run the builders (on save or on
+                workspace fresh etc.) and stored the analysis results in a
+                <filename>.recommenders/</filename>
+                folder. With v0.5 this is not required anymore. Code Recommenders now analyzes the compilation unit
+                on-the-fly whenever code completion is triggered. Developers now can easily use Code Recommenders
+                without changing any project configuration file. Just install-and-go.
+            </para>
+            <important>
+                <simpara> Please note that currently only Eclipse APIs like JFace, SWT, Workbench etc. are supported.
+                    Adding support for other frameworks is planned for v0.6 and v0.7.
+                </simpara>
+            </important>
+        </section>
+        <section>
+            <title>Completion Engines completely based on JDT</title>
+            <para>
+                Related to the previous change, we also switched from the
+                <ulink url="http://wala.sf.net">WALA bytecode analysis toolkit</ulink>
+                to
+                <emphasis>Eclipse JDT</emphasis>
+                as primary analysis tool for code completion. WALA will, however, still be the analysis toolkit of
+                choice for sophisticated code analysis and data exports. There is yet no better analysis toolkit
+                available that suites our needs.
+            </para>
+        </section>
+        <section>
+            <title>JDT-based Call Chain Completion</title>
+            <para>
+                With v0.5, Code Recommenders ships a new version of its
+                <ulink url="http://eclipse.org/recommenders/documentation/completion/">chain completion engine</ulink>
+                completely based on JDT. Thanks to Marko Martin who
+                <ulink url="https://bugs.eclipse.org/bugs/show_bug.cgi?id=359694">contributed this</ulink>
+                to Code Recommenders. Since this code is a major rewrite of the existing engine, please
+                <ulink url="https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Recommenders">report any issues</ulink>
+                you experience to bugzilla.
+            </para>
+        </section>
+        <section>
+            <title>Extended Documentation Platform</title>
+            <para>
+                Based on Stefan Henss' work in this year's
+                <ulink url="http://stefanhenss.com/summing-up-eclipse-extdoc">Google Summer of Code</ulink>
+                project, this release ships with an updated version of Stefan's
+                <emphasis>Extdoc View</emphasis>
+                . Internally, we changed the code to be easily extensible by other contributors. Check
+                <link linkend="isv-extdoc"> Extended Documentation Platform ISV documentation
+                </link>
+                for more details on that.
+            </para>
+        </section>
+        <section>
+            <title>Improved Subwords Completion</title>
+            <para>
+                For assignments,
+                <emphasis>subwords completion</emphasis>
+                now takes into account the variable name of the assignment.
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.5/subwords-assignment.png"/>
+                    </imageobject>
+                </mediaobject>
+                The exact implementation of the matching and ranking strategy is subject to change. If you have ideas on
+                how to improve the current strategy, look at the
+                <ulink
+                    url="http://git.eclipse.org/c/recommenders/org.eclipse.recommenders.git/tree/plugins/org.eclipse.recommenders.completion.rcp.subwords2/src/org/eclipse/recommenders/internal/completion/rcp/subwords2/AssignmentVarnameMatchCompletionProposalComputer.java">code</ulink>
+                and send your ideas to the
+                <ulink url="http://eclipse.org/forums/eclipse.recommenders">forum</ulink>
+                .
+            </para>
+        </section>
+        <section>
+            <title>Temporary Deactivation of Template Completion</title>
+            <para>
+                In v0.2 we added a new
+                <link linkend="changes-v0.2-templates">template completion engine</link>
+                to Code Recommenders. Due to the large internal refactorings, this engine was left out of this release
+                but will be added again in v0.6.
+            </para>
+        </section>
+        <section>
+            <title>Forecast: New Local Code-search</title>
+            <para>
+                Yet, Code Recommenders ships without official code search support. However, there is some work going on
+                in this area. Previous updates offered first draft of code-search client in the
+                <emphasis>experimental</emphasis>
+                section of the update site. For v0.5 we removed this feature from the update sites as it's currently
+                developed by Tobias Boehm, a Student at Darmstadt University of Technology as part of his Master thesis.
+                For the curious, the sources can be found in
+                <ulink
+                    url="http://code.google.com/a/eclipselabs.org/p/code-recommenders/source/browse/?repo=codesearch-tobias">Code Recommenders' Labs repository</ulink>
+                . If you are interested in bleeding edge state of (local) code-search, there is also an
+                <ulink
+                    url="http://vandyk.st.informatik.tu-darmstadt.de/updates/students/ep/codesearch-tobias/repositories/org.eclipselabs.recommenders.repository.codesearchquery/target/repository/">temporary update site</ulink>
+                . Please send your questions regarding local code-search to the
+                <ulink url="http://eclipse.org/forums/eclipse.recommenders">forum</ulink>
+                .
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>v0.4</title>
+        <subtitle>Published on 2011-11-07</subtitle>
+        <section>
+            <title>Maintenance Release</title>
+            <para>This is a maintenance release without any new features.</para>
+        </section>
+    </section>
+    <section>
+        <title>v0.3</title>
+        <subtitle>Published on 2011-08-26</subtitle>
+        <section>
+            <title>Subwords Completion</title>
+            <para>Sometimes you just don't know the complete name of a method - or entering its full name from the first
+                character? Subwords is here to assist.
+            </para>
+            <section>
+                <title>Completion on method calls:</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.3/subwords-completion-on-method-calls.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on variables:</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.3/subwords-completion-on-variables.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on method overrides:</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.3/subwords-completion-on-method-overrides.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+        </section>
+        <para>
+            Subwords has been mainly developed by Paul-Emmanuel Faidherbe and contributed to Eclipse Code Recommenders.
+            Thank you Paul-Emmanuel!
+            <note>
+                <title>Subwords currently has some limitations:</title>
+                <para> It doesn't support dynamic reranking of proposals with better/larger overlaps. It only works in
+                    the scenarios shown above. Typename completions are yet not possible. You may find more limitations
+                    as you go. Please send your feature requests and bugs to Bugzilla. A thread discussing this
+                    contribution is here: https://bugs.eclipse.org/bugs/show_bug.cgi?id=350000
+                </para>
+            </note>
+        </para>
+    </section>
+    <section>
+        <title>v0.2</title>
+        <subtitle>Published on 2011-03-01</subtitle>
+        <section>
+            <title>Chain Completion</title>
+            <para>
+                How many times did you ask yourself
+                <emphasis>"How do I get an instance of X?"</emphasis>
+                And how much time did you spent with shimming from one method call to another to find a call chain
+                returning the type you were looking for?
+            </para>
+            <para> Clearly, by far too long. Code Recommenders' new chain completion engine supports you in finding all
+                applicable call chains and thus saves you lots of time when learning new APIs. How does it work? In a
+                nutshell, Code Recommenders takes the current context code completion was triggered in and starts a
+                search on all local variables, fields and methods of the enclosing class recursively until a path to the
+                requested type is found (or a time out occurred :D). If it could find some valid paths, it generates
+                ready-to-use code snippets the developer can immediately insert into her code. Look at the screenshots
+                below for some examples:
+            </para>
+            <section>
+                <title>
+                    Completion on
+                    <code>this</code>
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.2/chain-completion-on-IStatusLineManager.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on static types
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.2/chain-completion-on-platformui.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on method returns
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.2/chain-completion-on-method-return.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion with type cast
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.2/chain-completion-with-cast.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+        </section>
+        <section id="changes-v0.2-templates">
+            <title>Templates Completion Engine</title>
+            <para> Have you ever wondered how to deal with a new framework's objects? Or got tired by continuously
+                writing the same procedures, e.g. instantiating an object and calling a bunch of setters!? For this
+                Eclipse contains standard-templates but they are only few and writing new is time-consuming and often
+                difficult to do.
+            </para>
+            <para> Our templates completion engine provides templates dynamically created on completion requests. They
+                are not manually crafted but obtained from frequent patterns found in real-life framework usage, i.e.
+                you are instantly served with the most common practices. For this not only the object type is
+                considered, but also what has already been done with the variable itself - our templates are
+                context-sensitive! You can see how they adopt to different occasion in the following screenshots. With
+                this the new templates completion engine provides valuable dynamic shortcuts for frequent code blocks
+                and is also able to guide framework novices with relevant examples.
+            </para>
+            <section>
+                <title>Completion for Local Declaration
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.2/template-completion-on-button-declaration.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Dynamic Pattern Completion
+                </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.2/template-completion-on-button-with-observed-calls.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+        </section>
+    </section>
+    <section>
+        <title>v0.1</title>
+        <subtitle>Published on 2011-02-15</subtitle>
+        <section>
+            <title>Calls Completion</title>
+            <section>
+                <title>Completion on Declared Variables</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.1/completion-on-field.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on This</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.1/completion-on-this.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion on Anonymous Method Returns</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.1/completion-on-method-return.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>Completion from Anonymous Inner Classes</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.1/completion-on-local-from-nested.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+            <section>
+                <title>On-the-fly Code Analysis</title>
+                <para> Code Recommenders performs several static analyses on your code whenever you save your editor
+                    contents. However, sometimes you work a while with a dirty editor (i.e., editor contains un-safed
+                    changes). If code completion now was triggered on variables added after the last save code
+                    recommenders couldn't make any recommendations for these variables. This update now contains an
+                    on-the-fly analyzer that performs a flat analysis of your current method body whenever code
+                    completion is triggered on a previously unknown variable based on the information it obtains from
+                    the JDT AST.
+                </para>
+            </section>
+            <section>
+                <title>Performance Improvements</title>
+                <para> Code Completion's performance has been improve quite a lot. However, the loading of recommender
+                    models may take a second and thus may slow down your code completion on the first load. After the
+                    models are loaded, code completion usually takes between 10 to 50 ms.
+                </para>
+            </section>
+        </section>
+        <section>
+            <title>Overrides Completion</title>
+            <section>
+                <title>Completion on Class Body</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/changes/v0.1/completion-on-class-body.png"/>
+                    </imageobject>
+                </mediaobject>
+            </section>
+        </section>
+        <section>
+            <title>Eclipse Help
+            </title>
+            <para> Code Recommenders follows the model of EGit and Mylyn and maintains its user and developer guides as
+                well as its new and noteworthy release notes in wiki.eclipse.org. This allows developers and users
+                likewise to edit and comment on existing documentation. The latest version of these wiki pages are
+                automatically integrated into the latest Eclipse Help plug-in and changes are available immediately to
+                you.
+            </para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="media/figures/changes/v0.1/eclipse-help-user.png"/>
+                </imageobject>
+            </mediaobject>
+        </section>
+    </section>
+</chapter>

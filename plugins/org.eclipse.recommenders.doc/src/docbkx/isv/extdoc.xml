@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
-<section xml:id="isv-extdoc123">
+<section xml:id="isv-extdoc">
 	<title>Extdoc</title>
 	<section>
 		<title>Design Overview for Extdoc</title>

@@ -39,6 +39,9 @@
                             <eclipsePluginId>${project.artifactId}</eclipsePluginId>
                             <eclipsePluginName>Code Recommenders: Documentation (Incubation)</eclipsePluginName>
                             <eclipsePluginProvider>Eclipse Code Recommenders</eclipsePluginProvider>
+                            <suppressHeaderNavigation>true</suppressHeaderNavigation>
+                            <suppressFooterNavigation>true</suppressFooterNavigation>
+                            <useIdAsFilename>true</useIdAsFilename>
                             <!-- <eclipseAutolabel>1</eclipseAutolabel> -->
                             <htmlStylesheet>media/style.css</htmlStylesheet>
                             <postProcess>
