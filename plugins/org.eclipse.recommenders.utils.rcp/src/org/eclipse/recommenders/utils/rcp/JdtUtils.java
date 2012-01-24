@@ -298,7 +298,8 @@ public class JdtUtils {
     }
 
     /**
-     * Returns a list of all public instance methods and fields declared in the given type or any of its super-types
+     * Returns a list of all public instance methods and fields declared in the
+     * given type or any of its super-types
      */
     public static Collection<IMember> findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(final IType type) {
         final LinkedHashMap<String, IMember> tmp = new LinkedHashMap<String, IMember>();
@@ -336,7 +337,8 @@ public class JdtUtils {
     }
 
     /**
-     * Returns a list of all public static fields and methods declared in the given class or any of its super-classes.
+     * Returns a list of all public static fields and methods declared in the
+     * given class or any of its super-classes.
      */
     public static Collection<IMember> findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(final IType type) {
 
@@ -544,7 +546,8 @@ public class JdtUtils {
     }
 
     /**
-     * Finds and returns the Java element that contains the text selection in the given editor.
+     * Finds and returns the Java element that contains the text selection in
+     * the given editor.
      * 
      * @param editor
      *            the Java editor
@@ -692,7 +695,8 @@ public class JdtUtils {
 
     /**
      * @param parent
-     *            must be an {@link IType} or something that has an {@link IType} as parent.
+     *            must be an {@link IType} or something that has an
+     *            {@link IType} as parent.
      */
     public static Optional<String> resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
             String typeSignature, final IJavaElement parent) {
@@ -705,7 +709,8 @@ public class JdtUtils {
                 throwIllegalArgumentException("parent could not be resolved to an IType: %s", parent);
             }
             typeSignature = JavaModelUtil.getResolvedTypeName(typeSignature, type);
-            // NOT needed. Done by getResolvedTypeName typeSignature = StringUtils.substringBefore(typeSignature, "[");
+            // NOT needed. Done by getResolvedTypeName typeSignature =
+            // StringUtils.substringBefore(typeSignature, "[");
             typeSignature = StringUtils.substringBeforeLast(typeSignature, "<");
             return fromNullable(typeSignature);
         } catch (final Exception e) {
@@ -733,6 +738,8 @@ public class JdtUtils {
             return Optional.absent();
         }
         final CompilationUnit astRoot = getAST(root.get(), WAIT_YES, null);
+        if (astRoot == null)
+            return absent();
         final ASTNode node = org.eclipse.jdt.core.dom.NodeFinder.perform(astRoot, textSelection.getOffset(), 0);
         return Optional.fromNullable(node);
     }
