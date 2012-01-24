@@ -14,7 +14,6 @@ import static java.util.Collections.emptyList;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -84,7 +83,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private ObjectUsage query;
     private IObjectMethodCallsNet model;
     private List<ICompletionProposal> proposals;
-    private LinkedList<CallsRecommendation> recommendations;
+    private List<CallsRecommendation> recommendations;
 
     private JavaContentAssistInvocationContext javaContext;
 
@@ -203,7 +202,6 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         final boolean expectsPrimitive = !expectsNonPrimitiveReturnType;
 
         for (final Tuple<IMethodName, Double> recommended : recommendedMethodCalls) {
-
             final IMethodName method = recommended.getFirst();
             final Double probability = recommended.getSecond();
 
@@ -218,7 +216,11 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             }
             final CallsRecommendation recommendation = CallsRecommendation.create(var, method, probability);
             recommendations.add(recommendation);
+
         }
+        // XXX experimental. limit completion list to "magical number 7"
+        // http://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two
+        recommendations = recommendations.subList(0, Math.min(recommendations.size(), 7));
     }
 
     private boolean samePrimitiveType(final ITypeName returnType, final String lhs) {
