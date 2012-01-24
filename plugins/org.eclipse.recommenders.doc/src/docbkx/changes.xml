@@ -2,7 +2,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
 <chapter id="changes">
     <title>New and Noteworthy</title>
-    <section>
+    <section id="v0.5">
         <title>v0.5</title>
         <subtitle>Planned for 2012-02-XX, first official release. Formal review needs to be scheduled.</subtitle>
         <section>
@@ -147,7 +147,7 @@
             </para>
         </section>
     </section>
-    <section>
+    <section id="v0.4">
         <title>v0.4</title>
         <subtitle>Published on 2011-11-07</subtitle>
         <section>
@@ -155,7 +155,7 @@
             <para>This is a maintenance release without any new features.</para>
         </section>
     </section>
-    <section>
+    <section id="v0.3">
         <title>v0.3</title>
         <subtitle>Published on 2011-08-26</subtitle>
         <section>
@@ -201,7 +201,7 @@
             </note>
         </para>
     </section>
-    <section>
+    <section id="v0.2">
         <title>v0.2</title>
         <subtitle>Published on 2011-03-01</subtitle>
         <section>
@@ -294,7 +294,7 @@
             </section>
         </section>
     </section>
-    <section>
+    <section id="v0.1">
         <title>v0.1</title>
         <subtitle>Published on 2011-02-15</subtitle>
         <section>
