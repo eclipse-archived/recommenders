@@ -208,7 +208,10 @@ public class JdtUtils {
 
     public static boolean containsErrors(final IType type) {
         final ITypeRoot typeRoot = type.getTypeRoot();
-        final CompilationUnit ast = SharedASTProvider.getAST(typeRoot, SharedASTProvider.WAIT_YES, null);
+        final CompilationUnit ast = getAST(typeRoot, SharedASTProvider.WAIT_YES, null);
+        if (ast == null) {
+            return false;
+        }
         final IProblem[] problems = ast.getProblems();
         for (final IProblem problem : problems) {
             if (problem.isError()) {
@@ -271,7 +274,7 @@ public class JdtUtils {
 
     public static Optional<IField> createUnresolvedField(final FieldBinding compilerBinding) {
         ensureIsNotNull(compilerBinding);
-        IField f = (IField) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
+        final IField f = (IField) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
         return fromNullable(f);
     }
 
@@ -288,12 +291,12 @@ public class JdtUtils {
 
     public static Optional<IMethod> createUnresolvedMethod(final MethodBinding compilerBinding) {
         ensureIsNotNull(compilerBinding);
-        IMethod m = (IMethod) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
+        final IMethod m = (IMethod) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
         return fromNullable(m);
     }
 
     public static Optional<IType> createUnresolvedType(final TypeBinding compilerBinding) {
-        IType t = (IType) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
+        final IType t = (IType) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
         return fromNullable(t);
     }
 
@@ -520,9 +523,9 @@ public class JdtUtils {
     }
 
     public static Optional<JavaEditor> getActiveJavaEditor() {
-        Optional<IWorkbenchPage> page = getActiveWorkbenchPage();
+        final Optional<IWorkbenchPage> page = getActiveWorkbenchPage();
         if (page.isPresent()) {
-            IEditorPart editor = page.get().getActiveEditor();
+            final IEditorPart editor = page.get().getActiveEditor();
             if (editor instanceof JavaEditor) {
                 return of((JavaEditor) editor);
             }
@@ -670,11 +673,11 @@ public class JdtUtils {
         if (node == null) {
             return absent();
         }
-        IMethodBinding b = node.resolveBinding();
+        final IMethodBinding b = node.resolveBinding();
         if (b == null) {
             return absent();
         }
-        IMethod method = cast(b.getJavaElement());
+        final IMethod method = cast(b.getJavaElement());
         return Optional.fromNullable(method);
     }
 
@@ -683,7 +686,10 @@ public class JdtUtils {
         if (root == null) {
             return Optional.absent();
         }
-        final CompilationUnit cuNode = SharedASTProvider.getAST(root, SharedASTProvider.WAIT_YES, null);
+        final CompilationUnit cuNode = getAST(root, SharedASTProvider.WAIT_YES, null);
+        if (cuNode == null) {
+            return absent();
+        }
         final ITextSelection selection = getTextSelection(editor);
         final ASTNode activeDeclarationNode = findClosestMethodOrTypeDeclarationAroundOffset(cuNode, selection);
         return fromNullable(activeDeclarationNode);
@@ -738,8 +744,9 @@ public class JdtUtils {
             return Optional.absent();
         }
         final CompilationUnit astRoot = getAST(root.get(), WAIT_YES, null);
-        if (astRoot == null)
+        if (astRoot == null) {
             return absent();
+        }
         final ASTNode node = org.eclipse.jdt.core.dom.NodeFinder.perform(astRoot, textSelection.getOffset(), 0);
         return Optional.fromNullable(node);
     }

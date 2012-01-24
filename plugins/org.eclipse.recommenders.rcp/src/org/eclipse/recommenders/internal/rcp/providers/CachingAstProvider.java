@@ -36,7 +36,9 @@ public class CachingAstProvider implements IAstProvider, IElementChangedListener
         CompilationUnit ast = cache.get(compilationUnit);
         if (ast == null) {
             ast = SharedASTProvider.getAST(compilationUnit, SharedASTProvider.WAIT_YES, null);
-            cache.put(compilationUnit, ast);
+            if (ast != null) {
+                cache.put(compilationUnit, ast);
+            }
         }
         return ast;
     }
