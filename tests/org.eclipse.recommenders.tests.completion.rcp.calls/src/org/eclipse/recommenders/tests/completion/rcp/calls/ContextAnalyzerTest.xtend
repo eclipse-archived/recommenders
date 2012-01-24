@@ -176,7 +176,7 @@ class ContextAnalyzerTest {
 	  
 	def private exercise (CharSequence code,String varname){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
-		val struct = fixture.parseWithMarkers(code.toString, "MyClass.java")
+		val struct = fixture.parseWithMarkers(code.toString)
 		val cu = struct.first;
 		val pos = struct.second.head;
 		val enclosingMethod = findEnclosingMethod(cu, pos)

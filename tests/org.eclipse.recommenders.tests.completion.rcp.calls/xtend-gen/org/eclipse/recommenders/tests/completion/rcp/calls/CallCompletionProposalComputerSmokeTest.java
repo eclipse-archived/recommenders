@@ -177,7 +177,7 @@ public class CallCompletionProposalComputerSmokeTest {
         JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
         final JavaProjectFixture fixture = _javaProjectFixture;
         String _string = code.toString();
-        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(_string, "MyClass.java");
+        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(_string);
         final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
         ICompilationUnit _first = struct.getFirst();
         final ICompilationUnit cu = _first;

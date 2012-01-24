@@ -83,7 +83,7 @@ public class AllJavaFeatures {
 
 	def private exercise (CharSequence code){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
-		val struct = fixture.createFileAndParseWithMarkers(code.toString, "MyClass.java")
+		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first;
 		cu.becomeWorkingCopy(null)
 		// just be sure that this file still compiles...

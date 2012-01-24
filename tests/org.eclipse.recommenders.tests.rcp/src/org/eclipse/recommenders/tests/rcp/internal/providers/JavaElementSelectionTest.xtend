@@ -97,7 +97,7 @@ class JavaElementSelectionTest {
 	}
 	def void exerciseAndVerify(CharSequence code, List<String> expected){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
-		val struct = fixture.parseWithMarkers(code.toString, "MyClass.java")
+		val struct = fixture.parseWithMarkers(code.toString)
 		val cu = struct.first;
 		val pos = struct.second;
 

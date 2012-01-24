@@ -45,7 +45,7 @@ class OverridesCompletionProposalComputerSmokeTest {
 	
 	def exercise(CharSequence code){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::workspace,"test")
-		val struct = fixture.createFileAndParseWithMarkers(code.toString, "MyClass.java")
+		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first;
 		for(completionIndex : struct.second){
 			val ctx = new JavaContentAssistContextMock(cu, completionIndex)

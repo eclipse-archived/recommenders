@@ -187,7 +187,7 @@ public class ContextAnalyzerTest {
       JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
       final JavaProjectFixture fixture = _javaProjectFixture;
       String _string = code.toString();
-      Tuple<CompilationUnit,Set<Integer>> _parseWithMarkers = fixture.parseWithMarkers(_string, "MyClass.java");
+      Tuple<CompilationUnit,Set<Integer>> _parseWithMarkers = fixture.parseWithMarkers(_string);
       final Tuple<CompilationUnit,Set<Integer>> struct = _parseWithMarkers;
       CompilationUnit _first = struct.getFirst();
       final CompilationUnit cu = _first;
