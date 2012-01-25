@@ -126,6 +126,7 @@ public class ProviderContentPart {
         scrolledContent.setLayout(defaultGridLayoutFactory.create());
 
         scrolledContent.addListener(SWT.Resize, new Listener() {
+
             @Override
             public void handleEvent(final Event event) {
                 resizeScrolledComposite();
@@ -135,9 +136,16 @@ public class ProviderContentPart {
         scrollingComposite.setContent(scrolledContent);
     }
 
+    private int scrolledCompsiteLastKnownWidth = -1;
+
     private void resizeScrolledComposite() {
         final Point size = scrolledContent.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
         scrollingComposite.setMinSize(size);
+        final int newWidth = scrolledContent.getSize().x;
+        if (newWidth != scrolledCompsiteLastKnownWidth) {
+            scrollingComposite.setMinHeight(scrolledContent.computeSize(newWidth, SWT.DEFAULT).y);
+            scrolledCompsiteLastKnownWidth = newWidth;
+        }
     }
 
     private void createStack() {
