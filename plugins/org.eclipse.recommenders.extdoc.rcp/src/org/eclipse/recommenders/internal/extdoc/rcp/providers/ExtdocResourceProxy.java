@@ -25,7 +25,8 @@ import org.eclipse.recommenders.webclient.WebServiceClient;
 import org.eclipse.recommenders.webclient.exceptions.NotFoundException;
 
 /**
- * A proxy for remote server interface. Note that all its methods may return {@code null}!
+ * A proxy for remote server interface. Note that all its methods may return
+ * {@code null}!
  */
 public class ExtdocResourceProxy implements IExtdocResource {
 
@@ -44,7 +45,6 @@ public class ExtdocResourceProxy implements IExtdocResource {
             res = webclient.doPostRequest(URL_CLASS_OVERRIDES, type, ClassOverrideDirectives.class);
         } catch (final NotFoundException e) {
             // ignore 404s
-            System.out.println(e);
         }
         return res;
     }
