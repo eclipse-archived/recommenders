@@ -23,6 +23,7 @@ import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.JavaLanguage;
 import com.ibm.wala.classLoader.Language;
 import com.ibm.wala.classLoader.Module;
+import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.ssa.SSAInstructionFactory;
 import com.ibm.wala.types.ClassLoaderReference;
 import com.ibm.wala.types.TypeName;
@@ -31,12 +32,11 @@ import com.ibm.wala.util.strings.Atom;
 
 public final class ClassHierarchyDummyClassLoader implements IClassLoader {
 
-    private final BundleClassloaderBasedClassHierarchy cha;
+    private final IClassHierarchy cha;
     private final ClassLoaderReference classLoaderReference;
 
-    ClassHierarchyDummyClassLoader(final BundleClassloaderBasedClassHierarchy bundleClassloaderBasedClassHierarchy,
-            final ClassLoaderReference classLoaderReference) {
-        cha = bundleClassloaderBasedClassHierarchy;
+    ClassHierarchyDummyClassLoader(final IClassHierarchy cha, final ClassLoaderReference classLoaderReference) {
+        this.cha = cha;
         this.classLoaderReference = classLoaderReference;
     }
 
