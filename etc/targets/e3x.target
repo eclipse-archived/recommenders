@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders: Eclipse 3.x Build Server Target Platform" sequenceNumber="52">
+<target name="Code Recommenders: Eclipse 3.x Build Server Target Platform" sequenceNumber="54">
 <locations>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201261700"/>
-<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201201261700"/>
-<repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd/"/>
-</location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.7.1.M20110909-1335"/>
 <unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.7.1.R37x_v20110907-7u7PFvHFN5LiN7iMI1T3vR_k8Ugx"/>
@@ -19,8 +14,16 @@
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.jdt.feature.group" version="3.8.0.v20111130-1318-8-8lFpEFNOfwRc2R3LVOg_u9B15B"/>
-<repository location="http://download.eclipse.org/eclipse/updates/3.8-I-builds"/>
+<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201261700"/>
+<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201201261700"/>
+<repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd/"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.jdt.feature.group" version="3.8.0.v20111130-1318-8-8lFnfFNOfwRQFKyWVBz0c89B15"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20111122-1556-7P7OFvNFLWUl76ponNOCoeY"/>
+<unit id="org.eclipse.equinox.executable" version="3.6.0.v20111122-1556-7P7OFvNFLWUl76ponNOCoeY"/>
+<unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.8.0.v20111114-2124-9Q7dFb8FRWt32-_vXXd00E_mbe9G"/>
+<repository location="http://download.eclipse.org/eclipse/updates/3.8milestones/"/>
 </location>
 </locations>
 </target>
