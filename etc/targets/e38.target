@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders: Eclipse 3.8 Developer Target Platform" sequenceNumber="41">
+<target name="Code Recommenders: Eclipse 3.8 Developer Target Platform" sequenceNumber="42">
 <locations>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201220905"/>
-<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201201220905"/>
-<repository location="http://download.eclipse.org/recommenders/updates/3rd/"/>
-</location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtext.xbase.feature.group" version="2.2.1.v201112130541"/>
 <unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.2.1.v201112130541"/>
@@ -20,6 +15,11 @@
 <unit id="org.eclipse.sdk.ide" version="3.8.0.I20111209-1447"/>
 <unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.8.0.v20111114-2124-9Q7dFb8FRWt32-_vXXd00E_mbe9G"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.8milestones/"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201252242"/>
+<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201201252242"/>
+<repository location="https://hudson.eclipse.org/hudson/job/recommenders.smoketest-e38/lastSuccessfulBuild/artifact/org.eclipse.recommenders.repository.3rd/target/repository/"/>
 </location>
 </locations>
 </target>
