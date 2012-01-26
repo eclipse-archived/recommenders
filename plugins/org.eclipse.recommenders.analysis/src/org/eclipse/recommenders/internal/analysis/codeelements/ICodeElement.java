@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Darmstadt University of Technology - initial API and implementation.
+ *    Marcel Bruch - initial API and implementation.
  */
 package org.eclipse.recommenders.internal.analysis.codeelements;
 

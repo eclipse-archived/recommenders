@@ -6,6 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
+ *     Marcel Bruch - Initial API and implementation
  */
 package org.eclipse.recommenders.internal.codesearch.server.lucene;
 
@@ -23,8 +24,9 @@ import com.google.common.collect.MapMaker;
 @SuppressWarnings("unchecked")
 public class CodesearchScorerWeight extends org.apache.lucene.search.Weight {
     /*
-     * XXX Having this cache is odd because it is only needed to quickly recompute the scores of each code snippet to
-     * push these values to the client... Should we think about refactoring this somehow?
+     * XXX Having this cache is odd because it is only needed to quickly
+     * recompute the scores of each code snippet to push these values to the
+     * client... Should we think about refactoring this somehow?
      */
     private static Map<CodesearchQuery, CodesearchScorer> cache = new MapMaker().maximumSize(10).makeMap();
     private static final long serialVersionUID = 1041182637020279041L;

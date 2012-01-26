@@ -6,10 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Marcel Bruch - initial API and implementation.
- */
-/**
- * 
+ *     Marcel Bruch - Initial API and implementation
  */
 package org.eclipse.recommenders.internal.analysis.fixture;
 
