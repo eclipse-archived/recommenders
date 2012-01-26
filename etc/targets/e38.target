@@ -17,9 +17,9 @@
 <repository location="http://download.eclipse.org/eclipse/updates/3.8milestones/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201252242"/>
-<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201201252242"/>
-<repository location="https://hudson.eclipse.org/hudson/job/recommenders.smoketest-e38/lastSuccessfulBuild/artifact/org.eclipse.recommenders.repository.3rd/target/repository/"/>
+<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201261700"/>
+<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201201261700"/>
+<repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd/"/>
 </location>
 </locations>
 </target>
