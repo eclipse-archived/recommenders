@@ -714,11 +714,16 @@ public class JdtUtils {
             if (type == null) {
                 throwIllegalArgumentException("parent could not be resolved to an IType: %s", parent);
             }
-            typeSignature = JavaModelUtil.getResolvedTypeName(typeSignature, type);
+            String resolvedTypeSignature = JavaModelUtil.getResolvedTypeName(typeSignature, type);
+            if (resolvedTypeSignature == null) {
+                // return fall-back. This happens for instance when giving <T>
+                // or QT; respectively.
+                return of("java.lang.Object");
+            }
             // NOT needed. Done by getResolvedTypeName typeSignature =
             // StringUtils.substringBefore(typeSignature, "[");
-            typeSignature = StringUtils.substringBeforeLast(typeSignature, "<");
-            return fromNullable(typeSignature);
+            resolvedTypeSignature = StringUtils.substringBeforeLast(resolvedTypeSignature, "<");
+            return fromNullable(resolvedTypeSignature);
         } catch (final Exception e) {
             log(e);
             return absent();

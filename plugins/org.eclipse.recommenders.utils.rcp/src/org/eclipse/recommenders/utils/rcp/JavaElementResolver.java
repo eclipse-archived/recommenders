@@ -12,6 +12,7 @@ package org.eclipse.recommenders.utils.rcp;
 
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
+import static org.eclipse.recommenders.utils.rcp.JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension;
 
 import java.util.HashSet;
 
@@ -22,6 +23,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
 import org.eclipse.jdt.core.search.SearchEngine;
@@ -201,8 +203,8 @@ public class JavaElementResolver {
     }
 
     /**
-     * Returns null if we fail to resolve all types used in the method signature, for instance generic return types
-     * etc...
+     * Returns null if we fail to resolve all types used in the method
+     * signature, for instance generic return types etc...
      */
     public IMethodName toRecMethod(IMethod jdtMethod) {
         ensureIsNotNull(jdtMethod);
@@ -216,14 +218,20 @@ public class JavaElementResolver {
                 final String[] unresolvedParameterTypes = jdtMethod.getParameterTypes();
                 final String[] resolvedParameterTypes = new String[unresolvedParameterTypes.length];
                 for (int i = resolvedParameterTypes.length; i-- > 0;) {
-                    resolvedParameterTypes[i] = JdtUtils
-                            .resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
-                                    unresolvedParameterTypes[i], jdtDeclaringType).or("V");
+                    final String unresolved = unresolvedParameterTypes[i];
+                    final int arrayCount = Signature.getArrayCount(unresolved);
+                    String resolved = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(unresolved,
+                            jdtDeclaringType).or("V");
+                    resolved = resolved + StringUtils.repeat("[]", arrayCount);
+                    resolvedParameterTypes[i] = resolved;
                 }
                 String resolvedReturnType = null;
                 final String unresolvedReturnType = jdtMethod.getReturnType();
                 try {
-                    resolvedReturnType = JavaModelUtil.getResolvedTypeName(unresolvedReturnType, jdtDeclaringType);
+                    final int returnTypeArrayCount = Signature.getArrayCount(unresolvedReturnType);
+                    resolvedReturnType = JavaModelUtil.getResolvedTypeName(unresolvedReturnType, jdtDeclaringType)
+                            + StringUtils.repeat("[]", returnTypeArrayCount);
+
                 } catch (final JavaModelException e) {
                     RecommendersUtilsPlugin.log(e);
                 }
@@ -270,8 +278,9 @@ public class JavaElementResolver {
 
     private String[] createJDTParameterTypeStrings(final IMethodName method) {
         /*
-         * Note, JDT expects declared-types (also declared array-types) given as parameters to (i) use dots as
-         * separator, and (ii) end with a semicolon. this conversion is done here:
+         * Note, JDT expects declared-types (also declared array-types) given as
+         * parameters to (i) use dots as separator, and (ii) end with a
+         * semicolon. this conversion is done here:
          */
         final ITypeName[] paramTypes = method.getParameterTypes();
         final String[] jdtParamTypes = new String[paramTypes.length];
