@@ -18,6 +18,7 @@ import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -141,6 +142,9 @@ public final class BrowserSizeWorkaround {
             final Composite theParentsParent = parent.getParent();
             final Composite theParentsParentsParent = theParentsParent.getParent();
             if (theParentsParentsParent == null || parent instanceof ScrolledComposite) {
+                final int newWidth = parent.getSize().x;
+                final Point newSize = parent.computeSize(newWidth, SWT.DEFAULT);
+                parent.setSize(newSize);
                 theParentsParent.layout(new Control[] { composite }, SWT.CHANGED);
                 break;
             }
