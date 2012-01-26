@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders: Eclipse 3.x Build Server Target Platform" sequenceNumber="51">
+<target name="Code Recommenders: Eclipse 3.x Build Server Target Platform" sequenceNumber="52">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201261700"/>
@@ -17,6 +17,10 @@
 <unit id="org.eclipse.xtext.xbase.feature.group" version="2.2.1.v201112130541"/>
 <unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.2.1.v201112130541"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.jdt.feature.group" version="3.8.0.v20111130-1318-8-8lFpEFNOfwRc2R3LVOg_u9B15B"/>
+<repository location="http://download.eclipse.org/eclipse/updates/3.8-I-builds"/>
 </location>
 </locations>
 </target>
