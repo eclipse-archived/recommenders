@@ -12,10 +12,6 @@ package org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing;
 
 import static com.google.common.base.Optional.fromNullable;
 import static java.lang.String.format;
-import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createGridComposite;
-import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
-import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.percentageToRecommendationPhrase;
-import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 
 import java.util.concurrent.ExecutionException;
@@ -32,19 +28,15 @@ import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.ExtdocResourceProxy;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
-import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.TreeBag;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
@@ -111,29 +103,6 @@ public final class SelfCallsProvider extends ExtdocProvider {
         return Status.NOT_AVAILABLE;
     }
 
-    Link createMethodLink(final Composite parent, final IMethodName method) {
-        final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
-        final String tooltip = Names.vm2srcQualifiedMethod(method);
-
-        final Link link = new Link(parent, SWT.NONE);
-        link.setText(text);
-        link.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
-        link.setToolTipText(tooltip);
-        link.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(final SelectionEvent e) {
-                final IMethod jdtMethod = resolver.toJdtMethod(method);
-                if (jdtMethod != null) {
-                    final JavaSelectionEvent event = new JavaSelectionEvent(jdtMethod, METHOD_DECLARATION);
-                    workspaceBus.post(event);
-                } else {
-                    link.setEnabled(false);
-                }
-            }
-        });
-        return link;
-    }
-
     private class TypeSelfcallDirectivesRenderer implements Runnable {
 
         private final IType type;
@@ -169,19 +138,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
             final TreeBag<IMethodName> b = newTreeBag(directive.getCalls());
-
-            final Composite group = createGridComposite(container, 4, 0, 0, 0, 0);
-            for (final IMethodName method : b.elementsOrderedByFrequency()) {
-
-                final int frequency = b.count(method);
-                final int percentage = (int) Math.round(frequency * 100.0d / numberOfSubclasses);
-
-                createLabel(group, "   " + percentageToRecommendationPhrase(percentage), true, false, SWT.COLOR_BLACK,
-                        true);
-                createLabel(group, "override", false);
-                createMethodLink(group, method);
-                createLabel(group, format(" -   (%d %% - %d times)", percentage, frequency), true);
-            }
+            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver);
         }
     }
 
@@ -222,19 +179,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfDefinitions();
             final TreeBag<IMethodName> b = newTreeBag(directive.getCalls());
-
-            final Composite group = createGridComposite(container, 4, 0, 0, 0, 0);
-            for (final IMethodName method : b.elementsOrderedByFrequency()) {
-
-                final int frequency = b.count(method);
-                final int percentage = (int) Math.round(frequency * 100.0d / numberOfSubclasses);
-
-                createLabel(group, "   " + percentageToRecommendationPhrase(percentage), true, false, SWT.COLOR_BLACK,
-                        true);
-                createLabel(group, "call", false);
-                createMethodLink(group, method);
-                createLabel(group, format(" -   (%d %% - %d times)", percentage, frequency), true);
-            }
+            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver);
         }
     }
 }

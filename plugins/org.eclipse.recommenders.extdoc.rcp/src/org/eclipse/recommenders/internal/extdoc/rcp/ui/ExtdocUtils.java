@@ -10,19 +10,31 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
+import static java.lang.String.format;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
+import org.eclipse.recommenders.utils.Names;
+import org.eclipse.recommenders.utils.TreeBag;
+import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
@@ -34,7 +46,13 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+
+import com.google.common.eventbus.EventBus;
 
 /**
  * Several shortcuts for creating SWT components in the Extdoc default way.
@@ -65,13 +83,71 @@ public final class ExtdocUtils {
         separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     }
 
+    public static Table renderMethodDirectivesBlock(final Composite parent, final TreeBag<IMethodName> methods,
+            final int total, final EventBus bus, final JavaElementResolver resolver) {
+        final Table table = new Table(parent, SWT.NONE | SWT.HIDE_SELECTION);
+        table.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+        table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
+        final TableColumn column1 = new TableColumn(table, SWT.NONE);
+        final TableColumn column2 = new TableColumn(table, SWT.NONE);
+        final TableColumn column3 = new TableColumn(table, SWT.NONE);
+        final TableColumn column4 = new TableColumn(table, SWT.NONE);
+
+        for (final IMethodName method : methods.elementsOrderedByFrequency()) {
+
+            final int frequency = methods.count(method);
+            final int percentage = (int) Math.round(frequency * 100.0d / total);
+            final String phraseText = percentageToRecommendationPhrase(percentage);
+            final String stats = format(" -   (%d %% - %d times)", percentage, frequency);
+
+            final Link bar = createMethodLink(table, method, resolver, bus);
+            final TableItem item = new TableItem(table, SWT.NONE);
+            item.setText(new String[] { phraseText, "override", bar.getText(), stats });
+            item.setFont(0, JFaceResources.getBannerFont());
+            final TableEditor editor = new TableEditor(table);
+            editor.grabHorizontal = editor.grabVertical = true;
+            editor.setEditor(bar, item, 2);
+
+        }
+        column1.pack();
+        column2.pack();
+        column3.pack();
+        column4.pack();
+        return table;
+    }
+
+    public static Link createMethodLink(final Composite parent, final IMethodName method,
+            final JavaElementResolver resolver, final EventBus workspaceBus) {
+        final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
+        final String tooltip = Names.vm2srcQualifiedMethod(method);
+
+        final Link link = new Link(parent, SWT.NONE);
+        link.setText(text);
+        link.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+        link.setToolTipText(tooltip);
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                final IMethod jdtMethod = resolver.toJdtMethod(method);
+                if (jdtMethod != null) {
+                    final JavaSelectionEvent event = new JavaSelectionEvent(jdtMethod, METHOD_DECLARATION);
+                    workspaceBus.post(event);
+                } else {
+                    link.setEnabled(false);
+                }
+            }
+        });
+        return link;
+    }
+
     /**
      * @param parent
      *            The composite to which the label shall be appended.
      * @param text
      *            The label's text.
      * @param wrap
-     *            True, if the label should set GridData in order to be wrapped when it exceeds the parent's width.
+     *            True, if the label should set GridData in order to be wrapped
+     *            when it exceeds the parent's width.
      * @return The label created with the specified parameters.
      */
     public static Label createLabel(final Composite parent, final String text, final boolean wrap) {
@@ -237,7 +313,7 @@ public final class ExtdocUtils {
     }
 
     public static Composite createComposite(final Composite parent, final int numColumns) {
-        Composite container = new Composite(parent, SWT.NO_BACKGROUND);
+        final Composite container = new Composite(parent, SWT.NO_BACKGROUND);
         container.setLayout(GridLayoutFactory.fillDefaults().margins(10, 0).spacing(0, 0).numColumns(numColumns)
                 .create());
         container.setLayoutData(GridDataFactory.fillDefaults().create());

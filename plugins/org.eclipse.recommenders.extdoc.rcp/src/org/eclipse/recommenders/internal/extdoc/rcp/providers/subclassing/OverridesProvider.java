@@ -17,8 +17,8 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createGridComposite;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createMethodLink;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.percentageToRecommendationPhrase;
-import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 
 import java.util.Collections;
@@ -29,9 +29,10 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.ClassOverridePatterns;
 import org.eclipse.recommenders.extdoc.MethodPattern;
@@ -40,18 +41,19 @@ import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.internal.extdoc.rcp.providers.ExtdocResourceProxy;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
-import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.TreeBag;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -131,29 +133,6 @@ public final class OverridesProvider extends ExtdocProvider {
         return false;
     }
 
-    Link createMethodLink(final Composite parent, final IMethodName method) {
-        final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
-        final String tooltip = Names.vm2srcQualifiedMethod(method);
-
-        final Link link = new Link(parent, SWT.NONE);
-        link.setText(text);
-        link.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
-        link.setToolTipText(tooltip);
-        link.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(final SelectionEvent e) {
-                final IMethod jdtMethod = resolver.toJdtMethod(method);
-                if (jdtMethod != null) {
-                    final JavaSelectionEvent event = new JavaSelectionEvent(jdtMethod, METHOD_DECLARATION);
-                    workspaceBus.post(event);
-                } else {
-                    link.setEnabled(false);
-                }
-            }
-        });
-        return link;
-    }
-
     // ========================================================================
     // TODO: Review the renderer code is redundant and needs refactoring after
     // all providers have been written to
@@ -194,19 +173,7 @@ public final class OverridesProvider extends ExtdocProvider {
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
             final TreeBag<IMethodName> b = newTreeBag(directive.getOverrides());
-
-            final Composite group = createGridComposite(container, 4, 0, 0, 0, 0);
-            for (final IMethodName method : b.elementsOrderedByFrequency()) {
-
-                final int frequency = b.count(method);
-                final int percentage = (int) Math.round(frequency * 100.0d / numberOfSubclasses);
-
-                createLabel(group, "   " + percentageToRecommendationPhrase(percentage), true, false, SWT.COLOR_BLACK,
-                        true);
-                createLabel(group, "override", false);
-                createMethodLink(group, method);
-                createLabel(group, format(" -   (%d %% - %d times)", percentage, frequency), true);
-            }
+            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver);
         }
 
     }
@@ -275,6 +242,7 @@ public final class OverridesProvider extends ExtdocProvider {
         private void createContainer() {
             container = new Composite(parent, SWT.NO_BACKGROUND);
             container.setLayout(new GridLayout());
+            container.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         }
 
         private void addHeader() {
@@ -292,7 +260,7 @@ public final class OverridesProvider extends ExtdocProvider {
             final String text = format("Pattern #%d (%d%% - %d examples):", index, patternPercentage,
                     pattern.getNumberOfObservations());
             createLabel(container, text, true, false, SWT.COLOR_DARK_GRAY, true);
-            final Composite group = createGridComposite(container, 4, 0, 0, 0, 0);
+            final Composite group = createGridComposite(container, 1, 0, 0, 0, 0);
             final List<Entry<IMethodName, Double>> s = Lists.newLinkedList(pattern.getMethods().entrySet());
             Collections.sort(s, new Comparator<Entry<IMethodName, Double>>() {
 
@@ -303,15 +271,35 @@ public final class OverridesProvider extends ExtdocProvider {
                 }
             });
 
+            final Table table = new Table(group, SWT.NONE | SWT.HIDE_SELECTION);
+            table.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+            table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
+            final TableColumn column1 = new TableColumn(table, SWT.NONE);
+            final TableColumn column2 = new TableColumn(table, SWT.NONE);
+            final TableColumn column3 = new TableColumn(table, SWT.NONE);
+            final TableColumn column4 = new TableColumn(table, SWT.NONE);
+
             for (final Entry<IMethodName, Double> entry : s) {
+
                 final int percentage = (int) Math.rint(entry.getValue() * 100);
 
-                createLabel(group, "   " + percentageToRecommendationPhrase(percentage), true, false, SWT.COLOR_BLACK,
-                        true);
-                createLabel(group, "override", false);
-                createMethodLink(group, entry.getKey());
-                createLabel(group, format(" -   (%d %%)", percentage), true);
+                final String phraseText = percentageToRecommendationPhrase(percentage);
+                final String stats = format(" -   (%d %%)", percentage);
+
+                final Link bar = createMethodLink(table, entry.getKey(), resolver, workspaceBus);
+                final TableItem item = new TableItem(table, SWT.NONE);
+                item.setText(new String[] { phraseText, "override", bar.getText(), stats });
+                item.setFont(0, JFaceResources.getBannerFont());
+                final TableEditor editor = new TableEditor(table);
+                editor.grabHorizontal = editor.grabVertical = true;
+                editor.setEditor(bar, item, 2);
+
             }
+            column1.pack();
+            column2.pack();
+            column3.pack();
+            column4.pack();
+
             new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
 
         }
