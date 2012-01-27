@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -52,6 +53,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
 import com.google.common.base.Predicate;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
@@ -60,6 +64,22 @@ public final class OverridesProvider extends ExtdocProvider {
     private final ExtdocResourceProxy proxy;
     private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
+    private final Cache<ITypeName, ClassOverrideDirectives> cache1 = CacheBuilder.newBuilder().maximumSize(20)
+            .concurrencyLevel(1).build(new CacheLoader<ITypeName, ClassOverrideDirectives>() {
+
+                @Override
+                public ClassOverrideDirectives load(final ITypeName typeName) throws Exception {
+                    return proxy.findClassOverrideDirectives(typeName);
+                }
+            });
+    private final Cache<ITypeName, ClassOverridePatterns> cache2 = CacheBuilder.newBuilder().maximumSize(20)
+            .concurrencyLevel(1).build(new CacheLoader<ITypeName, ClassOverridePatterns>() {
+
+                @Override
+                public ClassOverridePatterns load(final ITypeName typeName) throws Exception {
+                    return proxy.findClassOverridePatterns(typeName);
+                }
+            });
 
     @Inject
     public OverridesProvider(final ExtdocResourceProxy proxy, final JavaElementResolver resolver,
@@ -71,7 +91,8 @@ public final class OverridesProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent) {
+    public Status onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent)
+            throws ExecutionException {
         final IType type = root.findPrimaryType();
         if (type != null) {
             return onTypeSelection(type, event, parent);
@@ -80,16 +101,17 @@ public final class OverridesProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent) {
+    public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent)
+            throws ExecutionException {
         boolean hasData = false;
         hasData |= renderClassOverrideDirectives(type, parent);
         hasData |= renderClassOverridesPatterns(type, parent);
         return hasData ? Status.OK : Status.NOT_AVAILABLE;
     }
 
-    private boolean renderClassOverrideDirectives(final IType type, final Composite parent) {
+    private boolean renderClassOverrideDirectives(final IType type, final Composite parent) throws ExecutionException {
         final ITypeName typeName = resolver.toRecType(type);
-        final ClassOverrideDirectives overrides = proxy.findClassOverrideDirectives(typeName);
+        final ClassOverrideDirectives overrides = cache1.get(typeName);
         if (overrides != null) {
             runSyncInUiThread(new TypeOverrideDirectivesRenderer(type, overrides, parent));
             return true;
@@ -97,9 +119,9 @@ public final class OverridesProvider extends ExtdocProvider {
         return false;
     }
 
-    private boolean renderClassOverridesPatterns(final IType type, final Composite parent) {
+    private boolean renderClassOverridesPatterns(final IType type, final Composite parent) throws ExecutionException {
         final ITypeName typeName = resolver.toRecType(type);
-        final ClassOverridePatterns patterns = proxy.findClassOverridePatterns(typeName);
+        final ClassOverridePatterns patterns = cache2.get(typeName);
         if (patterns != null) {
             runSyncInUiThread(new OverridePatternsRenderer(type, patterns, parent));
             return true;
@@ -131,7 +153,8 @@ public final class OverridesProvider extends ExtdocProvider {
     }
 
     // ========================================================================
-    // TODO: Review the renderer code is redundant and needs refactoring after all providers have been written to
+    // TODO: Review the renderer code is redundant and needs refactoring after
+    // all providers have been written to
     // identify more common parts.
 
     private class TypeOverrideDirectivesRenderer implements Runnable {
@@ -214,7 +237,7 @@ public final class OverridesProvider extends ExtdocProvider {
             patterns = newLinkedList(filter(patterns, new Predicate<MethodPattern>() {
                 @Override
                 public boolean apply(final MethodPattern input) {
-                    int numberOfObservations = input.getNumberOfObservations();
+                    final int numberOfObservations = input.getNumberOfObservations();
                     return (numberOfObservations / totalNumberOfExamples) > 0.1;
                 }
             }));
@@ -231,7 +254,7 @@ public final class OverridesProvider extends ExtdocProvider {
         }
 
         private void computeTotalNumberOfExamples() {
-            for (MethodPattern pattern : patterns) {
+            for (final MethodPattern pattern : patterns) {
                 totalNumberOfExamples += pattern.getNumberOfObservations();
             }
         }
@@ -242,7 +265,7 @@ public final class OverridesProvider extends ExtdocProvider {
             addHeader();
 
             int i = 1;
-            for (MethodPattern pattern : patterns) {
+            for (final MethodPattern pattern : patterns) {
                 addDirectives(pattern, i++);
             }
         }
@@ -262,12 +285,13 @@ public final class OverridesProvider extends ExtdocProvider {
 
         private void addDirectives(final MethodPattern pattern, final int index) {
 
-            int patternPercentage = (int) Math.rint(100 * pattern.getNumberOfObservations() / totalNumberOfExamples);
-            String text = format("Pattern #%d (%d%% - %d examples):", index, patternPercentage,
+            final int patternPercentage = (int) Math.rint(100 * pattern.getNumberOfObservations()
+                    / totalNumberOfExamples);
+            final String text = format("Pattern #%d (%d%% - %d examples):", index, patternPercentage,
                     pattern.getNumberOfObservations());
             createLabel(container, text, true, false, SWT.COLOR_DARK_GRAY, true);
             final Composite group = createGridComposite(container, 4, 0, 0, 0, 0);
-            List<Entry<IMethodName, Double>> s = Lists.newLinkedList(pattern.getMethods().entrySet());
+            final List<Entry<IMethodName, Double>> s = Lists.newLinkedList(pattern.getMethods().entrySet());
             Collections.sort(s, new Comparator<Entry<IMethodName, Double>>() {
 
                 @Override
@@ -277,7 +301,7 @@ public final class OverridesProvider extends ExtdocProvider {
                 }
             });
 
-            for (Entry<IMethodName, Double> entry : s) {
+            for (final Entry<IMethodName, Double> entry : s) {
                 final int percentage = (int) Math.rint(entry.getValue() * 100);
 
                 createLabel(group, "   " + percentageToRecommendationPhrase(percentage), true, false, SWT.COLOR_BLACK,

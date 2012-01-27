@@ -16,6 +16,10 @@ import static org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.findAstNodeFromEditorSelection;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.inject.Inject;
 
 import org.eclipse.jdt.core.IJavaElement;
@@ -33,14 +37,17 @@ import org.eclipse.ui.IWorkbenchPart;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.Atomics;
 
 /**
- * Controls which events get fired over the event bus. It internally keeps track of the last selection to prevent the
- * system to send minor selection event updates as frequently happens during typing.
+ * Controls which events get fired over the event bus. It internally keeps track
+ * of the last selection to prevent the system to send minor selection event
+ * updates as frequently happens during typing.
  */
 @SuppressWarnings("restriction")
 public class JavaSelectionProvider implements ISelectionListener {
 
+    ScheduledThreadPoolExecutor d = new ScheduledThreadPoolExecutor(1);
     private final EventBus bus;
     private JavaSelectionEvent lastEvent = new JavaSelectionEvent(null, null);
 
@@ -51,20 +58,33 @@ public class JavaSelectionProvider implements ISelectionListener {
     }
 
     /**
-     * other parties may send other selection events. we should update our internal state based on this information.
+     * other parties may send other selection events. we should update our
+     * internal state based on this information.
      */
     @Subscribe
     public void onExternalJavaSelectionChange(final JavaSelectionEvent newSelectionEvent) {
         lastEvent = newSelectionEvent;
     }
 
+    AtomicReference<ISelection> selection = Atomics.newReference();
+
     @Override
-    public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
-        if (selection instanceof IStructuredSelection) {
-            handleSelectionFromViewer(selection);
-        } else if (selection instanceof ITextSelection && part instanceof JavaEditor) {
-            handleSelectionInEditor(part, selection);
-        }
+    public void selectionChanged(final IWorkbenchPart part, final ISelection s) {
+        selection.set(s);
+        d.schedule(new Runnable() {
+
+            @Override
+            public void run() {
+                if (selection.get() != s) {
+                    // don't do anything
+                    return;
+                } else if (s instanceof IStructuredSelection) {
+                    handleSelectionFromViewer(s);
+                } else if (s instanceof ITextSelection && part instanceof JavaEditor) {
+                    handleSelectionInEditor(part, s);
+                }
+            }
+        }, 100, TimeUnit.MILLISECONDS);
     }
 
     private void handleSelectionFromViewer(final ISelection selection) {

@@ -40,7 +40,7 @@ public abstract class ExtdocProvider {
 
     protected final void runSyncInUiThread(final Runnable runnable) {
         final ExceptionHandler handler = new ExceptionHandler();
-        Display.getDefault().syncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
                 try {

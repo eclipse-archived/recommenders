@@ -17,6 +17,8 @@ import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.percen
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 
+import java.util.concurrent.ExecutionException;
+
 import javax.inject.Inject;
 
 import org.eclipse.jdt.core.IMethod;
@@ -43,6 +45,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.google.common.eventbus.EventBus;
 
 public final class SelfCallsProvider extends ExtdocProvider {
@@ -50,6 +55,14 @@ public final class SelfCallsProvider extends ExtdocProvider {
     private final ExtdocResourceProxy proxy;
     private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
+    private final Cache<ITypeName, ClassSelfcallDirectives> cache1 = CacheBuilder.newBuilder().maximumSize(20)
+            .concurrencyLevel(1).build(new CacheLoader<ITypeName, ClassSelfcallDirectives>() {
+
+                @Override
+                public ClassSelfcallDirectives load(final ITypeName typeName) throws Exception {
+                    return proxy.findClassSelfcallDirectives(typeName);
+                }
+            });
 
     @Inject
     public SelfCallsProvider(final ExtdocResourceProxy proxy, final JavaElementResolver resolver,
@@ -61,7 +74,8 @@ public final class SelfCallsProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent) {
+    public Status onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent)
+            throws ExecutionException {
         final IType type = root.findPrimaryType();
         if (type != null) {
             return onTypeSelection(type, event, parent);
@@ -70,9 +84,10 @@ public final class SelfCallsProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent) {
+    public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent)
+            throws ExecutionException {
         final ITypeName typeName = resolver.toRecType(type);
-        final ClassSelfcallDirectives selfcalls = proxy.findClassSelfcallDirectives(typeName);
+        final ClassSelfcallDirectives selfcalls = cache1.get(typeName);
         if (selfcalls == null) {
             return Status.NOT_AVAILABLE;
         }

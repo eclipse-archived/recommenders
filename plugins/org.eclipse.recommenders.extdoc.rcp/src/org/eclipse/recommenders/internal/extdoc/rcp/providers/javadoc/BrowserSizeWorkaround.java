@@ -13,10 +13,8 @@ package org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.LocationEvent;
-import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.ProgressAdapter;
 import org.eclipse.swt.browser.ProgressEvent;
-import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -40,9 +38,11 @@ public final class BrowserSizeWorkaround {
 
         ensureParentHasGridLayout();
         initializeGridData();
+        // set size to minimum: This is required to determine the size correctly
+        // after the input is set:
+        layoutParents(browser);
 
         registerProgressListener();
-        registerLocationListener();
     }
 
     private void ensureParentHasGridLayout() {
@@ -58,17 +58,7 @@ public final class BrowserSizeWorkaround {
     }
 
     private void recalculateAndSetHeight() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(MILLIS_UNTIL_RESCALE);
-                } catch (final InterruptedException e) {
-                    // throw new IllegalStateException(e);
-                }
-                Display.getDefault().asyncExec(new RescaleAction());
-            }
-        }).start();
+        Display.getDefault().asyncExec(new RescaleAction());
     }
 
     private void setHeightAndTriggerLayout(final int height) {
@@ -78,27 +68,18 @@ public final class BrowserSizeWorkaround {
     }
 
     private void registerProgressListener() {
-        browser.addProgressListener(new ProgressListener() {
+        browser.addProgressListener(new ProgressAdapter() {
+            boolean mustRender = false;
+
             @Override
             public void completed(final ProgressEvent event) {
-                recalculateAndSetHeight();
-            }
-
-            @Override
-            public void changed(final ProgressEvent event) {
-            }
-        });
-    }
-
-    private void registerLocationListener() {
-        browser.addLocationListener(new LocationListener() {
-            @Override
-            public void changing(final LocationEvent event) {
-                setHeightAndTriggerLayout(MINIMUM_HEIGHT);
-            }
-
-            @Override
-            public void changed(final LocationEvent event) {
+                // for unknown reasons, the completed method is called twice.
+                // Once on begin, and once after the file load was finished.
+                // Thus, we simply consider every second event only.
+                if (mustRender) {
+                    recalculateAndSetHeight();
+                }
+                mustRender = !mustRender;
             }
         });
     }
@@ -107,18 +88,18 @@ public final class BrowserSizeWorkaround {
 
         @Override
         public void run() {
-            if (!browser.isDisposed()) {
-                final Object result = browser
-                        .evaluate("function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();");
-
-                if (result == null) {
-                    // terminate re-layout operation if browser widget fails to
-                    // compute its size
-                    return;
-                }
-                final int height = (int) Math.ceil(((Double) result).doubleValue());
-                setHeightAndTriggerLayout(height);
+            if (browser.isDisposed()) {
+                return;
             }
+            final String script = "function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();";
+            final Object result = browser.evaluate(script);
+            if (result == null) {
+                // terminate re-layout operation if browser
+                // widget fails to compute its size
+                return;
+            }
+            final int height = (int) Math.ceil(((Double) result).doubleValue());
+            setHeightAndTriggerLayout(height);
         }
     }
 

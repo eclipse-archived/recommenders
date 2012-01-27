@@ -47,21 +47,23 @@ public class JavaSelectionListenerTest {
     });
 
     @Test
-    public void testStructuredSelectionWithType() {
+    public void testStructuredSelectionWithType() throws InterruptedException {
         final List<?> expected = newArrayList(someType(), someMethod(), someField(), someLocalVariable(),
                 someJavaModel());
         for (final Object e : expected) {
             sut.selectionChanged(null, new StructuredSelection(e));
+            Thread.sleep(150);
         }
         assertEquals(expected, elements);
     }
 
     @Test
-    public void testFireEventTwiceSelection() {
+    public void testFireEventTwiceSelection() throws InterruptedException {
 
         final IType someType = someType();
         sut.selectionChanged(null, new StructuredSelection(someType));
         sut.selectionChanged(null, new StructuredSelection(someType));
+        Thread.sleep(150);
 
         assertEquals(1, elements.size());
     }

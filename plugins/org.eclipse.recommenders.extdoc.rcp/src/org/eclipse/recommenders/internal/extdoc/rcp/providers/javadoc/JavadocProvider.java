@@ -50,8 +50,9 @@ public final class JavadocProvider extends ExtdocProvider {
     }
 
     /*
-     * NOTE: this provider is an example provider. There is actually no need to create dispatch methods for each of
-     * these java elements separately. We just do this for demo purpose.
+     * NOTE: this provider is an example provider. There is actually no need to
+     * create dispatch methods for each of these java elements separately. We
+     * just do this for demo purpose.
      */
 
     @JavaSelectionSubscriber
@@ -92,11 +93,13 @@ public final class JavadocProvider extends ExtdocProvider {
             public void run() {
                 javadoc = new JavadocViewPart(parent, activeWorkbenchWindow, element, workspaceBus);
 
-                // TODO REVIEW MB: since javadoc view part is ours, shouldn't we move that into JavadocViewpart???
+                // TODO REVIEW MB: since javadoc view part is ours, shouldn't we
+                // move that into JavadocViewpart???
                 final Control control = javadoc.getControl();
                 if (control instanceof Browser) {
                     // on mac or win:
-                    new BrowserSizeWorkaround((Browser) control);
+                    final Browser browser = (Browser) control;
+                    new BrowserSizeWorkaround(browser);
                 } else if (control instanceof StyledText) {
                     // on linux:
                     initializeStyledText((StyledText) control);
@@ -105,7 +108,8 @@ public final class JavadocProvider extends ExtdocProvider {
             }
 
             private void initializeStyledText(final StyledText styledText) {
-                // here some layout magic happens only Stefan knows about. Won't touch until needed.
+                // here some layout magic happens only Stefan knows about. Won't
+                // touch until needed.
                 final GridData gridData = GridDataFactory.fillDefaults().grab(true, false)
                         .hint(SWT.DEFAULT, BrowserSizeWorkaround.MINIMUM_HEIGHT)
                         .minSize(SWT.DEFAULT, BrowserSizeWorkaround.MINIMUM_HEIGHT).create();
