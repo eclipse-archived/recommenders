@@ -14,9 +14,9 @@ package org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
@@ -55,42 +56,49 @@ public final class JavadocProvider extends ExtdocProvider {
      * just do this for demo purpose.
      */
 
-    @JavaSelectionSubscriber
-    public Status onPackageSelection(final IPackageFragment pkg, final JavaSelectionEvent selection,
-            final Composite parent) {
-        render(pkg, parent);
-        return Status.OK;
-    }
+    // @JavaSelectionSubscriber
+    // public Status onPackageSelection(final IPackageFragment pkg, final
+    // JavaSelectionEvent selection,
+    // final Composite parent) throws JavaModelException {
+    // render(pkg, parent);
+    // return Status.OK;
+    // }
 
     @JavaSelectionSubscriber
     public Status onCompilationUnitSelection(final ITypeRoot root, final JavaSelectionEvent selection,
-            final Composite parent) {
+            final Composite parent) throws JavaModelException {
         render(root, parent);
         return Status.OK;
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeSelection(final IType type, final JavaSelectionEvent selection, final Composite parent) {
+    public Status onTypeSelection(final IType type, final JavaSelectionEvent selection, final Composite parent)
+            throws JavaModelException {
         render(type, parent);
         return Status.OK;
     }
 
     @JavaSelectionSubscriber
-    public Status onMethodSelection(final IMethod method, final JavaSelectionEvent selection, final Composite parent) {
+    public Status onMethodSelection(final IMethod method, final JavaSelectionEvent selection, final Composite parent)
+            throws JavaModelException {
         render(method, parent);
         return Status.OK;
     }
 
     @JavaSelectionSubscriber
-    public Status onFieldSelection(final IField field, final JavaSelectionEvent selection, final Composite parent) {
+    public Status onFieldSelection(final IField field, final JavaSelectionEvent selection, final Composite parent)
+            throws JavaModelException {
         render(field, parent);
         return Status.OK;
     }
 
-    private Status render(final IJavaElement element, final Composite parent) {
+    private Status render(final IJavaElement element, final Composite parent) throws JavaModelException {
+        final Stopwatch w = new Stopwatch();
+        w.start();
         runSyncInUiThread(new Runnable() {
             @Override
             public void run() {
+                disposeOldJavadoc();
                 javadoc = new JavadocViewPart(parent, activeWorkbenchWindow, element, workspaceBus);
 
                 // TODO REVIEW MB: since javadoc view part is ours, shouldn't we
@@ -104,7 +112,13 @@ public final class JavadocProvider extends ExtdocProvider {
                     // on linux:
                     initializeStyledText((StyledText) control);
                 }
-                javadoc.setInput(element);
+
+            }
+
+            private void disposeOldJavadoc() {
+                if (javadoc != null) {
+                    javadoc.dispose();
+                }
             }
 
             private void initializeStyledText(final StyledText styledText) {
@@ -130,7 +144,10 @@ public final class JavadocProvider extends ExtdocProvider {
             }
 
         });
-        waitForBrowserSizeWorkaround();
+        javadoc.setInput(element);
+        w.stop();
+        System.out.println(w);
+        // waitForBrowserSizeWorkaround();
         return Status.OK;
     }
 
