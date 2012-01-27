@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import org.eclipse.core.commands.Command;
@@ -22,22 +23,34 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.expressions.IEvaluationContext;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.dynamichelpers.IExtensionTracker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IKeyBindingService;
+import org.eclipse.ui.IPageListener;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IPartService;
+import org.eclipse.ui.IPerspectiveListener;
+import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.ISourceProvider;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.handlers.IHandlerActivation;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.services.IServiceLocator;
@@ -46,10 +59,10 @@ import org.eclipse.ui.services.IServiceLocator;
 public final class ViewSiteMock implements IViewSite {
 
     private ISelectionProvider selectionProvider;
-    private final IWorkbenchWindow workbenchWindow;
+    private final Shell shell;
 
-    public ViewSiteMock(final IWorkbenchWindow workbenchWindow) {
-        this.workbenchWindow = workbenchWindow;
+    public ViewSiteMock(final Shell shell) {
+        this.shell = shell;
     }
 
     @Override
@@ -98,12 +111,153 @@ public final class ViewSiteMock implements IViewSite {
 
     @Override
     public Shell getShell() {
-        return workbenchWindow.getShell();
+        return shell;
     }
 
     @Override
     public IWorkbenchWindow getWorkbenchWindow() {
-        return workbenchWindow;
+        return new IWorkbenchWindow() {
+
+            @Override
+            public boolean hasService(final Class api) {
+
+                return false;
+            }
+
+            @Override
+            public Object getService(final Class api) {
+
+                return null;
+            }
+
+            @Override
+            public void removePerspectiveListener(final IPerspectiveListener listener) {
+
+            }
+
+            @Override
+            public void removePageListener(final IPageListener listener) {
+
+            }
+
+            @Override
+            public void addPerspectiveListener(final IPerspectiveListener listener) {
+
+            }
+
+            @Override
+            public void addPageListener(final IPageListener listener) {
+
+            }
+
+            @Override
+            public void setActivePage(final IWorkbenchPage page) {
+
+            }
+
+            @Override
+            public void run(final boolean fork, final boolean cancelable, final IRunnableWithProgress runnable)
+                    throws InvocationTargetException, InterruptedException {
+
+            }
+
+            @Override
+            public IWorkbenchPage openPage(final String perspectiveId, final IAdaptable input)
+                    throws WorkbenchException {
+
+                return null;
+            }
+
+            @Override
+            public IWorkbenchPage openPage(final IAdaptable input) throws WorkbenchException {
+
+                return null;
+            }
+
+            @Override
+            public boolean isApplicationMenu(final String menuId) {
+
+                return false;
+            }
+
+            @Override
+            public IWorkbench getWorkbench() {
+
+                return null;
+            }
+
+            @Override
+            public Shell getShell() {
+
+                return null;
+            }
+
+            @Override
+            public ISelectionService getSelectionService() {
+
+                return null;
+            }
+
+            @Override
+            public IPartService getPartService() {
+                return new IPartService() {
+
+                    @Override
+                    public void removePartListener(final IPartListener2 listener) {
+                    }
+
+                    @Override
+                    public void removePartListener(final IPartListener listener) {
+                    }
+
+                    @Override
+                    public IWorkbenchPartReference getActivePartReference() {
+
+                        return null;
+                    }
+
+                    @Override
+                    public IWorkbenchPart getActivePart() {
+
+                        return null;
+                    }
+
+                    @Override
+                    public void addPartListener(final IPartListener2 listener) {
+
+                    }
+
+                    @Override
+                    public void addPartListener(final IPartListener listener) {
+
+                    }
+                };
+            }
+
+            @Override
+            public IWorkbenchPage[] getPages() {
+
+                return null;
+            }
+
+            @Override
+            public IExtensionTracker getExtensionTracker() {
+
+                return null;
+            }
+
+            @Override
+            public IWorkbenchPage getActivePage() {
+
+                return null;
+            }
+
+            @Override
+            public boolean close() {
+
+                return false;
+            }
+        };
     }
 
     @Override

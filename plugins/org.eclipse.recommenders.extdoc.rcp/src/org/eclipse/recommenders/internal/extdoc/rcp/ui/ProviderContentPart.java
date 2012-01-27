@@ -14,6 +14,8 @@ import static java.lang.String.format;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -221,9 +223,15 @@ public class ProviderContentPart {
         container.layout();
     }
 
+    private final Lock layoutLock = new ReentrantLock();
+
     private void relayout() {
-        visiblePanel.layout();
-        resizeScrolledComposite();
+        if (layoutLock.tryLock()) {
+
+            resizeScrolledComposite();
+            visiblePanel.layout();
+            layoutLock.unlock();
+        }
     }
 
     @Subscribe
@@ -236,7 +244,7 @@ public class ProviderContentPart {
         } else {
             area.hide();
         }
-        relayout();
+        // relayout();
     }
 
     @Subscribe
@@ -249,7 +257,7 @@ public class ProviderContentPart {
     public void onEvent(final ProviderFinishedEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
         area.showContent();
-        relayout();
+        // relayout();
     }
 
     @Subscribe
@@ -257,7 +265,7 @@ public class ProviderContentPart {
         final ProviderArea area = providerAreas.get(e.provider);
         area.setStatus("provider is delayed...");
         area.showStatus();
-        relayout();
+        // relayout();
     }
 
     @Subscribe
@@ -272,7 +280,7 @@ public class ProviderContentPart {
             }
         });
         area.showStatus();
-        relayout();
+        area.layout();
     }
 
     @Subscribe
@@ -314,7 +322,7 @@ public class ProviderContentPart {
             }
         });
         area.showStatus();
-        relayout();
+        // relayout();
     }
 
     @Subscribe

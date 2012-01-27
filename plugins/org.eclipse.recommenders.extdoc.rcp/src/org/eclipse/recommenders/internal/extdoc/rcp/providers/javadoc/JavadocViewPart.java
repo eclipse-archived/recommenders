@@ -44,7 +44,7 @@ final class JavadocViewPart extends JavadocView {
             @Extdoc final EventBus extdocBus) {
         this.selection = selection;
         this.workspaceBus = extdocBus;
-        setSite(new ViewSiteMock(window));
+        setSite(new ViewSiteMock(window.getShell()));
         createPartControl(parent);
     }
 
