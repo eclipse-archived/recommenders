@@ -26,19 +26,19 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.util.ObjectVector;
 import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 @SuppressWarnings("restriction")
 public class RecommendersCompletionContext extends BaseRecommendersCompletionContext {
 
-    @Inject
-    public RecommendersCompletionContext(@Assisted final JavaContentAssistInvocationContext jdtContext) {
-        super(jdtContext);
+    public RecommendersCompletionContext(@Assisted final JavaContentAssistInvocationContext jdtContext,
+            final IAstProvider astProvider) {
+        super(jdtContext, astProvider);
     }
 
     @Override

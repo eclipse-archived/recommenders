@@ -44,6 +44,7 @@ import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.SearchableEnvironment;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
@@ -68,8 +69,9 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
     private IntelligentCompletionRequestor completionRequestor;
 
     @Inject
-    public RecommendersCompletionContext(@Assisted final JavaContentAssistInvocationContext jdtContext) {
-        super(jdtContext);
+    public RecommendersCompletionContext(@Assisted final JavaContentAssistInvocationContext jdtContext,
+            final IAstProvider astProvider) {
+        super(jdtContext, astProvider);
 
         jdtCompilationUnit = (org.eclipse.jdt.internal.core.CompilationUnit) getJavaContext().getCompilationUnit();
         initializeCompletionPrefixToken();

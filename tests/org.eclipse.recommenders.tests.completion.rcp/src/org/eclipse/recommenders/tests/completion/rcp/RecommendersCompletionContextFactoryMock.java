@@ -14,10 +14,11 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
 import org.eclipse.recommenders.internal.completion.rcp.RecommendersCompletionContext;
+import org.eclipse.recommenders.internal.rcp.providers.CachingAstProvider;
 
 public class RecommendersCompletionContextFactoryMock implements IRecommendersCompletionContextFactory {
     @Override
     public IRecommendersCompletionContext create(final JavaContentAssistInvocationContext context) {
-        return new RecommendersCompletionContext(context);
+        return new RecommendersCompletionContext(context, new CachingAstProvider());
     }
 }

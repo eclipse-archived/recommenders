@@ -14,7 +14,6 @@ import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -44,6 +43,7 @@ import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
@@ -54,9 +54,12 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     private final JavaContentAssistInvocationContext javaContext;
     private InternalCompletionContext coreContext;
+    private final IAstProvider astProvider;
 
-    public BaseRecommendersCompletionContext(final JavaContentAssistInvocationContext jdtContext) {
+    public BaseRecommendersCompletionContext(final JavaContentAssistInvocationContext jdtContext,
+            final IAstProvider astProvider) {
         this.javaContext = jdtContext;
+        this.astProvider = astProvider;
         this.coreContext = cast(jdtContext.getCoreContext());
         if (!coreContext.isExtended()) {
             requestExtendedContext();
@@ -64,8 +67,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     }
 
     private void requestExtendedContext() {
-        ICompilationUnit cu = getCompilationUnit();
-        CompletionProposalCollector collector = new CompletionProposalCollector(cu) {
+        final ICompilationUnit cu = getCompilationUnit();
+        final CompletionProposalCollector collector = new CompletionProposalCollector(cu) {
             @Override
             public void acceptContext(final CompletionContext context) {
                 super.acceptContext(context);
@@ -76,7 +79,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         collector.setRequireExtendedContext(true);
         try {
             cu.codeComplete(getInvocationOffset(), collector);
-        } catch (JavaModelException e) {
+        } catch (final JavaModelException e) {
             RecommendersPlugin.log(e);
         }
     }
@@ -171,17 +174,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public CompilationUnit getAST() {
-        try {
-            final ICompilationUnit cu = getCompilationUnit();
-            // XXX WTH? We have to do this twice - at least for e3.8 milestones???
-            internal_getAst(cu);
-            final CompilationUnit ast = internal_getAst(cu);
-            return ast;
-        } catch (final JavaModelException e) {
-            // this should not happen since the underlying resource typically exists.
-            // Thus, re-throw excepotion but unchecked
-            throw throwUnhandledException(e);
-        }
+        return astProvider.get(getCompilationUnit());
     }
 
     private CompilationUnit internal_getAst(final ICompilationUnit cu) throws JavaModelException {
@@ -268,8 +261,10 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
             if (c.receiver instanceof ThisReference) {
                 name = "this".toCharArray();
             } else if (c.receiver instanceof MessageSend) {
-                // some anonymous type/method return value that has no name... e.g.:
-                // PlatformUI.getWorkbench()|^Space --> receiver is anonymous --> name = null
+                // some anonymous type/method return value that has no name...
+                // e.g.:
+                // PlatformUI.getWorkbench()|^Space --> receiver is anonymous
+                // --> name = null
                 name = null;
             } else if (c.fieldBinding() != null) {
                 // does this happen? When?
@@ -341,7 +336,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         if (!opt.isPresent()) {
             return absent();
         }
-        TypeBinding b = opt.get();
+        final TypeBinding b = opt.get();
         if (b instanceof MissingTypeBinding) {
             return absent();
         }

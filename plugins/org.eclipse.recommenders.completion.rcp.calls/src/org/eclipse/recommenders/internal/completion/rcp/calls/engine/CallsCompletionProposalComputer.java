@@ -52,6 +52,7 @@ import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.recommenders.utils.rcp.ast.MethodDeclarationFinder;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
@@ -98,6 +99,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     @Override
     public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext javaContext,
             final IProgressMonitor monitor) {
+        final Stopwatch w = new Stopwatch();
+        w.start();
         initalize(javaContext);
 
         if (!isCompletionRequestSupported()) {
@@ -116,6 +119,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         createProspsals();
         releaseModel();
 
+        w.stop();
+        System.out.println("calls took " + w);
         return proposals;
 
     }
@@ -291,7 +296,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
         @Override
         protected boolean isPrefix(final String prefix, final String string) {
-            // remove this proposal as soon as none of our proposal can be applied anymore:
+            // remove this proposal as soon as none of our proposal can be
+            // applied anymore:
             for (final ICompletionProposal p : proposals) {
                 // skip me myself
                 if (p == this) {
