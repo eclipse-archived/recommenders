@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing;
 
+import static com.google.common.base.Optional.fromNullable;
 import static java.lang.String.format;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createGridComposite;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
@@ -45,6 +46,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
+import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -55,12 +57,12 @@ public final class SelfCallsProvider extends ExtdocProvider {
     private final ExtdocResourceProxy proxy;
     private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
-    private final Cache<ITypeName, ClassSelfcallDirectives> cache1 = CacheBuilder.newBuilder().maximumSize(20)
-            .concurrencyLevel(1).build(new CacheLoader<ITypeName, ClassSelfcallDirectives>() {
+    private final Cache<ITypeName, Optional<ClassSelfcallDirectives>> cache1 = CacheBuilder.newBuilder()
+            .maximumSize(20).concurrencyLevel(1).build(new CacheLoader<ITypeName, Optional<ClassSelfcallDirectives>>() {
 
                 @Override
-                public ClassSelfcallDirectives load(final ITypeName typeName) throws Exception {
-                    return proxy.findClassSelfcallDirectives(typeName);
+                public Optional<ClassSelfcallDirectives> load(final ITypeName typeName) throws Exception {
+                    return fromNullable(proxy.findClassSelfcallDirectives(typeName));
                 }
             });
 
@@ -87,11 +89,11 @@ public final class SelfCallsProvider extends ExtdocProvider {
     public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent)
             throws ExecutionException {
         final ITypeName typeName = resolver.toRecType(type);
-        final ClassSelfcallDirectives selfcalls = cache1.get(typeName);
-        if (selfcalls == null) {
+        final Optional<ClassSelfcallDirectives> opt = cache1.get(typeName);
+        if (!opt.isPresent()) {
             return Status.NOT_AVAILABLE;
         }
-        runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, selfcalls, parent));
+        runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, opt.get(), parent));
         return Status.OK;
     }
 

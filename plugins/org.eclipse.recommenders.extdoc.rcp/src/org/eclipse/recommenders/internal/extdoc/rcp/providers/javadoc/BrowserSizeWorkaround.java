@@ -118,14 +118,11 @@ public final class BrowserSizeWorkaround {
 
     public static void layoutParents(final Composite composite) {
         for (Composite parent = composite; parent != null; parent = parent.getParent()) {
-            // TODO: REVIEW MB: Johannes, this is confusing me. why is the
-            // parentsParentsParent needed? create a separate method for this?
-            final Composite theParentsParent = parent.getParent();
-            final Composite theParentsParentsParent = theParentsParent.getParent();
-            if (theParentsParentsParent == null || parent instanceof ScrolledComposite) {
+            if (parent instanceof ScrolledComposite) {
                 final int newWidth = parent.getSize().x;
                 final Point newSize = parent.computeSize(newWidth, SWT.DEFAULT);
                 parent.setSize(newSize);
+                final Composite theParentsParent = parent.getParent();
                 theParentsParent.layout(new Control[] { composite }, SWT.CHANGED);
                 break;
             }

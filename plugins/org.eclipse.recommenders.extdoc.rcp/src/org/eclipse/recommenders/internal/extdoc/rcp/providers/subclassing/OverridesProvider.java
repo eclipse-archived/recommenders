@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing;
 
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.collect.Collections2.filter;
 import static com.google.common.collect.Lists.newLinkedList;
 import static java.lang.String.format;
@@ -52,6 +53,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -64,20 +66,20 @@ public final class OverridesProvider extends ExtdocProvider {
     private final ExtdocResourceProxy proxy;
     private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
-    private final Cache<ITypeName, ClassOverrideDirectives> cache1 = CacheBuilder.newBuilder().maximumSize(20)
-            .concurrencyLevel(1).build(new CacheLoader<ITypeName, ClassOverrideDirectives>() {
+    private final Cache<ITypeName, Optional<ClassOverrideDirectives>> cache1 = CacheBuilder.newBuilder()
+            .maximumSize(20).concurrencyLevel(1).build(new CacheLoader<ITypeName, Optional<ClassOverrideDirectives>>() {
 
                 @Override
-                public ClassOverrideDirectives load(final ITypeName typeName) throws Exception {
-                    return proxy.findClassOverrideDirectives(typeName);
+                public Optional<ClassOverrideDirectives> load(final ITypeName typeName) throws Exception {
+                    return fromNullable(proxy.findClassOverrideDirectives(typeName));
                 }
             });
-    private final Cache<ITypeName, ClassOverridePatterns> cache2 = CacheBuilder.newBuilder().maximumSize(20)
-            .concurrencyLevel(1).build(new CacheLoader<ITypeName, ClassOverridePatterns>() {
+    private final Cache<ITypeName, Optional<ClassOverridePatterns>> cache2 = CacheBuilder.newBuilder().maximumSize(20)
+            .concurrencyLevel(1).build(new CacheLoader<ITypeName, Optional<ClassOverridePatterns>>() {
 
                 @Override
-                public ClassOverridePatterns load(final ITypeName typeName) throws Exception {
-                    return proxy.findClassOverridePatterns(typeName);
+                public Optional<ClassOverridePatterns> load(final ITypeName typeName) throws Exception {
+                    return fromNullable(proxy.findClassOverridePatterns(typeName));
                 }
             });
 
@@ -111,9 +113,9 @@ public final class OverridesProvider extends ExtdocProvider {
 
     private boolean renderClassOverrideDirectives(final IType type, final Composite parent) throws ExecutionException {
         final ITypeName typeName = resolver.toRecType(type);
-        final ClassOverrideDirectives overrides = cache1.get(typeName);
-        if (overrides != null) {
-            runSyncInUiThread(new TypeOverrideDirectivesRenderer(type, overrides, parent));
+        final Optional<ClassOverrideDirectives> opt = cache1.get(typeName);
+        if (opt.isPresent()) {
+            runSyncInUiThread(new TypeOverrideDirectivesRenderer(type, opt.get(), parent));
             return true;
         }
         return false;
@@ -121,9 +123,9 @@ public final class OverridesProvider extends ExtdocProvider {
 
     private boolean renderClassOverridesPatterns(final IType type, final Composite parent) throws ExecutionException {
         final ITypeName typeName = resolver.toRecType(type);
-        final ClassOverridePatterns patterns = cache2.get(typeName);
-        if (patterns != null) {
-            runSyncInUiThread(new OverridePatternsRenderer(type, patterns, parent));
+        final Optional<ClassOverridePatterns> opt = cache2.get(typeName);
+        if (opt.isPresent()) {
+            runSyncInUiThread(new OverridePatternsRenderer(type, opt.get(), parent));
             return true;
         }
         return false;
