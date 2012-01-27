@@ -35,8 +35,8 @@ import com.google.common.eventbus.EventBus;
 
 public class ProviderExecutionSchedulerFixture {
 
-    protected static final int RENDER_TIMEOUT = 75;
-    protected static final int TIME_OF_SLOW_PROVIDERS = 150;
+    protected static final int RENDER_TIMEOUT = 125;
+    protected static final int TIME_OF_SLOW_PROVIDERS = 250;
 
     public static final JavaSelectionEvent SELECTION = TYPE_IN_TYPE_DECLARATION;
 
@@ -71,7 +71,8 @@ public class ProviderExecutionSchedulerFixture {
         uninterestedProvider = new ExtdocProviderHelper() {
             @Override
             @JavaSelectionSubscriber(METHOD_BODY)
-            public Status methodToCall(IJavaElement e, JavaSelectionEvent s, Composite p) throws InterruptedException {
+            public Status methodToCall(final IJavaElement e, final JavaSelectionEvent s, final Composite p)
+                    throws InterruptedException {
                 countExecution();
                 return Status.OK;
             }
@@ -83,10 +84,11 @@ public class ProviderExecutionSchedulerFixture {
     private ExtdocProviderHelper createProvider(final Boolean shouldSleep, final boolean shouldCrash,
             final boolean isAvailable) {
 
-        ExtdocProviderHelper provider = new ExtdocProviderHelper() {
+        final ExtdocProviderHelper provider = new ExtdocProviderHelper() {
             @Override
             @JavaSelectionSubscriber
-            public Status methodToCall(IJavaElement e, JavaSelectionEvent s, Composite c) throws InterruptedException {
+            public Status methodToCall(final IJavaElement e, final JavaSelectionEvent s, final Composite c)
+                    throws InterruptedException {
                 selection = s;
                 composite = c;
 
@@ -113,15 +115,15 @@ public class ProviderExecutionSchedulerFixture {
         return provider;
     }
 
-    private void registerCompositeForProvider(ExtdocProviderHelper provider) {
-        Composite c = mock(Composite.class);
+    private void registerCompositeForProvider(final ExtdocProviderHelper provider) {
+        final Composite c = mock(Composite.class);
         when(contentPart.getRenderingArea(provider)).thenReturn(c);
         composites.put(provider, c);
     }
 
-    public ProviderExecutionScheduler createScheduler(ExtdocProvider... providerArray) {
-        List<ExtdocProvider> providers = asList(providerArray);
-        ProviderExecutionScheduler scheduler = new ProviderExecutionScheduler(providers, new SubscriptionManager(
+    public ProviderExecutionScheduler createScheduler(final ExtdocProvider... providerArray) {
+        final List<ExtdocProvider> providers = asList(providerArray);
+        final ProviderExecutionScheduler scheduler = new ProviderExecutionScheduler(providers, new SubscriptionManager(
                 providers), contentPart, bus) {
             {
                 RENDER_TIMEOUT_IN_MS = RENDER_TIMEOUT;
@@ -131,9 +133,9 @@ public class ProviderExecutionSchedulerFixture {
     }
 
     public ProviderExecutionScheduler createSchedulerWithMockedBus() {
-        List<ExtdocProvider> providers = Lists.newArrayList();
-        SubscriptionManager subscriptionManager = mock(SubscriptionManager.class);
-        ProviderContentPart contentPart = mock(ProviderContentPart.class);
+        final List<ExtdocProvider> providers = Lists.newArrayList();
+        final SubscriptionManager subscriptionManager = mock(SubscriptionManager.class);
+        final ProviderContentPart contentPart = mock(ProviderContentPart.class);
         return new ProviderExecutionScheduler(providers, subscriptionManager, contentPart, mockBus);
     }
 
@@ -150,11 +152,11 @@ public class ProviderExecutionSchedulerFixture {
             assertTrue(counter > 0);
         }
 
-        public void assertExecution(int times) {
+        public void assertExecution(final int times) {
             assertTrue(counter == times);
         }
 
-        public void assertParameters(JavaSelectionEvent selection, Composite composite) {
+        public void assertParameters(final JavaSelectionEvent selection, final Composite composite) {
             ensureIsNotNull(this.selection, "selection must be remembered in helper implementation");
             assertEquals(selection, this.selection);
 
@@ -166,8 +168,8 @@ public class ProviderExecutionSchedulerFixture {
                 throws InterruptedException;
     }
 
-    public Composite getComposite(ExtdocProviderHelper provider) {
-        Composite c = composites.get(provider);
+    public Composite getComposite(final ExtdocProviderHelper provider) {
+        final Composite c = composites.get(provider);
         ensureIsNotNull(c);
         return c;
     }
