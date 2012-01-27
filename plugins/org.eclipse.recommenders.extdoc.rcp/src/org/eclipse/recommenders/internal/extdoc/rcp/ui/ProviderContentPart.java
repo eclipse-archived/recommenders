@@ -18,7 +18,6 @@ import java.util.Map;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.internal.ui.viewsupport.JavaElementLinks;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -138,7 +137,7 @@ public class ProviderContentPart {
 
     private void resizeScrolledComposite() {
         final int newWidth = scrolledContent.getSize().x;
-        Point newSize = scrolledContent.computeSize(newWidth, SWT.DEFAULT);
+        final Point newSize = scrolledContent.computeSize(newWidth, SWT.DEFAULT);
         scrollingComposite.setMinHeight(newSize.y);
     }
 
@@ -193,9 +192,7 @@ public class ProviderContentPart {
 
     private void updateSelectionStatus(final JavaSelectionEvent selection) {
         final IJavaElement element = selection.getElement();
-        String text = JavaElementLinks.getElementLabel(element, LABEL_FLAGS);
-        text = stripHtml(text);
-
+        final String text = JavaElementLabels.getElementLabel(element, LABEL_FLAGS);
         selectionStatus.setText(text);
         selectionStatus.setImage(labelProvider.getImage(element));
     }
