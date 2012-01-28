@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.feature.extdoc.server.source"
-      label="Code Recommenders: ExtDoc Client Sources (Incubation) (Experimental)"
+      label="Code Recommenders: ExtDoc Server Sources (Incubation) (Experimental)"
       version="0.5.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

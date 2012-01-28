@@ -12,8 +12,8 @@
 
 -->
 <feature
-      id="org.eclipse.recommenders.feature.completion.rcp.chain"
-      label="Code Recommenders: Chain Completion (Incubation)"
+      id="org.eclipse.recommenders.feature.rcp.core.source"
+      label="Code Recommenders: RCP Core Sources (Incubation)"
       version="0.5.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
@@ -29,30 +29,46 @@
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.recommenders.feature.rcp.core"/>
-   </requires>
-
    <plugin
-         id="org.eclipse.recommenders.completion.rcp.chain"
+         id="org.eclipse.recommenders.rcp.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.completion.rcp"
+         id="org.eclipse.recommenders.injection.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.completion.rcp.e38"
+         id="org.eclipse.recommenders.utils.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.utils.gson.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.utils.rcp.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.webclient.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>

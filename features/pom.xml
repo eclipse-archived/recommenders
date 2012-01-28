@@ -15,6 +15,10 @@
 
 	<modules>
         <module>org.eclipse.recommenders.feature.rcp</module>
+        <module>org.eclipse.recommenders.feature.rcp.source</module>
+        
+        <module>org.eclipse.recommenders.feature.rcp.core</module>
+        <module>org.eclipse.recommenders.feature.rcp.core.source</module>
         
         <!--
 		<module>org.eclipse.recommenders.feature.codesearch.rcp</module>

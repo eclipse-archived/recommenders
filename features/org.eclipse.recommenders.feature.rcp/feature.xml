@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.feature.rcp"
-      label="Code Recommenders: RCP Utils (Incubation)"
+      label="Code Recommenders Developer Tools (Incubation)"
       version="0.5.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
@@ -29,83 +29,32 @@
       %license
    </license>
 
-   <plugin
-         id="org.eclipse.recommenders.rcp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.recommenders.feature.3rd.orbit"
+         version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.recommenders.injection"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.recommenders.feature.completion.rcp.chain"
+         version="0.0.0"/>
 
-   <plugin
-         id="com.google.inject"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.recommenders.feature.completion.rcp.intellig"
+         version="0.0.0"/>
 
-   <plugin
-         id="com.google.inject.assistedinject"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.recommenders.feature.completion.rcp.subwords"
+         version="0.0.0"/>
 
-   <plugin
-         id="com.google.inject.multibindings"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.recommenders.feature.extdoc.rcp"
+         version="0.0.0"/>
 
-   <plugin
-         id="javax.inject"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.recommenders.feature.rcp.core"
+         version="0.0.0"/>
 
-   <plugin
-         id="org.eclipse.recommenders.utils"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.utils.gson"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.utils.rcp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.webclient"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.doc"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <includes
+         id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit"
+         version="0.0.0"/>
 
 </feature>

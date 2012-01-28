@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2010 Darmstadt University of Technology.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+       Darmstadt University of Technology - initial API and implementation.
+
+-->
+<feature
+      id="org.eclipse.recommenders.feature.rcp.source"
+      label="Code Recommenders Developer Tools Sources (Incubation)"
+      version="0.5.0.qualifier"
+      provider-name="Eclipse Code Recommenders">
+
+   <description url="http://www.eclipse.org/recommenders/">
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <includes
+         id="org.eclipse.recommenders.feature.completion.rcp.chain.source"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.recommenders.feature.completion.rcp.intellig.source"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.recommenders.feature.completion.rcp.subwords.source"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.recommenders.feature.extdoc.rcp.source"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.recommenders.feature.rcp.core.source"
+         version="0.0.0"/>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="com.google.guava" version="10.0.0" match="compatible"/>
+      <import plugin="org.apache.commons.lang3"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="javax.inject" version="1.0.0" match="compatible"/>
+      <import plugin="com.google.inject" version="3.0.0" match="greaterOrEqual"/>
+      <import plugin="com.google.gson" version="2.0.0" match="greaterOrEqual"/>
+      <import plugin="com.sun.jersey.client"/>
+      <import plugin="com.sun.jersey.core"/>
+      <import plugin="org.eclipse.help"/>
+   </requires>
+
+</feature>
