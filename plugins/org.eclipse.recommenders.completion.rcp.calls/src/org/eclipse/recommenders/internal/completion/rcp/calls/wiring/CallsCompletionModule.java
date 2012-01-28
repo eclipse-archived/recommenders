@@ -17,7 +17,6 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
 
@@ -73,12 +72,15 @@ public class CallsCompletionModule extends AbstractModule {
         final File modelStoreLocation = new File(stateLocation.toFile(), MODEL_VERSION + "/model-store2/");
         final File dependencyStoreLocation = new File(stateLocation.toFile(), MODEL_VERSION + "/dependency-store2/");
         //
-        final EventBus callBus = new AsyncEventBus(Executors.newFixedThreadPool(5));
+        final EventBus callBus =
+                new AsyncEventBus(org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor(5,
+                        Thread.MIN_PRIORITY, "Recommenders-Call-ModelStore-"));
         final DependencyInfoStore depStore = new DependencyInfoStore(dependencyStoreLocation, callBus);
         final DependencyInfoComputerService depInfoComputer = new DependencyInfoComputerService(callBus);
         final ManifestResolverService manifestResolver = new ManifestResolverService(config, callBus);
-        final org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.ModelArchiveStore<IObjectMethodCallsNet> modelStore = new org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.ModelArchiveStore<IObjectMethodCallsNet>(
-                modelStoreLocation, new CallsModelLoader(), callBus);
+        final org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.ModelArchiveStore<IObjectMethodCallsNet> modelStore =
+                new org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.ModelArchiveStore<IObjectMethodCallsNet>(
+                        modelStoreLocation, new CallsModelLoader(), callBus);
         final ModelArchiveDownloadService modelDownloader = new ModelArchiveDownloadService(config, callBus);
 
         wsBus.register(depStore);
@@ -115,7 +117,8 @@ public class CallsCompletionModule extends AbstractModule {
     }
 
     /*
-     * this is a bit odd. Used to initialize complex wired elements such as JavaElementsProvider etc.
+     * this is a bit odd. Used to initialize complex wired elements such as
+     * JavaElementsProvider etc.
      */
     public static class ServicesInitializer {
 

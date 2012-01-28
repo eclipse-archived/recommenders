@@ -12,8 +12,10 @@ package org.eclipse.recommenders.internal.extdoc.rcp.scheduling;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.util.concurrent.MoreExecutors.listeningDecorator;
+import static java.lang.Thread.MIN_PRIORITY;
 import static org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider.Status.NOT_AVAILABLE;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,9 +24,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -51,13 +51,21 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class ProviderExecutionScheduler {
 
     @Testing("visibility allows to set test values")
     protected static int RENDER_TIMEOUT_IN_MS = 2000;
     private static final int NUMBER_OF_THREADS = 7;
+
+    private static int poolId;
+
+    private static ListeningExecutorService createListeningThreadPool(final int numberOfThreads) {
+        final String threadPoolId = "Recommenders-extdoc-pool-" + poolId++ + "thread-";
+        final ThreadPoolExecutor pool = coreThreadsTimoutExecutor(NUMBER_OF_THREADS, MIN_PRIORITY, threadPoolId);
+        final ListeningExecutorService listeningPool = listeningDecorator(pool);
+        return listeningPool;
+    }
 
     private final ListeningExecutorService pool;
     private final Map<ExtdocProvider, Future<?>> futures;
@@ -88,18 +96,6 @@ public class ProviderExecutionScheduler {
         latch = new CountDownLatch(providers.size());
     }
 
-    static int poolId;
-
-    private static ListeningExecutorService createListeningThreadPool(final int numberOfThreads) {
-        final ThreadFactory factory = new ThreadFactoryBuilder().setPriority(Thread.MIN_PRIORITY)
-                .setNameFormat("Recommenders-extdoc-pool-" + poolId++ + "thread-%d").build();
-        final ThreadPoolExecutor pool = new ThreadPoolExecutor(NUMBER_OF_THREADS, NUMBER_OF_THREADS, 100L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), factory);
-        pool.allowCoreThreadTimeOut(true);
-        final ListeningExecutorService listeningPool = listeningDecorator(pool);
-        return listeningPool;
-    }
-
     public void scheduleOnSelection(final JavaSelectionEvent selection) {
         this.currentSelection = selection;
         createNewRenderingPanelInUiThread();
@@ -115,8 +111,8 @@ public class ProviderExecutionScheduler {
             final Optional<Method> optMethod = subscriptionManager.findSubscribedMethod(provider, selection);
 
             if (optMethod.isPresent()) {
-                final OnSelectionCallable callable = new OnSelectionCallable(provider, optMethod.get(), selection,
-                        composite, latch);
+                final OnSelectionCallable callable =
+                        new OnSelectionCallable(provider, optMethod.get(), selection, composite, latch);
                 try {
 
                     final ListenableFuture<?> future = pool.submit(callable);
@@ -179,8 +175,8 @@ public class ProviderExecutionScheduler {
         final Optional<Method> optMethod = subscriptionManager.findSubscribedMethod(e.provider, currentSelection);
 
         if (optMethod.isPresent()) {
-            final OnActivationCallable callable = new OnActivationCallable(e.provider, optMethod.get(),
-                    currentSelection, composite);
+            final OnActivationCallable callable =
+                    new OnActivationCallable(e.provider, optMethod.get(), currentSelection, composite);
             if (pool.isShutdown()) {
                 return;
             }

@@ -11,13 +11,13 @@
 package org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath;
 
 import static com.google.common.base.Optional.fromNullable;
+import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.getLocation;
 
 import java.io.File;
 import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
 
@@ -33,22 +33,24 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 @Singleton
 @SuppressWarnings("restriction")
 public class DependencyInfoComputerService {
 
     /**
-     * Single-threaded executor used to compute fingerprints etc. for package fragment root. Single-threaded because
-     * it's an disk-IO heavy computation. More than one thread will probably not give any performance gains here.
+     * Single-threaded executor used to compute fingerprints etc. for package
+     * fragment root. Single-threaded because it's an disk-IO heavy computation.
+     * More than one thread will probably not give any performance gains here.
      */
-    private final ExecutorService pool = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
-            .setPriority(Thread.MIN_PRIORITY).setNameFormat("Recommenders-dependency-computer-%d").build());
+    private final ExecutorService pool = coreThreadsTimoutExecutor(1, Thread.MIN_PRIORITY,
+            "Recommenders-Dependency-Info-Computer-");
 
     /**
-     * Helper used to ignore {@link IPackageFragmentRoot}s that have been requested already. Relies on
-     * {@link JarPackageFragmentRoot#equals(Object)} to return true if two roots point to the same jar.
+     * Helper used to ignore {@link IPackageFragmentRoot}s that have been
+     * requested already. Relies on
+     * {@link JarPackageFragmentRoot#equals(Object)} to return true if two roots
+     * point to the same jar.
      */
     private final Set<DependencyResolutionRequested> queue = Sets.newHashSet();
 

@@ -38,6 +38,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Atomics;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * Controls which events get fired over the event bus. It internally keeps track
@@ -47,7 +48,8 @@ import com.google.common.util.concurrent.Atomics;
 @SuppressWarnings("restriction")
 public class JavaSelectionProvider implements ISelectionListener {
 
-    ScheduledThreadPoolExecutor d = new ScheduledThreadPoolExecutor(1);
+    ScheduledThreadPoolExecutor d = new ScheduledThreadPoolExecutor(1, new ThreadFactoryBuilder().setNameFormat(
+            "Recommenders-Timeout-Manager").build());
     private final EventBus bus;
     private JavaSelectionEvent lastEvent = new JavaSelectionEvent(null, null);
 

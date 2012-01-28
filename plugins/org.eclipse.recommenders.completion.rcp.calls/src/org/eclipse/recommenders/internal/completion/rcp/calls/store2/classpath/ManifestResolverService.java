@@ -10,8 +10,9 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath;
 
+import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
+
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.udc.ManifestMatchResult;
@@ -23,14 +24,11 @@ import org.eclipse.recommenders.webclient.WebServiceClient;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class ManifestResolverService {
 
-    private final ExecutorService pool = Executors.newFixedThreadPool(
-            5,
-            new ThreadFactoryBuilder().setPriority(Thread.MIN_PRIORITY)
-                    .setNameFormat("Recommenders-manifest-resolver-%d").build());
+    private final ExecutorService pool = coreThreadsTimoutExecutor(1, Thread.MIN_PRIORITY,
+            "Recommenders-Manifest-Resolver-");
 
     private final EventBus bus;
     private final WebServiceClient client;
@@ -54,8 +52,8 @@ public class ManifestResolverService {
             @Override
             public void run() {
                 try {
-                    final ManifestMatchResult matchResult = client.doPostRequest("manifest", e.dependency,
-                            ManifestMatchResult.class);
+                    final ManifestMatchResult matchResult =
+                            client.doPostRequest("manifest", e.dependency, ManifestMatchResult.class);
                     if (matchResult.bestMatch != null) {
                         fireNewManifestMappingCreated(matchResult.bestMatch, e);
                     }

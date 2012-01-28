@@ -55,6 +55,17 @@ import org.eclipse.ui.handlers.IHandlerActivation;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.services.IServiceLocator;
 
+/**
+ * This class is a mock for the {@link JavadocViewPart} to separate it from the
+ * workbench. The {@link JavadocViewPart} itself registers listeners in the
+ * workbench window to respond to selection change events and automatically
+ * updates itself. This behavior is unwanted for use inside the extdoc view,
+ * thus, needs to be mocked.
+ * 
+ * @see #getWorkbenchWindow()
+ * 
+ * 
+ */
 @SuppressWarnings({ "deprecation", "rawtypes" })
 public final class ViewSiteMock implements IViewSite {
 

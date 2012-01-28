@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.tests.rcp.internal.providers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import junit.framework.Assert;
@@ -43,7 +44,13 @@ public class JavaElementSelectionTest {
       _builder.append("class Myclass {");
       _builder.newLine();
       _builder.append("\t");
+      _builder.append("void test(String s1){");
+      _builder.newLine();
+      _builder.append("\t\t");
       _builder.append("Str$ing s = new St$ring(\"\");");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
       _builder.newLine();
       _builder.append("}");
       final CharSequence code = _builder;
@@ -68,7 +75,7 @@ public class JavaElementSelectionTest {
   }
   
   @Test
-  public void testTypeSelectionInMethodBody() {
+  public void testTypeSelectionInFieldDeclaration() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("class Myclass {");
       _builder.newLine();
@@ -81,6 +88,20 @@ public class JavaElementSelectionTest {
       List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
+  }
+  
+  @Test
+  public void testEmptySelectionInClassBody() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("class Myclass {");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("$");
+      _builder.newLine();
+      _builder.append("}");
+      final CharSequence code = _builder;
+      List<String> _emptyList = Collections.<String>emptyList();
+      this.exerciseAndVerify(code, _emptyList);
   }
   
   @Test

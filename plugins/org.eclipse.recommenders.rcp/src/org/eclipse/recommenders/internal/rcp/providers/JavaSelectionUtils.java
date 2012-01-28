@@ -50,7 +50,8 @@ import org.eclipse.ui.IEditorPart;
 import com.google.common.base.Optional;
 
 /**
- * Utility class that resolves a selected java element from editor selection or structured selection.
+ * Utility class that resolves a selected java element from editor selection or
+ * structured selection.
  */
 @SuppressWarnings("restriction")
 public class JavaSelectionUtils {
@@ -93,7 +94,8 @@ public class JavaSelectionUtils {
     };
 
     /**
-     * Returns the {@link IJavaElement} at the current offset or {@link Optional#absent()} if resolving fails.
+     * Returns the {@link IJavaElement} at the current offset or
+     * {@link Optional#absent()} if resolving fails.
      */
     public static Optional<IJavaElement> resolveJavaElementFromEditor(final IEditorPart editor,
             final ITextSelection selection) {
@@ -120,9 +122,10 @@ public class JavaSelectionUtils {
     }
 
     /**
-     * Returns the {@link IJavaElement} at the given offset. If no {@link IJavaElement} is selected, the innermost
-     * enclosing {@link IJavaElement} is returned (e.g., the declaring method or type). If both selection resolutions
-     * fail, {@link Optional#absent()} is returned.
+     * Returns the {@link IJavaElement} at the given offset. If no
+     * {@link IJavaElement} is selected, the innermost enclosing
+     * {@link IJavaElement} is returned (e.g., the declaring method or type). If
+     * both selection resolutions fail, {@link Optional#absent()} is returned.
      */
     public static Optional<IJavaElement> resolveJavaElementFromTypeRootInEditor(final ITypeRoot root, final int offset) {
         ensureIsNotNull(root);
@@ -133,15 +136,22 @@ public class JavaSelectionUtils {
                 // return java element under cursor/selection start
                 return of(elements[0]);
             } else {
-                // if no java element has been selected, return the innermost Java element enclosing a given offset.
-                // This might evaluate to null.
-                IJavaElement enclosingElement = root.getElementAt(offset);
-                if (enclosingElement == null) {
-                    // selection occurred in empty space somewhere before the type declaration.
-                    // return type-root then.
-                    enclosingElement = root;
-                }
-                return of(enclosingElement);
+                // XXX MB: decided against selection changes because these
+                // frequent changes were too disturbing
+                return absent();
+                // ignore that for a while:
+
+                // // if no java element has been selected, return the innermost
+                // Java element enclosing a given offset.
+                // // This might evaluate to null.
+                // IJavaElement enclosingElement = root.getElementAt(offset);
+                // if (enclosingElement == null) {
+                // // selection occurred in empty space somewhere before the
+                // type declaration.
+                // // return type-root then.
+                // enclosingElement = root;
+                // }
+                // return of(enclosingElement);
             }
         } catch (final JavaModelException e) {
             log(e);
@@ -165,7 +175,8 @@ public class JavaSelectionUtils {
             return JavaSelectionLocation.UNKNOWN;
         }
 
-        // handle a direct selection on a declaration node, i.e., the users select a whitespace as in
+        // handle a direct selection on a declaration node, i.e., the users
+        // select a whitespace as in
         // "public $ void do(){}":
         // TODO Review: create second(?) mapping
         switch (node.getNodeType()) {
@@ -184,16 +195,19 @@ public class JavaSelectionUtils {
     }
 
     /**
-     * some inner node that is not a method, a type or a field declaration node...
+     * some inner node that is not a method, a type or a field declaration
+     * node...
      */
     private static JavaSelectionLocation resolveSelectionLocationFromNonMemberDeclarationNode(ASTNode node) {
-        // deal with special case that no parent exists: for instance, if empty spaces before the package declaration
+        // deal with special case that no parent exists: for instance, if empty
+        // spaces before the package declaration
         // are selected, we translate this to type declaration:
         ASTNode parent = node.getParent();
         if (parent == null) {
             return JavaSelectionLocation.TYPE_DECLARATION;
         }
-        // we have a child node selected. Let's figure out which location this translates best:
+        // we have a child node selected. Let's figure out which location this
+        // translates best:
         while (node != null) {
             final StructuralPropertyDescriptor locationInParent = node.getLocationInParent();
             switch (parent.getNodeType()) {

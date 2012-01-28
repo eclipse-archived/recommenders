@@ -10,10 +10,11 @@
  */
 package org.eclipse.recommenders.internal.rcp.wiring;
 
+import static java.lang.Thread.MIN_PRIORITY;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
 
@@ -39,7 +40,6 @@ import org.eclipse.ui.PlatformUI;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -86,8 +86,7 @@ public class RecommendersModule extends AbstractModule implements Module {
     // @Workspace
     protected EventBus provideWorkspaceEventBus() {
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
-        final ExecutorService pool = Executors.newFixedThreadPool(numberOfCores + 1, new ThreadFactoryBuilder()
-                .setPriority(Thread.MIN_PRIORITY).setNameFormat("Recommenders-workpace-bus-%d").build());
+        final ExecutorService pool = coreThreadsTimoutExecutor(numberOfCores + 1, MIN_PRIORITY, "Recommenders-Bus-");
         final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool);
         return bus;
     }
@@ -134,7 +133,8 @@ public class RecommendersModule extends AbstractModule implements Module {
     }
 
     /*
-     * this is a bit odd. Used to initialize complex wired elements such as JavaElementsProvider etc.
+     * this is a bit odd. Used to initialize complex wired elements such as
+     * JavaElementsProvider etc.
      */
     public static class ServicesInitializer {
 

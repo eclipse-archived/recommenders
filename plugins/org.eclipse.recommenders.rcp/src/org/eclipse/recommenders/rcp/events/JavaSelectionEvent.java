@@ -13,15 +13,20 @@ package org.eclipse.recommenders.rcp.events;
 import static com.google.common.base.Optional.fromNullable;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
+import static org.eclipse.recommenders.utils.Checks.cast;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Javadoc;
+import org.eclipse.jdt.core.dom.TagElement;
 
 import com.google.common.base.Optional;
 
 /**
- * Contains all required information about the user's selection of a java element in the perspective (e.g. Editor,
- * Package Explorer, Outline, ...).
+ * Contains all required information about the user's selection of a java
+ * element in the perspective (e.g. Editor, Package Explorer, Outline, ...).
  */
 public class JavaSelectionEvent {
 
@@ -53,12 +58,45 @@ public class JavaSelectionEvent {
 
     @Override
     public boolean equals(final Object obj) {
-        return reflectionEquals(obj, this);
+        final boolean sameElementAndSameLocation = reflectionEquals(obj, this, "selection");
+        if (!sameElementAndSameLocation) {
+            return false;
+        }
+        final JavaSelectionEvent other = cast(obj);
+
+        if (sameElementAndSameLocation && sameLocation(other)) {
+            return true;
+        }
+        if (!selection.isPresent()) {
+            return true;
+        }
+
+        if (bothSelectionsInsideJavadoc(other)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean bothSelectionsInsideJavadoc(final JavaSelectionEvent other) {
+        final ASTNode currentNode = selection.get();
+        final ASTNode newNode = other.getSelectedNode().get();
+        final boolean currentSelectionInJavadoc = currentNode instanceof Javadoc || currentNode instanceof TagElement;
+        final boolean newSelectionInJavadoc = newNode instanceof Javadoc || newNode instanceof TagElement;
+        return currentSelectionInJavadoc && newSelectionInJavadoc;
+    }
+
+    private boolean sameLocation(final JavaSelectionEvent other) {
+        return location.equals(other.selection);
     }
 
     @Override
     public int hashCode() {
         return reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
     public static enum JavaSelectionLocation {
@@ -76,14 +114,9 @@ public class JavaSelectionEvent {
         TYPE_DECLARATION, TYPE_DECLARATION_EXTENDS, TYPE_DECLARATION_IMPLEMENTS,
         // TYPE_BODY,
 
-        FIELD_DECLARATION,
-        FIELD_DECLARATION_INITIALIZER,
+        FIELD_DECLARATION, FIELD_DECLARATION_INITIALIZER,
 
-        METHOD_DECLARATION,
-        METHOD_DECLARATION_RETURN,
-        METHOD_DECLARATION_PARAMETER,
-        METHOD_DECLARATION_THROWS,
-        METHOD_BODY,
+        METHOD_DECLARATION, METHOD_DECLARATION_RETURN, METHOD_DECLARATION_PARAMETER, METHOD_DECLARATION_THROWS, METHOD_BODY,
         //
         UNKNOWN,
 

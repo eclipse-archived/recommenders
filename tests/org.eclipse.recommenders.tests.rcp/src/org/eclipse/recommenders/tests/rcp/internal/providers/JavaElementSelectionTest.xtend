@@ -1,7 +1,6 @@
 package org.eclipse.recommenders.tests.rcp.internal.providers
 
-import static org.eclipse.recommenders.tests.rcp.internal.providers.XtendUtils.*
-
+import java.util.Collections
 import java.util.List
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.dom.NodeFinder
@@ -11,6 +10,7 @@ import org.junit.Ignore
 import org.junit.Test
 
 import static junit.framework.Assert.*
+import static org.eclipse.recommenders.tests.rcp.internal.providers.XtendUtils.*
 
 class JavaElementSelectionTest {
 
@@ -30,7 +30,9 @@ class JavaElementSelectionTest {
 	def void testTypeSelectionsInMethodBody() {
 		val code = ''' 
 		class Myclass {
-			Str$ing s = new St$ring("");
+			void test(String s1){
+				Str$ing s = new St$ring("");
+			}
 		}''' 
 
 		val expected = newListWithFrequency(
@@ -55,7 +57,7 @@ class JavaElementSelectionTest {
 
 	
 	@Test
-	def void testTypeSelectionInMethodBody () {
+	def void testTypeSelectionInFieldDeclaration () {
 		val code = '''
 		class Myclass {
 			Str$ing s = new St$ring("");
@@ -68,6 +70,15 @@ class JavaElementSelectionTest {
 		exerciseAndVerify(code, expected);
 	}
 
+	@Test
+	def void testEmptySelectionInClassBody () {
+		val code = '''
+		class Myclass {
+			$
+		}'''
+
+		exerciseAndVerify(code, Collections::emptyList);
+	}
 
 	@Test
 	def void testMethodSelectionInMethodBody () {

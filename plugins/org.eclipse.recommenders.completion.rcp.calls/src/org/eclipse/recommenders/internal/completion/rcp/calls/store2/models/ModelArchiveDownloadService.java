@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.ws.rs.core.MediaType;
 
@@ -36,13 +35,11 @@ import org.eclipse.ui.internal.misc.StatusUtil;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class ModelArchiveDownloadService {
-    private final ExecutorService pool = Executors.newFixedThreadPool(
-            5,
-            new ThreadFactoryBuilder().setPriority(Thread.MIN_PRIORITY)
-                    .setNameFormat("Recommenders-Model-Downloader-%d").build());
+
+    private final ExecutorService pool = org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor(5,
+            Thread.MIN_PRIORITY, "Recommenders-Model-Downloader-");
 
     private final WebServiceClient client;
     private final EventBus bus;
@@ -76,7 +73,8 @@ public class ModelArchiveDownloadService {
     }
 
     protected File downloadModel(final Manifest manifest) throws IOException {
-        // this is not exactly sexy but produces a nice output in Eclipse's progress view:
+        // this is not exactly sexy but produces a nice output in Eclipse's
+        // progress view:
         final File temp = File.createTempFile("download.", ".zip");
         final WorkspaceJob job = new WorkspaceJob("Downloading recommendation model") {
 
@@ -86,8 +84,10 @@ public class ModelArchiveDownloadService {
                 monitor.beginTask("call completion for " + manifest.getIdentifier(), 1);
                 try {
                     final String url = "model/" + WebServiceClient.encode(manifest.getIdentifier());
-                    final InputStream is = client.createRequestBuilder(url)
-                            .accept(MediaType.APPLICATION_OCTET_STREAM_TYPE).get(InputStream.class);
+                    final InputStream is =
+                            client.createRequestBuilder(url)
+                                    .accept(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                                    .get(InputStream.class);
                     final FileOutputStream fos = new FileOutputStream(temp);
                     IOUtils.copy(is, fos);
                     IOUtils.closeQuietly(is);
