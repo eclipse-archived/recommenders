@@ -117,6 +117,7 @@ public final class BrowserSizeWorkaround {
             browser.pack(true);
             browser.redraw();
             browser.setParent(parent);
+            helperShell.dispose();
             // browser.setSize(new Point(size.x, height / 2));
             // layoutParents(browser);
             latch.countDown();
