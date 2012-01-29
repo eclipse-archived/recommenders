@@ -15,6 +15,8 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
@@ -36,6 +38,7 @@ import com.google.inject.assistedinject.Assisted;
 @SuppressWarnings("restriction")
 public class RecommendersCompletionContext extends BaseRecommendersCompletionContext {
 
+    @Inject
     public RecommendersCompletionContext(@Assisted final JavaContentAssistInvocationContext jdtContext,
             final IAstProvider astProvider) {
         super(jdtContext, astProvider);
