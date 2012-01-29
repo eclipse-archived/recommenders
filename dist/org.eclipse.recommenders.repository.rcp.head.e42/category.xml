@@ -20,14 +20,17 @@
    </feature>
    <feature url="features/org.eclipse.recommenders.feature.3rd.orbit_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.orbit" version="0.5.0.qualifier"/>
    <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonorbit_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.5.0.qualifier"/>
-   <feature url="features/org.eclipse.recommenders.feature.rcp_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.rcp" version="0.5.0.qualifier">
-      <category name="main"/>
-   </feature>
    <feature url="features/org.eclipse.recommenders.feature.completion.rcp.intellig_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.intellig" version="0.5.0.qualifier">
       <category name="main"/>
    </feature>
    <feature url="features/org.eclipse.recommenders.feature.completion.rcp.intellig.source_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.intellig.source" version="0.5.0.qualifier">
       <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.rcp.core_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.rcp.core" version="0.5.0.qualifier">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.rcp.core.source_0.5.0.qualifier.jar" id="org.eclipse.recommenders.feature.rcp.core.source" version="0.5.0.qualifier">
+      <category name="main"/>
    </feature>
    <category-def name="sources" label="Code Recommenders - Eclipse 4.2 Sources"/>
    <category-def name="main" label="Code Recommenders - Eclipse 4.2"/>
