@@ -14,8 +14,6 @@ import static java.lang.String.format;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -103,12 +101,7 @@ public class ProviderContentPart {
         createWaitingScreen();
         createNewRenderingPanel();
 
-        moveOnTop(visiblePanel);
-    }
-
-    private void moveOnTop(final Composite newTopComposite) {
-        stackLayout.topControl = newTopComposite;
-        stack.layout();
+        stackLayout.topControl = visiblePanel;
     }
 
     private void createScrollingComposite() {
@@ -174,7 +167,7 @@ public class ProviderContentPart {
             providerAreas.put(p, providerArea);
         }
 
-        renderingPanel.layout();
+        // renderingPanel.layout();
     }
 
     private void createSelectionInfoArea() {
@@ -215,23 +208,18 @@ public class ProviderContentPart {
     }
 
     private void makeRenderingPanelVisible() {
-        renderingPanel.layout();
-        moveOnTop(renderingPanel);
+        System.out.println("private void makeRenderingPanelVisible() {");
+        // renderingPanel.layout();
+        stackLayout.topControl = renderingPanel;
+        // stack.layout();
         visiblePanel.dispose();
         visiblePanel = renderingPanel;
-
-        container.layout();
     }
 
-    private final Lock layoutLock = new ReentrantLock();
-
     private void relayout() {
-        if (layoutLock.tryLock()) {
-
-            resizeScrolledComposite();
-            visiblePanel.layout();
-            layoutLock.unlock();
-        }
+        System.out.println("relayouting panel");
+        resizeScrolledComposite();
+        stack.layout();
     }
 
     @Subscribe
@@ -244,7 +232,6 @@ public class ProviderContentPart {
         } else {
             area.hide();
         }
-        // relayout();
     }
 
     @Subscribe
@@ -257,7 +244,6 @@ public class ProviderContentPart {
     public void onEvent(final ProviderFinishedEvent e) {
         final ProviderArea area = providerAreas.get(e.provider);
         area.showContent();
-        // relayout();
     }
 
     @Subscribe
@@ -265,7 +251,6 @@ public class ProviderContentPart {
         final ProviderArea area = providerAreas.get(e.provider);
         area.setStatus("provider is delayed...");
         area.showStatus();
-        // relayout();
     }
 
     @Subscribe
@@ -322,7 +307,6 @@ public class ProviderContentPart {
             }
         });
         area.showStatus();
-        // relayout();
     }
 
     @Subscribe

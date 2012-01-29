@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -32,8 +34,11 @@ public final class BrowserSizeWorkaround {
     private final Browser browser;
     private GridData gridData;
 
-    public BrowserSizeWorkaround(final Browser browser) {
+    private final CountDownLatch latch;
+
+    public BrowserSizeWorkaround(final Browser browser, final CountDownLatch latch) {
         this.browser = browser;
+        this.latch = latch;
         browser.setJavascriptEnabled(true);
 
         ensureParentHasGridLayout();
@@ -61,12 +66,6 @@ public final class BrowserSizeWorkaround {
         Display.getDefault().asyncExec(new RescaleAction());
     }
 
-    private void setHeightAndTriggerLayout(final int height) {
-        gridData.heightHint = height;
-        gridData.minimumHeight = height;
-        layoutParents(browser.getParent());
-    }
-
     private void registerProgressListener() {
         browser.addProgressListener(new ProgressAdapter() {
             boolean mustRender = false;
@@ -92,15 +91,19 @@ public final class BrowserSizeWorkaround {
                 return;
             }
             final String script = "function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();";
-            final Object result = browser.evaluate(script);
+            Double result = (Double) browser.evaluate(script);
             if (result == null) {
                 // terminate re-layout operation if browser
                 // widget fails to compute its size
-                return;
+                result = 100d;
             }
-            final int height = (int) Math.ceil(((Double) result).doubleValue());
-            setHeightAndTriggerLayout(height);
+            final int height = (int) Math.ceil(result.doubleValue());
+            gridData.heightHint = height;
+            gridData.minimumHeight = height;
+            latch.countDown();
+
         }
+
     }
 
     /**
@@ -123,7 +126,7 @@ public final class BrowserSizeWorkaround {
                 final Point newSize = parent.computeSize(newWidth, SWT.DEFAULT);
                 parent.setSize(newSize);
                 final Composite theParentsParent = parent.getParent();
-                theParentsParent.layout(new Control[] { composite }, SWT.CHANGED);
+                theParentsParent.layout(new Control[] { composite }, SWT.DEFER);
                 break;
             }
         }

@@ -11,6 +11,9 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
@@ -32,7 +35,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
@@ -51,9 +53,8 @@ public final class JavadocProvider extends ExtdocProvider {
     }
 
     /*
-     * NOTE: this provider is an example provider. There is actually no need to
-     * create dispatch methods for each of these java elements separately. We
-     * just do this for demo purpose.
+     * NOTE: this provider is an example provider. There is actually no need to create dispatch methods for each of
+     * these java elements separately. We just do this for demo purpose.
      */
 
     // @JavaSelectionSubscriber
@@ -93,8 +94,7 @@ public final class JavadocProvider extends ExtdocProvider {
     }
 
     private Status render(final IJavaElement element, final Composite parent) throws JavaModelException {
-        final Stopwatch w = new Stopwatch();
-        w.start();
+        final CountDownLatch latch = new CountDownLatch(1);
         runSyncInUiThread(new Runnable() {
             @Override
             public void run() {
@@ -107,7 +107,7 @@ public final class JavadocProvider extends ExtdocProvider {
                 if (control instanceof Browser) {
                     // on mac or win:
                     final Browser browser = (Browser) control;
-                    new BrowserSizeWorkaround(browser);
+                    new BrowserSizeWorkaround(browser, latch);
                 } else if (control instanceof StyledText) {
                     // on linux:
                     initializeStyledText((StyledText) control);
@@ -145,10 +145,16 @@ public final class JavadocProvider extends ExtdocProvider {
 
         });
         javadoc.setInput(element);
-        w.stop();
-        System.out.println(w);
-        // waitForBrowserSizeWorkaround();
+        waitForBrowser(latch);
         return Status.OK;
+    }
+
+    private void waitForBrowser(final CountDownLatch latch) {
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+        } catch (final InterruptedException e) {
+            // we ignore them.
+        }
     }
 
     private void waitForBrowserSizeWorkaround() {
