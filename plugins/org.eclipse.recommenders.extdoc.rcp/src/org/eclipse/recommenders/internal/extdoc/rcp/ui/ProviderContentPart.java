@@ -91,7 +91,7 @@ public class ProviderContentPart {
     }
 
     public void createControl(final Composite parent) {
-        container = new Composite(parent, SWT.NO_BACKGROUND);
+        container = new Composite(parent, SWT.NONE);
         container.setLayout(defaultGridLayoutFactory.create());
 
         createScrollingComposite();
@@ -108,6 +108,7 @@ public class ProviderContentPart {
         scrollingComposite = new ScrolledComposite(container, SWT.V_SCROLL | SWT.H_SCROLL);
         scrollingComposite.setLayout(defaultGridLayoutFactory.create());
         scrollingComposite.setLayoutData(defaultGridDataFactory.create());
+        scrollingComposite.setBackground(container.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
         scrollingComposite.setExpandVertical(true);
         scrollingComposite.setExpandHorizontal(true);
         scrollingComposite.getVerticalBar().setIncrement(50);
@@ -139,6 +140,7 @@ public class ProviderContentPart {
     private void createStack() {
         stack = new Composite(scrolledContent, SWT.NONE);
         stack.setLayoutData(defaultGridDataFactory.create());
+
         stackLayout = new StackLayout();
         stack.setLayout(stackLayout);
     }
@@ -146,6 +148,8 @@ public class ProviderContentPart {
     private void createWaitingScreen() {
         visiblePanel = new Composite(stack, SWT.NONE);
         visiblePanel.setLayout(new FillLayout());
+        visiblePanel.setBackground(container.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+
         final Label l = new Label(visiblePanel, SWT.NONE);
         l.setText("waiting for selection...");
     }
@@ -208,16 +212,12 @@ public class ProviderContentPart {
     }
 
     private void makeRenderingPanelVisible() {
-        System.out.println("private void makeRenderingPanelVisible() {");
-        // renderingPanel.layout();
         stackLayout.topControl = renderingPanel;
-        // stack.layout();
         visiblePanel.dispose();
         visiblePanel = renderingPanel;
     }
 
     private void relayout() {
-        System.out.println("relayouting panel");
         resizeScrolledComposite();
         stack.layout();
     }

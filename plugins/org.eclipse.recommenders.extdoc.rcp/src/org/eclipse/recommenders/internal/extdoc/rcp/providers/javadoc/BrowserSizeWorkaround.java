@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.ProgressAdapter;
@@ -24,6 +23,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public final class BrowserSizeWorkaround {
 
@@ -32,34 +32,36 @@ public final class BrowserSizeWorkaround {
     public static final int MINIMUM_HEIGHT = 1;
 
     private final Browser browser;
-    private GridData gridData;
 
     private final CountDownLatch latch;
 
+    private final Composite parent;
+
+    private final Shell helperShell;
+
     public BrowserSizeWorkaround(final Browser browser, final CountDownLatch latch) {
-        this.browser = browser;
         this.latch = latch;
+
+        this.browser = browser;
         browser.setJavascriptEnabled(true);
-
-        ensureParentHasGridLayout();
-        initializeGridData();
-        // set size to minimum: This is required to determine the size correctly
-        // after the input is set:
-        layoutParents(browser);
-
         registerProgressListener();
-    }
+        this.parent = browser.getParent();
 
-    private void ensureParentHasGridLayout() {
-        if (!(browser.getParent().getLayout() instanceof GridLayout)) {
-            throw new IllegalStateException(
-                    "Browser size workaround requires that the parent composite of the browser widget uses a GridLayout.");
+        // only .x is relevant:
+        Point preferredBrowserSize = null;
+        for (Composite parent = browser; parent != null; parent = parent.getParent()) {
+            final Point size = parent.getSize();
+            if (size.x > 0) {
+                preferredBrowserSize = size;
+                break;
+            }
         }
-    }
-
-    private void initializeGridData() {
-        gridData = GridDataFactory.fillDefaults().grab(true, false).create();
-        browser.setLayoutData(gridData);
+        helperShell = new Shell();
+        helperShell.setLayout(new GridLayout());
+        helperShell.setSize(preferredBrowserSize);
+        browser.setParent(helperShell);
+        browser.setLayoutData(new GridData(preferredBrowserSize.x, MINIMUM_HEIGHT));
+        helperShell.layout(true);
     }
 
     private void recalculateAndSetHeight() {
@@ -71,11 +73,17 @@ public final class BrowserSizeWorkaround {
             boolean mustRender = false;
 
             @Override
-            public void completed(final ProgressEvent event) {
+            public synchronized void completed(final ProgressEvent event) {
+                final Display current = Display.getCurrent();
+
                 // for unknown reasons, the completed method is called twice.
                 // Once on begin, and once after the file load was finished.
                 // Thus, we simply consider every second event only.
                 if (mustRender) {
+                    // try {
+                    // // Thread.sleep(MILLIS_UNTIL_RESCALE);
+                    // } catch (final InterruptedException e) {
+                    // }
                     recalculateAndSetHeight();
                 }
                 mustRender = !mustRender;
@@ -90,6 +98,8 @@ public final class BrowserSizeWorkaround {
             if (browser.isDisposed()) {
                 return;
             }
+            final Point size = browser.getSize();
+            final GridData layoutData = (GridData) browser.getLayoutData();
             final String script = "function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();";
             Double result = (Double) browser.evaluate(script);
             if (result == null) {
@@ -98,12 +108,20 @@ public final class BrowserSizeWorkaround {
                 result = 100d;
             }
             final int height = (int) Math.ceil(result.doubleValue());
-            gridData.heightHint = height;
-            gridData.minimumHeight = height;
+            // gridData.heightHint = height;
+            // gridData.minimumHeight = height;
+            final Point computeSize = browser.computeSize(size.x, height);
+            layoutData.heightHint = height;
+            layoutData.widthHint = size.x;
+            browser.setSize(computeSize);
+            browser.pack(true);
+            browser.redraw();
+            browser.setParent(parent);
+            // browser.setSize(new Point(size.x, height / 2));
+            // layoutParents(browser);
             latch.countDown();
 
         }
-
     }
 
     /**
@@ -126,7 +144,7 @@ public final class BrowserSizeWorkaround {
                 final Point newSize = parent.computeSize(newWidth, SWT.DEFAULT);
                 parent.setSize(newSize);
                 final Composite theParentsParent = parent.getParent();
-                theParentsParent.layout(new Control[] { composite }, SWT.DEFER);
+                theParentsParent.layout(new Control[] { composite });
                 break;
             }
         }

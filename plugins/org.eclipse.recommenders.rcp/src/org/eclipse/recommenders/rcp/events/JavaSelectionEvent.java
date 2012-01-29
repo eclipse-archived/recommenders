@@ -25,8 +25,8 @@ import org.eclipse.jdt.core.dom.TagElement;
 import com.google.common.base.Optional;
 
 /**
- * Contains all required information about the user's selection of a java
- * element in the perspective (e.g. Editor, Package Explorer, Outline, ...).
+ * Contains all required information about the user's selection of a java element in the perspective (e.g. Editor,
+ * Package Explorer, Outline, ...).
  */
 public class JavaSelectionEvent {
 
@@ -86,7 +86,7 @@ public class JavaSelectionEvent {
     }
 
     private boolean sameLocation(final JavaSelectionEvent other) {
-        return location.equals(other.selection);
+        return location.equals(other.location);
     }
 
     @Override

@@ -104,6 +104,7 @@ public final class JavadocProvider extends ExtdocProvider {
                 // TODO REVIEW MB: since javadoc view part is ours, shouldn't we
                 // move that into JavadocViewpart???
                 final Control control = javadoc.getControl();
+                control.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
                 if (control instanceof Browser) {
                     // on mac or win:
                     final Browser browser = (Browser) control;
@@ -151,7 +152,10 @@ public final class JavadocProvider extends ExtdocProvider {
 
     private void waitForBrowser(final CountDownLatch latch) {
         try {
-            latch.await(5, TimeUnit.SECONDS);
+            final boolean success = latch.await(5, TimeUnit.SECONDS);
+            if (!success) {
+                System.out.println("------> javadoc failed");
+            }
         } catch (final InterruptedException e) {
             // we ignore them.
         }
