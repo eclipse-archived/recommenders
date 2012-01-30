@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
+import static org.eclipse.swt.SWT.COLOR_INFO_BACKGROUND;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -68,9 +70,16 @@ public final class ExtdocUtils {
     private ExtdocUtils() {
     }
 
+    public static void setInfoBackgroundColor(final Control c) {
+        final Display display = c.getDisplay();
+        final Color color = display.getSystemColor(COLOR_INFO_BACKGROUND);
+        c.setBackground(color);
+    }
+
     public static Composite createGridComposite(final Composite parent, final int columns, final int hSpacing,
             final int vSpacing, final int hMargin, final int vMargin) {
-        final Composite composite = new Composite(parent, SWT.NO_BACKGROUND);
+        final Composite composite = new Composite(parent, SWT.NONE);
+        setInfoBackgroundColor(composite);
         final GridLayout layout = GridLayoutFactory.swtDefaults().numColumns(columns).margins(hMargin, vMargin)
                 .spacing(hSpacing, vSpacing).create();
         composite.setLayout(layout);
@@ -146,8 +155,7 @@ public final class ExtdocUtils {
      * @param text
      *            The label's text.
      * @param wrap
-     *            True, if the label should set GridData in order to be wrapped
-     *            when it exceeds the parent's width.
+     *            True, if the label should set GridData in order to be wrapped when it exceeds the parent's width.
      * @return The label created with the specified parameters.
      */
     public static Label createLabel(final Composite parent, final String text, final boolean wrap) {
@@ -313,7 +321,8 @@ public final class ExtdocUtils {
     }
 
     public static Composite createComposite(final Composite parent, final int numColumns) {
-        final Composite container = new Composite(parent, SWT.NO_BACKGROUND);
+        final Composite container = new Composite(parent, SWT.NONE);
+        setInfoBackgroundColor(container);
         container.setLayout(GridLayoutFactory.fillDefaults().margins(10, 0).spacing(0, 0).numColumns(numColumns)
                 .create());
         container.setLayoutData(GridDataFactory.fillDefaults().create());

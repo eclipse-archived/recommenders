@@ -191,8 +191,10 @@ public final class CallsProvider extends ExtdocProvider {
                 preamble2.setText(format("For %s %s no recommendations are made.", receiverType.getElementName(),
                         varName));
             } else {
-                preamble2.setText(format("For %s %s the following recommendations are made:",
-                        receiverType.getElementName(), varName));
+                preamble2
+                        .setText(format(
+                                "For %s %s the following recommendations are made.\nIf you want to invoke a method on %s, then you...",
+                                receiverType.getElementName(), varName, varName));
             }
             new Label(container, SWT.NONE).setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0)
                     .hint(SWT.DEFAULT, 1).create());

@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import static java.lang.String.format;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
 
 import java.util.List;
 import java.util.Map;
@@ -175,11 +176,14 @@ public class ProviderContentPart {
     }
 
     private void createSelectionInfoArea() {
-        final Composite selectionArea = new Composite(renderingPanel, SWT.NO_BACKGROUND);
+        final Composite selectionArea = new Composite(renderingPanel, SWT.NONE);
+        setInfoBackgroundColor(selectionArea);
+
         selectionArea.setLayout(defaultGridLayoutFactory.create());
         selectionArea.setLayoutData(defaultGridDataFactory.grab(true, false).create());
 
-        selectionStatus = new CLabel(selectionArea, SWT.NO_BACKGROUND);
+        selectionStatus = new CLabel(selectionArea, SWT.NONE);
+        setInfoBackgroundColor(selectionStatus);
         selectionStatus.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
         selectionStatus.setBackground(selectionArea.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
     }

@@ -19,6 +19,7 @@ import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.create
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createMethodLink;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.percentageToRecommendationPhrase;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 
 import java.util.Collections;
@@ -160,7 +161,8 @@ public final class OverridesProvider extends ExtdocProvider {
         }
 
         private void createContainer() {
-            container = new Composite(parent, SWT.NO_BACKGROUND);
+            container = new Composite(parent, SWT.NONE);
+            setInfoBackgroundColor(container);
             container.setLayout(new GridLayout());
         }
 
@@ -240,7 +242,8 @@ public final class OverridesProvider extends ExtdocProvider {
         }
 
         private void createContainer() {
-            container = new Composite(parent, SWT.NO_BACKGROUND);
+            container = new Composite(parent, SWT.NONE);
+            setInfoBackgroundColor(container);
             container.setLayout(new GridLayout());
             container.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         }

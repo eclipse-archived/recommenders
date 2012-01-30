@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.examples;
 
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createSourceCodeArea;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
 
 import javax.inject.Inject;
 
@@ -78,7 +79,8 @@ public final class ExamplesProvider extends ExtdocProvider {
         }
 
         private void createContainer() {
-            container = new Composite(parent, SWT.NO_BACKGROUND);
+            container = new Composite(parent, SWT.NONE);
+            setInfoBackgroundColor(container);
             container.setLayout(new GridLayout());
         }
 

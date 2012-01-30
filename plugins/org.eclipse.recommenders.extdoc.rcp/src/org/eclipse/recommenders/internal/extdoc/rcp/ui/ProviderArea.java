@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
 import static org.eclipse.recommenders.utils.Throws.throwUnsupportedOperation;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -73,7 +74,8 @@ public class ProviderArea {
     }
 
     private Composite createComposite(final Composite parent) {
-        final Composite c = new Composite(parent, SWT.NO_BACKGROUND);
+        final Composite c = new Composite(parent, SWT.NONE);
+        setInfoBackgroundColor(container);
         c.setLayout(layoutFactory.create());
         c.setLayoutData(layoutDataFactory.create());
         return c;

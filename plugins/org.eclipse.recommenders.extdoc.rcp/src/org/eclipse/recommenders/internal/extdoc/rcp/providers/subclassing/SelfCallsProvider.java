@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing;
 
 import static com.google.common.base.Optional.fromNullable;
 import static java.lang.String.format;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 
 import java.util.concurrent.ExecutionException;
@@ -125,7 +126,8 @@ public final class SelfCallsProvider extends ExtdocProvider {
         }
 
         private void createContainer() {
-            container = new Composite(parent, SWT.NO_BACKGROUND);
+            container = new Composite(parent, SWT.NONE);
+            setInfoBackgroundColor(container);
             container.setLayout(new GridLayout());
         }
 
@@ -165,7 +167,8 @@ public final class SelfCallsProvider extends ExtdocProvider {
         }
 
         private void createContainer() {
-            container = new Composite(parent, SWT.NO_BACKGROUND);
+            container = new Composite(parent, SWT.NONE);
+            setInfoBackgroundColor(container);
             container.setLayout(new GridLayout());
         }
 

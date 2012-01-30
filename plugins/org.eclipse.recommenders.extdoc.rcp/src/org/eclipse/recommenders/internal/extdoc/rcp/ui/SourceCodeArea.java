@@ -81,5 +81,4 @@ final class SourceCodeArea extends JavaSourceViewer {
             throw new IllegalStateException(e);
         }
     }
-
 }
