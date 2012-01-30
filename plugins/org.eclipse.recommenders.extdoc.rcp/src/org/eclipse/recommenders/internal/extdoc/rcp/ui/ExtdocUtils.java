@@ -93,7 +93,7 @@ public final class ExtdocUtils {
     }
 
     public static Table renderMethodDirectivesBlock(final Composite parent, final TreeBag<IMethodName> methods,
-            final int total, final EventBus bus, final JavaElementResolver resolver) {
+            final int total, final EventBus bus, final JavaElementResolver resolver, final String middlePhrase) {
         final Table table = new Table(parent, SWT.NONE | SWT.HIDE_SELECTION);
         table.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
         table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
@@ -111,7 +111,7 @@ public final class ExtdocUtils {
 
             final Link bar = createMethodLink(table, method, resolver, bus);
             final TableItem item = new TableItem(table, SWT.NONE);
-            item.setText(new String[] { phraseText, "override", bar.getText(), stats });
+            item.setText(new String[] { phraseText, middlePhrase, bar.getText(), stats });
             item.setFont(0, JFaceResources.getBannerFont());
             final TableEditor editor = new TableEditor(table);
             editor.grabHorizontal = editor.grabVertical = true;
@@ -166,6 +166,7 @@ public final class ExtdocUtils {
             final int color, final boolean wrap) {
         final Label label = new Label(parent, SWT.WRAP);
         label.setText(text);
+        setInfoBackgroundColor(label);
         if (code) {
             label.setFont(CODEFONT);
         } else if (bold) {

@@ -175,7 +175,8 @@ public final class OverridesProvider extends ExtdocProvider {
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
             final TreeBag<IMethodName> b = newTreeBag(directive.getOverrides());
-            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver);
+            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver,
+                    "overrides");
         }
 
     }

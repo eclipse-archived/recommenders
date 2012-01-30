@@ -140,7 +140,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
             final TreeBag<IMethodName> b = newTreeBag(directive.getCalls());
-            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver);
+            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, "calls ");
         }
     }
 
@@ -182,7 +182,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfDefinitions();
             final TreeBag<IMethodName> b = newTreeBag(directive.getCalls());
-            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver);
+            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, "calls ");
         }
     }
 }
