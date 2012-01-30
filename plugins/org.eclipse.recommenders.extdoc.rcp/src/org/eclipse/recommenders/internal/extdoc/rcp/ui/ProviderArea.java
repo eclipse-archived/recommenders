@@ -75,7 +75,7 @@ public class ProviderArea {
 
     private Composite createComposite(final Composite parent) {
         final Composite c = new Composite(parent, SWT.NONE);
-        setInfoBackgroundColor(container);
+        setInfoBackgroundColor(c);
         c.setLayout(layoutFactory.create());
         c.setLayoutData(layoutDataFactory.create());
         return c;
