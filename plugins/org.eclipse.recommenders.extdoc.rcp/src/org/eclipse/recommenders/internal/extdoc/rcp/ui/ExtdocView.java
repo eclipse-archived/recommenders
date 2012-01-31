@@ -22,11 +22,14 @@ import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.ProviderExecution
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.SubscriptionManager;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocModule.Extdoc;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
+import org.eclipse.recommenders.utils.rcp.PartListener2Adapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ViewPart;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
@@ -47,13 +50,15 @@ public class ExtdocView extends ViewPart {
     private ProviderExecutionScheduler scheduler;
     private final Lock schedulerLock = new ReentrantLock();
     private SashForm sashForm;
+    private final IWorkbenchPage activePage;
+    protected boolean visible = true;
 
     @Inject
     public ExtdocView(final EventBus workspaceBus, @Extdoc final EventBus extdocBus,
             final SubscriptionManager subscriptionManager, final ExtdocIconLoader iconLoader,
             final List<ExtdocProvider> providers, final PreferencesFacade preferences,
             final ProviderOverviewPart overviewPart, final ProviderContentPart contentPart,
-            final ProviderConfigurationPersistenceService ps) {
+            final ProviderConfigurationPersistenceService ps, final IWorkbenchPage activePage) {
         this.workspaceBus = workspaceBus;
         this.extdocBus = extdocBus;
         this.subscriptionManager = subscriptionManager;
@@ -61,12 +66,14 @@ public class ExtdocView extends ViewPart {
         this.preferences = preferences;
         this.overviewPart = overviewPart;
         this.contentPart = contentPart;
+        this.activePage = activePage;
     }
 
     @Override
     public void createPartControl(final Composite parent) {
         createUiElements(parent);
         subscribeToEventBusses();
+        addPartListener();
     }
 
     private void createUiElements(final Composite parent) {
@@ -85,31 +92,41 @@ public class ExtdocView extends ViewPart {
         });
     }
 
+    private void subscribeToEventBusses() {
+        extdocBus.register(contentPart);
+        extdocBus.register(overviewPart);
+        workspaceBus.register(this);
+    }
+
+    private void addPartListener() {
+        activePage.addPartListener(new PartListener2Adapter() {
+
+            @Override
+            public void partHidden(final IWorkbenchPartReference partRef) {
+                if (isExtdocView(partRef)) {
+                    visible = false;
+                }
+            }
+
+            @Override
+            public void partVisible(final IWorkbenchPartReference partRef) {
+                if (isExtdocView(partRef)) {
+                    visible = true;
+                }
+            }
+
+            private boolean isExtdocView(final IWorkbenchPartReference partRef) {
+                return partRef.getPart(false) == ExtdocView.this;
+            }
+
+        });
+    }
+
     @Override
     public void dispose() {
         unsubscribeFromEventBusses();
         disposeScheduler();
         super.dispose();
-    }
-
-    @Override
-    public void setFocus() {
-        // TODO: check if this is needed to enable scrolling or something
-    }
-
-    // it might be necessary to add a lock here... a synchronized method is not
-    // possible as this method would block the "syncScheduling" method
-    private void disposeScheduler() {
-        if (scheduler != null) {
-            scheduler.dispose();
-            scheduler = null;
-        }
-    }
-
-    private void subscribeToEventBusses() {
-        extdocBus.register(contentPart);
-        extdocBus.register(overviewPart);
-        workspaceBus.register(this);
     }
 
     private void unsubscribeFromEventBusses() {
@@ -121,8 +138,19 @@ public class ExtdocView extends ViewPart {
     @Subscribe
     @AllowConcurrentEvents
     public void onJavaSelection(final JavaSelectionEvent selection) {
-        disposeScheduler();
-        scheduleNewSelection(selection);
+        if (visible) {
+            disposeScheduler();
+            scheduleNewSelection(selection);
+        }
+    }
+
+    // it might be necessary to add a lock here... a synchronized method is not
+    // possible as this method would block the "syncScheduling" method
+    private void disposeScheduler() {
+        if (scheduler != null) {
+            scheduler.dispose();
+            scheduler = null;
+        }
     }
 
     private void scheduleNewSelection(final JavaSelectionEvent selection) {
@@ -133,5 +161,10 @@ public class ExtdocView extends ViewPart {
         } finally {
             schedulerLock.unlock();
         }
+    }
+
+    @Override
+    public void setFocus() {
+        // TODO: check if this is needed to enable scrolling or something
     }
 }

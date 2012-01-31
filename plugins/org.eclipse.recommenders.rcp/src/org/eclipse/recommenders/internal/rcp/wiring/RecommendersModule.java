@@ -35,6 +35,7 @@ import org.eclipse.recommenders.utils.rcp.ast.BindingUtils;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
@@ -123,6 +124,11 @@ public class RecommendersModule extends AbstractModule implements Module {
     }
 
     @Provides
+    protected IWorkbenchPage provideActiveWorkbenchPage() {
+        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+    }
+
+    @Provides
     protected IJavaModel provideJavaModel() {
         return JavaModelManager.getJavaModelManager().getJavaModel();
     }
@@ -133,8 +139,7 @@ public class RecommendersModule extends AbstractModule implements Module {
     }
 
     /*
-     * this is a bit odd. Used to initialize complex wired elements such as
-     * JavaElementsProvider etc.
+     * this is a bit odd. Used to initialize complex wired elements such as JavaElementsProvider etc.
      */
     public static class ServicesInitializer {
 
