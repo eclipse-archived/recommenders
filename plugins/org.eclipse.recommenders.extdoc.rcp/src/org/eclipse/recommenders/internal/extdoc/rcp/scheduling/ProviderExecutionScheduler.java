@@ -55,7 +55,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 public class ProviderExecutionScheduler {
 
     @Testing("visibility allows to set test values")
-    protected static int RENDER_TIMEOUT_IN_MS = 2000;
+    protected static int RENDER_TIMEOUT_IN_MS = 3000;
     private static final int NUMBER_OF_THREADS = 7;
 
     private static int poolId;
@@ -111,8 +111,8 @@ public class ProviderExecutionScheduler {
             final Optional<Method> optMethod = subscriptionManager.findSubscribedMethod(provider, selection);
 
             if (optMethod.isPresent()) {
-                final OnSelectionCallable callable =
-                        new OnSelectionCallable(provider, optMethod.get(), selection, composite, latch);
+                final OnSelectionCallable callable = new OnSelectionCallable(provider, optMethod.get(), selection,
+                        composite, latch);
                 try {
 
                     final ListenableFuture<?> future = pool.submit(callable);
@@ -175,8 +175,8 @@ public class ProviderExecutionScheduler {
         final Optional<Method> optMethod = subscriptionManager.findSubscribedMethod(e.provider, currentSelection);
 
         if (optMethod.isPresent()) {
-            final OnActivationCallable callable =
-                    new OnActivationCallable(e.provider, optMethod.get(), currentSelection, composite);
+            final OnActivationCallable callable = new OnActivationCallable(e.provider, optMethod.get(),
+                    currentSelection, composite);
             if (pool.isShutdown()) {
                 return;
             }
