@@ -1,0 +1,403 @@
+<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
+<chapter id="usr" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>User Manual</title>
+    <section>
+        <title>What Is Code Recommenders?</title>
+        <subtitle> IDE 2.0: Bringing Collective Intelligence to Software Development</subtitle>
+  
+        <section>
+            <title>Abstract</title>
+            <para>Today’s Integrated Development Environments (IDEs) only integrate the tools and
+                knowledge of a single user and workstation. This neglects the fact that the way in
+                which we develop and maintain a piece of software and interact with our IDE provides
+                a rich source of information that can help ourselves and other programmers to avoid
+                mistakes in the future, or improve productivity otherwise. We argue that, in the
+                near future, IDEs will undergo a revolution that will significantly change the way
+                in which we develop and maintain software, through integration of collective
+                intelligence, the knowledge of the masses. We describe the concept of an IDE based
+                on collective intelligence and discuss three example instantiations of such IDEs.
+            </para>
+        </section>
+        <section>
+            <title>Introduction</title>
+            <epigraph>
+                <attribution>James Surowiecki: Wisdom of the Crowds </attribution>
+                <para>Under the right circumstances, groups are remarkably intelligent and are often
+                    better than the smartest person in them. </para>
+            </epigraph>
+            <para>During the past decades, software systems have grown significantly in size and
+                complexity, making software development and maintenance an extremely challenging
+                endeavor. Integrated Development Environments (IDEs) greatly facilitate this
+                endeavor by providing a convenient means to browse and manipulate a system’s source
+                code and to obtain helpful documentation on Application Programming Interfaces
+                (APIs). Yet, we argue that there is great space for improvement by exploiting
+                collective intelligence, the knowledge of the masses. </para>
+            <para>The leveraging of user data to build intelligent and user-centric web-based
+                systems, commonly summarized as the Web 2.0, is the source of our inspiration. A Web
+                2.0 site allows its users to interact with each other as contributors to the
+                website’s content, in contrast to websites where users are limited to the passive
+                viewing of information that is provided to them. Web 2.0 examples include web-based
+                communities, web applications, social-networking sites, video-sharing sites, wikis,
+                blogs, mashups, and folksonomies. </para>
+            <para>Amazon, for instance, creates recommendations based on purchase behaviors of its
+                customers or finds interesting similar products based on how customers interact with
+                search results. Netflix, a video-on-demand service, features a web application that
+                leverages user ratings on movies to recommend likely interesting movies to other
+                users. These systems have in common that they leverage crowds to continuously
+                improve the quality of their services, either through implicit feedback (e.g., user
+                click-through behaviors), explicit feedback (e.g., ratings for movies) or
+                user-generated content (e.g., product reviews and movie critics). </para>
+            <para>Today’s IDEs behave more like traditional “Web 1.0” applications in the way that
+                they do not enable their users to contribute and share their knowledge with others,
+                neither explicitly nor implicitly, and thus hinder themselves to effectively
+                exchange knowledge among developers. What would it mean to bring collective
+                intelligence into software development? Figure 1a shows the current state of the
+                practice: software developers use IDEs that are “integrated” only in the sense that
+                they integrate all tools necessary to browse, manipulate and build software on a
+                single machine. If a programmer has a question about a particular piece of code, for
+                instance an API, she has to browse the web for solutions—by hand. After she has
+                found the solution and solved her problem, the newly gained knowledge is usually
+                lost. </para>
+            <figure>
+                <title>IDE 2.0 vision: with Code Recommenders, IDEs will be linked through global
+                    knowledge bases </title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/usr/intro/ide20.png" contentwidth="15cm"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>Figure 1b shows our vision of the near future: IDEs will support developers
+                through integration with a global knowledge base. This knowledge base will receive
+                information from implicit and explicit user feedback. By implicit feedback we mean
+                anonymized usage data that the cross-linked IDEs will send to the knowledge base
+                automatically and spontaneously (in the figure, we represent such spontaneous
+                activity through dashed arrows). The knowledge base will also comprise explicit user
+                feedback in the form of user-written documentation, error reports, manuals, etc. In
+                this work, we will show that such data can help, for example, to improve ranking
+                heuristics, or to focus developer activity. </para>
+            <para>Crucially, the knowledge base itself is intelligent: it will use novel data-mining
+                techniques to integrate the different sources of information to produce new
+                information that has added value. For instance, if the knowledge base discovers that
+                people who write an equals method in Java often write a hashCode method on the same
+                type at the same time, or do so after a longer debugging session, then the knowledge
+                base may be able to discover the important rule that, in Java, every type that
+                implements equals should also implement hashCode, and that missing this rule likely
+                causes bugs. </para>
+            <para>The remainder of this paper is organized as follows. In Sec. 2, we materialize IDE
+                2.0 by discussing example intelligent IDE services that leverage implicit and
+                explicit user feedback to aid programmers in everyday software-development tasks. We
+                show that not only feedback data itself but in particular derived information,
+                obtained through data mining, has the potential of greatly easing the
+                software-development process as a whole. Moreover, as the data is persisted, it will
+                survive over time, unlike today, where much information gets lost and needs to be
+                re-discovered over and over again. In Sec.3, we materialize IDE 2.0 by drawing
+                parallels between the main characteristics of IDE 2.0 and those of Web 2.0. Finally,
+                Sec. 4 summarizes the paper. </para>
+        </section>
+        <section>
+            <title>From IDE 1.0 towards IDE 2.0</title>
+            <para>In the following we give three examples of how research in collective intelligence
+                can improve existing IDE services. We split the discussion of each example into
+                three sections. IDE 1.0 sections describe the state-of-the-art in today’s IDEs.
+                Under IDE 1.5, we briefly summarize current research to improve IDE 1.0 services.
+                IDE 2.0 sections discuss how collective intelligence could solve some of the issues
+                of these approaches. </para>
+            <section>
+                <title>Intelligent Code Completion </title>
+                <para><emphasis role="bold">IDE 1.0:</emphasis> Code completion is a very popular
+                    feature of modern IDEs, a life without which many developers find hard to
+                    imagine. One major reason for its popularity is that developers are frequently
+                    unaware of what methods they can invoke on a given variable. Here, code
+                    completion systems (CCSs) serve as an API browser, allowing developers to browse
+                    methods and select the appropriate one from the list of proposals. However,
+                    current completions are either computed by rather simplistic reasoning systems
+                    or are simply hard-coded. For instance, for method completion, CCSs only
+                    consider the receiver’s declared type. This often leads to an overwhelming
+                    number of proposals. Triggering code completion on a variable of
+                    javax.swing.JButton results in 381 method proposals. Clearly, developers only
+                    need a fraction of the proposed methods to make their code work. Code templates
+                    are an example for hard-coded proposals. Templates (like the Eclipse SWT Code
+                    Templates) serve as shortcuts and documentation for developers. Manual proposal
+                    definitions are labor intensive and error prone. </para>
+                <para><emphasis role="bold">IDE 1.5:</emphasis> Researchers have recognized these
+                    issues. For instance, approaches exist that analyse client code to learn which
+                    methods the clients frequently use in certain contexts, and rearrange method
+                    proposals according to this notion of relevance [2]. Tools like XSnippet,
+                    Prospector and Parseweb [7 9 10] attempt to solve the issue of hard-coded code
+                    templates by also analyzing source code, identifying common patterns in code.
+                    Although obviously useful, these systems didn’t made it into current IDEs. We
+                    argue that the primary reason for this is the lack of a continuously growing
+                    knowledge base. To build reliable models, source-code based approaches require
+                    example applications and full knowledge about the execution environment (i.e.,
+                    classpath, library versions etc.). However, finding a sufficiently large set of
+                    example projects is difficult and tedious, and creating models for new
+                    frameworks is too time-consuming yet. While such approaches can sufficiently
+                    support a few selected APIs, we argue that they do not scale when tens of
+                    thousands of APIs should be supported. </para>
+                <para><emphasis role="bold">IDE 2.0:</emphasis> So, how can we build continuously
+                    improving code completion systems then? To solve the scalability problem, code
+                    completion systems must allow users to share usage information among each other
+                    in an anonymized and automated way—from within the developer’s IDE. This
+                    continuous data sharing allows recommender systems to learn models for every API
+                    that developers actually use. IDEs are very powerful when it comes to extracting
+                    information: they have access to information about the execution environment and
+                    about user interactions, even with respect to certain APIs. But the new, massive
+                    data sets derived from this information pose a challenge. We will likely require
+                    new algorithms to find reliable and valuable patterns in this data. Whatever
+                    means future code completion systems will use to build better recommendation
+                    models, the systems will be based on shared data. It will be the users who
+                    provide this data, and it is important to realize that, as the user base grows,
+                    the recommendation systems will be able to continuously improve over time,
+                    making intelligent completions that are useful for novice developers and experts
+                    alike. </para>
+            </section>
+            <section>
+                <title>Example Code-Snippet Recommendations</title>
+                <para><emphasis role="bold">IDE 1.0:</emphasis> Source-code examples appear to be
+                    highly useful to developers, whenever the documentation of the API at hand is
+                    insufficient [8]. This is evident by the raise of several code search engines
+                    (CSEs) over the last few years, like Google Codesearch, Krugle, and Koders, just
+                    to name a few. However, current CSEs almost exclusively use standard
+                    information-retrieval techniques that were developed for text documents. While
+                    source code is text, it also bears important inherent structure. Disregarding
+                    this structure causes less effective rankings and misleading code summaries. </para>
+                <para><emphasis role="bold">IDE 1.5:</emphasis> Researchers have presented a number
+                    of approaches [3 5 11] that improve certain aspects of CSEs. All these
+                    approaches exploit structure, like inheritance relations, method calls, type
+                    usages, control flow and more, however they face two severe problems. First,
+                    source code provides much more structure than text. Thus, ranking systems have
+                    to take into account many more features when building the final ranking for a
+                    search query. Consequently, it is hard to derive optimal weights for these
+                    features, so that the resulting scoring function will perform as well as
+                    possible. Often, a fixed scoring systems will perform "well enough" but not be
+                    optimal. Another issue with current CSEs is that they ignore the personal
+                    experience of the user who issued the query. Many current web search engines now
+                    support “personalized search”, which leverages the personal background and
+                    interests of a user to find documents that are likely to be interesting for this
+                    user, but not necessarily for others. Current CSEs lack such functionality. </para>
+                <para><emphasis role="bold">IDE 2.0:</emphasis> How can one improve ranking and
+                    realize personalized search in CSEs? The key to solving both problems is to
+                    leverage implicit user feedback. To solve the manual-weight-tweaking problem of
+                    search engines, recent work [4] has shown that leveraging observations of how
+                    users interact with the search results can significantly improve the precision
+                    of existing search engines. The authors used the information whether or not the
+                    user inspects a search result to automatically adjust feature weights. This
+                    produces an optimized ranking where all inspected results are listed above those
+                    that the user did not investigate. To implement personalized code search
+                    engines, one can infer the personal background (or experience) of a developer by
+                    the code she has already written. Then, CSEs could first display code examples
+                    that are similar to examples previously explored or, on demand, code examples
+                    that allow the developer to learn new information. We are certain that IDE
+                    services in general, not only those that we discussed, can greatly benefit from
+                    leveraging implicit user feedback. </para>
+            </section>
+            <section>
+                <title>Extended Documentation</title>
+                <para><emphasis role="bold">IDE 1.0:</emphasis> Software engineers widely accept
+                    that documenting software is a tedious job. Especially open-source projects
+                    frequently lacks sufficient resources to produce comprehensive documentation.
+                    Both Sun and the Eclipse Foundation recently started to address this problem by
+                    opening their documentation platforms to their users. Eclipse asks its users to
+                    provide and update tutorials at the central Eclipse Wiki. Sun’s “Docweb” allows
+                    users to edit Javadoc API documentation, and to provide code examples or cross
+                    references to other interesting articles in the web. These tools aim to leverage
+                    a Wikipedia-style approach tailored to software documentation. Past experience
+                    has shown, however, that such systems often suffer from a lack of user
+                    participation. We believe that the primary cause for this lack of participation
+                    is the fact that people may not be willing to document APIs which they have no
+                    control over, because these APIs may change rapidly at any time: they may be
+                    completely outdated in just a few months. </para>
+                <para><emphasis role="bold">IDE 1.5:</emphasis> Recent research therefore addresses
+                    the problem from another angle, enriching existing documentation with
+                    automatically mined documentation [1 6]. Such approaches identify frequent
+                    patterns or interesting relations in code, and generate helpful guidelines from
+                    these relations. However, generated documentation may not always be helpful.
+                    Like text mining, documentation mining uncovers any relation between code
+                    elements, no matter whether or not this relation is useful to consider. The
+                    problem is aggravated by the fact that it is sometimes the surprising relations
+                    that are the most useful. Another drawback of mining approaches is that they
+                    cannot provide rationales for their observations, leaving it up to the developer
+                    to make sense of the data. </para>
+                <para><emphasis role="bold">IDE 2.0:</emphasis> How could collective intelligence
+                    address the issues mentioned above? The key to a solution is a mixture of
+                    explicit user feedback and user-provided content. In the future, we expect
+                    generated documentation to be judged by thousands of users, enabling people to
+                    evaluate the quality of their services immediately—tool developers and
+                    documentation providers alike. Furthermore, we expect collective intelligence to
+                    enable us to migrate documentation from older to newer versions more easily. For
+                    example, when a new version of an API becomes available, explicit user feedback
+                    will make apparent which parts of the documentation remain valid for the newer
+                    version and which parts require updating. Explicit user feedback will also allow
+                    users to attach rationale to mined documentation, allowing the documentation to
+                    not only state that users must follow a certain principle but why. </para>
+                <para>These examples are just the tip of the iceberg. We are confident that the
+                    software engineering research community will invent many more interesting
+                    techniques to generate, judge, and complete documentation. </para>
+            </section>
+        </section>
+        <section>
+            <title>From Web 2.0 to IDE 2.0</title>
+            <para>We have used the analogy to “Web 2.0” to indicate that this new generation of web
+                applications and our view of future IDEs have something in common. In the following,
+                we discuss the similarities between Web 2.0 and IDE 2.0 to make this analogy more
+                concrete. </para>
+            <para>In this section, we define a set of principles that we expect successful IDE 2.0
+                services to follow. Some of the concepts are paraphrased from Tim O’Reilly’s
+                principles for successful Web 2.0, described in his article “What is Web 2.0?”. </para>
+            <para>
+                <orderedlist>
+                    <listitem>
+                        <para>The Web as Platform. The web as platform is the core concept of Web
+                            2.0. In various ways, clients and servers share data over the web. We
+                            expect the same to hold for future collaborative IDE 2.0 services. These
+                            services rely on client-side usage data and thus, the web is also
+                            fundamental to them. A notable difference between IDE 2.0 and Web2.0 is
+                            that IDEs offer a much larger spectrum of data and also allow for
+                            client-side pre-processing of data like static analysis code analysis.
+                            Such pre-processing may even be crucial to allow for proper privacy.
+                            Furthermore, one needs to distribute to clients recommendation models
+                            that are built on the server-side. Local databases or caches can
+                            increase the scalability of these systems; crucial, when dealing with
+                            millions of request per day. Whatever the particular technology may be,
+                            the web will be the platform for IDE 2.0. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Data is key. Data is key to any IDE 2.0 service. However, here we
+                            fundamentally differ from Tim O’Reilly’s understanding of who owns this
+                            data. In Web 2.0, data is the key factor for the success of an
+                            application over its competitors. In contrast, we strongly believe in
+                            Open Data: all collected data is publicly available. This fosters a
+                            vital ecosystem around the concepts of IDE 2.0 and enables sustainable
+                            research. Successfully IDE 2.0 services will use both raw data and
+                            derived knowledge will facilitate innovation instead of locking in data
+                            or users. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Harnessing Collective Intelligence. Leveraging the wisdom of the
+                            crowds is the third fundamental concept of successful Web 2.0
+                            applications—and same holds for IDE 2.0. The examples introduced in the
+                            previous section used either user-provided content (like source code,
+                            updated documentation or code snippets), implicit feedback (like user
+                            click-through data used to improve rankings), or explicit feedback (like
+                            ratings for judging the quality of relevance of generated documentation)
+                            to build new kind of services. It is important to recognize that, while
+                            individuals may be able to build these services, these services cannot
+                            unleash their potential without the crowds sharing their knowledge. Only
+                            with collective intelligence, IDE services like intelligent code
+                            completion, example recommenders or even smart documentation systems
+                            become possible.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Rich User Experiences. The appearance of AJAX gave web applications a
+                            new look and feel, bringing web applications much closer to desktop
+                            applications than ever before. In the context of IDE 2.0, intelligent,
+                            context-sensitive recommender systems will evolve that recommend
+                            relevant APIs or documentation where appropriate and help to reduce the
+                            clutter in IDEs at the same time. However, providing a rich user
+                            experiences is fundamental for users to accept such services. Similar to
+                            Google Search, simple and intuitive interfaces seamlessly integrated
+                            into existing IDE concepts like code completion, quick fixes etc. are
+                            the major key to success.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Lightweight Programming Models. In web 2.0, mashups (applications that
+                            combine several other (web) applications to build new services on top of
+                            existing ones) evolved, building new services the application developers
+                            never considered. Excellent IDE 2.0 services will encourage others to
+                            build their services on top of existing ones by providing public and
+                            easy-to-use APIs. Clearly, in the early days we expect such services to
+                            be data-driven, i.e., they will leverage the same data for enhancing
+                            several aspects of current IDEs or to port existing services to other
+                            IDEs. Note that Open Data is necessary to enable such services. However,
+                            over time, services will use other services to build what we call IDE
+                            mashups.</para>
+                    </listitem>
+                </orderedlist>
+            </para>
+        </section>
+        <section>
+            <title>Summary</title>
+            <para>The concepts behind Web 2.0 are a great fit for future IDE services and we expect
+                future services to meet at least one if not almost all of these properties. However,
+                the Software Engineering research community has to play a key role in unleashing the
+                full power of the crowds. First, and most importantly, it has to provide an
+                appropriate environment for building and evaluating IDE 2.0 services. Strong
+                partners like the Eclipse Foundation or Sun/Oracle already support and promote such
+                new IDE concepts today, and their help will be crucial to providing access to large
+                user communities in the future. But there is an incentive for these partners: they
+                will profit from new exciter features, making the IDE itself appear very innovative. </para>
+            <para>Second, the Software Engineering research community is the connective link between
+                practitioners and researchers in machine learning. Most IDEs only contain instances
+                of rather primitive machine-learning algorithms. It will be our job to identify the
+                problems that developers face in their day-to-day work, to provide appropriate data
+                as input for machine learners, and to evaluate and reintegrate these results into
+                IDEs. Thus, IDE 2.0 research will create new fascinating and challenging
+                applications of machine learning aside the current markets. </para>
+            <para>To sum up, IDE 2.0 services have much potential to improve developer productivity
+                and provide a fantastic playground for new algorithms. They bring together several
+                research communities at the same time, to solve a new generation of challenges in
+                software engineering. When tackling the problem now and in a farsighted, IDE 2.0
+                will be one of the major research areas of the near future. </para>
+        </section>
+    </section>
+    <section>
+        <title>Code Completion</title>
+        <para></para>
+    </section>
+    <section>
+        <title>The Extended Documentation Platform</title>
+        <para>Writing documentation is one of those tasks programmers are typically not very keen about. It is
+            time-consuming, tedious, and has almost no immediate rewards. Consequently, documentation is (too) often
+            incomplete (or even worse) completely outdated.
+        </para>
+        <para>
+            But good and comprehensive documentation is crucial for the success of a library or framework. Tools exist,
+            that generate documentation from source code (i.e., extracting obvious information from code and generating
+            more or less helpful javadoc comments). Such approaches seem valuable at first, but finally this kind of
+            documentation only pleases our manager since it improves on the
+            <emphasis role="italic">source code to documentation
+            </emphasis>
+            ratio; from a developer's point of view this documentation is rather useless.
+        </para>
+        <para>
+            However, there are many other resources out there that offer valuable information about an API.
+            Stackoverflow for instance is an abundant source of information providing valuable tips on how to use a
+            certain API or deal with errors. Code-search engines offer code snippets showing how to use an API in action
+            etc. Many more resources exist. The
+            <emphasis role="italic">Extended Documentation Platform</emphasis>
+            is solely developed to serve the purpose to aggregate this the wide range of information sources available
+            on the web into a single view in Eclipse.
+        </para>
+        <para>
+            The figure below shows the
+            <emphasis role="italic">Ext</emphasis>
+            ended
+            <emphasis role="italic">Doc</emphasis>
+            umentation View (
+            <emphasis role="italic">Extdoc View
+            </emphasis>
+            for short). It basically consists of two parts: a provider overview panel on the left and a content area on
+            the right in which every provider presents its information is has for a given selection in the workspace or
+            active JavaEditor:
+        </para>
+        <para>
+            <inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="media/figures/usr/extdoc/view01.png" contentwidth="15cm"
+                        width="15cm"/>
+                </imageobject>
+            </inlinemediaobject>
+        </para>
+    </section>
+    <section>
+        <title>Snipmatch</title>
+        <para></para>
+    </section>
+    <section>
+        <title>Local Code-search
+        </title>
+        <para></para>
+    </section>
+</chapter>
