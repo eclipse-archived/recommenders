@@ -14,7 +14,10 @@ import static java.lang.Thread.MIN_PRIORITY;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -28,6 +31,7 @@ import org.eclipse.recommenders.internal.rcp.providers.CachingAstProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaModelEventsProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionProvider;
 import org.eclipse.recommenders.rcp.IAstProvider;
+import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.ast.ASTNodeUtils;
 import org.eclipse.recommenders.utils.rcp.ast.ASTStringUtils;
@@ -96,15 +100,9 @@ public class RecommendersModule extends AbstractModule implements Module {
     @Singleton
     protected JavaSelectionProvider provideJavaSelectionProvider(final EventBus bus, final IWorkbench wb) {
         final JavaSelectionProvider provider = new JavaSelectionProvider(bus);
-        Display.getDefault().asyncExec(new Runnable() {
-
-            @Override
-            public void run() {
-                final IWorkbenchWindow ww = wb.getActiveWorkbenchWindow();
-                final ISelectionService service = (ISelectionService) ww.getService(ISelectionService.class);
-                service.addPostSelectionListener(provider);
-            }
-        });
+        final IWorkbenchWindow ww = runUiFinder().activeWorkbenchWindow;
+        final ISelectionService service = (ISelectionService) ww.getService(ISelectionService.class);
+        service.addPostSelectionListener(provider);
         return provider;
     }
 
@@ -120,12 +118,33 @@ public class RecommendersModule extends AbstractModule implements Module {
 
     @Provides
     protected IWorkbench provideWorkbench() {
-        return PlatformUI.getWorkbench();
+        return runUiFinder().workbench;
     }
 
     @Provides
     protected IWorkbenchPage provideActiveWorkbenchPage() {
-        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+
+        return runUiFinder().activePage;
+    }
+
+    private ActivePageFinder runUiFinder() {
+        final ActivePageFinder finder = new ActivePageFinder();
+        try {
+            if (isRunningInUiThread()) {
+                finder.call();
+            } else {
+                final FutureTask<IWorkbenchPage> task = new FutureTask(finder);
+                Display.getDefault().asyncExec(task);
+                task.get(2, TimeUnit.SECONDS);
+            }
+        } catch (final Exception e) {
+            throw Throws.throwUnhandledException(e);
+        }
+        return finder;
+    }
+
+    private boolean isRunningInUiThread() {
+        return Display.getCurrent() != null;
     }
 
     @Provides
@@ -136,6 +155,20 @@ public class RecommendersModule extends AbstractModule implements Module {
     @Provides
     protected JavaModelManager provideJavaModelManger() {
         return JavaModelManager.getJavaModelManager();
+    }
+
+    private final class ActivePageFinder implements Callable<IWorkbenchPage> {
+        private IWorkbench workbench;
+        private IWorkbenchWindow activeWorkbenchWindow;
+        private IWorkbenchPage activePage;
+
+        @Override
+        public IWorkbenchPage call() throws Exception {
+            workbench = PlatformUI.getWorkbench();
+            activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
+            activePage = activeWorkbenchWindow.getActivePage();
+            return activePage;
+        }
     }
 
     /*
