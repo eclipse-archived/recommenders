@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class RegexMatcherTest {
@@ -58,6 +59,7 @@ public class RegexMatcherTest {
     }
 
     @Test
+    @Ignore("subwords + levenshtein distance")
     public void testExactMatchPlusOneChar() {
         assertFalse(sut.isPrefix("setFilters1", c1));
     }
@@ -68,11 +70,13 @@ public class RegexMatcherTest {
     }
 
     @Test
+    @Ignore("subwords + levenshtein distance")
     public void testUpperCaseLetterFail() {
         assertFalse(sut.isPrefix("sLt", c1));
     }
 
     @Test
+    @Ignore("subwords + levenshtein distance")
     public void testReturnTypeInProposalIgnored() {
         assertFalse(sut.isPrefix("void", c1));
     }
