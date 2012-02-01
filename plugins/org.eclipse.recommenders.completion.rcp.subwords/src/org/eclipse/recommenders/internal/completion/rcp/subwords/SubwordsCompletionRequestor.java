@@ -13,11 +13,12 @@ package org.eclipse.recommenders.internal.completion.rcp.subwords;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.floor;
 import static java.lang.Math.log;
+import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance;
+import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
@@ -68,14 +69,15 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     }
 
-    private boolean levenshtein(final String prefix, final String subwordsMatchingRegion) {
+    private boolean levenshtein(String prefix, final String subwordsMatchingRegion) {
         if (prefix.length() < 2) {
             return false;
         }
-
         final int maxDistance = (int) floor(log(prefix.length()));
-        final String completionPrefix = StringUtils.substring(subwordsMatchingRegion, 0, prefix.length());
-        final int distance = StringUtils.getLevenshteinDistance(completionPrefix, prefix, maxDistance);
+
+        prefix = prefix.toLowerCase();
+        final String completionPrefix = substring(subwordsMatchingRegion, 0, prefix.length()).toLowerCase();
+        final int distance = getLevenshteinDistance(completionPrefix, prefix, maxDistance);
         // no exact matches:
         if (distance <= 0) {
             return false;
