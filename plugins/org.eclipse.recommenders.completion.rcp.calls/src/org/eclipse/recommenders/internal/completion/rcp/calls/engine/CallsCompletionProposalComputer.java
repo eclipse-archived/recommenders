@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
@@ -29,6 +30,8 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.corext.util.JdtFlags;
+import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.ParameterGuessingProposal;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
@@ -43,6 +46,7 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFac
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -142,8 +146,23 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         receiverType = ctx.getReceiverType().orNull();
         if ((receiverType == null) && receiverName.isEmpty()) {
             // receiver may be this!
+            setReceiverToSupertype();
         }
         return receiverType != null;
+    }
+
+    private void setReceiverToSupertype() {
+        try {
+            final IMethod m = ctx.getEnclosingMethod().orNull();
+            if (m == null || JdtFlags.isStatic(m)) {
+                return;
+            }
+            final IType type = m.getDeclaringType();
+            final ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(type);
+            receiverType = hierarchy.getSuperclass(type);
+        } catch (final Exception e) {
+            RecommendersPlugin.logError(e, "Failed to resolve super type of %s", ctx.getEnclosingElement());
+        }
     }
 
     private boolean acquireModel() {
@@ -258,9 +277,9 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             final CompletionProposalDecorator decorator = new CompletionProposalDecorator(javaProposal, r.probability);
             proposals.add(decorator);
         }
-        if (!proposals.isEmpty()) {
-            proposals.add(new SeparatorProposal(ctx.getInvocationOffset()));
-        }
+        // if (!proposals.isEmpty()) {
+        // proposals.add(new SeparatorProposal(ctx.getInvocationOffset()));
+        // }
     }
 
     private void releaseModel() {
