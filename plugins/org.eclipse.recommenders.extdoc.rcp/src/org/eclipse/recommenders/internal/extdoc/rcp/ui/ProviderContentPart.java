@@ -155,6 +155,10 @@ public class ProviderContentPart {
         l.setText("waiting for selection...");
     }
 
+    public void setFocus() {
+        visiblePanel.setFocus();
+    }
+
     public Composite getRenderingArea(final ExtdocProvider p) {
         return providerAreas.get(p).getContentArea();
     }

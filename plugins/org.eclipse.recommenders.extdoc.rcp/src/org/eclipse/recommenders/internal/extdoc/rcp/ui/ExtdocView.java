@@ -165,6 +165,6 @@ public class ExtdocView extends ViewPart {
 
     @Override
     public void setFocus() {
-        // TODO: check if this is needed to enable scrolling or something
+        contentPart.setFocus();
     }
 }
