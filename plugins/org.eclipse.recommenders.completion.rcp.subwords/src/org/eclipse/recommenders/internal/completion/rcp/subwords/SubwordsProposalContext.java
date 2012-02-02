@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
 import static java.lang.Math.floor;
 import static java.lang.Math.log;
+import static java.lang.Math.max;
 import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance;
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
@@ -83,7 +84,7 @@ public class SubwordsProposalContext {
         this.subwordsMatchingRegion = SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket(jdtProposal
                 .getDisplayString());
         this.jdtProposal = ensureIsNotNull(jdtProposal);
-        maxLevenshteinDistance = (int) floor(log(prefix.length()));
+        maxLevenshteinDistance = max(1, (int) floor(log(prefix.length())));
         calculateMatchingRegionBigrams();
     }
 

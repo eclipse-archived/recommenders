@@ -62,4 +62,20 @@ public class SubwordsCompletionProposalComputerTest {
         // verify:
         // exception should be handled but not propagated.
     }
+
+    @Test
+    public void testFailEmptyPrefix() throws JavaModelException {
+        // setup:
+        final SubwordsCompletionProposalComputer sut = new SubwordsCompletionProposalComputer();
+        final JavaContentAssistInvocationContext ctx = mockInvocationContext("");
+        // configure that 'complete' throws an exception:
+        final ICompilationUnit cu = ctx.getCompilationUnit();
+        final JavaModelException exception = mock(JavaModelException.class);
+        doThrow(exception).when(cu).codeComplete(anyInt(), (CompletionRequestor) anyObject());
+        // exercise:
+        sut.computeCompletionProposals(ctx, null);
+        // verify:
+        // exception should be handled but not propagated.
+    }
+
 }
