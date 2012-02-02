@@ -1,4 +1,4 @@
-<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!--<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng" schematypens="http://relaxng.org/ns/structure/1.0"?> -->
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V5.0//EN" "http://www.docbook.org/xml/5.0/dtd/docbook.dtd">
 <chapter id="usr" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>User Manual</title>
@@ -345,6 +345,52 @@
     <section>
         <title>Code Completion</title>
         <para></para>
+        <section>
+            <title>Configuration</title>
+            <para>Code Recommender's code completion engines are extensions of JDT's Content Assist
+                framework. As such, they are enable under <guimenu>Preferences</guimenu> »
+                    <guimenuitem>Java</guimenuitem> » <guimenuitem>Editor</guimenuitem> »
+                    <guimenuitem>Content Assist</guimenuitem> »
+                <guimenuitem>Advanced</guimenuitem>:</para>
+            <figure>
+                <title>Enabling Code Recommenders' Code Competion</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/usr/completion/preferences.png"
+                            contentwidth="15cm"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <note>
+                <para>The Content Assist preference page allows a fine-grained confguration on which content assist list Code Recommender's completions are shown. If in the topmost listing any of Code Recommenders completion engines is checked, it contributes the to default , i.e., the first content assists list. Please note: if no completion engine is checked, no computations are performed. Code Recommenders is effectively disabled.</para>
+                <para>The second listing configures what is shown on the content assist cycle, i.e,
+                    which proposals are presented when a user presses ctrl-space twice or three
+                    times in a row. Arrange the completion engines in the order you would like to
+                    get their proposals. For instance, it may be a good choice to put the call chain
+                    completion engine on the second or third content assist list (not the default
+                    list) since it performs an exhaustive and time-consuming search. In contrast,
+                    putting subwords completion on the second content assist seems plausible since
+                    it kicks in when standard code completion would propose nothing. See the
+                    corresponding section about subwords completion for more details on this.</para>
+            </note>
+            <para/>
+        </section>
+        <section>
+            <title>Intelligent Call Completion</title>
+            <para/>
+        </section>
+        <section>
+            <title>Intelligent Overrides Completion</title>
+            <para/>
+        </section>
+        <section>
+            <title>Subwords Completion</title>
+            <para/>
+        </section>
+        <section>
+            <title>Chain Completion</title>
+            <para/>
+        </section>
     </section>
     <section>
         <title>The Extended Documentation Platform</title>
@@ -390,14 +436,31 @@
                 </imageobject>
             </inlinemediaobject>
         </para>
+        <para/>
+        <section>
+            <title>Subclassing Directives Provider</title>
+            <para/>
+        </section>
+        <section>
+            <title>Self-calls Directives Provider</title>
+            <para/>
+        </section>
+        <section>
+            <title>Example Code Snippets Provider</title>
+            <para/>
+        </section>
+        <section>
+            <title>Calls Recommendation Provider</title>
+            <para/>
+        </section>
     </section>
     <section>
         <title>Snipmatch</title>
-        <para></para>
+        <para>In progress.</para>
     </section>
     <section>
         <title>Local Code-search
         </title>
-        <para></para>
+        <para>In progress.</para>
     </section>
 </chapter>
