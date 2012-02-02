@@ -74,7 +74,7 @@ public class CallCompletionProposalComputerSmokeTest {
       _builder.append(" ");
       _builder.append("*/");
       _builder.newLine();
-      _builder.append("public class AllJavaFeatures {");
+      _builder.append("public class AllJavaFeatures<T extends Collection> {");
       _builder.newLine();
       _builder.newLine();
       _builder.append("    ");
@@ -166,6 +166,33 @@ public class CallCompletionProposalComputerSmokeTest {
       _builder.newLine();
       _builder.append("}");
       _builder.newLine();
+      final CharSequence code = _builder;
+      this.exercise(code);
+  }
+  
+  @Test
+  public void testFailCompletionOnTypeParameter() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("package completion.calls;");
+      _builder.newLine();
+      _builder.append("import java.util.Collection;");
+      _builder.newLine();
+      _builder.append("public class CompletionInClassWithGenerics {");
+      _builder.newLine();
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("public void <T> test() {");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("final T item;");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("item.$");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("}");
       final CharSequence code = _builder;
       this.exercise(code);
   }

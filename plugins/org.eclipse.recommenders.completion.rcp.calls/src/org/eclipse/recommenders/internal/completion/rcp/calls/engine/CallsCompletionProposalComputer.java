@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
@@ -144,11 +145,23 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private boolean findReceiver() {
         receiverName = ctx.getReceiverName();
         receiverType = ctx.getReceiverType().orNull();
-        if ((receiverType == null) && receiverName.isEmpty()) {
+        if (isReceiverNameThis() || isReceiverNameSuper() || isImplicitThis()) {
             // receiver may be this!
             setReceiverToSupertype();
         }
         return receiverType != null;
+    }
+
+    private boolean isReceiverNameThis() {
+        return "this".equals(receiverName);
+    }
+
+    private boolean isReceiverNameSuper() {
+        return "super".equals(receiverName);
+    }
+
+    private boolean isImplicitThis() {
+        return (receiverType == null) && receiverName.isEmpty();
     }
 
     private void setReceiverToSupertype() {
@@ -255,7 +268,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private void createProspsals() {
         final String prefix = ctx.getPrefix();
         for (final CallsRecommendation r : recommendations) {
-            if (!r.method.getName().startsWith(prefix)) {
+            final String proposalPrefix = StringUtils.substring(r.method.getName(), 0, prefix.length());
+            if (!proposalPrefix.equalsIgnoreCase(prefix)) {
                 continue;
             }
 

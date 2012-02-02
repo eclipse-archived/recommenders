@@ -42,6 +42,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
+import org.eclipse.jdt.core.ITypeParameter;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.compiler.IProblem;
@@ -52,6 +53,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -296,13 +298,18 @@ public class JdtUtils {
     }
 
     public static Optional<IType> createUnresolvedType(final TypeBinding compilerBinding) {
-        final IType t = (IType) Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
-        return fromNullable(t);
+        final JavaElement e = Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
+        if (e instanceof IType) {
+            return of((IType) e);
+        }else if(e instanceof ITypeParameter) {
+            final ITypeParameter t = cast(e);
+            // XXX we need to handle this one day...
+        }
+        return absent();
     }
 
     /**
-     * Returns a list of all public instance methods and fields declared in the
-     * given type or any of its super-types
+     * Returns a list of all public instance methods and fields declared in the given type or any of its super-types
      */
     public static Collection<IMember> findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(final IType type) {
         final LinkedHashMap<String, IMember> tmp = new LinkedHashMap<String, IMember>();
@@ -340,8 +347,7 @@ public class JdtUtils {
     }
 
     /**
-     * Returns a list of all public static fields and methods declared in the
-     * given class or any of its super-classes.
+     * Returns a list of all public static fields and methods declared in the given class or any of its super-classes.
      */
     public static Collection<IMember> findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(final IType type) {
 
@@ -549,8 +555,7 @@ public class JdtUtils {
     }
 
     /**
-     * Finds and returns the Java element that contains the text selection in
-     * the given editor.
+     * Finds and returns the Java element that contains the text selection in the given editor.
      * 
      * @param editor
      *            the Java editor
@@ -701,8 +706,7 @@ public class JdtUtils {
 
     /**
      * @param parent
-     *            must be an {@link IType} or something that has an
-     *            {@link IType} as parent.
+     *            must be an {@link IType} or something that has an {@link IType} as parent.
      */
     public static Optional<String> resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
             String typeSignature, final IJavaElement parent) {

@@ -43,7 +43,7 @@ $
  * 
  * @see $
  */
-public class AllJavaFeatures {
+public class AllJavaFeatures<T extends Collection> {
 
     /**
      * $
@@ -78,6 +78,23 @@ public class AllJavaFeatures {
     }
 }
 '''
+		exercise(code)
+	}
+	
+	
+		@Test
+		def void testFailCompletionOnTypeParameter(){
+		val code =
+			'''
+			package completion.calls;
+			import java.util.Collection;
+			public class CompletionInClassWithGenerics {
+			
+				public void <T> test() {
+					final T item;
+					item.$
+				}
+			}'''
 		exercise(code)
 	}
 
