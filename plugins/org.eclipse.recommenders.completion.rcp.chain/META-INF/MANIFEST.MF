@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: JDT Chain Completion
+Bundle-Name: Code Recommenders: JDT Chain Completion (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.chain;singleton:=true
 Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
