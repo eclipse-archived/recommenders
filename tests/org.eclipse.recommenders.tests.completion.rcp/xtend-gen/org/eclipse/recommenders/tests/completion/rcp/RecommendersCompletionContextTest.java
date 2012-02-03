@@ -51,6 +51,91 @@ public class RecommendersCompletionContextTest {
       Assert.assertEquals(_absent, _receiverType);
   }
   
+  @Test
+  public void testTypeParameters01() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("public <T> void m(T t){t.$}");
+      CharSequence _classbody = this.classbody(_builder);
+      final CharSequence code = _classbody;
+      IRecommendersCompletionContext _exercise = this.exercise(code);
+      final IRecommendersCompletionContext sut = _exercise;
+      Optional<IType> _receiverType = sut.getReceiverType();
+      boolean _isPresent = _receiverType.isPresent();
+      Assert.assertTrue(_isPresent);
+      Optional<IType> _receiverType_1 = sut.getReceiverType();
+      IType _get = _receiverType_1.get();
+      String _elementName = _get.getElementName();
+      Assert.assertEquals("Object", _elementName);
+  }
+  
+  @Test
+  public void testTypeParameters02() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("public <T extends Collection> void m(T t){t.$}");
+      CharSequence _classbody = this.classbody(_builder);
+      final CharSequence code = _classbody;
+      IRecommendersCompletionContext _exercise = this.exercise(code);
+      final IRecommendersCompletionContext sut = _exercise;
+      Optional<IType> _receiverType = sut.getReceiverType();
+      boolean _isPresent = _receiverType.isPresent();
+      Assert.assertTrue(_isPresent);
+      Optional<IType> _receiverType_1 = sut.getReceiverType();
+      IType _get = _receiverType_1.get();
+      String _elementName = _get.getElementName();
+      Assert.assertEquals("Collection", _elementName);
+  }
+  
+  @Test
+  public void testTypeParameters021() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("public <T super List> void m(T t){t.$}");
+      CharSequence _classbody = this.classbody(_builder);
+      final CharSequence code = _classbody;
+      IRecommendersCompletionContext _exercise = this.exercise(code);
+      final IRecommendersCompletionContext sut = _exercise;
+      Optional<IType> _receiverType = sut.getReceiverType();
+      boolean _isPresent = _receiverType.isPresent();
+      Assert.assertFalse(_isPresent);
+  }
+  
+  @Test
+  public void testTypeParameters03() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Class<?> clazz = null;");
+      _builder.newLine();
+      _builder.append("clazz.$");
+      CharSequence _methodbody = this.methodbody(_builder);
+      final CharSequence code = _methodbody;
+      IRecommendersCompletionContext _exercise = this.exercise(code);
+      final IRecommendersCompletionContext sut = _exercise;
+      Optional<IType> _receiverType = sut.getReceiverType();
+      boolean _isPresent = _receiverType.isPresent();
+      Assert.assertTrue(_isPresent);
+      Optional<IType> _receiverType_1 = sut.getReceiverType();
+      IType _get = _receiverType_1.get();
+      String _elementName = _get.getElementName();
+      Assert.assertEquals("Class", _elementName);
+  }
+  
+  @Test
+  public void testTypeParameters04() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Class<? super String> clazz = null;");
+      _builder.newLine();
+      _builder.append("clazz.$");
+      CharSequence _methodbody = this.methodbody(_builder);
+      final CharSequence code = _methodbody;
+      IRecommendersCompletionContext _exercise = this.exercise(code);
+      final IRecommendersCompletionContext sut = _exercise;
+      Optional<IType> _receiverType = sut.getReceiverType();
+      boolean _isPresent = _receiverType.isPresent();
+      Assert.assertTrue(_isPresent);
+      Optional<IType> _receiverType_1 = sut.getReceiverType();
+      IType _get = _receiverType_1.get();
+      String _elementName = _get.getElementName();
+      Assert.assertEquals("Class", _elementName);
+  }
+  
   private void assertCompletionNode(final IRecommendersCompletionContext sut, final Class<?> type) {
       ASTNode _completionNode = sut.getCompletionNode();
       final ASTNode node = _completionNode;

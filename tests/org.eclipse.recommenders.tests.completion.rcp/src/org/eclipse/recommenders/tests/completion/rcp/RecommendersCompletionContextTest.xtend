@@ -44,6 +44,55 @@ class RecommendersCompletionContextTest {
 		assertEquals(Optional::absent(),sut.receiverType);		
 	}
 	
+	
+	@Test
+	def void testTypeParameters01() {
+		val code = classbody('''
+		public <T> void m(T t){t.$}''')
+		val sut = exercise(code)
+		assertTrue(sut.receiverType.present);
+		assertEquals("Object",sut.receiverType.get.elementName);
+	}
+	
+	@Test
+	def void testTypeParameters02() {
+		val code = classbody('''
+		public <T extends Collection> void m(T t){t.$}''')
+		val sut = exercise(code)
+		assertTrue(sut.receiverType.present);
+		assertEquals("Collection",sut.receiverType.get.elementName);
+	}
+	
+	@Test
+	def void testTypeParameters021() {
+		// doesn't make too much sense. This results in a missing type --> absent()
+		val code = classbody('''
+		public <T super List> void m(T t){t.$}''')
+		val sut = exercise(code)
+		assertFalse(sut.receiverType.present);
+	}
+
+	@Test
+	def void testTypeParameters03() {
+		val code = methodbody('''
+		Class<?> clazz = null;
+		clazz.$''')
+		val sut = exercise(code)
+		assertTrue(sut.receiverType.present);
+		assertEquals("Class",sut.receiverType.get.elementName);
+	}
+	
+	@Test
+	def void testTypeParameters04() {
+		val code = methodbody('''
+		Class<? super String> clazz = null;
+		clazz.$''')
+		val sut = exercise(code)
+		assertTrue(sut.receiverType.present);
+		assertEquals("Class",sut.receiverType.get.elementName);
+	}
+	
+	
 	def private assertCompletionNode(IRecommendersCompletionContext sut, Class<?> type){
 		val node = sut.completionNode;
 		assertInstanceof(node,type)

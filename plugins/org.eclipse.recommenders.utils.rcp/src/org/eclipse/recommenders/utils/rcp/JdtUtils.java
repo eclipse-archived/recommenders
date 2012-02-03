@@ -21,6 +21,7 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
+import static org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin.logError;
 
 import java.io.File;
 import java.util.Collection;
@@ -53,7 +54,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeParameter;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -301,11 +301,31 @@ public class JdtUtils {
         final JavaElement e = Util.getUnresolvedJavaElement(compilerBinding, null, EMPTY_NODE_MAP);
         if (e instanceof IType) {
             return of((IType) e);
-        }else if(e instanceof ITypeParameter) {
-            final ITypeParameter t = cast(e);
-            // XXX we need to handle this one day...
+        } else if (e instanceof ITypeParameter) {
+            return resolveTypeParameter((ITypeParameter) e);
         }
         return absent();
+    }
+
+    private static Optional<IType> resolveTypeParameter(final ITypeParameter t) {
+        IType type = null;
+        try {
+            final IJavaProject project = t.getJavaProject();
+            final String[] bounds = t.getBoundsSignatures();
+            if (ArrayUtils.isEmpty(bounds)) {
+                type = project.findType("java.lang.Object");
+            } else {
+                final IMember declaringMember = t.getDeclaringMember();
+                final Optional<String> typename = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
+                        bounds[0], declaringMember);
+                if (typename.isPresent()) {
+                    type = project.findType(typename.get());
+                }
+            }
+        } catch (final Exception e) {
+            logError(e, "Failed to resolve type parameter '%s'", t.getElementName());
+        }
+        return fromNullable(type);
     }
 
     /**
