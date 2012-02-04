@@ -41,6 +41,11 @@
             image="icons/provider.examples.gif"
             name="Snippets">
       </provider>
+       <provider
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.hooks.StaticHooksFinder"
+            image="icons/provider.hooks.png"
+            name="Static Hooks">
+      </provider>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">

@@ -889,4 +889,8 @@ public class JdtUtils {
         }
         return Optional.fromNullable(res);
     }
+
+    public static boolean isInitializer(final IMethod m) {
+        return m.getElementName().equals("<clinit>");
+    }
 }
