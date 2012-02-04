@@ -31,7 +31,7 @@ import org.eclipse.recommenders.internal.rcp.providers.CachingAstProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaModelEventsProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionProvider;
 import org.eclipse.recommenders.rcp.IAstProvider;
-import org.eclipse.recommenders.utils.Throws;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.ast.ASTNodeUtils;
 import org.eclipse.recommenders.utils.rcp.ast.ASTStringUtils;
@@ -138,7 +138,7 @@ public class RecommendersModule extends AbstractModule implements Module {
                 task.get(2, TimeUnit.SECONDS);
             }
         } catch (final Exception e) {
-            throw Throws.throwUnhandledException(e);
+            RecommendersPlugin.logError(e, "Could not run 'active page finder' that early!");
         }
         return finder;
     }
