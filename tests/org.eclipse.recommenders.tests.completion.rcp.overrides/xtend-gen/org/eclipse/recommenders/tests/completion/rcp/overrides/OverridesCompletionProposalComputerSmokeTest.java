@@ -9,6 +9,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.InstantOverridesRecommender;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer;
+import org.eclipse.recommenders.tests.SmokeTestScenarios;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.overrides.MockRecommender;
 import org.eclipse.recommenders.tests.completion.rcp.overrides.RecommendersCompletionContextFactoryMock;
@@ -78,6 +79,14 @@ public class OverridesCompletionProposalComputerSmokeTest {
       _builder.newLine();
       final CharSequence code = _builder;
       this.exercise(code);
+  }
+  
+  @Test
+  public void smokeTestScenarios() {
+    List<CharSequence> _scenarios = SmokeTestScenarios.scenarios();
+    for (final CharSequence scenario : _scenarios) {
+      this.exercise(scenario);
+    }
   }
   
   public void exercise(final CharSequence code) {

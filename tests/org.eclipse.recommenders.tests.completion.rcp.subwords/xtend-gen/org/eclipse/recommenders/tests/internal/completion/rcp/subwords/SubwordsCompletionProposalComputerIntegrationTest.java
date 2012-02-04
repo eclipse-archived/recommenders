@@ -11,6 +11,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer;
 import org.eclipse.recommenders.tests.CodeBuilder;
+import org.eclipse.recommenders.tests.SmokeTestScenarios;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
@@ -41,21 +42,25 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     }
   }.apply();
   
-  private long MAX_COMPUTATION_LIMIT_MILLIS = 500;
+  private long MAX_COMPUTATION_LIMIT_MILLIS = 1000;
   
   @Test
   public void test000_smoke() {
-      CharSequence _smokeTestClass = CodeBuilder.smokeTestClass();
-      final CharSequence code = _smokeTestClass;
-      this.smoke(code);
+      CharSequence _OLD_TEST_CLASS = CodeBuilder.OLD_TEST_CLASS();
+      final CharSequence code = _OLD_TEST_CLASS;
+      this.smokeTest(code);
+      List<CharSequence> _scenarios = SmokeTestScenarios.scenarios();
+      for (final CharSequence scenario : _scenarios) {
+        this.smokeTest(scenario);
+      }
   }
   
   @Test
   public void test001() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("Object o=\"\"; o.hc$");
-      CharSequence _simpleTestMethod = CodeBuilder.simpleTestMethod(_builder);
-      final CharSequence code = _simpleTestMethod;
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode");
       this.exercise(code, _asList);
   }
@@ -64,8 +69,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   public void test002() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("Object o=\"\"; o.c$");
-      CharSequence _simpleTestMethod = CodeBuilder.simpleTestMethod(_builder);
-      final CharSequence code = _simpleTestMethod;
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("clone", "hashCode", "getClass");
       this.exercise(code, _asList);
   }
@@ -74,8 +79,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   public void test003() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("Object o=\"\"; o.C$");
-      CharSequence _simpleTestMethod = CodeBuilder.simpleTestMethod(_builder);
-      final CharSequence code = _simpleTestMethod;
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode", "getClass");
       this.exercise(code, _asList);
   }
@@ -84,8 +89,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   public void test004() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("Object o=\"\"; o.cod$");
-      CharSequence _simpleTestMethod = CodeBuilder.simpleTestMethod(_builder);
-      final CharSequence code = _simpleTestMethod;
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode");
       this.exercise(code, _asList);
   }
@@ -94,8 +99,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   public void test005() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("Object o=\"\"; o.coe$");
-      CharSequence _simpleTestMethod = CodeBuilder.simpleTestMethod(_builder);
-      final CharSequence code = _simpleTestMethod;
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode", "clone");
       this.exercise(code, _asList);
   }
@@ -104,8 +109,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   public void test006() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("Object o=\"\"; o.Ce$");
-      CharSequence _simpleTestMethod = CodeBuilder.simpleTestMethod(_builder);
-      final CharSequence code = _simpleTestMethod;
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode");
       this.exercise(code, _asList);
   }
@@ -114,8 +119,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   public void test007_subtype() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("String s=\"\"; s.lone$");
-      CharSequence _simpleTestMethod = CodeBuilder.simpleTestMethod(_builder);
-      final CharSequence code = _simpleTestMethod;
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("clone");
       this.exercise(code, _asList);
   }
@@ -184,7 +189,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       this.exercise(code, expected);
   }
   
-  public void smoke(final CharSequence code) {
+  public void smokeTest(final CharSequence code) {
     try {
       {
         IWorkspace _workspace = ResourcesPlugin.getWorkspace();

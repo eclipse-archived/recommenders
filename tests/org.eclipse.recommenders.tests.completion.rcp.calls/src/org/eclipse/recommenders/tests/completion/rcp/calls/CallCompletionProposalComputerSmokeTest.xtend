@@ -18,6 +18,7 @@ import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
 import org.eclipse.jdt.core.dom.AST
  
+import static org.eclipse.recommenders.tests.SmokeTestScenarios.* 
 class CallCompletionProposalComputerSmokeTest { 
   
 	@Test
@@ -82,8 +83,15 @@ public class AllJavaFeatures<T extends Collection> {
 	}
 	
 	
-		@Test
-		def void testFailCompletionOnTypeParameter(){
+	@Test
+	def void smokeTestScenarios(){
+		for(scenario : scenarios){
+			exercise(scenario)
+		}
+	}
+	
+	@Test
+	def void testFailCompletionOnTypeParameter(){
 		val code =
 			'''
 			package completion.calls;

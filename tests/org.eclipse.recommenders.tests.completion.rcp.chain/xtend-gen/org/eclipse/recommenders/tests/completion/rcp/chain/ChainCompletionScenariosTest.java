@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer;
+import org.eclipse.recommenders.tests.SmokeTestScenarios;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
@@ -19,12 +20,50 @@ import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("all")
-public class ChainScenariosTest {
+public class ChainCompletionScenariosTest {
+  private static JavaProjectFixture fixture = new Function0<JavaProjectFixture>() {
+    public JavaProjectFixture apply() {
+      IWorkspace _workspace = ResourcesPlugin.getWorkspace();
+      JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
+      return _javaProjectFixture;
+    }
+  }.apply();
+  
+  @Test
+  public void smokeTestScenarios() {
+    try {
+      List<CharSequence> _scenarios = SmokeTestScenarios.scenarios();
+      for (final CharSequence scenario : _scenarios) {
+        {
+          Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = ChainCompletionScenariosTest.fixture.createFileAndParseWithMarkers(scenario);
+          final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
+          ICompilationUnit _first = struct.getFirst();
+          final ICompilationUnit cu = _first;
+          Set<Integer> _second = struct.getSecond();
+          for (final Integer completionIndex : _second) {
+            {
+              JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (completionIndex).intValue());
+              final JavaContentAssistContextMock ctx = _javaContentAssistContextMock;
+              RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
+              ChainCompletionProposalComputer _chainCompletionProposalComputer = new ChainCompletionProposalComputer(_recommendersCompletionContextFactoryMock);
+              final ChainCompletionProposalComputer sut = _chainCompletionProposalComputer;
+              sut.sessionStarted();
+              sut.computeCompletionProposals(ctx, null);
+            }
+          }
+        }
+      }
+    } catch (Exception _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
+  }
+  
   @Test
   public void testFindLocalAnchor() {
       StringConcatenation _builder = new StringConcatenation();
@@ -442,11 +481,8 @@ public class ChainScenariosTest {
   public void exercise(final CharSequence code, final List<? extends List<String>> expected) {
     try {
       {
-        IWorkspace _workspace = ResourcesPlugin.getWorkspace();
-        JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
-        final JavaProjectFixture fixture = _javaProjectFixture;
         String _string = code.toString();
-        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(_string);
+        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = ChainCompletionScenariosTest.fixture.createFileAndParseWithMarkers(_string);
         final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
         ICompilationUnit _first = struct.getFirst();
         final ICompilationUnit cu = _first;

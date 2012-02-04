@@ -1,35 +1,69 @@
 package org.eclipse.recommenders.tests
 
-class CodeBuilder {
+import java.util.Arrays
+import static org.eclipse.recommenders.tests.CodeBuilder.*
+
+class SmokeTestScenarios {
+	
+	def static scenarios (){
+		Arrays::asList(
+			IMPORT_01, IMPORT_02, 
+			PACKAGE_01, PACKAGE_02, PACKAGE_03,
+			METHOD_STMT_01, METHOD_STMT_02, METHOD_STMT_03, METHOD_STMT_04, METHOD_STMT_05,METHOD_STMT_06,
+			OLD_TEST_CLASS
+		)
+	}
+	
 	
 	public static CharSequence someClass = '''public class C {}'''
 	
-	def static classbody(CharSequence classname, CharSequence classbody){
+	public static CharSequence IMPORT_01='''
+		$i$mport$ $java$.$uti$l.$
+		«someClass»
 		'''
-		import java.util.*;
-		import java.util.concurrent.*;
-		import java.text.*;
-		import java.util.concurrent.*;
-		import javax.annotation.*;
-		public class «classname» {
-			«classbody»
-		}
-		'''
-	}
 	
-	def static classbody(CharSequence classbody){
+	public static CharSequence IMPORT_02='''
+		import $stat$ic$ $java$.$uti$l.Collection.$
+		«someClass»
 		'''
-		import java.util.*;
-		import java.util.concurrent.*;
-		import java.text.*;
-		import java.util.concurrent.*;
-		import javax.annotation.*;
-		public class MyClass {
-			«classbody»
-		}
+
+	public static CharSequence IMPORT_03='''
+		$
+		«someClass»
 		'''
-	}
+		
+	public static CharSequence PACKAGE_01='''
+		$
+		«someClass»
+		'''
+
+	public static CharSequence PACKAGE_02='''
+		pack$age $
+		«someClass»
+		'''
+
+	public static CharSequence PACKAGE_03='''
+		package org.$
+		«someClass»
+		'''
+		
+	public static CharSequence METHOD_STMT_01 = method('''Ob$''')
+
+	public static CharSequence METHOD_STMT_02 = method('''Object $''')
+		
+	public static CharSequence METHOD_STMT_03 = method('''Object $o$ = $''')
+
+	public static CharSequence METHOD_STMT_04 = method('''Object o = new $''')
+
+	public static CharSequence METHOD_STMT_05 = method('''
+		Object o = "";
+		o.$
+		''')
 	
+	public static CharSequence METHOD_STMT_06 = classbody('''void <T> m(T t){
+		t.$
+		}''')
+
 	def static OLD_TEST_CLASS(){
 		'''
 		/**
@@ -89,24 +123,7 @@ class CodeBuilder {
 		        }
 		    }
 		}
-'''
+	'''	
 		
-	}
-	
-	def static method(CharSequence methodbody){
-		classbody('MyClass', '''
-		public void __test() {
-			«methodbody»
-		}''')
-	}
-
-	def static classWithFieldsAndTestMethod(CharSequence fieldDeclarations, CharSequence methodbody){
-		classbody('MyClass', '''
-		
-		«fieldDeclarations»
-		
-		public void __test() {
-			«methodbody»
-		}''')
 	}
 }

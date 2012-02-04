@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.tests.completion.rcp.overrides
 
 import java.util.List
+import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer
@@ -42,6 +43,13 @@ class OverridesCompletionProposalComputerSmokeTest {
 		'''
 		exercise(code); 
 	} 
+	
+	@Test
+	def void smokeTestScenarios(){
+		for(scenario : scenarios){
+			exercise(scenario)
+		}
+	}
 	
 	def exercise(CharSequence code){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::workspace,"test")

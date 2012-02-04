@@ -22,54 +22,58 @@ class SubwordsCompletionProposalComputerIntegrationTest {
   
   	JavaProjectFixture project = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
   	Stopwatch stopwatch =  new Stopwatch()
-  	long MAX_COMPUTATION_LIMIT_MILLIS =500
+  	long MAX_COMPUTATION_LIMIT_MILLIS =1000
   	 
   	@Test
 	def void test000_smoke(){
-		val code = smokeTestClass()
-		smoke(code)
+		val code = OLD_TEST_CLASS()
+		smokeTest(code)
+		
+		for(scenario : SmokeTestScenarios::scenarios){
+			smokeTest(scenario)
+		}
 	}
   
   	@Test 
 	def void test001(){
-		val code = simpleTestMethod('''Object o=""; o.hc$''')
+		val code = method('''Object o=""; o.hc$''')
 		exercise(code, asList("hashCode"))
 	}
  
  	@Test
 	def void test002(){
-		val code = simpleTestMethod('''Object o=""; o.c$''')
+		val code = method('''Object o=""; o.c$''')
 		exercise(code, asList("clone","hashCode", "getClass"))
 	}
  
  	@Test
 	def void test003(){
-		val code = simpleTestMethod('''Object o=""; o.C$''')
+		val code = method('''Object o=""; o.C$''')
 		exercise(code, asList("hashCode", "getClass"))
 	}
 	
  	@Test
 	def void test004(){
-		val code = simpleTestMethod('''Object o=""; o.cod$''')
+		val code = method('''Object o=""; o.cod$''')
 		exercise(code, asList("hashCode"))
 	}
 
  	@Test
 	def void test005(){
-		val code = simpleTestMethod('''Object o=""; o.coe$''')
+		val code = method('''Object o=""; o.coe$''')
 		exercise(code, asList("hashCode", "clone"))
 	}
 	
 	@Test
 	def void test006(){
-		val code = simpleTestMethod('''Object o=""; o.Ce$''')
+		val code = method('''Object o=""; o.Ce$''')
 		exercise(code, asList("hashCode"))
 	}
 	
 	
 	@Test
 	def void test007_subtype(){
-		val code = simpleTestMethod('''String s=""; s.lone$''')
+		val code = method('''String s=""; s.lone$''')
 		exercise(code, asList("clone"))
 	}
 	
@@ -112,7 +116,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		exercise(code, expected); 
 	}
 
-	def smoke(CharSequence code){
+	def smokeTest(CharSequence code){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first;

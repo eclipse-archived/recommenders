@@ -1,10 +1,19 @@
 package org.eclipse.recommenders.tests;
 
+import java.util.Arrays;
+import java.util.List;
+import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 
 @SuppressWarnings("all")
-public class CodeBuilder {
+public class SmokeTestScenarios {
+  public static List<CharSequence> scenarios() {
+    CharSequence _OLD_TEST_CLASS = CodeBuilder.OLD_TEST_CLASS();
+    List<CharSequence> _asList = Arrays.<CharSequence>asList(SmokeTestScenarios.IMPORT_01, SmokeTestScenarios.IMPORT_02, SmokeTestScenarios.PACKAGE_01, SmokeTestScenarios.PACKAGE_02, SmokeTestScenarios.PACKAGE_03, SmokeTestScenarios.METHOD_STMT_01, SmokeTestScenarios.METHOD_STMT_02, SmokeTestScenarios.METHOD_STMT_03, SmokeTestScenarios.METHOD_STMT_04, SmokeTestScenarios.METHOD_STMT_05, SmokeTestScenarios.METHOD_STMT_06, _OLD_TEST_CLASS);
+    return _asList;
+  }
+  
   public static CharSequence someClass = new Function0<CharSequence>() {
     public CharSequence apply() {
       StringConcatenation _builder = new StringConcatenation();
@@ -13,51 +22,134 @@ public class CodeBuilder {
     }
   }.apply();
   
-  public static CharSequence classbody(final CharSequence classname, final CharSequence classbody) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import java.util.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("import java.text.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("import javax.annotation.*;");
-    _builder.newLine();
-    _builder.append("public class ");
-    _builder.append(classname, "");
-    _builder.append(" {");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t");
-    _builder.append(classbody, "	");
-    _builder.newLineIfNotEmpty();
-    _builder.append("}");
-    _builder.newLine();
-    return _builder;
-  }
+  public static CharSequence IMPORT_01 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("$i$mport$ $java$.$uti$l.$");
+      _builder.newLine();
+      _builder.append(CodeBuilder.someClass, "");
+      _builder.newLineIfNotEmpty();
+      return _builder;
+    }
+  }.apply();
   
-  public static CharSequence classbody(final CharSequence classbody) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import java.util.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("import java.text.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("import javax.annotation.*;");
-    _builder.newLine();
-    _builder.append("public class MyClass {");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append(classbody, "	");
-    _builder.newLineIfNotEmpty();
-    _builder.append("}");
-    _builder.newLine();
-    return _builder;
-  }
+  public static CharSequence IMPORT_02 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("import $stat$ic$ $java$.$uti$l.Collection.$");
+      _builder.newLine();
+      _builder.append(CodeBuilder.someClass, "");
+      _builder.newLineIfNotEmpty();
+      return _builder;
+    }
+  }.apply();
+  
+  public static CharSequence IMPORT_03 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("$");
+      _builder.newLine();
+      _builder.append(CodeBuilder.someClass, "");
+      _builder.newLineIfNotEmpty();
+      return _builder;
+    }
+  }.apply();
+  
+  public static CharSequence PACKAGE_01 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("$");
+      _builder.newLine();
+      _builder.append(CodeBuilder.someClass, "");
+      _builder.newLineIfNotEmpty();
+      return _builder;
+    }
+  }.apply();
+  
+  public static CharSequence PACKAGE_02 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("pack$age $");
+      _builder.newLine();
+      _builder.append(CodeBuilder.someClass, "");
+      _builder.newLineIfNotEmpty();
+      return _builder;
+    }
+  }.apply();
+  
+  public static CharSequence PACKAGE_03 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("package org.$");
+      _builder.newLine();
+      _builder.append(CodeBuilder.someClass, "");
+      _builder.newLineIfNotEmpty();
+      return _builder;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_01 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Ob$");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_02 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Object $");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_03 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Object $o$ = $");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_04 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Object o = new $");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_05 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Object o = \"\";");
+      _builder.newLine();
+      _builder.append("o.$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_06 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("void <T> m(T t){");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("t.$");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("}");
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
+      return _classbody;
+    }
+  }.apply();
   
   public static CharSequence OLD_TEST_CLASS() {
     StringConcatenation _builder = new StringConcatenation();
@@ -216,33 +308,5 @@ public class CodeBuilder {
     _builder.append("}");
     _builder.newLine();
     return _builder;
-  }
-  
-  public static CharSequence method(final CharSequence methodbody) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("public void __test() {");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append(methodbody, "	");
-    _builder.newLineIfNotEmpty();
-    _builder.append("}");
-    CharSequence _classbody = CodeBuilder.classbody("MyClass", _builder);
-    return _classbody;
-  }
-  
-  public static CharSequence classWithFieldsAndTestMethod(final CharSequence fieldDeclarations, final CharSequence methodbody) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.newLine();
-    _builder.append(fieldDeclarations, "");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("public void __test() {");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append(methodbody, "	");
-    _builder.newLineIfNotEmpty();
-    _builder.append("}");
-    CharSequence _classbody = CodeBuilder.classbody("MyClass", _builder);
-    return _classbody;
   }
 }

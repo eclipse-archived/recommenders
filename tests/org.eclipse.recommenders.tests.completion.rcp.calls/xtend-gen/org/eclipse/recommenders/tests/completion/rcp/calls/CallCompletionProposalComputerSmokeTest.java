@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.tests.completion.rcp.calls;
 
+import java.util.List;
 import java.util.Set;
 import junit.framework.Assert;
 import org.eclipse.core.resources.IWorkspace;
@@ -8,6 +9,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallsCompletionProposalComputer;
+import org.eclipse.recommenders.tests.SmokeTestScenarios;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
 import org.eclipse.recommenders.tests.completion.rcp.calls.ModelStoreMock;
@@ -168,6 +170,14 @@ public class CallCompletionProposalComputerSmokeTest {
       _builder.newLine();
       final CharSequence code = _builder;
       this.exercise(code);
+  }
+  
+  @Test
+  public void smokeTestScenarios() {
+    List<CharSequence> _scenarios = SmokeTestScenarios.scenarios();
+    for (final CharSequence scenario : _scenarios) {
+      this.exercise(scenario);
+    }
   }
   
   @Test

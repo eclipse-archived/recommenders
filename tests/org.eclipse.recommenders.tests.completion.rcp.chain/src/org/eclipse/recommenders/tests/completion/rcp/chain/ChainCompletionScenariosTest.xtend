@@ -3,15 +3,37 @@ package org.eclipse.recommenders.tests.completion.rcp.chain
 import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposal
+import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer
+import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.junit.Ignore
 import org.junit.Test
 
 import static junit.framework.Assert.*
+import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
+import static org.eclipse.recommenders.tests.completion.rcp.chain.ChainCompletionScenariosTest.*
  
-class ChainScenariosTest { 
+class ChainCompletionScenariosTest { 
   
+	static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
+	
+ 	@Test
+	def void smokeTestScenarios(){
+		for(scenario : scenarios){
+			val struct = fixture.createFileAndParseWithMarkers(scenario)
+			val cu = struct.first;
+	
+			for(completionIndex : struct.second){
+				val ctx = new org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock(cu, completionIndex)
+				val sut = new org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock())
+				sut.sessionStarted
+				sut.computeCompletionProposals(ctx, null)
+			}
+		}
+	}
+ 
  
 	@Test
 	def void testFindLocalAnchor(){
@@ -315,8 +337,8 @@ class ChainScenariosTest {
 			
 		exercise(code, expected);
 	}
+	
 	def exercise(CharSequence code, List<? extends List<String>> expected){
-		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first;
 		val completionIndex = struct.second.head
@@ -332,6 +354,8 @@ class ChainScenariosTest {
 		assertTrue(''' some expected values were not found «expected» '''.toString, expected.empty)
 	}
 	
+
+
 	def l(String spaceSeparatedElementNames){ 
 		val elementNames = StringUtils::split(spaceSeparatedElementNames);
 		return newArrayList(elementNames) as List<String>
