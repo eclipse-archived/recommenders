@@ -199,7 +199,21 @@ public class ProviderContentPart {
 
     private void updateSelectionStatus(final JavaSelectionEvent selection) {
         final IJavaElement element = selection.getElement();
-        final String text = JavaElementLabels.getElementLabel(element, LABEL_FLAGS);
+
+        final String text;
+        switch (element.getElementType()) {
+        case IJavaElement.PACKAGE_FRAGMENT_ROOT:
+        case IJavaElement.PACKAGE_FRAGMENT:
+            text = element.getElementName();
+            break;
+        case IJavaElement.LOCAL_VARIABLE:
+            text = JavaElementLabels.getElementLabel(element, JavaElementLabels.F_PRE_TYPE_SIGNATURE
+                    | JavaElementLabels.F_POST_QUALIFIED);
+            break;
+        default:
+            text = JavaElementLabels.getElementLabel(element, LABEL_FLAGS);
+            break;
+        }
         selectionStatus.setText(text);
         selectionStatus.setImage(labelProvider.getImage(element));
     }
