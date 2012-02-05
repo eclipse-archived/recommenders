@@ -58,7 +58,6 @@ import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.recommenders.utils.rcp.ast.MethodDeclarationFinder;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
@@ -105,8 +104,6 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     @Override
     public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext javaContext,
             final IProgressMonitor monitor) {
-        final Stopwatch w = new Stopwatch();
-        w.start();
         initalize(javaContext);
 
         if (!isCompletionRequestSupported()) {
@@ -124,9 +121,6 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         findRecommendations();
         createProspsals();
         releaseModel();
-
-        w.stop();
-        System.out.println("calls took " + w);
         return proposals;
 
     }

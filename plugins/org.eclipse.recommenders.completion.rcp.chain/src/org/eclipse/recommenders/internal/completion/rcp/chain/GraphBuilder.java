@@ -185,7 +185,7 @@ public class GraphBuilder {
     }
 
     private void cancelIfMaxNumberOfChainsLimitIsReadched() {
-        boolean hasMoreElementsThanNeeded = chains.size() >= 20;
+        final boolean hasMoreElementsThanNeeded = chains.size() >= 20;
         if (hasMoreElementsThanNeeded) {
             throwCancelationException();
         }
@@ -224,7 +224,6 @@ public class GraphBuilder {
 
     private void terminateIfInterrupted() {
         if (Thread.interrupted()) {
-            // System.out.println("ignoring terminate");
             Throws.throwCancelationException();
         }
     }

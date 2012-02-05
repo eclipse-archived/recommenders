@@ -17,6 +17,7 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -34,6 +35,8 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
+import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
+import org.eclipse.ui.internal.misc.StatusUtil;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -127,7 +130,7 @@ public class BindingUtils {
             return method == null ? null : resolver.toRecMethod(method).orNull();
         } catch (final Exception e) {
             final String msg = format("java element resolver failed with %s: %s", method.getKey(), e.toString());
-            System.out.println(msg);
+            RecommendersUtilsPlugin.log(StatusUtil.newStatus(IStatus.WARNING, msg, null));
             return null;
         }
     }
@@ -137,7 +140,7 @@ public class BindingUtils {
             return type == null ? null : resolver.toRecType(type);
         } catch (final Exception e) {
             final String msg = format("java element resolver failed with %s: %s", type.getKey(), e.toString());
-            System.out.println(msg);
+            RecommendersUtilsPlugin.log(StatusUtil.newStatus(IStatus.WARNING, msg, null));
             return null;
         }
     }

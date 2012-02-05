@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.net.ClassOverridesNetwork;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.net.ClassOverridesNetworkBuilder;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.net.ClassOverridesObservation;
@@ -64,20 +63,11 @@ public class OverridesModelStore {
     }
 
     private ClassOverridesNetwork loadNetwork(final ITypeName name) {
-        final StopWatch stopwatch = new StopWatch();
-        stopwatch.start();
-
         try {
-            stopwatch.split();
             final List<ClassOverridesObservation> observations = loadObservations(name);
-            System.out.printf("deserialization of '%s' took %s\n", name, stopwatch);
-            stopwatch.unsplit();
             return createNetwork(name, observations);
         } catch (final IOException x) {
             throw throwUnhandledException(x);
-        } finally {
-            stopwatch.stop();
-            System.out.printf("loading model for '%s' took %s\n", name, stopwatch);
         }
     }
 
