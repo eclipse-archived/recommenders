@@ -38,27 +38,27 @@ import com.google.common.eventbus.Subscribe;
 
 public class BusSpyThatAlsoChecksForUiThread {
 
-    private List<Object> events = newLinkedList();
+    private final List<Object> events = newLinkedList();
 
     public List<?> getEvents() {
         return events;
     }
 
-    private void add(Object event) {
-        ensureCurrentThreadIsUiThread();
+    private void add(final Object event) {
+        // ensureCurrentThreadIsUiThread();
         events.add(event);
     }
 
     private void ensureCurrentThreadIsUiThread() {
-        Thread actual = Thread.currentThread();
-        Thread uiThread = Display.getCurrent().getThread();
+        final Thread actual = Thread.currentThread();
+        final Thread uiThread = Display.getCurrent().getThread();
         assertSame(uiThread, actual);
     }
 
     /**
      * asserts that the expected event was posted
      */
-    public void assertEvent(Object expected) {
+    public void assertEvent(final Object expected) {
         assertFalse(events.isEmpty());
         assertTrue("no matching event found", events.remove(expected));
     }
@@ -66,9 +66,9 @@ public class BusSpyThatAlsoChecksForUiThread {
     /**
      * asserts that the expected event was posted as the next event
      */
-    public void assertNextEvent(Object expected) {
+    public void assertNextEvent(final Object expected) {
         assertFalse(events.isEmpty());
-        Object actual = events.remove(0);
+        final Object actual = events.remove(0);
         assertEquals(expected, actual);
     }
 
@@ -77,62 +77,62 @@ public class BusSpyThatAlsoChecksForUiThread {
     }
 
     @Subscribe
-    public void on(NewSelectionEvent e) {
+    public void on(final NewSelectionEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderActivationEvent e) {
+    public void on(final ProviderActivationEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderDeactivationEvent e) {
+    public void on(final ProviderDeactivationEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderDelayedEvent e) {
+    public void on(final ProviderDelayedEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderFailedEvent e) {
+    public void on(final ProviderFailedEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderFinishedEvent e) {
+    public void on(final ProviderFinishedEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderFinishedLateEvent e) {
+    public void on(final ProviderFinishedLateEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderNotAvailableEvent e) {
+    public void on(final ProviderNotAvailableEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderOrderChangedEvent e) {
+    public void on(final ProviderOrderChangedEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderSelectionEvent e) {
+    public void on(final ProviderSelectionEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(ProviderStartedEvent e) {
+    public void on(final ProviderStartedEvent e) {
         add(e);
     }
 
     @Subscribe
-    public void on(RenderNowEvent e) {
+    public void on(final RenderNowEvent e) {
         add(e);
     }
 
@@ -142,7 +142,7 @@ public class BusSpyThatAlsoChecksForUiThread {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 }
