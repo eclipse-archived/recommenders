@@ -48,6 +48,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -194,7 +195,13 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final NewSelectionEvent e) {
-        updateSelectionStatus(e.selection);
+        Display.getDefault().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                updateSelectionStatus(e.selection);
+            }
+        });
     }
 
     private void updateSelectionStatus(final JavaSelectionEvent selection) {
@@ -224,9 +231,15 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final RenderNowEvent e) {
-        makeRenderingPanelVisible();
-        relayout();
-        scrollToTop();
+        Display.getDefault().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                makeRenderingPanelVisible();
+                relayout();
+                scrollToTop();
+            }
+        });
     }
 
     private void scrollToTop() {
@@ -246,111 +259,166 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final ProviderNotAvailableEvent e) {
-        final ProviderArea area = providerAreas.get(e.provider);
+        Display.getDefault().syncExec(new Runnable() {
 
-        if (e.hasFinishedLate) {
-            area.setStatus("provider finished without data");
-            area.showStatus();
-        } else {
-            area.hide();
-        }
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                final ProviderArea area = providerAreas.get(e.provider);
+
+                if (e.hasFinishedLate) {
+                    area.setStatus("provider finished without data");
+                    area.showStatus();
+                } else {
+                    area.hide();
+                }
+
+            }
+        });
     }
 
     @Subscribe
     public void onEvent(final ProviderSelectionEvent e) {
-        final ProviderArea area = providerAreas.get(e.provider);
-        scrollingComposite.setOrigin(area.getLocation());
+        Display.getDefault().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                final ProviderArea area = providerAreas.get(e.provider);
+                scrollingComposite.setOrigin(area.getLocation());
+            }
+        });
     }
 
     @Subscribe
     public void onEvent(final ProviderFinishedEvent e) {
-        final ProviderArea area = providerAreas.get(e.provider);
-        area.showContent();
+        Display.getDefault().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                final ProviderArea area = providerAreas.get(e.provider);
+                area.showContent();
+
+            }
+        });
     }
 
     @Subscribe
     public void onEvent(final ProviderDelayedEvent e) {
-        final ProviderArea area = providerAreas.get(e.provider);
-        area.setStatus("provider is delayed...");
-        area.showStatus();
+        Display.getDefault().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                final ProviderArea area = providerAreas.get(e.provider);
+                area.setStatus("provider is delayed...");
+                area.showStatus();
+            }
+        });
     }
 
     @Subscribe
     public void onEvent(final ProviderFinishedLateEvent e) {
-        final ProviderArea area = providerAreas.get(e.provider);
-        final String statusMessage = "provider finished late <a>show</a>";
-        area.setStatusWithCallback(statusMessage, new SelectionAdapter() {
+        Display.getDefault().syncExec(new Runnable() {
+
             @Override
-            public void widgetSelected(final SelectionEvent e) {
-                area.showContent();
-                relayout();
+            public void run() {
+                final ProviderArea area = providerAreas.get(e.provider);
+                final String statusMessage = "provider finished late <a>show</a>";
+                area.setStatusWithCallback(statusMessage, new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(final SelectionEvent e) {
+                        area.showContent();
+                        relayout();
+                    }
+                });
+                area.showStatus();
+                area.layout();
             }
         });
-        area.showStatus();
-        area.layout();
     }
 
     @Subscribe
     public void onEvent(final ProviderFailedEvent e) {
-        final ProviderArea area = providerAreas.get(e.provider);
-        final String statusMessage = "provider failed <a>show exception</a>";
-        area.setStatusWithCallback(statusMessage, new SelectionAdapter() {
+
+        Display.getDefault().syncExec(new Runnable() {
+
             @Override
-            public void widgetSelected(final SelectionEvent event) {
-                // REVIEW: TODO: printing the potentially LARGE stacktrace
-                // looked odd... details view of ErrorDialog is
-                // odd too. What to do?
-                // final String details =
-                // Throwables.getStackTraceAsString(e.exception);
-                final String providerName = e.provider.getDescription().getName();
+            public void run() {
 
-                final String dialogTitle = format("Extdoc Provider Failure", providerName);
-                final String errorMessage = findFirstNonNullErrorMessage(e.throwable);
-                final String rootCauseMessage = Throwables.getRootCause(e.throwable).getMessage();
+                final ProviderArea area = providerAreas.get(e.provider);
+                final String statusMessage = "provider failed <a>show exception</a>";
+                area.setStatusWithCallback(statusMessage, new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(final SelectionEvent event) {
+                        // REVIEW: TODO: printing the potentially LARGE stacktrace
+                        // looked odd... details view of ErrorDialog is
+                        // odd too. What to do?
+                        // final String details =
+                        // Throwables.getStackTraceAsString(e.exception);
+                        final String providerName = e.provider.getDescription().getName();
 
-                final Status status = new Status(IStatus.ERROR, ExtdocPlugin.PLUGIN_ID, errorMessage, e.throwable);
-                final String message = format(
-                        "Provider %s failed with the following message: %s - %s\n\nSee error log for more details.",
-                        providerName, errorMessage, rootCauseMessage);
-                RecommendersPlugin.logError(new Exception(e.throwable), message);
-                ErrorDialog.openError(container.getShell(), dialogTitle, message, status);
-            }
+                        final String dialogTitle = format("Extdoc Provider Failure", providerName);
+                        final String errorMessage = findFirstNonNullErrorMessage(e.throwable);
+                        final String rootCauseMessage = Throwables.getRootCause(e.throwable).getMessage();
 
-            private String findFirstNonNullErrorMessage(final Throwable exception) {
-                final List<Throwable> causalChain = Throwables.getCausalChain(exception);
-                String errorMessage = null;
-                for (final Throwable t : causalChain) {
-                    errorMessage = t.getMessage();
-                    if (errorMessage != null) {
-                        break;
+                        final Status status = new Status(IStatus.ERROR, ExtdocPlugin.PLUGIN_ID, errorMessage,
+                                e.throwable);
+                        final String message = format(
+                                "Provider %s failed with the following message: %s - %s\n\nSee error log for more details.",
+                                providerName, errorMessage, rootCauseMessage);
+                        RecommendersPlugin.logError(new Exception(e.throwable), message);
+                        ErrorDialog.openError(container.getShell(), dialogTitle, message, status);
                     }
-                }
-                return errorMessage;
+
+                    private String findFirstNonNullErrorMessage(final Throwable exception) {
+                        final List<Throwable> causalChain = Throwables.getCausalChain(exception);
+                        String errorMessage = null;
+                        for (final Throwable t : causalChain) {
+                            errorMessage = t.getMessage();
+                            if (errorMessage != null) {
+                                break;
+                            }
+                        }
+                        return errorMessage;
+                    }
+                });
+                area.showStatus();
             }
         });
-        area.showStatus();
     }
 
     @Subscribe
     public void onEvent(final ProviderOrderChangedEvent e) {
-        final ProviderArea areaToMove = providerAreas.get(e.provider);
-        final ProviderArea areaRef = providerAreas.get(e.reference);
+        Display.getDefault().syncExec(new Runnable() {
 
-        final boolean isAbove = e.oldIndex > e.newIndex;
-        if (isAbove) {
-            areaToMove.moveAbove(areaRef);
-        } else {
-            areaToMove.moveBelow(areaRef);
-        }
-        relayout();
+            @Override
+            public void run() {
+                final ProviderArea areaToMove = providerAreas.get(e.provider);
+                final ProviderArea areaRef = providerAreas.get(e.reference);
+
+                final boolean isAbove = e.oldIndex > e.newIndex;
+                if (isAbove) {
+                    areaToMove.moveAbove(areaRef);
+                } else {
+                    areaToMove.moveBelow(areaRef);
+                }
+                relayout();
+            }
+        });
     }
 
     @Subscribe
     public void onEvent(final ProviderDeactivationEvent e) {
-        final ProviderArea area = providerAreas.get(e.provider);
-        area.hide();
-        area.cleanup();
-        area.layout();
-        relayout();
+
+        Display.getDefault().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                final ProviderArea area = providerAreas.get(e.provider);
+                area.hide();
+                area.cleanup();
+                area.layout();
+                relayout();
+            }
+        });
     }
 }

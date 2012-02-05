@@ -31,6 +31,7 @@ import org.eclipse.recommenders.internal.extdoc.rcp.ui.OrderChangeHandler.OrderC
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocModule.Extdoc;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -144,11 +145,17 @@ public class ProviderOverviewPart {
 
     @Subscribe
     public void onEvent(final NewSelectionEvent e) {
-        for (final ExtdocProvider p : providers) {
-            final TableItem oldItem = provider2item.get(p);
-            provider2item.put(p, createItemForProvider(p));
-            oldItem.dispose();
-        }
+        Display.getDefault().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                for (final ExtdocProvider p : providers) {
+                    final TableItem oldItem = provider2item.get(p);
+                    provider2item.put(p, createItemForProvider(p));
+                    oldItem.dispose();
+                }
+            }
+        });
     }
 
     @Subscribe

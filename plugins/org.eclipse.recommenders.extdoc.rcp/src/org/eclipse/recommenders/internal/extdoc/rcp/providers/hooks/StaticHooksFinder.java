@@ -10,11 +10,17 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.hooks;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+import static org.eclipse.jdt.ui.JavaElementLabels.M_APP_RETURNTYPE;
+import static org.eclipse.jdt.ui.JavaElementLabels.M_PARAMETER_TYPES;
+import static org.eclipse.jdt.ui.JavaElementLabels.getElementLabel;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createComposite;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
-import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createMethodLink;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
@@ -28,23 +34,30 @@ import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.jdt.ui.JavaElementLabels;
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
+import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.eventbus.EventBus;
 
@@ -53,6 +66,7 @@ public class StaticHooksFinder extends ExtdocProvider {
     private final class HooksRendererRunnable implements Runnable {
         private final TreeMultimap<IType, IMethod> index;
         private final Composite parent;
+        private StyledText styledText;
 
         private HooksRendererRunnable(final TreeMultimap<IType, IMethod> index, final Composite parent) {
             this.index = index;
@@ -66,33 +80,156 @@ public class StaticHooksFinder extends ExtdocProvider {
                 createLabel(container, "No public static method found in selected package (-root)", true);
             }
 
-            final GridDataFactory labelFactory = GridDataFactory.swtDefaults().indent(3, 5);
+            final List<StyleRange> typeRanges = Lists.newLinkedList();
+            // final List<StyleRange> methodRanges = Lists.newLinkedList();
+            final StringBuilder sb = new StringBuilder();
             for (final IType type : index.keySet()) {
-                labelFactory.applyTo(createLabel(container, type.getFullyQualifiedName() + ":", true, false,
-                        SWT.COLOR_BLACK, true));
-                final Table table = new Table(container, SWT.NONE | SWT.HIDE_SELECTION);
-                table.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
-                table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
-                final TableColumn column1 = new TableColumn(table, SWT.NONE);
-
+                final String typeLabel = type.getFullyQualifiedName();
+                final int typeLabelBegin = sb.length();
+                sb.append(typeLabel);
+                final int typeLabelEnd = sb.length();
+                final StyleRange styleRange = new StyleRange();
+                styleRange.rise = -12;
+                styleRange.start = typeLabelBegin;
+                styleRange.length = typeLabelEnd - typeLabelBegin;
+                styleRange.fontStyle = SWT.BOLD;
+                styleRange.data = type;
+                typeRanges.add(styleRange);
+                sb.append(IOUtils.LINE_SEPARATOR);
                 for (final IMethod method : index.get(type)) {
-                    // final Link l = createMethodLink(container, method, workspaceBus);
-                    // linkFactory.applyTo(l);
+                    sb.append("    ");
+                    final int methodLabelBegin = sb.length();
+                    final String methodLabel = getElementLabel(method, M_APP_RETURNTYPE | M_PARAMETER_TYPES);
+                    sb.append(methodLabel);
+                    final int methodLabelEnd = sb.length();
+                    final StyleRange methodStyleRange = new StyleRange();
+                    methodStyleRange.start = methodLabelBegin;
+                    methodStyleRange.length = methodLabelEnd - methodLabelBegin;
+                    methodStyleRange.data = method;
+                    methodStyleRange.underline = true;
+                    // methodStyleRange.fontStyle = SWT.BOLD;
+                    methodStyleRange.foreground = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
+                    typeRanges.add(methodStyleRange);
+                    sb.append(IOUtils.LINE_SEPARATOR);
+                }
+            }
 
-                    final Link bar = createMethodLink(table, method, workspaceBus);
-                    final TableItem item = new TableItem(table, SWT.NONE);
-                    item.setText(new String[] { bar.getText() });
-                    item.setFont(0, JFaceResources.getBannerFont());
-                    final TableEditor editor = new TableEditor(table);
-                    editor.grabHorizontal = editor.grabVertical = true;
-                    editor.setEditor(bar, item, 0);
+            styledText = new StyledText(container, SWT.NONE);
+            styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            ExtdocUtils.setInfoBackgroundColor(styledText);
+            styledText.setEditable(false);
+            styledText.setText(sb.toString());
+            styledText.setStyleRanges(typeRanges.toArray(new StyleRange[0]));
+            final Cursor c1 = Display.getDefault().getSystemCursor(SWT.CURSOR_ARROW);
+            final Cursor c2 = Display.getDefault().getSystemCursor(SWT.CURSOR_HAND);
+            styledText.addListener(SWT.MouseDown, new Listener() {
+
+                @Override
+                public void handleEvent(final Event event) {
+                    // It is up to the application to determine when and how a link should be activated.
+                    // In this snippet links are activated on mouse down when the control key is held down
+                    // if ((event.stateMask) != 0) {
+                    final Optional<IMethod> opt = getSelectedMethod(event.x, event.y);
+                    if (opt.isPresent()) {
+                        final JavaSelectionEvent sEvent = new JavaSelectionEvent(opt.get(), METHOD_DECLARATION);
+                        workspaceBus.post(sEvent);
+                    }
+                    // }
+                }
+            });
+
+            styledText.addMouseMoveListener(new MouseMoveListener() {
+
+                @Override
+                public void mouseMove(final MouseEvent e) {
+                    final Optional<IMethod> opt = getSelectedMethod(e.x, e.y);
+                    if (opt.isPresent()) {
+                        styledText.setCursor(c2);
+                    } else {
+                        styledText.setCursor(c1);
+                    }
 
                 }
-                column1.pack();
+            });
+            styledText.addMouseTrackListener(new MouseTrackListener() {
 
+                @Override
+                public void mouseHover(final MouseEvent e) {
+                    //
+                    // final Optional<IMethod> opt = getSelectedMethod(e.x, e.y);
+                    // if (opt.isPresent()) {
+                    // styledText.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_HAND));
+                    // } else {
+                    // styledText.setCursor(new Cursor(Display.getDefault(), SWT.CURSOR_ARROW));
+                    // }
+
+                }
+
+                @Override
+                public void mouseExit(final MouseEvent e) {
+                    // TODO Auto-generated method stub
+                    System.out.println(e);
+                }
+
+                @Override
+                public void mouseEnter(final MouseEvent e) {
+                    // TODO Auto-generated method stub
+                    System.out.println(e);
+                }
+            });
+        }
+
+        private Optional<StyleRange> getSelectedStyleRange(final int x, final int y) {
+            try {
+                final int offset = styledText.getOffsetAtLocation(new Point(x, y));
+                final StyleRange style = styledText.getStyleRangeAtOffset(offset);
+                return Optional.fromNullable(style);
+            } catch (final IllegalArgumentException e) {
+                return absent();
+            }
+        }
+
+        private Optional<IMethod> getSelectedMethod(final int x, final int y) {
+            final Optional<StyleRange> range = getSelectedStyleRange(x, y);
+            if (!range.isPresent()) {
+                return absent();
+            }
+
+            final Object data = range.get().data;
+            if (data instanceof IMethod) {
+                return of((IMethod) data);
+            } else {
+                return absent();
             }
         }
     }
+
+    // final GridDataFactory labelFactory = GridDataFactory.swtDefaults().indent(3, 5);
+    // for (final IType type : index.keySet()) {
+    // labelFactory.applyTo(createLabel(container, type.getFullyQualifiedName() + ":", true, false,
+    // SWT.COLOR_BLACK, true));
+    // final Table table = new Table(container, SWT.NONE | SWT.HIDE_SELECTION);
+    // table.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+    // table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
+    // final TableColumn column1 = new TableColumn(table, SWT.NONE);
+    //
+    // for (final IMethod method : index.get(type)) {
+    // // final Link l = createMethodLink(container, method, workspaceBus);
+    // // linkFactory.applyTo(l);
+    //
+    // final Link bar = createMethodLink(table, method, workspaceBus);
+    // final TableItem item = new TableItem(table, SWT.NONE);
+    // item.setText(new String[] { bar.getText() });
+    // item.setFont(0, JFaceResources.getBannerFont());
+    // final TableEditor editor = new TableEditor(table);
+    // editor.grabHorizontal = editor.grabVertical = true;
+    // editor.setEditor(bar, item, 0);
+    //
+    // }
+    // column1.pack();
+    //
+    // }
+    // }
 
     private final class MethodNameComparator implements Comparator<IMethod> {
         @Override

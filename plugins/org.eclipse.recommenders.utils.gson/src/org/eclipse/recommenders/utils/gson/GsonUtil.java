@@ -70,6 +70,10 @@ public class GsonUtil {
         return gson;
     }
 
+    public static <T> T deserialize(final CharSequence json, final Type classOfT) {
+        return deserialize(json.toString(), classOfT);
+    }
+
     public static <T> T deserialize(final String json, final Type classOfT) {
         ensureIsNotNull(json);
         ensureIsNotNull(classOfT);

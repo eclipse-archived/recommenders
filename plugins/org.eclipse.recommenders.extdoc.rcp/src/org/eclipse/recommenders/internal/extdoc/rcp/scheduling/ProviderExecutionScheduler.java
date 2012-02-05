@@ -215,12 +215,12 @@ public class ProviderExecutionScheduler {
     }
 
     private void postInUiThread(final Object event) {
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                extdocBus.post(event);
-            }
-        });
+        // Display.getDefault().asyncExec(new Runnable() {
+        // @Override
+        // public void run() {
+        extdocBus.post(event);
+        // }
+        // });
     }
 
     private class OnActivationCallable implements Callable<Void> {
