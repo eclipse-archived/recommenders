@@ -128,8 +128,9 @@ public final class ExtdocUtils {
     }
 
     public static Link createMethodLink(final Composite parent, final IMethod method, final EventBus workspaceBus) {
-        final String text = "<a>" + JavaElementLabels.getElementLabel(method, JavaElementLabels.M_APP_RETURNTYPE)
-                + "</a>";
+        final String text = "<a>"
+                + JavaElementLabels.getElementLabel(method, JavaElementLabels.M_APP_RETURNTYPE
+                        | JavaElementLabels.M_PARAMETER_TYPES) + "</a>";
         final String tooltip = JavaElementLabels.getElementLabel(method, JavaElementLabels.DEFAULT_QUALIFIED);
 
         final Link link = new Link(parent, SWT.NONE);
