@@ -51,6 +51,7 @@ import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
@@ -196,7 +197,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             return;
         }
         final IMethod first = JdtUtils.findFirstDeclaration(enclosingMethod.get());
-        query.contextFirst = jdtResolver.toRecMethod(first);
+        query.contextFirst = jdtResolver.toRecMethod(first).or(VmMethodName.NULL);
     }
 
     private void setReceiverType() {
@@ -208,7 +209,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         final Optional<IMethod> enclosingMethod = ctx.getEnclosingMethod();
         if (enclosingMethod.isPresent()) {
             final IMethod jdtMethod = enclosingMethod.get();
-            final IMethodName recMethod = jdtResolver.toRecMethod(jdtMethod);
+            final IMethodName recMethod = jdtResolver.toRecMethod(jdtMethod).or(VmMethodName.NULL);
             final Optional<MethodDeclaration> astMethod = MethodDeclarationFinder.find(ast, recMethod);
             if (astMethod.isPresent()) {
                 final AstBasedObjectUsageResolver r = new AstBasedObjectUsageResolver();
@@ -273,15 +274,15 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
                 continue;
             }
 
-            final IMethod method = jdtResolver.toJdtMethod(r.method);
-            if (method == null) {
+            final Optional<IMethod> optMethod = jdtResolver.toJdtMethod(r.method);
+            if (!optMethod.isPresent()) {
                 continue;
             }
 
             final int start = ctx.getInvocationOffset() - ctx.getPrefix().length();
             final int end = ctx.getInvocationOffset();
-            final CompletionProposal proposal = JdtUtils.createProposal(method, CompletionProposal.METHOD_REF, start,
-                    end, end);
+            final CompletionProposal proposal = JdtUtils.createProposal(optMethod.get(), CompletionProposal.METHOD_REF,
+                    start, end, end);
             final int proposalPercentage = (int) Math.rint(r.probability * 100);
             final int rating = BASIS_RELEVANCE + proposalPercentage;
             proposal.setRelevance(rating);

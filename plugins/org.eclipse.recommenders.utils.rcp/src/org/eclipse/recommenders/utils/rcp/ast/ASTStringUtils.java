@@ -30,6 +30,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
 import com.google.common.collect.Lists;
@@ -170,7 +171,7 @@ public class ASTStringUtils {
 
     private static String toSimpleMethodString(final IMethodBinding method) {
         final IMethod jdtMethod = (IMethod) method.getJavaElement();
-        final IMethodName jdt2crMethod = resolver.toRecMethod(jdtMethod);
+        final IMethodName jdt2crMethod = resolver.toRecMethod(jdtMethod).or(VmMethodName.NULL);
         final String simpleName = Names.vm2srcSimpleMethod(jdt2crMethod);
         return simpleName;
     }

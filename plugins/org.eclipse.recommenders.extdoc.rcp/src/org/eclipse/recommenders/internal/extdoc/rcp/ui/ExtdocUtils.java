@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
@@ -54,6 +55,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 
 /**
@@ -125,6 +127,25 @@ public final class ExtdocUtils {
         return table;
     }
 
+    public static Link createMethodLink(final Composite parent, final IMethod method, final EventBus workspaceBus) {
+        final String text = "<a>" + JavaElementLabels.getElementLabel(method, JavaElementLabels.M_APP_RETURNTYPE)
+                + "</a>";
+        final String tooltip = JavaElementLabels.getElementLabel(method, JavaElementLabels.DEFAULT_QUALIFIED);
+
+        final Link link = new Link(parent, SWT.NONE);
+        link.setText(text);
+        link.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+        link.setToolTipText(tooltip);
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                final JavaSelectionEvent event = new JavaSelectionEvent(method, METHOD_DECLARATION);
+                workspaceBus.post(event);
+            }
+        });
+        return link;
+    }
+
     public static Link createMethodLink(final Composite parent, final IMethodName method,
             final JavaElementResolver resolver, final EventBus workspaceBus) {
         final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
@@ -137,9 +158,9 @@ public final class ExtdocUtils {
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                final IMethod jdtMethod = resolver.toJdtMethod(method);
-                if (jdtMethod != null) {
-                    final JavaSelectionEvent event = new JavaSelectionEvent(jdtMethod, METHOD_DECLARATION);
+                final Optional<IMethod> opt = resolver.toJdtMethod(method);
+                if (opt.isPresent()) {
+                    final JavaSelectionEvent event = new JavaSelectionEvent(opt.get(), METHOD_DECLARATION);
                     workspaceBus.post(event);
                 } else {
                     link.setEnabled(false);

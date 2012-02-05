@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.utils.rcp;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension;
@@ -43,6 +45,7 @@ import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
@@ -60,15 +63,15 @@ public class JavaElementResolver {
     public HashSet<IMethodName> failedRecMethods = Sets.newHashSet();
     public HashSet<ITypeName> failedRecTypes = Sets.newHashSet();
 
-    public IType toJdtType(final ITypeName recType) {
+    public Optional<IType> toJdtType(final ITypeName recType) {
         ensureIsNotNull(recType);
         if (failedRecTypes.contains(recType)) {
-            return null;
+            return absent();
         }
 
         IType jdtType = (IType) cache.get(recType);
         if (jdtType == null) {
-            jdtType = resolveType(recType);
+            jdtType = resolveType(recType).orNull();
 
             if (jdtType != null) {
                 registerRecJdtElementPair(recType, jdtType);
@@ -81,7 +84,7 @@ public class JavaElementResolver {
             cache.remove(recType);
             return toJdtType(recType);
         }
-        return jdtType;
+        return fromNullable(jdtType);
     }
 
     public ITypeName toRecType(IType jdtType) {
@@ -97,7 +100,7 @@ public class JavaElementResolver {
         return recType;
     }
 
-    private IType resolveType(final ITypeName recType) {
+    private Optional<IType> resolveType(final ITypeName recType) {
         // TODO woah, what a hack just to find a nested/anonymous type... this
         // definitely needs refactoring!
         ensureIsNotNull(recType);
@@ -105,18 +108,18 @@ public class JavaElementResolver {
             // TODO see https://bugs.eclipse.org/bugs/show_bug.cgi?id=339806
             // should throw an exception? or return an Array type?
             System.err.println("array type in JavaElementResolver. Decision  bug 339806 pending...?");
-            return null;
+            return absent();
         }
 
         if (recType.isNestedType()) {
             final ITypeName declaringType = recType.getDeclaringType();
-            final IType parent = resolveType(declaringType);
+            final IType parent = resolveType(declaringType).orNull();
             if (parent != null) {
                 try {
                     for (final IType nested : parent.getTypes()) {
                         final String key = nested.getKey();
                         if (key.equals(recType.getIdentifier() + ";")) {
-                            return nested;
+                            return fromNullable(nested);
                         }
                     }
                     for (final IMethod m : parent.getMethods()) {
@@ -125,7 +128,7 @@ public class JavaElementResolver {
                                 final IType nested = (IType) children;
                                 final String key = nested.getKey();
                                 if (key.equals(recType.getIdentifier() + ";")) {
-                                    return nested;
+                                    return fromNullable(nested);
                                 }
                             }
                         }
@@ -133,11 +136,11 @@ public class JavaElementResolver {
                 } catch (final Exception x) {
                     // final IType type =
                     // parent.getType(recType.getClassName());
-                    System.out.println(parent);
-                    return null;
+                    // System.out.println(parent);
+                    return absent();
                 }
             }
-            return null;
+            return absent();
         }
         final IType[] res = new IType[1];
         final IJavaSearchScope scope = SearchEngine.createWorkspaceScope();
@@ -156,7 +159,7 @@ public class JavaElementResolver {
         } catch (final CoreException e) {
             throwUnhandledException(e);
         }
-        return res[0];
+        return fromNullable(res[0]);
     }
 
     private void registerRecJdtElementPair(final IName recName, final IJavaElement jdtElement) {
@@ -171,11 +174,11 @@ public class JavaElementResolver {
         // XXX checkIsNull(put);
     }
 
-    public IMethod toJdtMethod(final IMethodName recMethod) {
+    public Optional<IMethod> toJdtMethod(final IMethodName recMethod) {
         ensureIsNotNull(recMethod);
         // failedRecMethods.clear()
         if (failedRecMethods.contains(recMethod)) {
-            return null;
+            return absent();
         }
 
         IMethod jdtMethod = (IMethod) cache.get(recMethod);
@@ -183,14 +186,14 @@ public class JavaElementResolver {
             jdtMethod = null;
         }
         if (jdtMethod == null) {
-            jdtMethod = resolveMethod(recMethod);
+            jdtMethod = resolveMethod(recMethod).orNull();
             if (jdtMethod == null) {
                 // if (!recMethod.isSynthetic()) {
                 // System.err.printf("resolving %s failed. Is it an compiler generated constructor?\n.",
                 // recMethod.getIdentifier());
                 // }
                 failedRecMethods.add(recMethod);
-                return null;
+                return absent();
             }
             registerRecJdtElementPair(recMethod, jdtMethod);
         } else if (!jdtMethod.exists()) {
@@ -199,21 +202,22 @@ public class JavaElementResolver {
             cache.remove(recMethod);
             return toJdtMethod(recMethod);
         }
-        return jdtMethod;
+        return fromNullable(jdtMethod);
     }
 
     /**
-     * Returns null if we fail to resolve all types used in the method
-     * signature, for instance generic return types etc...
+     * Returns null if we fail to resolve all types used in the method signature, for instance generic return types
+     * etc...
+     * 
      */
-    public IMethodName toRecMethod(IMethod jdtMethod) {
+    // This method should return IMethodNames in all cases but yet it does not work completey as we want it to work
+    public Optional<IMethodName> toRecMethod(IMethod jdtMethod) {
         ensureIsNotNull(jdtMethod);
         jdtMethod = JdtUtils.resolveJavaElementProxy(jdtMethod);
         IMethodName recMethod = (IMethodName) cache.inverse().get(jdtMethod);
         if (recMethod == null) {
             try {
                 final IType jdtDeclaringType = jdtMethod.getDeclaringType();
-                final ITypeName recDeclaringType = toRecType(jdtDeclaringType);
                 //
                 final String[] unresolvedParameterTypes = jdtMethod.getParameterTypes();
                 final String[] resolvedParameterTypes = new String[unresolvedParameterTypes.length];
@@ -239,36 +243,36 @@ public class JavaElementResolver {
                     RecommendersUtilsPlugin.logWarning("Failed to resolve return type '%s' of method %s.%s%s",
                             unresolvedReturnType, jdtDeclaringType.getFullyQualifiedName(), jdtMethod.getElementName(),
                             jdtMethod.getSignature());
-                    return null;
+                    return absent();
                 }
                 final String methodSignature = Names.src2vmMethod(
                         jdtMethod.isConstructor() ? "<init>" : jdtMethod.getElementName(), resolvedParameterTypes,
                         resolvedReturnType);
+                final ITypeName recDeclaringType = toRecType(jdtDeclaringType);
                 recMethod = VmMethodName.get(recDeclaringType.getIdentifier(), methodSignature);
                 registerRecJdtElementPair(recMethod, jdtMethod);
             } catch (final Exception e) {
-                e.printStackTrace();
                 RecommendersUtilsPlugin.logError(e, "failed to resolve jdt method '%s'.", jdtMethod);
-                return null;
+                return absent();
             }
         }
-        return recMethod;
+        return fromNullable(recMethod);
     }
 
-    private IMethod resolveMethod(final IMethodName recMethod) {
+    private Optional<IMethod> resolveMethod(final IMethodName recMethod) {
         ensureIsNotNull(recMethod);
         try {
-            final IType jdtType = toJdtType(recMethod.getDeclaringType());
+            final IType jdtType = toJdtType(recMethod.getDeclaringType()).orNull();
             if (!isSuccessfullyResolvedType(jdtType)) {
-                return null;
+                return absent();
             }
             final String[] jdtParamTypes = createJDTParameterTypeStrings(recMethod);
             final ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(jdtType);
             final IMethod jdtMethod = JavaModelUtil.findMethodInHierarchy(hierarchy, jdtType, recMethod.getName(),
                     jdtParamTypes, recMethod.isInit());
-            return jdtMethod;
+            return fromNullable(jdtMethod);
         } catch (final Exception e) {
-            return null;
+            return absent();
         }
     }
 
@@ -278,9 +282,8 @@ public class JavaElementResolver {
 
     private String[] createJDTParameterTypeStrings(final IMethodName method) {
         /*
-         * Note, JDT expects declared-types (also declared array-types) given as
-         * parameters to (i) use dots as separator, and (ii) end with a
-         * semicolon. this conversion is done here:
+         * Note, JDT expects declared-types (also declared array-types) given as parameters to (i) use dots as
+         * separator, and (ii) end with a semicolon. this conversion is done here:
          */
         final ITypeName[] paramTypes = method.getParameterTypes();
         final String[] jdtParamTypes = new String[paramTypes.length];

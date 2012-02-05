@@ -17,7 +17,7 @@ class JavaElementResolver4GenericsTest {
 	def void testBoundReturn() {
 		val code = classbody('''public Iterable<? extends Executor> $m(){return null;}''')
 		val method = getMethod(code)
-		val actual =  sut.toRecMethod(method)
+		val actual =  sut.toRecMethod(method).get
 		assertEquals("LMyClass.m()Ljava/lang/Iterable;",actual.identifier)
 	}
 	
@@ -26,7 +26,7 @@ class JavaElementResolver4GenericsTest {
 	def void testArrays() {
 		val code = classbody('''public Iterable[][] $m(String[][] s){return null;}''')
 		val method = getMethod(code)
-		val actual =  sut.toRecMethod(method)
+		val actual =  sut.toRecMethod(method).get
 		assertEquals("LMyClass.m([[Ljava/lang/String;)[[Ljava/lang/Iterable;",actual.identifier)
 	}
 	@Test

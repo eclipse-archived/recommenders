@@ -68,7 +68,7 @@ public class BindingUtils {
     }
 
     public static Optional<IType> getType(final ITypeBinding b) {
-        IJavaElement element = resolveJavaElementQuietly(b);
+        final IJavaElement element = resolveJavaElementQuietly(b);
         if (element instanceof IType) {
             return of((IType) element);
         } else if (element instanceof TypeParameter) {
@@ -124,7 +124,7 @@ public class BindingUtils {
 
     public static IMethodName toMethodName(final IMethod method) {
         try {
-            return method == null ? null : resolver.toRecMethod(method);
+            return method == null ? null : resolver.toRecMethod(method).orNull();
         } catch (final Exception e) {
             final String msg = format("java element resolver failed with %s: %s", method.getKey(), e.toString());
             System.out.println(msg);
@@ -162,7 +162,7 @@ public class BindingUtils {
     }
 
     public static ITypeName toTypeName(final ITypeBinding b) {
-        Optional<IType> type = getType(b);
+        final Optional<IType> type = getType(b);
         if (!type.isPresent()) {
             return VmTypeName.NULL;
         }

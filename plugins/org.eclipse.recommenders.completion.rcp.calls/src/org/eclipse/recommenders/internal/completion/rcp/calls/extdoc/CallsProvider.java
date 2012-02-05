@@ -116,7 +116,7 @@ public final class CallsProvider extends ExtdocProvider {
         final AstBasedObjectUsageResolver r = new AstBasedObjectUsageResolver();
         final ObjectUsage usage = r.findObjectUsage(variable.getElementName(), optAstMethod.get());
         final IMethod first = JdtUtils.findFirstDeclaration(optJdtMethod.get());
-        usage.contextFirst = jdtResolver.toRecMethod(first);
+        usage.contextFirst = jdtResolver.toRecMethod(first).or(VmMethodName.NULL);
         if (usage.kind == Kind.PARAMETER) {
             usage.definition = usage.contextFirst;
         }
@@ -255,9 +255,9 @@ public final class CallsProvider extends ExtdocProvider {
             link.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(final SelectionEvent e) {
-                    final IMethod jdtMethod = jdtResolver.toJdtMethod(method);
-                    if (jdtMethod != null) {
-                        final JavaSelectionEvent event = new JavaSelectionEvent(jdtMethod, METHOD_DECLARATION);
+                    final Optional<IMethod> opt = jdtResolver.toJdtMethod(method);
+                    if (opt.isPresent()) {
+                        final JavaSelectionEvent event = new JavaSelectionEvent(opt.get(), METHOD_DECLARATION);
                         workspaceBus.post(event);
                     } else {
                         link.setEnabled(false);

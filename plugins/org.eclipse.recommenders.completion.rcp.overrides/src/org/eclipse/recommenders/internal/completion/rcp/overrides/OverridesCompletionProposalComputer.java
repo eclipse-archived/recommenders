@@ -35,6 +35,7 @@ import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration
 import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
@@ -115,8 +116,8 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
         for (final IMethod m : enclosingType.getMethods()) {
             final Optional<IMethod> superMethod = JdtUtils.findOverriddenMethod(m);
             if (superMethod.isPresent()) {
-                final IMethodName recMethod = jdtCache.toRecMethod(m);
-                final IMethodName recSuperMethod = jdtCache.toRecMethod(superMethod.get());
+                final IMethodName recMethod = jdtCache.toRecMethod(m).or(VmMethodName.NULL);
+                final IMethodName recSuperMethod = jdtCache.toRecMethod(superMethod.get()).or(VmMethodName.NULL);
                 final MethodDeclaration create = MethodDeclaration.create(recMethod);
                 create.superDeclaration = recSuperMethod;
                 query.methods.add(create);
@@ -133,10 +134,11 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
                 continue;
             }
 
-            final IMethod method = jdtCache.toJdtMethod(r.method);
-            if (method == null) {
+            final Optional<IMethod> optMethod = jdtCache.toJdtMethod(r.method);
+            if (!optMethod.isPresent()) {
                 continue;
             }
+            final IMethod method = optMethod.get();
 
             final int start = ctx.getInvocationOffset() - prefix.length();
             final int end = ctx.getInvocationOffset();

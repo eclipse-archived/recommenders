@@ -66,7 +66,7 @@ public class StaticHooksFinder extends ExtdocProvider {
                 labelFactory.applyTo(createLabel(container, type.getFullyQualifiedName() + ":", true, false,
                         SWT.COLOR_BLACK, true));
                 for (final IMethod method : index.get(type)) {
-                    final Link l = createMethodLink(container, resolver.toRecMethod(method), resolver, workspaceBus);
+                    final Link l = createMethodLink(container, method, workspaceBus);
                     linkFactory.applyTo(l);
                 }
             }

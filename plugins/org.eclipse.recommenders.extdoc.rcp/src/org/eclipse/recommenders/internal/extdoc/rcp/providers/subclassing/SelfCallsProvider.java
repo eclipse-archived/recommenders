@@ -94,8 +94,11 @@ public final class SelfCallsProvider extends ExtdocProvider {
     public Status onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
 
         for (IMethod current = method; current != null; current = JdtUtils.findOverriddenMethod(current).orNull()) {
-            final IMethodName methodName = resolver.toRecMethod(current);
-            final MethodSelfcallDirectives selfcalls = proxy.findMethodSelfcallDirectives(methodName);
+            final Optional<IMethodName> opt = resolver.toRecMethod(current);
+            if (!opt.isPresent()) {
+                continue;
+            }
+            final MethodSelfcallDirectives selfcalls = proxy.findMethodSelfcallDirectives(opt.get());
             if (selfcalls != null) {
                 runSyncInUiThread(new MethodSelfcallDirectivesRenderer(method, selfcalls, parent));
                 return Status.OK;

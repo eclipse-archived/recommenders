@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.tests.utils.rcp;
 
+import com.google.common.base.Optional;
 import java.util.List;
 import java.util.Set;
 import junit.framework.Assert;
@@ -37,8 +38,9 @@ public class JavaElementResolver4GenericsTest {
       final CharSequence code = _classbody;
       IMethod _method = this.getMethod(code);
       final IMethod method = _method;
-      IMethodName _recMethod = this.sut.toRecMethod(method);
-      final IMethodName actual = _recMethod;
+      Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
+      IMethodName _get = _recMethod.get();
+      final IMethodName actual = _get;
       String _identifier = actual.getIdentifier();
       Assert.assertEquals("LMyClass.m()Ljava/lang/Iterable;", _identifier);
   }
@@ -51,8 +53,9 @@ public class JavaElementResolver4GenericsTest {
       final CharSequence code = _classbody;
       IMethod _method = this.getMethod(code);
       final IMethod method = _method;
-      IMethodName _recMethod = this.sut.toRecMethod(method);
-      final IMethodName actual = _recMethod;
+      Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
+      IMethodName _get = _recMethod.get();
+      final IMethodName actual = _get;
       String _identifier = actual.getIdentifier();
       Assert.assertEquals("LMyClass.m([[Ljava/lang/String;)[[Ljava/lang/Iterable;", _identifier);
   }
@@ -65,8 +68,8 @@ public class JavaElementResolver4GenericsTest {
       final CharSequence code = _classbody;
       IMethod _method = this.getMethod(code);
       final IMethod method = _method;
-      IMethodName _recMethod = this.sut.toRecMethod(method);
-      final IMethodName actual = _recMethod;
+      Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
+      final Optional<IMethodName> actual = _recMethod;
       Assert.assertNotNull(actual);
   }
   
@@ -78,8 +81,8 @@ public class JavaElementResolver4GenericsTest {
       final CharSequence code = _classbody;
       IMethod _method = this.getMethod(code);
       final IMethod method = _method;
-      IMethodName _recMethod = this.sut.toRecMethod(method);
-      final IMethodName actual = _recMethod;
+      Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
+      final Optional<IMethodName> actual = _recMethod;
       Assert.assertNotNull(actual);
   }
   
