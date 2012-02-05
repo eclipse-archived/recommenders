@@ -14,6 +14,7 @@ package org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
@@ -23,6 +24,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -34,6 +36,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.misc.StatusUtil;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -154,7 +157,7 @@ public final class JavadocProvider extends ExtdocProvider {
         try {
             final boolean success = latch.await(5, TimeUnit.SECONDS);
             if (!success) {
-                System.out.println("------> javadoc failed");
+                RecommendersPlugin.log(StatusUtil.newStatus(IStatus.WARNING, "javadoc provider failed.", null));
             }
         } catch (final InterruptedException e) {
             // we ignore them.

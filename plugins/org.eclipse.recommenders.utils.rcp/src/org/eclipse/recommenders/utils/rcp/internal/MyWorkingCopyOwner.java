@@ -19,7 +19,6 @@ public class MyWorkingCopyOwner extends WorkingCopyOwner {
     public String findSource(final String typeName, final String packageName) {
         final String source = super.findSource(typeName, packageName);
         if (source == null || source.isEmpty()) {
-            // System.out.println(typeName);
         }
         return source;
     }

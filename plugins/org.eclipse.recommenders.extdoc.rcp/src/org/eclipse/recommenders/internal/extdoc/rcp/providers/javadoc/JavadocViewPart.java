@@ -30,9 +30,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import com.google.common.eventbus.EventBus;
 
 /**
- * This class simply reuses to original Eclipse javadoc view to display Javadocs
- * attached to {@link IJavaElement}s. At some time later, we may have the need
- * to create a beautiful solution. For this suffices.
+ * This class simply reuses to original Eclipse javadoc view to display Javadocs attached to {@link IJavaElement}s. At
+ * some time later, we may have the need to create a beautiful solution. For this suffices.
  */
 @SuppressWarnings("restriction")
 final class JavadocViewPart extends JavadocView {
@@ -70,9 +69,8 @@ final class JavadocViewPart extends JavadocView {
     }
 
     /**
-     * Links in the javadoc viewer are resolved to java elements on click - if
-     * possible. If so, we want to trigger a new workspace-wide(!) selection
-     * event.
+     * Links in the javadoc viewer are resolved to java elements on click - if possible. If so, we want to trigger a new
+     * workspace-wide(!) selection event.
      */
     private boolean isNewInternalJavaElementSelection(final IJavaElement input) {
         return input != this.selection && input != null;
@@ -121,7 +119,6 @@ final class JavadocViewPart extends JavadocView {
         final Matcher matcher = pattern.matcher(markUp);
         if (matcher.matches()) {
             String content = matcher.group(3);
-            // System.out.println("matched: " + content);
             if (content.equals("")) {
                 content = "<em>Note: No javadoc available</em>";
                 markUp = markUp.replace(matcher.group(1), matcher.group(2) + content + "</body>");

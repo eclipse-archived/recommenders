@@ -136,7 +136,6 @@ public class JavaElementResolver {
                 } catch (final Exception x) {
                     // final IType type =
                     // parent.getType(recType.getClassName());
-                    // System.out.println(parent);
                     return absent();
                 }
             }

@@ -30,7 +30,7 @@ public class BayesNode {
     private final Factor factor = new Factor();
     private int id = -1;
 
-    public BayesNode(String name) {
+    public BayesNode(final String name) {
         this.name = name;
     }
 
@@ -48,7 +48,7 @@ public class BayesNode {
 
     public void setParents(final List<BayesNode> parents) {
         this.parents = parents;
-        for (BayesNode p : parents) {
+        for (final BayesNode p : parents) {
             p.children.add(this);
         }
         adjustFactordimensions();
@@ -70,7 +70,7 @@ public class BayesNode {
     }
 
     private void fillWithParentDimensions(final int[] dimensions, final int[] dimensionIds) {
-        for (ListIterator<BayesNode> it = parents.listIterator(); it.hasNext();) {
+        for (final ListIterator<BayesNode> it = parents.listIterator(); it.hasNext();) {
             final BayesNode p = it.next();
             dimensions[it.nextIndex() - 1] = p.getOutcomeCount();
             dimensionIds[it.nextIndex() - 1] = p.getId();
@@ -117,8 +117,7 @@ public class BayesNode {
     public int getOutcomeIndex(final String name) {
         try {
             return outcomeIndices.get(name);
-        } catch (NullPointerException ex) {
-            System.out.println("");
+        } catch (final NullPointerException ex) {
             throw ex;
         }
     }

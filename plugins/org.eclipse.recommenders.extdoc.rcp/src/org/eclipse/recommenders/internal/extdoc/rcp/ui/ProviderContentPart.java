@@ -333,8 +333,6 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final ProviderOrderChangedEvent e) {
-        System.out.printf("order changed: %d, %d", e.oldIndex, e.newIndex);
-
         final ProviderArea areaToMove = providerAreas.get(e.provider);
         final ProviderArea areaRef = providerAreas.get(e.reference);
 

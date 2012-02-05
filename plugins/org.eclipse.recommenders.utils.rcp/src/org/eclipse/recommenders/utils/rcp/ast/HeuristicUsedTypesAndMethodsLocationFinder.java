@@ -75,7 +75,6 @@ public class HeuristicUsedTypesAndMethodsLocationFinder {
                                 literals.add(name.getIdentifier());
                             }
                             final Expression expression = parent2.getExpression();
-                            System.out.println();
                         }
                         guesses.add(node);
                     }

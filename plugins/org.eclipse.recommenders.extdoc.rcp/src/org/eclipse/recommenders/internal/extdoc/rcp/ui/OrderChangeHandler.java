@@ -38,42 +38,42 @@ public class OrderChangeHandler extends DropTargetAdapter implements DragSourceL
 
     private final List<OrderChangedListener> listeners = newArrayList();
 
-    public static OrderChangeHandler enable(Table table) {
+    public static OrderChangeHandler enable(final Table table) {
         return new OrderChangeHandler(table);
     }
 
-    private OrderChangeHandler(Table table) {
+    private OrderChangeHandler(final Table table) {
         this.table = table;
 
         final Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
         final int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
 
-        DragSource source = new DragSource(table, operations);
+        final DragSource source = new DragSource(table, operations);
         source.setTransfer(types);
         source.addDragListener(this);
 
-        DropTarget target = new DropTarget(table, operations);
+        final DropTarget target = new DropTarget(table, operations);
         target.setTransfer(types);
         target.addDropListener(this);
     }
 
-    public void addListener(OrderChangedListener listener) {
+    public void addListener(final OrderChangedListener listener) {
         listeners.add(listener);
     }
 
-    public void removeListener(OrderChangedListener listener) {
+    public void removeListener(final OrderChangedListener listener) {
         listeners.remove(listener);
     }
 
-    private void notifyAll(int oldIndex, int newIndex) {
-        for (OrderChangedListener listener : listeners) {
+    private void notifyAll(final int oldIndex, final int newIndex) {
+        for (final OrderChangedListener listener : listeners) {
             listener.orderChanged(oldIndex, newIndex);
         }
     }
 
     @Override
     public void dragStart(final DragSourceEvent event) {
-        TableItem[] selection = table.getSelection();
+        final TableItem[] selection = table.getSelection();
         dragSourceItem = selection[0];
     }
 
@@ -83,7 +83,7 @@ public class OrderChangeHandler extends DropTargetAdapter implements DragSourceL
     }
 
     @Override
-    public void dragFinished(DragSourceEvent event) {
+    public void dragFinished(final DragSourceEvent event) {
         table.deselectAll();
         dragSourceItem = null;
     }
@@ -95,11 +95,11 @@ public class OrderChangeHandler extends DropTargetAdapter implements DragSourceL
 
     @Override
     public void drop(final DropTargetEvent event) {
-        boolean isDraggingFromWithinTable = dragSourceItem != null;
+        final boolean isDraggingFromWithinTable = dragSourceItem != null;
         if (isDraggingFromWithinTable) {
-            Widget dropTargetItem = event.item;
+            final Widget dropTargetItem = event.item;
 
-            int selIndex = findIndex(dragSourceItem, table);
+            final int selIndex = findIndex(dragSourceItem, table);
             int dropIndex = findIndex(dropTargetItem, table);
 
             if (dropIndex > selIndex) {
@@ -110,13 +110,13 @@ public class OrderChangeHandler extends DropTargetAdapter implements DragSourceL
                 notifyAll(selIndex, dropIndex);
             }
         } else {
-            System.out.println("sorry, dragged from outside");
+            // "sorry, dragged from outside"
         }
     }
 
-    private int findIndex(Widget dropTarget, Table table) {
+    private int findIndex(final Widget dropTarget, final Table table) {
         int index = 0;
-        for (TableItem item : table.getItems()) {
+        for (final TableItem item : table.getItems()) {
             if (item.equals(dropTarget)) {
                 return index;
             }

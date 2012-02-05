@@ -17,11 +17,14 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ManifestResolutionFinished;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ModelArchiveDownloadFinished;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ModelArchiveDownloadRequested;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ModelArchiveRegistered;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.ui.internal.misc.StatusUtil;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
@@ -104,7 +107,8 @@ public class ModelArchiveStore<T extends IModel> {
     private void registerInIndex(final IModelArchive archive, final Manifest manifest) {
         final IModelArchive old = index.put(manifest, archive);
         if (old != null) {
-            System.out.println("overriding old model with new: " + old.getManifest() + " new " + manifest);
+            final String message = "overriding old model with new: " + old.getManifest() + " new " + manifest;
+            RecommendersPlugin.log(StatusUtil.newStatus(IStatus.WARNING, message, null));
         }
     }
 
