@@ -24,6 +24,9 @@ import javax.inject.Singleton;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
@@ -42,6 +45,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
@@ -100,9 +104,16 @@ public class RecommendersModule extends AbstractModule implements Module {
     @Singleton
     protected JavaSelectionProvider provideJavaSelectionProvider(final EventBus bus, final IWorkbench wb) {
         final JavaSelectionProvider provider = new JavaSelectionProvider(bus);
-        final IWorkbenchWindow ww = runUiFinder().activeWorkbenchWindow;
-        final ISelectionService service = (ISelectionService) ww.getService(ISelectionService.class);
-        service.addPostSelectionListener(provider);
+        new UIJob("Register workbench selection lister") {
+
+            @Override
+            public IStatus runInUIThread(final IProgressMonitor monitor) {
+                final IWorkbenchWindow ww = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                final ISelectionService service = (ISelectionService) ww.getService(ISelectionService.class);
+                service.addPostSelectionListener(provider);
+                return Status.OK_STATUS;
+            }
+        }.schedule(1000);
         return provider;
     }
 
@@ -118,7 +129,7 @@ public class RecommendersModule extends AbstractModule implements Module {
 
     @Provides
     protected IWorkbench provideWorkbench() {
-        return runUiFinder().workbench;
+        return PlatformUI.getWorkbench();
     }
 
     @Provides
