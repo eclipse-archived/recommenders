@@ -307,6 +307,10 @@ public class StaticHooksFinder extends ExtdocProvider {
     private void findStaticHooks(final TreeMultimap<IType, IMethod> index, final ITypeRoot root)
             throws JavaModelException {
         final IType type = root.findPrimaryType();
+        if (!type.isClass()) {
+            return;
+        }
+
         for (final IMethod m : type.getMethods()) {
             if (JdtFlags.isStatic(m) && JdtFlags.isPublic(m) && !JdtUtils.isInitializer(m)) {
                 index.put(type, m);
