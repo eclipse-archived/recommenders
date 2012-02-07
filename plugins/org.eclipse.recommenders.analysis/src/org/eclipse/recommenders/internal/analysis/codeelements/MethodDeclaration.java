@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.analysis.codeelements;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -105,11 +107,23 @@ public class MethodDeclaration implements INamedCodeElement {
         this.variables = variables;
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
     public void clearEmptySets() {
-        if (nestedTypes.isEmpty())
+        if (nestedTypes.isEmpty()) {
             nestedTypes = null;
-        if (objects.isEmpty())
+        }
+        if (objects.isEmpty()) {
             objects = null;
+        }
     }
 
     public synchronized Set<Variable> getVariables() {
@@ -132,18 +146,21 @@ public class MethodDeclaration implements INamedCodeElement {
     @Override
     public void accept(final CompilationUnitVisitor v) {
         if (v.visit(this)) {
-            if (nestedTypes != null)
+            if (nestedTypes != null) {
                 for (final TypeDeclaration nestedType : nestedTypes) {
                     nestedType.accept(v);
                 }
-            if (objects != null)
+            }
+            if (objects != null) {
                 for (final ObjectInstanceKey obj : objects) {
                     obj.accept(v);
                 }
-            if (variables != null)
+            }
+            if (variables != null) {
                 for (final Variable var : getVariables()) {
                     var.accept(v);
                 }
+            }
         }
 
     }

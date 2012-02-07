@@ -12,6 +12,8 @@ package org.eclipse.recommenders.internal.analysis.codeelements;
 
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -40,8 +42,7 @@ public class TypeDeclaration implements INamedCodeElement {
     }
 
     /**
-     * use {@link #create(ITypeName, ITypeName)} to create an instance of this
-     * class.
+     * use {@link #create(ITypeName, ITypeName)} to create an instance of this class.
      */
     protected TypeDeclaration() {
         // no-one should instantiate this class directly
@@ -63,35 +64,52 @@ public class TypeDeclaration implements INamedCodeElement {
 
     public int modifiers;
 
+    @Override
     public void accept(final CompilationUnitVisitor v) {
 
         if (v.visit(this)) {
 
-            if (memberTypes != null)
+            if (memberTypes != null) {
                 for (final TypeDeclaration type : memberTypes) {
                     type.accept(v);
                 }
-            if (methods != null)
+            }
+            if (methods != null) {
                 for (final MethodDeclaration method : methods) {
                     method.accept(v);
                 }
+            }
         }
     }
 
     public void clearEmptySets() {
-        if (interfaces.isEmpty())
+        if (interfaces.isEmpty()) {
             interfaces = null;
-        if (fields.isEmpty())
+        }
+        if (fields.isEmpty()) {
             fields = null;
-        if (methods.isEmpty())
+        }
+        if (methods.isEmpty()) {
             methods = null;
-        if (memberTypes.isEmpty())
+        }
+        if (memberTypes.isEmpty()) {
             memberTypes = null;
+        }
     }
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     public MethodDeclaration findMethod(final IMethodName methodName) {
