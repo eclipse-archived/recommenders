@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.6"?>
+<?pde version="3.8"?>
 
 <target name="Code Recommenders: Eclipse 3.8 Developer Target Platform" sequenceNumber="42">
 <locations>
@@ -17,8 +17,8 @@
 <repository location="http://download.eclipse.org/eclipse/updates/3.8milestones/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201201261700"/>
-<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201201261700"/>
+<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201202080827"/>
+<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201202080827"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd/"/>
 </location>
 </locations>
