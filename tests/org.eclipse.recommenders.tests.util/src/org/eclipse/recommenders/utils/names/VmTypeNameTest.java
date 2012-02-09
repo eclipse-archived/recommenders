@@ -184,7 +184,7 @@ public class VmTypeNameTest {
     @Test
     public void testCompareTo() {
         assertEquals(0, NamesTest.MAP$ENTRY.compareTo(NamesTest.MAP$ENTRY));
-        assertTrue(0 > NamesTest.MAP$ENTRY.compareTo(NamesTest.STRING));
+        assertTrue(0 < NamesTest.MAP$ENTRY.compareTo(NamesTest.STRING));
     }
 
     @Test(expected = IllegalStateException.class)

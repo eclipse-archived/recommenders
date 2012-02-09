@@ -16,6 +16,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.eclipse.recommenders.tests.jdt.AstUtils.MARKER;
 import static org.eclipse.recommenders.tests.jdt.AstUtils.MARKER_ESCAPE;
 import static org.eclipse.recommenders.utils.Checks.cast;
+import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 import static org.eclipse.recommenders.utils.Tuple.newTuple;
 
@@ -44,6 +45,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.rcp.ast.BindingUtils;
 
 import com.google.common.collect.Sets;
 
@@ -61,6 +63,7 @@ public class JavaProjectFixture {
     private ASTParser parser;
 
     public JavaProjectFixture(final IWorkspace workspace, final String projectName) {
+        BindingUtils.testingInitializeResolver();
         createJavaProject(workspace, projectName);
         createParser();
     }
@@ -142,8 +145,10 @@ public class JavaProjectFixture {
         int pos = 0;
         final StringBuilder sb = new StringBuilder(content);
         while ((pos = sb.indexOf(MARKER, pos)) != -1) {
-            sb.delete(pos, pos + 1);
+            sb.deleteCharAt(pos);
             markers.add(pos);
+            ensureIsTrue(pos < sb.length());
+            pos--;
         }
         return newTuple(sb.toString(), markers);
     }

@@ -30,6 +30,7 @@ import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.internal.core.TypeParameter;
 import org.eclipse.recommenders.utils.annotations.Nullable;
+import org.eclipse.recommenders.utils.annotations.Testing;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -46,6 +47,11 @@ public class BindingUtils {
 
     @Inject
     private static JavaElementResolver resolver;
+
+    @Testing
+    public static void testingInitializeResolver() {
+        resolver = new JavaElementResolver();
+    }
 
     public static Optional<IType> getVariableType(final IVariableBinding b) {
         if (b == null) {

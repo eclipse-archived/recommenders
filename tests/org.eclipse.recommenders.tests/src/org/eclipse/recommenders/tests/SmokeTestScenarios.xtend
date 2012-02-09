@@ -47,7 +47,7 @@ class SmokeTestScenarios {
 		«someClass»
 		'''
 		
-	public static CharSequence METHOD_STMT_01 = method('''Ob$''')
+	public static CharSequence METHOD_STMT_01 = method('''Ob$;''')
 
 	public static CharSequence METHOD_STMT_02 = method('''Object $''')
 		

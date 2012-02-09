@@ -117,7 +117,11 @@ public class AllJavaFeatures<T extends Collection> {
 		val CallsCompletionProposalComputer sut = new CallsCompletionProposalComputer(new ModelStoreMock(), new JavaElementResolver(),
             new RecommendersCompletionContextFactoryMock())
 		for(pos : struct.second){
-			sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, pos), null);
+			if(pos< cu.source.length){
+				sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, pos), null);
+			}else{
+				print("warning: skipped smoke scenario: " + cu.source)
+			}
 		}
 	}
 }

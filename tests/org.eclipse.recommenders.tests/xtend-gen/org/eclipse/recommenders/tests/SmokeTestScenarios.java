@@ -91,7 +91,7 @@ public class SmokeTestScenarios {
   public static CharSequence METHOD_STMT_01 = new Function0<CharSequence>() {
     public CharSequence apply() {
       StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Ob$");
+      _builder.append("Ob$;");
       CharSequence _method = CodeBuilder.method(_builder);
       return _method;
     }

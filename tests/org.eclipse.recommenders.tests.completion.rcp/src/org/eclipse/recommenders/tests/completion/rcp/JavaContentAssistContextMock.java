@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.tests.completion.rcp;
 
+import static org.apache.commons.lang3.StringUtils.substring;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,7 +56,18 @@ public class JavaContentAssistContextMock extends JavaContentAssistInvocationCon
 
     private void initializeCoreContext() throws JavaModelException {
         requestor = new SimpleCompletionRequestor();
-        cu.codeComplete(completionOffset, requestor);
+        try {
+            cu.codeComplete(completionOffset, requestor);
+        } catch (final Exception e) {
+            final String source = cu.getSource();
+            final int length = source.length();
+
+            final int start = Math.max(0, 0);
+            final int end = Math.min(source.length(), completionOffset - 10);
+            final String location = substring(source, start, completionOffset) + "|<^space>"
+                    + substring(source, completionOffset, end);
+            System.err.printf("error at completion offset %d: '%s'", completionOffset, location);
+        }
     }
 
     @Override

@@ -18,6 +18,9 @@ import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.InputOutput;
+import org.eclipse.xtext.xbase.lib.IntegerExtensions;
+import org.eclipse.xtext.xbase.lib.StringExtensions;
 import org.junit.Test;
 
 @SuppressWarnings("all")
@@ -229,8 +232,17 @@ public class CallCompletionProposalComputerSmokeTest {
         final CallsCompletionProposalComputer sut = _callsCompletionProposalComputer;
         Set<Integer> _second = struct.getSecond();
         for (final Integer pos : _second) {
-          JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (pos).intValue());
-          sut.computeCompletionProposals(_javaContentAssistContextMock, null);
+          String _source = cu.getSource();
+          int _length = _source.length();
+          boolean _operator_lessThan = IntegerExtensions.operator_lessThan((pos).intValue(), _length);
+          if (_operator_lessThan) {
+            JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (pos).intValue());
+            sut.computeCompletionProposals(_javaContentAssistContextMock, null);
+          } else {
+            String _source_1 = cu.getSource();
+            String _operator_plus = StringExtensions.operator_plus("warning: skipped smoke scenario: ", _source_1);
+            InputOutput.<String>print(_operator_plus);
+          }
         }
       }
     } catch (Exception _e) {
