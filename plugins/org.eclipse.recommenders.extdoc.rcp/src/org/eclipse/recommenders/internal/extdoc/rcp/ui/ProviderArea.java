@@ -112,6 +112,7 @@ public class ProviderArea {
      * relayout is needed afterwards
      */
     private static void setVisible(final Composite d, final boolean isVisible) {
+        d.setVisible(isVisible);
         final Object layoutData = d.getLayoutData();
         if (layoutData instanceof GridData) {
             final GridData gridData = (GridData) layoutData;
@@ -147,7 +148,6 @@ public class ProviderArea {
     public void cleanup() {
         disposeChildren(status);
         disposeChildren(content);
-        layout();
     }
 
     private static void disposeChildren(final Composite parent) {

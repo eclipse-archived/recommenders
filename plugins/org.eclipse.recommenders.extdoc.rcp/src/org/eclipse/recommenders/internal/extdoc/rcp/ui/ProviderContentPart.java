@@ -58,7 +58,6 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
-@SuppressWarnings("restriction")
 public class ProviderContentPart {
 
     private final List<ExtdocProvider> providers;
@@ -339,7 +338,7 @@ public class ProviderContentPart {
     @Subscribe
     public void onEvent(final ProviderFailedEvent e) {
 
-        Display.getDefault().syncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
 
             @Override
             public void run() {
