@@ -189,7 +189,7 @@ public class VmTypeName implements ITypeName {
 
     @Override
     public int compareTo(final ITypeName o) {
-        return o.getIdentifier().compareTo(getIdentifier());
+        return getIdentifier().compareTo(o.getIdentifier());
     }
 
     @Override
