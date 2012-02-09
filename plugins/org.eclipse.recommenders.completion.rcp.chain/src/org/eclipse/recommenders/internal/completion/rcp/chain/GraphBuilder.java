@@ -65,7 +65,6 @@ public class GraphBuilder {
             this.newEdge = newEdge;
         }
 
-        @Override
         public Void call() throws Exception {
             visitEdge(newEdge);
             final int count = numberOfScheduledJobs.decrementAndGet();
@@ -188,32 +187,6 @@ public class GraphBuilder {
         final boolean hasMoreElementsThanNeeded = chains.size() >= 20;
         if (hasMoreElementsThanNeeded) {
             throwCancelationException();
-        }
-    }
-
-    private void dsfTraverse(final LinkedHashSet<MemberEdge> incompleteChain, final MemberEdge edgeToTest) {
-        terminateIfInterrupted();
-
-        if (introducesCycleIntoCallChain(incompleteChain, edgeToTest)) {
-            return;
-        }
-
-        final LinkedHashSet<MemberEdge> workingCopy = createWorkingCopyWithNewEdge(incompleteChain, edgeToTest);
-
-        if (reachedCallChainMaxLengthLimit(workingCopy)) {
-            return;
-        }
-
-        if (edgeToTest.isChainAnchor()) {
-            registerCopyOfSuccessfullyCompletedChain(workingCopy);
-            return;
-        }
-
-        final IType accessedFrom = edgeToTest.getReceiverType().get();
-        final TypeNode typeNode = nodes.get(accessedFrom);
-
-        for (final MemberEdge nextEdgeToTest : typeNode.incomingEdges) {
-            dsfTraverse(workingCopy, nextEdgeToTest);
         }
     }
 

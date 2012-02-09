@@ -63,62 +63,51 @@ public class ChainCompletionProposal implements IJavaCompletionProposal, IComple
         return b;
     }
 
-    @Override
     public void apply(final IDocument document) {
         completion.apply(document);
     }
 
-    @Override
     public void apply(final ITextViewer viewer, final char trigger, final int stateMask, final int offset) {
         completion.apply(viewer, trigger, stateMask, offset);
 
     }
 
-    @Override
     public String getAdditionalProposalInfo() {
         return completion.getAdditionalProposalInfo();
     }
 
-    @Override
     public String getDisplayString() {
         return completion.getDisplayString();
 
     }
 
-    @Override
     public IContextInformation getContextInformation() {
         return completion.getContextInformation();
 
     }
 
-    @Override
     public int getRelevance() {
         final int relevance = (2 ^ 12) - chain.size();
         return relevance;
     }
 
-    @Override
     public Point getSelection(final IDocument document) {
         return completion.getSelection(document);
     }
 
-    @Override
     public Image getImage() {
         return completion.getImage();
     }
 
-    @Override
     public void selected(final ITextViewer viewer, final boolean smartToggle) {
         completion.selected(viewer, smartToggle);
 
     }
 
-    @Override
     public void unselected(final ITextViewer viewer) {
         completion.unselected(viewer);
     }
 
-    @Override
     public boolean validate(final IDocument document, final int offset, final DocumentEvent event) {
         return completion.validate(document, offset, event);
     }
@@ -128,27 +117,22 @@ public class ChainCompletionProposal implements IJavaCompletionProposal, IComple
         return completion.getDisplayString();
     }
 
-    @Override
     public StyledString getStyledDisplayString() {
         return completion.getStyledDisplayString();
     }
 
-    @Override
     public boolean isAutoInsertable() {
         return completion.isAutoInsertable();
     }
 
-    @Override
     public IInformationControlCreator getInformationControlCreator() {
         return completion.getInformationControlCreator();
     }
 
-    @Override
     public CharSequence getPrefixCompletionText(final IDocument document, final int completionOffset) {
         return completion.getPrefixCompletionText(document, completionOffset);
     }
 
-    @Override
     public int getPrefixCompletionStart(final IDocument document, final int completionOffset) {
         return completion.getPrefixCompletionStart(document, completionOffset);
     }

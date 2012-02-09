@@ -79,7 +79,6 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         this.ctxFactory = ctxFactory;
     }
 
-    @Override
     public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context,
             final IProgressMonitor monitor) {
 
@@ -247,8 +246,8 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean matchesPrefixToken(final IJavaElement decl) {
-        String prefix = ctx.getPrefix();
-        String elementName = decl.getElementName();
+        final String prefix = ctx.getPrefix();
+        final String elementName = decl.getElementName();
         return elementName.startsWith(prefix);
     }
 
@@ -258,7 +257,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         final List<List<MemberEdge>> chains = b.getChains();
         try {
             new SimpleTimeLimiter().callWithTimeout(new Callable<Void>() {
-                @Override
+
                 public Void call() throws Exception {
                     b.build(entrypoints);
                     b.findChains(expectedType);
@@ -284,24 +283,20 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
                 .logError(e, "Chain completion failed in %s.", ctx.getCompilationUnit().getElementName());
     }
 
-    @Override
     public List<IContextInformation> computeContextInformation(final ContentAssistInvocationContext context,
             final IProgressMonitor monitor) {
         return Collections.emptyList();
     }
 
-    @Override
     public void sessionStarted() {
         proposals = new LinkedList<ICompletionProposal>();
         setError(null);
     }
 
-    @Override
     public String getErrorMessage() {
         return error;
     }
 
-    @Override
     public void sessionEnded() {
 
     }

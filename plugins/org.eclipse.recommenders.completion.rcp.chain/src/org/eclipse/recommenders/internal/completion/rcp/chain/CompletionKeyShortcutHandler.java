@@ -41,8 +41,8 @@ public class CompletionKeyShortcutHandler extends AbstractHandler {
 
     private void validateChainCompletionCategoryExists() {
 
-        List<CompletionProposalCategory> categories = registry.getProposalCategories();
-        for (CompletionProposalCategory c : categories) {
+        final List<CompletionProposalCategory> categories = registry.getProposalCategories();
+        for (final CompletionProposalCategory c : categories) {
             if (c.getId().equals(CHAIN_COMPLETION_CATEGORY)) {
                 return;
             }
@@ -52,9 +52,8 @@ public class CompletionKeyShortcutHandler extends AbstractHandler {
 
     }
 
-    @Override
     public Object execute(final ExecutionEvent event) throws ExecutionException {
-        Optional<JavaEditor> opt = JdtUtils.getActiveJavaEditor();
+        final Optional<JavaEditor> opt = JdtUtils.getActiveJavaEditor();
         if (!opt.isPresent()) {
             return null;
         }

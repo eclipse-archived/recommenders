@@ -4,7 +4,7 @@ Bundle-Name: Code Recommenders: JDT Chain Completion (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.chain;singleton:=true
 Bundle-Version: 0.5.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: com.google.guava,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
