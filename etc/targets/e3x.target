@@ -14,8 +14,8 @@
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201202070606"/>
-<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201202070606"/>
+<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201202071805"/>
+<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201202071805"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
