@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.extdoc.rcp.providers;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.swt.widgets.Display;
 
@@ -40,16 +43,22 @@ public abstract class ExtdocProvider {
 
     protected final void runSyncInUiThread(final Runnable runnable) {
         final ExceptionHandler handler = new ExceptionHandler();
+        final CountDownLatch latch = new CountDownLatch(1);
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
                 try {
                     runnable.run();
+                    latch.countDown();
                 } catch (final Exception e) {
                     handler.setException(e);
                 }
             }
         });
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+        } catch (final InterruptedException e) {
+        }
         handler.throwExceptionIfExistent();
     }
 
