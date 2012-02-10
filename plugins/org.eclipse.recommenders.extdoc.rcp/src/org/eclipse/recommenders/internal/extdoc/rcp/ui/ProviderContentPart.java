@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
+import static org.eclipse.recommenders.rcp.RecommendersPlugin.logWarning;
 
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderFi
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderNotAvailableEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderOrderChangedEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderSelectionEvent;
+import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderStatusEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.RenderNowEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocPlugin;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
@@ -54,6 +56,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -76,19 +80,21 @@ public class ProviderContentPart {
             | JavaElementLabels.M_EXCEPTIONS | JavaElementLabels.F_PRE_TYPE_SIGNATURE
             | JavaElementLabels.T_TYPE_PARAMETERS;
 
-    private final Map<ExtdocProvider, ProviderArea> providerAreas;
+    // using class instead of instances to be sure that only one provider of a given type exists. We have rendering
+    // issues and this is used as an additional check:
+    private Map<ExtdocProvider, ProviderArea> providerAreas;
     private CLabel selectionStatus;
     private final JavaElementLabelProvider labelProvider;
 
     private final GridLayoutFactory defaultGridLayoutFactory = GridLayoutFactory.fillDefaults().spacing(0, 0);
     private final GridDataFactory defaultGridDataFactory = GridDataFactory.fillDefaults().grab(true, true);
 
+    private HashMultimap<Class<? extends ExtdocProvider>, Class<?>> providerEvents;
+
     @Inject
     public ProviderContentPart(final List<ExtdocProvider> providers) {
-        this.providers = providers;
-
-        providerAreas = Maps.newHashMap();
-        labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
+        this.providers = ImmutableList.copyOf(providers);
+        this.labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
     }
 
     public void createControl(final Composite parent) {
@@ -169,6 +175,8 @@ public class ProviderContentPart {
         renderingPanel.setLayout(defaultGridLayoutFactory.create());
 
         createSelectionInfoArea();
+        providerAreas = Maps.newHashMap();
+        providerEvents = HashMultimap.create();
 
         for (final ExtdocProvider p : providers) {
             final ProviderArea providerArea = new ProviderArea(p);
@@ -194,7 +202,7 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final NewSelectionEvent e) {
-        Display.getDefault().syncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
 
             @Override
             public void run() {
@@ -230,7 +238,7 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final RenderNowEvent e) {
-        Display.getDefault().syncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
 
             @Override
             public void run() {
@@ -258,11 +266,11 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final ProviderNotAvailableEvent e) {
-        Display.getDefault().syncExec(new Runnable() {
+        recordProviderEvent(e);
+        asyncExec(new Runnable() {
 
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 final ProviderArea area = providerAreas.get(e.provider);
 
                 if (e.hasFinishedLate) {
@@ -271,14 +279,19 @@ public class ProviderContentPart {
                 } else {
                     area.hide();
                 }
-
             }
         });
     }
 
+    private void asyncExec(final Runnable runnable) {
+        container.getDisplay().asyncExec(runnable);
+    }
+
     @Subscribe
     public void onEvent(final ProviderSelectionEvent e) {
-        Display.getDefault().syncExec(new Runnable() {
+        recordProviderEvent(e);
+
+        asyncExec(new Runnable() {
 
             @Override
             public void run() {
@@ -290,7 +303,12 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final ProviderFinishedEvent e) {
-        Display.getDefault().syncExec(new Runnable() {
+        if (hasSentFinishedEventBefore(e.provider)) {
+            return;
+        }
+        recordProviderEvent(e);
+
+        asyncExec(new Runnable() {
 
             @Override
             public void run() {
@@ -303,7 +321,11 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final ProviderDelayedEvent e) {
-        Display.getDefault().syncExec(new Runnable() {
+        if (isProviderFinishedAlready(e)) {
+            return;
+        }
+        recordProviderEvent(e);
+        Display.getDefault().asyncExec(new Runnable() {
 
             @Override
             public void run() {
@@ -314,9 +336,32 @@ public class ProviderContentPart {
         });
     }
 
+    private boolean isProviderFinishedAlready(final ProviderDelayedEvent e) {
+        // due to concurrency there might be milliseconds that may cause a layout glitch: a provider rendered the
+        // contents already but the scheduler finds this provider to be failed. This is checked as handled here.
+        // TODO: is there a better way to handle this in the scheduler?
+        final Class<?>[] finishedEvents = { ProviderFinishedEvent.class, ProviderFinishedLateEvent.class,
+                ProviderFailedEvent.class, ProviderNotAvailableEvent.class };
+        return providerEventsContainsAnyOf(e.provider, finishedEvents);
+    }
+
+    private boolean providerEventsContainsAnyOf(final ExtdocProvider provider, final Class<?>... events) {
+        for (final Class<?> e : events) {
+            if (providerEvents.containsEntry(provider.getClass(), e)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Subscribe
     public void onEvent(final ProviderFinishedLateEvent e) {
-        Display.getDefault().syncExec(new Runnable() {
+        if (hasSentFinishedEventBefore(e.provider)) {
+            return;
+        }
+        recordProviderEvent(e);
+
+        Display.getDefault().asyncExec(new Runnable() {
 
             @Override
             public void run() {
@@ -335,10 +380,26 @@ public class ProviderContentPart {
         });
     }
 
+    private void recordProviderEvent(final ProviderStatusEvent e) {
+        providerEvents.put(e.provider.getClass(), e.getClass());
+    }
+
+    private boolean hasSentFinishedEventBefore(final ExtdocProvider provider) {
+        if (providerEventsContainsAnyOf(provider, ProviderFinishedEvent.class, ProviderFinishedLateEvent.class,
+                ProviderNotAvailableEvent.class)) {
+            logWarning(
+                    "Provider %s send 'ProviderFinishedLateEvent' but send other finished events before. Rejecting further paint events.",
+                    provider.getClass());
+            return true;
+        }
+        return false;
+    }
+
     @Subscribe
     public void onEvent(final ProviderFailedEvent e) {
+        recordProviderEvent(e);
 
-        Display.getDefault().syncExec(new Runnable() {
+        asyncExec(new Runnable() {
 
             @Override
             public void run() {
@@ -387,7 +448,7 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final ProviderOrderChangedEvent e) {
-        Display.getDefault().syncExec(new Runnable() {
+        asyncExec(new Runnable() {
 
             @Override
             public void run() {
@@ -407,8 +468,7 @@ public class ProviderContentPart {
 
     @Subscribe
     public void onEvent(final ProviderDeactivationEvent e) {
-
-        Display.getDefault().syncExec(new Runnable() {
+        asyncExec(new Runnable() {
 
             @Override
             public void run() {

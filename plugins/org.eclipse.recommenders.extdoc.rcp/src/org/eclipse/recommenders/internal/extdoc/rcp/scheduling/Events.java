@@ -20,13 +20,21 @@ public class Events {
 
     public static abstract class ExtdocEvent {
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             return reflectionEquals(this, obj);
         }
 
         @Override
         public int hashCode() {
             return reflectionHashCode(this);
+        }
+    }
+
+    public static abstract class ProviderStatusEvent extends ExtdocEvent {
+        public final ExtdocProvider provider;
+
+        public ProviderStatusEvent(final ExtdocProvider provider) {
+            this.provider = provider;
         }
     }
 
@@ -39,73 +47,59 @@ public class Events {
         }
     }
 
-    public static class ProviderActivationEvent extends ExtdocEvent {
-
-        public final ExtdocProvider provider;
+    public static class ProviderActivationEvent extends ProviderStatusEvent {
 
         public ProviderActivationEvent(final ExtdocProvider provider) {
-            this.provider = provider;
+            super(provider);
         }
     }
 
-    public static class ProviderDeactivationEvent extends ExtdocEvent {
-
-        public final ExtdocProvider provider;
-
+    public static class ProviderDeactivationEvent extends ProviderStatusEvent {
         public ProviderDeactivationEvent(final ExtdocProvider provider) {
-            this.provider = provider;
+            super(provider);
         }
     }
 
-    public static class ProviderDelayedEvent extends ExtdocEvent {
-
-        public final ExtdocProvider provider;
+    public static class ProviderDelayedEvent extends ProviderStatusEvent {
 
         public ProviderDelayedEvent(final ExtdocProvider provider) {
-            this.provider = provider;
+            super(provider);
         }
     }
 
-    public static class ProviderFailedEvent extends ExtdocEvent {
+    public static class ProviderFailedEvent extends ProviderStatusEvent {
 
-        public final ExtdocProvider provider;
         public final Throwable throwable;
 
         public ProviderFailedEvent(final ExtdocProvider provider, final Throwable throwable) {
-            this.provider = provider;
+            super(provider);
             this.throwable = throwable;
         }
     }
 
-    public static class ProviderFinishedEvent extends ExtdocEvent {
-
-        public final ExtdocProvider provider;
+    public static class ProviderFinishedEvent extends ProviderStatusEvent {
 
         public ProviderFinishedEvent(final ExtdocProvider provider) {
-            this.provider = provider;
+            super(provider);
         }
     }
 
-    public static class ProviderFinishedLateEvent extends ExtdocEvent {
-
-        public final ExtdocProvider provider;
+    public static class ProviderFinishedLateEvent extends ProviderStatusEvent {
 
         public ProviderFinishedLateEvent(final ExtdocProvider provider) {
-            this.provider = provider;
+            super(provider);
         }
     }
 
-    public static class ProviderNotAvailableEvent extends ExtdocEvent {
-        public final ExtdocProvider provider;
+    public static class ProviderNotAvailableEvent extends ProviderStatusEvent {
         public final boolean hasFinishedLate;
 
         public ProviderNotAvailableEvent(final ExtdocProvider provider) {
-            this.provider = provider;
-            hasFinishedLate = false;
+            this(provider, false);
         }
 
         public ProviderNotAvailableEvent(final ExtdocProvider provider, final boolean hasFinishedLate) {
-            this.provider = provider;
+            super(provider);
             this.hasFinishedLate = hasFinishedLate;
         }
     }
@@ -126,21 +120,17 @@ public class Events {
         }
     }
 
-    public static class ProviderSelectionEvent extends ExtdocEvent {
-
-        public final ExtdocProvider provider;
+    public static class ProviderSelectionEvent extends ProviderStatusEvent {
 
         public ProviderSelectionEvent(final ExtdocProvider provider) {
-            this.provider = provider;
+            super(provider);
         }
     }
 
-    public static class ProviderStartedEvent extends ExtdocEvent {
-
-        public final ExtdocProvider provider;
+    public static class ProviderStartedEvent extends ProviderStatusEvent {
 
         public ProviderStartedEvent(final ExtdocProvider provider) {
-            this.provider = provider;
+            super(provider);
         }
     }
 

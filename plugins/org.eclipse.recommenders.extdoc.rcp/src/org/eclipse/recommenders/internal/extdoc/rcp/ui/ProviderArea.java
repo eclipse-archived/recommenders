@@ -106,6 +106,7 @@ public class ProviderArea {
         setVisible(status, false);
         setVisible(content, false);
         setVisible(container, false);
+        layout();
     }
 
     /**
@@ -116,12 +117,13 @@ public class ProviderArea {
         final Object layoutData = d.getLayoutData();
         if (layoutData instanceof GridData) {
             final GridData gridData = (GridData) layoutData;
-            if (isVisible) {
-                gridData.heightHint = -1;
-            } else {
-                gridData.heightHint = 0;
-            }
-            d.setLayoutData(gridData);
+            gridData.exclude = !isVisible;
+            // if (isVisible) {
+            // gridData.heightHint = -1;
+            // } else {
+            // gridData.heightHint = 0;
+            // }
+            // d.setLayoutData(gridData);
         } else {
             throwUnsupportedOperation("layout of provided composite not supported");
         }
@@ -161,6 +163,7 @@ public class ProviderArea {
         final Link link = new Link(status, SWT.NONE);
         link.setText(statusMessage);
         link.setBackground(link.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        layout();
     }
 
     public void setStatusWithCallback(final String statusMessage, final SelectionListener listener) {

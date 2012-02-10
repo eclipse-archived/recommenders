@@ -122,7 +122,7 @@ public final class JavadocProvider extends ExtdocProvider {
                 browser.addProgressListener(new ProgressAdapter() {
                     @Override
                     public void completed(final ProgressEvent event) {
-
+                        browser.removeProgressListener(this);
                         browser.getDisplay().timerExec(5, new Runnable() {
 
                             @Override
