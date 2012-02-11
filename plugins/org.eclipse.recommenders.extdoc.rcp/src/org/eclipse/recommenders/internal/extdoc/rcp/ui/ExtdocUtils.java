@@ -323,8 +323,10 @@ public final class ExtdocUtils {
         }
     }
 
-    public static void createSourceCodeArea(final Composite parent, final String snippet) {
-        new SourceCodeArea(parent).setCode(snippet);
+    public static SourceCodeArea createSourceCodeArea(final Composite parent, final String snippet) {
+        final SourceCodeArea area = new SourceCodeArea(parent);
+        area.setCode(snippet);
+        return area;
     }
 
     public static Button createButton(final Composite parent, final String text,

@@ -30,7 +30,7 @@ public class Events {
         }
     }
 
-    public static abstract class ProviderStatusEvent extends ExtdocEvent {
+    public static abstract class ProviderStatusEvent {
         public final ExtdocProvider provider;
 
         public ProviderStatusEvent(final ExtdocProvider provider) {

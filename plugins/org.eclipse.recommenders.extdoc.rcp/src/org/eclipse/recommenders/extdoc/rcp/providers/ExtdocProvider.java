@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.extdoc.rcp.providers;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.swt.widgets.Display;
@@ -55,10 +54,10 @@ public abstract class ExtdocProvider {
                 }
             }
         });
-        try {
-            latch.await(5, TimeUnit.SECONDS);
-        } catch (final InterruptedException e) {
-        }
+        // try {
+        // latch.await(5, TimeUnit.SECONDS);
+        // } catch (final InterruptedException e) {
+        // }
         handler.throwExceptionIfExistent();
     }
 

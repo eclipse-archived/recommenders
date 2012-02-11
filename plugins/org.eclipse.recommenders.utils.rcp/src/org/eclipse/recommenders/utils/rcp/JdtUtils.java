@@ -13,6 +13,7 @@ package org.eclipse.recommenders.utils.rcp;
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
+import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isPublic;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isStatic;
 import static org.eclipse.jdt.ui.SharedASTProvider.WAIT_YES;
@@ -490,6 +491,26 @@ public class JdtUtils {
         }
     }
 
+    public static Optional<ITypeName> resolveUnqualifiedJDTType(final String qName, final IJavaElement parent) {
+        if (isPrimitiveTypeSignature(qName)) {
+            final ITypeName primitive = VmTypeName.get(qName);
+            return of(primitive);
+        }
+        try {
+            final Optional<String> opt = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(qName, parent);
+            if (!opt.isPresent()) {
+                return absent();
+            }
+            final int arrayCount = Signature.getArrayCount(qName);
+            final String vmSuperclassName = repeat('[', arrayCount) + toVMTypeDescriptor(opt.get());
+            final ITypeName vmTypeName = VmTypeName.get(vmSuperclassName);
+            return of(vmTypeName);
+        } catch (final Exception e) {
+            log(e);
+            return absent();
+        }
+    }
+
     public static Optional<IType> findSuperclass(final IType type) {
         ensureIsNotNull(type);
         try {
@@ -732,6 +753,9 @@ public class JdtUtils {
             String typeSignature, final IJavaElement parent) {
         ensureIsNotNull(typeSignature);
         ensureIsNotNull(parent);
+        if (isPrimitiveTypeSignature(typeSignature)) {
+            return of(typeSignature);
+        }
         try {
             typeSignature = typeSignature.replace('/', '.');
             final IType type = (IType) (parent instanceof IType ? parent : parent.getAncestor(IJavaElement.TYPE));
@@ -752,6 +776,10 @@ public class JdtUtils {
             log(e);
             return absent();
         }
+    }
+
+    private static boolean isPrimitiveTypeSignature(final String typeSignature) {
+        return typeSignature.length() == 1;
     }
 
     public static void revealInEditor(final IEditorPart editor, final MethodDeclaration method) {

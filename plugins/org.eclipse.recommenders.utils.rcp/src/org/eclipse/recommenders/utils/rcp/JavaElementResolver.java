@@ -12,6 +12,7 @@ package org.eclipse.recommenders.utils.rcp;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension;
@@ -48,6 +49,7 @@ import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
@@ -265,14 +267,48 @@ public class JavaElementResolver {
             if (!isSuccessfullyResolvedType(jdtType)) {
                 return absent();
             }
-            final String[] jdtParamTypes = createJDTParameterTypeStrings(recMethod);
             final ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(jdtType);
-            final IMethod jdtMethod = JavaModelUtil.findMethodInHierarchy(hierarchy, jdtType, recMethod.getName(),
-                    jdtParamTypes, recMethod.isInit());
-            return fromNullable(jdtMethod);
+            for (final IType t : Lists.asList(jdtType, hierarchy.getAllSupertypes(jdtType))) {
+                for (final IMethod m : t.getMethods()) {
+                    if (sameSignature(recMethod, m)) {
+                        return of(m);
+                    }
+                }
+            }
+            return absent();
         } catch (final Exception e) {
             return absent();
         }
+    }
+
+    private boolean sameSignature(final IMethodName recMethod, final IMethod jdtMethod) throws JavaModelException {
+        if (!(bothConstructors(recMethod, jdtMethod) || sameName(recMethod, jdtMethod))) {
+            return false;
+        }
+        final ITypeName[] recTypes = recMethod.getParameterTypes();
+        final String[] jdtTypes = jdtMethod.getParameterTypes();
+        if (!sameNumberOfParameters(recMethod, jdtMethod)) {
+            return false;
+        }
+        for (int i = 0; i < recTypes.length; i++) {
+            final Optional<ITypeName> jdtType = JdtUtils.resolveUnqualifiedJDTType(jdtTypes[i], jdtMethod);
+            if (jdtType.isPresent() && !recTypes[i].equals(jdtType.get())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean sameNumberOfParameters(final IMethodName recMethod, final IMethod m) throws JavaModelException {
+        return recMethod.getParameterTypes().length == m.getParameters().length;
+    }
+
+    private boolean sameName(final IMethodName recMethod, final IMethod m) {
+        return recMethod.getName().equals(m.getElementName());
+    }
+
+    private boolean bothConstructors(final IMethodName recMethod, final IMethod m) throws JavaModelException {
+        return recMethod.isInit() && m.isConstructor();
     }
 
     private boolean isSuccessfullyResolvedType(final IType jdtType) throws JavaModelException {

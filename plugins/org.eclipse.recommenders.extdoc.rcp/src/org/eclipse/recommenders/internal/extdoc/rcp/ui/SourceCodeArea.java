@@ -25,12 +25,13 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
 @SuppressWarnings({ "restriction", "unchecked" })
-final class SourceCodeArea extends JavaSourceViewer {
+public final class SourceCodeArea extends JavaSourceViewer {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -48,7 +49,7 @@ final class SourceCodeArea extends JavaSourceViewer {
         formatter = ToolFactory.createCodeFormatter(options);
     }
 
-    SourceCodeArea(final Composite parent) {
+    public SourceCodeArea(final Composite parent) {
         super(parent, null, null, false, SWT.READ_ONLY | SWT.WRAP, store);
 
         configure(configuration);
@@ -57,10 +58,15 @@ final class SourceCodeArea extends JavaSourceViewer {
         getTextWidget().setLayoutData(GridDataFactory.fillDefaults().indent(20, 0).create());
     }
 
-    void setCode(final String code) {
+    public void setCode(final String code) {
         final IDocument document = new Document(code);
         format(document);
         setInput(document);
+    }
+
+    @Override
+    public StyledText getTextWidget() {
+        return super.getTextWidget();
     }
 
     private static void format(final IDocument document) {

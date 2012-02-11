@@ -72,7 +72,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.recommenders.extdoc.rcp.providers.DocumentationProvider:"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider:"/>
                </appinfo>
             </annotation>
          </attribute>
