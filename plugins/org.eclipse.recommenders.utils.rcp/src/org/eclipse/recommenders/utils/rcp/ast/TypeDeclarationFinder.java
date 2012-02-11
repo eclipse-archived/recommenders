@@ -43,7 +43,7 @@ public class TypeDeclarationFinder {
             @Override
             public boolean visit(final TypeDeclaration node) {
                 final ITypeBinding b = node.resolveBinding();
-                final ITypeName name = BindingUtils.toTypeName(b);
+                final ITypeName name = BindingUtils.toTypeName(b).orNull();
                 if (name == searchedType) {
                     match = node;
                     return false;

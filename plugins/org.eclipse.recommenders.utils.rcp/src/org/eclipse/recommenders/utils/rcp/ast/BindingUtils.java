@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.utils.rcp.ast;
 
 import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 import static java.lang.String.format;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
@@ -87,27 +88,27 @@ public class BindingUtils {
         return absent();
     }
 
-    public static ITypeName toTypeName(@Nullable final Type type) {
+    public static Optional<ITypeName> toTypeName(@Nullable final Type type) {
         if (type == null) {
-            return null;
+            return absent();
         }
         final ITypeBinding b = type.resolveBinding();
         if (b == null) {
-            return null;
+            return absent();
         }
         return toTypeName(b);
     }
 
-    public static IMethod getMethod(final IMethodBinding b) {
+    public static Optional<IMethod> getMethod(final IMethodBinding b) {
         // assertNotNull(b);
         final IJavaElement element = resolveJavaElementQuietly(b);
         if (!resolveSucceeded(element, IMethod.class)) {
-            return null;
+            return absent();
         }
-        return (IMethod) element;
+        return of((IMethod) element);
     }
 
-    public static IMethod getMethod(final MethodDeclaration method) {
+    public static Optional<IMethod> getMethod(final MethodDeclaration method) {
         if (method == null) {
             return null;
         }
@@ -151,51 +152,59 @@ public class BindingUtils {
         }
     }
 
-    public static IMethodName toMethodName(final IMethodBinding b) {
-        final IMethodName ref = toMethodName(getMethod(b));
+    public static Optional<IMethodName> toMethodName(final IMethodBinding b) {
+        final Optional<IMethod> method = getMethod(b);
+        if (!method.isPresent()) {
+            return absent();
+        }
+        IMethodName ref = toMethodName(method.get());
         if (ref == null && b != null) {
             try {
                 // there is no matching source element (only a compiler-generated method)
                 final ITypeBinding declaringClass = b.getDeclaringClass();
-                final ITypeName typeName = toTypeName(declaringClass);
+                final Optional<ITypeName> optTypeName = toTypeName(declaringClass);
+                if (!optTypeName.isPresent()) {
+                    return absent();
+                }
                 final String key = b.getKey();
                 String methodName = key.substring(key.lastIndexOf(";.") + 2);
                 if (methodName.startsWith("(")) {
                     methodName = "<init>" + methodName;
                 }
-                return VmMethodName.get(typeName.getIdentifier(), methodName);
+                ref = VmMethodName.get(optTypeName.get().getIdentifier(), methodName);
             } catch (final Exception e) {
             }
         }
-        return ref;
+        return fromNullable(ref);
     }
 
-    public static ITypeName toTypeName(final ITypeBinding b) {
+    public static Optional<ITypeName> toTypeName(final ITypeBinding b) {
         final Optional<IType> type = getType(b);
         if (!type.isPresent()) {
-            return VmTypeName.NULL;
+            return absent();
         }
         final ITypeName ref = toTypeName(type.get());
         if (ref == null && b != null) {
             try {
                 if (b.isPrimitive()) {
-                    return VmTypeName.get(b.getBinaryName());
+                    final ITypeName res = VmTypeName.get(b.getBinaryName());
+                    return of(res);
                 }
                 if (b.isArray()) {
-                    return null;
+                    return absent();
                 }
                 final String name = b.getName();
                 final String pkg = b.getPackage().getKey();
                 final String fullQualifiedName = "L" + pkg + "/" + name;
-                final VmTypeName fallback = VmTypeName.get(fullQualifiedName);
-                return fallback;
+                final ITypeName fallback = VmTypeName.get(fullQualifiedName);
+                return of(fallback);
             } catch (final Exception e) {
                 // it's just a try to recover from invalid input... if it
                 // doesn't work, don't do
                 // anything
             }
         }
-        return ref;
+        return fromNullable(ref);
     }
 
     public static IVariableBinding getVariableBinding(final Name name) {
@@ -206,9 +215,9 @@ public class BindingUtils {
     public static List<ITypeName> toTypeNames(final ITypeBinding[] interfaces) {
         final List<ITypeName> res = Lists.newLinkedList();
         for (final ITypeBinding b : interfaces) {
-            final ITypeName typeName = toTypeName(b);
-            if (typeName != null) {
-                res.add(typeName);
+            final Optional<ITypeName> opt = toTypeName(b);
+            if (opt.isPresent()) {
+                res.add(opt.get());
             }
         }
         return res;

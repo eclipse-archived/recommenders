@@ -101,11 +101,10 @@ public class UsedTypesAndMethodsFinder {
             }
 
             /**
-             * returns true iff the give type was relevant, and thus added to
-             * the list of returned types
+             * returns true iff the give type was relevant, and thus added to the list of returned types
              */
             private boolean addTypeBinding(final ITypeBinding b) {
-                final ITypeName type = BindingUtils.toTypeName(b);
+                final ITypeName type = BindingUtils.toTypeName(b).orNull();
                 if (expectedTypes.contains(type)) {
                     types.add(b);
                     return true;
@@ -115,14 +114,14 @@ public class UsedTypesAndMethodsFinder {
 
             private void addVariableBinding(final IVariableBinding b, final SimpleName node) {
                 final ITypeBinding varType = b.getType();
-                final ITypeName type = BindingUtils.toTypeName(varType);
+                final ITypeName type = BindingUtils.toTypeName(varType).orNull();
                 if (expectedTypes.contains(type)) {
                     types.add(varType);
                 }
             }
 
             private void addMethodBinding(final IMethodBinding b) {
-                final IMethodName method = BindingUtils.toMethodName(b);
+                final IMethodName method = BindingUtils.toMethodName(b).orNull();
                 if (method == null) {
                     return;
                 }

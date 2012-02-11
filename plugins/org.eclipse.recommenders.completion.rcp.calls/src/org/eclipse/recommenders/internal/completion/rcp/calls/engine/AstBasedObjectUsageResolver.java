@@ -122,9 +122,9 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
     }
 
     private void registerMethodCallOnReceiver(final IMethodBinding b) {
-        final IMethodName method = BindingUtils.toMethodName(b);
-        if (method != null) {
-            res.calls.add(method);
+        final Optional<IMethodName> opt = BindingUtils.toMethodName(b);
+        if (opt.isPresent()) {
+            res.calls.add(opt.get());
         }
     }
 
@@ -178,18 +178,18 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
         case ASTNode.METHOD_INVOCATION:
             // x = some().method().call()
             final MethodInvocation mi = cast(expression);
-            res.definition = toMethodName(mi.resolveMethodBinding());
+            res.definition = toMethodName(mi.resolveMethodBinding()).orNull();
             res.kind = Kind.METHOD_RETURN;
             break;
         case ASTNode.SUPER_METHOD_INVOCATION:
             // x = super.some()
             final SuperMethodInvocation smi = cast(expression);
-            res.definition = toMethodName(smi.resolveMethodBinding());
+            res.definition = toMethodName(smi.resolveMethodBinding()).orNull();
             res.kind = Kind.METHOD_RETURN;
             break;
         case ASTNode.CLASS_INSTANCE_CREATION:
             final ClassInstanceCreation cic = cast(expression);
-            res.definition = toMethodName(cic.resolveConstructorBinding());
+            res.definition = toMethodName(cic.resolveConstructorBinding()).orNull();
             res.kind = Kind.NEW;
             break;
         case ASTNode.SIMPLE_NAME:
@@ -227,14 +227,14 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
         if ((b == null) || !matchesVarname(b) || isVartypeKnown()) {
             return;
         }
-        res.type = toTypeName(b.getType());
+        res.type = toTypeName(b.getType()).orNull();
         if (res.kind != null) {
             // warning?
             return;
         }
         if (b.isParameter()) {
             res.kind = Kind.PARAMETER;
-            final IMethodName method = BindingUtils.toMethodName(b.getDeclaringMethod());
+            final IMethodName method = BindingUtils.toMethodName(b.getDeclaringMethod()).orNull();
             if (method != null) {
                 res.definition = method;
             }

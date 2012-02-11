@@ -40,9 +40,9 @@ public class TypeDeclarationInformationAnalyzer {
         final ASTNode parent = member.getParent();
         if (parent instanceof TypeDeclaration) {
             final TypeDeclaration type = (TypeDeclaration) parent;
-            superclassType = BindingUtils.toTypeName(type.getSuperclassType());
+            superclassType = BindingUtils.toTypeName(type.getSuperclassType()).orNull();
             for (final Type t : (List<Type>) type.superInterfaceTypes()) {
-                final ITypeName typeName = BindingUtils.toTypeName(t);
+                final ITypeName typeName = BindingUtils.toTypeName(t).orNull();
                 if (typeName != null) {
                     superInterfaceTypes.add(typeName);
                 }
@@ -52,7 +52,7 @@ public class TypeDeclarationInformationAnalyzer {
             final AnonymousClassDeclaration type = cast(parent);
             final ClassInstanceCreation classInstanceCreationNode = cast(type.getParent());
             final ITypeBinding anonymousType = classInstanceCreationNode.resolveTypeBinding();
-            superclassType = BindingUtils.toTypeName(anonymousType.getSuperclass());
+            superclassType = BindingUtils.toTypeName(anonymousType.getSuperclass()).orNull();
             superInterfaceTypes = BindingUtils.toTypeNames(anonymousType.getInterfaces());
         }
     }

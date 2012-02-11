@@ -56,14 +56,14 @@ public class MethodReturnsLocationFinder {
             }
 
             private void addVariableBinding(final IVariableBinding b, final SimpleName node) {
-                final ITypeName type = BindingUtils.toTypeName(b.getType());
+                final ITypeName type = BindingUtils.toTypeName(b.getType()).orNull();
                 if (expectedTypes.contains(type)) {
                     types.add(node);
                 }
             }
 
             private void addMethodBinding(final IMethodBinding b, final ASTNode node) {
-                final IMethodName method = BindingUtils.toMethodName(b);
+                final IMethodName method = BindingUtils.toMethodName(b).orNull();
                 if (method == null) {
                     return;
                 }
