@@ -95,7 +95,8 @@ public class RecommendersModule extends AbstractModule implements Module {
     // @Workspace
     protected EventBus provideWorkspaceEventBus() {
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
-        final ExecutorService pool = coreThreadsTimoutExecutor(numberOfCores + 1, MIN_PRIORITY, "Recommenders-Bus-");
+        final ExecutorService pool = coreThreadsTimoutExecutor(numberOfCores + 1, MIN_PRIORITY,
+                "Recommenders-Bus-Thread-", 1L, TimeUnit.SECONDS);
         final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool);
         return bus;
     }
