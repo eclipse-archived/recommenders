@@ -35,9 +35,8 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 public class JavaSelectionListenerTest {
-    ;
 
-    public List<IJavaElement> elements = Lists.newArrayList();
+    volatile List<IJavaElement> elements = Lists.newArrayList();
 
     JavaSelectionProvider sut = new JavaSelectionProvider(new EventBus() {
         @Override
@@ -54,6 +53,17 @@ public class JavaSelectionListenerTest {
             sut.selectionChanged(null, new StructuredSelection(e));
             Thread.sleep(150);
         }
+        // :<
+        // [Mock for IType, hashCode: 1126660656,
+        // Mock for IMethod, hashCode: 1456356194,
+        // Mock for IField, hashCode: 1089547122,
+        // Mock for ILocalVariable, hashCode: 1085837532,
+        // Mock for IJavaModel, hashCode: 519936919]>
+        // but was:
+        // <[Mock for IType, hashCode: 1126660656,
+        // Mock for IMethod, hashCode: 1456356194,
+        // Mock for ILocalVariable, hashCode: 1085837532,
+        // Mock for IJavaModel, hashCode: 519936919]>
         assertEquals(expected, elements);
     }
 
