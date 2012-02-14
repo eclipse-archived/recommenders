@@ -212,9 +212,13 @@ public class JavaElementResolver {
      * 
      */
     // This method should return IMethodNames in all cases but yet it does not work completey as we want it to work
-    public Optional<IMethodName> toRecMethod(IMethod jdtMethod) {
+    public Optional<IMethodName> toRecMethod(final IMethod jdtMethod) {
         ensureIsNotNull(jdtMethod);
-        jdtMethod = JdtUtils.resolveJavaElementProxy(jdtMethod);
+        if (!jdtMethod.exists()) {
+            // compiler generated methods (e.g., calls to constructors to inner non-static classes do not exist.
+            return absent();
+        }
+        JdtUtils.resolveJavaElementProxy(jdtMethod);
         IMethodName recMethod = (IMethodName) cache.inverse().get(jdtMethod);
         if (recMethod == null) {
             try {
@@ -231,6 +235,10 @@ public class JavaElementResolver {
                     resolvedParameterTypes[i] = resolved;
                 }
                 String resolvedReturnType = null;
+
+                // binary synthetic methods (compiler generated methods) do not exist and thus,
+                // jdtMethod.getReturnType() throws an execption...
+
                 final String unresolvedReturnType = jdtMethod.getReturnType();
                 try {
                     final int returnTypeArrayCount = Signature.getArrayCount(unresolvedReturnType);
