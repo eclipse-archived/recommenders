@@ -96,16 +96,19 @@ public class RecommendersModule extends AbstractModule implements Module {
     protected EventBus provideWorkspaceEventBus() {
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
         final ExecutorService pool = coreThreadsTimoutExecutor(numberOfCores + 1, MIN_PRIORITY,
-                "Recommenders-Bus-Thread-", 1L, TimeUnit.SECONDS);
+                "Recommenders-Bus-Thread-", 1L, TimeUnit.MINUTES);
         final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool);
         return bus;
     }
 
     @Provides
     @Singleton
-    protected JavaSelectionProvider provideJavaSelectionProvider(final EventBus bus, final IWorkbench wb) {
+    protected JavaSelectionProvider provideJavaSelectionProvider(final EventBus bus) {
         final JavaSelectionProvider provider = new JavaSelectionProvider(bus);
         new UIJob("Register workbench selection lister") {
+            {
+                schedule();
+            }
 
             @Override
             public IStatus runInUIThread(final IProgressMonitor monitor) {
@@ -114,7 +117,7 @@ public class RecommendersModule extends AbstractModule implements Module {
                 service.addPostSelectionListener(provider);
                 return Status.OK_STATUS;
             }
-        }.schedule(1000);
+        };
         return provider;
     }
 
@@ -134,7 +137,11 @@ public class RecommendersModule extends AbstractModule implements Module {
     }
 
     @Provides
-    protected IWorkbenchPage provideActiveWorkbenchPage() {
+    protected IWorkbenchPage provideActiveWorkbenchPage(final IWorkbench wb) {
+
+        if (isRunningInUiThread()) {
+            return wb.getActiveWorkbenchWindow().getActivePage();
+        }
 
         return runUiFinder().activePage;
     }
