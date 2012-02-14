@@ -770,7 +770,7 @@ public class JdtUtils {
             }
             // NOT needed. Done by getResolvedTypeName typeSignature =
             // StringUtils.substringBefore(typeSignature, "[");
-            resolvedTypeSignature = StringUtils.substringBeforeLast(resolvedTypeSignature, "<");
+            resolvedTypeSignature = StringUtils.substringBefore(resolvedTypeSignature, "<");
             return fromNullable(resolvedTypeSignature);
         } catch (final Exception e) {
             log(e);

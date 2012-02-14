@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentExceptio
 import static org.eclipse.recommenders.utils.Throws.throwNotImplemented;
 import static org.eclipse.recommenders.utils.names.VmTypeName.BOOLEAN;
 import static org.eclipse.recommenders.utils.names.VmTypeName.BYTE;
+import static org.eclipse.recommenders.utils.names.VmTypeName.CHAR;
 import static org.eclipse.recommenders.utils.names.VmTypeName.DOUBLE;
 import static org.eclipse.recommenders.utils.names.VmTypeName.FLOAT;
 import static org.eclipse.recommenders.utils.names.VmTypeName.INT;
@@ -140,7 +141,7 @@ public class VmMethodName implements IMethodName {
                 argTypes.add(BOOLEAN);
                 break;
             case 'C':
-                argTypes.add(VOID);
+                argTypes.add(CHAR);
                 break;
             case 'B':
                 argTypes.add(BYTE);
