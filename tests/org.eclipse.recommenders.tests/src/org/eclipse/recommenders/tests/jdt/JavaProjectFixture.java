@@ -52,8 +52,12 @@ import com.google.common.collect.Sets;
 public class JavaProjectFixture {
 
     public static String findClassName(final CharSequence source) {
-        final Pattern p = Pattern.compile(".*class\\s+(\\w+).*", Pattern.DOTALL);
-        final Matcher matcher = p.matcher(source);
+        Pattern p = Pattern.compile(".*class\\s+(\\w+).*", Pattern.DOTALL);
+        Matcher matcher = p.matcher(source);
+        if (!matcher.matches()) {
+            p = Pattern.compile(".*interface\\s+(\\w+).*", Pattern.DOTALL);
+            matcher = p.matcher(source);
+        }
         assertTrue(matcher.matches());
         final String group = matcher.group(1);
         return group;
