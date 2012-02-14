@@ -105,7 +105,7 @@ public class RecommendersModule extends AbstractModule implements Module {
     @Singleton
     protected JavaSelectionProvider provideJavaSelectionProvider(final EventBus bus) {
         final JavaSelectionProvider provider = new JavaSelectionProvider(bus);
-        new UIJob("Register workbench selection lister") {
+        new UIJob("Registering workbench selection listener.") {
             {
                 schedule();
             }
