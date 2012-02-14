@@ -21,6 +21,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.core.IJavaElement;
@@ -31,12 +33,11 @@ import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionProvider;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 public class JavaSelectionListenerTest {
 
-    volatile List<IJavaElement> elements = Lists.newArrayList();
+    List<IJavaElement> elements = Collections.synchronizedList(new ArrayList<IJavaElement>());
 
     JavaSelectionProvider sut = new JavaSelectionProvider(new EventBus() {
         @Override
@@ -53,17 +54,6 @@ public class JavaSelectionListenerTest {
             sut.selectionChanged(null, new StructuredSelection(e));
             Thread.sleep(150);
         }
-        // :<
-        // [Mock for IType, hashCode: 1126660656,
-        // Mock for IMethod, hashCode: 1456356194,
-        // Mock for IField, hashCode: 1089547122,
-        // Mock for ILocalVariable, hashCode: 1085837532,
-        // Mock for IJavaModel, hashCode: 519936919]>
-        // but was:
-        // <[Mock for IType, hashCode: 1126660656,
-        // Mock for IMethod, hashCode: 1456356194,
-        // Mock for ILocalVariable, hashCode: 1085837532,
-        // Mock for IJavaModel, hashCode: 519936919]>
         assertEquals(expected, elements);
     }
 
