@@ -13,7 +13,6 @@ package org.eclipse.recommenders.utils.rcp;
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
-import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isPublic;
 import static org.eclipse.jdt.internal.corext.util.JdtFlags.isStatic;
 import static org.eclipse.jdt.ui.SharedASTProvider.WAIT_YES;
@@ -491,20 +490,27 @@ public class JdtUtils {
         }
     }
 
-    public static Optional<ITypeName> resolveUnqualifiedJDTType(final String qName, final IJavaElement parent) {
-        if (isPrimitiveTypeSignature(qName)) {
-            final ITypeName primitive = VmTypeName.get(qName);
-            return of(primitive);
-        }
+    public static Optional<ITypeName> resolveUnqualifiedJDTType(String qName, final IJavaElement parent) {
         try {
-            final Optional<String> opt = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(qName, parent);
-            if (!opt.isPresent()) {
-                return absent();
+            // TODO nested classes as arguments don't work (such as Formatter$Flags)...
+            final int dimensions = Signature.getArrayCount(qName);
+            if (dimensions > 0) {
+                qName = Signature.getElementType(qName);
             }
-            final int arrayCount = Signature.getArrayCount(qName);
-            final String vmSuperclassName = repeat('[', arrayCount) + toVMTypeDescriptor(opt.get());
-            final ITypeName vmTypeName = VmTypeName.get(vmSuperclassName);
-            return of(vmTypeName);
+
+            String res = StringUtils.repeat('[', dimensions);
+            if (isPrimitiveTypeSignature(qName)) {
+                res += qName;
+            } else {
+                final Optional<String> opt = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(qName,
+                        parent);
+                if (!opt.isPresent()) {
+                    return absent();
+                }
+                res += toVMTypeDescriptor(opt.get());
+            }
+            final ITypeName typeName = VmTypeName.get(res);
+            return of(typeName);
         } catch (final Exception e) {
             log(e);
             return absent();

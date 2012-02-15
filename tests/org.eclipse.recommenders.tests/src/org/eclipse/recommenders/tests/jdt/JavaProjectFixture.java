@@ -45,7 +45,6 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.recommenders.utils.Tuple;
-import org.eclipse.recommenders.utils.rcp.ast.BindingUtils;
 
 import com.google.common.collect.Sets;
 
@@ -67,7 +66,6 @@ public class JavaProjectFixture {
     private ASTParser parser;
 
     public JavaProjectFixture(final IWorkspace workspace, final String projectName) {
-        BindingUtils.testingInitializeResolver();
         createJavaProject(workspace, projectName);
         createParser();
     }

@@ -18,6 +18,8 @@ import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.collect.MapMaker;
 
 public class VmTypeName implements ITypeName {
@@ -67,8 +69,7 @@ public class VmTypeName implements ITypeName {
     }
 
     private static String removeGenerics(final String typeName) {
-        final String replacement = typeName.replaceAll("<.*>", "");
-        return replacement;
+        return StringUtils.substringBefore(typeName, "<");
     }
 
     private String identifier;

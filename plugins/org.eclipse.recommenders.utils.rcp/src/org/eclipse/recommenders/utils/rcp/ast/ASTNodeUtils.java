@@ -13,7 +13,6 @@ package org.eclipse.recommenders.utils.rcp.ast;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -26,6 +25,7 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 public class ASTNodeUtils {
@@ -147,14 +147,10 @@ public class ASTNodeUtils {
     }
 
     public static boolean sameType(final ITypeBinding jdtType, final ITypeName crType) {
-        if (jdtType == null || crType == null) {
-            return false;
+        final Optional<ITypeName> opt = BindingUtils.toTypeName(jdtType);
+        if (opt.isPresent()) {
+            return opt.get().equals(crType);
         }
-        final IType javaElement = (IType) jdtType.getJavaElement();
-        if (javaElement == null) {
-            return false;
-        }
-        final ITypeName jdt2crType = resolver.toRecType(javaElement);
-        return jdt2crType == crType;
+        return false;
     }
 }
