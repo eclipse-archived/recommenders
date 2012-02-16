@@ -10,7 +10,7 @@ import org.junit.Ignore
 import org.junit.Test
 
 import static junit.framework.Assert.*
-import static org.eclipse.recommenders.tests.rcp.internal.providers.XtendUtils.*
+import static org.eclipse.recommenders.tests.XtendUtils.*
 
 class JavaElementSelectionTest {
 

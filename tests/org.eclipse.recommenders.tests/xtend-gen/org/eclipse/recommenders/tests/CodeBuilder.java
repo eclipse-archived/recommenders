@@ -13,6 +13,29 @@ public class CodeBuilder {
     }
   }.apply();
   
+  public static CharSequence classDeclaration(final CharSequence declaration, final CharSequence body) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("import java.util.*;");
+    _builder.newLine();
+    _builder.append("import java.util.concurrent.*;");
+    _builder.newLine();
+    _builder.append("import java.text.*;");
+    _builder.newLine();
+    _builder.append("import java.util.concurrent.*;");
+    _builder.newLine();
+    _builder.append("import javax.annotation.*;");
+    _builder.newLine();
+    _builder.append(declaration, "");
+    _builder.append(" {");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t");
+    _builder.append(body, "	");
+    _builder.newLineIfNotEmpty();
+    _builder.append("}");
+    _builder.newLine();
+    return _builder;
+  }
+  
   public static CharSequence classbody(final CharSequence classname, final CharSequence classbody) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.util.*;");

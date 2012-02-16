@@ -4,6 +4,19 @@ class CodeBuilder {
 	
 	public static CharSequence someClass = '''public class C {}'''
 	
+	def static classDeclaration(CharSequence declaration, CharSequence body) {
+		'''
+		import java.util.*;
+		import java.util.concurrent.*;
+		import java.text.*;
+		import java.util.concurrent.*;
+		import javax.annotation.*;
+		«declaration» {
+			«body»
+		}
+		'''
+	}
+	
 	def static classbody(CharSequence classname, CharSequence classbody){
 		'''
 		import java.util.*;

@@ -42,7 +42,7 @@ public class RecommendersCompletionContextTest {
   
   @Test
   public void test03() {
-      CharSequence _methodbody = this.methodbody("String s1 = new String();\n\t\t\ts1.\n\t\t\tString s2 = new String();\n\t\t\ts2.$");
+      CharSequence _methodbody = this.methodbody("String s1 = new String();\r\n\t\t\ts1.\r\n\t\t\tString s2 = new String();\r\n\t\t\ts2.$");
       final CharSequence code = _methodbody;
       IRecommendersCompletionContext _exercise = this.exercise(code);
       final IRecommendersCompletionContext sut = _exercise;
