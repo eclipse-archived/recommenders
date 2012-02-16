@@ -61,7 +61,7 @@ public class MethodDeclarationFinder {
             @Override
             public boolean visit(final MethodDeclaration node) {
                 for (final IMethodName searchedMethod : searchedMethodes) {
-                    if (sameSimpleName(node, searchedMethod)) {
+                    if (sameSimpleName(node, searchedMethod) || searchedMethod.isInit() && searchedMethod.isInit()) {
                         final List<SingleVariableDeclaration> jdtParams = node.parameters();
                         final ITypeName[] crParams = searchedMethod.getParameterTypes();
                         if (haveSameNumberOfParameters(jdtParams, crParams)

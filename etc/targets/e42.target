@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?>
+<?pde version="3.6"?>
 
 <target name="Code Recommenders: Eclipse 4.2 Development and Build Server Target Platform" sequenceNumber="95">
 <locations>
@@ -15,8 +15,8 @@
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.executable" version="3.6.0.v20120123-1704-7P7OFvNFLWUl76sUqHOCz0ZV"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20120123-1704-7P7OFvNFLWUl76sUqHOCz0ZV"/>
-<unit id="org.eclipse.equinox.core.sdk.feature.group" version="3.8.0.v20120106-1613-85FAaG3oFoYTlcgQOfs3Lmun"/>
-<unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.8.0.v20111114-2124-9Q7dFb8FRWti6-ZMXXy00Ekoai5G"/>
+<unit id="org.eclipse.equinox.core.sdk.feature.group" version="3.8.0.v20120106-1613-85FAcG3oFoYTlciOUZC3Nj4j"/>
+<unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.8.0.v20111114-2124-9Q7dFb8FRWti61XQVoy1qEloYdJG"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.8-I-builds"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">

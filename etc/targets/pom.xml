@@ -25,11 +25,11 @@
 						</goals>
 						<configuration>
 							<artifacts>
-								<artifact>
+								<!-- artifact>
 									<file>e37.target</file>
 									<type>target</type>
 									<classifier>e37</classifier>
-								</artifact>
+								</artifact -->
                                 <artifact>
                                     <file>e3x.target</file>
                                     <type>target</type>

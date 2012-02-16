@@ -49,10 +49,14 @@ public class BindingUtils {
             }
         }
 
+        final String binaryName = b.getBinaryName();
+        if (binaryName == null) {
+            return absent();
+        }
         if (b.isPrimitive()) {
-            sb.append(b.getBinaryName());
+            sb.append(binaryName);
         } else {
-            sb.append('L').append(b.getBinaryName().replace('.', '/'));
+            sb.append('L').append(binaryName.replace('.', '/'));
         }
 
         try {
@@ -98,18 +102,29 @@ public class BindingUtils {
             return absent();
         }
         final StringBuilder sb = new StringBuilder();
-        final ITypeName declaringType = toTypeName(b.getDeclaringClass()).get();
+        final ITypeName declaringType = toTypeName(b.getDeclaringClass()).orNull();
+        if (declaringType == null) {
+            return absent();
+        }
+
         final String methodName = b.isConstructor() ? "<init>" : b.getName();
         sb.append(declaringType).append(".").append(methodName).append("(");
         for (final ITypeBinding param : b.getParameterTypes()) {
-            final Optional<ITypeName> paramType = toTypeName(param);
-            sb.append(paramType.get());
+            final ITypeName paramType = toTypeName(param).orNull();
+            if (paramType == null) {
+                return absent();
+            }
+            sb.append(paramType);
             if (needsColon(param)) {
                 sb.append(';');
             }
         }
         final ITypeBinding returnType = b.getReturnType();
-        sb.append(")").append(toTypeName(returnType).get());
+        final ITypeName obj = toTypeName(returnType).orNull();
+        if (obj == null) {
+            return absent();
+        }
+        sb.append(")").append(obj);
         if (needsColon(returnType)) {
             sb.append(';');
         }
