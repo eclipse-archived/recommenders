@@ -67,6 +67,7 @@ public class JavaElementResolver {
 
     public Optional<IType> toJdtType(final ITypeName recType) {
         ensureIsNotNull(recType);
+        // failedRecTypes.clear()
         if (failedRecTypes.contains(recType)) {
             return absent();
         }
@@ -115,6 +116,8 @@ public class JavaElementResolver {
 
         if (recType.isNestedType()) {
             final ITypeName declaringType = recType.getDeclaringType();
+            final String simpleName = StringUtils.substringAfterLast(recType.getIdentifier(), "$");
+
             final IType parent = resolveType(declaringType).orNull();
             if (parent != null) {
                 try {
@@ -124,10 +127,19 @@ public class JavaElementResolver {
                             return fromNullable(nested);
                         }
                     }
+                    // int count = 0;
                     for (final IMethod m : parent.getMethods()) {
                         for (final IJavaElement children : m.getChildren()) {
                             if (children instanceof IType) {
                                 final IType nested = (IType) children;
+                                // count++;
+                                if (nested.getKey().endsWith(simpleName + ";")) {
+                                    return of(nested);
+                                }
+                                // if (String.valueOf(count).equals(simpleName)) {
+                                // return of(nested);
+                                // }
+
                                 final String key = nested.getKey();
                                 if (key.equals(recType.getIdentifier() + ";")) {
                                     return fromNullable(nested);
@@ -285,6 +297,7 @@ public class JavaElementResolver {
             }
             return absent();
         } catch (final Exception e) {
+            RecommendersUtilsPlugin.logWarning(e, "failed to resolve method '%s' in workspace", recMethod);
             return absent();
         }
     }
@@ -300,11 +313,24 @@ public class JavaElementResolver {
         }
         for (int i = 0; i < recTypes.length; i++) {
             final Optional<ITypeName> jdtType = JdtUtils.resolveUnqualifiedJDTType(jdtTypes[i], jdtMethod);
-            if (jdtType.isPresent() && !recTypes[i].equals(jdtType.get())) {
+            // TODO XXX: checking for simple names is not clean! getClassName()
+            if (!jdtType.isPresent()) {
+                return false;
+            }
+
+            if (!sameSimpleTypes(recTypes[i], jdtType.get()) || !sameArrayDimensions(recTypes[i], jdtType.get())) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean sameSimpleTypes(final ITypeName t1, final ITypeName t2) {
+        return t1.getClassName().equals(t2.getClassName());
+    }
+
+    private boolean sameArrayDimensions(final ITypeName t1, final ITypeName t2) {
+        return t1.getArrayDimensions() == t2.getArrayDimensions();
     }
 
     private boolean sameNumberOfParameters(final IMethodName recMethod, final IMethod m) throws JavaModelException {

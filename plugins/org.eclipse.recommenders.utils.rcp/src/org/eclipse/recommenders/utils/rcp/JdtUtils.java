@@ -492,24 +492,35 @@ public class JdtUtils {
 
     public static Optional<ITypeName> resolveUnqualifiedJDTType(String qName, final IJavaElement parent) {
         try {
-            // TODO nested classes as arguments don't work (such as Formatter$Flags)...
+            qName = Signature.getTypeErasure(qName);
+            qName = StringUtils.removeEnd(qName, ";");
             final int dimensions = Signature.getArrayCount(qName);
             if (dimensions > 0) {
                 qName = Signature.getElementType(qName);
             }
 
-            String res = StringUtils.repeat('[', dimensions);
             if (isPrimitiveTypeSignature(qName)) {
-                res += qName;
-            } else {
-                final Optional<String> opt = resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(qName,
-                        parent);
-                if (!opt.isPresent()) {
-                    return absent();
-                }
-                res += toVMTypeDescriptor(opt.get());
+                final ITypeName t = VmTypeName.get(StringUtils.repeat('[', dimensions) + qName);
+                return of(t);
             }
-            final ITypeName typeName = VmTypeName.get(res);
+
+            final IType type = findClosestTypeOrThis(parent);
+            if (type == null) {
+                return absent();
+            }
+
+            if (qName.charAt(0) == Signature.C_UNRESOLVED) {
+
+                final String[][] resolvedNames = type.resolveType(qName.substring(1));
+                if (resolvedNames == null || resolvedNames.length == 0) {
+                    return of((ITypeName) VmTypeName.OBJECT);
+                }
+                final String pkg = new String(resolvedNames[0][0]);
+                final String name = new String(resolvedNames[0][1]).replace('.', '$');
+                qName = StringUtils.repeat('[', dimensions) + "L" + pkg + "." + name;
+            }
+            qName = qName.replace('.', '/');
+            final ITypeName typeName = VmTypeName.get(qName);
             return of(typeName);
         } catch (final Exception e) {
             log(e);
@@ -759,29 +770,33 @@ public class JdtUtils {
             String typeSignature, final IJavaElement parent) {
         ensureIsNotNull(typeSignature);
         ensureIsNotNull(parent);
+        // remove generics information if available:
+        typeSignature = Signature.getTypeErasure(typeSignature);
+
         if (isPrimitiveTypeSignature(typeSignature)) {
             return of(typeSignature);
         }
         try {
             typeSignature = typeSignature.replace('/', '.');
-            final IType type = (IType) (parent instanceof IType ? parent : parent.getAncestor(IJavaElement.TYPE));
+            final IType type = findClosestTypeOrThis(parent);
             if (type == null) {
                 throwIllegalArgumentException("parent could not be resolved to an IType: %s", parent);
             }
-            String resolvedTypeSignature = JavaModelUtil.getResolvedTypeName(typeSignature, type);
+            final String resolvedTypeSignature = JavaModelUtil.getResolvedTypeName(typeSignature, type);
             if (resolvedTypeSignature == null) {
                 // return fall-back. This happens for instance when giving <T>
                 // or QT; respectively.
                 return of("java.lang.Object");
             }
-            // NOT needed. Done by getResolvedTypeName typeSignature =
-            // StringUtils.substringBefore(typeSignature, "[");
-            resolvedTypeSignature = StringUtils.substringBefore(resolvedTypeSignature, "<");
-            return fromNullable(resolvedTypeSignature);
+            return of(resolvedTypeSignature);
         } catch (final Exception e) {
             log(e);
             return absent();
         }
+    }
+
+    private static IType findClosestTypeOrThis(final IJavaElement parent) {
+        return (IType) (parent instanceof IType ? parent : parent.getAncestor(IJavaElement.TYPE));
     }
 
     private static boolean isPrimitiveTypeSignature(final String typeSignature) {
