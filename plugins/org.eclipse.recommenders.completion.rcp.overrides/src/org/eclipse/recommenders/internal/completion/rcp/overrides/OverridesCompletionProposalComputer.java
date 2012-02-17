@@ -103,7 +103,7 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private boolean hasModel() {
-        return recommender.isSuperclassSupported();
+        return recommender.hasModel(jdtCache.toRecType(supertype));
     }
 
     private void computeRecommendations() throws JavaModelException {

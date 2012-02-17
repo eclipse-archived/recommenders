@@ -42,7 +42,7 @@ public class InstantOverridesRecommender {
     public synchronized List<OverridesRecommendation> createRecommendations(final TypeDeclaration type) {
         this.type = type;
         this.superclass = type.superclass;
-        if (!isSuperclassSupported()) {
+        if (!hasModel(superclass)) {
             return Collections.emptyList();
         }
         loadSuperclassModel();
@@ -50,8 +50,8 @@ public class InstantOverridesRecommender {
         return readRecommendations();
     }
 
-    public boolean isSuperclassSupported() {
-        return modelStore.hasModel(superclass);
+    public boolean hasModel(final ITypeName name) {
+        return modelStore.hasModel(name);
     }
 
     private void loadSuperclassModel() {
