@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposal
 import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer
+import org.eclipse.recommenders.tests.CodeBuilder
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
@@ -14,10 +15,16 @@ import org.junit.Test
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
 import static org.eclipse.recommenders.tests.completion.rcp.chain.ChainCompletionScenariosTest.*
+import org.junit.Before
  
 class ChainCompletionScenariosTest { 
   
 	static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
+	
+	@Before
+	def void before(){
+		fixture.clear
+	}
 	
  	@Test
 	def void smokeTestScenarios(){
@@ -338,6 +345,23 @@ class ChainCompletionScenariosTest {
 		exercise(code, expected);
 	}
 	
+	
+	@Test
+	def void test012(){
+		compile(FIELDS)
+		val code = CodeBuilder::classbody(
+			'''
+				public static Fields f = new Fields();
+				public static void test_protected() {
+				final Boolean c = $
+			''')
+		var expected = w(newArrayList(
+			"f _public"
+			))
+			
+		exercise(code, expected);
+	}
+	
 	def exercise(CharSequence code, List<? extends List<String>> expected){
 		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first;
@@ -354,13 +378,17 @@ class ChainCompletionScenariosTest {
 		assertTrue(''' some expected values were not found «expected» '''.toString, expected.empty)
 	}
 	
+	
+	def compile(CharSequence code){
+		fixture.createFileAndParseWithMarkers(code)
+	}
 
 
 	def l(String spaceSeparatedElementNames){ 
 		val elementNames = StringUtils::split(spaceSeparatedElementNames);
 		return newArrayList(elementNames) as List<String>
 	}
-	def w (String [] chains){
+	def  w (String [] chains){
 		val List<List<String>> res = newArrayList();
 		for(chain :chains){
 			res.add(l(chain))
@@ -368,4 +396,18 @@ class ChainCompletionScenariosTest {
 		return res as List<List<String>>
 	}
 	
+	CharSequence FIELDS = 
+		'''
+		public class Fields {
+			public static 			Boolean _spublic;
+			protected static 		Boolean _sprotected;
+			/* default */ static 	Boolean _sdefault;
+			private static 			Boolean _sprivate;
+
+			public 			Boolean _public;
+			protected 		Boolean _protected;
+			/* default */	Boolean _default;
+			private 		Boolean _private;
+		}
+		'''
 }

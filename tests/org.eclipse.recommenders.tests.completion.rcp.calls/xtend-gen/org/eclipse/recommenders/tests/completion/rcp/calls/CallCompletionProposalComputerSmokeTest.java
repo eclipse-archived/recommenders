@@ -8,8 +8,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallsCompletionProposalComputer;
-import org.eclipse.recommenders.tests.SmokeTestScenarios;
+import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
 import org.eclipse.recommenders.tests.completion.rcp.calls.ModelStoreMock;
@@ -18,199 +19,146 @@ import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Exceptions;
-import org.eclipse.xtext.xbase.lib.InputOutput;
-import org.eclipse.xtext.xbase.lib.IntegerExtensions;
-import org.eclipse.xtext.xbase.lib.StringExtensions;
+import org.eclipse.xtext.xbase.lib.Functions.Function0;
+import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings("all")
 public class CallCompletionProposalComputerSmokeTest {
-  @Test
-  public void smokeTest() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("/**");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("*$ Copyright (c) 2010, 2011 Darmstadt University of Technology.");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("* All rights reserved. This$ program and the accompanying materials");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("* are made available under the terms of the Eclipse Public License v1.0");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("* which accompanies this distribution, and is available at");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("* http://www.$eclipse.org/legal/epl-v10.html");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("*");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("* Contributors$:");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("*    Marcel Bruch $- initial API and implementation.");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("*/");
-      _builder.newLine();
-      _builder.append("package org.ecli$pse.recommenders.tests.comp$letion.rcp.calls$;$");
-      _builder.newLine();
-      _builder.append("$");
-      _builder.newLine();
-      _builder.append("im$port java.$util.*$;");
-      _builder.newLine();
-      _builder.append("$");
-      _builder.newLine();
-      _builder.append("/**");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("* Some $class comments {@link$plain $}");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("* ");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("* @see $");
-      _builder.newLine();
-      _builder.append(" ");
-      _builder.append("*/");
-      _builder.newLine();
-      _builder.append("public class AllJavaFeatures<T extends Collection> {");
-      _builder.newLine();
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("/**");
-      _builder.newLine();
-      _builder.append("     ");
-      _builder.append("* $");
-      _builder.newLine();
-      _builder.append("     ");
-      _builder.append("*/");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("static {");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.append("S$et $s = new Has$hSet<St$ring>();");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.append("s$.$add(\"$\");");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("/**");
-      _builder.newLine();
-      _builder.append("     ");
-      _builder.append("* $");
-      _builder.newLine();
-      _builder.append("     ");
-      _builder.append("* ");
-      _builder.newLine();
-      _builder.append("     ");
-      _builder.append("* @par$am $");
-      _builder.newLine();
-      _builder.append("     ");
-      _builder.append("*/");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("pub$lic st$atic voi$d stat$ic1(fi$nal St$ring ar$g) {");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.append("ch$ar$ c$ = a$rg.$charAt($);");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.append("Str$ing $s $=$ \"$\"$;");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("priv$ate sta$tic cl$ass MyInne$rClass extend$s Obse$rvable{");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.append("@Override");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.append("pub$lic synchro$nized vo$id addObs$erver(Observ$er $o) {");
-      _builder.newLine();
-      _builder.append("        \t");
-      _builder.append("o$");
-      _builder.newLine();
-      _builder.append("        \t");
-      _builder.append(";");
-      _builder.newLine();
-      _builder.append("            ");
-      _builder.append("// TO$DO A$uto-generated method stub");
-      _builder.newLine();
-      _builder.append("            ");
-      _builder.append("sup$er.addOb$server($o);");
-      _builder.newLine();
-      _builder.append("            ");
-      _builder.append("o.$");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.append("}");
-      _builder.newLine();
-      final CharSequence code = _builder;
-      this.exercise(code);
-  }
+  private static JavaProjectFixture fixture = new Function0<JavaProjectFixture>() {
+    public JavaProjectFixture apply() {
+      IWorkspace _workspace = ResourcesPlugin.getWorkspace();
+      JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
+      return _javaProjectFixture;
+    }
+  }.apply();
   
-  @Test
-  public void smokeTestScenarios() {
-    List<CharSequence> _scenarios = SmokeTestScenarios.scenarios();
-    for (final CharSequence scenario : _scenarios) {
-      this.exercise(scenario);
+  @Before
+  public void before() {
+    try {
+      CallCompletionProposalComputerSmokeTest.fixture.clear();
+    } catch (Exception _e) {
+      throw Exceptions.sneakyThrow(_e);
     }
   }
   
-  @Test
-  public void testFailCompletionOnTypeParameter() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("package completion.calls;");
-      _builder.newLine();
-      _builder.append("import java.util.Collection;");
-      _builder.newLine();
-      _builder.append("public class CompletionInClassWithGenerics {");
-      _builder.newLine();
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("public void <T> test() {");
-      _builder.newLine();
-      _builder.append("\t\t");
-      _builder.append("final T item;");
-      _builder.newLine();
-      _builder.append("\t\t");
-      _builder.append("item.$");
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.append("}");
-      final CharSequence code = _builder;
-      this.exercise(code);
+  public CharSequence method(final CharSequence code) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public void __test(Object o, List l){");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append(code, "	");
+    _builder.newLineIfNotEmpty();
+    _builder.append("}");
+    _builder.newLine();
+    CharSequence _classbody = CodeBuilder.classbody(_builder);
+    return _classbody;
   }
   
-  private void exercise(final CharSequence code) {
+  @Test
+  public void testStdCompletion() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("o.$");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testOnConstructor() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("new Object().$");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testOnReturn() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("l.get(0).$");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testInIf() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("if(o.$)");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testExpectsPrimitive() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("int i = o.$");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testExpectsNonPrimitive() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Object o1 = o.$");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testInMessageSend() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("l.add(o.$)");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testPrefix01() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("o.has$");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testPrefix02() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("o.hashc$");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testPrefix03() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("o.hashC$");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code);
+  }
+  
+  @Test
+  public void testPrefix04() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("o.x$");
+      CharSequence _method = this.method(_builder);
+      final CharSequence code = _method;
+      this.test(code, 0);
+  }
+  
+  private void test(final CharSequence code) {
+    this.test(code, 1);
+  }
+  
+  private void test(final CharSequence code, final int numberOfExpectedProposals) {
     try {
       {
         IWorkspace _workspace = ResourcesPlugin.getWorkspace();
@@ -232,16 +180,12 @@ public class CallCompletionProposalComputerSmokeTest {
         final CallsCompletionProposalComputer sut = _callsCompletionProposalComputer;
         Set<Integer> _second = struct.getSecond();
         for (final Integer pos : _second) {
-          String _source = cu.getSource();
-          int _length = _source.length();
-          boolean _operator_lessThan = IntegerExtensions.operator_lessThan((pos).intValue(), _length);
-          if (_operator_lessThan) {
+          {
             JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (pos).intValue());
-            sut.computeCompletionProposals(_javaContentAssistContextMock, null);
-          } else {
-            String _source_1 = cu.getSource();
-            String _operator_plus = StringExtensions.operator_plus("warning: skipped smoke scenario: ", _source_1);
-            InputOutput.<String>print(_operator_plus);
+            List<ICompletionProposal> _computeCompletionProposals = sut.computeCompletionProposals(_javaContentAssistContextMock, null);
+            final List<ICompletionProposal> proposals = _computeCompletionProposals;
+            int _size = proposals.size();
+            Assert.assertEquals("wrong number of proposals", numberOfExpectedProposals, _size);
           }
         }
       }

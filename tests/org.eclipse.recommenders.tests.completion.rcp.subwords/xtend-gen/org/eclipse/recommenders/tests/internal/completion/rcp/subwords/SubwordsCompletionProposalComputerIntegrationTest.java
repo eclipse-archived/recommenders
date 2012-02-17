@@ -27,7 +27,7 @@ import org.junit.Test;
 
 @SuppressWarnings("all")
 public class SubwordsCompletionProposalComputerIntegrationTest {
-  private JavaProjectFixture project = new Function0<JavaProjectFixture>() {
+  private static JavaProjectFixture fixture = new Function0<JavaProjectFixture>() {
     public JavaProjectFixture apply() {
       IWorkspace _workspace = ResourcesPlugin.getWorkspace();
       JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
@@ -192,11 +192,9 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   public void smokeTest(final CharSequence code) {
     try {
       {
-        IWorkspace _workspace = ResourcesPlugin.getWorkspace();
-        JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
-        final JavaProjectFixture fixture = _javaProjectFixture;
+        SubwordsCompletionProposalComputerIntegrationTest.fixture.clear();
         String _string = code.toString();
-        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(_string);
+        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = SubwordsCompletionProposalComputerIntegrationTest.fixture.createFileAndParseWithMarkers(_string);
         final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
         ICompilationUnit _first = struct.getFirst();
         final ICompilationUnit cu = _first;
@@ -225,8 +223,9 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   public void exercise(final CharSequence code, final List<String> expected) {
     try {
       {
+        SubwordsCompletionProposalComputerIntegrationTest.fixture.clear();
         String _string = code.toString();
-        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = this.project.createFileAndParseWithMarkers(_string);
+        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = SubwordsCompletionProposalComputerIntegrationTest.fixture.createFileAndParseWithMarkers(_string);
         final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
         ICompilationUnit _first = struct.getFirst();
         final ICompilationUnit cu = _first;

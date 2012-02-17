@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Control;
 public class CompletionOnClassBody extends Dialog {
 
     //@start
-    <^Space|createDialogArea.*>
+    
     //@end
     //@Override
     //protected Control createDialogArea(Composite parent) {

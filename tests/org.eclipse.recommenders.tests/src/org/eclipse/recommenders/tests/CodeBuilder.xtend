@@ -1,8 +1,11 @@
 package org.eclipse.recommenders.tests
 
+import java.util.concurrent.atomic.AtomicInteger
+
 class CodeBuilder {
 	
 	public static CharSequence someClass = '''public class C {}'''
+	private static AtomicInteger classCounter = new AtomicInteger()
 	
 	def static classDeclaration(CharSequence declaration, CharSequence body) {
 		'''
@@ -37,7 +40,7 @@ class CodeBuilder {
 		import java.text.*;
 		import java.util.concurrent.*;
 		import javax.annotation.*;
-		public class MyClass {
+		public class Class«classCounter.addAndGet(1)» {
 			«classbody»
 		}
 		'''

@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer;
+import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.SmokeTestScenarios;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
@@ -22,6 +23,7 @@ import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -34,6 +36,15 @@ public class ChainCompletionScenariosTest {
       return _javaProjectFixture;
     }
   }.apply();
+  
+  @Before
+  public void before() {
+    try {
+      ChainCompletionScenariosTest.fixture.clear();
+    } catch (Exception _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
+  }
   
   @Test
   public void smokeTestScenarios() {
@@ -478,6 +489,24 @@ public class ChainCompletionScenariosTest {
       this.exercise(code, expected);
   }
   
+  @Test
+  public void test012() {
+      this.compile(this.FIELDS);
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("public static Fields f = new Fields();");
+      _builder.newLine();
+      _builder.append("public static void test_protected() {");
+      _builder.newLine();
+      _builder.append("final Boolean c = $");
+      _builder.newLine();
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
+      final CharSequence code = _classbody;
+      ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList("f _public");
+      List<List<String>> _w = this.w(((String[])Conversions.unwrapArray(_newArrayList, String.class)));
+      List<List<String>> expected = _w;
+      this.exercise(code, expected);
+  }
+  
   public void exercise(final CharSequence code, final List<? extends List<String>> expected) {
     try {
       {
@@ -524,6 +553,15 @@ public class ChainCompletionScenariosTest {
     }
   }
   
+  public Tuple<ICompilationUnit,Set<Integer>> compile(final CharSequence code) {
+    try {
+      Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = ChainCompletionScenariosTest.fixture.createFileAndParseWithMarkers(code);
+      return _createFileAndParseWithMarkers;
+    } catch (Exception _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
+  }
+  
   public List<String> l(final String spaceSeparatedElementNames) {
       String[] _split = StringUtils.split(spaceSeparatedElementNames);
       final String[] elementNames = _split;
@@ -540,4 +578,40 @@ public class ChainCompletionScenariosTest {
       }
       return ((List<List<String>>) res);
   }
+  
+  private CharSequence FIELDS = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("public class Fields {");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("public static \t\t\tBoolean _spublic;");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("protected static \t\tBoolean _sprotected;");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("/* default */ static \tBoolean _sdefault;");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("private static \t\t\tBoolean _sprivate;");
+      _builder.newLine();
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("public \t\t\tBoolean _public;");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("protected \t\tBoolean _protected;");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("/* default */\tBoolean _default;");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("private \t\tBoolean _private;");
+      _builder.newLine();
+      _builder.append("}");
+      _builder.newLine();
+      return _builder;
+    }
+  }.apply();
 }

@@ -18,17 +18,37 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.BooleanExtensions;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
+import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.StringExtensions;
+import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings("all")
 public class ContextAnalyzerTest {
+  private static JavaProjectFixture fixture = new Function0<JavaProjectFixture>() {
+    public JavaProjectFixture apply() {
+      IWorkspace _workspace = ResourcesPlugin.getWorkspace();
+      JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
+      return _javaProjectFixture;
+    }
+  }.apply();
+  
+  @Before
+  public void before() {
+    try {
+      ContextAnalyzerTest.fixture.clear();
+    } catch (Exception _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
+  }
+  
   @Test
   public void testCalls() {
-      CharSequence _methodbody = this.methodbody("\r\n\t\t\tExecutorService pool;\r\n\t\t\tpool.shutdown();\r\n\t\t\tpool.hashCode();\r\n\t\t\t");
+      CharSequence _methodbody = this.methodbody("\n\t\t\tExecutorService pool;\n\t\t\tpool.shutdown();\n\t\t\tpool.hashCode();\n\t\t\t");
       final CharSequence code = _methodbody;
       ObjectUsage _exercise = this.exercise(code, "pool");
       final ObjectUsage res = _exercise;
@@ -42,7 +62,7 @@ public class ContextAnalyzerTest {
    */
   @Test
   public void testCallsOnReusedVar() {
-      CharSequence _methodbody = this.methodbody("\r\n\t\t\tObject o = new Object();\r\n\t\t\to.hashCode();\r\n\t\t\to = new Object();\r\n\t\t\to.equals(null);\r\n\t\t\t");
+      CharSequence _methodbody = this.methodbody("\n\t\t\tObject o = new Object();\n\t\t\to.hashCode();\n\t\t\to = new Object();\n\t\t\to.equals(null);\n\t\t\t");
       final CharSequence code = _methodbody;
       ObjectUsage _exercise = this.exercise(code, "o");
       final ObjectUsage res = _exercise;
@@ -53,7 +73,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testCallsOnParam01() {
-      CharSequence _classbody = this.classbody("\r\n\t\tpublic void m1(String s$){\r\n\t\t\thashCode();\r\n\t\t}\r\n\t\t");
+      CharSequence _classbody = this.classbody("\n\t\tpublic void m1(String s$){\n\t\t\thashCode();\n\t\t}\n\t\t");
       final CharSequence code = _classbody;
       ObjectUsage _exercise = this.exercise(code, "s");
       final ObjectUsage res = _exercise;
@@ -64,7 +84,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testCallsOnThisAndSuper() {
-      CharSequence _methodbody = this.methodbody("\r\n\t\t\thashCode();\r\n\t\t\tsuper.wait();\r\n\t\t\tthis.equals(null);\r\n\t\t\t");
+      CharSequence _methodbody = this.methodbody("\n\t\t\thashCode();\n\t\t\tsuper.wait();\n\t\t\tthis.equals(null);\n\t\t\t");
       final CharSequence code = _methodbody;
       ObjectUsage _exercise = this.exercise(code, "this");
       final ObjectUsage res = _exercise;
@@ -74,7 +94,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testCallsSuperConstructor() {
-      CharSequence _classbody = this.classbody("\r\n\t\t\tMyClass() {\r\n\t\t\t\tsuper();\r\n\t\t\t\t$\r\n\t\t\t}\r\n\t\t\t");
+      CharSequence _classbody = this.classbody("\n\t\t\tMyClass() {\n\t\t\t\tsuper();\n\t\t\t\t$\n\t\t\t}\n\t\t\t");
       final CharSequence code = _classbody;
       ObjectUsage _exercise = this.exercise(code, "this");
       final ObjectUsage res = _exercise;
@@ -84,7 +104,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testCallThisConstructor() {
-      CharSequence _classbody = this.classbody("\r\n\t\t\tMyClass() {\r\n\t\t\t}\r\n\r\n\t\t\tMyClass(String s) {\r\n\t\t\t\tthis();\r\n\t\t\t\t$\r\n\t\t\t}\r\n\t\t\t");
+      CharSequence _classbody = this.classbody("\n\t\t\tMyClass() {\n\t\t\t}\n\n\t\t\tMyClass(String s) {\n\t\t\t\tthis();\n\t\t\t\t$\n\t\t\t}\n\t\t\t");
       final CharSequence code = _classbody;
       ObjectUsage _exercise = this.exercise(code, "this");
       final ObjectUsage res = _exercise;
@@ -94,7 +114,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testDefConstructor() {
-      CharSequence _methodbody = this.methodbody("\r\n\t\t\tObject o = new Object();\r\n\t\t\t");
+      CharSequence _methodbody = this.methodbody("\n\t\t\tObject o = new Object();\n\t\t\t");
       final CharSequence code = _methodbody;
       ObjectUsage _exercise = this.exercise(code, "o");
       final ObjectUsage res = _exercise;
@@ -104,7 +124,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testDefMethodReturn() {
-      CharSequence _methodbody = this.methodbody("\r\n\t\t\tExecutorService pool = Executors.newCachedThreadPool();\r\n\t\t\t");
+      CharSequence _methodbody = this.methodbody("\n\t\t\tExecutorService pool = Executors.newCachedThreadPool();\n\t\t\t");
       final CharSequence code = _methodbody;
       ObjectUsage _exercise = this.exercise(code, "pool");
       final ObjectUsage res = _exercise;
@@ -114,7 +134,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testDefSuperMethodReturn() {
-      CharSequence _methodbody = this.methodbody("\r\n\t\t\tint hash = super.hashCode();\r\n\t\t\t");
+      CharSequence _methodbody = this.methodbody("\n\t\t\tint hash = super.hashCode();\n\t\t\t");
       final CharSequence code = _methodbody;
       ObjectUsage _exercise = this.exercise(code, "hash");
       final ObjectUsage res = _exercise;
@@ -124,7 +144,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testDefOnCallChain() {
-      CharSequence _methodbody = this.methodbody("\r\n\t\t\tint i = Executors.newCachedThreadPool().hashCode();\r\n\t\t\t");
+      CharSequence _methodbody = this.methodbody("\n\t\t\tint i = Executors.newCachedThreadPool().hashCode();\n\t\t\t");
       final CharSequence code = _methodbody;
       ObjectUsage _exercise = this.exercise(code, "i");
       final ObjectUsage res = _exercise;
@@ -134,7 +154,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testDefOnAlias() {
-      CharSequence _methodbody = this.methodbody("\r\n\t\t\tint i = 23;\r\n\t\t\tint j = i;\r\n\t\t\t");
+      CharSequence _methodbody = this.methodbody("\n\t\t\tint i = 23;\n\t\t\tint j = i;\n\t\t\t");
       final CharSequence code = _methodbody;
       ObjectUsage _exercise = this.exercise(code, "j");
       final ObjectUsage res = _exercise;
@@ -144,7 +164,7 @@ public class ContextAnalyzerTest {
   
   @Test
   public void testDefAssignment() {
-      CharSequence _methodbody = this.methodbody("\r\n\t\t\tint i,j = 23;\r\n\t\t\tj = i;\r\n\t\t\t");
+      CharSequence _methodbody = this.methodbody("\n\t\t\tint i,j = 23;\n\t\t\tj = i;\n\t\t\t");
       final CharSequence code = _methodbody;
       ObjectUsage _exercise = this.exercise(code, "j");
       final ObjectUsage res = _exercise;
@@ -183,11 +203,8 @@ public class ContextAnalyzerTest {
   }
   
   private ObjectUsage exercise(final CharSequence code, final String varname) {
-      IWorkspace _workspace = ResourcesPlugin.getWorkspace();
-      JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
-      final JavaProjectFixture fixture = _javaProjectFixture;
       String _string = code.toString();
-      Tuple<CompilationUnit,Set<Integer>> _parseWithMarkers = fixture.parseWithMarkers(_string);
+      Tuple<CompilationUnit,Set<Integer>> _parseWithMarkers = ContextAnalyzerTest.fixture.parseWithMarkers(_string);
       final Tuple<CompilationUnit,Set<Integer>> struct = _parseWithMarkers;
       CompilationUnit _first = struct.getFirst();
       final CompilationUnit cu = _first;

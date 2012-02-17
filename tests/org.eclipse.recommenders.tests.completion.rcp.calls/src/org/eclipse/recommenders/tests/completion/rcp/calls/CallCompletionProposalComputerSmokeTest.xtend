@@ -18,95 +18,105 @@ import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
 import org.eclipse.jdt.core.dom.AST
  
-import static org.eclipse.recommenders.tests.SmokeTestScenarios.* 
+import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
+import org.eclipse.recommenders.tests.CodeBuilder
+import org.junit.Before 
 class CallCompletionProposalComputerSmokeTest { 
   
-	@Test
-	def void smokeTest(){
-		val code =
-'''
-/**
- *$ Copyright (c) 2010, 2011 Darmstadt University of Technology.
- * All rights reserved. This$ program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.$eclipse.org/legal/epl-v10.html
- *
- * Contributors$:
- *    Marcel Bruch $- initial API and implementation.
- */
-package org.ecli$pse.recommenders.tests.comp$letion.rcp.calls$;$
-$
-im$port java.$util.*$;
-$
-/**
- * Some $class comments {@link$plain $}
- * 
- * @see $
- */
-public class AllJavaFeatures<T extends Collection> {
-
-    /**
-     * $
-     */
-    static {
-        S$et $s = new Has$hSet<St$ring>();
-        s$.$add("$");
-    }
-
-    /**
-     * $
-     * 
-     * @par$am $
-     */
-    pub$lic st$atic voi$d stat$ic1(fi$nal St$ring ar$g) {
-        ch$ar$ c$ = a$rg.$charAt($);
-        Str$ing $s $=$ "$"$;
-    }
-    
-    
-    
-    priv$ate sta$tic cl$ass MyInne$rClass extend$s Obse$rvable{
-        
-        @Override
-        pub$lic synchro$nized vo$id addObs$erver(Observ$er $o) {
-        	o$
-        	;
-            // TO$DO A$uto-generated method stub
-            sup$er.addOb$server($o);
-            o.$
-        }
-    }
-}
-'''
-		exercise(code)
+	static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
+	@Before
+	def void before(){
+		fixture.clear
 	}
-	
-	
-	@Test
-	def void smokeTestScenarios(){
-		for(scenario : scenarios){
-			exercise(scenario)
+
+	def method(CharSequence code){
+		CodeBuilder::classbody(
+		'''
+		public void __test(Object o, List l){
+			«code»
 		}
+		''')
 	}
 	
 	@Test
-	def void testFailCompletionOnTypeParameter(){
-		val code =
-			'''
-			package completion.calls;
-			import java.util.Collection;
-			public class CompletionInClassWithGenerics {
-			
-				public void <T> test() {
-					final T item;
-					item.$
-				}
-			}'''
-		exercise(code)
+	def void testStdCompletion(){
+		val code = method('''
+			o.$'''
+		)
+		test(code)
 	}
 
-	def private exercise (CharSequence code){
+	@Test
+	def void testOnConstructor(){
+		val code = method('''new Object().$''')
+		test(code)
+	}
+
+
+	@Test
+	def void testOnReturn(){
+		val code = method('''l.get(0).$''')
+		test(code)
+	}
+
+
+	@Test
+	def void testInIf(){
+		val code = method('''if(o.$)''')
+		test(code)
+	}
+
+	@Test
+	def void testExpectsPrimitive(){
+		val code = method('''int i = o.$''')
+		test(code)
+	}
+
+
+	@Test
+	def void testExpectsNonPrimitive(){
+		val code = method('''Object o1 = o.$''')
+		test(code)
+	}
+
+	@Test
+	def void testInMessageSend(){
+		val code = method('''l.add(o.$)''')
+		test(code)
+	}
+	
+	@Test
+	def void testPrefix01(){
+		val code = method('''o.has$''')
+		test(code)
+	}
+
+	@Test
+	def void testPrefix02(){
+		val code = method('''o.hashc$''')
+		test(code)
+	}
+
+	@Test
+	def void testPrefix03(){
+		val code = method('''o.hashC$''')
+		test(code)
+	}
+
+	@Test
+	def void testPrefix04(){
+		val code = method('''o.x$''')
+		test(code,0)
+	}
+
+
+	
+
+	def private test(CharSequence code){
+		test(code,1)
+	}
+
+	def private test(CharSequence code, int numberOfExpectedProposals){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first;
@@ -117,11 +127,13 @@ public class AllJavaFeatures<T extends Collection> {
 		val CallsCompletionProposalComputer sut = new CallsCompletionProposalComputer(new ModelStoreMock(), new JavaElementResolver(),
             new RecommendersCompletionContextFactoryMock())
 		for(pos : struct.second){
-			if(pos< cu.source.length){
-				sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, pos), null);
-			}else{
-				print("warning: skipped smoke scenario: " + cu.source)
-			}
+			val proposals = sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, pos), null);
+			assertEquals("wrong number of proposals", numberOfExpectedProposals, proposals.size())
 		}
 	}
+
+
+	
+	
+	
 }

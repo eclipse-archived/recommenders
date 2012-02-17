@@ -36,7 +36,7 @@ public class ModelStoreMock extends CallModelStore {
         final IObjectMethodCallsNet net = Mockito.mock(IObjectMethodCallsNet.class);
         when(net.getRecommendedMethodCalls(anyDouble())).thenReturn(new TreeSet<Tuple<IMethodName, Double>>() {
             {
-                add(Tuple.newTuple(VmMethodName.NULL, 0.8d));
+                add(Tuple.newTuple((IMethodName) VmMethodName.get("Ljava/lang/Object.hashCode()I"), 0.8d));
             }
         });
         return Optional.of(net);

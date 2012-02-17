@@ -238,11 +238,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             final Double probability = recommended.getSecond();
 
             if (expectsReturnType) {
-                final ITypeName returnType = method.getReturnType();
                 if (method.isVoid()) {
-                    continue;
-                }
-                if (expectsPrimitive && !samePrimitiveType(returnType, ctx.getExpectedTypeSignature().or(""))) {
                     continue;
                 }
             }

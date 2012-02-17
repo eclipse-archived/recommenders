@@ -11,9 +11,17 @@ import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.junit.Test
 
 import static junit.framework.Assert.*
+import org.junit.Before
  
 class ContextAnalyzerTest { 
-  
+
+	static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
+	
+	@Before
+	def before(){
+		fixture.clear
+	}
+	  
 	@Test
 	def void testCalls(){
 		val code = methodbody('
@@ -175,7 +183,6 @@ class ContextAnalyzerTest {
 	  }
 	  
 	def private exercise (CharSequence code,String varname){
-		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.parseWithMarkers(code.toString)
 		val cu = struct.first;
 		val pos = struct.second.head;

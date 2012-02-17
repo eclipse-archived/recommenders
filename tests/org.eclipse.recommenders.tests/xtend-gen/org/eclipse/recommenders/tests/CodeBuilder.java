@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.tests;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 
@@ -10,6 +11,13 @@ public class CodeBuilder {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("public class C {}");
       return _builder;
+    }
+  }.apply();
+  
+  private static AtomicInteger classCounter = new Function0<AtomicInteger>() {
+    public AtomicInteger apply() {
+      AtomicInteger _atomicInteger = new AtomicInteger();
+      return _atomicInteger;
     }
   }.apply();
   
@@ -72,8 +80,11 @@ public class CodeBuilder {
     _builder.newLine();
     _builder.append("import javax.annotation.*;");
     _builder.newLine();
-    _builder.append("public class MyClass {");
-    _builder.newLine();
+    _builder.append("public class Class");
+    int _addAndGet = CodeBuilder.classCounter.addAndGet(1);
+    _builder.append(_addAndGet, "");
+    _builder.append(" {");
+    _builder.newLineIfNotEmpty();
     _builder.append("\t");
     _builder.append(classbody, "	");
     _builder.newLineIfNotEmpty();

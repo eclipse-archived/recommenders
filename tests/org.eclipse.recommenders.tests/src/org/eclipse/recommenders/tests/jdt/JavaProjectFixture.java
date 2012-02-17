@@ -29,8 +29,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -174,11 +177,29 @@ public class JavaProjectFixture {
         if (file.exists()) {
             file.delete(true, null);
         }
-
         final ByteArrayInputStream is = new ByteArrayInputStream(content.getFirst().getBytes());
         file.create(is, true, null);
         final ICompilationUnit cu = (ICompilationUnit) javaProject.findElement(path);
+        project.refreshLocal(IResource.DEPTH_INFINITE, null);
+        project.build(IncrementalProjectBuilder.FULL_BUILD, null);
         return Tuple.newTuple(cu, content.getSecond());
+    }
+
+    public void clear() throws CoreException {
+
+        final IProject project = javaProject.getProject();
+        project.accept(new IResourceVisitor() {
+            @Override
+            public boolean visit(final IResource resource) throws CoreException {
+                switch (resource.getType()) {
+                case IResource.FILE:
+                    if (resource.getName().endsWith(".class") || resource.getName().endsWith(".java")) {
+                        resource.delete(true, null);
+                    }
+                }
+                return true;
+            }
+        });
     }
 
     public String removeMarkers(final String content) {

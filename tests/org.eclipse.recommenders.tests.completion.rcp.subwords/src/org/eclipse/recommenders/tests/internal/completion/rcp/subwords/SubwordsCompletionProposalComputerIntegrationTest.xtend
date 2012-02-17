@@ -20,7 +20,10 @@ import org.junit.Before
  
 class SubwordsCompletionProposalComputerIntegrationTest { 
   
-  	JavaProjectFixture project = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
+  	  
+	static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
+	
+
   	Stopwatch stopwatch =  new Stopwatch()
   	long MAX_COMPUTATION_LIMIT_MILLIS =1000
   	 
@@ -117,7 +120,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 	}
 
 	def smokeTest(CharSequence code){
-		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
+		fixture.clear
 		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first;
 		for(completionIndex : struct.second){
@@ -133,8 +136,8 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 	}
 	
 	def exercise(CharSequence code, List<String> expected){
-		
-		val struct = project.createFileAndParseWithMarkers(code.toString)
+		fixture.clear
+		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first; 
 		val completionIndex = struct.second.head
 		val ctx = new JavaContentAssistContextMock(cu, completionIndex)
