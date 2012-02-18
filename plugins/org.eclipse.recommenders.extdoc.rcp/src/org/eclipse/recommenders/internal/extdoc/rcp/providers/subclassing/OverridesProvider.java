@@ -251,9 +251,7 @@ public final class OverridesProvider extends ExtdocProvider {
 
         private void addHeader() {
             new Label(container, SWT.None);
-            final String message = format(
-                    "Based on the above examples, we identified the following patterns\nhow this class is typically extended:",
-                    directive.getPatterns().length, type.getElementName());
+            final String message = format("Based on the above examples, we identified the following patterns\nhow this class is typically extended:");
             createLabel(container, message, true);
         }
 

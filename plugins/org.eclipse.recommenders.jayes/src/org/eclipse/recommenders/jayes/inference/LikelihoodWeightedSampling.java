@@ -22,10 +22,10 @@ import org.eclipse.recommenders.jayes.util.MathUtils;
 public class LikelihoodWeightedSampling extends AbstractInferer {
 
     private int sampleCount = 200;
-    private BasicSampler sampler = new BasicSampler();
+    private final BasicSampler sampler = new BasicSampler();
 
     @Override
-    public void setNetwork(BayesNet bn) {
+    public void setNetwork(final BayesNet bn) {
         super.setNetwork(bn);
         sampler.setBN(bn);
 
@@ -35,10 +35,10 @@ public class LikelihoodWeightedSampling extends AbstractInferer {
     protected void updateBeliefs() {
         sampler.setEvidence(evidence);
         for (int i = 0; i < sampleCount; i++) {
-            Map<BayesNode, String> sample = sampler.sample();
-            double weight = computeEvidenceProbability(sample);
+            final Map<BayesNode, String> sample = sampler.sample();
+            final double weight = computeEvidenceProbability(sample);
 
-            for (Entry<Integer, Integer> e : BayesUtils.toIntegerMap(sample).entrySet()) {
+            for (final Entry<Integer, Integer> e : BayesUtils.toIntegerMap(sample).entrySet()) {
                 beliefs[e.getKey()][e.getValue()] += weight;
             }
         }
@@ -48,21 +48,24 @@ public class LikelihoodWeightedSampling extends AbstractInferer {
     }
 
     private void normalizeBeliefs() {
-        for (int i = 0; i < beliefs.length; i++)
+        for (int i = 0; i < beliefs.length; i++) {
             beliefs[i] = MathUtils.normalize(beliefs[i]);
+        }
     }
 
-    private double computeEvidenceProbability(Map<BayesNode, String> sample) {
+    private double computeEvidenceProbability(final Map<BayesNode, String> sample) {
         double factor = 1.0;
-        for (BayesNode n : net.getNodes()) {
-            if (evidence.containsKey(n.getId())) {
+        for (final BayesNode n : net.getNodes()) {
+            // REVIEW: XXX integer is incompatible to evicende.BayesNode. This never returns true!
+            final int id = n.getId();
+            if (evidence.containsKey(id)) {
                 factor *= n.marginalize(sample)[n.getOutcomeIndex(evidence.get(n))];
             }
         }
         return factor;
     }
 
-    public void setSampleCount(int sampleCount) {
+    public void setSampleCount(final int sampleCount) {
         this.sampleCount = sampleCount;
     }
 

@@ -132,6 +132,15 @@ public class RecommendersModule extends AbstractModule implements Module {
     }
 
     @Provides
+    protected Display provideDisplay() {
+        Display d = Display.getCurrent();
+        if (d == null) {
+            d = Display.getDefault();
+        }
+        return d;
+    }
+
+    @Provides
     protected IWorkbench provideWorkbench() {
         return PlatformUI.getWorkbench();
     }

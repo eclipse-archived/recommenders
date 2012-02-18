@@ -25,8 +25,7 @@ public class VmVariableName implements IVariableName {
     private static Map<String /* vmTypeName */, VmVariableName> index = new MapMaker().weakValues().makeMap();
 
     /**
-     * Format: DeclaringType'.'fieldName;FieldType, i.e.,
-     * &lt;VmTypeName&gt;.&lt;String&gt;;&lt;VmTypeName&gt;
+     * Format: DeclaringType'.'fieldName;FieldType, i.e., &lt;VmTypeName&gt;.&lt;String&gt;;&lt;VmTypeName&gt;
      * 
      * @param variableName
      * @return
@@ -75,8 +74,6 @@ public class VmVariableName implements IVariableName {
 
     @Override
     public int compareTo(final IVariableName other) {
-        identifier.compareTo(other.getIdentifier());
-        return 0;
+        return identifier.compareTo(other.getIdentifier());
     }
-
 }

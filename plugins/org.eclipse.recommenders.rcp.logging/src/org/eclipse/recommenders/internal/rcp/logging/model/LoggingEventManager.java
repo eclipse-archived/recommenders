@@ -33,7 +33,7 @@ public class LoggingEventManager {
     private LoggingEventManager() {
     }
 
-    public static LoggingEventManager getManager() {
+    public static synchronized LoggingEventManager getManager() {
         if (manager == null) {
             manager = new LoggingEventManager();
         }

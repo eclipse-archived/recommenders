@@ -416,7 +416,7 @@ public class ProviderContentPart {
                         // Throwables.getStackTraceAsString(e.exception);
                         final String providerName = e.provider.getDescription().getName();
 
-                        final String dialogTitle = format("Extdoc Provider Failure", providerName);
+                        final String dialogTitle = format("Extdoc Provider '%s' Failure", providerName);
                         final String errorMessage = findFirstNonNullErrorMessage(e.throwable);
                         final String rootCauseMessage = Throwables.getRootCause(e.throwable).getMessage();
 

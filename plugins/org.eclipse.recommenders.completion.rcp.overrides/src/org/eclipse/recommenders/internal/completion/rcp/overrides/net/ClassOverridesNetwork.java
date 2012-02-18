@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.completion.rcp.overrides.net;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.utils.Checks.ensureEquals;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -58,12 +57,6 @@ public class ClassOverridesNetwork {
         for (final BayesNode methodNode : methodNodes) {
             methodNameMapping.put(VmMethodName.get(methodNode.getName()), methodNode);
         }
-    }
-
-    public IMethodName getMethodReferenceFromEscapedName(final String escapedName) {
-        final IMethodName res = escapedMethodReferences.get(escapedName);
-        ensureIsNotNull(res);
-        return res;
     }
 
     public void clearEvidence() {
