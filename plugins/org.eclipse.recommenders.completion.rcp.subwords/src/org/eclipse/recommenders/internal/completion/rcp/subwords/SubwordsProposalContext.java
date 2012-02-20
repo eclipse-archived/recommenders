@@ -210,10 +210,11 @@ public class SubwordsProposalContext {
 
     public int calculateRelevance() {
         if (subwordsMatchingRegion.startsWith(prefix)) {
-            return 5;
+            return jdtProposal.getRelevance();
+        } else {
+            return getJdtProposal().getRelevance() - 50;
         }
 
-        return 1;
         // TODO until https://bugs.eclipse.org/bugs/show_bug.cgi?id=350991 is
         // fixed this should not be used:
         // final int matches =

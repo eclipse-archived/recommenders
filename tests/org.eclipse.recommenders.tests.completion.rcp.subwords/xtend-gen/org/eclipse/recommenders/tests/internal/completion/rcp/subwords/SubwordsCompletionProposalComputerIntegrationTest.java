@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer;
 import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.SmokeTestScenarios;
@@ -22,6 +23,7 @@ import org.eclipse.xtext.xbase.lib.ComparableExtensions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.IntegerExtensions;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -60,7 +62,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       CharSequence _method = CodeBuilder.method(_builder);
       final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode");
-      this.exercise(code, _asList);
+      this.exerciseAndVerify(code, _asList);
   }
   
   @Test
@@ -70,7 +72,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       CharSequence _method = CodeBuilder.method(_builder);
       final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("clone", "hashCode", "getClass");
-      this.exercise(code, _asList);
+      this.exerciseAndVerify(code, _asList);
   }
   
   @Test
@@ -80,7 +82,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       CharSequence _method = CodeBuilder.method(_builder);
       final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode", "getClass");
-      this.exercise(code, _asList);
+      this.exerciseAndVerify(code, _asList);
   }
   
   @Test
@@ -90,7 +92,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       CharSequence _method = CodeBuilder.method(_builder);
       final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode");
-      this.exercise(code, _asList);
+      this.exerciseAndVerify(code, _asList);
   }
   
   @Test
@@ -100,7 +102,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       CharSequence _method = CodeBuilder.method(_builder);
       final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode", "clone");
-      this.exercise(code, _asList);
+      this.exerciseAndVerify(code, _asList);
   }
   
   @Test
@@ -110,7 +112,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       CharSequence _method = CodeBuilder.method(_builder);
       final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("hashCode");
-      this.exercise(code, _asList);
+      this.exerciseAndVerify(code, _asList);
   }
   
   @Test
@@ -120,7 +122,49 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       CharSequence _method = CodeBuilder.method(_builder);
       final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("clone");
-      this.exercise(code, _asList);
+      this.exerciseAndVerify(code, _asList);
+  }
+  
+  @Test
+  public void test008_overloaded() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Object o=\"\"; o.w$");
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
+      List<String> _asList = Arrays.<String>asList("wait", "wait", "wait");
+      this.exerciseAndVerify(code, _asList);
+  }
+  
+  @Test
+  public void test008_ranking() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("String s=\"\"; s.has$");
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
+      List<IJavaCompletionProposal> _exercise = this.exercise(code);
+      final List<IJavaCompletionProposal> actual = _exercise;
+      final Function1<IJavaCompletionProposal,Boolean> _function = new Function1<IJavaCompletionProposal,Boolean>() {
+          public Boolean apply(final IJavaCompletionProposal p) {
+            String _string = p.toString();
+            boolean _startsWith = _string.startsWith("hashCode");
+            return Boolean.valueOf(_startsWith);
+          }
+        };
+      IJavaCompletionProposal _findFirst = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function);
+      final IJavaCompletionProposal pHashCode = ((IJavaCompletionProposal) _findFirst);
+      final Function1<IJavaCompletionProposal,Boolean> _function_1 = new Function1<IJavaCompletionProposal,Boolean>() {
+          public Boolean apply(final IJavaCompletionProposal p) {
+            String _string = p.toString();
+            boolean _startsWith = _string.startsWith("getChars");
+            return Boolean.valueOf(_startsWith);
+          }
+        };
+      IJavaCompletionProposal _findFirst_1 = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function_1);
+      final IJavaCompletionProposal pGetChars = ((IJavaCompletionProposal) _findFirst_1);
+      int _relevance = pGetChars.getRelevance();
+      int _relevance_1 = pHashCode.getRelevance();
+      boolean _operator_lessThan = IntegerExtensions.operator_lessThan(_relevance, _relevance_1);
+      Assert.assertTrue(_operator_lessThan);
   }
   
   /**
@@ -153,7 +197,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       final CharSequence code = _builder;
       ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList("aFile");
       ArrayList<String> expected = _newArrayList;
-      this.exercise(code, expected);
+      this.exerciseAndVerify(code, expected);
   }
   
   @Test
@@ -184,7 +228,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       final CharSequence code = _builder;
       ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList("aFile");
       ArrayList<String> expected = _newArrayList;
-      this.exercise(code, expected);
+      this.exerciseAndVerify(code, expected);
   }
   
   public void smokeTest(final CharSequence code) {
@@ -220,7 +264,34 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     }
   }
   
-  public void exercise(final CharSequence code, final List<String> expected) {
+  public void exerciseAndVerify(final CharSequence code, final List<String> expected) {
+      List<IJavaCompletionProposal> _exercise = this.exercise(code);
+      final List<IJavaCompletionProposal> actual = _exercise;
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append(" ");
+      _builder.append("some expected values were not found.\\nExpected: ");
+      _builder.append(expected, " ");
+      _builder.append(",\\nFound: ");
+      _builder.append(actual, " ");
+      _builder.append(" ");
+      String _string = _builder.toString();
+      int _size = expected.size();
+      int _size_1 = actual.size();
+      Assert.assertEquals(_string, _size, _size_1);
+      for (final String e : expected) {
+        final Function1<IJavaCompletionProposal,Boolean> _function = new Function1<IJavaCompletionProposal,Boolean>() {
+            public Boolean apply(final IJavaCompletionProposal p) {
+              String _string = p.toString();
+              boolean _startsWith = _string.startsWith(e);
+              return Boolean.valueOf(_startsWith);
+            }
+          };
+        IJavaCompletionProposal _findFirst = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function);
+        Assert.assertNotNull(_findFirst);
+      }
+  }
+  
+  public List<IJavaCompletionProposal> exercise(final CharSequence code) {
     try {
       {
         SubwordsCompletionProposalComputerIntegrationTest.fixture.clear();
@@ -232,8 +303,6 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         Set<Integer> _second = struct.getSecond();
         Integer _head = IterableExtensions.<Integer>head(_second);
         final Integer completionIndex = _head;
-        CompletionProposalCollector _completionProposalCollector = new CompletionProposalCollector(cu, false);
-        cu.codeComplete((completionIndex).intValue(), _completionProposalCollector);
         JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (completionIndex).intValue());
         final JavaContentAssistContextMock ctx = _javaContentAssistContextMock;
         SubwordsCompletionProposalComputer _subwordsCompletionProposalComputer = new SubwordsCompletionProposalComputer();
@@ -244,28 +313,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         final List actual = _computeCompletionProposals;
         this.stopwatch.stop();
         this.failIfComputerTookTooLong(code);
-        StringConcatenation _builder = new StringConcatenation();
-        _builder.append(" ");
-        _builder.append("some expected values were not found.\\nExpected: ");
-        _builder.append(expected, " ");
-        _builder.append(",\\nFound: ");
-        _builder.append(actual, " ");
-        _builder.append(" ");
-        String _string_1 = _builder.toString();
-        int _size = expected.size();
-        int _size_1 = actual.size();
-        Assert.assertEquals(_string_1, _size, _size_1);
-        for (final String e : expected) {
-          final Function1<Object,Boolean> _function = new Function1<Object,Boolean>() {
-              public Boolean apply(final Object p) {
-                String _string = p.toString();
-                boolean _startsWith = _string.startsWith(e);
-                return Boolean.valueOf(_startsWith);
-              }
-            };
-          Object _findFirst = IterableExtensions.<Object>findFirst(actual, _function);
-          Assert.assertNotNull(_findFirst);
-        }
+        return actual;
       }
     } catch (Exception _e) {
       throw Exceptions.sneakyThrow(_e);

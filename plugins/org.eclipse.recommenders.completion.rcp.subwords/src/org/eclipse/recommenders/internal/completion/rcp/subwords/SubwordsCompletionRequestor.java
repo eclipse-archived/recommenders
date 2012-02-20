@@ -114,8 +114,15 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
     }
 
     private boolean isDuplicate(final CompletionProposal proposal) {
-        final String completion = String.valueOf(proposal.getCompletion());
-        return !duplicates.add(completion);
+        final StringBuilder sb = new StringBuilder();
+        final char[] c = proposal.getCompletion();
+        sb.append(c);
+        final char[] s = proposal.getSignature();
+        if (s != null) {
+            sb.append(s);
+        }
+        final String key = sb.toString();
+        return !duplicates.add(key);
     }
 
     // private boolean isSmallTypo(final String prefix, final String subwordsMatchingRegion) {

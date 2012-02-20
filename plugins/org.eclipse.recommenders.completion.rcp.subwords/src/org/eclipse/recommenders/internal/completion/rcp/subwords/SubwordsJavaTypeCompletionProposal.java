@@ -19,8 +19,10 @@ import org.eclipse.jface.viewers.StyledString;
 public class SubwordsJavaTypeCompletionProposal extends LazyJavaTypeCompletionProposal {
 
     public static SubwordsJavaTypeCompletionProposal create(final SubwordsProposalContext subwordsContext) {
-        return new SubwordsJavaTypeCompletionProposal(subwordsContext.getProposal(), subwordsContext.getContext(),
-                subwordsContext);
+        final SubwordsJavaTypeCompletionProposal res = new SubwordsJavaTypeCompletionProposal(
+                subwordsContext.getProposal(), subwordsContext.getContext(), subwordsContext);
+        res.setRelevance(subwordsContext.calculateRelevance());
+        return res;
     }
 
     private final SubwordsProposalContext subwordsContext;
@@ -34,7 +36,7 @@ public class SubwordsJavaTypeCompletionProposal extends LazyJavaTypeCompletionPr
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        setRelevance(subwordsContext.calculateRelevance());
+        // setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 

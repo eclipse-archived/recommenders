@@ -39,46 +39,60 @@ class SubwordsCompletionProposalComputerIntegrationTest {
   	@Test 
 	def void test001(){
 		val code = method('''Object o=""; o.hc$''')
-		exercise(code, asList("hashCode"))
+		exerciseAndVerify(code, asList("hashCode"))
 	}
  
  	@Test
 	def void test002(){
 		val code = method('''Object o=""; o.c$''')
-		exercise(code, asList("clone","hashCode", "getClass"))
+		exerciseAndVerify(code, asList("clone","hashCode", "getClass"))
 	}
  
  	@Test
 	def void test003(){
 		val code = method('''Object o=""; o.C$''')
-		exercise(code, asList("hashCode", "getClass"))
+		exerciseAndVerify(code, asList("hashCode", "getClass"))
 	}
 	
  	@Test
 	def void test004(){
 		val code = method('''Object o=""; o.cod$''')
-		exercise(code, asList("hashCode"))
+		exerciseAndVerify(code, asList("hashCode"))
 	}
 
  	@Test
 	def void test005(){
 		val code = method('''Object o=""; o.coe$''')
-		exercise(code, asList("hashCode", "clone"))
+		exerciseAndVerify(code, asList("hashCode", "clone"))
 	}
 	
 	@Test
 	def void test006(){
 		val code = method('''Object o=""; o.Ce$''')
-		exercise(code, asList("hashCode"))
+		exerciseAndVerify(code, asList("hashCode"))
 	}
 	
 	
 	@Test
 	def void test007_subtype(){
 		val code = method('''String s=""; s.lone$''')
-		exercise(code, asList("clone"))
+		exerciseAndVerify(code, asList("clone"))
 	}
 	
+	@Test 
+	def void test008_overloaded(){
+		val code = method('''Object o=""; o.w$''')
+		exerciseAndVerify(code, asList("wait", "wait","wait"))
+	}
+	
+	@Test 
+	def void test008_ranking(){
+		val code = method('''String s=""; s.has$''')
+		val actual = exercise(code) 
+		val pHashCode = actual.findFirst(p | p.toString.startsWith("hashCode")) as IJavaCompletionProposal
+		val pGetChars= actual.findFirst(p | p.toString.startsWith("getChars")) as IJavaCompletionProposal
+		assertTrue(pGetChars.relevance< pHashCode.relevance)
+	}
  	/**
   	 * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=370572
  	 */
@@ -96,7 +110,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		}
 		'''
 		var expected = newArrayList("aFile")
-		exercise(code, expected); 
+		exerciseAndVerify(code, expected); 
 	}
 	 
 
@@ -115,7 +129,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		}
 		'''
 		var expected = newArrayList("aFile")
-		exercise(code, expected); 
+		exerciseAndVerify(code, expected); 
 	}
 
 	def smokeTest(CharSequence code){
@@ -137,31 +151,30 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		}
 	}
 	
-	def exercise(CharSequence code, List<String> expected){
+	def exerciseAndVerify(CharSequence code, List<String> expected){
+		val actual = exercise(code)
+		
+		assertEquals(''' some expected values were not found.\nExpected: «expected»,\nFound: «actual» '''.toString, expected.size, actual.size)
+		for(e : expected) { 
+  			assertNotNull(actual.findFirst(p|p.toString.startsWith(e)))
+		} 
+	}
+	
+	def List<IJavaCompletionProposal> exercise(CharSequence code){
 		fixture.clear
 		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first; 
 		val completionIndex = struct.second.head
-
-		// warm up jdt
-		cu.codeComplete(completionIndex, new CompletionProposalCollector(cu,false))
-		
 		val ctx = new JavaContentAssistContextMock(cu, completionIndex)
-		
 		val sut = new SubwordsCompletionProposalComputer()
 		sut.sessionStarted
 		stopwatch.start
 		val actual = sut.computeCompletionProposals(ctx, null)
 		stopwatch.stop
-		
 		failIfComputerTookTooLong(code)
-
-		assertEquals(''' some expected values were not found.\nExpected: «expected»,\nFound: «actual» '''.toString, expected.size, actual.size)
-		
-		for(e : expected) { 
-  			assertNotNull(actual.findFirst(p|p.toString.startsWith(e)))
-		} 
+		return actual;
 	}
+	
 	
 	def failIfComputerTookTooLong(CharSequence code){
 		if(stopwatch.elapsedMillis > MAX_COMPUTATION_LIMIT_MILLIS)

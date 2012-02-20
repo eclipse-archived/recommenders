@@ -19,8 +19,10 @@ import org.eclipse.jface.viewers.StyledString;
 public final class SubwordsJavaMethodCompletionProposal extends JavaMethodCompletionProposal {
 
     public static SubwordsJavaMethodCompletionProposal create(final SubwordsProposalContext subwordsContext) {
-        return new SubwordsJavaMethodCompletionProposal(subwordsContext.getProposal(), subwordsContext.getContext(),
-                subwordsContext);
+        final SubwordsJavaMethodCompletionProposal res = new SubwordsJavaMethodCompletionProposal(
+                subwordsContext.getProposal(), subwordsContext.getContext(), subwordsContext);
+        res.setRelevance(subwordsContext.calculateRelevance());
+        return res;
     }
 
     private final SubwordsProposalContext subwordsContext;
@@ -34,7 +36,7 @@ public final class SubwordsJavaMethodCompletionProposal extends JavaMethodComple
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        setRelevance(subwordsContext.calculateRelevance());
+        // setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 

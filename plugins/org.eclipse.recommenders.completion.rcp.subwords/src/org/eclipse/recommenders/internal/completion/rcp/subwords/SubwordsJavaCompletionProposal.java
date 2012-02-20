@@ -40,10 +40,11 @@ public class SubwordsJavaCompletionProposal extends JavaCompletionProposal {
 
     public static SubwordsJavaCompletionProposal create(final SubwordsProposalContext subwordsContext) {
         final JavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
+        final int relevance = subwordsContext.calculateRelevance();
+
         return new SubwordsJavaCompletionProposal(jdtProposal.getReplacementString(), subwordsContext.getProposal()
                 .getReplaceStart(), jdtProposal.getReplacementLength(), jdtProposal.getImage(),
-                jdtProposal.getStyledDisplayString(), jdtProposal.getRelevance(), true, subwordsContext.getContext(),
-                subwordsContext);
+                jdtProposal.getStyledDisplayString(), relevance, true, subwordsContext.getContext(), subwordsContext);
     }
 
     private final SubwordsProposalContext subwordsContext;

@@ -36,6 +36,7 @@ public class SubwordsOverrideCompletionProposal extends OverrideCompletionPropos
                 completionText, subwordsContext);
         final Image image = jdtProposal.getImage();
         res.setImage(image);
+        res.setRelevance(jdtProposal.getRelevance());
         return res;
     }
 
@@ -53,7 +54,7 @@ public class SubwordsOverrideCompletionProposal extends OverrideCompletionPropos
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        setRelevance(subwordsContext.calculateRelevance());
+        // setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 

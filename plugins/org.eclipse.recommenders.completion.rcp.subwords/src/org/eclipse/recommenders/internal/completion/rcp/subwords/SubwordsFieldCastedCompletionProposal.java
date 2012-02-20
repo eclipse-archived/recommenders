@@ -22,10 +22,10 @@ public class SubwordsFieldCastedCompletionProposal extends JavaFieldWithCastedRe
 
     public static SubwordsFieldCastedCompletionProposal create(final SubwordsProposalContext subwordsContext) {
         final JavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
-
+        final int relevance = subwordsContext.calculateRelevance();
         return new SubwordsFieldCastedCompletionProposal(jdtProposal.getDisplayString(),
                 jdtProposal.getReplacementOffset(), jdtProposal.getReplacementLength(), jdtProposal.getImage(),
-                jdtProposal.getStyledDisplayString(), jdtProposal.getRelevance(), true, subwordsContext.getContext(),
+                jdtProposal.getStyledDisplayString(), relevance, true, subwordsContext.getContext(),
                 subwordsContext.getProposal(), subwordsContext);
     }
 
@@ -42,7 +42,7 @@ public class SubwordsFieldCastedCompletionProposal extends JavaFieldWithCastedRe
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        setRelevance(subwordsContext.calculateRelevance());
+        // setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 
