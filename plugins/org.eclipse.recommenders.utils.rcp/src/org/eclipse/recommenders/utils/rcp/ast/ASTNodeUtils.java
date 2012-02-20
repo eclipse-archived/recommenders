@@ -10,20 +10,32 @@
  */
 package org.eclipse.recommenders.utils.rcp.ast;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+import static org.eclipse.recommenders.utils.Throws.throwCancelationException;
+
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.ISourceRange;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
+import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
@@ -152,5 +164,67 @@ public class ASTNodeUtils {
             return opt.get().equals(crType);
         }
         return false;
+    }
+
+    /**
+     * Returns the closes parent ASTnode of the given node-class. Returns the input node if the node already is of the
+     * requested type.
+     */
+    public static <T extends ASTNode> Optional<T> getClosestParent(ASTNode node, final Class<T> nodeClass) {
+
+        while (node != null) {
+            if (nodeClass.isInstance(node)) {
+                return (Optional<T>) of(node);
+            }
+            node = node.getParent();
+        }
+        return absent();
+    }
+
+    public static Optional<MethodDeclaration> find(final CompilationUnit cu, final IMethod method) {
+        try {
+            final ISourceRange nameRange = method.getNameRange();
+            if (nameRange == null || nameRange.getOffset() == -1) {
+                return useVisitor(cu, method);
+            }
+            final ASTNode node = NodeFinder.perform(cu, nameRange);
+            final Optional<MethodDeclaration> opt = getClosestParent(node, MethodDeclaration.class);
+            return opt;
+        } catch (final JavaModelException e) {
+            RecommendersUtilsPlugin.log(e);
+            return absent();
+        }
+    }
+
+    private static Optional<MethodDeclaration> useVisitor(final CompilationUnit cu, final IMethod member) {
+
+        return new Finder<Optional<MethodDeclaration>>() {
+
+            private MethodDeclaration res;
+
+            @Override
+            public Optional<MethodDeclaration> call() {
+                try {
+                    cu.accept(this);
+                } catch (final Exception e) {
+
+                }
+                return Optional.of(res);
+            }
+
+            @Override
+            public boolean visit(final MethodDeclaration node) {
+                final IMethodBinding b = node.resolveBinding();
+                if (member.equals(b.getJavaElement())) {
+                    res = node;
+                    throwCancelationException();
+                }
+                return true;
+            }
+        }.call();
+
+    }
+
+    private abstract static class Finder<T> extends ASTVisitor implements Callable<T> {
     }
 }
