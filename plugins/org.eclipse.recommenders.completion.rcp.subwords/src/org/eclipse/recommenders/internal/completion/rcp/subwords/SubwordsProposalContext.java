@@ -10,11 +10,6 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static java.lang.Math.max;
-import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance;
-import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Collection;
@@ -74,7 +69,7 @@ public class SubwordsProposalContext {
     private List<String> matchingRegionBigrams;
     private Pattern pattern;
 
-    private final int maxLevenshteinDistance;
+    // private final int maxLevenshteinDistance;
 
     public SubwordsProposalContext(final String prefix, final CompletionProposal proposal,
             final IJavaCompletionProposal jdtProposal, final JavaContentAssistInvocationContext ctx) {
@@ -84,7 +79,7 @@ public class SubwordsProposalContext {
         this.subwordsMatchingRegion = SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket(jdtProposal
                 .getDisplayString());
         this.jdtProposal = ensureIsNotNull(jdtProposal);
-        maxLevenshteinDistance = max(1, (int) floor(log(prefix.length())));
+        // maxLevenshteinDistance = max(1, (int) floor(log(prefix.length())));
         calculateMatchingRegionBigrams();
     }
 
@@ -119,23 +114,23 @@ public class SubwordsProposalContext {
     }
 
     public boolean isRegexMatch() {
-        return createMatcher().matches() || passesLevenshteinDistanceFilter();
+        return createMatcher().matches();// || passesLevenshteinDistanceFilter();
     }
 
-    private boolean passesLevenshteinDistanceFilter() {
-        if (prefix.length() < 2) {
-            return false;
-        }
-
-        prefix = prefix.toLowerCase();
-        final String completionPrefix = substring(subwordsMatchingRegion, 0, prefix.length()).toLowerCase();
-        final int distance = getLevenshteinDistance(completionPrefix, prefix, maxLevenshteinDistance);
-        // no exact matches:
-        if (distance <= 0) {
-            return false;
-        }
-        return true;
-    }
+    // private boolean passesLevenshteinDistanceFilter() {
+    // if (prefix.length() < 2) {
+    // return false;
+    // }
+    //
+    // prefix = prefix.toLowerCase();
+    // final String completionPrefix = substring(subwordsMatchingRegion, 0, prefix.length()).toLowerCase();
+    // final int distance = getLevenshteinDistance(completionPrefix, prefix, maxLevenshteinDistance);
+    // // no exact matches:
+    // if (distance <= 0) {
+    // return false;
+    // }
+    // return true;
+    // }
 
     private Matcher createMatcher() {
         return pattern.matcher(subwordsMatchingRegion);

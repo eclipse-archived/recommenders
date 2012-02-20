@@ -11,10 +11,6 @@
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance;
-import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
 import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.matchesPrefixPattern;
 
@@ -105,7 +101,8 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
         final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal
                 .getCompletion());
-        if (!matchesPrefixPattern(prefix, subwordsMatchingRegion) && !isSmallTypo(prefix, subwordsMatchingRegion)) {
+        if (!matchesPrefixPattern(prefix, subwordsMatchingRegion)) { // && !isSmallTypo(prefix, subwordsMatchingRegion))
+                                                                     // {
             return;
         }
 
@@ -121,21 +118,21 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         return !duplicates.add(completion);
     }
 
-    private boolean isSmallTypo(final String prefix, final String subwordsMatchingRegion) {
-        if (prefix.length() < 2) {
-            return false;
-        }
-        final int maxDistance = (int) floor(log(prefix.length()));
-
-        final String lowerTokenPrefix = prefix.toLowerCase();
-        final String lowerCompletionPrefix = substring(subwordsMatchingRegion, 0, prefix.length()).toLowerCase();
-        final int distance = getLevenshteinDistance(lowerCompletionPrefix, lowerTokenPrefix, maxDistance);
-        // no exact matches:
-        if (distance <= 0) {
-            return false;
-        }
-        return true;
-    }
+    // private boolean isSmallTypo(final String prefix, final String subwordsMatchingRegion) {
+    // if (prefix.length() < 2) {
+    // return false;
+    // }
+    // final int maxDistance = max((int) floor(log(prefix.length())));
+    //
+    // final String lowerTokenPrefix = prefix.toLowerCase();
+    // final String lowerCompletionPrefix = substring(subwordsMatchingRegion, 0, prefix.length()).toLowerCase();
+    // final int distance = getLevenshteinDistance(lowerCompletionPrefix, lowerTokenPrefix, maxDistance);
+    // // no exact matches:
+    // if (distance <= 0) {
+    // return false;
+    // }
+    // return true;
+    // }
 
     private IJavaCompletionProposal[] tryCreateJdtProposal(final CompletionProposal proposal) {
         final int oldLength = collector.getJavaCompletionProposals().length;
