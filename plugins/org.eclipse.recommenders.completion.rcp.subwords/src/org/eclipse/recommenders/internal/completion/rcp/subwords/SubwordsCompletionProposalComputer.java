@@ -21,7 +21,9 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
+import org.eclipse.swt.graphics.Point;
 
 public class SubwordsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
@@ -45,6 +47,13 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
 
         final String token = getToken();
         final SubwordsCompletionRequestor requestor = new SubwordsCompletionRequestor(token, ctx);
+
+        final ITextViewer viewer = ctx.getViewer();
+        final Point selection = viewer.getSelectedRange();
+        if (selection.y > 0) {
+            requestor.setReplacementLength(selection.y);
+        }
+
         final ICompilationUnit cu = ctx.getCompilationUnit();
         final int offsetBeforeTokenBegin = ctx.getInvocationOffset() - token.length();
         try {

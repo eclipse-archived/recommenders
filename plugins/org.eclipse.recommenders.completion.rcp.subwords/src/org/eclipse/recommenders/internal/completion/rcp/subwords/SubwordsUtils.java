@@ -81,7 +81,7 @@ public class SubwordsUtils {
         return copy;
     }
 
-    public static boolean checkStringMatchesPrefixPattern(final String prefix, String toTest) {
+    public static boolean matchesPrefixPattern(final String prefix, String toTest) {
         final Pattern pattern = createRegexPatternFromPrefix(prefix);
         toTest = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(toTest);
         final Matcher m = pattern.matcher(toTest);

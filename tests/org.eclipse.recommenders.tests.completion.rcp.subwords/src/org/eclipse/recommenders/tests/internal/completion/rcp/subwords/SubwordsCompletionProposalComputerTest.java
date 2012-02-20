@@ -17,7 +17,6 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.eclipse.jdt.core.CompletionContext;
@@ -45,7 +44,7 @@ public class SubwordsCompletionProposalComputerTest {
 
     private void verifyCodeCompleteIsCalled(final JavaContentAssistInvocationContext ctx) throws JavaModelException {
         final ICompilationUnit cu = ctx.getCompilationUnit();
-        verify(cu, times(1)).codeComplete(anyInt(), (CompletionRequestor) any());
+        verify(cu, atLeastOnce()).codeComplete(anyInt(), (CompletionRequestor) any());
     }
 
     @Test
