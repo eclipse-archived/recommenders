@@ -9,6 +9,7 @@ import junit.framework.Assert;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer;
 import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.SmokeTestScenarios;
@@ -206,9 +207,11 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
             Stopwatch _stopwatch = new Stopwatch();
             this.stopwatch = _stopwatch;
             this.stopwatch.start();
+            CompletionProposalCollector _completionProposalCollector = new CompletionProposalCollector(cu, false);
+            cu.codeComplete((completionIndex).intValue(), _completionProposalCollector);
             sut.computeCompletionProposals(ctx, null);
             this.stopwatch.stop();
-            this.failIfComputerTookTooLong();
+            this.failIfComputerTookTooLong(code);
           }
         }
       }
@@ -229,6 +232,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         Set<Integer> _second = struct.getSecond();
         Integer _head = IterableExtensions.<Integer>head(_second);
         final Integer completionIndex = _head;
+        CompletionProposalCollector _completionProposalCollector = new CompletionProposalCollector(cu, false);
+        cu.codeComplete((completionIndex).intValue(), _completionProposalCollector);
         JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (completionIndex).intValue());
         final JavaContentAssistContextMock ctx = _javaContentAssistContextMock;
         SubwordsCompletionProposalComputer _subwordsCompletionProposalComputer = new SubwordsCompletionProposalComputer();
@@ -238,7 +243,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         List _computeCompletionProposals = sut.computeCompletionProposals(ctx, null);
         final List actual = _computeCompletionProposals;
         this.stopwatch.stop();
-        this.failIfComputerTookTooLong();
+        this.failIfComputerTookTooLong(code);
         StringConcatenation _builder = new StringConcatenation();
         _builder.append(" ");
         _builder.append("some expected values were not found.\\nExpected: ");
@@ -267,7 +272,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     }
   }
   
-  public Object failIfComputerTookTooLong() {
+  public Object failIfComputerTookTooLong(final CharSequence code) {
     Object _xifexpression = null;
     long _elapsedMillis = this.stopwatch.elapsedMillis();
     boolean _operator_greaterThan = ComparableExtensions.<Long>operator_greaterThan(Long.valueOf(_elapsedMillis), Long.valueOf(this.MAX_COMPUTATION_LIMIT_MILLIS));
@@ -276,6 +281,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       _builder.append("completion took FAR too long: ");
       long _elapsedMillis_1 = this.stopwatch.elapsedMillis();
       _builder.append(_elapsedMillis_1, "");
+      _builder.append("\\n in:\\n");
+      _builder.append(code, "");
       String _string = _builder.toString();
       Assert.fail(_string);
     }

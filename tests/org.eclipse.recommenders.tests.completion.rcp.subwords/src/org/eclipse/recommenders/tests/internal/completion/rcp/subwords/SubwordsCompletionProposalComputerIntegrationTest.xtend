@@ -17,6 +17,8 @@ import org.eclipse.jdt.core.CompletionProposal
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal
 import com.google.common.base.Stopwatch
 import org.junit.Before
+import org.eclipse.jdt.core.CompletionRequestorAdapter
+import org.eclipse.jdt.ui.text.java.CompletionProposalCollector
  
 class SubwordsCompletionProposalComputerIntegrationTest { 
   
@@ -126,9 +128,12 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 			sut.sessionStarted
 			stopwatch = new Stopwatch()
 			stopwatch.start
+			// warm up jdt
+			cu.codeComplete(completionIndex, new CompletionProposalCollector(cu,false))
+			
 			sut.computeCompletionProposals(ctx, null)
 			stopwatch.stop
-			failIfComputerTookTooLong
+			failIfComputerTookTooLong(code)
 		}
 	}
 	
@@ -137,16 +142,19 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first; 
 		val completionIndex = struct.second.head
+
+		// warm up jdt
+		cu.codeComplete(completionIndex, new CompletionProposalCollector(cu,false))
+		
 		val ctx = new JavaContentAssistContextMock(cu, completionIndex)
 		
 		val sut = new SubwordsCompletionProposalComputer()
 		sut.sessionStarted
-		
 		stopwatch.start
 		val actual = sut.computeCompletionProposals(ctx, null)
 		stopwatch.stop
 		
-		failIfComputerTookTooLong
+		failIfComputerTookTooLong(code)
 
 		assertEquals(''' some expected values were not found.\nExpected: «expected»,\nFound: «actual» '''.toString, expected.size, actual.size)
 		
@@ -155,8 +163,8 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		} 
 	}
 	
-	def failIfComputerTookTooLong(){
+	def failIfComputerTookTooLong(CharSequence code){
 		if(stopwatch.elapsedMillis > MAX_COMPUTATION_LIMIT_MILLIS)
-			fail('''completion took FAR too long: «stopwatch.elapsedMillis»'''.toString)
+			fail('''completion took FAR too long: «stopwatch.elapsedMillis»\n in:\n«code»'''.toString)
 	}
 }
