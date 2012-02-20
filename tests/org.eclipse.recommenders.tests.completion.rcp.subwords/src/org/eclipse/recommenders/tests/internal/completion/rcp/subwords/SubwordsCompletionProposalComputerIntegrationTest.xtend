@@ -25,13 +25,10 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 	
 
   	Stopwatch stopwatch =  new Stopwatch()
-  	long MAX_COMPUTATION_LIMIT_MILLIS =1000
+  	long MAX_COMPUTATION_LIMIT_MILLIS =2000
   	 
   	@Test
 	def void test000_smoke(){
-		val code = OLD_TEST_CLASS()
-		smokeTest(code)
-		
 		for(scenario : SmokeTestScenarios::scenarios){
 			smokeTest(scenario)
 		}

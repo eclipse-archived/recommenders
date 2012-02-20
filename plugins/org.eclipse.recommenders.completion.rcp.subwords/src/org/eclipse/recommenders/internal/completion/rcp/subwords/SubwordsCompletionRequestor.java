@@ -51,60 +51,41 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         checkNotNull(ctx);
         this.prefix = prefix;
         this.ctx = ctx;
-        this.collector = new CompletionProposalCollector(ctx.getCompilationUnit(), false);
-        setFavoriteReferences(getFavoriteStaticMembers());
+        this.collector = new CompletionProposalCollector(ctx.getCompilationUnit());
         this.collector.acceptContext(ctx.getCoreContext());
+
+        setIgnored(CompletionProposal.ANNOTATION_ATTRIBUTE_REF, false);
+        setIgnored(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, false);
+        setIgnored(CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, false);
+        setIgnored(CompletionProposal.FIELD_REF, false);
+        setIgnored(CompletionProposal.FIELD_REF_WITH_CASTED_RECEIVER, false);
+        setIgnored(CompletionProposal.KEYWORD, false);
+        setIgnored(CompletionProposal.LABEL_REF, false);
+        setIgnored(CompletionProposal.LOCAL_VARIABLE_REF, false);
+        setIgnored(CompletionProposal.METHOD_DECLARATION, false);
+        setIgnored(CompletionProposal.METHOD_NAME_REFERENCE, false);
+        setIgnored(CompletionProposal.METHOD_REF, false);
+        setIgnored(CompletionProposal.CONSTRUCTOR_INVOCATION, false);
+        setIgnored(CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER, false);
+        setIgnored(CompletionProposal.PACKAGE_REF, false);
+        setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, false);
+        setIgnored(CompletionProposal.VARIABLE_DECLARATION, false);
+        setIgnored(CompletionProposal.TYPE_REF, false);
+
+        setAllowsRequiredProposals(CompletionProposal.FIELD_REF, CompletionProposal.TYPE_REF, true);
+        setAllowsRequiredProposals(CompletionProposal.FIELD_REF, CompletionProposal.TYPE_IMPORT, true);
+        setAllowsRequiredProposals(CompletionProposal.FIELD_REF, CompletionProposal.FIELD_IMPORT, true);
+        setAllowsRequiredProposals(CompletionProposal.METHOD_REF, CompletionProposal.TYPE_REF, true);
+        setAllowsRequiredProposals(CompletionProposal.METHOD_REF, CompletionProposal.TYPE_IMPORT, true);
+        setAllowsRequiredProposals(CompletionProposal.METHOD_REF, CompletionProposal.METHOD_IMPORT, true);
+        setAllowsRequiredProposals(CompletionProposal.CONSTRUCTOR_INVOCATION, CompletionProposal.TYPE_REF, true);
+        setAllowsRequiredProposals(CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION,
+                CompletionProposal.TYPE_REF, true);
+        setAllowsRequiredProposals(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, CompletionProposal.TYPE_REF, true);
+        setAllowsRequiredProposals(CompletionProposal.TYPE_REF, CompletionProposal.TYPE_REF, true);
+
+        setFavoriteReferences(getFavoriteStaticMembers());
         setRequireExtendedContext(true);
-        this.collector.setFavoriteReferences(getFavoriteStaticMembers());
-
-        // setIgnored(CompletionProposal.TYPE_REF, false);
-        // setIgnored(CompletionProposal.ANNOTATION_ATTRIBUTE_REF, false);
-        // setIgnored(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, false);
-        // setIgnored(CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, false);
-        // setIgnored(CompletionProposal.FIELD_REF, false);
-        // setIgnored(CompletionProposal.FIELD_REF_WITH_CASTED_RECEIVER, false);
-        // setIgnored(CompletionProposal.KEYWORD, false);
-        // setIgnored(CompletionProposal.LABEL_REF, false);
-        // setIgnored(CompletionProposal.LOCAL_VARIABLE_REF, false);
-        // setIgnored(CompletionProposal.METHOD_DECLARATION, false);
-        // setIgnored(CompletionProposal.METHOD_NAME_REFERENCE, false);
-        // setIgnored(CompletionProposal.METHOD_REF, false);
-        // setIgnored(CompletionProposal.CONSTRUCTOR_INVOCATION, false);
-        // setIgnored(CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER, false);
-        // setIgnored(CompletionProposal.PACKAGE_REF, false);
-        // setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, false);
-        // setIgnored(CompletionProposal.VARIABLE_DECLARATION, false);
-        // setIgnored(CompletionProposal.TYPE_REF, false);
-        // // Allow completions for unresolved types - since 3.3
-        // setAllowsRequiredProposals(CompletionProposal.FIELD_REF, CompletionProposal.TYPE_REF, true);
-        // setAllowsRequiredProposals(CompletionProposal.FIELD_REF, CompletionProposal.TYPE_IMPORT, true);
-        // setAllowsRequiredProposals(CompletionProposal.FIELD_REF, CompletionProposal.FIELD_IMPORT, true);
-        //
-        // setAllowsRequiredProposals(CompletionProposal.METHOD_REF, CompletionProposal.TYPE_REF, true);
-        // setAllowsRequiredProposals(CompletionProposal.METHOD_REF, CompletionProposal.TYPE_IMPORT, true);
-        // setAllowsRequiredProposals(CompletionProposal.METHOD_REF, CompletionProposal.METHOD_IMPORT, true);
-        //
-        // setAllowsRequiredProposals(CompletionProposal.CONSTRUCTOR_INVOCATION, CompletionProposal.TYPE_REF, true);
-        //
-        // setAllowsRequiredProposals(CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION,
-        // CompletionProposal.TYPE_REF, true);
-        // setAllowsRequiredProposals(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, CompletionProposal.TYPE_REF,
-        // true);
-        //
-        // setAllowsRequiredProposals(CompletionProposal.TYPE_REF, CompletionProposal.TYPE_REF, true);
-        //
-        // Set the favorite list to propose static members - since 3.3
-
-    }
-
-    @Override
-    public boolean isIgnored(final int completionProposalKind) {
-        return false;
-    }
-
-    @Override
-    public boolean isAllowingRequiredProposals(final int proposalKind, final int requiredProposalKind) {
-        return true;
     }
 
     private String[] getFavoriteStaticMembers() {

@@ -42,17 +42,14 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     }
   }.apply();
   
-  private long MAX_COMPUTATION_LIMIT_MILLIS = 1000;
+  private long MAX_COMPUTATION_LIMIT_MILLIS = 2000;
   
   @Test
   public void test000_smoke() {
-      CharSequence _OLD_TEST_CLASS = CodeBuilder.OLD_TEST_CLASS();
-      final CharSequence code = _OLD_TEST_CLASS;
-      this.smokeTest(code);
-      List<CharSequence> _scenarios = SmokeTestScenarios.scenarios();
-      for (final CharSequence scenario : _scenarios) {
-        this.smokeTest(scenario);
-      }
+    List<CharSequence> _scenarios = SmokeTestScenarios.scenarios();
+    for (final CharSequence scenario : _scenarios) {
+      this.smokeTest(scenario);
+    }
   }
   
   @Test

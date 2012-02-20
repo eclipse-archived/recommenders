@@ -22,6 +22,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.tests.jdt.SimpleCompletionRequestor;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 
 public class JavaContentAssistContextMock extends JavaContentAssistInvocationContext {
@@ -42,6 +43,7 @@ public class JavaContentAssistContextMock extends JavaContentAssistInvocationCon
         final ITextViewer mock = mock(ITextViewer.class);
         final Document document = new Document(cu.getSource());
         when(mock.getDocument()).thenReturn(document);
+        when(mock.getSelectedRange()).thenReturn(new Point(-1, -1));
         return mock;
     }
 

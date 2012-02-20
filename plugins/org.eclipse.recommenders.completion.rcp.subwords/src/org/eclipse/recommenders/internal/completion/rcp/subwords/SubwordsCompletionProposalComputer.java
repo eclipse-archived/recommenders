@@ -59,8 +59,10 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
         try {
             // first on the original position
             cu.codeComplete(ctx.getInvocationOffset(), requestor);
-            // then on the 'virtual' position
-            cu.codeComplete(offsetBeforeTokenBegin, requestor);
+            if (token.length() > 0) {
+                // then on the 'virtual' position
+                cu.codeComplete(offsetBeforeTokenBegin, requestor);
+            }
         } catch (final JavaModelException e) {
             RecommendersUtilsPlugin.log(e);
         }

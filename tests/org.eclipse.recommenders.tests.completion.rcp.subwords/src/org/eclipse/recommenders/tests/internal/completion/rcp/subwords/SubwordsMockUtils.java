@@ -24,6 +24,9 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.WorkingCopyOwner;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.IEditorPart;
 import org.mockito.Mockito;
 
 public class SubwordsMockUtils {
@@ -45,19 +48,34 @@ public class SubwordsMockUtils {
     }
 
     public static JavaContentAssistInvocationContext mockInvocationContext() throws JavaModelException {
-        final JavaContentAssistInvocationContext javaContext = mock(JavaContentAssistInvocationContext.class);
+        final IJavaProject javaProject = mockJavaProject();
+        final ICompilationUnit cu = mockICompilationUnit();
+        final ITextViewer viewer = mock(ITextViewer.class);
+        when(viewer.getSelectedRange()).thenReturn(new Point(-1, -1));
 
         final CompletionContext completionContext = mock(CompletionContext.class);
-        when(javaContext.getCoreContext()).thenReturn(completionContext);
+        final JavaContentAssistInvocationContext javaContext = new JavaContentAssistInvocationContext(viewer, 1,
+                mock(IEditorPart.class)) {
 
-        final ICompilationUnit cu = mockICompilationUnit();
-        when(javaContext.getCompilationUnit()).thenReturn(cu);
+            @Override
+            public ICompilationUnit getCompilationUnit() {
+                try {
+                    final IType type = mockType();
+                    when(cu.getElementAt(Mockito.anyInt())).thenReturn(type);
+                    when(cu.getJavaProject()).thenReturn(javaProject);
+                    return cu;
+                } catch (final JavaModelException e) {
+                    return null;
+                }
+            }
 
-        final IJavaProject javaProject = mockJavaProject();
+            @Override
+            public CompletionContext getCoreContext() {
+                return completionContext;
+            }
+        };
+
         when(javaContext.getProject()).thenReturn(javaProject);
-
-        final IType type = mockType();
-        when(cu.getElementAt(Mockito.anyInt())).thenReturn(type);
 
         return javaContext;
     }
