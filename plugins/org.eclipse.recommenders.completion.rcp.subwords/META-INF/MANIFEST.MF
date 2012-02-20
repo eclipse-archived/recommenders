@@ -11,5 +11,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.apache.commons.lang3,
  com.google.guava,
- org.eclipse.recommenders.utils
+ org.eclipse.recommenders.utils,
+ org.eclipse.recommenders.utils.rcp
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

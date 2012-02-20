@@ -21,6 +21,7 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 public class SubwordsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
@@ -47,13 +48,12 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
         final ICompilationUnit cu = ctx.getCompilationUnit();
         final int offsetBeforeTokenBegin = ctx.getInvocationOffset() - token.length();
         try {
+            // first on the original position
+            cu.codeComplete(ctx.getInvocationOffset(), requestor);
+            // then on the 'virtual' position
             cu.codeComplete(offsetBeforeTokenBegin, requestor);
         } catch (final JavaModelException e) {
-            // TODO: won't do that in a later version... but for this early
-            // prototype...
-            // REVIEW: could improve my code and log this message to the error
-            // log?
-            e.printStackTrace();
+            RecommendersUtilsPlugin.log(e);
         }
         return requestor.getProposals();
     }

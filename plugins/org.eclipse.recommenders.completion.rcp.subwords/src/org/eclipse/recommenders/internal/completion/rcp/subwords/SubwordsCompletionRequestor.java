@@ -18,6 +18,7 @@ import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
@@ -27,12 +28,14 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @SuppressWarnings("restriction")
 public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private final List<IJavaCompletionProposal> proposals = Lists.newLinkedList();
 
+    private final Set<String> duplicates = Sets.newHashSet();
     private final JavaContentAssistInvocationContext ctx;
 
     private final CompletionProposalCollector collector;
@@ -50,11 +53,14 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     @Override
     public void accept(final CompletionProposal proposal) {
+        if (isDuplicate(proposal)) {
+            return;
+        }
+
         final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal
                 .getCompletion());
         if (!SubwordsUtils.checkStringMatchesPrefixPattern(prefix, subwordsMatchingRegion)
                 && !levenshtein(prefix, subwordsMatchingRegion)) {
-
             return;
         }
 
@@ -67,6 +73,11 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
         createSubwordsProposal(subwordsContext);
 
+    }
+
+    private boolean isDuplicate(final CompletionProposal proposal) {
+        final String completion = String.valueOf(proposal.getCompletion());
+        return !duplicates.add(completion);
     }
 
     private boolean levenshtein(String prefix, final String subwordsMatchingRegion) {
@@ -100,7 +111,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         final AbstractJavaCompletionProposal subWordProposal = SubwordsCompletionProposalFactory
                 .createFromJDTProposal(subwordsContext);
         if (subWordProposal != null) {
-            subWordProposal.setRelevance(subwordsContext.calculateRelevance());
+            // subWordProposal.setRelevance(subwordsContext.calculateRelevance());
             proposals.add(subWordProposal);
         }
     }
