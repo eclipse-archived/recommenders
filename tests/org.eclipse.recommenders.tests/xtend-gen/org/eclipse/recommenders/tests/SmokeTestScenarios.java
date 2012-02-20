@@ -9,8 +9,7 @@ import org.eclipse.xtext.xbase.lib.Functions.Function0;
 @SuppressWarnings("all")
 public class SmokeTestScenarios {
   public static List<CharSequence> scenarios() {
-    CharSequence _OLD_TEST_CLASS = CodeBuilder.OLD_TEST_CLASS();
-    List<CharSequence> _asList = Arrays.<CharSequence>asList(SmokeTestScenarios.IMPORT_01, SmokeTestScenarios.IMPORT_02, SmokeTestScenarios.PACKAGE_01, SmokeTestScenarios.PACKAGE_02, SmokeTestScenarios.PACKAGE_03, SmokeTestScenarios.METHOD_STMT_01, SmokeTestScenarios.METHOD_STMT_02, SmokeTestScenarios.METHOD_STMT_03, SmokeTestScenarios.METHOD_STMT_04, SmokeTestScenarios.METHOD_STMT_05, SmokeTestScenarios.METHOD_STMT_06, _OLD_TEST_CLASS);
+    List<CharSequence> _asList = Arrays.<CharSequence>asList(SmokeTestScenarios.IMPORT_01, SmokeTestScenarios.IMPORT_02, SmokeTestScenarios.PACKAGE_01, SmokeTestScenarios.PACKAGE_02, SmokeTestScenarios.PACKAGE_03, SmokeTestScenarios.METHOD_STMT_01, SmokeTestScenarios.METHOD_STMT_02, SmokeTestScenarios.METHOD_STMT_03, SmokeTestScenarios.METHOD_STMT_04, SmokeTestScenarios.METHOD_STMT_05, SmokeTestScenarios.METHOD_STMT_06, SmokeTestScenarios.COMMENTS_01, SmokeTestScenarios.COMMENTS_02);
     return _asList;
   }
   
@@ -145,6 +144,61 @@ public class SmokeTestScenarios {
       _builder.append("t.$");
       _builder.newLine();
       _builder.append("\t\t");
+      _builder.append("}");
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
+      return _classbody;
+    }
+  }.apply();
+  
+  public static CharSequence COMMENTS_01 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("/**");
+      _builder.newLine();
+      _builder.append(" ");
+      _builder.append("*$ Copyright (c) 2010, 2011 Darmstadt University of Technology.");
+      _builder.newLine();
+      _builder.append(" ");
+      _builder.append("* All rights reserved. This$ program and the accompanying materials");
+      _builder.newLine();
+      _builder.append(" ");
+      _builder.append("* are made available under the terms of the Eclipse Public License v1.0");
+      _builder.newLine();
+      _builder.append(" ");
+      _builder.append("* which accompanies this distribution, and is available at");
+      _builder.newLine();
+      _builder.append(" ");
+      _builder.append("* http://www.$eclipse.org/legal/epl-v10.html");
+      _builder.newLine();
+      _builder.append(" ");
+      _builder.append("*");
+      _builder.newLine();
+      _builder.append(" ");
+      _builder.append("* Contributors$:");
+      _builder.newLine();
+      _builder.append(" ");
+      _builder.append("*    Marcel Bruch $- initial API and implementation.");
+      _builder.newLine();
+      _builder.append(" ");
+      _builder.append("*/");
+      _builder.newLine();
+      _builder.append("package org.ecli$pse.recommenders.tests.comp$letion.rcp.calls$;$");
+      _builder.newLine();
+      return _builder;
+    }
+  }.apply();
+  
+  public static CharSequence COMMENTS_02 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("/**");
+      _builder.newLine();
+      _builder.append("* $");
+      _builder.newLine();
+      _builder.append("*/");
+      _builder.newLine();
+      _builder.append("static {");
+      _builder.newLine();
       _builder.append("}");
       CharSequence _classbody = CodeBuilder.classbody(_builder);
       return _classbody;

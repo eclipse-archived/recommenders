@@ -82,7 +82,7 @@ public class SubwordsJavaCompletionProposal extends JavaCompletionProposal {
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        setRelevance(subwordsContext.calculateRelevance());
+        // setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 
