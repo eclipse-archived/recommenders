@@ -260,7 +260,7 @@ public class CodeBuilder {
     _builder.append(methodbody, "	");
     _builder.newLineIfNotEmpty();
     _builder.append("}");
-    CharSequence _classbody = CodeBuilder.classbody("MyClass", _builder);
+    CharSequence _classbody = CodeBuilder.classbody(_builder);
     return _classbody;
   }
   
@@ -276,7 +276,7 @@ public class CodeBuilder {
     _builder.append(methodbody, "	");
     _builder.newLineIfNotEmpty();
     _builder.append("}");
-    CharSequence _classbody = CodeBuilder.classbody("MyClass", _builder);
+    CharSequence _classbody = CodeBuilder.classbody(_builder);
     return _classbody;
   }
 }

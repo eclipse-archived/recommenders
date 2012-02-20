@@ -78,6 +78,9 @@ class SmokeTestScenarios {
 		 *    Marcel Bruch $- initial API and implementation.
 		 */
 		package org.ecli$pse.recommenders.tests.comp$letion.rcp.calls$;$
+		public class Comments01 {
+			
+		}
 		'''
 		
 		

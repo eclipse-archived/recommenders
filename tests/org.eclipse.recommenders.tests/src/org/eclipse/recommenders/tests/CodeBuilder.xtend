@@ -110,14 +110,14 @@ class CodeBuilder {
 	}
 	
 	def static method(CharSequence methodbody){
-		classbody('MyClass', '''
+		classbody('''
 		public void __test() {
 			«methodbody»
 		}''')
 	}
 
 	def static classWithFieldsAndTestMethod(CharSequence fieldDeclarations, CharSequence methodbody){
-		classbody('MyClass', '''
+		classbody('''
 		
 		«fieldDeclarations»
 		

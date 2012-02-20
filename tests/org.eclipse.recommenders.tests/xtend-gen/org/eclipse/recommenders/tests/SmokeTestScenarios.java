@@ -184,6 +184,12 @@ public class SmokeTestScenarios {
       _builder.newLine();
       _builder.append("package org.ecli$pse.recommenders.tests.comp$letion.rcp.calls$;$");
       _builder.newLine();
+      _builder.append("public class Comments01 {");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.newLine();
+      _builder.append("}");
+      _builder.newLine();
       return _builder;
     }
   }.apply();
