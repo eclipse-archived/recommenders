@@ -10,7 +10,14 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
+import static org.eclipse.recommenders.utils.Checks.cast;
+
+import java.lang.reflect.Method;
+
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.StyledString;
@@ -18,6 +25,18 @@ import org.eclipse.swt.graphics.Image;
 
 @SuppressWarnings("restriction")
 public class SubwordsJavaCompletionProposal extends JavaCompletionProposal {
+
+    private static Method GET_PROPOSAL_INFO;
+
+    {
+        try {
+            final Class<AbstractJavaCompletionProposal> clazz = AbstractJavaCompletionProposal.class;
+            GET_PROPOSAL_INFO = clazz.getDeclaredMethod("getProposalInfo");
+            GET_PROPOSAL_INFO.setAccessible(true);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static SubwordsJavaCompletionProposal create(final SubwordsProposalContext subwordsContext) {
         final JavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
@@ -40,8 +59,24 @@ public class SubwordsJavaCompletionProposal extends JavaCompletionProposal {
 
     @Override
     public void apply(final IDocument document, final char trigger, final int offset) {
-        // TODO Auto-generated method stub
-        super.apply(document, trigger, offset);
+        subwordsContext.getJdtProposal().apply(document);
+    }
+
+    @Override
+    protected boolean isSupportingRequiredProposals() {
+        return true;
+    }
+
+    @Override
+    protected ProposalInfo getProposalInfo() {
+        final IJavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
+        try {
+            final ProposalInfo info = cast(GET_PROPOSAL_INFO.invoke(jdtProposal));
+            return info;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
