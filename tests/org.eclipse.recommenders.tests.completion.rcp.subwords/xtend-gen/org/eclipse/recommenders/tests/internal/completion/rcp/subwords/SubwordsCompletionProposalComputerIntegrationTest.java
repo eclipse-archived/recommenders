@@ -11,6 +11,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
+import org.eclipse.jface.text.Document;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer;
 import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.SmokeTestScenarios;
@@ -133,6 +134,16 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       final CharSequence code = _method;
       List<String> _asList = Arrays.<String>asList("wait", "wait", "wait");
       this.exerciseAndVerify(code, _asList);
+  }
+  
+  @Test
+  public void test009_overrides() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("String id;$");
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
+      final CharSequence code = _classbody;
+      List<String> _asList = Arrays.<String>asList("getId", "setId");
+      this.exerciseAndVerifyLenient(code, _asList);
   }
   
   @Test
@@ -264,6 +275,46 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     }
   }
   
+  public void exerciseAndVerifyLenient(final CharSequence code, final List<String> expected) {
+      List<IJavaCompletionProposal> _exercise = this.exercise(code);
+      final List<IJavaCompletionProposal> actual = _exercise;
+      for (final String e : expected) {
+        {
+          final Function1<IJavaCompletionProposal,Boolean> _function = new Function1<IJavaCompletionProposal,Boolean>() {
+              public Boolean apply(final IJavaCompletionProposal p) {
+                String _string = p.toString();
+                boolean _startsWith = _string.startsWith(e);
+                return Boolean.valueOf(_startsWith);
+              }
+            };
+          IJavaCompletionProposal _findFirst = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function);
+          final IJavaCompletionProposal match = _findFirst;
+          Assert.assertNotNull(match);
+          this.applyProposal(match, code);
+          actual.remove(match);
+        }
+      }
+  }
+  
+  public void applyProposal(final IJavaCompletionProposal proposal, final CharSequence code) {
+      String _string = code.toString();
+      Document _document = new Document(_string);
+      final Document doc = _document;
+      proposal.apply(doc);
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("applying template ");
+      _builder.append(proposal, "");
+      _builder.append(" on code ");
+      _builder.append(code, "");
+      _builder.append(" failed.");
+      String _string_1 = _builder.toString();
+      String _get = doc.get();
+      int _length = _get.length();
+      int _length_1 = code.length();
+      boolean _operator_greaterThan = IntegerExtensions.operator_greaterThan(_length, _length_1);
+      Assert.assertTrue(_string_1, _operator_greaterThan);
+  }
+  
   public void exerciseAndVerify(final CharSequence code, final List<String> expected) {
       List<IJavaCompletionProposal> _exercise = this.exercise(code);
       final List<IJavaCompletionProposal> actual = _exercise;
@@ -279,15 +330,20 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       int _size_1 = actual.size();
       Assert.assertEquals(_string, _size, _size_1);
       for (final String e : expected) {
-        final Function1<IJavaCompletionProposal,Boolean> _function = new Function1<IJavaCompletionProposal,Boolean>() {
-            public Boolean apply(final IJavaCompletionProposal p) {
-              String _string = p.toString();
-              boolean _startsWith = _string.startsWith(e);
-              return Boolean.valueOf(_startsWith);
-            }
-          };
-        IJavaCompletionProposal _findFirst = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function);
-        Assert.assertNotNull(_findFirst);
+        {
+          final Function1<IJavaCompletionProposal,Boolean> _function = new Function1<IJavaCompletionProposal,Boolean>() {
+              public Boolean apply(final IJavaCompletionProposal p) {
+                String _string = p.toString();
+                boolean _startsWith = _string.startsWith(e);
+                return Boolean.valueOf(_startsWith);
+              }
+            };
+          IJavaCompletionProposal _findFirst = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function);
+          final IJavaCompletionProposal match = _findFirst;
+          Assert.assertNotNull(match);
+          this.applyProposal(match, code);
+          actual.remove(match);
+        }
       }
   }
   

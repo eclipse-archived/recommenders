@@ -19,6 +19,7 @@ import com.google.common.base.Stopwatch
 import org.junit.Before
 import org.eclipse.jdt.core.CompletionRequestorAdapter
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector
+import org.eclipse.jface.text.Document
  
 class SubwordsCompletionProposalComputerIntegrationTest { 
   
@@ -84,6 +85,14 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		val code = method('''Object o=""; o.w$''')
 		exerciseAndVerify(code, asList("wait", "wait","wait"))
 	}
+	
+	
+	@Test 
+	def void test009_overrides(){
+		val code = classbody('''String id;$''')
+		exerciseAndVerifyLenient(code, asList("getId", "setId"))
+	}
+	
 	
 	@Test 
 	def void test008_ranking(){
@@ -151,14 +160,34 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		}
 	}
 	
+	def exerciseAndVerifyLenient(CharSequence code, List<String> expected){
+		val actual = exercise(code)
+		for(e : expected) {
+			val match = actual.findFirst(p|p.toString.startsWith(e)) 
+  			assertNotNull(match)
+  			applyProposal(match, code)
+  			actual.remove(match)
+		}  
+	}
+	
+	def applyProposal(IJavaCompletionProposal proposal, CharSequence code){
+		val doc = new Document(code.toString)
+		proposal.apply(doc)
+		assertTrue('''applying template «proposal» on code «code» failed.'''.toString, doc.get.length> code.length)
+	}
+	
 	def exerciseAndVerify(CharSequence code, List<String> expected){
 		val actual = exercise(code)
 		
 		assertEquals(''' some expected values were not found.\nExpected: «expected»,\nFound: «actual» '''.toString, expected.size, actual.size)
-		for(e : expected) { 
-  			assertNotNull(actual.findFirst(p|p.toString.startsWith(e)))
+		for(e : expected) {
+			val match = actual.findFirst(p|p.toString.startsWith(e)) 
+  			assertNotNull(match)
+  			applyProposal(match, code)
+  			actual.remove(match)
 		} 
 	}
+	
 	
 	def List<IJavaCompletionProposal> exercise(CharSequence code){
 		fixture.clear
