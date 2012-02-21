@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
+import org.eclipse.recommenders.utils.names.IMethodName;
 
 import com.google.common.base.Optional;
 
@@ -86,5 +87,11 @@ public interface IRecommendersCompletionContext {
     Optional<IType> getClosestEnclosingType();
 
     boolean hasEnclosingElement();
+
+    /**
+     * Returns the method that defines an anonymous value, if any. Checks whether the completion was triggered on an
+     * method return value and returns this method if possible.
+     */
+    Optional<IMethodName> getMethodDef();
 
 }

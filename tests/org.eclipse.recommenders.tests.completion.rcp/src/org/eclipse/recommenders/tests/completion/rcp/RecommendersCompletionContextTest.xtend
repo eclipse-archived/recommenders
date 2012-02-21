@@ -10,6 +10,7 @@ import static junit.framework.Assert.*
 import org.eclipse.jdt.internal.compiler.ast.MessageSend
 import org.eclipse.jdt.internal.compiler.ast.ASTNode
 import com.google.common.base.Optional
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess
  
 class RecommendersCompletionContextTest { 
   
@@ -42,6 +43,14 @@ class RecommendersCompletionContextTest {
 		val sut = exercise(code)
 		// check is absent but no exception is thrown
 		assertEquals(Optional::absent(),sut.receiverType);		
+	}
+	
+	@Test
+	def void test04(){
+		val code = methodbody('s1.concat("").$;')
+		val sut = exercise(code)
+		assertCompletionNode(sut, typeof(CompletionOnMemberAccess));
+		assertTrue(sut.methodDef.present)
 	}
 	
 	

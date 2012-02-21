@@ -13,6 +13,7 @@ import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMoc
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
@@ -49,6 +50,18 @@ public class RecommendersCompletionContextTest {
       Optional<?> _absent = Optional.absent();
       Optional<IType> _receiverType = sut.getReceiverType();
       Assert.assertEquals(_absent, _receiverType);
+  }
+  
+  @Test
+  public void test04() {
+      CharSequence _methodbody = this.methodbody("s1.concat(\"\").$;");
+      final CharSequence code = _methodbody;
+      IRecommendersCompletionContext _exercise = this.exercise(code);
+      final IRecommendersCompletionContext sut = _exercise;
+      this.assertCompletionNode(sut, org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess.class);
+      Optional<IMethodName> _methodDef = sut.getMethodDef();
+      boolean _isPresent = _methodDef.isPresent();
+      Assert.assertTrue(_isPresent);
   }
   
   @Test

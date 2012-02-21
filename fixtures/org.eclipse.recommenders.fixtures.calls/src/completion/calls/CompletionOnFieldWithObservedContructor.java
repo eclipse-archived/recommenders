@@ -25,7 +25,7 @@ public class CompletionOnFieldWithObservedContructor extends Dialog {
         // b. -> pattern w/o contructor
         //@start
         b = new Button(null, 0);
-        b.<^Space|setText.*%>
+        b.addetec<^Space|setText.*%>
         return null;
         //@end
 //        b = new Button(null, 0);

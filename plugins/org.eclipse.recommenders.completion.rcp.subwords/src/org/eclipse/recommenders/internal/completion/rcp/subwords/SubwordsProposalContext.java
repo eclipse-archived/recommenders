@@ -212,7 +212,7 @@ public class SubwordsProposalContext {
         if (subwordsMatchingRegion.startsWith(prefix)) {
             return jdtProposal.getRelevance();
         } else {
-            return getJdtProposal().getRelevance() - 50;
+            return 5;
         }
 
         // TODO until https://bugs.eclipse.org/bugs/show_bug.cgi?id=350991 is

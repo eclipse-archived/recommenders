@@ -213,7 +213,10 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
                     query.kind = usage.kind;
                 }
                 if (usage.definition != null) {
-                    query.definition = usage.definition;
+                    final Optional<IMethodName> def = ctx.getMethodDef();
+                    if (def.isPresent()) {
+                        query.definition = def.get();
+                    }
                 }
             }
         }

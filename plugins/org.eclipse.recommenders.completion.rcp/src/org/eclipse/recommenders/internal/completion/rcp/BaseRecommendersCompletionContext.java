@@ -36,6 +36,7 @@ import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
@@ -45,6 +46,8 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.rcp.CompilerBindings;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 import com.google.common.base.Optional;
@@ -341,6 +344,19 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
             return absent();
         }
         return JdtUtils.createUnresolvedType(b);
+    }
 
+    @Override
+    public Optional<IMethodName> getMethodDef() {
+        final ASTNode node = getCompletionNode();
+        if (node instanceof CompletionOnMemberAccess) {
+            final CompletionOnMemberAccess n = cast(node);
+            if (n.receiver instanceof MessageSend) {
+                final MessageSend receiver = (MessageSend) n.receiver;
+                final MethodBinding binding = receiver.binding;
+                return CompilerBindings.toMethodName(binding);
+            }
+        }
+        return absent();
     }
 }
