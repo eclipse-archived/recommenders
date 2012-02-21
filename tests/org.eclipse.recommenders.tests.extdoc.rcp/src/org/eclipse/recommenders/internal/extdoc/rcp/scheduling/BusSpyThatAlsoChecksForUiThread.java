@@ -38,15 +38,15 @@ import com.google.common.eventbus.Subscribe;
 
 public class BusSpyThatAlsoChecksForUiThread {
 
-    private final List<Object> events = newLinkedList();
+    private final List<Object> _events = newLinkedList();
 
-    public List<?> getEvents() {
-        return events;
+    public synchronized List<Object> getEvents() {
+        return _events;
     }
 
     private void add(final Object event) {
         // ensureCurrentThreadIsUiThread();
-        events.add(event);
+        getEvents().add(event);
     }
 
     private void ensureCurrentThreadIsUiThread() {
@@ -59,21 +59,21 @@ public class BusSpyThatAlsoChecksForUiThread {
      * asserts that the expected event was posted
      */
     public void assertEvent(final Object expected) {
-        assertFalse(events.isEmpty());
-        assertTrue("no matching event found", events.remove(expected));
+        assertFalse(getEvents().isEmpty());
+        assertTrue("no matching event found", getEvents().remove(expected));
     }
 
     /**
      * asserts that the expected event was posted as the next event
      */
     public void assertNextEvent(final Object expected) {
-        assertFalse(events.isEmpty());
-        final Object actual = events.remove(0);
+        assertFalse(getEvents().isEmpty());
+        final Object actual = getEvents().remove(0);
         assertEquals(expected, actual);
     }
 
     public void assertNoMoreEvents() {
-        assertTrue(events.isEmpty());
+        assertTrue(getEvents().isEmpty());
     }
 
     @Subscribe

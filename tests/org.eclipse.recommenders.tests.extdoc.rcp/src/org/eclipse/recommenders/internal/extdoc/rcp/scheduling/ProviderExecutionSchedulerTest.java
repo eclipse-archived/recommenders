@@ -243,7 +243,7 @@ public class ProviderExecutionSchedulerTest {
     private void waitForFinish() {
 
         try {
-            Thread.sleep(TIME_OF_SLOW_PROVIDERS + 100);
+            Thread.sleep(TIME_OF_SLOW_PROVIDERS + 200);
         } catch (final InterruptedException e) {
             Throws.throwUnhandledException(e);
         }
