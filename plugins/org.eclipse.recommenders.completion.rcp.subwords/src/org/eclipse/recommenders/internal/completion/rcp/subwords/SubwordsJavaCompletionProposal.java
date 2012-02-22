@@ -60,7 +60,17 @@ public class SubwordsJavaCompletionProposal extends JavaCompletionProposal {
 
     @Override
     public void apply(final IDocument document, final char trigger, final int offset) {
-        subwordsContext.getJdtProposal().apply(document);
+        final JavaCompletionProposal p = subwordsContext.getJdtProposal();
+        p.apply(document, trigger, offset);
+    }
+
+    @Override
+    public void setReplacementLength(final int replacementLength) {
+        if (subwordsContext != null) {
+            final JavaCompletionProposal p = subwordsContext.getJdtProposal();
+            p.setReplacementLength(replacementLength);
+        }
+        super.setReplacementLength(replacementLength);
     }
 
     @Override
