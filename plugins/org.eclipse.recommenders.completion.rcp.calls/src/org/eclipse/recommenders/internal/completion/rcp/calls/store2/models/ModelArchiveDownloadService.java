@@ -84,10 +84,8 @@ public class ModelArchiveDownloadService {
                 monitor.beginTask("call completion for " + manifest.getIdentifier(), 1);
                 try {
                     final String url = "model/" + WebServiceClient.encode(manifest.getIdentifier());
-                    final InputStream is =
-                            client.createRequestBuilder(url)
-                                    .accept(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                                    .get(InputStream.class);
+                    final InputStream is = client.createRequestBuilder(url)
+                            .accept(MediaType.APPLICATION_OCTET_STREAM_TYPE).get(InputStream.class);
                     final FileOutputStream fos = new FileOutputStream(temp);
                     IOUtils.copy(is, fos);
                     IOUtils.closeQuietly(is);
@@ -95,7 +93,7 @@ public class ModelArchiveDownloadService {
 
                     return Status.OK_STATUS;
 
-                } catch (final IOException e) {
+                } catch (final Exception e) {
                     return StatusUtil.newStatus(CallsCompletionPlugin.PLUGIN_ID, e);
                 } finally {
                     monitor.done();
