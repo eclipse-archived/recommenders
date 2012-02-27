@@ -59,8 +59,8 @@ public class ModelArchiveDownloadService {
                 try {
                     final File archive = downloadModel(e.manifest);
                     fireModelArchiveDownloaded(archive, e);
-                } catch (final IOException e1) {
-                    RecommendersPlugin.logError(e1, "Exception occurred during model download for %s", e);
+                } catch (final Exception x) {
+                    RecommendersPlugin.logError(x, "Exception occurred during model download for %s", e);
                 }
             }
         });

@@ -234,4 +234,9 @@ public class CouchDBAccessService {
     public WebServiceClient getClient() {
         return client;
     }
+
+    public String delete(final String _id, final String _rev) {
+        final String res = client.createResource(_id).queryParam("rev", _rev).delete(String.class);
+        return res;
+    }
 }

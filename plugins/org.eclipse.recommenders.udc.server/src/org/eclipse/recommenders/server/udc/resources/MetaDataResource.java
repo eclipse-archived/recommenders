@@ -44,6 +44,9 @@ public class MetaDataResource {
     @Inject
     private CouchDBAccessService dataAccess;
 
+    @Inject
+    ModelResource modelResource;
+
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     @POST
@@ -61,16 +64,27 @@ public class MetaDataResource {
 
         final LibraryIdentifier libraryIdentifier = findOrCreateLibraryIdentifier(dependencyInfo);
         Manifest manifest = findFingerprintMatch(libraryIdentifier);
-        if (manifest != null) {
+        if (exists(manifest)) {
             return new ManifestMatchResult(manifest);
         }
 
         final ManifestMatcher matcher = createManifestMatcher(libraryIdentifier);
         manifest = matcher.getBestMatch();
-        if (manifest == Manifest.NULL) {
+        if (!exists(manifest) || manifest == Manifest.NULL) {
             return new ManifestMatchResult();
         } else {
             return new ManifestMatchResult(manifest);
+        }
+    }
+
+    private boolean exists(final Manifest m) {
+        if (m == null) {
+            return false;
+        }
+        try {
+            return modelResource.getExistingZipFile(m.getIdentifier()).exists();
+        } catch (final Exception e) {
+            return false;
         }
     }
 
