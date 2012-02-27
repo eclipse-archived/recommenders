@@ -53,7 +53,7 @@ public class LoggingUtils {
             // org.eclipse.core.internal.runtime.Log.isLoggable(Log.java:101)
             log.log(status);
         } catch (final Throwable e) {
-            e.printStackTrace();
+            System.out.println(status);
         }
     }
 
