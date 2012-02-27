@@ -84,6 +84,16 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         setRequireExtendedContext(true);
     }
 
+    // @Override
+    // public boolean isAllowingRequiredProposals(final int proposalKind, final int requiredProposalKind) {
+    // return true;
+    // };
+    //
+    // @Override
+    // public boolean isIgnored(final int completionProposalKind) {
+    // return false;
+    // };
+
     private String[] getFavoriteStaticMembers() {
         final String serializedFavorites = PreferenceConstants.getPreferenceStore().getString(
                 PreferenceConstants.CODEASSIST_FAVORITE_STATIC_MEMBERS);
@@ -99,8 +109,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
             return;
         }
 
-        final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal
-                .getCompletion());
+        final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal);
         if (!matchesPrefixPattern(prefix, subwordsMatchingRegion)) { // && !isSmallTypo(prefix, subwordsMatchingRegion))
                                                                      // {
             return;
@@ -115,8 +124,13 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private boolean isDuplicate(final CompletionProposal proposal) {
         final StringBuilder sb = new StringBuilder();
+
         final char[] c = proposal.getCompletion();
         sb.append(c);
+        final char[] d = proposal.getDeclarationSignature();
+        if (d != null) {
+            sb.append(d);
+        }
         final char[] s = proposal.getSignature();
         if (s != null) {
             sb.append(s);

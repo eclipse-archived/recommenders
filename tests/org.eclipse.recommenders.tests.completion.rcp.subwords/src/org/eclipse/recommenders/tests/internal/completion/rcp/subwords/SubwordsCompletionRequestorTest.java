@@ -20,11 +20,13 @@ import static org.eclipse.recommenders.tests.internal.completion.rcp.subwords.Su
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionRequestor;
+import org.eclipse.recommenders.utils.ConcurrentBag;
 import org.junit.Test;
 
 public class SubwordsCompletionRequestorTest {

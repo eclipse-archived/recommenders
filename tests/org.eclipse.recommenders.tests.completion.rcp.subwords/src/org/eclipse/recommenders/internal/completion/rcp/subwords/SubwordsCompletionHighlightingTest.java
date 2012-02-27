@@ -31,9 +31,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.SourceRange;
+import org.eclipse.recommenders.utils.ConcurrentBag;
 import org.junit.Test;
 
 public class SubwordsCompletionHighlightingTest {

@@ -137,12 +137,22 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   }
   
   @Test
-  public void test009_overrides() {
+  public void test009_ProposedGettersAndSetters() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("String id;$");
       CharSequence _classbody = CodeBuilder.classbody(_builder);
       final CharSequence code = _classbody;
       List<String> _asList = Arrays.<String>asList("getId", "setId");
+      this.exerciseAndVerifyLenient(code, _asList);
+  }
+  
+  @Test
+  public void test010_ConstuctorCalls() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("ConcurrentHashMap b = new ConcurrentHashMap$");
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
+      final CharSequence code = _classbody;
+      List<String> _asList = Arrays.<String>asList("ConcurrentHashMap(int");
       this.exerciseAndVerifyLenient(code, _asList);
   }
   
@@ -266,7 +276,6 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
             cu.codeComplete((completionIndex).intValue(), _completionProposalCollector);
             sut.computeCompletionProposals(ctx, null);
             this.stopwatch.stop();
-            this.failIfComputerTookTooLong(code);
           }
         }
       }
@@ -292,6 +301,10 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
           Assert.assertNotNull(match);
           this.applyProposal(match, code);
           actual.remove(match);
+          boolean _isEmpty = actual.isEmpty();
+          if (_isEmpty) {
+            return;
+          }
         }
       }
   }
@@ -368,7 +381,6 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         List _computeCompletionProposals = sut.computeCompletionProposals(ctx, null);
         final List actual = _computeCompletionProposals;
         this.stopwatch.stop();
-        this.failIfComputerTookTooLong(code);
         return actual;
       }
     } catch (Exception _e) {

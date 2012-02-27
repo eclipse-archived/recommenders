@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
@@ -58,10 +59,10 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
         final int offsetBeforeTokenBegin = ctx.getInvocationOffset() - token.length();
         try {
             // first on the original position
-            cu.codeComplete(ctx.getInvocationOffset(), requestor);
+            cu.codeComplete(ctx.getInvocationOffset(), requestor, new NullProgressMonitor());
             if (token.length() > 0) {
                 // then on the 'virtual' position
-                cu.codeComplete(offsetBeforeTokenBegin, requestor);
+                cu.codeComplete(offsetBeforeTokenBegin, requestor, new NullProgressMonitor());
             }
         } catch (final JavaModelException e) {
             RecommendersUtilsPlugin.log(e);

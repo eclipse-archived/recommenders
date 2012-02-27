@@ -11,12 +11,14 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.custom.StyleRange;
@@ -112,8 +114,12 @@ public class SubwordsUtils {
         return p;
     }
 
-    public static String getTokensBetweenLastWhitespaceAndFirstOpeningBracket(final char[] completion) {
-        return getTokensBetweenLastWhitespaceAndFirstOpeningBracket(String.valueOf(completion));
+    public static String getTokensBetweenLastWhitespaceAndFirstOpeningBracket(final CompletionProposal proposal) {
+        char[] token = proposal.getCompletion();
+        if (Arrays.equals(token, new char[] { '(', ')' })) {
+            token = proposal.getName();
+        }
+        return getTokensBetweenLastWhitespaceAndFirstOpeningBracket(String.valueOf(token));
     }
 
     public static String getTokensBetweenLastWhitespaceAndFirstOpeningBracket(String completion) {
