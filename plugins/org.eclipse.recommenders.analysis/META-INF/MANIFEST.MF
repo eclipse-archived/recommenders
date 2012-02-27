@@ -12,6 +12,6 @@ Require-Bundle: org.apache.commons.lang3,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.utils.gson,
  org.slf4j.api,
- org.eclipse.osgi;bundle-version="3.7.1"
+ org.eclipse.osgi
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
