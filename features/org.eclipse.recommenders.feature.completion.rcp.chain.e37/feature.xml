@@ -14,7 +14,7 @@
 <feature
       id="org.eclipse.recommenders.feature.completion.rcp.chain.e37"
       label="Code Recommenders: Chain Completion (Incubation)"
-      version="0.5.0.qualifier"
+      version="0.5.1.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.eclipse.org/recommenders/">

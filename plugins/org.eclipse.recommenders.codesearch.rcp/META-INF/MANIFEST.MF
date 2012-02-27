@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: RCP Codesearch Client (Incubation) (Experimental)
 Bundle-SymbolicName: org.eclipse.recommenders.codesearch.rcp;singleton:=true
-Bundle-Version: 0.5.0.qualifier
+Bundle-Version: 0.5.1.qualifier
 Bundle-Activator: org.eclipse.recommenders.internal.codesearch.rcp.CodesearchPlugin
 Bundle-Vendor: Eclipse Code Recommenders
 Require-Bundle: org.eclipse.ui,

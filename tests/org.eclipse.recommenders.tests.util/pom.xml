@@ -9,4 +9,4 @@
 	<artifactId>org.eclipse.recommenders.tests.util</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 
-</project>
+<version>0.5.1-SNAPSHOT</version></project>

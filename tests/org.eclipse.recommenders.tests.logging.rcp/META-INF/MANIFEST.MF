@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Logging Tests (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp.logging
-Bundle-Version: 0.5.0.qualifier
+Bundle-Version: 0.5.1.qualifier
 Fragment-Host: org.eclipse.recommenders.rcp.logging
 Require-Bundle: org.junit4,
  org.mockito,

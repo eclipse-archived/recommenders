@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.codesearch.server"
       label="Code Recommenders: Codesearch Server (Incubation)"
-      version="0.5.0.qualifier">
+      version="0.5.1.qualifier">
 
    <description url="http://www.eclipse.org/recommenders/">
       %description

@@ -19,9 +19,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * This class contains various frequently used checks we used in our code base.
- * Some methods return their arguments where appropriate, others return
- * {@link Void} if a return value has no or at least ambiguous meaning.
+ * This class contains various frequently used checks we used in our code base. Some methods return their arguments
+ * where appropriate, others return {@link Void} if a return value has no or at least ambiguous meaning.
  * 
  */
 public class Checks {
@@ -29,6 +28,13 @@ public class Checks {
         final boolean equals = value == null ? expected == null : value.equals(expected);
         if (!equals) {
             final String formattedMessage = format("Expected %s but got %s -- %s ", expected, value, message);
+            throwIllegalArgumentException(formattedMessage);
+        }
+    }
+
+    public static void ensureEquals(int actual, int expected, final String message, Object... args) {
+        if (actual != expected) {
+            final String formattedMessage = format("Expected %s but got %s -- %s ", expected, actual, message);
             throwIllegalArgumentException(formattedMessage);
         }
     }
@@ -116,8 +122,7 @@ public class Checks {
     }
 
     /**
-     * @return the given object if it is an instance of the given class or
-     *         raises an exception
+     * @return the given object if it is an instance of the given class or raises an exception
      */
     @SuppressWarnings("unchecked")
     public static <T> T ensureIsInstanceOf(final Object obj, final Class<T> clazz) {
@@ -132,8 +137,7 @@ public class Checks {
     }
 
     /**
-     * @return the iterable or raises an exception if iterable contains no
-     *         elements
+     * @return the iterable or raises an exception if iterable contains no elements
      */
     public static <T extends Iterable<?>> T ensureIsNotEmpty(final T iterable, final String message,
             final Object... args) {
@@ -146,8 +150,7 @@ public class Checks {
     }
 
     /**
-     * @return the given testValue or raises an exception if this string is
-     *         empty
+     * @return the given testValue or raises an exception if this string is empty
      */
     public static String ensureIsNotEmpty(final String testValue, final String message, final Object... args) {
         ensureIsNotNull(testValue);
@@ -200,8 +203,7 @@ public class Checks {
     }
 
     /**
-     * Checks whether the array of double values is sorted - but does not sort
-     * the array.
+     * Checks whether the array of double values is sorted - but does not sort the array.
      */
     // TODO should we rename this method since this name may imply that it
     // sorts the Array?

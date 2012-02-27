@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Common Codesearch Classes (Incubation) (Experimental)
 Bundle-SymbolicName: org.eclipse.recommenders.codesearch
-Bundle-Version: 0.5.0.qualifier
+Bundle-Version: 0.5.1.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Export-Package: org.eclipse.recommenders.codesearch,
  org.eclipse.recommenders.codesearch.client

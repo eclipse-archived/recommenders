@@ -19,6 +19,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionRequestor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -44,7 +45,7 @@ public class SubwordsCompletionProposalComputerTest {
 
     private void verifyCodeCompleteIsCalled(final JavaContentAssistInvocationContext ctx) throws JavaModelException {
         final ICompilationUnit cu = ctx.getCompilationUnit();
-        verify(cu, atLeastOnce()).codeComplete(anyInt(), (CompletionRequestor) any());
+        verify(cu, atLeastOnce()).codeComplete(anyInt(), (CompletionRequestor) any(), (IProgressMonitor) any());
     }
 
     @Test
@@ -55,7 +56,7 @@ public class SubwordsCompletionProposalComputerTest {
         // configure that 'complete' throws an exception:
         final ICompilationUnit cu = ctx.getCompilationUnit();
         final JavaModelException exception = mock(JavaModelException.class);
-        doThrow(exception).when(cu).codeComplete(anyInt(), (CompletionRequestor) anyObject());
+        doThrow(exception).when(cu).codeComplete(anyInt(), (CompletionRequestor) anyObject(), (IProgressMonitor) any());
         // exercise:
         sut.computeCompletionProposals(ctx, null);
         // verify:
@@ -70,7 +71,7 @@ public class SubwordsCompletionProposalComputerTest {
         // configure that 'complete' throws an exception:
         final ICompilationUnit cu = ctx.getCompilationUnit();
         final JavaModelException exception = mock(JavaModelException.class);
-        doThrow(exception).when(cu).codeComplete(anyInt(), (CompletionRequestor) anyObject());
+        doThrow(exception).when(cu).codeComplete(anyInt(), (CompletionRequestor) anyObject(), (IProgressMonitor) any());
         // exercise:
         sut.computeCompletionProposals(ctx, null);
         // verify:
