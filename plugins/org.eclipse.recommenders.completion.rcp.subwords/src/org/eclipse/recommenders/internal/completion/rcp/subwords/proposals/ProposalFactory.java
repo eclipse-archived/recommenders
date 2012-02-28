@@ -26,6 +26,7 @@ import org.eclipse.jdt.internal.ui.text.java.LazyGenericTypeProposal;
 import org.eclipse.jdt.internal.ui.text.java.LazyJavaTypeCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
 import org.eclipse.jdt.internal.ui.text.java.ParameterGuessingProposal;
+import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsProposalContext;
@@ -82,9 +83,20 @@ public class ProposalFactory {
 
         final CompletionProposal proposal = subwordsContext.getProposal();
         final JavaContentAssistInvocationContext context = subwordsContext.getContext();
-        final boolean fillBestGuess = true;
+        final boolean fillBestGuess = shouldFillArgumentNames();
+
         final CompletionContext coreContext = context.getCoreContext();
         return new SwParameterGuessingProposal(proposal, context, coreContext, fillBestGuess, subwordsContext);
+    }
+
+    private static boolean shouldFillArgumentNames() {
+        try {
+            final boolean res = PreferenceConstants.getPreferenceStore().getBoolean(
+                    PreferenceConstants.CODEASSIST_GUESS_METHOD_ARGUMENTS);
+            return res;
+        } catch (final Exception e) {
+        }
+        return false;
     }
 
     public static SwAnonymousTypeCompletionProposal createAnonymousTypeCompletionProposal(
