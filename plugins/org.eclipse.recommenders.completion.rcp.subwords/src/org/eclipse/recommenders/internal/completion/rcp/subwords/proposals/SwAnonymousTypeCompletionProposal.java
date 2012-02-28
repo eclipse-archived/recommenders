@@ -8,40 +8,22 @@
  * Contributors:
  *    Paul-Emmanuel Faidherbe - Completion generalization
  */
-package org.eclipse.recommenders.internal.completion.rcp.subwords;
+package org.eclipse.recommenders.internal.completion.rcp.subwords.proposals;
 
-import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
-import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsProposalContext;
 
 @SuppressWarnings("restriction")
-public class SubwordsAnonymousCompletionProposal extends AnonymousTypeCompletionProposal {
-
-    public static SubwordsAnonymousCompletionProposal create(final SubwordsProposalContext subwordsContext)
-            throws JavaModelException {
-        final JavaContentAssistInvocationContext context = subwordsContext.getContext();
-        final CompletionProposal proposal = subwordsContext.getProposal();
-        final JavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
-        final IJavaProject project = context.getProject();
-        final String declarationSignature = String.valueOf(proposal.getDeclarationSignature());
-        final String declarationKey = String.valueOf(proposal.getDeclarationKey());
-        final String completionText = String.valueOf(proposal.getCompletion());
-
-        return new SubwordsAnonymousCompletionProposal(project, context.getCompilationUnit(), context,
-                proposal.getReplaceStart(), jdtProposal.getReplacementLength(), completionText,
-                jdtProposal.getStyledDisplayString(), declarationSignature, (IType) project.findElement(declarationKey,
-                        null), jdtProposal.getRelevance(), subwordsContext);
-    }
+public class SwAnonymousTypeCompletionProposal extends AnonymousTypeCompletionProposal {
 
     private final SubwordsProposalContext subwordsContext;
 
-    private SubwordsAnonymousCompletionProposal(final IJavaProject jproject, final ICompilationUnit cu,
+    protected SwAnonymousTypeCompletionProposal(final IJavaProject jproject, final ICompilationUnit cu,
             final JavaContentAssistInvocationContext invocationContext, final int start, final int length,
             final String constructorCompletion, final StyledString displayName, final String declarationSignature,
             final IType superType, final int relevance, final SubwordsProposalContext subwordsContext) {

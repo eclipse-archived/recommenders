@@ -19,6 +19,8 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.internal.completion.rcp.subwords.proposals.ProposalFactory;
+import org.eclipse.recommenders.internal.completion.rcp.subwords.proposals.SwJavaMethodCompletionProposal;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,7 +28,7 @@ import org.junit.Test;
 public class RegexMatcherTest {
 
     private static final String c1 = "setFilters(ViewerFilter[] filters) : void - StructuredViewer";
-    private SubwordsJavaMethodCompletionProposal sut;
+    private SwJavaMethodCompletionProposal sut;
 
     @Before
     public void before() throws JavaModelException {
@@ -81,14 +83,14 @@ public class RegexMatcherTest {
         assertFalse(sut.isPrefix("void", c1));
     }
 
-    private SubwordsJavaMethodCompletionProposal createJavaCompletionProposal() throws JavaModelException {
+    private SwJavaMethodCompletionProposal createJavaCompletionProposal() throws JavaModelException {
         final CompletionProposal dummyProposal = mockCompletionProposal(CompletionProposal.METHOD_REF, c1);
         final JavaContentAssistInvocationContext dummyInvocationContext = mockInvocationContext();
 
         final SubwordsProposalContext subwordsContext = new SubwordsProposalContext("", dummyProposal,
                 mockJdtCompletion(c1), dummyInvocationContext);
-        final SubwordsJavaMethodCompletionProposal someSubwordsProposal = SubwordsJavaMethodCompletionProposal
-                .create(subwordsContext);
+        final SwJavaMethodCompletionProposal someSubwordsProposal = ProposalFactory
+                .createJavaMethodCompletionProposal(subwordsContext);
         return someSubwordsProposal;
     }
 
