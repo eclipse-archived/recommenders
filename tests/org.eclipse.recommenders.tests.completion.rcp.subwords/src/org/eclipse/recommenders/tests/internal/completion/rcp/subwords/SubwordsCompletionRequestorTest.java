@@ -20,13 +20,11 @@ import static org.eclipse.recommenders.tests.internal.completion.rcp.subwords.Su
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionRequestor;
-import org.eclipse.recommenders.utils.ConcurrentBag;
 import org.junit.Test;
 
 public class SubwordsCompletionRequestorTest {
@@ -61,7 +59,7 @@ public class SubwordsCompletionRequestorTest {
         // exercise:
         sut.accept(proposal);
         // verify:
-        assertNumberOfAcceptedProposals(0, sut);
+        assertNumberOfAcceptedProposals(1, sut);
     }
 
     @Test
@@ -117,6 +115,11 @@ public class SubwordsCompletionRequestorTest {
     }
 
     private SubwordsCompletionRequestor createSut(final String token) throws JavaModelException {
-        return new SubwordsCompletionRequestor(token, mockInvocationContext());
+        return new SubwordsCompletionRequestor(token, mockInvocationContext()) {
+            @Override
+            protected boolean shouldFillArgumentNames() {
+                return false;
+            }
+        };
     }
 }

@@ -66,12 +66,13 @@ public final class SwLazyGenericTypeProposal extends LazyJavaTypeCompletionPropo
             final JavaContentAssistInvocationContext context, final SubwordsProposalContext subwordsContext) {
         super(proposal, context);
         this.subwordsContext = subwordsContext;
+        setRelevance(subwordsContext.calculateRelevance());
     }
 
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        // setRelevance(subwordsContext.calculateRelevance());
+        setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 

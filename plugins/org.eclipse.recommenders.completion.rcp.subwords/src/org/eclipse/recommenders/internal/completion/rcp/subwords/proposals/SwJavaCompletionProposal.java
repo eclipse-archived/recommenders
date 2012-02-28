@@ -27,12 +27,13 @@ public class SwJavaCompletionProposal extends org.eclipse.jdt.internal.ui.text.j
         super(replacementString, replacementOffset, replacementLength, image, displayString, relevance, inJavadoc,
                 invocationContext);
         this.subwordsContext = subwordsContext;
+        setRelevance(subwordsContext.calculateRelevance());
     }
 
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        // setRelevance(subwordsContext.calculateRelevance());
+        setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 

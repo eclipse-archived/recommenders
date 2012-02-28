@@ -30,6 +30,7 @@ public class SwAnonymousTypeCompletionProposal extends AnonymousTypeCompletionPr
         super(jproject, cu, invocationContext, start, length, constructorCompletion, displayName, declarationSignature,
                 superType, relevance);
         this.subwordsContext = subwordsContext;
+        setRelevance(subwordsContext.calculateRelevance());
     }
 
     @Override

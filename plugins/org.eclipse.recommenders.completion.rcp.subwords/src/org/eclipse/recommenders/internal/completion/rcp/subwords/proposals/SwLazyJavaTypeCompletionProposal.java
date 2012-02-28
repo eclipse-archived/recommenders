@@ -26,6 +26,7 @@ public class SwLazyJavaTypeCompletionProposal extends LazyJavaTypeCompletionProp
             final JavaContentAssistInvocationContext context, final SubwordsProposalContext subwordsContext) {
         super(proposal, context);
         this.subwordsContext = subwordsContext;
+        setRelevance(subwordsContext.calculateRelevance());
     }
 
     @Override

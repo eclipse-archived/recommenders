@@ -27,12 +27,13 @@ public class SwOverrideCompletionProposal extends org.eclipse.jdt.internal.ui.te
         super(jproject, cu, methodName, paramTypes, start, length, displayName, completionProposal);
 
         this.subwordsContext = subwordsContext;
+        setRelevance(subwordsContext.calculateRelevance());
     }
 
     @Override
     protected boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        // setRelevance(subwordsContext.calculateRelevance());
+        setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 

@@ -25,12 +25,13 @@ public final class SwJavaMethodCompletionProposal extends JavaMethodCompletionPr
             final JavaContentAssistInvocationContext context, final SubwordsProposalContext subwordsContext) {
         super(proposal, context);
         this.subwordsContext = subwordsContext;
+        setRelevance(subwordsContext.calculateRelevance());
     }
 
     @Override
     public boolean isPrefix(final String prefix, final String completion) {
         subwordsContext.setPrefix(prefix);
-        // setRelevance(subwordsContext.calculateRelevance());
+        setRelevance(subwordsContext.calculateRelevance());
         return subwordsContext.isRegexMatch();
     }
 
