@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.utils.rcp,
  org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.utils,
- org.eclipse.recommenders.injection
+ org.eclipse.recommenders.injection,
+ org.apache.commons.lang3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-ExtensibleAPI: true
 Bundle-ActivationPolicy: lazy

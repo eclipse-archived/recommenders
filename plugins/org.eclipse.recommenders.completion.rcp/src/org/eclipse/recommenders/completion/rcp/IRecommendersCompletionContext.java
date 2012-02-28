@@ -11,7 +11,9 @@
 package org.eclipse.recommenders.completion.rcp;
 
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -21,6 +23,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -94,4 +97,5 @@ public interface IRecommendersCompletionContext {
      */
     Optional<IMethodName> getMethodDef();
 
+    public Map<IJavaCompletionProposal, CompletionProposal> getProposals();
 }
