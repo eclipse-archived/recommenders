@@ -10,10 +10,13 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords.proposals;
 
+import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeCompletionProposal;
+import org.eclipse.jdt.internal.ui.text.java.AnonymousTypeProposalInfo;
+import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsProposalContext;
@@ -31,6 +34,18 @@ public class SwAnonymousTypeCompletionProposal extends AnonymousTypeCompletionPr
                 superType, relevance);
         this.subwordsContext = subwordsContext;
         setRelevance(subwordsContext.calculateRelevance());
+    }
+
+    @Override
+    protected ProposalInfo getProposalInfo() {
+        ProposalInfo info = super.getProposalInfo();
+        if (info == null) {
+            final IJavaProject project = subwordsContext.getContext().getProject();
+            final CompletionProposal proposal = subwordsContext.getProposal();
+            info = new AnonymousTypeProposalInfo(project, proposal);
+            setProposalInfo(info);
+        }
+        return info;
     }
 
     @Override
