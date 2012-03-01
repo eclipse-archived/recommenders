@@ -25,7 +25,6 @@ import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelecti
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.UNKNOWN;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.findTypeRoot;
-import static org.eclipse.recommenders.utils.rcp.JdtUtils.log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,16 +44,21 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation;
+import org.eclipse.recommenders.utils.rcp.EclipseLogger;
 import org.eclipse.ui.IEditorPart;
+import org.slf4j.Logger;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
 /**
- * Utility class that resolves a selected java element from editor selection or
- * structured selection.
+ * Utility class that resolves a selected java element from editor selection or structured selection.
  */
 @SuppressWarnings("restriction")
 public class JavaSelectionUtils {
+
+    @VisibleForTesting
+    public static Logger log = new EclipseLogger();
 
     @SuppressWarnings("serial")
     private static Map<StructuralPropertyDescriptor, JavaSelectionLocation> MAPPING = new HashMap<StructuralPropertyDescriptor, JavaSelectionLocation>() {
@@ -94,8 +98,7 @@ public class JavaSelectionUtils {
     };
 
     /**
-     * Returns the {@link IJavaElement} at the current offset or
-     * {@link Optional#absent()} if resolving fails.
+     * Returns the {@link IJavaElement} at the current offset or {@link Optional#absent()} if resolving fails.
      */
     public static Optional<IJavaElement> resolveJavaElementFromEditor(final IEditorPart editor,
             final ITextSelection selection) {
@@ -122,10 +125,9 @@ public class JavaSelectionUtils {
     }
 
     /**
-     * Returns the {@link IJavaElement} at the given offset. If no
-     * {@link IJavaElement} is selected, the innermost enclosing
-     * {@link IJavaElement} is returned (e.g., the declaring method or type). If
-     * both selection resolutions fail, {@link Optional#absent()} is returned.
+     * Returns the {@link IJavaElement} at the given offset. If no {@link IJavaElement} is selected, the innermost
+     * enclosing {@link IJavaElement} is returned (e.g., the declaring method or type). If both selection resolutions
+     * fail, {@link Optional#absent()} is returned.
      */
     public static Optional<IJavaElement> resolveJavaElementFromTypeRootInEditor(final ITypeRoot root, final int offset) {
         ensureIsNotNull(root);
@@ -154,9 +156,14 @@ public class JavaSelectionUtils {
                 // return of(enclosingElement);
             }
         } catch (final JavaModelException e) {
-            log(e);
+            log(e, "Failed to resolve selection in '%s' at offset %d", root.getHandleIdentifier(), offset);
             return absent();
         }
+    }
+
+    private static void log(JavaModelException e, String newMessage, Object... args) {
+        String format = String.format(newMessage, args);
+        log.error(format, e);
     }
 
     public static JavaSelectionLocation resolveSelectionLocationFromAst(final CompilationUnit astRoot, final int offset) {
@@ -195,8 +202,7 @@ public class JavaSelectionUtils {
     }
 
     /**
-     * some inner node that is not a method, a type or a field declaration
-     * node...
+     * some inner node that is not a method, a type or a field declaration node...
      */
     private static JavaSelectionLocation resolveSelectionLocationFromNonMemberDeclarationNode(ASTNode node) {
         // deal with special case that no parent exists: for instance, if empty

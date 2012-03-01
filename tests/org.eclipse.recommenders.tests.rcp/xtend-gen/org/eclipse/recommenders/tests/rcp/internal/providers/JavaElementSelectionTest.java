@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.tests.rcp.internal.providers;
 
+import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,12 +8,11 @@ import java.util.Set;
 import junit.framework.Assert;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils;
 import org.eclipse.recommenders.tests.XtendUtils;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
@@ -32,7 +32,7 @@ public class JavaElementSelectionTest {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("class Myc$lass {}");
       final CharSequence code = _builder;
-      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(((String) null), Integer.valueOf(1));
+      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("LMyclass;", Integer.valueOf(1));
       List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
@@ -54,8 +54,9 @@ public class JavaElementSelectionTest {
       _builder.newLine();
       _builder.append("}");
       final CharSequence code = _builder;
-      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;", Integer.valueOf(2));
-      List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
+      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;", Integer.valueOf(1));
+      Pair<String,Integer> _operator_mappedTo_1 = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;.(Ljava/lang/String;)V", Integer.valueOf(1));
+      List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo, _operator_mappedTo_1);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
   }
@@ -65,7 +66,7 @@ public class JavaElementSelectionTest {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("import java.util.*;");
       _builder.newLine();
-      _builder.append("class Myclass extends L$ist {}");
+      _builder.append("class Myclass123 extends L$ist {}");
       _builder.newLine();
       final CharSequence code = _builder;
       Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/util/List<>;", Integer.valueOf(1));
@@ -84,8 +85,9 @@ public class JavaElementSelectionTest {
       _builder.newLine();
       _builder.append("}");
       final CharSequence code = _builder;
-      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;", Integer.valueOf(2));
-      List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo);
+      Pair<String,Integer> _operator_mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;", Integer.valueOf(1));
+      Pair<String,Integer> _operator_mappedTo_1 = ObjectExtensions.<String, Integer>operator_mappedTo("Ljava/lang/String;.(Ljava/lang/String;)V", Integer.valueOf(1));
+      List<String> _newListWithFrequency = XtendUtils.<String>newListWithFrequency(_operator_mappedTo, _operator_mappedTo_1);
       final List<String> expected = _newListWithFrequency;
       this.exerciseAndVerify(code, expected);
   }
@@ -148,44 +150,57 @@ public class JavaElementSelectionTest {
   }
   
   public void exerciseAndVerify(final CharSequence code, final List<String> expected) {
-      IWorkspace _workspace = ResourcesPlugin.getWorkspace();
-      JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
-      final JavaProjectFixture fixture = _javaProjectFixture;
-      String _string = code.toString();
-      Tuple<CompilationUnit,Set<Integer>> _parseWithMarkers = fixture.parseWithMarkers(_string);
-      final Tuple<CompilationUnit,Set<Integer>> struct = _parseWithMarkers;
-      CompilationUnit _first = struct.getFirst();
-      final CompilationUnit cu = _first;
-      Set<Integer> _second = struct.getSecond();
-      final Set<Integer> pos = _second;
-      ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList();
-      final List<String> actual = _newArrayList;
-      for (final Integer position : pos) {
-        {
-          ASTNode _perform = NodeFinder.perform(cu, (position).intValue(), 0);
-          final ASTNode selection = _perform;
-          boolean matched = false;
-          if (!matched) {
-            if (selection instanceof SimpleName) {
-              final SimpleName _simpleName = (SimpleName)selection;
-              matched=true;
+    try {
+      {
+        IWorkspace _workspace = ResourcesPlugin.getWorkspace();
+        JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
+        final JavaProjectFixture fixture = _javaProjectFixture;
+        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(code);
+        final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
+        ICompilationUnit _first = struct.getFirst();
+        final ICompilationUnit cu = _first;
+        boolean _operator_equals = ObjectExtensions.operator_equals(cu, null);
+        if (_operator_equals) {
+          Assert.fail("cu is not allowed to be null!");
+        }
+        Set<Integer> _second = struct.getSecond();
+        final Set<Integer> pos = _second;
+        ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList();
+        final List<String> actual = _newArrayList;
+        for (final Integer position : pos) {
+          {
+            Optional<IJavaElement> _resolveJavaElementFromTypeRootInEditor = JavaSelectionUtils.resolveJavaElementFromTypeRootInEditor(cu, (position).intValue());
+            final Optional<IJavaElement> selection = _resolveJavaElementFromTypeRootInEditor;
+            boolean _isPresent = selection.isPresent();
+            if (_isPresent) {
               {
-                IBinding _resolveBinding = _simpleName.resolveBinding();
-                final IBinding binding = _resolveBinding;
-                IJavaElement _javaElement = binding.getJavaElement();
-                final IJavaElement javaElement = _javaElement;
-                boolean _operator_equals = ObjectExtensions.operator_equals(javaElement, null);
-                if (_operator_equals) {
-                  actual.add(null);
-                } else {
-                  String _key = binding.getKey();
-                  actual.add(_key);
+                IJavaElement _get = selection.get();
+                final IJavaElement t = _get;
+                boolean matched = false;
+                if (!matched) {
+                  if (t instanceof IType) {
+                    final IType _iType = (IType)t;
+                    matched=true;
+                    String _key = _iType.getKey();
+                    actual.add(_key);
+                  }
+                }
+                if (!matched) {
+                  if (t instanceof IMethod) {
+                    final IMethod _iMethod = (IMethod)t;
+                    matched=true;
+                    String _key = _iMethod.getKey();
+                    actual.add(_key);
+                  }
                 }
               }
             }
           }
         }
+        Assert.assertEquals(expected, actual);
       }
-      Assert.assertEquals(expected, actual);
+    } catch (Exception _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
 }
