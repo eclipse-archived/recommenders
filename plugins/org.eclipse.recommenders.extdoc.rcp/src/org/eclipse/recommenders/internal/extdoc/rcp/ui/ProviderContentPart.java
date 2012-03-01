@@ -171,6 +171,7 @@ public class ProviderContentPart {
 
     public void createNewRenderingPanel() {
         renderingPanel = new Composite(stack, SWT.NONE);
+        renderingPanel.setRedraw(false);
         renderingPanel.setBackground(renderingPanel.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
         renderingPanel.setLayout(defaultGridLayoutFactory.create());
 
@@ -245,6 +246,7 @@ public class ProviderContentPart {
                 makeRenderingPanelVisible();
                 relayout();
                 scrollToTop();
+                renderingPanel.setRedraw(true);
             }
         });
     }

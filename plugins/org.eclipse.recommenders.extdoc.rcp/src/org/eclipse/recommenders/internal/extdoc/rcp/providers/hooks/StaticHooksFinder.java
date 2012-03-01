@@ -52,6 +52,7 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -115,6 +116,7 @@ public class StaticHooksFinder extends ExtdocProvider {
             }
 
             styledText = new StyledText(container, SWT.NONE);
+            styledText.setRedraw(false);
             styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
             ExtdocUtils.setInfoBackgroundColor(styledText);
             styledText.setEditable(false);
@@ -177,6 +179,7 @@ public class StaticHooksFinder extends ExtdocProvider {
                     System.out.println(e);
                 }
             });
+            styledText.setRedraw(true);
         }
 
         private Optional<StyleRange> getSelectedStyleRange(final int x, final int y) {
@@ -268,7 +271,9 @@ public class StaticHooksFinder extends ExtdocProvider {
         try {
             for (final IJavaElement e : root.getChildren()) {
                 if (e.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
-                    findStaticHooks((IPackageFragment) e, index);
+                    final IPackageFragment pkg = (IPackageFragment) e;
+                    findStaticHooks(pkg, index);
+                    pkg.close();
                 }
             }
         } catch (final Exception x) {
