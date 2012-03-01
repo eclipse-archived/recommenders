@@ -8,6 +8,7 @@ import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.junit.Test
 
 import static junit.framework.Assert.*
+import static org.eclipse.recommenders.tests.CodeBuilder.*
 
 class JavaElementResolver4GenericsTest {
 
@@ -18,7 +19,7 @@ class JavaElementResolver4GenericsTest {
 		val code = classbody('''public Iterable<? extends Executor> $m(){return null;}''')
 		val method = getMethod(code)
 		val actual =  sut.toRecMethod(method).get
-		assertEquals("LMyClass.m()Ljava/lang/Iterable;",actual.identifier)
+		assertEquals("m()Ljava/lang/Iterable;",actual.signature)
 	}
 	
 	
@@ -27,7 +28,7 @@ class JavaElementResolver4GenericsTest {
 		val code = classbody('''public Iterable[][] $m(String[][] s){return null;}''')
 		val method = getMethod(code)
 		val actual =  sut.toRecMethod(method).get
-		assertEquals("LMyClass.m([[Ljava/lang/String;)[[Ljava/lang/Iterable;",actual.identifier)
+		assertEquals("m([[Ljava/lang/String;)[[Ljava/lang/Iterable;",actual.signature)
 	}
 	@Test
 	def void testBoundArg() {
@@ -56,12 +57,4 @@ class JavaElementResolver4GenericsTest {
 		Checks::ensureIsNotNull(method);
 	}
 	
-	def private classbody(CharSequence classbody)
-		'''
-		import java.util.*;
-		import java.util.concurrent.*;
-		public class MyClass {
-			«classbody»
-		}
-  		'''
 }

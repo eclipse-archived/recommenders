@@ -9,6 +9,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Tuple;
@@ -34,37 +35,37 @@ public class JavaElementResolver4GenericsTest {
   public void testBoundReturn() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("public Iterable<? extends Executor> $m(){return null;}");
-      CharSequence _classbody = this.classbody(_builder);
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
       final CharSequence code = _classbody;
       IMethod _method = this.getMethod(code);
       final IMethod method = _method;
       Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
       IMethodName _get = _recMethod.get();
       final IMethodName actual = _get;
-      String _identifier = actual.getIdentifier();
-      Assert.assertEquals("LMyClass.m()Ljava/lang/Iterable;", _identifier);
+      String _signature = actual.getSignature();
+      Assert.assertEquals("m()Ljava/lang/Iterable;", _signature);
   }
   
   @Test
   public void testArrays() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("public Iterable[][] $m(String[][] s){return null;}");
-      CharSequence _classbody = this.classbody(_builder);
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
       final CharSequence code = _classbody;
       IMethod _method = this.getMethod(code);
       final IMethod method = _method;
       Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
       IMethodName _get = _recMethod.get();
       final IMethodName actual = _get;
-      String _identifier = actual.getIdentifier();
-      Assert.assertEquals("LMyClass.m([[Ljava/lang/String;)[[Ljava/lang/Iterable;", _identifier);
+      String _signature = actual.getSignature();
+      Assert.assertEquals("m([[Ljava/lang/String;)[[Ljava/lang/Iterable;", _signature);
   }
   
   @Test
   public void testBoundArg() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("public void $m(Iterable<? extends Executor> e){}");
-      CharSequence _classbody = this.classbody(_builder);
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
       final CharSequence code = _classbody;
       IMethod _method = this.getMethod(code);
       final IMethod method = _method;
@@ -77,7 +78,7 @@ public class JavaElementResolver4GenericsTest {
   public void testUnboundArg() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("public <T> void $m(T s){}");
-      CharSequence _classbody = this.classbody(_builder);
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
       final CharSequence code = _classbody;
       IMethod _method = this.getMethod(code);
       final IMethod method = _method;
@@ -112,21 +113,5 @@ public class JavaElementResolver4GenericsTest {
     } catch (Exception _e) {
       throw Exceptions.sneakyThrow(_e);
     }
-  }
-  
-  private CharSequence classbody(final CharSequence classbody) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import java.util.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("public class MyClass {");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append(classbody, "	");
-    _builder.newLineIfNotEmpty();
-    _builder.append("}");
-    _builder.newLine();
-    return _builder;
   }
 }
