@@ -83,4 +83,9 @@ public class VmFieldName implements IFieldName {
     public int compareTo(final IFieldName other) {
         return identifier.compareTo(other.getIdentifier());
     }
+
+    @Override
+    public String toString() {
+        return getIdentifier();
+    }
 }
