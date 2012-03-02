@@ -8,7 +8,8 @@
       <javaCompletionProposalComputer
             activate="true"
             categoryId="org.eclipse.recommenders.subwords.rcp.category"
-            class="org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer">
+            class="org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer"
+            requiresReordering="true">
       </javaCompletionProposalComputer>
    </extension>
    <extension
