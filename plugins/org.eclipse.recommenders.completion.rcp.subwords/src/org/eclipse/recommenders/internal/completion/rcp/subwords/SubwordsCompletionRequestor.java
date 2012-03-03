@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.eclipse.jdt.core.CompletionProposal.*;
 import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
 import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.matchesPrefixPattern;
 
@@ -60,37 +61,34 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         // this.collector = new CompletionProposalCollector(ctx.getCompilationUnit());
         this.collector.acceptContext(ctx.getCoreContext());
 
-        collector.setIgnored(CompletionProposal.ANNOTATION_ATTRIBUTE_REF, false);
-        collector.setIgnored(CompletionProposal.ANONYMOUS_CLASS_DECLARATION, false);
-        collector.setIgnored(CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, false);
-        collector.setIgnored(CompletionProposal.FIELD_REF, false);
-        collector.setIgnored(CompletionProposal.FIELD_REF_WITH_CASTED_RECEIVER, false);
-        collector.setIgnored(CompletionProposal.KEYWORD, false);
-        collector.setIgnored(CompletionProposal.LABEL_REF, false);
-        collector.setIgnored(CompletionProposal.LOCAL_VARIABLE_REF, false);
-        collector.setIgnored(CompletionProposal.METHOD_DECLARATION, false);
-        collector.setIgnored(CompletionProposal.METHOD_NAME_REFERENCE, false);
-        collector.setIgnored(CompletionProposal.METHOD_REF, false);
-        collector.setIgnored(CompletionProposal.CONSTRUCTOR_INVOCATION, false);
-        collector.setIgnored(CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER, false);
-        collector.setIgnored(CompletionProposal.PACKAGE_REF, false);
-        collector.setIgnored(CompletionProposal.POTENTIAL_METHOD_DECLARATION, false);
-        collector.setIgnored(CompletionProposal.VARIABLE_DECLARATION, false);
-        collector.setIgnored(CompletionProposal.TYPE_REF, false);
+        collector.setIgnored(ANNOTATION_ATTRIBUTE_REF, false);
+        collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, false);
+        collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, false);
+        collector.setIgnored(FIELD_REF, false);
+        collector.setIgnored(FIELD_REF_WITH_CASTED_RECEIVER, false);
+        collector.setIgnored(KEYWORD, false);
+        collector.setIgnored(LABEL_REF, false);
+        collector.setIgnored(LOCAL_VARIABLE_REF, false);
+        collector.setIgnored(METHOD_DECLARATION, false);
+        collector.setIgnored(METHOD_NAME_REFERENCE, false);
+        collector.setIgnored(METHOD_REF, false);
+        collector.setIgnored(CONSTRUCTOR_INVOCATION, false);
+        collector.setIgnored(METHOD_REF_WITH_CASTED_RECEIVER, false);
+        collector.setIgnored(PACKAGE_REF, false);
+        collector.setIgnored(POTENTIAL_METHOD_DECLARATION, false);
+        collector.setIgnored(VARIABLE_DECLARATION, false);
+        collector.setIgnored(TYPE_REF, false);
 
-        collector.setAllowsRequiredProposals(CompletionProposal.FIELD_REF, CompletionProposal.TYPE_REF, true);
-        collector.setAllowsRequiredProposals(CompletionProposal.FIELD_REF, CompletionProposal.TYPE_IMPORT, true);
-        collector.setAllowsRequiredProposals(CompletionProposal.FIELD_REF, CompletionProposal.FIELD_IMPORT, true);
-        collector.setAllowsRequiredProposals(CompletionProposal.METHOD_REF, CompletionProposal.TYPE_REF, true);
-        collector.setAllowsRequiredProposals(CompletionProposal.METHOD_REF, CompletionProposal.TYPE_IMPORT, true);
-        collector.setAllowsRequiredProposals(CompletionProposal.METHOD_REF, CompletionProposal.METHOD_IMPORT, true);
-        collector.setAllowsRequiredProposals(CompletionProposal.CONSTRUCTOR_INVOCATION, CompletionProposal.TYPE_REF,
-                true);
-        collector.setAllowsRequiredProposals(CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION,
-                CompletionProposal.TYPE_REF, true);
-        collector.setAllowsRequiredProposals(CompletionProposal.ANONYMOUS_CLASS_DECLARATION,
-                CompletionProposal.TYPE_REF, true);
-        collector.setAllowsRequiredProposals(CompletionProposal.TYPE_REF, CompletionProposal.TYPE_REF, true);
+        collector.setAllowsRequiredProposals(FIELD_REF, TYPE_REF, true);
+        collector.setAllowsRequiredProposals(FIELD_REF, TYPE_IMPORT, true);
+        collector.setAllowsRequiredProposals(FIELD_REF, FIELD_IMPORT, true);
+        collector.setAllowsRequiredProposals(METHOD_REF, TYPE_REF, true);
+        collector.setAllowsRequiredProposals(METHOD_REF, TYPE_IMPORT, true);
+        collector.setAllowsRequiredProposals(METHOD_REF, METHOD_IMPORT, true);
+        collector.setAllowsRequiredProposals(CONSTRUCTOR_INVOCATION, TYPE_REF, true);
+        collector.setAllowsRequiredProposals(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, TYPE_REF, true);
+        collector.setAllowsRequiredProposals(ANONYMOUS_CLASS_DECLARATION, TYPE_REF, true);
+        collector.setAllowsRequiredProposals(TYPE_REF, TYPE_REF, true);
 
         collector.setFavoriteReferences(getFavoriteStaticMembers());
         collector.setRequireExtendedContext(true);
@@ -109,12 +107,14 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     @Override
     public boolean isAllowingRequiredProposals(final int proposalKind, final int requiredProposalKind) {
-        return collector.isAllowingRequiredProposals(proposalKind, requiredProposalKind);
+        boolean isAllowed = collector.isAllowingRequiredProposals(proposalKind, requiredProposalKind);
+        return isAllowed;
     };
 
     @Override
     public boolean isIgnored(final int completionProposalKind) {
-        return collector.isIgnored(completionProposalKind);
+        boolean ignored = collector.isIgnored(completionProposalKind);
+        return ignored;
     };
 
     @Override
@@ -144,8 +144,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         }
 
         final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal);
-        if (!matchesPrefixPattern(prefix, subwordsMatchingRegion)) { // && !isSmallTypo(prefix, subwordsMatchingRegion))
-                                                                     // {
+        if (!subwordsMatchingRegion.isEmpty() &&  !matchesPrefixPattern(prefix, subwordsMatchingRegion)) { // && !isSmallTypo(prefix, subwordsMatchingRegion))
             return;
         }
 

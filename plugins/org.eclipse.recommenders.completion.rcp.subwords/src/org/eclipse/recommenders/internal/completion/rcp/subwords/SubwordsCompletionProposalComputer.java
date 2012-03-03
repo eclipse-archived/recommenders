@@ -33,7 +33,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
     @Override
     public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         ctx = (JavaContentAssistInvocationContext) context;
-        return findSubwordMatchingProposals();
+        return findSubwordMatchingProposals(monitor);
     }
 
     private String getToken() {
@@ -44,7 +44,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
         return String.valueOf(token);
     }
 
-    private List<IJavaCompletionProposal> findSubwordMatchingProposals() {
+    private List<IJavaCompletionProposal> findSubwordMatchingProposals(IProgressMonitor monitor) {
 
         final String token = getToken();
         final SubwordsCompletionRequestor requestor = new SubwordsCompletionRequestor(token, ctx);
@@ -59,10 +59,10 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
         final int offsetBeforeTokenBegin = ctx.getInvocationOffset() - token.length();
         try {
             // first on the original position
-            cu.codeComplete(ctx.getInvocationOffset(), requestor, new NullProgressMonitor());
+            cu.codeComplete(ctx.getInvocationOffset(), requestor, monitor);
             if (token.length() > 0) {
                 // then on the 'virtual' position
-                cu.codeComplete(offsetBeforeTokenBegin, requestor, new NullProgressMonitor());
+                cu.codeComplete(offsetBeforeTokenBegin, requestor, monitor);
             }
         } catch (final JavaModelException e) {
             RecommendersUtilsPlugin.log(e);
