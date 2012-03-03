@@ -8,6 +8,7 @@ import java.util.Set;
 import junit.framework.Assert;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -157,6 +158,16 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   }
   
   @Test
+  public void test011_NewCompletionOnCompleteStatement() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("new LinkedLis$t(){};");
+      CharSequence _method = CodeBuilder.method(_builder);
+      final CharSequence code = _method;
+      List<String> _asList = Arrays.<String>asList("LinkedList(");
+      this.exerciseAndVerifyLenient(code, _asList);
+  }
+  
+  @Test
   public void test008_ranking() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("String s=\"\"; s.has$");
@@ -274,7 +285,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
             this.stopwatch.start();
             CompletionProposalCollector _completionProposalCollector = new CompletionProposalCollector(cu, false);
             cu.codeComplete((completionIndex).intValue(), _completionProposalCollector);
-            sut.computeCompletionProposals(ctx, null);
+            NullProgressMonitor _nullProgressMonitor = new NullProgressMonitor();
+            sut.computeCompletionProposals(ctx, _nullProgressMonitor);
             this.stopwatch.stop();
           }
         }
@@ -378,7 +390,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
         final SubwordsCompletionProposalComputer sut = _subwordsCompletionProposalComputer;
         sut.sessionStarted();
         this.stopwatch.start();
-        List _computeCompletionProposals = sut.computeCompletionProposals(ctx, null);
+        NullProgressMonitor _nullProgressMonitor = new NullProgressMonitor();
+        List _computeCompletionProposals = sut.computeCompletionProposals(ctx, _nullProgressMonitor);
         final List actual = _computeCompletionProposals;
         this.stopwatch.stop();
         return actual;

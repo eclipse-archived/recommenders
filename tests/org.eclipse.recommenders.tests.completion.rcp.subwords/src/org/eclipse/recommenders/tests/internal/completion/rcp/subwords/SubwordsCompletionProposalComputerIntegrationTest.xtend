@@ -20,6 +20,7 @@ import org.junit.Before
 import org.eclipse.jdt.core.CompletionRequestorAdapter
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector
 import org.eclipse.jface.text.Document
+import org.eclipse.core.runtime.NullProgressMonitor
  
 class SubwordsCompletionProposalComputerIntegrationTest { 
   
@@ -99,6 +100,11 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		exerciseAndVerifyLenient(code, asList("ConcurrentHashMap(int"))
 	}
 	
+	@Test 
+	def void test011_NewCompletionOnCompleteStatement(){
+		val code = method('''new LinkedLis$t(){};''')
+		exerciseAndVerifyLenient(code, asList("LinkedList("))
+	}
 		
 	@Test 
 	def void test008_ranking(){
@@ -160,7 +166,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 			// warm up jdt
 			cu.codeComplete(completionIndex, new CompletionProposalCollector(cu,false))
 			
-			sut.computeCompletionProposals(ctx, null)
+			sut.computeCompletionProposals(ctx, new NullProgressMonitor())
 			stopwatch.stop
 //			failIfComputerTookTooLong(code)
 		}
@@ -207,7 +213,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		val sut = new SubwordsCompletionProposalComputer()
 		sut.sessionStarted
 		stopwatch.start
-		val actual = sut.computeCompletionProposals(ctx, null)
+		val actual = sut.computeCompletionProposals(ctx, new NullProgressMonitor())
 		stopwatch.stop
 //		failIfComputerTookTooLong(code)
 		return actual;
