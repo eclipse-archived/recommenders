@@ -87,11 +87,13 @@ public class JavaProjectFixture {
         int num = 1;
         List<String> names = newArrayList();
 
-        Pattern p = Pattern.compile("new\\s+(\\w+).*?\\)\\s+\\{", Pattern.DOTALL);
+        // new <name> ( ... ) {
+        Pattern p = Pattern.compile("new\\s*?(\\w+)\\s*?\\([^)]*?\\)\\s*?\\{", Pattern.DOTALL);
         Matcher matcher = p.matcher(source);
         while (matcher.find()) {
             final String name = matcher.group(1);
             if (!name.equals(declaringType)) {
+                System.out.println("matched: " + matcher.group(0));
                 names.add(declaringType + "$" + num++);
             }
         }
