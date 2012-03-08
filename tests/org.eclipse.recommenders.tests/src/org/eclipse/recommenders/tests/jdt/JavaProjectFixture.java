@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.tests.jdt;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertTrue;
@@ -21,6 +22,7 @@ import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 import static org.eclipse.recommenders.utils.Tuple.newTuple;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,6 +65,37 @@ public class JavaProjectFixture {
         assertTrue(matcher.matches());
         final String group = matcher.group(1);
         return group;
+    }
+
+    public static List<String> findInnerClassNames(final CharSequence source) {
+        String declaringType = findClassName(source);
+        List<String> names = newArrayList();
+
+        Pattern p = Pattern.compile("(class|interface)\\s+(\\w+)", Pattern.DOTALL);
+        Matcher matcher = p.matcher(source);
+        while (matcher.find()) {
+            final String name = matcher.group(2);
+            if (!name.equals(declaringType)) {
+                names.add(declaringType + "$" + name);
+            }
+        }
+        return names;
+    }
+
+    public static List<String> findAnonymousClassNames(final CharSequence source) {
+        String declaringType = findClassName(source);
+        int num = 1;
+        List<String> names = newArrayList();
+
+        Pattern p = Pattern.compile("new\\s+(\\w+).*?\\)\\s+\\{", Pattern.DOTALL);
+        Matcher matcher = p.matcher(source);
+        while (matcher.find()) {
+            final String name = matcher.group(1);
+            if (!name.equals(declaringType)) {
+                names.add(declaringType + "$" + num++);
+            }
+        }
+        return names;
     }
 
     private IJavaProject javaProject;
