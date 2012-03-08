@@ -14,6 +14,7 @@ class CodeBuilder {
 		import java.text.*;
 		import java.util.concurrent.*;
 		import javax.annotation.*;
+		import javax.xml.ws.Action;
 		«declaration» {
 			«body»
 		}
@@ -27,6 +28,7 @@ class CodeBuilder {
 		import java.text.*;
 		import java.util.concurrent.*;
 		import javax.annotation.*;
+		import javax.xml.ws.Action;
 		public class «classname» {
 			«classbody»
 		}
@@ -40,6 +42,7 @@ class CodeBuilder {
 		import java.text.*;
 		import java.util.concurrent.*;
 		import javax.annotation.*;
+		import javax.xml.ws.Action;
 		public class Class«classCounter.addAndGet(1)» {
 			«classbody»
 		}
