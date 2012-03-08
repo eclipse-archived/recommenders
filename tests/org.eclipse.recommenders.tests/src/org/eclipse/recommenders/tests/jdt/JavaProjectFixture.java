@@ -93,7 +93,6 @@ public class JavaProjectFixture {
         while (matcher.find()) {
             final String name = matcher.group(1);
             if (!name.equals(declaringType)) {
-                System.out.println("matched: " + matcher.group(0));
                 names.add(declaringType + "$" + num++);
             }
         }
