@@ -12,82 +12,54 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.preferences;
 
 import static org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin.PLUGIN_ID;
 
-import java.io.File;
+import javax.inject.Inject;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.recommenders.commons.udc.DependencyInformation;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.Events.ManifestResolutionRequested;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+import com.google.inject.assistedinject.Assisted;
+
 public class CommandSection {
 
     private final CallModelStore modelStore;
-    private Button reresolveButton;
-    private final DependencyInfoStore depStore;
 
-    public CommandSection(final Composite parent, final CallModelStore modelStore) {
+    @Inject
+    public CommandSection(@Assisted final Composite parent, final CallModelStore modelStore) {
         this.modelStore = modelStore;
-        this.depStore = modelStore.getDependencyInfoStore();
 
-        final Composite group = createGroup(parent);
-        createButtons(group);
+        createButton(createGroup(parent));
     }
 
-    private Composite createGroup(final Composite parent) {
+    private Composite createGroup(Composite parent) {
         final Composite section = new Composite(parent, SWT.NONE);
         section.setLayout(new GridLayout(2, false));
         section.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.END).create());
         return section;
     }
 
-    private void createButtons(final Composite group) {
-        final Composite container = new Composite(group, SWT.NONE);
-        container.setLayoutData(GridDataFactory.swtDefaults().span(2, 1).align(GridData.END, GridData.BEGINNING)
-                .create());
-        container.setLayout(new RowLayout());
-
-        reresolveButton = createButton(container, "Update all models", loadImage("/icons/obj16/refresh.gif"));
+    private void createButton(Composite parent) {
+        Button b = new Button(parent, SWT.PUSH);
+        b.setImage(loadImage("/icons/obj16/trash.gif"));
+        b.setText("Clear Mappings");
+        b.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(final SelectionEvent e) {
+                modelStore.getMappings().clear();
+            }
+        });
     }
 
     protected Image loadImage(final String name) {
         final ImageDescriptor desc = AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, name);
         return desc.createImage();
-    }
-
-    private SelectionListener createSelectionListener() {
-        return new SelectionListener() {
-            @Override
-            public void widgetSelected(final SelectionEvent e) {
-                reresolveButton.setEnabled(false);
-                for (final File f : modelStore.getDependencyInfoStore().getFiles()) {
-                    final DependencyInformation info = depStore.getDependencyInfo(f).get();
-                    modelStore.getManifestResolverService().onEvent(new ManifestResolutionRequested(info));
-                }
-            }
-
-            @Override
-            public void widgetDefaultSelected(final SelectionEvent e) {
-            }
-        };
-    }
-
-    private Button createButton(final Composite container, final String text, final Image image) {
-        final Button button = new Button(container, SWT.PUSH);
-        button.setImage(image);
-        button.setText(text);
-        button.addSelectionListener(createSelectionListener());
-        return button;
     }
 }

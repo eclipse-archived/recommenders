@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.store2.models;
 import java.io.Closeable;
 import java.io.File;
 
-import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 public interface IModelArchive<T extends IModel> extends Closeable {
@@ -25,7 +24,7 @@ public interface IModelArchive<T extends IModel> extends Closeable {
     @SuppressWarnings("rawtypes")
     public static final IModelArchive NULL = new NullModelArchive();
 
-    Manifest getManifest();
+    // Manifest getManifest();
 
     boolean hasModel(final ITypeName name);
 

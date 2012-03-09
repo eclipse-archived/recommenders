@@ -15,7 +15,7 @@ import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_I
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_KIND;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_PATTERNS;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_TRUE;
-import static org.eclipse.recommenders.commons.udc.ObjectUsage.UNKNOWN_METHOD;
+import static org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage.UNKNOWN_METHOD;
 import static org.eclipse.recommenders.utils.Checks.ensureEquals;
 
 import java.util.Collection;
@@ -30,8 +30,8 @@ import java.util.TreeSet;
 
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.bayesnet.Node;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;

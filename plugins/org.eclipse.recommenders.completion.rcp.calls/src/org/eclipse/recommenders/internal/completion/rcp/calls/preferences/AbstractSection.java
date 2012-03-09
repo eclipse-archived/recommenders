@@ -96,10 +96,15 @@ public abstract class AbstractSection {
 
     protected Button createButton(final Composite container, final Image image,
             final SelectionListener selectionListener) {
+        final Button button = createButton(container, image);
+        button.addSelectionListener(selectionListener);
+        return button;
+    }
+
+    protected Button createButton(final Composite container, final Image image) {
         final Button button = new Button(container, SWT.PUSH);
         button.setEnabled(false);
         button.setImage(image);
-        button.addSelectionListener(selectionListener);
         buttons.add(button);
         return button;
     }

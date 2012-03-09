@@ -74,7 +74,7 @@
      <extension
            point="org.eclipse.ui.preferencePages">
         <page
-              class="org.eclipse.recommenders.internal.rcp.ui.RecommendersMainPreferencePage"
+              class="org.eclipse.recommenders.internal.rcp.ui.PreferencePage"
               id="org.eclipse.recommenders.rcp.category.preferences"
               name="Code Recommenders">
         </page>
@@ -86,4 +86,10 @@
             name="Code Recommenders">
       </category>
       </extension>
+     <extension
+           point="org.eclipse.core.runtime.preferences">
+        <initializer
+              class="org.eclipse.recommenders.internal.rcp.ui.PreferenceInitializer">
+        </initializer>
+     </extension>
 </plugin>

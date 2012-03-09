@@ -21,7 +21,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.recommenders.rcp.category.preferences"
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.calls.preferences.CallsCompletionPreferencePage"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.calls.preferences.CallsPreferencePage"
             id="org.eclipse.recommenders.calls.rcp.dependencies"
             name="Calls">
       </page>

@@ -11,9 +11,9 @@
 package org.eclipse.recommenders.internal.rcp.wiring;
 
 import static java.lang.Thread.MIN_PRIORITY;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
+import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
@@ -33,7 +34,19 @@ import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.recommenders.internal.rcp.providers.CachingAstProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaModelEventsProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionProvider;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.BundleManifestSymbolicNameFinder;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.BundleManifestVersionFinder;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.ClasspathEntryInfoProvider;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.FingerprintClasspathEntryAnalyzer;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.IClasspathEntryAnalyzer;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.INameFinder;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.IVersionFinder;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.LocationClasspathEntryAnalyzer;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.NameClasspathEntryAnalyzer;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.TypesCollectorClasspathEntryAnalyzer;
+import org.eclipse.recommenders.internal.rcp.providers.cpe.VersionClasspathEntryAnalyzer;
 import org.eclipse.recommenders.rcp.IAstProvider;
+import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.ast.ASTNodeUtils;
@@ -46,6 +59,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
@@ -54,6 +69,7 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
+import com.google.inject.multibindings.Multibinder;
 
 @SuppressWarnings("restriction")
 public class RecommendersModule extends AbstractModule implements Module {
@@ -63,6 +79,17 @@ public class RecommendersModule extends AbstractModule implements Module {
         configureJavaElementResolver();
         configureAstProvider();
         initalizeSingletonServices();
+    }
+
+    @Singleton
+    @Provides
+    protected IClasspathEntryInfoProvider configurePackageFragmentRootInfoProvider(final EventBus bus,
+            IWorkspaceRoot workspace) {
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        File stateLocation = Platform.getStateLocation(bundle).toFile();
+        IClasspathEntryInfoProvider cpeInfoProvider = new ClasspathEntryInfoProvider(stateLocation, workspace, bus);
+        bus.register(cpeInfoProvider);
+        return cpeInfoProvider;
     }
 
     private void configureJavaElementResolver() {
@@ -199,16 +226,38 @@ public class RecommendersModule extends AbstractModule implements Module {
         }
     }
 
+    private void bindClasspathAnalyzers() {
+
+        // classpath entry analyzer
+        final Multibinder<IClasspathEntryAnalyzer> binder = Multibinder.newSetBinder(binder(),
+                IClasspathEntryAnalyzer.class);
+        binder.addBinding().to(LocationClasspathEntryAnalyzer.class).in(Singleton.class);
+        binder.addBinding().to(NameClasspathEntryAnalyzer.class).in(Singleton.class);
+        binder.addBinding().to(VersionClasspathEntryAnalyzer.class).in(Singleton.class);
+        binder.addBinding().to(FingerprintClasspathEntryAnalyzer.class).in(Singleton.class);
+        binder.addBinding().to(TypesCollectorClasspathEntryAnalyzer.class).in(Singleton.class);
+
+        // version finder
+        final Multibinder<IVersionFinder> versionFinderBinder = Multibinder
+                .newSetBinder(binder(), IVersionFinder.class);
+        versionFinderBinder.addBinding().to(BundleManifestVersionFinder.class).in(Scopes.SINGLETON);
+
+        // name finder
+        final Multibinder<INameFinder> nameFinderBinder = Multibinder.newSetBinder(binder(), INameFinder.class);
+        nameFinderBinder.addBinding().to(BundleManifestSymbolicNameFinder.class).in(Scopes.SINGLETON);
+    }
+
     /*
      * this is a bit odd. Used to initialize complex wired elements such as JavaElementsProvider etc.
      */
     public static class ServicesInitializer {
 
+        public final IClasspathEntryInfoProvider pgkInfoProvider;
+
         @Inject
         private ServicesInitializer(final IAstProvider astProvider, final JavaModelEventsProvider eventsProvider,
-                final JavaSelectionProvider selectionProvider) {
-            ensureIsNotNull(astProvider);
-            ensureIsNotNull(eventsProvider);
+                final JavaSelectionProvider selectionProvider, IClasspathEntryInfoProvider pgkInfoProvider) {
+            this.pgkInfoProvider = pgkInfoProvider;
         }
     }
 

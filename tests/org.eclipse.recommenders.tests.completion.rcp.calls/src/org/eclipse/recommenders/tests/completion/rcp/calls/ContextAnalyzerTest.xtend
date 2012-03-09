@@ -5,13 +5,14 @@ import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.dom.CompilationUnit
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.NodeFinder
-import org.eclipse.recommenders.commons.udc.ObjectUsage
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.AstBasedObjectUsageResolver
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.junit.Test
 
 import static junit.framework.Assert.*
 import org.junit.Before
+import org.eclipse.jdt.ui.SharedASTProvider
  
 class ContextAnalyzerTest { 
 
@@ -179,12 +180,14 @@ class ContextAnalyzerTest {
 			void test() {
 				«methodbody»
 				$
+			}
 			''')
 	  }
 	  
 	def private exercise (CharSequence code,String varname){
-		val struct = fixture.parseWithMarkers(code.toString)
-		val cu = struct.first;
+		val struct = fixture.createFileAndParseWithMarkers(code)
+		val icu = struct.first;
+		val cu = SharedASTProvider::getAST(icu, SharedASTProvider::WAIT_YES,null)
 		val pos = struct.second.head;
 		val enclosingMethod = findEnclosingMethod(cu, pos)
 		val sut = new AstBasedObjectUsageResolver();

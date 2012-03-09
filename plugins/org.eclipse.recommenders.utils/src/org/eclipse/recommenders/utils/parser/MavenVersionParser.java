@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.utils.Version;
 
-public class MavenVersionParser implements VersionParser {
+public class MavenVersionParser implements IVersionParser {
 
     @Override
     public boolean canParse(final String version) {
@@ -47,8 +47,9 @@ public class MavenVersionParser implements VersionParser {
                     if (tokenizer.hasMoreTokens()) {
                         consumeDelimiter(tokenizer, "-", ".");
                         qualifier = parseString(tokenizer);
-                        if (tokenizer.hasMoreTokens()) {
-                            Throws.throwIllegalArgumentException("couldn't convert string into version: '%s'", version);
+                        // everything that follows after the third separator is treated as being part of the qualifier
+                        while (tokenizer.hasMoreElements()) {
+                            qualifier += tokenizer.nextToken();
                         }
                     }
                 }

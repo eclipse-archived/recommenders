@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.tests.mining.calls.generation;
 
-import static org.eclipse.recommenders.commons.udc.ObjectUsage.NO_METHOD;
+import static org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage.NO_METHOD;
 
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;

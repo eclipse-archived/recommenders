@@ -12,9 +12,9 @@ package org.eclipse.recommenders.mining.calls.generation;
 
 import static java.lang.Math.abs;
 import static java.lang.String.format;
-import static org.eclipse.recommenders.commons.udc.ObjectUsage.DUMMY_METHOD;
 import static org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind.PARAMETER;
 import static org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind.UNKNOWN;
+import static org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage.DUMMY_METHOD;
 import static org.eclipse.recommenders.utils.Checks.ensureEquals;
 import static org.eclipse.recommenders.utils.Checks.ensureIsGreaterOrEqualTo;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;

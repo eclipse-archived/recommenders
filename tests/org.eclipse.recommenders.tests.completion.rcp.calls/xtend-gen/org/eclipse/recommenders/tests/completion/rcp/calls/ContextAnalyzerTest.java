@@ -6,11 +6,13 @@ import java.util.Set;
 import junit.framework.Assert;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
+import org.eclipse.jdt.ui.SharedASTProvider;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.AstBasedObjectUsageResolver;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
@@ -198,25 +200,34 @@ public class ContextAnalyzerTest {
     _builder.append("\t");
     _builder.append("$");
     _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
     CharSequence _classbody = this.classbody(_builder);
     return _classbody;
   }
   
   private ObjectUsage exercise(final CharSequence code, final String varname) {
-      String _string = code.toString();
-      Tuple<CompilationUnit,Set<Integer>> _parseWithMarkers = ContextAnalyzerTest.fixture.parseWithMarkers(_string);
-      final Tuple<CompilationUnit,Set<Integer>> struct = _parseWithMarkers;
-      CompilationUnit _first = struct.getFirst();
-      final CompilationUnit cu = _first;
-      Set<Integer> _second = struct.getSecond();
-      Integer _head = IterableExtensions.<Integer>head(_second);
-      final Integer pos = _head;
-      MethodDeclaration _findEnclosingMethod = this.findEnclosingMethod(cu, (pos).intValue());
-      final MethodDeclaration enclosingMethod = _findEnclosingMethod;
-      AstBasedObjectUsageResolver _astBasedObjectUsageResolver = new AstBasedObjectUsageResolver();
-      final AstBasedObjectUsageResolver sut = _astBasedObjectUsageResolver;
-      ObjectUsage _findObjectUsage = sut.findObjectUsage(varname, enclosingMethod);
-      return _findObjectUsage;
+    try {
+      {
+        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = ContextAnalyzerTest.fixture.createFileAndParseWithMarkers(code);
+        final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
+        ICompilationUnit _first = struct.getFirst();
+        final ICompilationUnit icu = _first;
+        CompilationUnit _aST = SharedASTProvider.getAST(icu, SharedASTProvider.WAIT_YES, null);
+        final CompilationUnit cu = _aST;
+        Set<Integer> _second = struct.getSecond();
+        Integer _head = IterableExtensions.<Integer>head(_second);
+        final Integer pos = _head;
+        MethodDeclaration _findEnclosingMethod = this.findEnclosingMethod(cu, (pos).intValue());
+        final MethodDeclaration enclosingMethod = _findEnclosingMethod;
+        AstBasedObjectUsageResolver _astBasedObjectUsageResolver = new AstBasedObjectUsageResolver();
+        final AstBasedObjectUsageResolver sut = _astBasedObjectUsageResolver;
+        ObjectUsage _findObjectUsage = sut.findObjectUsage(varname, enclosingMethod);
+        return _findObjectUsage;
+      }
+    } catch (Exception _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   private MethodDeclaration findEnclosingMethod(final CompilationUnit ast, final int pos) {

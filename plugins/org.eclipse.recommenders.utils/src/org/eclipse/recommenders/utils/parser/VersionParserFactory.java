@@ -10,37 +10,31 @@
  */
 package org.eclipse.recommenders.utils.parser;
 
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
-
-import java.util.LinkedList;
-import java.util.List;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 
 import org.eclipse.recommenders.utils.Version;
 
+import com.google.common.base.Optional;
+
 public class VersionParserFactory {
 
-    private static final List<VersionParser> knownParser;
+    private static final IVersionParser[] knownParser = { new OsgiVersionParser(), new MavenVersionParser() };
 
-    static {
-        knownParser = new LinkedList<VersionParser>();
-
-        knownParser.add(new OsgiVersionParser());
-        knownParser.add(new MavenVersionParser());
-    }
-
-    public static VersionParser getCompatibleParser(final String version) {
-        for (final VersionParser parser : knownParser) {
+    public static Optional<IVersionParser> getCompatibleParser(final String version) {
+        for (final IVersionParser parser : knownParser) {
             if (parser.canParse(version)) {
-                return parser;
+                return of(parser);
             }
         }
 
-        return null;
+        return absent();
     }
 
     public static Version parse(final String version) {
-        final VersionParser parser = getCompatibleParser(version);
-        ensureIsNotNull(parser, "Given version string '%s' has unknown format and can not be parsed.", version);
-        return parser.parse(version);
+        final Optional<IVersionParser> opt = getCompatibleParser(version);
+        ensureIsTrue(opt.isPresent(), "Given version string '%s' has unknown format and can not be parsed.", version);
+        return opt.get().parse(version);
     }
 }

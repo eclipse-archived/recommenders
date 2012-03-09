@@ -18,7 +18,7 @@ class CodeBuilder {
 		«declaration» {
 			«body»
 		}
-		'''
+		''' 
 	}
 	
 	def static classbody(CharSequence classname, CharSequence classbody){

@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.IModel;
 import org.eclipse.recommenders.utils.Tuple;

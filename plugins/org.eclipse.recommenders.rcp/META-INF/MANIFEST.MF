@@ -7,7 +7,7 @@ Bundle-Activator: org.eclipse.recommenders.rcp.RecommendersPlugin
 Bundle-Vendor: Eclipse Code Recommenders
 Export-Package: org.eclipse.recommenders.internal.rcp.providers,
  org.eclipse.recommenders.rcp,
- org.eclipse.recommenders.rcp.events;x-friends:="org.eclipse.recommenders.extdoc.rcp"
+ org.eclipse.recommenders.rcp.events
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core;bundle-version="3.7.0",
@@ -20,6 +20,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.injection,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- org.slf4j.api
+ org.slf4j.api,
+ org.eclipse.recommenders.utils.gson,
+ org.eclipse.recommenders.analysis
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

@@ -56,19 +56,27 @@ public class MavenVersionParserTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testValueOf_InvalidToManyDots() {
-        final String version = "1.2.3-4.5";
-        final MavenVersionParser parser = new MavenVersionParser();
-        assertFalse(parser.canParse(version));
-        parser.parse(version);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testInvalidNoDotsAtAll() {
         final String version = "1_2_3_4_5";
         final MavenVersionParser parser = new MavenVersionParser();
         assertFalse(parser.canParse(version));
         parser.parse(version);
+    }
+
+    @Test
+    public void testStrangeQualifier() {
+        final String version = "1.2.3.4-5";
+        final MavenVersionParser parser = new MavenVersionParser();
+        Version actual = parser.parse(version);
+        assertEquals(Version.create(1, 2, 3, "4-5"), actual);
+    }
+
+    @Test
+    public void testValueOf_InvalidToManyDots() {
+        final String version = "1.2.3-4.5";
+        final MavenVersionParser parser = new MavenVersionParser();
+        Version actual = parser.parse(version);
+        assertEquals(Version.create(1, 2, 3, "4.5"), actual);
     }
 
     @Test

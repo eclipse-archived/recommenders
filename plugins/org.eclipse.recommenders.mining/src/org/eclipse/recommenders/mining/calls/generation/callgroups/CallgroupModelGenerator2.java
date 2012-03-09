@@ -27,7 +27,7 @@ import org.eclipse.recommenders.commons.mining.features.ContextFeature;
 import org.eclipse.recommenders.commons.mining.features.DefinitionFeature;
 import org.eclipse.recommenders.commons.mining.features.Feature;
 import org.eclipse.recommenders.commons.mining.features.KindFeature;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.mining.calls.generation.GenericNetworkBuilder;
 import org.eclipse.recommenders.mining.calls.generation.IModelGenerator;
 import org.eclipse.recommenders.mining.calls.generation.ObjectUsageImporter;

@@ -19,7 +19,7 @@ import java.util.Set;
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.mining.calls.data.IModelSpecificationProvider;
 import org.eclipse.recommenders.mining.calls.data.IObjectUsageProvider;
 import org.eclipse.recommenders.mining.calls.data.ModelArchiveFileWriter;

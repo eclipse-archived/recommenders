@@ -12,12 +12,16 @@ package org.eclipse.recommenders.rcp;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.recommenders.injection.InjectionService;
+import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.ServicesInitializer;
 import org.eclipse.recommenders.utils.rcp.LoggingUtils;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 public class RecommendersPlugin extends AbstractUIPlugin {
     private static RecommendersPlugin plugin;
+    public static String P_REPOSITORY_URL = "recommenders.repository.url";
+    public static String P_REPOSITORY_ENABLE_AUTO_DOWNLOAD = "recommenders.repository.auto.download";
 
     public static RecommendersPlugin getDefault() {
         return plugin;
@@ -53,5 +57,7 @@ public class RecommendersPlugin extends AbstractUIPlugin {
     public void stop(final BundleContext context) throws Exception {
         plugin = null;
         super.stop(context);
+        ServicesInitializer s = InjectionService.getInstance().requestInstance(ServicesInitializer.class);
+        s.pgkInfoProvider.close();
     }
 }

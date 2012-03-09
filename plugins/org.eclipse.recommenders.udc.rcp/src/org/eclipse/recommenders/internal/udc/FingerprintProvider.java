@@ -16,7 +16,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ClasspathDependencyStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store3.ClasspathDependencyStore;
 
 import com.google.common.collect.Sets;
 
@@ -35,7 +35,7 @@ public class FingerprintProvider {
         for (final String absolutPath : libraries) {
             final File library = new File(absolutPath);
             if (classpathDependencyStore.containsClasspathDependencyInfo(library)) {
-                final String fingerPrint = classpathDependencyStore.getClasspathDependencyInfo(library).jarFileFingerprint;
+                final String fingerPrint = classpathDependencyStore.getClasspathDependencyInfo(library).jarFingerprint;
                 result.add(fingerPrint);
             }
         }

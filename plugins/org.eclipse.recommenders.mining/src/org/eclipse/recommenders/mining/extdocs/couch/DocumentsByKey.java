@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.mining.extdocs.couch;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.slf4j.LoggerFactory.getLogger;
 

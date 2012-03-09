@@ -11,98 +11,171 @@
 package org.eclipse.recommenders.internal.completion.rcp.calls.store2;
 
 import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelResolutionData.ModelResolutionStatus.FAILED;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoComputerService;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.DependencyInfoStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.classpath.ManifestResolverService;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelDownloadJob.JobFactory;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelResolutionData.ModelResolutionStatus;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.IModelArchive;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.ModelArchiveDownloadService;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.ModelArchiveStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.models.ModelArchive;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CallModelsIndexFile;
+import org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils;
+import org.eclipse.recommenders.rcp.repo.IModelRepository;
+import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonatype.aether.artifact.Artifact;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
+import com.google.gson.reflect.TypeToken;
 
 public class CallModelStore implements Closeable {
 
-    private final ModelArchiveStore<IObjectMethodCallsNet> modelStore;
-    private final DependencyInfoStore depStore;
-    private final DependencyInfoComputerService depComputer;
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Map<IObjectMethodCallsNet, IModelArchive<IObjectMethodCallsNet>> pool = Maps.newConcurrentMap();
+
+    private final IModelRepository modelRepo;
     private final JavaElementResolver jdtCache;
+    private final JobFactory factory;
 
-    private final Map<IObjectMethodCallsNet, IModelArchive<IObjectMethodCallsNet>> index = Maps.newHashMap();
-    private final ModelArchiveDownloadService modelDownloadService;
-    private final ManifestResolverService manifestResolver;
+    private final File mappingsFile;
+    private Map<File, CallModelResolutionData> mappings;
 
-    public CallModelStore(final DependencyInfoStore depStore, final DependencyInfoComputerService depComputer,
-            final ModelArchiveStore<IObjectMethodCallsNet> modelStore, final ManifestResolverService manifestResolver,
-            final ModelArchiveDownloadService modelDownloadService, final JavaElementResolver jdtCache) {
-        this.depStore = depStore;
-        this.depComputer = depComputer;
-        this.modelStore = modelStore;
-        this.manifestResolver = manifestResolver;
-        this.modelDownloadService = modelDownloadService;
+    @Inject
+    public CallModelStore(@CallModelsIndexFile File mappingsFile, IModelRepository repository,
+            JavaElementResolver jdtCache, JobFactory factory) {
+        this.mappingsFile = mappingsFile;
+        this.modelRepo = repository;
         this.jdtCache = jdtCache;
+        this.factory = factory;
+        loadMappings();
+    }
+
+    private void loadMappings() {
+        if (mappingsFile.exists()) {
+            mappings = GsonUtil.deserialize(mappingsFile, new TypeToken<Map<File, CallModelResolutionData>>() {
+            }.getType());
+        } else {
+            mappings = Maps.newHashMap();
+        }
+        // mappings.clear()
     }
 
     public Optional<IObjectMethodCallsNet> aquireModel(final IType type) {
-        final IPackageFragmentRoot fragmentRoot = (IPackageFragmentRoot) type
-                .getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
-        final Optional<File> location = JdtUtils.getLocation(fragmentRoot);
-        if (!location.isPresent()) {
+        try {
+            final Optional<IPackageFragmentRoot> pkgRoot = findPackageFragmentRoot(type);
+            if (!pkgRoot.isPresent()) {
+                return absent();
+            }
+
+            final Optional<File> location = JdtUtils.getLocation(pkgRoot.get());
+            if (!location.isPresent()) {
+                return absent();
+            }
+
+            Optional<IModelArchive<IObjectMethodCallsNet>> archive = findModelArchive(location.get());
+            if (!archive.isPresent()) {
+                return absent();
+            }
+
+            final Optional<IObjectMethodCallsNet> model = findModel(type, archive.get());
+            if (!model.isPresent()) {
+                return absent();
+            }
+
+            pool.put(model.get(), archive.get());
+            return of(model.get());
+        } catch (Exception e) {
+            log.warn("Loading model for '" + type.getFullyQualifiedName() + "' failed with exception.", e);
             return absent();
         }
-        final Optional<Manifest> manifest = depStore.getManifest(location.get());
-        if (!manifest.isPresent()) {
-            return absent();
-        }
-        @SuppressWarnings("unchecked")
-        final IModelArchive<IObjectMethodCallsNet> archive = modelStore.getModelArchive(manifest.get());
-        final ITypeName recType = jdtCache.toRecType(type);
-        if (!archive.hasModel(recType)) {
-            return absent();
-        }
-        final IObjectMethodCallsNet model = archive.acquireModel(recType);
-        index.put(model, archive);
-        return of(model);
     }
 
-    public void releaseModel(final IObjectMethodCallsNet model) {
-        final IModelArchive<IObjectMethodCallsNet> archive = index.get(model);
-        archive.releaseModel(model);
+    private Optional<IPackageFragmentRoot> findPackageFragmentRoot(final IType type) {
+        IPackageFragmentRoot pkgRoot = (IPackageFragmentRoot) type.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
+        return fromNullable(pkgRoot);
+    }
+
+    private Optional<IModelArchive<IObjectMethodCallsNet>> findModelArchive(File location) {
+        CallModelResolutionData mapping = getModel(location);
+        switch (mapping.getStatus()) {
+        case UNRESOLVED:
+            factory.create(location).schedule();
+        case FAILED:
+        case PROHIBITED:
+        case UNINITIALIZED:
+            return absent();
+        }
+
+        if (isEmpty(mapping.getCoordinate())) {
+            return absent();
+        }
+
+        if (mapping.getModel() == null) {
+            Artifact modelArtifact = RepositoryUtils.newArtifact(mapping.getCoordinate());
+            File file = modelRepo.location(modelArtifact);
+            if (!file.exists()) {
+                mapping.setStatus(FAILED);
+                mapping.setError(String.format("File %s does not exist", file.getAbsolutePath()));
+                return absent();
+            }
+            mapping.setModel(new ModelArchive<IObjectMethodCallsNet>(file, new CallModelLoader()));
+        }
+        return fromNullable(mapping.getModel());
+    }
+
+    private Optional<IObjectMethodCallsNet> findModel(final IType type, IModelArchive<IObjectMethodCallsNet> archive) {
+        final ITypeName rType = jdtCache.toRecType(type);
+        if (!archive.hasModel(rType)) {
+            return absent();
+        }
+        final IObjectMethodCallsNet model = archive.acquireModel(rType);
+        return fromNullable(model);
+    }
+
+    public Map<File, CallModelResolutionData> getMappings() {
+        return mappings;
+    }
+
+    public CallModelResolutionData getModel(File f) {
+        if (f == null) {
+            return CallModelResolutionData.NULL;
+        }
+        CallModelResolutionData ref = mappings.get(f);
+        if (ref == null) {
+            ref = new CallModelResolutionData();
+            ref.setStatus(ModelResolutionStatus.UNRESOLVED);
+            mappings.put(f, ref);
+        }
+        return ref;
     }
 
     @Override
     public void close() throws IOException {
-        depStore.close();
+        Files.createParentDirs(mappingsFile);
+        GsonUtil.serialize(mappings, mappingsFile);
     }
 
-    public DependencyInfoStore getDependencyInfoStore() {
-        return depStore;
-    }
-
-    public DependencyInfoComputerService getDependencyInfoComputerService() {
-        return depComputer;
-    }
-
-    public ModelArchiveDownloadService getModelArchiveDownloadService() {
-        return modelDownloadService;
-    }
-
-    public ManifestResolverService getManifestResolverService() {
-        return manifestResolver;
+    public void releaseModel(final IObjectMethodCallsNet model) {
+        final IModelArchive<IObjectMethodCallsNet> archive = pool.get(model);
+        archive.releaseModel(model);
     }
 }

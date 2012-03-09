@@ -13,6 +13,7 @@ package org.eclipse.recommenders.tests.completion.rcp.calls;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.core.IType;
@@ -28,7 +29,7 @@ import com.google.common.base.Optional;
 public class ModelStoreMock extends CallModelStore {
 
     public ModelStoreMock() {
-        super(null, null, null, null, null, null);
+        super(new File("fail.txt"), null, null, null);
     }
 
     @Override

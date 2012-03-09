@@ -15,16 +15,13 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
-import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Throws;
-import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 public class ModelArchive<T extends IModel> implements IModelArchive<T> {
@@ -34,7 +31,7 @@ public class ModelArchive<T extends IModel> implements IModelArchive<T> {
 
     private final IModelLoader<T> modelLoader;
     private ZipFile zipFile;
-    private Manifest manifest;
+    // private Manifest manifest;
     private File file;
 
     private final GenericKeyedObjectPool pool = createPool();
@@ -51,7 +48,7 @@ public class ModelArchive<T extends IModel> implements IModelArchive<T> {
         this.file = ensureIsNotNull(file);
         this.modelLoader = ensureIsNotNull(modelLoader);
         open();
-        readManifest();
+        // readManifest();
     }
 
     @Override
@@ -63,21 +60,21 @@ public class ModelArchive<T extends IModel> implements IModelArchive<T> {
         }
     }
 
-    private void readManifest() {
-        try {
-            final ZipEntry manifestEntry = zipFile.getEntry(MANIFEST_FILENAME);
-            ensureIsNotNull(manifestEntry, "Archive '%s' does not contain manifest file.", file.getAbsolutePath());
-            final InputStream inputStream = zipFile.getInputStream(manifestEntry);
-            manifest = GsonUtil.deserialize(inputStream, Manifest.class);
-        } catch (final IOException e) {
-            Throws.throwUnhandledException(e, "Unable to load manifest from archive '%s'", file.getAbsolutePath());
-        }
-    }
+    // private void readManifest() {
+    // try {
+    // final ZipEntry manifestEntry = zipFile.getEntry(MANIFEST_FILENAME);
+    // ensureIsNotNull(manifestEntry, "Archive '%s' does not contain manifest file.", file.getAbsolutePath());
+    // final InputStream inputStream = zipFile.getInputStream(manifestEntry);
+    // manifest = GsonUtil.deserialize(inputStream, Manifest.class);
+    // } catch (final IOException e) {
+    // Throws.throwUnhandledException(e, "Unable to load manifest from archive '%s'", file.getAbsolutePath());
+    // }
+    // }
 
-    @Override
-    public Manifest getManifest() {
-        return manifest;
-    }
+    // @Override
+    // public Manifest getManifest() {
+    // return manifest;
+    // }
 
     private String getFilenameFromType(final ITypeName type) {
         return type.getIdentifier().replaceAll("/", ".") + MODEL_POSTFIX;

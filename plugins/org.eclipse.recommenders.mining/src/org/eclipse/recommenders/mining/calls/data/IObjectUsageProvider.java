@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.mining.calls.data;
 
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 
 public interface IObjectUsageProvider {
     Iterable<ObjectUsage> findObjectUsages(ModelSpecification spec);

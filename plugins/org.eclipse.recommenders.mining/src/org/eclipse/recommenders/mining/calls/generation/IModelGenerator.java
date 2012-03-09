@@ -13,7 +13,7 @@ package org.eclipse.recommenders.mining.calls.generation;
 import java.util.Collection;
 
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 public interface IModelGenerator {

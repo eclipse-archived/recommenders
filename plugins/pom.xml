@@ -15,7 +15,6 @@
 
 	<modules>
 		<module>org.eclipse.recommenders.analysis</module>
-		<module>org.eclipse.recommenders.analysis.rcp</module>
 
 		<module>org.eclipse.recommenders.completion.rcp</module>
 		<module>org.eclipse.recommenders.completion.rcp.e37</module>
@@ -44,6 +43,7 @@
 
 		<module>org.eclipse.recommenders.rcp</module>
 		<module>org.eclipse.recommenders.rcp.logging</module>
+		<module>org.eclipse.recommenders.rcp.repo</module>
 
 		<module>org.eclipse.recommenders.server</module>
 		<module>org.eclipse.recommenders.server.console</module>

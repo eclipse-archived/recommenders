@@ -193,7 +193,6 @@ public class JavaProjectFixture {
     }
 
     public CompilationUnit parse(final String content) {
-
         parser.setSource(content.toCharArray());
         parser.setUnitName(findClassName(content) + ".java");
         final CompilationUnit cu = cast(parser.createAST(null));

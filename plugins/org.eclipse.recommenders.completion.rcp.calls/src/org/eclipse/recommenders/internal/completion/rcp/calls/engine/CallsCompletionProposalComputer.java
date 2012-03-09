@@ -45,9 +45,9 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension2;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
@@ -83,7 +83,6 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         }
     };
 
-    private final CallModelStore modelStore;
     private final IRecommendersCompletionContextFactory ctxFactory;
     private final JavaElementResolver jdtResolver;
 
@@ -97,10 +96,12 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private JavaContentAssistInvocationContext javaContext;
 
+    private final CallModelStore modelStore3;
+
     @Inject
-    public CallsCompletionProposalComputer(final CallModelStore modelStore, final JavaElementResolver jdtResolver,
+    public CallsCompletionProposalComputer(final CallModelStore modelStore3, final JavaElementResolver jdtResolver,
             final IRecommendersCompletionContextFactory ctxFactory) {
-        this.modelStore = modelStore;
+        this.modelStore3 = modelStore3;
         this.jdtResolver = jdtResolver;
         this.ctxFactory = ctxFactory;
     }
@@ -180,7 +181,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean acquireModel() {
-        model = modelStore.aquireModel(receiverType).orNull();
+        model = modelStore3.aquireModel(receiverType).orNull();
+        // model = modelStore.aquireModel(receiverType).orNull();
         return model != null;
     }
 
@@ -299,7 +301,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private void releaseModel() {
         if (model != null) {
-            modelStore.releaseModel(model);
+            modelStore3.releaseModel(model);
             model = null;
         }
     }

@@ -35,7 +35,7 @@ public class ConsistencyCheck {
                 // new java.io.InputStreamReader(System.in));
                 // final String line = stdin.readLine();
                 // if (line.equalsIgnoreCase("y")) {
-                db.delete(spec._id, spec._rev);
+                // db.delete(spec._id, spec._rev);
                 System.out.println(id + " deleted");
                 // }
             }

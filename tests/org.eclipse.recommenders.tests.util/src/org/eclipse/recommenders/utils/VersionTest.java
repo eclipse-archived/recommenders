@@ -42,9 +42,12 @@ public class VersionTest {
         assertEquals(version, sut.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
+    // (expected = IllegalArgumentException.class)
     public void testValueOf_InvalidToManyDots() {
-        Version.valueOf("1.2.3.4.5");
+        // we accept small version mistakes
+        Version version = Version.valueOf("1.2.3.4.5");
+        assertEquals("4.5", version.qualifier);
     }
 
     @Test(expected = IllegalArgumentException.class)

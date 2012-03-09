@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.eclipse.recommenders.commons.udc.LibraryIdentifier;
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.webclient.CouchUtils;
 import org.eclipse.recommenders.webclient.WebServiceClient;
 import org.eclipse.recommenders.webclient.results.GenericResultObjectView;

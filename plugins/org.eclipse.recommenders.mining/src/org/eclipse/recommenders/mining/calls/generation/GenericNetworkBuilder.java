@@ -17,7 +17,7 @@ import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_I
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_PATTERNS;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_FALSE;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_TRUE;
-import static org.eclipse.recommenders.commons.udc.ObjectUsage.DUMMY_METHOD;
+import static org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage.DUMMY_METHOD;
 import static org.eclipse.recommenders.mining.calls.generation.NetworkUtils.P_ROUNDING_PRECISION;
 import static org.eclipse.recommenders.mining.calls.generation.NetworkUtils.ensureAllProbabilitiesInValidRange;
 import static org.eclipse.recommenders.mining.calls.generation.NetworkUtils.getProbabilityInMinMaxRange;

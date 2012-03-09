@@ -15,8 +15,8 @@ import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_I
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_PATTERNS;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_FALSE;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_TRUE;
-import static org.eclipse.recommenders.commons.udc.ObjectUsage.DUMMY_METHOD;
-import static org.eclipse.recommenders.commons.udc.ObjectUsage.NO_METHOD;
+import static org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage.DUMMY_METHOD;
+import static org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage.NO_METHOD;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;

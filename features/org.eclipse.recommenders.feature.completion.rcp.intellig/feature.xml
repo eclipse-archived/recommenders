@@ -69,13 +69,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.analysis.rcp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.recommenders.udc"
          download-size="0"
          install-size="0"

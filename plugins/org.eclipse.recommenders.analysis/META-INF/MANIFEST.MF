@@ -7,11 +7,11 @@ Bundle-Vendor: Eclipse Code Recommenders
 Export-Package: org.eclipse.recommenders.internal.analysis,
  org.eclipse.recommenders.internal.analysis.archive,
  org.eclipse.recommenders.internal.analysis.codeelements
-Require-Bundle: org.apache.commons.lang3,
- com.google.guava,
+Require-Bundle: org.eclipse.osgi,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.utils.gson,
+ org.apache.commons.lang3,
  org.slf4j.api,
- org.eclipse.osgi
+ com.google.guava
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

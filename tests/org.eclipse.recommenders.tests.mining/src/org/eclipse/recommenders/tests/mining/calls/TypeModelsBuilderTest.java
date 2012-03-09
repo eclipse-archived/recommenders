@@ -23,7 +23,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.recommenders.commons.bayesnet.Node;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.mining.calls.generation.callgroups.ReceiverCallGroupsContainer;
 import org.eclipse.recommenders.mining.calls.generation.callgroups.TypeModelsWithContextBuilder;
 import org.eclipse.recommenders.utils.Tuple;

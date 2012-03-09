@@ -22,6 +22,7 @@ import org.eclipse.recommenders.utils.names.VmTypeName;
 
 import com.google.common.collect.Sets;
 
+@Deprecated
 public class ObjectUsage {
 
     public static ObjectUsage newObjectUsageWithDefaults() {

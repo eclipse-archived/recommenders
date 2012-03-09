@@ -44,7 +44,7 @@ public class CallCompletionProposalComputerSmokeTest {
   
   public CharSequence method(final CharSequence code) {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("public void __test(Object o, List l){");
+    _builder.append("public void __test(Object o, List l) {");
     _builder.newLine();
     _builder.append("\t");
     _builder.append(code, "	");

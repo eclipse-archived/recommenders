@@ -15,7 +15,6 @@ import static org.eclipse.recommenders.utils.Throws.throwIllegalStateException;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.recommenders.commons.udc.Manifest;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 public class NullModelArchive<T extends IModel> implements IModelArchive<T> {
@@ -24,10 +23,10 @@ public class NullModelArchive<T extends IModel> implements IModelArchive<T> {
     public void close() throws IOException {
     }
 
-    @Override
-    public Manifest getManifest() {
-        return Manifest.NULL;
-    }
+    // @Override
+    // public Manifest getManifest() {
+    // return Manifest.NULL;
+    // }
 
     @Override
     public boolean hasModel(final ITypeName name) {

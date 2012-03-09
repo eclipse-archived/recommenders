@@ -19,7 +19,7 @@ import org.eclipse.recommenders.utils.parser.OsgiVersionParser;
 public class Version implements Comparable<Version> {
 
     public static final Version ZERO = create(0, 0, 0);
-    public static final Version UNKNOWN = create(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+    public static final Version UNKNOWN = create(-1, -1, -1);
     public static final Version LATEST = create(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
     public static Version create(final int major, final int minor, final int micro, final String qualifier) {

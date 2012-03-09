@@ -20,10 +20,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.eclipse.recommenders.commons.udc.ModelSpecification;
-import org.eclipse.recommenders.commons.udc.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.CompilationUnit;
 import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
+import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codeelements.ReceiverCallSite;
 import org.eclipse.recommenders.mining.calls.AlgorithmParameters;
 import org.eclipse.recommenders.mining.calls.data.IObjectUsageProvider;

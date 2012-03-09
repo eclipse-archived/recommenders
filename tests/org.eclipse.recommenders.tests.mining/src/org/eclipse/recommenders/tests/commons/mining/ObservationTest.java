@@ -10,10 +10,10 @@
  */
 package org.eclipse.recommenders.tests.commons.mining;
 
-import static org.eclipse.recommenders.commons.udc.ObjectUsage.UNKNOWN_KIND;
-import static org.eclipse.recommenders.commons.udc.ObjectUsage.UNKNOWN_METHOD;
-import static org.eclipse.recommenders.commons.udc.ObjectUsage.UNKNOWN_TYPE;
 import static org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind.UNKNOWN;
+import static org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage.UNKNOWN_KIND;
+import static org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage.UNKNOWN_METHOD;
+import static org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage.UNKNOWN_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
