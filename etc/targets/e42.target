@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.6"?>
 
-<target name="Code Recommenders: Eclipse 4.2 Development and Build Server Target Platform" sequenceNumber="95">
+<target name="Code Recommenders: Eclipse 4.2 Development and Build Server Target Platform" sequenceNumber="97">
 <locations>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtext.xbase.feature.group" version="2.2.1.v201112130541"/>
@@ -9,27 +9,29 @@
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.jdt.feature.group" version="3.7.1.r371_v20110810-0800-7z8gFcoFMLfTabvKsR5Qm9rBGEBK"/>
-<repository location="http://download.eclipse.org/releases/indigo"/>
-</location>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.equinox.executable" version="3.6.0.v20120123-1704-7P7OFvNFLWUl76sUqHOCz0ZV"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20120123-1704-7P7OFvNFLWUl76sUqHOCz0ZV"/>
-<unit id="org.eclipse.equinox.core.sdk.feature.group" version="3.8.0.v20120106-1613-85FAcG3oFoYTlciOUZC3Nj4j"/>
-<unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.8.0.v20111114-2124-9Q7dFb8FRWti61XQVoy1qEloYdJG"/>
+<unit id="org.eclipse.equinox.executable" version="3.6.0.v20120305-1541-7P7OFvNFLWUl7Dqyq3OBHhO"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20120305-1541-7P7OFvNFLWUl7Dqyq3OBHhO"/>
+<unit id="org.eclipse.equinox.core.sdk.feature.group" version="3.8.0.v20120106-1613-85FAcG3oFoYTlcmKba83M8qz"/>
+<unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.8.0.v20111114-2124-9Q7dFbMFYGirlx2KL6qF5j2IsZ85"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.8-I-builds"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.2.0.I20111209-2100"/>
-<unit id="org.eclipse.emf.ecore.feature.group" version="2.8.0.v20111209-0930"/>
-<unit id="org.eclipse.emf.common.feature.group" version="2.8.0.v20111209-0930"/>
-<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.1.0.v20111122-1412-8292FiwFWmE7gfJmrPd0Fbk"/>
+<unit id="org.eclipse.sdk.ide" version="4.2.0.I20120127-1145"/>
+<unit id="org.eclipse.emf.ecore.feature.group" version="2.8.0.v20120127-1049"/>
+<unit id="org.eclipse.emf.common.feature.group" version="2.8.0.v20120127-1049"/>
+<unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.1.0.v20111122-1412-8295FixFWmE7gmOqvHcfrcD"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.2milestones/"/>
 </location>
 <location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201202080827"/>
-<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201202080827"/>
+<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201203072108"/>
+<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201203072108"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd/"/>
+</location>
+<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.m2e.feature.feature.group" version="1.0.200.20111228-1245"/>
+<unit id="org.eclipse.m2e.logback.feature.feature.group" version="1.0.200.20111228-1245"/>
+<unit id="org.eclipse.jdt.feature.group" version="3.7.2.v20120120-1414-7z8gFcuFMP7BW5XTz0jLTnz0l9B1"/>
+<repository location="http://download.eclipse.org/releases/indigo"/>
 </location>
 </locations>
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>

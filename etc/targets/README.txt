@@ -19,7 +19,7 @@ a text editor manually and reopen the target editor again...
 <<<<<<
 
 
-== When target files get outdated ==
+== When target files get out dated ==
 Sometimes the contents of an update site change and previously found features cannot be found
 anymore and the update site fails to resolve all required plug-ins.
 
@@ -28,4 +28,4 @@ On the right of the first editor tab is an "update" button. Select the update si
 changed, click the "update" button and wait until Eclipse returns. The missing libraries
 probably show up again.
 
-If not, call your service agent (mailing-list) :)
+If not, call your service agent (i.e., send an email to the mailing-list)
