@@ -18,12 +18,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.recommenders.completion.rcp.IIntelligentCompletionContext;
-import org.eclipse.recommenders.completion.rcp.IVariableUsageResolver;
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
-import org.eclipse.recommenders.internal.completion.rcp.calls.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.IProjectModelFacade;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store.ProjectServices;
 import org.eclipse.recommenders.internal.completion.rcp.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.internal.completion.rcp.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.utils.Tuple;

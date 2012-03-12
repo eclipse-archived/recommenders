@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang3,
  org.eclipse.jdt.ui,
  org.eclipse.recommenders.completion.rcp.calls,
- org.eclipse.recommenders.injection
+ org.eclipse.recommenders.injection,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Implementation-Version: 0.1.0

@@ -25,5 +25,11 @@ Require-Bundle: org.mockito,
  org.eclipse.equinox.ds,
  org.hamcrest,
  org.eclipse.recommenders.rcp,
- org.apache.commons.lang3;bundle-version="3.1.0"
+ org.apache.commons.lang3;bundle-version="3.1.0",
+ org.eclipse.recommenders.completion.rcp.calls;bundle-version="0.5.1",
+ org.eclipse.recommenders.rcp.repo;bundle-version="0.5.1",
+ org.eclipse.recommenders.analysis;bundle-version="0.5.1",
+ org.eclipse.recommenders.completion.rcp.chain;bundle-version="0.5.1",
+ org.eclipse.recommenders.completion.rcp.overrides;bundle-version="0.5.1",
+ org.eclipse.recommenders.completion.rcp.subwords;bundle-version="0.5.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

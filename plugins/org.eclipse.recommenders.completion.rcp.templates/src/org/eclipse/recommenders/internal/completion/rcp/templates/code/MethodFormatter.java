@@ -13,8 +13,6 @@ package org.eclipse.recommenders.internal.completion.rcp.templates.code;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.IJavaModelStatusConstants;
 import org.eclipse.jdt.core.IMethod;
@@ -26,6 +24,9 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
+
 /**
  * Generates the <code>String</code> representation of an {@link IMethod}.
  */
@@ -36,8 +37,8 @@ public class MethodFormatter {
 
     /**
      * @param elementResolver
-     *            Is responsible for converting an {@link IMethodName} observed
-     *            within the context into an {@link IMethod}.
+     *            Is responsible for converting an {@link IMethodName} observed within the context into an
+     *            {@link IMethod}.
      */
     @Inject
     public MethodFormatter(final JavaElementResolver elementResolver) {
@@ -62,15 +63,15 @@ public class MethodFormatter {
     /**
      * @param methodName
      *            The method for which to get the parameter names.
-     * @return The method's parameters as template code, e.g.
-     *         <code>${string}, ${selected:link(false, true)}</code>.
+     * @return The method's parameters as template code, e.g. <code>${string}, ${selected:link(false, true)}</code>.
      */
     private String getParametersString(final IMethodName methodName) throws JavaModelException {
         final StringBuilder parameters = new StringBuilder(32);
-        final IMethod jdtMethod = elementResolver.toJdtMethod(methodName);
-        if (jdtMethod == null) {
+        final Optional<IMethod> opt = elementResolver.toJdtMethod(methodName);
+        if (!opt.isPresent()) {
             throw new JavaModelException(new IllegalStateException(), IJavaModelStatusConstants.CORE_EXCEPTION);
         }
+        IMethod jdtMethod = opt.get();
         final String[] parameterNames = jdtMethod.getParameterNames();
         final String[] parameterTypes = jdtMethod.getParameterTypes();
         for (int i = 0; i < parameterNames.length; ++i) {
@@ -89,8 +90,7 @@ public class MethodFormatter {
      * @param parameterType
      *            The parameter's type as resolved by JDT.
      * @return The template code for a single parameter, e.g.
-     *         <code>${listener:var(org.eclipse.swt.events.SelectionListener)}</code>
-     *         .
+     *         <code>${listener:var(org.eclipse.swt.events.SelectionListener)}</code> .
      */
     private String getParameterString(final String parameterName, final ITypeName parameterType) {
         String appendix = "";
@@ -113,9 +113,8 @@ public class MethodFormatter {
     /**
      * @param parameterName
      *            The parameter's name as resolved by JDT.
-     * @return The unique parameter name, i.e. if there already has been a name
-     *         "button" in the current template, the new parameter name will be
-     *         "button2".
+     * @return The unique parameter name, i.e. if there already has been a name "button" in the current template, the
+     *         new parameter name will be "button2".
      */
     private String getParameterName(final String parameterName) {
         final String name = parameterName.length() <= 5 && parameterName.startsWith("arg") ? "arg" : parameterName;
@@ -130,11 +129,9 @@ public class MethodFormatter {
     }
 
     /**
-     * Eclipse templates disallow the use of same names for different
-     * parameters. Therefore we count the occurrences of each parameter name, so
-     * we can assign unique names, e.g. turn "<code>button</code>" into "
-     * <code>button3</code>". This method resets the counter (usually called
-     * after the pattern is completed).
+     * Eclipse templates disallow the use of same names for different parameters. Therefore we count the occurrences of
+     * each parameter name, so we can assign unique names, e.g. turn "<code>button</code>" into " <code>button3</code>".
+     * This method resets the counter (usually called after the pattern is completed).
      */
     final void resetArgumentCounter() {
         argumentCounter.clear();

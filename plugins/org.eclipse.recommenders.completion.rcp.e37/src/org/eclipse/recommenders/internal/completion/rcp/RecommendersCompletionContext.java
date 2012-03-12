@@ -167,7 +167,7 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
 
     @Override
     public ASTNode getCompletionNodeParent() {
-        return astCompletionNodeFinder.completionNodeParent;
+        return astCompletionNodeFinder.completionNodeParent();
     }
 
     @Override

@@ -11,7 +11,26 @@
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.eclipse.jdt.core.CompletionProposal.*;
+import static org.eclipse.jdt.core.CompletionProposal.ANNOTATION_ATTRIBUTE_REF;
+import static org.eclipse.jdt.core.CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION;
+import static org.eclipse.jdt.core.CompletionProposal.ANONYMOUS_CLASS_DECLARATION;
+import static org.eclipse.jdt.core.CompletionProposal.CONSTRUCTOR_INVOCATION;
+import static org.eclipse.jdt.core.CompletionProposal.FIELD_IMPORT;
+import static org.eclipse.jdt.core.CompletionProposal.FIELD_REF;
+import static org.eclipse.jdt.core.CompletionProposal.FIELD_REF_WITH_CASTED_RECEIVER;
+import static org.eclipse.jdt.core.CompletionProposal.KEYWORD;
+import static org.eclipse.jdt.core.CompletionProposal.LABEL_REF;
+import static org.eclipse.jdt.core.CompletionProposal.LOCAL_VARIABLE_REF;
+import static org.eclipse.jdt.core.CompletionProposal.METHOD_DECLARATION;
+import static org.eclipse.jdt.core.CompletionProposal.METHOD_IMPORT;
+import static org.eclipse.jdt.core.CompletionProposal.METHOD_NAME_REFERENCE;
+import static org.eclipse.jdt.core.CompletionProposal.METHOD_REF;
+import static org.eclipse.jdt.core.CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER;
+import static org.eclipse.jdt.core.CompletionProposal.PACKAGE_REF;
+import static org.eclipse.jdt.core.CompletionProposal.POTENTIAL_METHOD_DECLARATION;
+import static org.eclipse.jdt.core.CompletionProposal.TYPE_IMPORT;
+import static org.eclipse.jdt.core.CompletionProposal.TYPE_REF;
+import static org.eclipse.jdt.core.CompletionProposal.VARIABLE_DECLARATION;
 import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
 import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.matchesPrefixPattern;
 
@@ -60,7 +79,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
         // this.collector = new CompletionProposalCollector(ctx.getCompilationUnit());
         this.collector.acceptContext(ctx.getCoreContext());
-
+        this.collector.setInvocationContext(ctx);
         collector.setIgnored(ANNOTATION_ATTRIBUTE_REF, false);
         collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, false);
         collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, false);
@@ -144,8 +163,13 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         }
 
         final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal);
-        if (!subwordsMatchingRegion.isEmpty() &&  !matchesPrefixPattern(prefix, subwordsMatchingRegion)) { // && !isSmallTypo(prefix, subwordsMatchingRegion))
-            return;
+        if (!subwordsMatchingRegion.isEmpty()) {
+            if (!matchesPrefixPattern(prefix, subwordsMatchingRegion)) {
+                if (!matchesPrefixPattern(prefix.toLowerCase(), subwordsMatchingRegion)) {
+                    return;
+                }
+                proposal.setRelevance(proposal.getRelevance() - 1);
+            }
         }
 
         for (final IJavaCompletionProposal p : tryCreateJdtProposal(proposal)) {

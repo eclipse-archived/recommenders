@@ -29,8 +29,8 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 public class LogbackConfigurationInitializer implements Callable<IStatus> {
-    protected static final String LOGBACK_BUNDLE_ID = "ch.qos.logback.core";
-    protected static final String PROP_LOGBACK_CONFIGURATION_FILE = "logback.configurationFile";
+    public static final String LOGBACK_BUNDLE_ID = "ch.qos.logback.core";
+    public static final String PROP_LOGBACK_CONFIGURATION_FILE = "logback.configurationFile";
 
     @Override
     public IStatus call() {

@@ -33,6 +33,8 @@ public class CodeBuilder {
     _builder.newLine();
     _builder.append("import javax.annotation.*;");
     _builder.newLine();
+    _builder.append("import javax.xml.ws.Action;");
+    _builder.newLine();
     _builder.append(declaration, "");
     _builder.append(" {");
     _builder.newLineIfNotEmpty();
@@ -55,6 +57,8 @@ public class CodeBuilder {
     _builder.append("import java.util.concurrent.*;");
     _builder.newLine();
     _builder.append("import javax.annotation.*;");
+    _builder.newLine();
+    _builder.append("import javax.xml.ws.Action;");
     _builder.newLine();
     _builder.append("public class ");
     _builder.append(classname, "");
@@ -79,6 +83,8 @@ public class CodeBuilder {
     _builder.append("import java.util.concurrent.*;");
     _builder.newLine();
     _builder.append("import javax.annotation.*;");
+    _builder.newLine();
+    _builder.append("import javax.xml.ws.Action;");
     _builder.newLine();
     _builder.append("public class Class");
     int _addAndGet = CodeBuilder.classCounter.addAndGet(1);

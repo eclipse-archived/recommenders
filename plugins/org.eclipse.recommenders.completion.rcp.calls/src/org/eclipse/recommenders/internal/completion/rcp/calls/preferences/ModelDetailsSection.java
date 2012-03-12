@@ -19,8 +19,12 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelResolutionData;
+import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelResolutionData.ModelResolutionStatus;
 import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.swt.SWT;
@@ -39,7 +43,7 @@ public class ModelDetailsSection extends AbstractSection {
     private File file;
     private CallModelResolutionData model;
     private WritableValue value;
-    private Text statusText;
+    private ComboViewer statusText;
 
     @Inject
     public ModelDetailsSection(@Assisted final PreferencePage preferencePage, @Assisted final Composite parent,
@@ -52,9 +56,11 @@ public class ModelDetailsSection extends AbstractSection {
     @Override
     protected void createDetailsContainer(final Composite parent) {
         createLabel(parent, "Name:");
-        nameText = createText(parent, SWT.READ_ONLY | SWT.BORDER);
+        nameText = createText(parent, SWT.BORDER);
         createLabel(parent, "Status:");
-        statusText = createText(parent, SWT.READ_ONLY | SWT.BORDER);
+        statusText = new ComboViewer(parent, SWT.BORDER);
+        statusText.setContentProvider(new ArrayContentProvider());
+        statusText.setInput(ModelResolutionStatus.values());
         bindValues();
     }
 
@@ -65,15 +71,17 @@ public class ModelDetailsSection extends AbstractSection {
     private void bindValues() {
         value = new WritableValue();
         DataBindingContext ctx = new DataBindingContext();
+
         IObservableValue widgetValue = WidgetProperties.text(SWT.Modify).observe(nameText);
         IObservableValue modelValue = BeanProperties.value(CallModelResolutionData.class,
                 CallModelResolutionData.P_COORDINATE).observeDetail(value);
         ctx.bindValue(widgetValue, modelValue);
 
-        widgetValue = WidgetProperties.text(SWT.Modify).observe(statusText);
+        widgetValue = ViewerProperties.singlePostSelection().observe(statusText);
         modelValue = BeanProperties.value(CallModelResolutionData.class, CallModelResolutionData.P_STATUS)
                 .observeDetail(value);
         ctx.bindValue(widgetValue, modelValue);
+
     }
 
     public void selectionChanged(final File file) {

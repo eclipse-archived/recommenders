@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.rcp.repo;
 
 import java.io.File;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.sonatype.aether.artifact.Artifact;
@@ -24,11 +25,19 @@ public interface IModelRepository {
 
     void setRemote(String url);
 
-    void deploy(Artifact artifact, Artifact pom, IProgressMonitor monitor) throws DeploymentException;
+    void deploy(Artifact artifact, IProgressMonitor monitor) throws DeploymentException;
 
-    void resolve(Artifact artifact, final IProgressMonitor monitor) throws DependencyResolutionException;
+    /**
+     * Resolves and downloads all dependencies for a given artifact.
+     * 
+     * @return a list of dependencies required by the given artifact - including the artifact itself (probably)
+     */
+    List<File> resolve(Artifact artifact, final IProgressMonitor monitor) throws DependencyResolutionException;
 
-    void install(Artifact artifact, Artifact pom) throws InstallationException;
+    /**
+     * Installs the local artifact to the
+     */
+    void install(Artifact artifact) throws InstallationException;
 
     /**
      * Deletes a <b>local</b> artifact from file system.

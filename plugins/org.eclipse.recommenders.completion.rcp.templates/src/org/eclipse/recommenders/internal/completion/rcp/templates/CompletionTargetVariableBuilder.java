@@ -12,13 +12,13 @@ package org.eclipse.recommenders.internal.completion.rcp.templates;
 
 import java.util.Set;
 
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
 import org.eclipse.recommenders.internal.completion.rcp.templates.types.CompletionTargetVariable;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
 import com.google.common.collect.Sets;
@@ -28,7 +28,7 @@ import com.google.common.collect.Sets;
  */
 public final class CompletionTargetVariableBuilder {
 
-    private ITypeName receiverType;
+    private IType receiverType;
     private String receiverName;
     private int replacementOffset;
     private boolean needsConstructor;
@@ -64,7 +64,7 @@ public final class CompletionTargetVariableBuilder {
     private CompletionTargetVariable buildInvokedVariable(final IRecommendersCompletionContext context) {
         receiverType = context.getReceiverType().orNull();
         receiverName = context.getReceiverName() == null ? "" : context.getReceiverName();
-        replacementOffset = context.getReplacementRegion().getOffset();
+        replacementOffset = context.getReplacementRange().getOffset();
         if (receiverType == null) {
             handleUnresolvedType(context);
         } else if (context.getVariable() != null && context.getVariable().isThis()) {

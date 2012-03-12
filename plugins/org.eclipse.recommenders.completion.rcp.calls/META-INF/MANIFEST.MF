@@ -34,3 +34,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.databinding.property;bundle-version="1.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Export-Package: org.eclipse.recommenders.internal.completion.rcp.calls.engine,
+ org.eclipse.recommenders.internal.completion.rcp.calls.extdoc,
+ org.eclipse.recommenders.internal.completion.rcp.calls.net,
+ org.eclipse.recommenders.internal.completion.rcp.calls.preferences,
+ org.eclipse.recommenders.internal.completion.rcp.calls.store2,
+ org.eclipse.recommenders.internal.completion.rcp.calls.store2.models,
+ org.eclipse.recommenders.internal.completion.rcp.calls.wiring

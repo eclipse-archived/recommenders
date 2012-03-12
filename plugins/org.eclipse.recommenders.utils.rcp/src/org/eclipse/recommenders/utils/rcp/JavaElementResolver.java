@@ -225,7 +225,9 @@ public class JavaElementResolver {
      */
     // This method should return IMethodNames in all cases but yet it does not work completey as we want it to work
     public Optional<IMethodName> toRecMethod(final IMethod jdtMethod) {
-        ensureIsNotNull(jdtMethod);
+        if (jdtMethod == null) {
+            return absent();
+        }
         if (!jdtMethod.exists()) {
             // compiler generated methods (e.g., calls to constructors to inner non-static classes do not exist.
             return absent();

@@ -38,7 +38,7 @@ public class VmTypeName implements ITypeName {
 
     public static final VmTypeName STRING = VmTypeName.get("Ljava/lang/String");
 
-    public static final VmTypeName NULL = get("null");
+    public static final VmTypeName NULL = get("Lnull");
 
     public static final VmTypeName BYTE = get("B");
 
@@ -99,7 +99,16 @@ public class VmTypeName implements ITypeName {
             default:
                 throwUnreachable("Invalid type name: " + vmTypeName);
             }
+        } else {
+            switch (vmTypeName.charAt(0)) {
+            case '[':
+            case 'L':
+                break;
+            default:
+                throwUnreachable("Invalid type name: " + vmTypeName);
+            }
         }
+
         int off = 0;
         while (off < vmTypeName.length()) {
             final char c = vmTypeName.charAt(off);

@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.completion.rcp;
 
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -127,6 +128,8 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.recommenders.utils.annotations.Clumsy;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @Clumsy
@@ -143,11 +146,15 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
      */
     public Statement completionNode;
 
+    public List<Statement> parents = Lists.newArrayList();
+
     /**
      * One of {@link ReturnStatement}, {@link LocalDeclaration}, {@link FieldDeclaration}, {@link MessageSend}, or
      * <code>null</code>
      */
-    public Statement completionNodeParent;
+    public Statement completionNodeParent() {
+        return parents.isEmpty() ? null : Iterables.getLast(parents);
+    }
 
     /**
      * The type of the receiver this completion event was triggered on, e.g, Button b = ...; b.|&lt;ctrl-space&gt; would
@@ -254,7 +261,12 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             evaluateCompletionOnSingleNameReference(node);
             return false;
         }
+        // storeParentNode(singleNameReference);
         return true;
+    }
+
+    private void storeParentNode(final Statement node) {
+        parents.add(node);
     }
 
     @SuppressWarnings("unchecked")
@@ -285,6 +297,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             evaluateCompletionOnQualifiedNameReference(node);
             return false;
         }
+        storeParentNode(qualifiedNameReference);
         return true;
     }
 
@@ -336,9 +349,8 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             final CompletionOnMessageSend node = storeCompletionNode(messageSend);
             evaluateCompletionOnMessageSend(node);
             return false;
-        } else if (doArgumentsContainCompletionNode(messageSend)) {
-            completionNodeParent = messageSend;
         }
+        storeParentNode(messageSend);
         return true;
     }
 
@@ -367,6 +379,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             evaluateCompletionOnMemberAccess(node);
             return false;
         }
+        storeParentNode(fieldReference);
         return true;
     }
 
@@ -418,14 +431,15 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
         if (localDeclaration instanceof CompletionOnLocalName) {
             final CompletionOnLocalName node = storeCompletionNode(localDeclaration);
             evaluateCompletionOnLocalName(node);
+            return true;
         } else if (isCompletionOnVariableInitialization(localDeclaration.initialization)) {
             setExpectedReturnType(localDeclaration.binding.type);
-            completionNodeParent = localDeclaration;
         } else {
             // we only add this declaration if it's "complete".
             // Var c = c doesn't make sense, right?
             localDeclarations.add(localDeclaration);
         }
+        storeParentNode(localDeclaration);
         return true;
     }
 
@@ -447,11 +461,11 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             storeCompletionNode(fieldDeclaration);
             return false;
         }
+        storeParentNode(fieldDeclaration);
         if (isCompletionOnVariableInitialization(fieldDeclaration.initialization)
                 && checkFieldTypeIsKnown(fieldDeclaration)) {
 
             setExpectedReturnType(fieldDeclaration.binding.type);
-            completionNodeParent = fieldDeclaration;
         } else {
             // we only add this declaration if it's "complete".
             // Var c = c doesn't make sense, right?
@@ -484,11 +498,13 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     @Override
     public boolean visit(final AllocationExpression allocationExpression, final BlockScope scope) {
+        storeParentNode(allocationExpression);
         return true;
     }
 
     @Override
     public boolean visit(final AND_AND_Expression and_and_Expression, final BlockScope scope) {
+        storeParentNode(and_and_Expression);
         return true;
     }
 
@@ -499,67 +515,72 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     @Override
     public boolean visit(final Argument argument, final BlockScope scope) {
+        storeParentNode(argument);
         return true;
     }
 
     @Override
     public boolean visit(final Argument argument, final ClassScope scope) {
+        storeParentNode(argument);
         return true;
     }
 
     @Override
     public boolean visit(final ArrayAllocationExpression arrayAllocationExpression, final BlockScope scope) {
+        storeParentNode(arrayAllocationExpression);
         return true;
     }
 
     @Override
     public boolean visit(final ArrayInitializer arrayInitializer, final BlockScope scope) {
+        storeParentNode(arrayInitializer);
         return true;
     }
 
     @Override
     public boolean visit(final ArrayQualifiedTypeReference arrayQualifiedTypeReference, final BlockScope scope) {
+        storeParentNode(arrayQualifiedTypeReference);
         return true;
     }
 
     @Override
     public boolean visit(final ArrayQualifiedTypeReference arrayQualifiedTypeReference, final ClassScope scope) {
+        storeParentNode(arrayQualifiedTypeReference);
+
         return true;
     }
 
     @Override
     public boolean visit(final ArrayReference arrayReference, final BlockScope scope) {
+        storeParentNode(arrayReference);
         return true;
     }
 
     @Override
     public boolean visit(final ArrayTypeReference arrayTypeReference, final BlockScope scope) {
+        storeParentNode(arrayTypeReference);
+
         return true;
     }
 
     @Override
     public boolean visit(final ArrayTypeReference arrayTypeReference, final ClassScope scope) {
+        storeParentNode(arrayTypeReference);
         return true;
     }
 
     @Override
     public boolean visit(final AssertStatement assertStatement, final BlockScope scope) {
+        storeParentNode(assertStatement);
         return true;
     }
 
     @Override
     public boolean visit(final Assignment assignment, final BlockScope scope) {
-        if (assignment.expression == null) {
-            return true;
-        }
-        if (assignment.expression instanceof AllocationExpression) {
-            return true;
-
-        } else if (assignment.expression instanceof CompletionOnSingleNameReference) {
-            completionNodeParent = assignment;
+        storeCompletionNode(assignment);
+        if (assignment.expression instanceof CompletionOnSingleNameReference) {
             return true;
         } else if (assignment.expression instanceof CompletionOnQualifiedNameReference) {
-            completionNodeParent = assignment;
             return true;
         }
         return true;
@@ -572,11 +593,13 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 
     @Override
     public boolean visit(final Block block, final BlockScope scope) {
+        storeParentNode(block);
         return true;
     }
 
     @Override
     public boolean visit(final BreakStatement breakStatement, final BlockScope scope) {
+        storeParentNode(breakStatement);
         return true;
     }
 
@@ -961,7 +984,7 @@ public class CompilerAstCompletionNodeFinder extends ASTVisitor {
             return true;
         }
         setExpectedReturnType(referenceContext.binding.returnType);
-        completionNodeParent = returnStatement;
+        parents.add(returnStatement);
 
         return true;
     }

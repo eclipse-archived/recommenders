@@ -23,5 +23,6 @@ Require-Bundle: org.eclipse.ui,
  org.junit4,
  org.mockito,
  org.hamcrest,
- org.objenesis
+ org.objenesis,
+ org.eclipse.recommenders.rcp.logging
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

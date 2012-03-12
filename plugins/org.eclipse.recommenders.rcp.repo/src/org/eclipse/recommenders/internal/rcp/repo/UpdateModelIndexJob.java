@@ -12,7 +12,6 @@ package org.eclipse.recommenders.internal.rcp.repo;
 
 import static org.apache.commons.io.FileUtils.cleanDirectory;
 import static org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils.newArtifact;
-import static org.eclipse.ui.internal.misc.StatusUtil.newStatus;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,9 +22,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.recommenders.internal.rcp.repo.wiring.Activator;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
 
 import com.google.common.io.ByteStreams;
@@ -33,9 +33,9 @@ import com.google.common.io.Closeables;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 
-@SuppressWarnings("restriction")
 public class UpdateModelIndexJob extends Job {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final Artifact indexArtifact = newArtifact("org.eclipse.recommenders:index:zip:0.0.0");
     private final IModelRepositoryIndex index;
     private final IModelRepository repo;
@@ -61,7 +61,8 @@ public class UpdateModelIndexJob extends Job {
             }
             index.open();
         } catch (Exception e) {
-            return newStatus(Activator.PLUGIN_ID, e);
+            log.debug("Updating index canceled.", e);
+            return Status.CANCEL_STATUS;
         }
         return Status.OK_STATUS;
     }

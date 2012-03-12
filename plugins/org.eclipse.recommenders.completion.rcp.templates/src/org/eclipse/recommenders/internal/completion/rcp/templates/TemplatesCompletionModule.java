@@ -10,12 +10,12 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.templates;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-
 import org.eclipse.recommenders.internal.completion.rcp.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.completion.rcp.templates.code.MethodCallFormatter;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 
 /**
  * Prepares the <code>Plugin</code> by injecting dependencies.
@@ -24,8 +24,8 @@ public final class TemplatesCompletionModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bindCallsRecommender();
-        bindCodeBuilder();
+        // bindCallsRecommender();
+        // bindCodeBuilder();
     }
 
     /**

@@ -256,8 +256,8 @@ public class CallsPreferencePage extends PreferencePage implements IWorkbenchPre
     }
 
     private void saveWebserviceBaseurl() {
-        final String text = webserviceBaseurl.getText();
-        getPreferenceStore().setValue(PreferenceConstants.WEBSERVICE_HOST, text);
+        // final String text = webserviceBaseurl.getText();
+        // getPreferenceStore().setValue(PreferenceConstants.WEBSERVICE_HOST, text);
     }
 
 }
