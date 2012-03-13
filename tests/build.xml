@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Example Ant Build with JaCoCo" default="report" xmlns:jacoco="antlib:org.jacoco.ant">
+
+	<property name="result.dir" location="target/" />
+	<property name="result.classes.dir" location="${result.dir}/classes" />
+	<property name="result.report.dir" location="${result.dir}/report" />
+	<property name="result.exec.file" location="${result.dir}/jacoco.exec" />
+
+
+	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+		<classpath path="./jacocoant.jar" />
+	</taskdef>
+
+	<target name="report">
+		<jacoco:report>
+			<executiondata>
+				<file file="${result.dir}/jacoco.exec" />
+			</executiondata>
+			<structure name="Eclipse Code Recommenders">
+				<classfiles>
+					<fileset dir="../plugins/org.eclipse.recommenders.rcp/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.calls/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.chain/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.e38/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.overrides/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.subwords/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.extdoc.rcp/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.injection/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.jayes/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.jayes.serialization/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.rcp/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.utils/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.utils.rcp/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.webclient/target/classes/" />
+				</classfiles>
+				<sourcefiles encoding="UTF-8">
+					<fileset dir="../plugins/org.eclipse.recommenders.rcp/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.calls/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.chain/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.e38/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.overrides/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.subwords/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.templates/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.extdoc.rcp/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.injection/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.jayes/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.jayes.serialization/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.rcp/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.utils/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.utils.rcp/src/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.webclient/src/" />
+				</sourcefiles>
+			</structure>
+			<!-- to produce reports in different formats. -->
+			<html destdir="${result.report.dir}" />
+			<csv destfile="${result.report.dir}/report.csv" />
+			<xml destfile="${result.report.dir}/report.xml" />
+		</jacoco:report>
+	</target>
+</project>

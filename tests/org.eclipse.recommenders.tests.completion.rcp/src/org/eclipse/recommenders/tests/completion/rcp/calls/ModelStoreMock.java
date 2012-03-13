@@ -17,8 +17,8 @@ import java.io.File;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.core.IType;
+import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;

@@ -11,27 +11,14 @@ package org.eclipse.recommenders.utils.rcp;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.List;
-import java.util.Set;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.texteditor.ITextEditor;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
 
 public class RCPUtils {
     public static IStructuredSelection asStructuredSelection(final ISelection selection) {
@@ -58,40 +45,6 @@ public class RCPUtils {
     public static <T> Optional<T> first(final ISelection s) {
         final T element = unsafeFirstElement(s);
         return Optional.fromNullable(element);
-    }
-
-    public static IWorkbenchPage getActiveWorkbenchPage() {
-        ensureIsNotNull(Display.getCurrent(), "not called from ui thread");
-        final IWorkbench workbench = PlatformUI.getWorkbench();
-        if (workbench == null) {
-            return null;
-        }
-        final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-        if (window == null) {
-            return null;
-        }
-        final IWorkbenchPage page = window.getActivePage();
-        return page;
-    }
-
-    public static ITextSelection getTextSelection(final ITextEditor editor) {
-        if (editor == null) {
-            return new TextSelection(0, 0);
-        } else {
-            return (TextSelection) editor.getSelectionProvider().getSelection();
-        }
-    }
-
-    public static Set<IProject> getAllOpenProjects() {
-        final Set<IProject> result = Sets.newHashSet();
-        final IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-        for (final IProject project : projects) {
-            if (project.isAccessible()) {
-                result.add(project);
-            }
-        }
-
-        return result;
     }
 
 }

@@ -5,14 +5,15 @@ import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.dom.CompilationUnit
 import org.eclipse.jdt.core.dom.MethodDeclaration
 import org.eclipse.jdt.core.dom.NodeFinder
-import org.eclipse.recommenders.internal.analysis.codeelements.ObjectUsage
+import org.eclipse.jdt.ui.SharedASTProvider
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.AstBasedObjectUsageResolver
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
+import org.junit.Before
 import org.junit.Test
 
 import static junit.framework.Assert.*
-import org.junit.Before
-import org.eclipse.jdt.ui.SharedASTProvider
+import static org.eclipse.recommenders.tests.completion.rcp.calls.ContextAnalyzerTest.*
+import org.eclipse.recommenders.internal.analysis.codestructs.ObjectUsage
  
 class ContextAnalyzerTest { 
 

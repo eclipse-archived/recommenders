@@ -6,22 +6,26 @@ Bundle-Version: 0.5.1.qualifier
 Bundle-Activator: org.eclipse.recommenders.rcp.RecommendersPlugin
 Bundle-Vendor: Eclipse Code Recommenders
 Export-Package: org.eclipse.recommenders.internal.rcp.providers,
+ org.eclipse.recommenders.internal.rcp.repo,
  org.eclipse.recommenders.rcp,
- org.eclipse.recommenders.rcp.events
-Require-Bundle: org.eclipse.ui,
+ org.eclipse.recommenders.rcp.events,
+ org.eclipse.recommenders.rcp.repo
+Require-Bundle: com.google.guava;bundle-version="[10.0.0,11.0.0)",
+ com.ning.async-http-client;bundle-version="1.6.0",
+ org.slf4j.api,
+ org.eclipse.ui,
+ org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core;bundle-version="3.7.0",
  org.eclipse.jdt.ui;bundle-version="3.7.0",
- org.eclipse.core.resources,
- com.google.guava;bundle-version="[10.0.0,11.0.0)";visibility:=reexport,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.m2e.maven.runtime,
  org.apache.commons.lang3,
  org.eclipse.recommenders.utils.rcp,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.injection,
- org.eclipse.jface.text,
- org.eclipse.ui.editors,
- org.slf4j.api,
- org.eclipse.recommenders.utils.gson,
- org.eclipse.recommenders.analysis
+ org.apache.lucene;bundle-version="3.5.0",
+ org.apache.commons.io;bundle-version="2.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

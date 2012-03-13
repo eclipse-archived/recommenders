@@ -12,10 +12,7 @@
 	<artifactId>org.eclipse.recommenders.plugin.parent</artifactId>
 	<packaging>pom</packaging>
 
-
 	<modules>
-		<module>org.eclipse.recommenders.analysis</module>
-
 		<module>org.eclipse.recommenders.completion.rcp</module>
 		<module>org.eclipse.recommenders.completion.rcp.e37</module>
 		<module>org.eclipse.recommenders.completion.rcp.e38</module>
@@ -24,44 +21,17 @@
 		<module>org.eclipse.recommenders.completion.rcp.overrides</module>
 		<module>org.eclipse.recommenders.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.completion.rcp.subwords2</module>
+		<module>org.eclipse.recommenders.doc</module>
 		<!-- module>org.eclipse.recommenders.completion.rcp.templates</module -->
-
-		<module>org.eclipse.recommenders.codesearch</module>
-		<!-- module>org.eclipse.recommenders.codesearch.rcp</module -->
-		<module>org.eclipse.recommenders.codesearch.server</module>
-
 		<module>org.eclipse.recommenders.extdoc</module>
 		<module>org.eclipse.recommenders.extdoc.rcp</module>
-		<module>org.eclipse.recommenders.extdoc.server</module>
-
 		<module>org.eclipse.recommenders.injection</module>
-
 		<module>org.eclipse.recommenders.jayes</module>
 		<module>org.eclipse.recommenders.jayes.serialization</module>
-
-		<module>org.eclipse.recommenders.mining</module>
-
 		<module>org.eclipse.recommenders.rcp</module>
-		<module>org.eclipse.recommenders.rcp.logging</module>
-		<module>org.eclipse.recommenders.rcp.repo</module>
-
-		<module>org.eclipse.recommenders.server</module>
-		<module>org.eclipse.recommenders.server.console</module>
-		<module>org.eclipse.recommenders.server.rcp</module>
-		<module>org.eclipse.recommenders.server.setup</module>
-
-		<module>org.eclipse.recommenders.udc</module>
-        <!-- Skip until refactorings in core are done: -->
-<!-- 		<module>org.eclipse.recommenders.udc.rcp</module> -->
-		<module>org.eclipse.recommenders.udc.server</module>
-
 		<module>org.eclipse.recommenders.utils</module>
-		<module>org.eclipse.recommenders.utils.gson</module>
 		<module>org.eclipse.recommenders.utils.rcp</module>
-
 		<module>org.eclipse.recommenders.webclient</module>
-
-		<module>org.eclipse.recommenders.doc</module>
 	</modules>
 
 	<profiles>

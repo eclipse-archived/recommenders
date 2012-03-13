@@ -29,6 +29,10 @@
       %license
    </license>
 
+   <requires>
+      <import plugin="org.eclipse.m2e.maven.runtime"/>
+   </requires>
+
    <plugin
          id="org.eclipse.recommenders.rcp"
          download-size="0"
@@ -81,13 +85,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.utils.gson"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.recommenders.utils.rcp"
          download-size="0"
          install-size="0"
@@ -103,13 +100,6 @@
 
    <plugin
          id="org.eclipse.recommenders.doc"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.rcp.repo"
          download-size="0"
          install-size="0"
          version="0.0.0"

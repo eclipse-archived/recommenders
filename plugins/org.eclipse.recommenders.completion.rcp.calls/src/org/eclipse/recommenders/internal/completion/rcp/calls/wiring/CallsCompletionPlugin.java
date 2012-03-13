@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.wiring;
 import java.io.IOException;
 
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
 import org.eclipse.recommenders.utils.rcp.LoggingUtils;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;

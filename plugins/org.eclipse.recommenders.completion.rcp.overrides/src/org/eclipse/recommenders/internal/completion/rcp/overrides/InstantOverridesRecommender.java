@@ -13,8 +13,8 @@ package org.eclipse.recommenders.internal.completion.rcp.overrides;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.recommenders.internal.analysis.codeelements.MethodDeclaration;
-import org.eclipse.recommenders.internal.analysis.codeelements.TypeDeclaration;
+import org.eclipse.recommenders.internal.analysis.codestructs.MethodDeclaration;
+import org.eclipse.recommenders.internal.analysis.codestructs.TypeDeclaration;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.net.ClassOverridesNetwork;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;

@@ -1,62 +1,54 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.eclipse.recommenders</groupId>
-        <artifactId>org.eclipse.recommenders.parent</artifactId>
-        <version>0.5.0-SNAPSHOT</version>
-    </parent>
-    <groupId>org.eclipse.recommenders.tests</groupId>
-    <artifactId>org.eclipse.recommenders.tests.parent</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>org.eclipse.recommenders.tests</module>
-        <module>org.eclipse.recommenders.tests.analysis</module>
-        <module>org.eclipse.recommenders.tests.completion.rcp</module>
-        <module>org.eclipse.recommenders.tests.extdoc.rcp</module>
-        <module>org.eclipse.recommenders.tests.jayes</module>
-        <module>org.eclipse.recommenders.tests.mining</module>
-        <module>org.eclipse.recommenders.tests.rcp</module>
-        <module>org.eclipse.recommenders.tests.udc.server</module>
-        <module>org.eclipse.recommenders.tests.util</module>
-        <module>org.eclipse.recommenders.tests.webclient</module>
-    </modules>
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-        <plugins>
-            <plugin>
-                <groupId>org.eclipse.tycho</groupId>
-                <artifactId>tycho-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.tycho</groupId>
-                <artifactId>tycho-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- don't run tests in UI thread and harness per default (i.e., run them headless). Can modules overwrite 
-                        that? -->
-                    <!-- see http://wiki.eclipse.org/Minerva#Headless_Tests -->
-                    <!-- see http://wiki.eclipse.org/Tycho/Packaging_Types#eclipse-test-plugin for semantics of useUIHarness 
-                        etc. -->
-                    <useUIHarness>false</useUIHarness>
-                    <useUIThread>false</useUIThread>
-                    <!-- increase memory for test execution and enable mac execution by using +XstartOnFirstThread -->
-                    <!-- STOP: using argline overwrites the jacoco arguments. DON'T use them -->
-                    <!-- argLine>-Xms256m -Xmx512m -XX:MaxPermSize=256M -XstartOnFirstThread</argLine -->
-                    <!-- Convention: We don't use test suites. All Test classes should end with "*Test.java". Everything 
-                        else is not executed by default. Modules may overwrite this? -->
-                    <includes>
-                        <!-- see http://intellectualcramps.wordpress.com/2011/06/04/tycho-surefire-test-setup-tips/ -->
-                        <!-- see http://maksim.sorokin.dk/it/2010/12/21/tests-in-tycho/ -->
-                        <include>**/*Test.java</include>
-                    </includes>
-                    <!-- Kill test JVM if tests take more than 5 minutes (300 seconds) to finish -->
-                    <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.eclipse.recommenders</groupId>
+		<artifactId>org.eclipse.recommenders.parent</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	</parent>
+	<groupId>org.eclipse.recommenders.tests</groupId>
+	<artifactId>org.eclipse.recommenders.tests.parent</artifactId>
+	<packaging>pom</packaging>
+	<modules>
+		<module>org.eclipse.recommenders.tests</module>
+		<module>org.eclipse.recommenders.tests.completion.rcp</module>
+		<module>org.eclipse.recommenders.tests.extdoc.rcp</module>
+		<module>org.eclipse.recommenders.tests.jayes</module>
+		<module>org.eclipse.recommenders.tests.rcp</module>
+		<module>org.eclipse.recommenders.tests.util</module>
+		<module>org.eclipse.recommenders.tests.webclient</module>
+	</modules>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<configuration>
+					<!-- don't run tests in UI thread and harness per default (i.e., run them headless). Can modules overwrite that? -->
+					<!-- see http://wiki.eclipse.org/Minerva#Headless_Tests -->
+					<!-- see http://wiki.eclipse.org/Tycho/Packaging_Types#eclipse-test-plugin for semantics of useUIHarness etc. -->
+					<useUIHarness>false</useUIHarness>
+					<useUIThread>false</useUIThread>
+					<!-- increase memory for test execution and enable mac execution by using +XstartOnFirstThread -->
+					<!-- STOP: using argline overwrites the jacoco arguments. DON'T use them -->
+					<!-- argLine>-Xms256m -Xmx512m -XX:MaxPermSize=256M -XstartOnFirstThread</argLine -->
+					<!-- Convention: We don't use test suites. All Test classes should end with "*Test.java". Everything else is not executed 
+						by default. Modules may overwrite this? -->
+					<includes>
+						<!-- see http://intellectualcramps.wordpress.com/2011/06/04/tycho-surefire-test-setup-tips/ -->
+						<!-- see http://maksim.sorokin.dk/it/2010/12/21/tests-in-tycho/ -->
+						<include>**/*Test.java</include>
+					</includes>
+					<!-- Kill test JVM if tests take more than 5 minutes (300 seconds) to finish -->
+					<forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+					<argLine append="true" >${tycho.testArgLine} -XstartOnFirstThread</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

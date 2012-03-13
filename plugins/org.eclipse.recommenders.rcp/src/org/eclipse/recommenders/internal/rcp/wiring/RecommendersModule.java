@@ -11,9 +11,13 @@
 package org.eclipse.recommenders.internal.rcp.wiring;
 
 import static java.lang.Thread.MIN_PRIORITY;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
@@ -32,22 +36,17 @@ import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.recommenders.internal.rcp.providers.CachingAstProvider;
+import org.eclipse.recommenders.internal.rcp.providers.ClasspathEntryInfoProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaModelEventsProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionProvider;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.BundleManifestSymbolicNameFinder;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.BundleManifestVersionFinder;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.ClasspathEntryInfoProvider;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.FingerprintClasspathEntryAnalyzer;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.IClasspathEntryAnalyzer;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.INameFinder;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.IVersionFinder;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.LocationClasspathEntryAnalyzer;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.NameClasspathEntryAnalyzer;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.TypesCollectorClasspathEntryAnalyzer;
-import org.eclipse.recommenders.internal.rcp.providers.cpe.VersionClasspathEntryAnalyzer;
+import org.eclipse.recommenders.internal.rcp.repo.ModelRepository;
+import org.eclipse.recommenders.internal.rcp.repo.ModelRepositoryIndex;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.rcp.repo.IModelRepository;
+import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
+import org.eclipse.recommenders.rcp.repo.ModelRepositoryService;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.ast.ASTNodeUtils;
 import org.eclipse.recommenders.utils.rcp.ast.ASTStringUtils;
@@ -65,11 +64,11 @@ import org.osgi.framework.FrameworkUtil;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
+import com.google.inject.BindingAnnotation;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
-import com.google.inject.multibindings.Multibinder;
 
 @SuppressWarnings("restriction")
 public class RecommendersModule extends AbstractModule implements Module {
@@ -78,6 +77,7 @@ public class RecommendersModule extends AbstractModule implements Module {
     protected void configure() {
         configureJavaElementResolver();
         configureAstProvider();
+        bindRepository();
         initalizeSingletonServices();
     }
 
@@ -103,6 +103,42 @@ public class RecommendersModule extends AbstractModule implements Module {
         final CachingAstProvider p = new CachingAstProvider();
         JavaCore.addElementChangedListener(p);
         bind(IAstProvider.class).toInstance(p);
+    }
+
+    private void bindRepository() {
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        File stateLocation = Platform.getStateLocation(bundle).toFile();
+
+        File repo = new File(stateLocation, "repo");
+        repo.mkdirs();
+        bind(File.class).annotatedWith(LocalModelRepositoryLocation.class).toInstance(repo);
+        bind(String.class).annotatedWith(RemoteModelRepositoryLocation.class).toInstance(
+                "http://vandyk.st.informatik.tu-darmstadt.de/maven/");
+        bind(IModelRepository.class).to(ModelRepository.class).in(Scopes.SINGLETON);
+
+        File index = new File(stateLocation, "index");
+        index.mkdirs();
+        bind(File.class).annotatedWith(ModelRepositoryIndexLocation.class).toInstance(index);
+        bind(IModelRepositoryIndex.class).to(ModelRepositoryIndex.class).in(Scopes.SINGLETON);
+        bind(ModelRepositoryService.class).asEagerSingleton();
+    }
+
+    @BindingAnnotation
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    public static @interface LocalModelRepositoryLocation {
+    }
+
+    @BindingAnnotation
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    public static @interface RemoteModelRepositoryLocation {
+    }
+
+    @BindingAnnotation
+    @Target(PARAMETER)
+    @Retention(RUNTIME)
+    public static @interface ModelRepositoryIndexLocation {
     }
 
     private void initalizeSingletonServices() {
@@ -224,27 +260,6 @@ public class RecommendersModule extends AbstractModule implements Module {
             activePage = activeWorkbenchWindow.getActivePage();
             return activePage;
         }
-    }
-
-    private void bindClasspathAnalyzers() {
-
-        // classpath entry analyzer
-        final Multibinder<IClasspathEntryAnalyzer> binder = Multibinder.newSetBinder(binder(),
-                IClasspathEntryAnalyzer.class);
-        binder.addBinding().to(LocationClasspathEntryAnalyzer.class).in(Singleton.class);
-        binder.addBinding().to(NameClasspathEntryAnalyzer.class).in(Singleton.class);
-        binder.addBinding().to(VersionClasspathEntryAnalyzer.class).in(Singleton.class);
-        binder.addBinding().to(FingerprintClasspathEntryAnalyzer.class).in(Singleton.class);
-        binder.addBinding().to(TypesCollectorClasspathEntryAnalyzer.class).in(Singleton.class);
-
-        // version finder
-        final Multibinder<IVersionFinder> versionFinderBinder = Multibinder
-                .newSetBinder(binder(), IVersionFinder.class);
-        versionFinderBinder.addBinding().to(BundleManifestVersionFinder.class).in(Scopes.SINGLETON);
-
-        // name finder
-        final Multibinder<INameFinder> nameFinderBinder = Multibinder.newSetBinder(binder(), INameFinder.class);
-        nameFinderBinder.addBinding().to(BundleManifestSymbolicNameFinder.class).in(Scopes.SINGLETON);
     }
 
     /*

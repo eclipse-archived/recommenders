@@ -12,7 +12,7 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.engine;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.eclipse.recommenders.internal.analysis.codeelements.Variable;
+import org.eclipse.recommenders.internal.analysis.codestructs.Variable;
 import org.eclipse.recommenders.rcp.IRecommendation;
 import org.eclipse.recommenders.utils.names.IMethodName;
 

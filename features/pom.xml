@@ -16,44 +16,19 @@
 	<modules>
         <module>org.eclipse.recommenders.feature.rcp</module>
         <module>org.eclipse.recommenders.feature.rcp.source</module>
-        
         <module>org.eclipse.recommenders.feature.rcp.core</module>
         <module>org.eclipse.recommenders.feature.rcp.core.source</module>
-        
-        <!--
-		<module>org.eclipse.recommenders.feature.codesearch.rcp</module>
-		<module>org.eclipse.recommenders.feature.codesearch.rcp.source</module>
-        -->
-		<module>org.eclipse.recommenders.feature.codesearch.server</module>
-		<module>org.eclipse.recommenders.feature.codesearch.server.source</module>
-
-
-
 		<module>org.eclipse.recommenders.feature.completion.rcp.intellig</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.intellig.source</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.intellig.e37</module>
-
 		<module>org.eclipse.recommenders.feature.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.subwords.source</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.subwords2</module>
-
         <module>org.eclipse.recommenders.feature.completion.rcp.chain</module>
         <module>org.eclipse.recommenders.feature.completion.rcp.chain.source</module>
         <module>org.eclipse.recommenders.feature.completion.rcp.chain.e37</module>
-
-
 		<module>org.eclipse.recommenders.feature.extdoc.rcp</module>
 		<module>org.eclipse.recommenders.feature.extdoc.rcp.source</module>
-        <module>org.eclipse.recommenders.feature.extdoc.server</module>
-        <module>org.eclipse.recommenders.feature.extdoc.server.source</module>
-
-<!-- 		<module>org.eclipse.recommenders.feature.udc.rcp</module> -->
-<!-- 		<module>org.eclipse.recommenders.feature.udc.rcp.source</module> -->
-		<module>org.eclipse.recommenders.feature.udc.server</module>
-		<module>org.eclipse.recommenders.feature.udc.server.source</module>
-
-		<module>org.eclipse.recommenders.feature.server</module>
-		<module>org.eclipse.recommenders.feature.server.rootfiles</module>
         <module>org.eclipse.recommenders.feature.3rd.orbit</module>
         <module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>
 

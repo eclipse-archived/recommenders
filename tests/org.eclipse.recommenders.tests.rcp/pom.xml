@@ -39,7 +39,7 @@
 				</property>
 			</activation>
 			<properties>
-				<tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
+				<tycho.test.jvmArgs>${tycho.testArgLine} -Xmx800m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
 			</properties>
 		</profile>
 		<profile>
@@ -51,7 +51,7 @@
 				</property>
 			</activation>
 			<properties>
-				<tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.test.jvmArgs>
+				<tycho.test.jvmArgs>${tycho.testArgLine} -Xmx800m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.test.jvmArgs>
 			</properties>
 			<build>
 				<pluginManagement>
@@ -75,4 +75,5 @@
 			</build>
 		</profile>
 	</profiles>
-<version>0.5.1-SNAPSHOT</version></project>
+	<version>0.5.1-SNAPSHOT</version>
+</project>

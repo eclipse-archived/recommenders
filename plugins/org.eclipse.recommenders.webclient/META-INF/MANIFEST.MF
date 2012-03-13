@@ -11,7 +11,6 @@ Require-Bundle: com.google.guava,
  org.apache.commons.lang3,
  org.eclipse.recommenders.injection,
  org.eclipse.recommenders.utils,
- org.eclipse.recommenders.utils.gson,
  com.sun.jersey.client;visibility:=reexport,
  com.sun.jersey.core;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

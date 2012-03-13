@@ -16,7 +16,7 @@ import javax.inject.Inject;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;

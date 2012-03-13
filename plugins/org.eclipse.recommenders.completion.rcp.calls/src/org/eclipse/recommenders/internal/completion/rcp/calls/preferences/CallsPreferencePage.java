@@ -33,7 +33,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;

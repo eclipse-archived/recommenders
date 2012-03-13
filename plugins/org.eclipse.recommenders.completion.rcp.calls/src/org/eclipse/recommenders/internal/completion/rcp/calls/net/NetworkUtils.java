@@ -20,14 +20,11 @@ import static org.eclipse.recommenders.utils.Throws.throwIllegalStateException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Set;
 
 import org.apache.commons.math.stat.StatUtils;
 import org.apache.commons.math.util.MathUtils;
 import org.eclipse.recommenders.commons.bayesnet.Node;
-import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite;
-import org.eclipse.recommenders.internal.analysis.codeelements.DefinitionSite.Kind;
-import org.eclipse.recommenders.internal.analysis.codeelements.ObjectInstanceKey;
+import org.eclipse.recommenders.internal.analysis.codestructs.DefinitionSite;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 
@@ -48,37 +45,6 @@ public class NetworkUtils {
 
     public static String STATE_DUMMY_DEF = VmMethodName.get("L_dummy.dummy()V").getIdentifier();
     public static String STATE_DUMMY_GRP = "pattern dummy";
-
-    public static void workaroundRecomputeMissingDefintionSite(final ObjectInstanceKey obj,
-            final IMethodName firstDeclarationOfEnclosingMethod) {
-        if (obj.definitionSite == null) {
-            if (obj.isThis()) {
-                obj.definitionSite = DefinitionSite.newSite(Kind.THIS);
-            } else if (obj.kind == ObjectInstanceKey.Kind.PARAMETER) {
-                obj.definitionSite = DefinitionSite
-                        .newSite(Kind.PARAMETER, null, -1, firstDeclarationOfEnclosingMethod);
-            } else {
-                final Set<IMethodName> invokedMethods = obj.getInvokedMethods();
-                final IMethodName constructorCall = findConstructorCall(invokedMethods);
-                if (constructorCall != null) {
-                    obj.definitionSite = DefinitionSite.newSite(Kind.NEW, null, -1, constructorCall);
-                }
-            }
-
-            if (obj.definitionSite == null) {
-                obj.definitionSite = DefinitionSite.newSite(Kind.UNKNOWN);
-            }
-        }
-    }
-
-    private static IMethodName findConstructorCall(final Set<IMethodName> invokedMethods) {
-        for (final IMethodName m : invokedMethods) {
-            if (m.isInit()) {
-                return m;
-            }
-        }
-        return null;
-    }
 
     public static String createDefinitionState(final DefinitionSite def) {
         switch (def.kind) {

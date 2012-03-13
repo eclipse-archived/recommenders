@@ -20,10 +20,10 @@ import java.lang.annotation.Target;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelDownloadJob.JobFactory;
 import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.ClientConfigurationPreferenceListener;
 import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.SectionsFactory;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.store2.CallModelDownloadJob.JobFactory;
 import org.eclipse.recommenders.webclient.ClientConfiguration;
 import org.osgi.framework.FrameworkUtil;
 

@@ -12,7 +12,6 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang3,
  org.apache.commons.io,
  org.apache.lucene;bundle-version="3.5.0",
- org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.injection,
  org.eclipse.jdt.core,
  org.eclipse.recommenders.utils.rcp,
@@ -22,5 +21,3 @@ Require-Bundle: org.eclipse.ui,
  com.ning.async-http-client;bundle-version="1.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.recommenders.internal.rcp.repo,
- org.eclipse.recommenders.rcp.repo
