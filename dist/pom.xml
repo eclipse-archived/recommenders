@@ -32,7 +32,7 @@
         <profile>
             <id>server</id>
             <modules>
-                <module>org.eclipse.recommenders.product.server</module>
+               <!-- <module>org.eclipse.recommenders.product.server</module> -->
             </modules>
         </profile>
     </profiles>
