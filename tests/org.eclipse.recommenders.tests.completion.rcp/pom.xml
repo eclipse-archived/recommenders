@@ -64,6 +64,7 @@
                             <artifactId>tycho-surefire-plugin</artifactId>
                             <version>${tycho-version}</version>
                             <configuration>
+                            <appArgLine>-XstartOnFirstThread</appArgLine>
                                 <dependencies combine.children="append">
                                     <dependency>
                                         <artifactId>org.eclipse.jdt.launching.macosx</artifactId>
