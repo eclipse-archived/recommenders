@@ -23,6 +23,7 @@ import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelecti
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION_EXTENDS;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION_IMPLEMENTS;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.UNKNOWN;
+import static org.eclipse.recommenders.utils.Checks.ensureIsGreaterOrEqualTo;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.findTypeRoot;
 
@@ -104,11 +105,18 @@ public class JavaSelectionUtils {
             final ITextSelection selection) {
         ensureIsNotNull(editor);
         ensureIsNotNull(selection);
+        if (!isValidSelection(selection)) {
+            return absent();
+        }
         if (editor instanceof JavaEditor) {
             final JavaEditor javaEditor = (JavaEditor) editor;
             return resolveJavaElementFromEditor(javaEditor, selection.getOffset());
         }
         return absent();
+    }
+
+    private static boolean isValidSelection(final ITextSelection selection) {
+        return selection.getOffset() != -1;
     }
 
     /**
@@ -131,6 +139,7 @@ public class JavaSelectionUtils {
      */
     public static Optional<IJavaElement> resolveJavaElementFromTypeRootInEditor(final ITypeRoot root, final int offset) {
         ensureIsNotNull(root);
+        ensureIsGreaterOrEqualTo(offset, 0, "illegal offset: " + offset);
         try {
             // try resolve elements at current offset
             final IJavaElement[] elements = root.codeSelect(offset, 0);
