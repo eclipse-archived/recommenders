@@ -26,6 +26,7 @@ public class JavaSelectionUtilsTest {
     public void testLogging() throws JavaModelException {
         // setup
         ITypeRoot mock = mock(ITypeRoot.class);
+        when(mock.getSourceRange()).thenReturn(new SourceRange(0, 100));
         String expectedHandleName = "myhandle";
         when(mock.getHandleIdentifier()).thenReturn(expectedHandleName);
         JavaModelException x = new JavaModelException(new RuntimeException(), 0);
