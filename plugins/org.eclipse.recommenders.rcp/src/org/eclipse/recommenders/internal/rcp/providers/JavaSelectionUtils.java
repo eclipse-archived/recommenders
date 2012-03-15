@@ -23,7 +23,6 @@ import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelecti
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION_EXTENDS;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION_IMPLEMENTS;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.UNKNOWN;
-import static org.eclipse.recommenders.utils.Checks.ensureIsGreaterOrEqualTo;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.findTypeRoot;
 
@@ -31,8 +30,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -139,8 +138,11 @@ public class JavaSelectionUtils {
      */
     public static Optional<IJavaElement> resolveJavaElementFromTypeRootInEditor(final ITypeRoot root, final int offset) {
         ensureIsNotNull(root);
-        ensureIsGreaterOrEqualTo(offset, 0, "illegal offset: " + offset);
         try {
+            if (isInvalidSelection(root, offset)) {
+                return absent();
+            }
+
             // try resolve elements at current offset
             final IJavaElement[] elements = root.codeSelect(offset, 0);
             if (elements.length > 0) {
@@ -164,13 +166,27 @@ public class JavaSelectionUtils {
                 // }
                 // return of(enclosingElement);
             }
-        } catch (final JavaModelException e) {
-            log(e, "Failed to resolve selection in '%s' at offset %d", root.getHandleIdentifier(), offset);
+        } catch (final Exception e) {
+            // actually, these can happen when using snipmatch's in-editor completion.
+            // fractions of seconds seem potentially to lead to this exception, thus, we swallow them here.
+            if (!isInvalidSelection(root, offset))
+                log(e, "Failed to resolve selection in '%s' at offset %d", root.getHandleIdentifier(), offset);
             return absent();
         }
     }
 
-    private static void log(JavaModelException e, String newMessage, Object... args) {
+    private static boolean isInvalidSelection(ITypeRoot root, final int offset) {
+        ISourceRange range;
+        try {
+            range = root.getSourceRange();
+            return range == null || offset < 0 || offset > range.getLength();
+        } catch (Exception e) {
+            log.debug("exception while checking editor offset", e);
+            return false;
+        }
+    }
+
+    private static void log(Exception e, String newMessage, Object... args) {
         String format = String.format(newMessage, args);
         log.error(format, e);
     }
