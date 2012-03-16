@@ -27,6 +27,8 @@ public interface IModelRepository {
 
     void deploy(Artifact artifact, IProgressMonitor monitor) throws DeploymentException;
 
+    void deploy(Artifact[] artifacts, IProgressMonitor monitor) throws DeploymentException;
+
     /**
      * Resolves and downloads all dependencies for a given artifact.
      * 

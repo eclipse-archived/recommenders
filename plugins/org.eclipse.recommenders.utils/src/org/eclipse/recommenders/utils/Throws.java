@@ -74,4 +74,9 @@ public class Throws {
     public static CancellationException throwCancelationException() {
         throw new CancellationException();
     }
+
+    public static CancellationException throwCancelationException(String message, Object... args) {
+        final String formattedMessage = format(message, args);
+        throw new CancellationException(formattedMessage);
+    }
 }

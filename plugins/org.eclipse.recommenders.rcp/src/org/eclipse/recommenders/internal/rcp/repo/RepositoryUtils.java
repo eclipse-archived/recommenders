@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp.repo;
 
 import static org.apache.commons.lang3.ArrayUtils.reverse;
 import static org.apache.commons.lang3.ArrayUtils.subarray;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.apache.commons.lang3.StringUtils.replace;
 import static org.apache.commons.lang3.StringUtils.split;
@@ -72,5 +73,20 @@ public class RepositoryUtils {
         for (int i = segments.length; i-- > 0;) {
             segments[i] = replace(segments[i], "/", "");
         }
+    }
+
+    public static String toArtifactFileName(Artifact artifact) {
+        String artifactId = artifact.getArtifactId();
+        String version = artifact.getVersion();
+        String classifier = artifact.getClassifier();
+        String extension = artifact.getExtension();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(artifactId).append('-').append(version);
+        if (!isEmpty(classifier)) {
+            sb.append('-').append(classifier);
+        }
+        sb.append('.').append(extension);
+        return sb.toString();
     }
 }

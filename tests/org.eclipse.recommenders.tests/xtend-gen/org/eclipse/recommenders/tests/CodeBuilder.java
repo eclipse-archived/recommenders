@@ -25,6 +25,8 @@ public class CodeBuilder {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.util.*;");
     _builder.newLine();
+    _builder.append("import java.lang.reflect.*;");
+    _builder.newLine();
     _builder.append("import java.util.concurrent.*;");
     _builder.newLine();
     _builder.append("import java.text.*;");
@@ -75,6 +77,10 @@ public class CodeBuilder {
   public static CharSequence classbody(final CharSequence classbody) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.util.*;");
+    _builder.newLine();
+    _builder.append("import java.lang.reflect.*;");
+    _builder.newLine();
+    _builder.append("import java.io.*;");
     _builder.newLine();
     _builder.append("import java.util.concurrent.*;");
     _builder.newLine();
@@ -260,7 +266,7 @@ public class CodeBuilder {
   
   public static CharSequence method(final CharSequence methodbody) {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("public void __test() {");
+    _builder.append("public void __test() throws Exception {");
     _builder.newLine();
     _builder.append("\t");
     _builder.append(methodbody, "	");

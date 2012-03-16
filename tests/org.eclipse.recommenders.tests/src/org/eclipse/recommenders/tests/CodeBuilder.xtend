@@ -10,6 +10,7 @@ class CodeBuilder {
 	def static classDeclaration(CharSequence declaration, CharSequence body) {
 		'''
 		import java.util.*;
+		import java.lang.reflect.*;
 		import java.util.concurrent.*;
 		import java.text.*;
 		import java.util.concurrent.*;
@@ -38,6 +39,8 @@ class CodeBuilder {
 	def static classbody(CharSequence classbody){
 		'''
 		import java.util.*;
+		import java.lang.reflect.*;
+		import java.io.*;
 		import java.util.concurrent.*;
 		import java.text.*;
 		import java.util.concurrent.*;
@@ -114,7 +117,7 @@ class CodeBuilder {
 	
 	def static method(CharSequence methodbody){
 		classbody('''
-		public void __test() {
+		public void __test() throws Exception {
 			«methodbody»
 		}''')
 	}

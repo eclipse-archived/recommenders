@@ -13,10 +13,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
  org.eclipse.jface.text,
- org.eclipse.recommenders.utils.rcp,
+ org.eclipse.recommenders.injection,
  org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.utils,
- org.eclipse.recommenders.injection,
+ org.eclipse.recommenders.utils.rcp,
  org.apache.commons.lang3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-ExtensibleAPI: true

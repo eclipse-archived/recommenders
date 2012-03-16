@@ -257,6 +257,11 @@ public class ModelRepository implements IModelRepository {
 
     @Override
     public void deploy(Artifact artifact, IProgressMonitor monitor) throws DeploymentException {
+        deploy(new Artifact[] { artifact }, monitor);
+    }
+
+    @Override
+    public void deploy(Artifact[] artifacts, IProgressMonitor monitor) throws DeploymentException {
         DefaultRepositorySystemSession session = newSession();
         session.setTransferListener(new TransferListener(monitor));
 
@@ -264,7 +269,9 @@ public class ModelRepository implements IModelRepository {
         // nexus.setAuthentication(authentication);
 
         DeployRequest r = new DeployRequest();
-        r.addArtifact(artifact);// .addArtifact(pom);
+        for (Artifact a : artifacts) {
+            r.addArtifact(a);
+        }
         r.setRepository(remote);
         system.deploy(session, r);
     }
