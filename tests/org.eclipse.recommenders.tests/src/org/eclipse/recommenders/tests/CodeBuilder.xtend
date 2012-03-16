@@ -9,11 +9,12 @@ class CodeBuilder {
 	
 	def static classDeclaration(CharSequence declaration, CharSequence body) {
 		'''
-		import java.util.*;
+		import java.lang.annotation.*;
 		import java.lang.reflect.*;
+		import java.util.*;
+		import java.util.concurrent.*;
 		import java.util.concurrent.*;
 		import java.text.*;
-		import java.util.concurrent.*;
 		import javax.annotation.*;
 		import javax.xml.ws.Action;
 		«declaration» {
@@ -25,7 +26,6 @@ class CodeBuilder {
 	def static classbody(CharSequence classname, CharSequence classbody){
 		'''
 		import java.util.*;
-		import java.util.concurrent.*;
 		import java.text.*;
 		import java.util.concurrent.*;
 		import javax.annotation.*;

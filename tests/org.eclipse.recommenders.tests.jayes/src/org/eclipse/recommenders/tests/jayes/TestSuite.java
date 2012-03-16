@@ -15,8 +15,8 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ FactorTests.class, RejectionSamplerTests.class, LikelyhoodWeightedSamplingTests.class, LBPTest.class,
-        JunctionTreeTests.class })
+@SuiteClasses({ FactorTest.class, RejectionSamplerTest.class, LikelyhoodWeightedSamplingTest.class, LBPTest.class,
+        JunctionTreeTest.class })
 public class TestSuite {
 
 }

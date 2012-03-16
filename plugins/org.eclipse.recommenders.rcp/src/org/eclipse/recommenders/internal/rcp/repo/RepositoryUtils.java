@@ -24,6 +24,14 @@ import com.google.common.net.InternetDomainName;
 
 public class RepositoryUtils {
 
+    public static String EXTENSION_MODELS = "zip";
+
+    public static String CLASSIFIER_COMPLETION_CALLS = "call";
+    public static String CLASSIFIER_COMPLETION_OVERRIDES = "ovrd";
+    public static String CLASSIFIER_EXTDOC_OVERRIDE = "extdoc-ovrd";
+    public static String CLASSIFIER_EXTDOC_OVERRIDE_PATTERNS = "extodc-ovrdp";
+    public static String CLASSIFIER_EXTDOC_SELF_CALLS = "extdoc-self";
+
     public static Artifact newArtifact(String coordinate) {
         return new DefaultArtifact(coordinate);
     }

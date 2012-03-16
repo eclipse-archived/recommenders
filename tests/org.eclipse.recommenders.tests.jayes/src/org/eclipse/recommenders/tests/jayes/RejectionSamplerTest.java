@@ -14,21 +14,20 @@ import static org.junit.Assert.assertArrayEquals;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.LikelihoodWeightedSampling;
+import org.eclipse.recommenders.jayes.inference.RejectionSampling;
 import org.eclipse.recommenders.tests.jayes.util.NetExamples;
 import org.junit.Test;
 
-public class LikelyhoodWeightedSamplingTests {
+public class RejectionSamplerTest {
 
     @Test
     public void testSampler1() {
         BayesNet net = NetExamples.testNet1();
-
         BayesNode a = net.getNode("a");
         BayesNode b = net.getNode("b");
         BayesNode c = net.getNode("c");
 
-        LikelihoodWeightedSampling sampler = new LikelihoodWeightedSampling();
+        RejectionSampling sampler = new RejectionSampling();
         sampler.setSampleCount(10000);
         sampler.setNetwork(net);
         sampler.addEvidence(a, "false");

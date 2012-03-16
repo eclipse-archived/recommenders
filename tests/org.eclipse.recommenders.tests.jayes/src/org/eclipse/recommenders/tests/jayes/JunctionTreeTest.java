@@ -25,7 +25,7 @@ import org.eclipse.recommenders.tests.jayes.LBP.LoopyBeliefPropagation;
 import org.eclipse.recommenders.tests.jayes.util.NetExamples;
 import org.junit.Test;
 
-public class JunctionTreeTests {
+public class JunctionTreeTest {
 
     @Test
     public void testInference1() {

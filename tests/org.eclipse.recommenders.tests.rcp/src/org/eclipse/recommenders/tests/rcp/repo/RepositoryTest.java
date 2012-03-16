@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Marcel Bruch - initial API and implementation.
+ */
 package org.eclipse.recommenders.tests.rcp.repo;
 
 import static org.junit.Assert.assertEquals;
@@ -16,7 +26,7 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import com.google.common.io.Files;
 
-public class RepositoryTests {
+public class RepositoryTest {
 
     private static ModelRepository sut;
 
@@ -46,7 +56,7 @@ public class RepositoryTests {
         Artifact actual = RepositoryUtils.newClassifierAndExtension(RepositoryUtils.pom(SWT_37_CALLS),
                 SWT_37_CALLS.getClassifier(), SWT_37_CALLS.getExtension());
         assertEquals(SWT_37_CALLS, actual);
-        
+
         actual = RepositoryUtils.newArtifact(SWT_37_CALLS.toString());
         assertEquals(SWT_37_CALLS, actual);
     }

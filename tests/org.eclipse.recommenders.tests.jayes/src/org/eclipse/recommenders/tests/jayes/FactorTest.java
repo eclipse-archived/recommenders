@@ -18,7 +18,7 @@ import org.eclipse.recommenders.jayes.util.ArrayUtils;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 import org.junit.Test;
 
-public class FactorTests {
+public class FactorTest {
 
     @Test
     public void sumTest() {
