@@ -16,15 +16,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonatype.aether.transfer.AbstractTransferListener;
 import org.sonatype.aether.transfer.TransferEvent;
 import org.sonatype.aether.transfer.TransferResource;
 
 public class TransferListener extends AbstractTransferListener {
-
-    private Logger log = LoggerFactory.getLogger(getClass());
 
     private final IProgressMonitor monitor;
     private Map<TransferResource, Long> downloads = new ConcurrentHashMap<TransferResource, Long>();
@@ -41,6 +37,10 @@ public class TransferListener extends AbstractTransferListener {
     }
 
     @Override
+    public void transferStarted(TransferEvent event) throws org.sonatype.aether.transfer.TransferCancelledException {
+    };
+
+    @Override
     public void transferProgressed(TransferEvent event) {
         TransferResource resource = event.getResource();
         downloads.put(resource, Long.valueOf(event.getTransferredBytes()));
@@ -55,7 +55,7 @@ public class TransferListener extends AbstractTransferListener {
     public void transferSucceeded(TransferEvent event) {
         TransferResource resource = event.getResource();
         downloads.remove(resource);
-        monitor.subTask("Finished transfer: " + resource);
+        monitor.subTask("Finished transfer: " + resource.getResourceName());
     }
 
     private String getStatus(long complete, long total) {
@@ -72,13 +72,11 @@ public class TransferListener extends AbstractTransferListener {
 
     @Override
     public void transferFailed(TransferEvent event) {
-        log.error("Transfer failed.", event.getException());
         monitor.subTask("Transfer failed: " + event);
     }
 
     @Override
     public void transferCorrupted(TransferEvent event) {
-        log.error("Transfer corrupted.", event.getException());
         monitor.subTask("Transfer corrupted: " + event.getException().getLocalizedMessage());
     }
 

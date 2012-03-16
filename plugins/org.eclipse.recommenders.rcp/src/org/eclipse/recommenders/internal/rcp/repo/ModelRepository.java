@@ -184,6 +184,7 @@ public class ModelRepository implements IModelRepository {
 
             @Override
             public void artifactDownloaded(org.sonatype.aether.RepositoryEvent event) {
+                monitor.subTask("downloaded " + event.getArtifact());
                 saveEtag(event.getArtifact());
             };
         });
@@ -197,7 +198,7 @@ public class ModelRepository implements IModelRepository {
         DependencyRequest dependencyRequest = new DependencyRequest();
         dependencyRequest.setCollectRequest(collectRequest);
 
-        List<ArtifactResult> artifactResults = system.resolveDependencies(newSession(), dependencyRequest)
+        List<ArtifactResult> artifactResults = system.resolveDependencies(session, dependencyRequest)
                 .getArtifactResults();
 
         List<File> files = Lists.newLinkedList();
