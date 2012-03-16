@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.repo;
 
 import static java.lang.String.format;
+import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,28 +60,19 @@ public class TransferListener extends AbstractTransferListener {
     }
 
     private String getStatus(long complete, long total) {
-        if (total >= 1024) {
-            return toKB(complete) + "/" + toKB(total) + " KB ";
-        } else if (total >= 0) {
-            return complete + "/" + total + " B ";
-        } else if (complete >= 1024) {
-            return toKB(complete) + " KB ";
-        } else {
-            return complete + " B ";
-        }
+        String status = byteCountToDisplaySize(complete);
+        if (total > 0)
+            status += "/" + byteCountToDisplaySize(total);
+        return status;
     }
 
     @Override
     public void transferFailed(TransferEvent event) {
-        monitor.subTask("Transfer failed: " + event);
+        monitor.subTask("Transfer failed: " + event.getException().getLocalizedMessage());
     }
 
     @Override
     public void transferCorrupted(TransferEvent event) {
         monitor.subTask("Transfer corrupted: " + event.getException().getLocalizedMessage());
-    }
-
-    private long toKB(long bytes) {
-        return (bytes + 1023) / 1024;
     }
 }

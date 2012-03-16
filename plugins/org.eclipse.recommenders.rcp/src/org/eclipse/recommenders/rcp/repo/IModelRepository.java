@@ -11,11 +11,9 @@
 package org.eclipse.recommenders.rcp.repo;
 
 import java.io.File;
-import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.deployment.DeploymentException;
 import org.sonatype.aether.installation.InstallationException;
 import org.sonatype.aether.resolution.DependencyResolutionException;
 
@@ -25,39 +23,35 @@ public interface IModelRepository {
 
     void setRemote(String url);
 
-    void deploy(Artifact artifact, IProgressMonitor monitor) throws DeploymentException;
-
-    void deploy(Artifact[] artifacts, IProgressMonitor monitor) throws DeploymentException;
-
     /**
-     * Resolves and downloads all dependencies for a given artifact.
+     * Resolves the given model coordinate and downloads the corresponding jar from server if not locally available.
      * 
-     * @return a list of dependencies required by the given artifact - including the artifact itself (probably)
+     * @return the local copy of the model artifact
      */
-    List<File> resolve(Artifact artifact, final IProgressMonitor monitor) throws DependencyResolutionException;
+    File resolve(Artifact model, final IProgressMonitor monitor) throws DependencyResolutionException;
 
     /**
      * Installs the local artifact to the
      */
-    void install(Artifact artifact) throws InstallationException;
+    void install(Artifact model) throws InstallationException;
 
     /**
      * Deletes a <b>local</b> artifact from file system.
      */
-    void delete(Artifact artifact);
+    void delete(Artifact model);
 
     /**
      * Checks whether a local artifact (described the given information artifact) is in sync with the remote repository
      */
-    boolean isLatest(Artifact artifact);
+    boolean isLatest(Artifact model);
 
     /**
      * Returns the location of the local repository. This is a handle only operation. This file may or may not exists.
      */
-    File location(Artifact artifact);
+    File location(Artifact model);
 
-    Optional<Artifact> findHigestVersion(Artifact artifact);
+    Optional<Artifact> findHigestVersion(Artifact model);
 
-    Optional<Artifact> findLowestVersion(Artifact artifact);
+    Optional<Artifact> findLowestVersion(Artifact model);
 
 }

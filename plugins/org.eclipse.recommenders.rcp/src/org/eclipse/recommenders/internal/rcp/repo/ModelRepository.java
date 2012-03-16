@@ -18,7 +18,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,25 +36,22 @@ import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.collection.CollectRequest;
+import org.sonatype.aether.collection.DependencyCollectionContext;
+import org.sonatype.aether.collection.DependencySelector;
 import org.sonatype.aether.connector.wagon.WagonProvider;
 import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
-import org.sonatype.aether.deployment.DeployRequest;
-import org.sonatype.aether.deployment.DeploymentException;
 import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyFilter;
+import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.installation.InstallRequest;
 import org.sonatype.aether.installation.InstallationException;
 import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactResult;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResolutionException;
 import org.sonatype.aether.resolution.VersionRangeRequest;
 import org.sonatype.aether.resolution.VersionRangeResult;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
 import org.sonatype.aether.util.DefaultRepositorySystemSession;
-import org.sonatype.aether.util.artifact.JavaScopes;
-import org.sonatype.aether.util.filter.DependencyFilterUtils;
 import org.sonatype.aether.version.Version;
 
 import com.google.common.base.Optional;
@@ -175,10 +171,11 @@ public class ModelRepository implements IModelRepository {
     }
 
     @Override
-    public synchronized List<File> resolve(Artifact artifact, final IProgressMonitor monitor)
+    public synchronized File resolve(Artifact artifact, final IProgressMonitor monitor)
             throws DependencyResolutionException {
         monitor.subTask("Resolving...");
         DefaultRepositorySystemSession session = newSession();
+        session.setDependencySelector(new TheArtifactOnlyDependencySelector());
         session.setTransferListener(new TransferListener(monitor));
         session.setRepositoryListener(new AbstractRepositoryListener() {
 
@@ -189,7 +186,7 @@ public class ModelRepository implements IModelRepository {
             };
         });
 
-        Dependency dependency = new Dependency(artifact, null);
+        Dependency dependency = new Dependency(artifact, "model");
 
         CollectRequest collectRequest = new CollectRequest();
         collectRequest.setRoot(dependency);
@@ -198,14 +195,9 @@ public class ModelRepository implements IModelRepository {
         DependencyRequest dependencyRequest = new DependencyRequest();
         dependencyRequest.setCollectRequest(collectRequest);
 
-        List<ArtifactResult> artifactResults = system.resolveDependencies(session, dependencyRequest)
-                .getArtifactResults();
-
-        List<File> files = Lists.newLinkedList();
-        for (ArtifactResult artifactResult : artifactResults) {
-            files.add(artifactResult.getArtifact().getFile());
-        }
-        return files;
+        DependencyNode root = system.resolveDependencies(session, dependencyRequest).getRoot();
+        File file = root.getDependency().getArtifact().getFile();
+        return file;
     }
 
     private void saveEtag(Artifact artifact) {
@@ -220,15 +212,6 @@ public class ModelRepository implements IModelRepository {
         }
     }
 
-    // @Override
-    // public void install(Artifact artifact, Artifact pom) throws InstallationException {
-    // RepositorySystemSession session = newSession();
-    // InstallRequest r = new InstallRequest();
-    // r.addArtifact(artifact).addArtifact(pom);
-    // system.install(session, r);
-    // log.info("installed {} to {} ", artifact, pom.getFile().getParent());
-    // }
-
     @Override
     public void install(Artifact artifact) throws InstallationException {
         RepositorySystemSession session = newSession();
@@ -236,45 +219,6 @@ public class ModelRepository implements IModelRepository {
         r.addArtifact(artifact);// .addArtifact(pom);
         system.install(session, r);
         log.info("installed '{}' to {}", artifact, location);
-    }
-
-    public List<File> resolveClasspath(Artifact artifact) throws DependencyResolutionException {
-        DependencyFilter classpathFlter = DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE);
-
-        CollectRequest collectRequest = new CollectRequest();
-        collectRequest.setRoot(new Dependency(artifact, JavaScopes.COMPILE));
-        collectRequest.addRepository(remote);
-        DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, classpathFlter);
-
-        List<ArtifactResult> artifactResults = system.resolveDependencies(newSession(), dependencyRequest)
-                .getArtifactResults();
-
-        List<File> files = Lists.newLinkedList();
-        for (ArtifactResult artifactResult : artifactResults) {
-            files.add(artifactResult.getArtifact().getFile());
-        }
-        return files;
-    }
-
-    @Override
-    public void deploy(Artifact artifact, IProgressMonitor monitor) throws DeploymentException {
-        deploy(new Artifact[] { artifact }, monitor);
-    }
-
-    @Override
-    public void deploy(Artifact[] artifacts, IProgressMonitor monitor) throws DeploymentException {
-        DefaultRepositorySystemSession session = newSession();
-        session.setTransferListener(new TransferListener(monitor));
-
-        // Authentication authentication = new Authentication("admin", "admin123");
-        // nexus.setAuthentication(authentication);
-
-        DeployRequest r = new DeployRequest();
-        for (Artifact a : artifacts) {
-            r.addArtifact(a);
-        }
-        r.setRepository(remote);
-        system.deploy(session, r);
     }
 
     @Override
@@ -332,5 +276,18 @@ public class ModelRepository implements IModelRepository {
         // "http://213.133.100.41/recommenders/models/"
         // local repository
         // File("target/dist-repo").toURI().toString());
+    }
+
+    private final class TheArtifactOnlyDependencySelector implements DependencySelector {
+        @Override
+        public boolean selectDependency(Dependency d) {
+            // we don't want any dependencies to be returned. Just the artifact itself.
+            return false;
+        }
+
+        @Override
+        public DependencySelector deriveChildSelector(DependencyCollectionContext c) {
+            return this;
+        }
     }
 }

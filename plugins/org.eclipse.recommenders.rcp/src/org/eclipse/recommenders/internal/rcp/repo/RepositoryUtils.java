@@ -89,4 +89,15 @@ public class RepositoryUtils {
         sb.append('.').append(extension);
         return sb.toString();
     }
+
+    public static Artifact pom(Artifact a) {
+        DefaultArtifact pom = new DefaultArtifact(a.getGroupId(), a.getArtifactId(), null, "pom", a.getVersion());
+        return pom;
+    }
+
+    public static Artifact newClassifierAndExtension(Artifact a, String classifier, String extension) {
+        DefaultArtifact res = new DefaultArtifact(a.getGroupId(), a.getArtifactId(), classifier, extension,
+                a.getVersion());
+        return res;
+    }
 }
