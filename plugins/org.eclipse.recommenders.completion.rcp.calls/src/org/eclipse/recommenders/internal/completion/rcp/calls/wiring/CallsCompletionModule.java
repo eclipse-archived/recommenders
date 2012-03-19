@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.wiring;
 
+import static java.lang.String.format;
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -19,74 +21,43 @@ import java.lang.annotation.Target;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
-import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelDownloadJob.JobFactory;
-import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.ClientConfigurationPreferenceListener;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.SectionsFactory;
-import org.eclipse.recommenders.webclient.ClientConfiguration;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.ManualModelStoreWiring.CallModelArchiveStore;
+import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
+import org.eclipse.recommenders.internal.rcp.models.store.DefaultModelArchiveStore;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Scopes;
+import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 public class CallsCompletionModule extends AbstractModule {
 
-    public static final String MODEL_VERSION = "0.4";
-    public static final String CALLS_STORE_LOCATION = "calls.store.location";
+    public static final String MODEL_VERSION = "0.5";
+
+    public static TypeLiteral<IModelArchiveStore<IType, IObjectMethodCallsNet>> STORE = new TypeLiteral<IModelArchiveStore<IType, IObjectMethodCallsNet>>() {
+    };
+    public static TypeLiteral<DefaultModelArchiveStore<IType, IObjectMethodCallsNet>> STORE_IMPL = new TypeLiteral<DefaultModelArchiveStore<IType, IObjectMethodCallsNet>>() {
+    };
 
     @Override
     protected void configure() {
-        configurePreferences();
-        configureStore3();
-    }
-
-    private void configureStore3() {
         final IPath stateLocation = Platform.getStateLocation(FrameworkUtil.getBundle(getClass()));
-        final File index = new File(stateLocation.toFile(), MODEL_VERSION + "/index.json");
-        bind(File.class).annotatedWith(CallModelsIndexFile.class).toInstance(index);
-        install(new FactoryModuleBuilder().build(JobFactory.class));
+        final File index = new File(stateLocation.toFile(), format("call-models-%s.json", MODEL_VERSION));
+        bind(File.class).annotatedWith(CallModelStore.class).toInstance(index);
+
+        bind(STORE).to(CallModelArchiveStore.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(SectionsFactory.class));
-        bind(CallModelStore.class).in(Scopes.SINGLETON);
-    }
-
-    private void configurePreferences() {
-        final ClientConfiguration config = new ClientConfiguration();
-        final IPreferenceStore store = CallsCompletionPlugin.getDefault().getPreferenceStore();
-        store.addPropertyChangeListener(new ClientConfigurationPreferenceListener(config, store));
-        bind(ClientConfiguration.class).annotatedWith(CallModelsServer.class).toInstance(config);
     }
 
     @BindingAnnotation
-    @Target(PARAMETER)
+    @Target({ PARAMETER, METHOD })
     @Retention(RUNTIME)
-    public static @interface DependencyStoreLocation {
-    }
-
-    @BindingAnnotation
-    @Target(PARAMETER)
-    @Retention(RUNTIME)
-    public static @interface CallModelsIndexFile {
-    }
-
-    @BindingAnnotation
-    @Target(PARAMETER)
-    @Retention(RUNTIME)
-    public static @interface ModelsStoreLocation {
-    }
-
-    @BindingAnnotation
-    @Target(PARAMETER)
-    @Retention(RUNTIME)
-    public static @interface CallModelsServer {
-    }
-
-    @BindingAnnotation
-    @Target(PARAMETER)
-    @Retention(RUNTIME)
-    public static @interface PreferenceStore {
+    static @interface CallModelStore {
     }
 
 }

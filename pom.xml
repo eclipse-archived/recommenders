@@ -107,9 +107,6 @@
 							<includes>
 								<include>${coverage.filter}</include>
 							</includes>
-							<excludes>
-								<exclude>org.eclipse.recommenders.internal.completion.rcp.subwords.proposals</exclude>
-							</excludes>
 							<append>true</append>
 						</configuration>
 					</execution>
@@ -201,6 +198,7 @@
 							<validHeader>license-faidherbe-2011.txt</validHeader>
 							<validHeader>license-tu-darmstadt-2010.txt</validHeader>
 							<validHeader>license-tu-darmstadt-2011.txt</validHeader>
+							<validHeader>license-tu-darmstadt-2012.txt</validHeader>
 							<validHeader>license-henss-2010.txt</validHeader>
 							<validHeader>license-kutschke-2011.txt</validHeader>
 							<validHeader>license-henss-2011.txt</validHeader>

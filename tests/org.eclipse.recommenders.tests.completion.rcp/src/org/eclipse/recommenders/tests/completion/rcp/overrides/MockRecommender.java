@@ -12,7 +12,7 @@ package org.eclipse.recommenders.tests.completion.rcp.overrides;
 
 import static org.mockito.Mockito.mock;
 
-import org.eclipse.recommenders.internal.completion.rcp.overrides.InstantOverridesRecommender;
+import org.eclipse.recommenders.internal.completion.rcp.overrides.model.InstantOverridesRecommender;
 
 public class MockRecommender {
 

@@ -29,10 +29,6 @@
       %license
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.m2e.maven.runtime"/>
-   </requires>
-
    <plugin
          id="org.eclipse.recommenders.rcp"
          download-size="0"

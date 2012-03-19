@@ -33,8 +33,6 @@ import com.google.common.collect.Sets;
 
 public class ClassOverridesNetwork {
 
-    private HashMap<String, IMethodName> escapedMethodReferences;
-
     private final ITypeName typeName;
 
     private final List<BayesNode> methodNodes;
@@ -86,7 +84,7 @@ public class ClassOverridesNetwork {
                 continue;
             }
             final IMethodName method = VmMethodName.get(node.getName());
-            final Tuple<IMethodName, Double> item = Tuple.create(method, probability);
+            final Tuple<IMethodName, Double> item = Tuple.newTuple(method, probability);
             recommendations.add(item);
         }
         return recommendations;

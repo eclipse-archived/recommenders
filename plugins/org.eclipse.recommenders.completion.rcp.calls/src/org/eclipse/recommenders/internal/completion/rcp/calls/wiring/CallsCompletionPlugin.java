@@ -13,12 +13,12 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.wiring;
 import java.io.IOException;
 
 import org.eclipse.recommenders.injection.InjectionService;
-import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
 import org.eclipse.recommenders.utils.rcp.LoggingUtils;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.google.inject.Injector;
+import com.google.inject.Key;
 
 public class CallsCompletionPlugin extends AbstractUIPlugin {
 
@@ -34,20 +34,19 @@ public class CallsCompletionPlugin extends AbstractUIPlugin {
     public void start(final BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
-        // new ModelStoreInitializerJob().schedule(1000);
     }
 
     @Override
     public void stop(final BundleContext context) throws Exception {
-        closeDependencyStore();
+        closeStore();
         plugin = null;
         super.stop(context);
     }
 
-    private void closeDependencyStore() {
+    private void closeStore() {
         try {
             final Injector injector = InjectionService.getInstance().getInjector();
-            injector.getInstance(CallModelStore.class).close();
+            injector.getInstance(Key.get(CallsCompletionModule.STORE)).close();
         } catch (final IOException e) {
             LoggingUtils.logError(e, this, "Exception while closing dependency store.");
         }

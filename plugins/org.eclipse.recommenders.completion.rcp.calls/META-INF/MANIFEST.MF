@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.calls;singleton:=tr
 Bundle-Version: 0.5.1.qualifier
 Bundle-Activator: org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin
 Bundle-Vendor: Eclipse Code Recommenders
-Require-Bundle: org.eclipse.ui,
+Require-Bundle: org.eclipse.recommenders.injection,
+  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.recommenders.rcp,
  org.eclipse.jdt.core,
@@ -16,7 +17,6 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.math,
  org.eclipse.core.resources,
  org.eclipse.recommenders.utils.rcp,
- org.eclipse.recommenders.injection,
  org.eclipse.recommenders.jayes.serialization,
  org.apache.commons.pool,
  org.eclipse.recommenders.webclient,
@@ -27,13 +27,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.databinding,
  org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans,
- org.eclipse.m2e.maven.runtime,
  org.eclipse.core.databinding.property
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.recommenders.internal.completion.rcp.calls.engine,
  org.eclipse.recommenders.internal.completion.rcp.calls.extdoc,
- org.eclipse.recommenders.internal.completion.rcp.calls.models,
  org.eclipse.recommenders.internal.completion.rcp.calls.net,
  org.eclipse.recommenders.internal.completion.rcp.calls.preferences,
  org.eclipse.recommenders.internal.completion.rcp.calls.wiring

@@ -235,6 +235,10 @@ public class JavaProjectFixture {
         });
     }
 
+    public IJavaProject getJavaProject() {
+        return javaProject;
+    }
+
     public String removeMarkers(final String content) {
         return content.replaceAll(MARKER_ESCAPE, "");
     }

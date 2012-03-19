@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,10 +41,12 @@ import com.google.common.base.Optional;
 
 public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
 
+    public static final Artifact INDEX_COORDINATE = newArtifact("org.eclipse.recommenders:index:zip:0.0.0");
     public static final String F_FINGERPRINTS = "fingerprints";
     public static final String F_COORDINATE = "coordinate";
     public static final String F_CLASSIFIER = "classifier";
     public static final String F_ARTIFACT_ID = "artifactId";
+    public static final String SYMBOLIC_NAMES = "symbolic-names";
 
     private Logger log = LoggerFactory.getLogger(getClass());
     private Directory directory;
@@ -85,19 +87,19 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
     public Optional<Artifact> searchByFingerprint(String fingerprint, String classifier) {
         Term t1 = new Term(F_FINGERPRINTS, fingerprint);
         Term t2 = new Term(F_CLASSIFIER, classifier);
-        return findByTerm(t1, t2);
+        return findByTerm(classifier, t1, t2);
 
     }
 
     @Override
     public Optional<Artifact> searchByArtifactId(String artifactId, String classifier) {
-        Term t1 = new Term(F_ARTIFACT_ID, artifactId);
+        Term t1 = new Term(SYMBOLIC_NAMES, artifactId);
         Term t2 = new Term(F_CLASSIFIER, classifier);
 
-        return findByTerm(t1, t2);
+        return findByTerm(classifier, t1, t2);
     }
 
-    private Optional<Artifact> findByTerm(Term... terms) {
+    private Optional<Artifact> findByTerm(String classifier, Term... terms) {
         if (reader == null) {
             return absent();
         }
@@ -118,11 +120,11 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
                 log.warn("More than one potential match for query {} found. Inconsistency in model store?", query);
             }
             Document doc = reader.document(matches.scoreDocs[0].doc);
-            String coordinate = doc.get(F_COORDINATE);
-            if (coordinate == null) {
+            String modelCoordinate = doc.get(classifier);
+            if (modelCoordinate == null) {
                 return absent();
             }
-            return of(newArtifact(coordinate));
+            return of(newArtifact(modelCoordinate));
         } catch (Exception e) {
             log.error("Searching index failed with exception", e);
             return absent();

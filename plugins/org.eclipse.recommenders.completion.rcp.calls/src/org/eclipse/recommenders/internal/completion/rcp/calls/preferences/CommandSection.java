@@ -14,9 +14,11 @@ import static org.eclipse.recommenders.internal.completion.rcp.calls.wiring.Call
 
 import javax.inject.Inject;
 
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,11 +32,11 @@ import com.google.inject.assistedinject.Assisted;
 
 public class CommandSection {
 
-    private final CallModelStore modelStore;
+    private final IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore;
 
     @Inject
-    public CommandSection(@Assisted final Composite parent, final CallModelStore modelStore) {
-        this.modelStore = modelStore;
+    public CommandSection(@Assisted final Composite parent, IModelArchiveStore<IType, IObjectMethodCallsNet> store) {
+        this.modelStore = store;
 
         createButton(createGroup(parent));
     }
@@ -53,7 +55,7 @@ public class CommandSection {
         b.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                modelStore.getMappings().clear();
+                modelStore.getMetadata().clear();
             }
         });
     }

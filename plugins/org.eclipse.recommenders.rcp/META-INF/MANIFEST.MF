@@ -5,15 +5,17 @@ Bundle-SymbolicName: org.eclipse.recommenders.rcp;singleton:=true
 Bundle-Version: 0.5.1.qualifier
 Bundle-Activator: org.eclipse.recommenders.rcp.RecommendersPlugin
 Bundle-Vendor: Eclipse Code Recommenders
-Export-Package: org.eclipse.recommenders.internal.rcp.providers,
+Export-Package: org.eclipse.recommenders.internal.rcp.models,
+ org.eclipse.recommenders.internal.rcp.models.archive,
+ org.eclipse.recommenders.internal.rcp.models.store,
+ org.eclipse.recommenders.internal.rcp.providers,
  org.eclipse.recommenders.internal.rcp.repo,
  org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.rcp.events,
  org.eclipse.recommenders.rcp.repo
 Require-Bundle: org.eclipse.recommenders.injection,
  com.google.guava;bundle-version="[10.0.0,11.0.0)",
- com.ning.async-http-client;bundle-version="1.6.0",
- org.slf4j.api,
+ org.slf4j.api;visibility:=reexport,
  org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
@@ -21,11 +23,12 @@ Require-Bundle: org.eclipse.recommenders.injection,
  org.eclipse.jdt.ui;bundle-version="3.7.0",
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- org.eclipse.m2e.maven.runtime,
  org.apache.commons.lang3,
  org.eclipse.recommenders.utils.rcp,
  org.eclipse.recommenders.utils,
  org.apache.lucene;bundle-version="3.5.0",
- org.apache.commons.io;bundle-version="2.0.0"
+ org.apache.commons.io;bundle-version="2.0.0",
+ org.apache.commons.pool;bundle-version="[1.4.0,2.0.0)",
+ org.eclipse.recommenders.aether;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

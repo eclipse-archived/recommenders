@@ -11,3 +11,4 @@ Require-Bundle: com.google.inject;bundle-version="3.0.0";visibility:=reexport,
  com.google.guava,
  org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

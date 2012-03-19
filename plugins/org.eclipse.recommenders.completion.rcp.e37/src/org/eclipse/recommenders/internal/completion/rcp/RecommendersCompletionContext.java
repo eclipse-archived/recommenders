@@ -43,10 +43,8 @@ import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.SearchableEnvironment;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
-import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -64,7 +62,7 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
 
     private CompletionParser completionParser;
 
-    private String token;
+    // private String token;
 
     private IntelligentCompletionRequestor completionRequestor;
 
@@ -72,9 +70,9 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
     public RecommendersCompletionContext(@Assisted final JavaContentAssistInvocationContext jdtContext,
             final IAstProvider astProvider) {
         super(jdtContext, astProvider);
-
+        jdtContext.getExpectedType();
         jdtCompilationUnit = (org.eclipse.jdt.internal.core.CompilationUnit) getJavaContext().getCompilationUnit();
-        initializeCompletionPrefixToken();
+        // initializeCompletionPrefixToken();
         initializeRequestor();
         initializeCompletionEngine();
         performCodeCompletion();
@@ -82,14 +80,14 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
         clearStateIfNoCompletionNodeFound();
     }
 
-    private void initializeCompletionPrefixToken() {
-        try {
-            token = getJavaContext().computeIdentifierPrefix().toString();
-        } catch (final BadLocationException x) {
-            RecommendersUtilsPlugin.logError(x, "Computing token from active editor failed.");
-            token = "";
-        }
-    }
+    // private void initializeCompletionPrefixToken() {
+    // try {
+    // token = getJavaContext().computeIdentifierPrefix().toString();
+    // } catch (final BadLocationException x) {
+    // RecommendersUtilsPlugin.logError(x, "Computing token from active editor failed.");
+    // token = "";
+    // }
+    // }
 
     private void initializeRequestor() {
         completionRequestor = new IntelligentCompletionRequestor(jdtCompilationUnit);

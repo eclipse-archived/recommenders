@@ -32,12 +32,12 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
-import org.eclipse.recommenders.internal.analysis.codestructs.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codestructs.DefinitionSite.Kind;
+import org.eclipse.recommenders.internal.analysis.codestructs.ObjectUsage;
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.AstBasedObjectUsageResolver;
-import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
+import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.Tuple;
@@ -64,15 +64,15 @@ import com.google.common.eventbus.EventBus;
 @Experimental
 public final class CallsProvider extends ExtdocProvider {
 
-    private final CallModelStore modelStore;
+    private final IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore;
     private final JavaElementResolver jdtResolver;
     private final EventBus workspaceBus;
     private IType receiverType;
     private IObjectMethodCallsNet model;
 
     @Inject
-    public CallsProvider(final CallModelStore modelStore, final JavaElementResolver jdtResolver,
-            final EventBus workspaceBus) {
+    public CallsProvider(final IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore,
+            final JavaElementResolver jdtResolver, final EventBus workspaceBus) {
         this.modelStore = modelStore;
         this.jdtResolver = jdtResolver;
         this.workspaceBus = workspaceBus;

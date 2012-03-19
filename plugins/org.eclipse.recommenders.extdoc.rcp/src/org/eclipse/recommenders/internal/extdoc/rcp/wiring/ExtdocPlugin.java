@@ -10,7 +10,15 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.wiring;
 
+import org.eclipse.recommenders.injection.InjectionService;
+import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassOverridesModelStore;
+import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassOverridesPatternsModelStore;
+import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassSelfcallsModelStore;
+import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
+
+import com.google.inject.Injector;
 
 public class ExtdocPlugin extends AbstractUIPlugin {
     public static final String PLUGIN_ID = "org.eclipse.recommenders.extdoc.rcp";
@@ -25,4 +33,20 @@ public class ExtdocPlugin extends AbstractUIPlugin {
         super.start(context);
         INSTANCE = this;
     };
+
+    @Override
+    @SuppressWarnings("rawtypes")
+    public void stop(BundleContext context) throws Exception {
+        INSTANCE = null;
+        Injector i = InjectionService.getInstance().getInjector();
+        IModelArchiveStore[] stores = { i.getInstance(ClassOverridesPatternsModelStore.class),
+                i.getInstance(ClassOverridesModelStore.class), i.getInstance(ClassSelfcallsModelStore.class) };
+        for (IModelArchiveStore<?, ?> store : stores) {
+            try {
+                store.close();
+            } catch (Exception e) {
+            }
+        }
+        super.stop(context);
+    }
 }

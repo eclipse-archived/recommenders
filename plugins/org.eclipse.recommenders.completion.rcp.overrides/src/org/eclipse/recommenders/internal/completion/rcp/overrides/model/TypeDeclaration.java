@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.overrides;
+package org.eclipse.recommenders.internal.completion.rcp.overrides.model;
 
 import java.util.Set;
 

@@ -10,7 +10,6 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing;
 
-import static com.google.common.base.Optional.fromNullable;
 import static java.lang.String.format;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
@@ -26,43 +25,30 @@ import org.eclipse.recommenders.extdoc.ClassSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
-import org.eclipse.recommenders.internal.extdoc.rcp.providers.ExtdocResourceProxy;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
+import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassSelfcallsModelStore;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.TreeBag;
 import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
-import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
 import com.google.common.eventbus.EventBus;
 
 public final class SelfCallsProvider extends ExtdocProvider {
 
-    private final ExtdocResourceProxy proxy;
     private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
-    private final Cache<ITypeName, Optional<ClassSelfcallDirectives>> cache1 = CacheBuilder.newBuilder()
-            .maximumSize(20).concurrencyLevel(1).build(new CacheLoader<ITypeName, Optional<ClassSelfcallDirectives>>() {
-
-                @Override
-                public Optional<ClassSelfcallDirectives> load(final ITypeName typeName) throws Exception {
-                    return fromNullable(proxy.findClassSelfcallDirectives(typeName));
-                }
-            });
+    private final ClassSelfcallsModelStore cStore;
 
     @Inject
-    public SelfCallsProvider(final ExtdocResourceProxy proxy, final JavaElementResolver resolver,
+    public SelfCallsProvider(ClassSelfcallsModelStore cStore, final JavaElementResolver resolver,
             final EventBus workspaceBus) {
-        this.proxy = proxy;
+        this.cStore = cStore;
         this.resolver = resolver;
         this.workspaceBus = workspaceBus;
 
@@ -81,31 +67,30 @@ public final class SelfCallsProvider extends ExtdocProvider {
     @JavaSelectionSubscriber
     public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent)
             throws ExecutionException {
-        final ITypeName typeName = resolver.toRecType(type);
-        final Optional<ClassSelfcallDirectives> opt = cache1.get(typeName);
-        if (!opt.isPresent()) {
+        Optional<ClassSelfcallDirectives> model = cStore.aquireModel(type);
+        if (!model.isPresent()) {
             return Status.NOT_AVAILABLE;
         }
-        runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, opt.get(), parent));
+        runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, model.get(), parent));
         return Status.OK;
     }
 
-    @JavaSelectionSubscriber
-    public Status onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
+    // @JavaSelectionSubscriber
+    // public Status onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
 
-        for (IMethod current = method; current != null; current = JdtUtils.findOverriddenMethod(current).orNull()) {
-            final Optional<IMethodName> opt = resolver.toRecMethod(current);
-            if (!opt.isPresent()) {
-                continue;
-            }
-            final MethodSelfcallDirectives selfcalls = proxy.findMethodSelfcallDirectives(opt.get());
-            if (selfcalls != null) {
-                runSyncInUiThread(new MethodSelfcallDirectivesRenderer(method, selfcalls, parent));
-                return Status.OK;
-            }
-        }
-        return Status.NOT_AVAILABLE;
-    }
+    // for (IMethod current = method; current != null; current = JdtUtils.findOverriddenMethod(current).orNull()) {
+    // final Optional<IMethodName> opt = resolver.toRecMethod(current);
+    // if (!opt.isPresent()) {
+    // continue;
+    // }
+    // final MethodSelfcallDirectives selfcalls = proxy.findMethodSelfcallDirectives(opt.get());
+    // if (selfcalls != null) {
+    // runSyncInUiThread(new MethodSelfcallDirectivesRenderer(method, selfcalls, parent));
+    // return Status.OK;
+    // }
+    // }
+    // return Status.NOT_AVAILABLE;
+    // }
 
     private class TypeSelfcallDirectivesRenderer implements Runnable {
 

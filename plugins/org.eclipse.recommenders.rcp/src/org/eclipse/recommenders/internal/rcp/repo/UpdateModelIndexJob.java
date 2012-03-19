@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,12 +11,9 @@
 package org.eclipse.recommenders.internal.rcp.repo;
 
 import static org.apache.commons.io.FileUtils.cleanDirectory;
-import static org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils.newArtifact;
+import static org.eclipse.recommenders.internal.rcp.repo.ModelRepositoryIndex.INDEX_COORDINATE;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -24,19 +21,14 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
+import org.eclipse.recommenders.utils.Zips;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.aether.artifact.Artifact;
-
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closeables;
-import com.google.common.io.Files;
-import com.google.common.io.InputSupplier;
 
 public class UpdateModelIndexJob extends Job {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final Artifact indexArtifact = newArtifact("org.eclipse.recommenders:index:zip:0.0.0");
+
     private final IModelRepositoryIndex index;
     private final IModelRepository repo;
 
@@ -53,15 +45,15 @@ public class UpdateModelIndexJob extends Job {
             File location = index.getLocation();
             if (doesNotExistOrIsAlmostEmptyFolder(location)) {
                 downloadAndUnzipIndex(monitor);
-            } else if (!repo.isLatest(indexArtifact)) {
-                repo.delete(indexArtifact);
+            } else if (!repo.isLatest(INDEX_COORDINATE)) {
+                repo.delete(INDEX_COORDINATE);
                 index.close();
                 cleanDirectory(location);
                 downloadAndUnzipIndex(monitor);
             }
             index.open();
         } catch (Exception e) {
-            log.debug("Updating index canceled.", e);
+            log.debug("Updating index cancelled.", e);
             return Status.CANCEL_STATUS;
         }
         return Status.OK_STATUS;
@@ -74,24 +66,13 @@ public class UpdateModelIndexJob extends Job {
     }
 
     private void downloadAndUnzipIndex(IProgressMonitor monitor) throws Exception {
-        repo.resolve(indexArtifact, monitor);
+        repo.resolve(INDEX_COORDINATE, monitor);
 
-        File f = repo.location(indexArtifact);
+        File f = repo.location(INDEX_COORDINATE);
         if (!f.exists()) {
             return;
         }
-
         File basedir = index.getLocation();
-        InputSupplier<FileInputStream> fis = Files.newInputStreamSupplier(f);
-        ZipInputStream zis = new ZipInputStream(fis.getInput());
-        ZipEntry entry;
-        while ((entry = zis.getNextEntry()) != null) {
-            if (!entry.isDirectory()) {
-                final File file = new File(basedir, entry.getName());
-                Files.createParentDirs(file);
-                Files.write(ByteStreams.toByteArray(zis), file);
-            }
-        }
-        Closeables.closeQuietly(zis);
+        Zips.unzip(f, basedir);
     }
 }

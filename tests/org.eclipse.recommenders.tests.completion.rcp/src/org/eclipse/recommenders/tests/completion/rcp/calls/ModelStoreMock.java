@@ -17,8 +17,8 @@ import java.io.File;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.core.IType;
-import org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelStore;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.rcp.models.store.DefaultModelArchiveStore;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 
 import com.google.common.base.Optional;
 
-public class ModelStoreMock extends CallModelStore {
+public class ModelStoreMock extends DefaultModelArchiveStore<IType, IObjectMethodCallsNet> {
 
     public ModelStoreMock() {
         super(new File("fail.txt"), null, null, null);

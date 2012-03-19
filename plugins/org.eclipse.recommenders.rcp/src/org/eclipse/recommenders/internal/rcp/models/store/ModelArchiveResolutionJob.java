@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,24 +8,23 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.calls.models;
+package org.eclipse.recommenders.internal.rcp.models.store;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.eclipse.core.runtime.Status.CANCEL_STATUS;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
-import static org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelResolutionData.ModelResolutionStatus.FAILED;
-import static org.eclipse.recommenders.internal.completion.rcp.calls.models.CallModelResolutionData.ModelResolutionStatus.RESOLVED;
+import static org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus.FAILED;
+import static org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus.RESOLVED;
 import static org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils.asCoordinate;
 
 import java.io.File;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils;
+import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
+import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
@@ -34,57 +33,59 @@ import org.eclipse.recommenders.utils.Version;
 import org.sonatype.aether.artifact.Artifact;
 
 import com.google.common.base.Optional;
+import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-public class CallModelDownloadJob extends Job {
+@SuppressWarnings("rawtypes")
+public class ModelArchiveResolutionJob extends Job {
 
-    public static interface JobFactory {
-        CallModelDownloadJob create(File file);
-    }
+    private final ModelArchiveMetadata metadata;
+    private final IClasspathEntryInfoProvider cpeInfos;
+    private final IModelRepository repository;
 
     private ClasspathEntryInfo cpeInfo;
-    private final CallModelStore store;
-    private final IModelRepository repo;
+    private File pkgRoot;
     private final IModelRepositoryIndex index;
-    private final CallModelResolutionData mapping = new CallModelResolutionData();
-    private final IClasspathEntryInfoProvider cpeInfoProvider;
-    private final File file;
+    private final String classifier;
 
     @Inject
-    public CallModelDownloadJob(@Assisted File file, CallModelStore store, IModelRepository repo,
-            IModelRepositoryIndex index, IClasspathEntryInfoProvider cpeInfoProvider) {
-        super("Downloading calls model...");
-        this.file = file;
-        this.cpeInfoProvider = cpeInfoProvider;
-        this.store = store;
-        this.repo = repo;
+    public ModelArchiveResolutionJob(@Assisted ModelArchiveMetadata metadata,
+            IClasspathEntryInfoProvider cpeInfoProvider, IModelRepository repository, IModelRepositoryIndex index,
+            @Assisted String classifier) {
+        super("Resolving model for " + metadata.getLocation().getName() + "...");
+        this.metadata = metadata;
+        this.cpeInfos = cpeInfoProvider;
+        this.repository = repository;
         this.index = index;
+        this.classifier = classifier;
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-        monitor.beginTask("Model requested for " + file.getName(), 4);
+
+        monitor.beginTask("Model requested for " + metadata.getLocation().getName(), 4);
         monitor.worked(1);
-        mapping.setStatus(FAILED);
+        metadata.setStatus(ModelArchiveResolutionStatus.FAILED);
         try {
             monitor.subTask("Looking up available models in index...");
-            cpeInfo = cpeInfoProvider.getInfo(file).orNull();
+            pkgRoot = metadata.getLocation();
+            cpeInfo = cpeInfos.getInfo(pkgRoot).orNull();
             if (cpeInfo == null) {
-                mapping.setError(format("No class path info available for '%s'. Skipped.", file));
+                metadata.setError(format("No class path info available for '%s'. Skipped.", pkgRoot));
                 return CANCEL_STATUS;
             }
 
             if (isEmpty(cpeInfo.getFingerprint())) {
-                mapping.setError(format("Fingerprint for '%s' was null.", cpeInfo.getLocation()));
+                metadata.setError(format("Fingerprint for '%s' was null.", cpeInfo.getLocation()));
                 return CANCEL_STATUS;
             }
 
-            Optional<Artifact> handle = index.searchByFingerprint(cpeInfo.getFingerprint(), "cr-calls");
+            Optional<Artifact> handle = index.searchByFingerprint(cpeInfo.getFingerprint(), classifier);
             if (!handle.isPresent() && !isEmpty(cpeInfo.getSymbolicName())) {
-                handle = index.searchByArtifactId(cpeInfo.getSymbolicName(), "cr-calls");
+                handle = index.searchByArtifactId(cpeInfo.getSymbolicName(), classifier);
             }
             if (!handle.isPresent()) {
-                mapping.setError(format(
+                metadata.setError(format(
                         "No call model found for '%s'. Neither fingerprint '%s' nor symbolic name '%s' are known.",
                         cpeInfo.getLocation(), cpeInfo.getFingerprint(), cpeInfo.getSymbolicName()));
                 return CANCEL_STATUS;
@@ -92,30 +93,30 @@ public class CallModelDownloadJob extends Job {
 
             Optional<Artifact> bestMatch = findBestMatch(handle.get(), cpeInfo.getVersion());
             if (!bestMatch.isPresent()) {
-                mapping.setError(format("No best matching model found for '%s'. This is probably a bug.",
+                metadata.setError(format("No best matching model found for '%s'. This is probably a bug.",
                         cpeInfo.getLocation()));
                 return CANCEL_STATUS;
             }
 
             monitor.worked(1);
-            repo.resolve(bestMatch.get(), monitor);
+            repository.resolve(bestMatch.get(), monitor);
             monitor.worked(2);
-            File local = repo.location(bestMatch.get());
+            File local = repository.location(bestMatch.get());
             if (!local.exists()) {
-                mapping.setError(format("Failed to download and install model artifact '%s' to local repostiory",
+                metadata.setError(format("Failed to download and install model artifact '%s' to local repostiory",
                         asCoordinate(bestMatch.get())));
                 return CANCEL_STATUS;
             }
-            mapping.setStatus(RESOLVED);
-            mapping.setCoordinate(RepositoryUtils.asCoordinate(bestMatch.get()));
+            metadata.setStatus(RESOLVED);
+            metadata.setArtifact(bestMatch.get());
+            metadata.setCoordinate(bestMatch.get().toString());
             return OK_STATUS;
 
         } catch (Exception x) {
-            mapping.setStatus(FAILED);
-            mapping.setError(x.getMessage());
+            metadata.setStatus(FAILED);
+            metadata.setError(x.getMessage());
             return CANCEL_STATUS;
         } finally {
-            store.getMappings().put(file, mapping);
             monitor.done();
         }
     }
@@ -124,18 +125,18 @@ public class CallModelDownloadJob extends Job {
         Artifact query = null;
         if (version.isUnknown()) {
             query = artifact.setVersion("([0,");
-            return repo.findHigestVersion(query);
+            return repository.findHigestVersion(query);
         }
 
         String upperBound = Version.create(version.major, version.minor + 1).toString();
         query = artifact.setVersion("[0," + upperBound + ")");
-        Optional<Artifact> match = repo.findHigestVersion(query);
+        Optional<Artifact> match = repository.findHigestVersion(query);
         if (match.isPresent()) {
             return match;
         }
 
-        query = artifact.setVersion("[" + upperBound + ",");
-        match = repo.findLowestVersion(query);
+        query = artifact.setVersion("[" + upperBound + ",)");
+        match = repository.findLowestVersion(query);
         return match;
     }
 }

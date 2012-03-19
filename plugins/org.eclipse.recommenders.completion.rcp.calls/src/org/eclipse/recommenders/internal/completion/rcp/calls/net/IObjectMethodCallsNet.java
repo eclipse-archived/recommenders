@@ -16,22 +16,19 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.eclipse.recommenders.internal.analysis.codestructs.DefinitionSite;
-import org.eclipse.recommenders.internal.analysis.codestructs.ObjectUsage;
 import org.eclipse.recommenders.internal.analysis.codestructs.DefinitionSite.Kind;
-import org.eclipse.recommenders.internal.completion.rcp.calls.models.IModel;
+import org.eclipse.recommenders.internal.analysis.codestructs.ObjectUsage;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
-public interface IObjectMethodCallsNet extends IModel {
+public interface IObjectMethodCallsNet {
 
-    @Override
     public abstract ITypeName getType();
 
     public abstract void setCalled(final IMethodName calledMethod);
 
-    @Override
     public abstract void clearEvidence();
 
     public abstract void setMethodContext(final IMethodName newActiveMethodContext);

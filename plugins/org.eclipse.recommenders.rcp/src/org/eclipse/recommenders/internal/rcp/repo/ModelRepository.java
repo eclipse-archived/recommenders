@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import static com.google.common.base.Optional.of;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.DependencyCollectionContext;
 import org.sonatype.aether.collection.DependencySelector;
+import org.sonatype.aether.connector.file.FileRepositoryConnectorFactory;
 import org.sonatype.aether.connector.wagon.WagonProvider;
 import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
 import org.sonatype.aether.graph.Dependency;
@@ -84,7 +86,7 @@ public class ModelRepository implements IModelRepository {
         locator.setServices(WagonProvider.class, new ManualWagonProvider());
         locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
         // import org.sonatype.aether.connector.file.FileRepositoryConnectorFactory;
-        // locator.addService(RepositoryConnectorFactory.class, FileRepositoryConnectorFactory.class);
+        locator.addService(RepositoryConnectorFactory.class, FileRepositoryConnectorFactory.class);
         return locator.getService(RepositorySystem.class);
     }
 
@@ -107,6 +109,13 @@ public class ModelRepository implements IModelRepository {
         try {
             String remoteBaseurl = StringUtils.removeEnd(remote.getUrl(), "/");
             String url = String.format("%1$s/%2$s", remoteBaseurl, computePath(artifact));
+            if (url.startsWith("file:")) {
+                // try file:
+                File file = new File(new URI(url));
+                if (file.exists())
+                    return of(file.lastModified() + "");
+                return absent();
+            }
             Response r = http.prepareHead(url).execute().get();
 
             String header = r.getHeader("ETag");
@@ -244,7 +253,8 @@ public class ModelRepository implements IModelRepository {
     }
 
     private Optional<VersionRangeResult> resolveVersionRange(Artifact a) {
-        VersionRangeRequest rangeRequest = new VersionRangeRequest(a, Collections.singletonList(remote), "cr-calls");
+        VersionRangeRequest rangeRequest = new VersionRangeRequest(a, Collections.singletonList(remote),
+                a.getClassifier());
         try {
             return of(system.resolveVersionRange(newSession(), rangeRequest));
         } catch (Exception e) {

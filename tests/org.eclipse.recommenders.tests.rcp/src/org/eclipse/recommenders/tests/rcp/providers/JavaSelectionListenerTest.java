@@ -37,48 +37,47 @@ import com.google.common.eventbus.EventBus;
 
 public class JavaSelectionListenerTest {
 
-	List<IJavaElement> elements = Collections
-			.synchronizedList(new ArrayList<IJavaElement>());
+    List<IJavaElement> elements = Collections.synchronizedList(new ArrayList<IJavaElement>());
 
-	JavaSelectionProvider sut = new JavaSelectionProvider(new EventBus() {
-		@Override
-		public void post(final Object event) {
-			elements.add(((JavaSelectionEvent) event).getElement());
-		};
-	});
+    JavaSelectionProvider sut = new JavaSelectionProvider(new EventBus() {
+        @Override
+        public void post(final Object event) {
+            elements.add(((JavaSelectionEvent) event).getElement());
+        };
+    });
 
-	@Test
-	public void testStructuredSelectionWithType() throws InterruptedException {
-		final List<?> expected = newArrayList(someType(), someMethod(),
-				someField(), someLocalVariable(), someJavaModel());
-		for (final Object e : expected) {
-			sut.selectionChanged(null, new StructuredSelection(e));
-			Thread.sleep(150);
-		}
-		assertEquals(expected, elements);
-	}
+    @Test
+    public void testStructuredSelectionWithType() throws InterruptedException {
+        final List<?> expected = newArrayList(someType(), someMethod(), someField(), someLocalVariable(),
+                someJavaModel());
+        for (final Object e : expected) {
+            sut.selectionChanged(null, new StructuredSelection(e));
+            Thread.sleep(200);
+        }
+        assertEquals(expected, elements);
+    }
 
-	@Test
-	public void testFireEventTwiceSelection() throws InterruptedException {
+    @Test
+    public void testFireEventTwiceSelection() throws InterruptedException {
 
-		final IType someType = someType();
-		sut.selectionChanged(null, new StructuredSelection(someType));
-		sut.selectionChanged(null, new StructuredSelection(someType));
-		Thread.sleep(150);
+        final IType someType = someType();
+        sut.selectionChanged(null, new StructuredSelection(someType));
+        sut.selectionChanged(null, new StructuredSelection(someType));
+        Thread.sleep(200);
 
-		assertEquals(1, elements.size());
-	}
+        assertEquals(1, elements.size());
+    }
 
-	@Test
-	public void testEmptyStructuredSelection() {
-		sut.selectionChanged(null, EMPTY);
-		assertTrue(elements.isEmpty());
-	}
+    @Test
+    public void testEmptyStructuredSelection() {
+        sut.selectionChanged(null, EMPTY);
+        assertTrue(elements.isEmpty());
+    }
 
-	@Test
-	public void testAnyUnknownSelectionType() {
-		sut.selectionChanged(null, mock(ISelection.class));
-		assertTrue(elements.isEmpty());
-	}
+    @Test
+    public void testAnyUnknownSelectionType() {
+        sut.selectionChanged(null, mock(ISelection.class));
+        assertTrue(elements.isEmpty());
+    }
 
 }

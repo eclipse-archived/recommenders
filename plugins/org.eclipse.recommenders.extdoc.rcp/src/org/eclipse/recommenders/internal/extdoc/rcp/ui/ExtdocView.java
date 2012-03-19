@@ -28,7 +28,6 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ViewPart;
 
@@ -36,7 +35,6 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 public class ExtdocView extends ViewPart {
 
@@ -51,7 +49,6 @@ public class ExtdocView extends ViewPart {
     private ProviderExecutionScheduler scheduler;
     private final Lock schedulerLock = new ReentrantLock();
     private SashForm sashForm;
-    private final Provider<IWorkbenchPage> activePage;
     protected boolean visible = true;
 
     @Inject
@@ -59,7 +56,7 @@ public class ExtdocView extends ViewPart {
             final SubscriptionManager subscriptionManager, final ExtdocIconLoader iconLoader,
             final List<ExtdocProvider> providers, final PreferencesFacade preferences,
             final ProviderOverviewPart overviewPart, final ProviderContentPart contentPart,
-            final ProviderConfigurationPersistenceService ps, final Provider<IWorkbenchPage> activePage) {
+            final ProviderConfigurationPersistenceService ps) {
         this.workspaceBus = workspaceBus;
         this.extdocBus = extdocBus;
         this.subscriptionManager = subscriptionManager;
@@ -67,13 +64,13 @@ public class ExtdocView extends ViewPart {
         this.preferences = preferences;
         this.overviewPart = overviewPart;
         this.contentPart = contentPart;
-        this.activePage = activePage;
     }
 
     @Override
     public void createPartControl(final Composite parent) {
         createUiElements(parent);
         subscribeToEventBusses();
+
         addPartListener();
     }
 
@@ -100,7 +97,7 @@ public class ExtdocView extends ViewPart {
     }
 
     private void addPartListener() {
-        activePage.get().addPartListener(new PartListener2Adapter() {
+        getViewSite().getPage().addPartListener(new PartListener2Adapter() {
 
             @Override
             public void partHidden(final IWorkbenchPartReference partRef) {

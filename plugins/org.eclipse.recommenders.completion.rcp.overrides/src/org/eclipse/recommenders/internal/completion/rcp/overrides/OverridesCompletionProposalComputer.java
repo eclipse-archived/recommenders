@@ -33,6 +33,8 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
 import org.eclipse.recommenders.internal.analysis.codestructs.MethodDeclaration;
 import org.eclipse.recommenders.internal.analysis.codestructs.TypeDeclaration;
+import org.eclipse.recommenders.internal.completion.rcp.overrides.model.InstantOverridesRecommender;
+import org.eclipse.recommenders.internal.completion.rcp.overrides.model.OverridesRecommendation;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;

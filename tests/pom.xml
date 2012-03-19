@@ -46,8 +46,12 @@
 					</includes>
 					<!-- Kill test JVM if tests take more than 5 minutes (300 seconds) to finish -->
 					<forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
-					<argLine append="true" >${tycho.testArgLine}</argLine>
+					<argLine append="true">${tycho.testArgLine}</argLine>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.completion.rcp.overrides.net;
 import static org.eclipse.recommenders.utils.Checks.ensureIsGreaterOrEqualTo;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -55,14 +54,14 @@ public class ClassOverridesNetworkBuilder {
         network = new BayesNet();
     }
 
-    private void filterInfrequentOverridingPatterns() {
-        for (final Iterator<ClassOverridesObservation> it = overriddenMethods.iterator(); it.hasNext();) {
-            final ClassOverridesObservation next = it.next();
-            if (next.frequency < 5) {
-                it.remove();
-            }
-        }
-    }
+    // private void filterInfrequentOverridingPatterns() {
+    // for (final Iterator<ClassOverridesObservation> it = overriddenMethods.iterator(); it.hasNext();) {
+    // final ClassOverridesObservation next = it.next();
+    // if (next.frequency < 5) {
+    // it.remove();
+    // }
+    // }
+    // }
 
     private void computeTotalNumberOfSubtypes() {
         for (final ClassOverridesObservation usage : overriddenMethods) {
@@ -108,7 +107,6 @@ public class ClassOverridesNetworkBuilder {
     public void createMethodNodes() {
         final Set<IMethodName> methods = collectInvokedMethodsFromPatterns();
         methodNodes = Lists.newLinkedList();
-        final int i = 1;
         for (final IMethodName ref : methods) {
             final BayesNode methodNode = new BayesNode(ref.getIdentifier());
             network.addNode(methodNode);
