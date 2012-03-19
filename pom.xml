@@ -19,7 +19,7 @@
 	<packaging>pom</packaging>
 	<properties>
         <recommenders-version>0.5.2-SNAPSHOT</recommenders-version>
-		<tycho-version>0.14.0</tycho-version>
+		<tycho-version>0.14.1</tycho-version>
 		<jacoco-version>0.5.4.201111111111</jacoco-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<build-alias>b000</build-alias>
