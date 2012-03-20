@@ -19,14 +19,8 @@ import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.NewSelectionEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderActivationEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderDeactivationEvent;
-import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderDelayedEvent;
-import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderFailedEvent;
-import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderFinishedEvent;
-import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderFinishedLateEvent;
-import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderNotAvailableEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderOrderChangedEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderSelectionEvent;
-import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.Events.ProviderStartedEvent;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.OrderChangeHandler.OrderChangedListener;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocModule.Extdoc;
 import org.eclipse.swt.SWT;
@@ -46,17 +40,14 @@ public class ProviderOverviewPart {
 
     private final EventBus bus;
     private final List<ExtdocProvider> providers;
-    private final ExtdocIconLoader iconLoader;
 
     private Table table;
     private final Map<ExtdocProvider, TableItem> provider2item = Maps.newHashMap();
 
     @Inject
-    public ProviderOverviewPart(@Extdoc final EventBus bus, final List<ExtdocProvider> providers,
-            final ExtdocIconLoader iconLoader) {
+    public ProviderOverviewPart(@Extdoc final EventBus bus, final List<ExtdocProvider> providers) {
         this.bus = bus;
         this.providers = providers;
-        this.iconLoader = iconLoader;
     }
 
     public void createControl(final Composite parent) {
@@ -158,46 +149,46 @@ public class ProviderOverviewPart {
         });
     }
 
-    @Subscribe
-    public void onEvent(final ProviderNotAvailableEvent e) {
-        // final TableItem tableItem = provider2item.get(e.provider);
-        // tableItem.setImage(iconLoader.getImage(Icon.NOT_AVAILABLE));
-        // tableItem.setForeground(new Color(table.getDisplay(), 180, 180, 180));
-    }
-
-    @Subscribe
-    public void onEvent(final ProviderDeactivationEvent e) {
-        // final TableItem tableItem = provider2item.get(e.provider);
-        // tableItem.setImage(e.provider.getDescription().getImage());
-    }
-
-    @Subscribe
-    public void onEvent(final ProviderStartedEvent e) {
-        // final TableItem tableItem = provider2item.get(e.provider);
-        // tableItem.setImage(iconLoader.getImage(Icon.STARTED));
-    }
-
-    @Subscribe
-    public void onEvent(final ProviderFinishedEvent e) {
-        // final TableItem tableItem = provider2item.get(e.provider);
-        // tableItem.setImage(e.provider.getDescription().getImage());
-    }
-
-    @Subscribe
-    public void onEvent(final ProviderDelayedEvent e) {
-        // final TableItem tableItem = provider2item.get(e.provider);
-        // tableItem.setImage(iconLoader.getImage(Icon.DELAYED));
-    }
-
-    @Subscribe
-    public void onEvent(final ProviderFinishedLateEvent e) {
-        // final TableItem tableItem = provider2item.get(e.provider);
-        // tableItem.setImage(e.provider.getDescription().getImage());
-    }
-
-    @Subscribe
-    public void onEvent(final ProviderFailedEvent e) {
-        // final TableItem tableItem = provider2item.get(e.provider);
-        // tableItem.setImage(iconLoader.getImage(Icon.FAILED));
-    }
+    // @Subscribe
+    // public void onEvent(final ProviderNotAvailableEvent e) {
+    // // final TableItem tableItem = provider2item.get(e.provider);
+    // // tableItem.setImage(iconLoader.getImage(Icon.NOT_AVAILABLE));
+    // // tableItem.setForeground(new Color(table.getDisplay(), 180, 180, 180));
+    // }
+    //
+    // @Subscribe
+    // public void onEvent(final ProviderDeactivationEvent e) {
+    // // final TableItem tableItem = provider2item.get(e.provider);
+    // // tableItem.setImage(e.provider.getDescription().getImage());
+    // }
+    //
+    // @Subscribe
+    // public void onEvent(final ProviderStartedEvent e) {
+    // // final TableItem tableItem = provider2item.get(e.provider);
+    // // tableItem.setImage(iconLoader.getImage(Icon.STARTED));
+    // }
+    //
+    // @Subscribe
+    // public void onEvent(final ProviderFinishedEvent e) {
+    // // final TableItem tableItem = provider2item.get(e.provider);
+    // // tableItem.setImage(e.provider.getDescription().getImage());
+    // }
+    //
+    // @Subscribe
+    // public void onEvent(final ProviderDelayedEvent e) {
+    // // final TableItem tableItem = provider2item.get(e.provider);
+    // // tableItem.setImage(iconLoader.getImage(Icon.DELAYED));
+    // }
+    //
+    // @Subscribe
+    // public void onEvent(final ProviderFinishedLateEvent e) {
+    // // final TableItem tableItem = provider2item.get(e.provider);
+    // // tableItem.setImage(e.provider.getDescription().getImage());
+    // }
+    //
+    // @Subscribe
+    // public void onEvent(final ProviderFailedEvent e) {
+    // // final TableItem tableItem = provider2item.get(e.provider);
+    // // tableItem.setImage(iconLoader.getImage(Icon.FAILED));
+    // }
 }

@@ -170,6 +170,7 @@ public class ASTNodeUtils {
      * Returns the closes parent ASTnode of the given node-class. Returns the input node if the node already is of the
      * requested type.
      */
+    @SuppressWarnings("unchecked")
     public static <T extends ASTNode> Optional<T> getClosestParent(ASTNode node, final Class<T> nodeClass) {
 
         while (node != null) {

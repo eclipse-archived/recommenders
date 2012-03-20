@@ -147,8 +147,8 @@ public class SubwordsProposalContext {
         final Set<SourceRange> intersections = findIntersections(bigramHighlightRanges, regexHighlightRanges);
 
         setStyle(copy, bigramHighlightRanges, BIGRAMS_STYLER);
-        setStyle(copy, regexHighlightRanges, REGEX_STYLER);
-        setStyle(copy, intersections, COMPOUND_STYLER);
+        setStyle(copy, regexHighlightRanges, BIGRAMS_STYLER);
+        // setStyle(copy, intersections, COMPOUND_STYLER);
 
         return copy;
     }

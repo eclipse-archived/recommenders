@@ -61,6 +61,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.eventbus.EventBus;
 
+@SuppressWarnings("restriction")
 public class StaticHooksFinder extends ExtdocProvider {
 
     private final class HooksRendererRunnable implements Runnable {

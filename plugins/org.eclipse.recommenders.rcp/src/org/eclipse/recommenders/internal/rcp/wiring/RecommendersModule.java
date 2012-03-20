@@ -113,8 +113,9 @@ public class RecommendersModule extends AbstractModule implements Module {
         repo.mkdirs();
         bind(File.class).annotatedWith(LocalModelRepositoryLocation.class).toInstance(repo);
         bind(String.class).annotatedWith(RemoteModelRepositoryLocation.class).toInstance(
-        // "http://vandyk.st.informatik.tu-darmstadt.de/maven/"
-                "file:/Volumes/usb/maven/repository/");
+         "http://vandyk.st.informatik.tu-darmstadt.de/maven/"
+        // "file:/Volumes/usb/maven/repository/"
+                );
         bind(IModelRepository.class).to(ModelRepository.class).in(Scopes.SINGLETON);
 
         File index = new File(stateLocation, "index");

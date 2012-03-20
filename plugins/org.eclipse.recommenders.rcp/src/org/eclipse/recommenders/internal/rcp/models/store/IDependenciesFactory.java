@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchive;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
 
+@SuppressWarnings("rawtypes")
 public interface IDependenciesFactory {
 
     ModelArchiveResolutionJob newResolutionJob(ModelArchiveMetadata meta, String classifier);

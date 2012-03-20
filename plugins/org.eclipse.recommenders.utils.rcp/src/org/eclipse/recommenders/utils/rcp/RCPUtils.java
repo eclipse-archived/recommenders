@@ -17,6 +17,10 @@ import java.util.List;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 
 import com.google.common.base.Optional;
 
@@ -47,4 +51,16 @@ public class RCPUtils {
         return Optional.fromNullable(element);
     }
 
+    public static Optional<IWorkbenchPage> getActiveWorkbenchPage() {
+        final IWorkbench workbench = PlatformUI.getWorkbench();
+        if (workbench == null) {
+            return absent();
+        }
+        final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+        if (window == null) {
+            return absent();
+        }
+        final IWorkbenchPage page = window.getActivePage();
+        return of(page);
+    }
 }

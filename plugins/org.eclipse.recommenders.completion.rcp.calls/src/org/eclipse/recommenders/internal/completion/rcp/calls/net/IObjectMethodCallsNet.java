@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.eclipse.recommenders.internal.analysis.codestructs.DefinitionSite;
-import org.eclipse.recommenders.internal.analysis.codestructs.DefinitionSite.Kind;
-import org.eclipse.recommenders.internal.analysis.codestructs.ObjectUsage;
+import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite;
+import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
+import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;

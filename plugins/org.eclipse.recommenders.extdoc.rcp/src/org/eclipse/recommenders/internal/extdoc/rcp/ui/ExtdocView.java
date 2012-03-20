@@ -38,6 +38,7 @@ import com.google.inject.Inject;
 
 public class ExtdocView extends ViewPart {
 
+    public static final String ID = "org.eclipse.recommenders.extdoc.rcp.ExtdocView";
     private final EventBus workspaceBus;
     private final EventBus extdocBus;
     private final SubscriptionManager subscriptionManager;

@@ -103,7 +103,6 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
         if (reader == null) {
             return absent();
         }
-        IndexSearcher searcher = new IndexSearcher(reader);
         BooleanQuery query = new BooleanQuery();
         for (Term t : terms) {
             TermQuery q = new TermQuery(t);
@@ -112,7 +111,9 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
         }
 
         try {
+            IndexSearcher searcher = new IndexSearcher(reader);
             TopDocs matches = searcher.search(query, 5);
+            searcher.close();
             if (matches.totalHits == 0) {
                 return absent();
             }

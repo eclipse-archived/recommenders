@@ -24,7 +24,10 @@
 					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.chain/target/classes/" />
 					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.e38/target/classes/" />
 					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.overrides/target/classes/" />
-					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.subwords/target/classes/" />
+					<fileset dir="../plugins/org.eclipse.recommenders.completion.rcp.subwords/target/classes/">
+						<include name="**"/>
+						<exclude name="org/eclipse/recommenders/internal/completion/rcp/subwords/proposals/**"/>
+					</fileset>
 					<fileset dir="../plugins/org.eclipse.recommenders.extdoc.rcp/target/classes/" />
 					<fileset dir="../plugins/org.eclipse.recommenders.injection/target/classes/" />
 					<fileset dir="../plugins/org.eclipse.recommenders.jayes/target/classes/" />

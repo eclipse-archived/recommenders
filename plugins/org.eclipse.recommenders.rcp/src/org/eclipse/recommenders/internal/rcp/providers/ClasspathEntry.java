@@ -11,11 +11,9 @@
 package org.eclipse.recommenders.internal.rcp.providers;
 
 import java.io.File;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.recommenders.utils.Version;
 
 public class ClasspathEntry {
@@ -30,7 +28,6 @@ public class ClasspathEntry {
     public String name;
     public String fingerprint;
     public Version version;
-    public Set<TypeReference> types;
 
     @Override
     public String toString() {

@@ -8,12 +8,12 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.analysis.codestructs;
+package org.eclipse.recommenders.internal.utils.codestructs;
 
 import java.util.Date;
 import java.util.Set;
 
-import org.eclipse.recommenders.internal.analysis.codestructs.DefinitionSite.Kind;
+import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;

@@ -113,6 +113,7 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
         return fromNullable(pkgRoot);
     }
 
+    @SuppressWarnings("unchecked")
     private Optional<IModelArchive<K, V>> findModelArchive(File location) {
         ModelArchiveMetadata<K, V> meta = findOrCreateMetadata(location);
         switch (meta.getStatus()) {
@@ -122,6 +123,8 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
         case PROHIBITED:
         case UNINITIALIZED:
             return absent();
+        default:
+            // go ahead and load the archive...
         }
 
         if (isEmpty(meta.getCoordinate())) {

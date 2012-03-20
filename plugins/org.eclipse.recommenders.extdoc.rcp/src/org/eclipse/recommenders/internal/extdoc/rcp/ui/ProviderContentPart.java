@@ -233,10 +233,6 @@ public class ProviderContentPart {
         selectionStatus.setImage(labelProvider.getImage(element));
     }
 
-    private String stripHtml(final String text) {
-        return text.replaceAll("\\<.*?\\>", "");
-    }
-
     @Subscribe
     public void onEvent(final RenderNowEvent e) {
         Display.getDefault().asyncExec(new Runnable() {

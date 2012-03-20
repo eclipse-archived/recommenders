@@ -69,10 +69,7 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -155,12 +152,6 @@ public class JdtUtils {
         }
     };
 
-
-
-
-
-
-
     private static String createFieldKey(final IField field) {
         try {
             return field.getElementName() + field.getTypeSignature();
@@ -168,7 +159,6 @@ public class JdtUtils {
             throw throwUnhandledException(e);
         }
     }
-
 
     private static String createMethodKey(final IMethod method) {
         try {
@@ -365,7 +355,6 @@ public class JdtUtils {
         return res;
     }
 
-
     public static Optional<IMethod> findOverriddenMethod(final IMethod jdtMethod) {
         try {
             final IType jdtDeclaringType = jdtMethod.getDeclaringType();
@@ -486,21 +475,8 @@ public class JdtUtils {
         return fromNullable(root);
     }
 
-    public static Optional<IWorkbenchPage> getActiveWorkbenchPage() {
-        final IWorkbench workbench = PlatformUI.getWorkbench();
-        if (workbench == null) {
-            return absent();
-        }
-        final IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-        if (window == null) {
-            return absent();
-        }
-        final IWorkbenchPage page = window.getActivePage();
-        return of(page);
-    }
-
     public static Optional<JavaEditor> getActiveJavaEditor() {
-        final Optional<IWorkbenchPage> page = getActiveWorkbenchPage();
+        final Optional<IWorkbenchPage> page = RCPUtils.getActiveWorkbenchPage();
         if (page.isPresent()) {
             final IEditorPart editor = page.get().getActiveEditor();
             if (editor instanceof JavaEditor) {
@@ -509,12 +485,6 @@ public class JdtUtils {
         }
         return absent();
     }
-
-
-
-    
-
-
 
     public static boolean hasPrimitiveReturnType(final IMethod method) {
         try {
@@ -536,8 +506,6 @@ public class JdtUtils {
         return false;
     }
 
-
-
     public static boolean isVoid(final IMethod method) {
         try {
             return Signature.SIG_VOID.equals(method.getReturnType());
@@ -546,15 +514,9 @@ public class JdtUtils {
         }
     }
 
-
-
     public static void log(final Exception e) {
         RecommendersUtilsPlugin.logError(e, "Exception occurred.");
     }
-
-
-
-    
 
     public static Optional<IMethod> resolveMethod(@Nullable final MethodDeclaration node) {
         if (node == null) {
@@ -567,8 +529,6 @@ public class JdtUtils {
         final IMethod method = cast(b.getJavaElement());
         return Optional.fromNullable(method);
     }
-
-
 
     public static <T extends IJavaElement> T resolveJavaElementProxy(final IJavaElement element) {
         return (T) element.getPrimaryElement();
@@ -614,10 +574,6 @@ public class JdtUtils {
     private static boolean isPrimitiveTypeSignature(final String typeSignature) {
         return typeSignature.length() == 1;
     }
-
-
-
-   
 
     public static Optional<ASTNode> findAstNodeFromEditorSelection(final JavaEditor editor,
             final ITextSelection textSelection) {
