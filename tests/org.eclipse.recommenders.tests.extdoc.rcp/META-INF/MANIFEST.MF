@@ -9,5 +9,6 @@ Require-Bundle: org.junit4,
  org.mockito,
  org.objenesis,
  org.hamcrest,
- org.eclipse.equinox.ds
+ org.eclipse.equinox.ds,
+ org.eclipse.recommenders.tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
