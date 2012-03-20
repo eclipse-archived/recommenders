@@ -30,30 +30,23 @@ import java.util.LinkedHashMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.ITypeParameter;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.Signature;
-import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -63,40 +56,23 @@ import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.internal.core.LocalVariable;
 import org.eclipse.jdt.internal.core.util.Util;
 import org.eclipse.jdt.internal.corext.dom.NodeFinder;
-import org.eclipse.jdt.internal.corext.template.java.JavaContext;
-import org.eclipse.jdt.internal.corext.template.java.JavaContextType;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.internal.corext.util.MethodOverrideTester;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
-import org.eclipse.jdt.internal.ui.javaeditor.IClassFileEditorInput;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
-import org.eclipse.jdt.ui.IWorkingCopyManager;
-import org.eclipse.jdt.ui.SharedASTProvider;
-import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Region;
-import org.eclipse.jface.text.TextSelection;
-import org.eclipse.jface.text.templates.ContextTypeRegistry;
-import org.eclipse.jface.text.templates.TemplateContextType;
-import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.annotations.Nullable;
-import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
-import org.eclipse.recommenders.utils.rcp.ast.MethodDeclarationFinder;
-import org.eclipse.recommenders.utils.rcp.internal.MyWorkingCopyOwner;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.texteditor.ITextEditor;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -179,66 +155,11 @@ public class JdtUtils {
         }
     };
 
-    private static IJavaElement[] codeResolve(final ITypeRoot root, final ITextSelection selection) {
-        reconcileIfCompilationUnit(root);
-        try {
-            return root.codeSelect(selection.getOffset(), selection.getLength());
-        } catch (final Exception e) {
-            log(e);
-        }
-        return EMPTY_RESULT;
-    }
 
-    /**
-     * Finds and returns the Java elements for the given editor selection.
-     * 
-     * @param editor
-     *            the Java editor
-     * @param selection
-     *            the text selection
-     * @return the Java elements for the given editor selection
-     */
-    public static IJavaElement[] codeResolve(final JavaEditor editor, final ITextSelection selection) {
-        ensureIsNotNull(editor);
-        ensureIsNotNull(selection);
-        final Optional<ITypeRoot> input = getInput(editor);
-        if (input.isPresent()) {
-            return codeResolve(input.get(), selection);
-        }
-        return EMPTY_RESULT;
-    }
 
-    public static boolean containsErrors(final IType type) {
-        final ITypeRoot typeRoot = type.getTypeRoot();
-        final CompilationUnit ast = getAST(typeRoot, SharedASTProvider.WAIT_YES, null);
-        if (ast == null) {
-            return false;
-        }
-        final IProblem[] problems = ast.getProblems();
-        for (final IProblem problem : problems) {
-            if (problem.isError()) {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    public static CompilationUnit createCompilationUnitFromString(final ITypeName typeName, final String source,
-            final IJavaProject javaProject) {
-        final ASTParser parser = ASTParser.newParser(AST.JLS3);
-        parser.setKind(ASTParser.K_COMPILATION_UNIT);
-        parser.setSource(source.toCharArray());
-        parser.setResolveBindings(true);
-        // XXX does this hurt?
-        final String srcClassName = Names.vm2srcTypeName(typeName.getIdentifier());
-        parser.setUnitName(srcClassName + ".java");
-        parser.setProject(javaProject);
-        parser.setWorkingCopyOwner(new MyWorkingCopyOwner());
-        parser.setBindingsRecovery(true);
-        parser.setStatementsRecovery(true);
-        final ASTNode ast = parser.createAST(null);
-        return (CompilationUnit) ast;
-    }
+
+
 
     private static String createFieldKey(final IField field) {
         try {
@@ -248,15 +169,6 @@ public class JdtUtils {
         }
     }
 
-    public static JavaContext createJavaContext(final JavaContentAssistInvocationContext contentAssistContext) {
-        final ContextTypeRegistry templateContextRegistry = JavaPlugin.getDefault().getTemplateContextRegistry();
-        final TemplateContextType templateContextType = templateContextRegistry.getContextType(JavaContextType.ID_ALL);
-        final JavaContext javaTemplateContext = new JavaContext(templateContextType,
-                contentAssistContext.getDocument(), contentAssistContext.getInvocationOffset(), contentAssistContext
-                        .getCoreContext().getToken().length, contentAssistContext.getCompilationUnit());
-        javaTemplateContext.setForceEvaluation(true);
-        return javaTemplateContext;
-    }
 
     private static String createMethodKey(final IMethod method) {
         try {
@@ -453,9 +365,6 @@ public class JdtUtils {
         return res;
     }
 
-    public static Optional<MethodDeclaration> findMethod(final CompilationUnit cuNode, final IMethodName searchedMethod) {
-        return MethodDeclarationFinder.find(cuNode, searchedMethod);
-    }
 
     public static Optional<IMethod> findOverriddenMethod(final IMethod jdtMethod) {
         try {
@@ -528,6 +437,10 @@ public class JdtUtils {
         }
     }
 
+    private static String toVMTypeDescriptor(final String fqjdtName) {
+        return fqjdtName == null ? "Ljava/lang/Object" : "L" + fqjdtName.replace('.', '/');
+    }
+
     public static Optional<IType> findSuperclass(final IType type) {
         ensureIsNotNull(type);
         try {
@@ -597,63 +510,11 @@ public class JdtUtils {
         return absent();
     }
 
-    private static Optional<IJavaElement> getElementAtOffset(final ITypeRoot input, final ITextSelection selection) {
-        IJavaElement res = null;
-        try {
-            final ITypeRoot root = input;
-            reconcileIfCompilationUnit(root);
-            res = root.getElementAt(selection.getOffset());
-        } catch (final Exception e) {
-            log(e);
-        }
-        if (res == null) {
-            res = input;
-        }
-        return of(res);
-    }
 
-    /**
-     * Finds and returns the Java element that contains the text selection in the given editor.
-     * 
-     * @param editor
-     *            the Java editor
-     * @param selection
-     *            the text selection
-     * @return the Java elements for the given editor selection
-     */
-    public static Optional<IJavaElement> getElementAtOffset(final JavaEditor editor, final ITextSelection selection) {
-        final Optional<ITypeRoot> input = getInput(editor);
-        if (input.isPresent()) {
-            return getElementAtOffset(input.get(), selection);
-        }
-        return absent();
-    }
 
-    private static Optional<ITypeRoot> getInput(final JavaEditor editor) {
-        ITypeRoot res;
+    
 
-        final IEditorInput input = editor.getEditorInput();
-        if (input instanceof IClassFileEditorInput) {
-            final IClassFileEditorInput classfileInput = (IClassFileEditorInput) input;
-            res = classfileInput.getClassFile();
-        } else {
-            final IWorkingCopyManager manager = JavaPlugin.getDefault().getWorkingCopyManager();
-            res = manager.getWorkingCopy(input);
-        }
-        return fromNullable(res);
-    }
 
-    public static IPackageFragmentRoot getPackageFragmentRoot(final IPackageFragment packageFragment) {
-        return (IPackageFragmentRoot) packageFragment.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
-    }
-
-    public static ITextSelection getTextSelection(final ITextEditor editor) {
-        if (editor == null) {
-            return new TextSelection(0, 0);
-        } else {
-            return (TextSelection) editor.getSelectionProvider().getSelection();
-        }
-    }
 
     public static boolean hasPrimitiveReturnType(final IMethod method) {
         try {
@@ -675,13 +536,7 @@ public class JdtUtils {
         return false;
     }
 
-    public static boolean isJavaClass(final IType type) {
-        try {
-            return type.isClass();
-        } catch (final Exception e) {
-            throw throwUnhandledException(e);
-        }
-    }
+
 
     public static boolean isVoid(final IMethod method) {
         try {
@@ -691,46 +546,15 @@ public class JdtUtils {
         }
     }
 
-    private static void log(final CoreException e) {
-        RecommendersUtilsPlugin.log(e);
-    }
+
 
     public static void log(final Exception e) {
         RecommendersUtilsPlugin.logError(e, "Exception occurred.");
     }
 
-    public static Optional<JavaEditor> openJavaEditor(final IEditorInput input) {
-        final Optional<IWorkbenchPage> oPage = getActiveWorkbenchPage();
-        if (!oPage.isPresent()) {
-            return absent();
-        }
-        final IWorkbenchPage page = oPage.get();
-        final IEditorPart editor = page.findEditor(input);
-        if (editor instanceof JavaEditor) {
-            page.bringToTop(editor);
-            return of((JavaEditor) editor);
-        } else {
-            try {
-                return fromNullable((JavaEditor) page.openEditor(input, "org.eclipse.jdt.ui.CompilationUnitEditor"));
-            } catch (final PartInitException e) {
-                log(e);
-                return absent();
-            }
-        }
-    }
 
-    private static void reconcileIfCompilationUnit(final IJavaElement element) {
-        if (element instanceof ICompilationUnit) {
-            final ICompilationUnit cunit = (ICompilationUnit) element;
-            if (cunit.isWorkingCopy()) {
-                try {
-                    JavaModelUtil.reconcile(cunit);
-                } catch (final Exception e) {
-                    log(e);
-                }
-            }
-        }
-    }
+
+    
 
     public static Optional<IMethod> resolveMethod(@Nullable final MethodDeclaration node) {
         if (node == null) {
@@ -744,19 +568,7 @@ public class JdtUtils {
         return Optional.fromNullable(method);
     }
 
-    public static Optional<ASTNode> resolveDeclarationNode(final JavaEditor editor) {
-        final ITypeRoot root = EditorUtility.getEditorInputJavaElement(editor, true);
-        if (root == null) {
-            return Optional.absent();
-        }
-        final CompilationUnit cuNode = getAST(root, SharedASTProvider.WAIT_YES, null);
-        if (cuNode == null) {
-            return absent();
-        }
-        final ITextSelection selection = getTextSelection(editor);
-        final ASTNode activeDeclarationNode = findClosestMethodOrTypeDeclarationAroundOffset(cuNode, selection);
-        return fromNullable(activeDeclarationNode);
-    }
+
 
     public static <T extends IJavaElement> T resolveJavaElementProxy(final IJavaElement element) {
         return (T) element.getPrimaryElement();
@@ -803,17 +615,9 @@ public class JdtUtils {
         return typeSignature.length() == 1;
     }
 
-    public static void revealInEditor(final IEditorPart editor, final MethodDeclaration method) {
-        EditorUtility.revealInEditor(editor, createRegion(method.getName()));
-    }
 
-    public static void revealInEditor(final IEditorPart editor, final TypeDeclaration type) {
-        EditorUtility.revealInEditor(editor, createRegion(type.getName()));
-    }
 
-    private static String toVMTypeDescriptor(final String fqjdtName) {
-        return fqjdtName == null ? "Ljava/lang/Object" : "L" + fqjdtName.replace('.', '/');
-    }
+   
 
     public static Optional<ASTNode> findAstNodeFromEditorSelection(final JavaEditor editor,
             final ITextSelection textSelection) {
