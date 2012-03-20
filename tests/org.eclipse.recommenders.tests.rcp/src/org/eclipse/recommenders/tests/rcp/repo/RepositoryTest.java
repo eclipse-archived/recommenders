@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.recommenders.internal.rcp.repo.ModelRepository;
 import org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
@@ -93,6 +94,7 @@ public class RepositoryTest {
     }
 
     @Test
+    @Ignore
     public void repoPhases() throws Exception {
         // check not available on startup
         File location = sut.location(SWT_37_CALLS);
@@ -131,6 +133,7 @@ public class RepositoryTest {
     }
 
     @Test
+    @Ignore
     public void repoSmoketest() {
         sut.toString();
         sut.findHigestVersion(SWT_37_CALLS);
