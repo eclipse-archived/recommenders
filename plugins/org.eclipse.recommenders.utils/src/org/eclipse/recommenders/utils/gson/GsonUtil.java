@@ -45,8 +45,12 @@ import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class GsonUtil {
+    public static final Type T_LIST_STRING = new TypeToken<List<String>>() {
+    }.getType();
+
     private static Gson gson;
 
     public static synchronized Gson getInstance() {

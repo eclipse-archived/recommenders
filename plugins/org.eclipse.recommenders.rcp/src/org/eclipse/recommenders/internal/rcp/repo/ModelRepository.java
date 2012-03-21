@@ -56,6 +56,7 @@ import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
 import org.sonatype.aether.util.DefaultRepositorySystemSession;
 import org.sonatype.aether.version.Version;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -104,7 +105,8 @@ public class ModelRepository implements IModelRepository {
         return remoteEtag.equals(localEtag);
     }
 
-    private Optional<String> remoteEtag(Artifact artifact) {
+    @VisibleForTesting
+    public Optional<String> remoteEtag(Artifact artifact) {
 
         try {
             String remoteBaseurl = StringUtils.removeEnd(remote.getUrl(), "/");
@@ -299,5 +301,9 @@ public class ModelRepository implements IModelRepository {
         public DependencySelector deriveChildSelector(DependencyCollectionContext c) {
             return this;
         }
+    }
+
+    public String getRemote() {
+        return remote.getUrl();
     }
 }

@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils.newArti
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
 
@@ -97,6 +100,24 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
         Term t2 = new Term(F_CLASSIFIER, classifier);
 
         return findByTerm(classifier, t1, t2);
+    }
+
+    public List<Artifact> searchByClassifier(String classifier) {
+        List<Artifact> res = Lists.newLinkedList();
+        try {
+            Term t = new Term(F_CLASSIFIER, classifier);
+            IndexSearcher searcher = new IndexSearcher(reader);
+            TopDocs matches = searcher.search(new TermQuery(t), Integer.MAX_VALUE);
+            searcher.close();
+            for (ScoreDoc doc : matches.scoreDocs) {
+                String value = reader.document(doc.doc).get(F_COORDINATE);
+                if (value != null)
+                    res.add(newArtifact(value));
+            }
+        } catch (Exception e) {
+            log.error("Searching index failed with exception", e);
+        }
+        return res;
     }
 
     private Optional<Artifact> findByTerm(String classifier, Term... terms) {
