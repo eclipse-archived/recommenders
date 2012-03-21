@@ -110,7 +110,7 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
             TopDocs matches = searcher.search(new TermQuery(t), Integer.MAX_VALUE);
             searcher.close();
             for (ScoreDoc doc : matches.scoreDocs) {
-                String value = reader.document(doc.doc).get(F_COORDINATE);
+                String value = reader.document(doc.doc).get(classifier);
                 if (value != null)
                     res.add(newArtifact(value));
             }
