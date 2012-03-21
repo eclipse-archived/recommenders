@@ -78,6 +78,11 @@ public class Zips {
         return suffix == null ? name : name + suffix;
     }
 
+    public static VmTypeName toType(ZipEntry entry, @Nullable String suffix) {
+        String name = StringUtils.removeEnd(entry.getName(), suffix);
+        return VmTypeName.get("L" + name);
+    }
+
     public static ITypeName type(ZipEntry e, String suffix) {
         String name = "L" + StringUtils.substringBefore(e.getName(), suffix);
         return VmTypeName.get(name);

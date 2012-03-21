@@ -32,8 +32,8 @@ import java.util.TreeSet;
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite;
-import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
+import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
@@ -202,11 +202,9 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
             final boolean isAlreadyUsedAsEvidence = junctionTreeAlgorithm.getEvidence().containsKey(bayesNode);
             if (!isAlreadyUsedAsEvidence) {
-
                 final int indexForTrue = bayesNode.getOutcomeIndex(STATE_TRUE);
                 final double[] probabilities = junctionTreeAlgorithm.getBeliefs(bayesNode);
                 final double probability = probabilities[indexForTrue];
-
                 if (probability >= minProbabilityThreshold) {
                     res.add(Tuple.newTuple(method, probability));
                 }

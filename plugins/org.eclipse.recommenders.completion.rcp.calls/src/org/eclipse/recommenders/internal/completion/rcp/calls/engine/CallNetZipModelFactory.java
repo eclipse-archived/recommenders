@@ -42,7 +42,7 @@ public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObje
 
     private ZipEntry getEntry(IType jType) {
         ITypeName rType = toRecName(jType);
-        String name = rType.getIdentifier().replaceAll("/", ".") + ".data";
+        String name = rType.getIdentifier().substring(1) + ".data";
         return zip.getEntry(name);
     }
 

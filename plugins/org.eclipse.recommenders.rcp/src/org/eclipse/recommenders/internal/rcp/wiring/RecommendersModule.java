@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -79,6 +79,7 @@ public class RecommendersModule extends AbstractModule implements Module {
         configureAstProvider();
         bindRepository();
         initalizeSingletonServices();
+
     }
 
     @Singleton
@@ -106,15 +107,19 @@ public class RecommendersModule extends AbstractModule implements Module {
     }
 
     private void bindRepository() {
+        bind(RepositoryUrlChangeListener.class).asEagerSingleton();
+
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         File stateLocation = Platform.getStateLocation(bundle).toFile();
 
         File repo = new File(stateLocation, "repo");
         repo.mkdirs();
+        String url = RecommendersPlugin.getDefault().getPreferenceStore()
+                .getString(RecommendersPlugin.P_REPOSITORY_URL);
         bind(File.class).annotatedWith(LocalModelRepositoryLocation.class).toInstance(repo);
-        bind(String.class).annotatedWith(RemoteModelRepositoryLocation.class).toInstance(
-         "http://vandyk.st.informatik.tu-darmstadt.de/maven/"
-        // "file:/Volumes/usb/maven/repository/"
+        bind(String.class).annotatedWith(RemoteModelRepositoryLocation.class).toInstance(url
+        // "file:/Volumes/usb/juno/m2/"
+        //
                 );
         bind(IModelRepository.class).to(ModelRepository.class).in(Scopes.SINGLETON);
 

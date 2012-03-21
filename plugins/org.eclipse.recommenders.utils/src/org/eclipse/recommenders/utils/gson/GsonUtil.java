@@ -25,6 +25,9 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Throws;
@@ -35,7 +38,11 @@ import org.eclipse.recommenders.utils.names.VmFieldName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.io.Closeables;
+import com.google.common.io.Files;
+import com.google.common.io.InputSupplier;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -126,5 +133,26 @@ public class GsonUtil {
         } finally {
             IOUtils.closeQuietly(fw);
         }
+    }
+
+    public static <T> List<T> deserializeZip(File zip, Class<T> classOfT) throws IOException {
+
+        List<T> res = Lists.newLinkedList();
+        ZipInputStream zis = null;
+        try {
+            InputSupplier<FileInputStream> fis = Files.newInputStreamSupplier(zip);
+            zis = new ZipInputStream(fis.getInput());
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (!entry.isDirectory()) {
+                    final InputStreamReader reader = new InputStreamReader(zis);
+                    final T data = getInstance().fromJson(reader, classOfT);
+                    res.add(data);
+                }
+            }
+        } finally {
+            Closeables.closeQuietly(zis);
+        }
+        return res;
     }
 }

@@ -12,14 +12,13 @@ package org.eclipse.recommenders.internal.utils.codestructs;
 
 import java.util.Set;
 
+import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
+import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.collect.Sets;
 
 public class ObjectInstanceKey {
-    public static enum Kind {
-        LOCAL, FIELD, PARAMETER, RETURN
-    }
 
     public static ObjectInstanceKey create(final ITypeName varType, final Kind kind) {
         final ObjectInstanceKey recValue = new ObjectInstanceKey();
@@ -36,6 +35,15 @@ public class ObjectInstanceKey {
 
     public DefinitionSite definitionSite;
 
+    public Set<IMethodName> calls;
 
+    public boolean isThis() {
+
+        return kind == Kind.THIS;
+    }
+
+    public Set<IMethodName> getInvokedMethods() {
+        return calls;
+    }
 
 }

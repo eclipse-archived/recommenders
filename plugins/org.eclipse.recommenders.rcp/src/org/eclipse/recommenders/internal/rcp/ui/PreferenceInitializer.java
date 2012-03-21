@@ -19,7 +19,7 @@ import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static final String SERVER_URL = "http://vandyk.st.informatik.tu-darmstadt.de/maven";
+    private static final String SERVER_URL = "http://vandyk.st.informatik.tu-darmstadt.de/juno";
 
     @Override
     public void initializeDefaultPreferences() {

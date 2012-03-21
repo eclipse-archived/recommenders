@@ -13,7 +13,7 @@ import org.junit.Test
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.completion.rcp.calls.ContextAnalyzerTest.*
-import org.eclipse.recommenders.internal.analysis.codestructs.ObjectUsage
+import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage
  
 class ContextAnalyzerTest { 
 

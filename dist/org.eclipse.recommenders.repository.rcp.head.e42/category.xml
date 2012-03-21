@@ -30,7 +30,7 @@
       <category name="sources"/>
    </feature>
    <feature url="features/org.eclipse.recommenders.feature.rcp.core.source_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.rcp.core.source" version="0.5.1.qualifier">
-      <category name="main"/>
+      <category name="sources"/>
    </feature>
    <category-def name="sources" label="Code Recommenders - Eclipse 4.2 Sources"/>
    <category-def name="main" label="Code Recommenders - Eclipse 4.2"/>

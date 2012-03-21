@@ -49,6 +49,7 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
+import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.internal.utils.codestructs.Variable;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
@@ -71,7 +72,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private static final int BASIS_RELEVANCE = 935;
 
     // private static final int MAX_NUM_PROPOSALS = 5;
-    private static final double MIN_PROBABILITY_THRESHOLD = 0.1d;
+    private static final double MIN_PROBABILITY_THRESHOLD = 0.01d;
 
     @SuppressWarnings("serial")
     private final Set<Class<?>> supportedCompletionRequests = new HashSet<Class<?>>() {
@@ -190,7 +191,19 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         setCalls();
         setReceiverType();
         setFirstMethodDeclaration();
+        setDefinition();
         return true;
+    }
+
+    private void setDefinition() {
+        if (query.definition.equals(ObjectUsage.UNKNOWN_METHOD)) {
+            Optional<IMethodName> methodDef = ctx.getMethodDef();
+            if (methodDef.isPresent()) {
+                query.definition = methodDef.get();
+            }
+        } else if (query.definition != null && query.kind == Kind.PARAMETER) {
+            query.definition = query.contextFirst;
+        }
     }
 
     private void setFirstMethodDeclaration() {
@@ -221,6 +234,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
                     query.kind = usage.kind;
                 }
                 if (usage.definition != null) {
+                    query.definition = usage.definition;
                     final Optional<IMethodName> def = ctx.getMethodDef();
                     if (def.isPresent()) {
                         query.definition = def.get();

@@ -19,11 +19,11 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.webclient.ClientConfiguration;
 
-public class ClientConfigurationPreferenceListener implements IPropertyChangeListener {
+public class RepositoryUrlPreferenceListener implements IPropertyChangeListener {
 
     private final ClientConfiguration config;
 
-    public ClientConfigurationPreferenceListener(final ClientConfiguration config, final IPreferenceStore store) {
+    public RepositoryUrlPreferenceListener(final ClientConfiguration config, final IPreferenceStore store) {
         this.config = config;
 
         final String host = store.getString(PreferenceConstants.WEBSERVICE_HOST);

@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
 import static org.apache.commons.lang3.StringUtils.getCommonPrefix;
+import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.matchesPrefixPattern;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Collection;
@@ -35,6 +36,17 @@ import com.google.common.collect.Sets;
 
 public class SubwordsProposalContext {
 
+    public static boolean isMatch(String prefix, String proposalText) {
+        if (proposalText.isEmpty()) {
+            return true;
+        } else if (matchesPrefixPattern(prefix, proposalText)) {
+            return true;
+        } else if (matchesPrefixPattern(prefix.toLowerCase(), proposalText)) {
+            return true;
+        }
+        return false;
+    }
+
     public static final int PREFIX_BONUS = 5000;
 
     private static Styler BIGRAMS_STYLER = new Styler() {
@@ -44,22 +56,22 @@ public class SubwordsProposalContext {
         }
     };
 
-    private static Styler REGEX_STYLER = new Styler() {
+    // private static Styler REGEX_STYLER = new Styler() {
+    //
+    // @Override
+    // public void applyStyles(final TextStyle textStyle) {
+    // textStyle.underline = true;
+    // }
+    // };
 
-        @Override
-        public void applyStyles(final TextStyle textStyle) {
-            textStyle.underline = true;
-        }
-    };
-
-    private static Styler COMPOUND_STYLER = new Styler() {
-
-        @Override
-        public void applyStyles(final TextStyle textStyle) {
-            BIGRAMS_STYLER.applyStyles(textStyle);
-            REGEX_STYLER.applyStyles(textStyle);
-        }
-    };
+    // private static Styler COMPOUND_STYLER = new Styler() {
+    //
+    // @Override
+    // public void applyStyles(final TextStyle textStyle) {
+    // BIGRAMS_STYLER.applyStyles(textStyle);
+    // REGEX_STYLER.applyStyles(textStyle);
+    // }
+    // };
 
     private String prefix;
     private final String subwordsMatchingRegion;
@@ -115,7 +127,8 @@ public class SubwordsProposalContext {
     }
 
     public boolean isRegexMatch() {
-        return createMatcher().matches();// ||
+        return isMatch(prefix, subwordsMatchingRegion);
+        // createMatcher().matches();// ||
                                          // passesLevenshteinDistanceFilter();
     }
 

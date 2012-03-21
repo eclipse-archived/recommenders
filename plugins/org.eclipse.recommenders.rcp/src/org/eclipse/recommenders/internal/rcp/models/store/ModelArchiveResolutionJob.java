@@ -30,6 +30,8 @@ import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
 import org.eclipse.recommenders.utils.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
 
 import com.google.common.base.Optional;
@@ -39,6 +41,7 @@ import com.google.inject.assistedinject.Assisted;
 @SuppressWarnings("rawtypes")
 public class ModelArchiveResolutionJob extends Job {
 
+    private Logger log = LoggerFactory.getLogger(getClass());
     private final ModelArchiveMetadata metadata;
     private final IClasspathEntryInfoProvider cpeInfos;
     private final IModelRepository repository;
@@ -65,7 +68,7 @@ public class ModelArchiveResolutionJob extends Job {
 
         monitor.beginTask("Model requested for " + metadata.getLocation().getName(), 4);
         monitor.worked(1);
-        metadata.setStatus(ModelArchiveResolutionStatus.FAILED);
+        metadata.setStatus(ModelArchiveResolutionStatus.UNRESOLVED);
         try {
             monitor.subTask("Looking up available models in index...");
             pkgRoot = metadata.getLocation();
@@ -137,6 +140,10 @@ public class ModelArchiveResolutionJob extends Job {
 
         query = artifact.setVersion("[" + upperBound + ",)");
         match = repository.findLowestVersion(query);
+        if (!match.isPresent()) {
+            log.warn("using hard-wired model coordinate known at indexing time {}.", artifact);
+            match = Optional.of(artifact);
+        }
         return match;
     }
 }

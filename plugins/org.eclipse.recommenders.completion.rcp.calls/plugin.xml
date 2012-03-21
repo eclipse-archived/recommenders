@@ -12,7 +12,7 @@
          name="Code Recommenders Calls Proposals"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <javaCompletionProposalComputer
-            activate="true"
+            activate="false"
             categoryId="org.eclipse.recommenders.rcp.category.completion"
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallsCompletionProposalComputer">
       </javaCompletionProposalComputer>

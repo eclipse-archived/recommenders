@@ -48,7 +48,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -64,7 +63,6 @@ public class CallsPreferencePage extends PreferencePage implements IWorkbenchPre
     private final SectionsFactory factory;
     private ClasspathEntryInfoSection cpeInfoDetailsSection;
     private ModelDetailsSection callModelDetailsSection;
-    private Text webserviceBaseurl;
 
     @Inject
     public CallsPreferencePage(SectionsFactory factory, IClasspathEntryInfoProvider cpeInfoProvider,
