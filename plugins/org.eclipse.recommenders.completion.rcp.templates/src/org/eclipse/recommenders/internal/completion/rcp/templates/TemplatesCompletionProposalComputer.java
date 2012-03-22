@@ -161,14 +161,16 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
 
             double sum = 0.0d;
 
-            DefinitionSite.Kind[] values = { DefinitionSite.Kind.NEW, DefinitionSite.Kind.METHOD_RETURN };
+            DefinitionSite.Kind[] values = { DefinitionSite.Kind.NEW };
 
             for (DefinitionSite.Kind k : values) {
                 query.kind = k;
                 net.setQuery(query);
-                for (Tuple<String, Double> p : getMostLikelyPatternsSortedByProbability(net)) {
+                List<Tuple<String, Double>> callgroups = getMostLikelyPatternsSortedByProbability(net);
+                for (Tuple<String, Double> p : callgroups) {
                     String patternId = p.getFirst();
-                    for (DefinitionSite def : net.getDefinitions()) {
+                    net.setPattern(patternId);
+                    for (Tuple<String, Double> def : net.getDefinitions()) {
                         double prob = p.getSecond();
                         if (prob < 0.05) {
                             break;
@@ -183,7 +185,11 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
                         for (final Tuple<IMethodName, Double> pair : rec) {
                             calls.add(pair.getFirst());
                         }
-                        System.out.printf("%3.3f %s\n", prob, calls);
+
+                        System.out.printf("%3.3f def:%s calls:\n", prob, def);
+                        for (IMethodName call : calls) {
+                            System.out.printf("\t%s\n", call);
+                        }
                         continue;
                     }
                 }

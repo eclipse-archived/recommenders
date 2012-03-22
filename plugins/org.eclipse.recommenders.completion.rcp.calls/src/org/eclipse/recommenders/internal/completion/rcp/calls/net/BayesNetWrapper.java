@@ -19,7 +19,6 @@ import static org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage.UN
 import static org.eclipse.recommenders.utils.Checks.ensureEquals;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -321,7 +320,8 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
     }
 
     @Override
-    public Set<DefinitionSite> getDefinitions() {
+    public Set<Tuple<String, Double>> getDefinitions() {
+        Set<Tuple<String, Double>> res = Sets.newHashSet();
         double[] beliefs = junctionTreeAlgorithm.getBeliefs(definitionNode);
         for (int i = definitionNode.getOutcomeCount(); i-- > 0;) {
             if (beliefs[i] > 0.05) {
@@ -329,10 +329,12 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
                 if (outcomeName.equals("LNone.none()V")) {
                     continue;
                 }
-                System.err.println(outcomeName);
-                ;
+                if (outcomeName.equals(ObjectUsage.UNKNOWN_METHOD.getIdentifier())) {
+                    continue;
+                }
+                res.add(Tuple.newTuple(outcomeName, beliefs[i]));
             }
         }
-        return Collections.emptySet();
+        return res;
     }
 }
