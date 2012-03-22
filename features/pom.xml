@@ -31,7 +31,7 @@
 		<module>org.eclipse.recommenders.feature.extdoc.rcp.source</module>
         <module>org.eclipse.recommenders.feature.3rd.orbit</module>
         <module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>
-
+        <module>org.eclipse.recommenders.feature.3rd.rcp.nonjuno</module>
 	</modules>
 
 	<build>

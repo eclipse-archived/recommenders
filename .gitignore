@@ -16,3 +16,6 @@ aggregators/
 *#
 *.licensed
 *.aux
+
+/plugins/org.eclipse.recommenders.mining/
+/tests/org.eclipse.recommenders.tests.mining/
