@@ -24,6 +24,7 @@ import java.util.List;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
@@ -43,6 +44,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.ThisExpression;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
@@ -67,6 +69,16 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
             registerMethodCallOnReceiver(b);
         }
         return true;
+    }
+
+    @Override
+    public boolean visit(AnonymousClassDeclaration node) {
+        return false;
+    }
+
+    @Override
+    public boolean visit(TypeDeclaration node) {
+        return false;
     }
 
     private boolean receiverExpressionMatchesVarname(@Nullable final Expression exp) {
@@ -204,7 +216,7 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
             // some alias thing...
             // it might be that we found an assignment before and this simpleName is just "$missing". Then ignore this
             if (res.kind == null)
-            res.kind = Kind.UNKNOWN;
+                res.kind = Kind.UNKNOWN;
             break;
         default:
             break;

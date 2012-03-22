@@ -37,14 +37,11 @@ import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
-import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.eclipse.jface.text.contentassist.ICompletionProposalExtension2;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
@@ -342,32 +339,5 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     @Override
     public void sessionEnded() {
-    }
-
-    private final class SeparatorProposal extends JavaCompletionProposal {
-        private SeparatorProposal(final int replacementOffset) {
-            super("", replacementOffset, 0, null, "--------------", BASIS_RELEVANCE);
-        }
-
-        @Override
-        protected boolean isPrefix(final String prefix, final String string) {
-            // remove this proposal as soon as none of our proposal can be
-            // applied anymore:
-            for (final ICompletionProposal p : proposals) {
-                // skip me myself
-                if (p == this) {
-                    continue;
-                }
-                if (p instanceof ICompletionProposalExtension2) {
-                    final ICompletionProposalExtension2 p2 = (ICompletionProposalExtension2) p;
-                    final IDocument doc = javaContext.getDocument();
-                    final int newOffset = javaContext.getInvocationOffset() + prefix.length();
-                    if (p2.validate(doc, newOffset, null)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
     }
 }

@@ -7,7 +7,10 @@ import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite$Kind
 import org.eclipse.recommenders.tests.CodeBuilder
 import org.junit.Test
 
-import static junit.framework.Assert.* 
+import static junit.framework.Assert.*
+import org.eclipse.recommenders.utils.names.IMethodName
+import java.util.Set
+import com.google.common.collect.Sets 
 class QueryTest { 
   
 
@@ -47,6 +50,38 @@ class QueryTest {
 		verifyDefinition(DefinitionSite$Kind::FIELD)		
 	}
 
+
+
+	@Test
+	def testFindCalls01(){
+		code = CodeBuilder::method('''
+        Object o = null;
+        o.equals(new Object() {
+            public boolean equals(Object obj) {
+                o.hashCode();
+                return false;
+            }
+        });
+        o.$
+        }
+		''')
+		exercise()
+		verifyCalls(newHashSet("equals"))
+	}
+
+	@Test
+	def testFindCalls02(){
+		code = CodeBuilder::method('''
+        Object o = null;
+        o.equals();
+        Object o2 = null;
+        o2.hashCode();
+        o.$
+        }
+		''')
+		exercise()
+		verifyCalls(newHashSet("equals"))
+	}
 	
 	@Test
 	def testDefThis01(){
@@ -77,6 +112,16 @@ class QueryTest {
 	}
 	
 	
+	@Test
+	def testDefThis05(){
+		code = CodeBuilder::classbody('''
+		public boolean equals(Object o){
+			boolean res = super.equals(o);
+			this.hash$
+		}''')
+		exercise()
+		verifyDefinition(DefinitionSite$Kind::THIS)		
+	}
 	
 	def exercise(){
 		val actual = CallCompletionProposalComputerSmokeTest::exercise(code)
@@ -87,4 +132,14 @@ class QueryTest {
 	def verifyDefinition(DefinitionSite$Kind kind){
 		assertEquals(kind, sut.query.kind)
 	}
+	
+	
+	def verifyCalls(Set<String> expected){
+		val actual = newHashSet()
+		actual.addAll(sut.query.calls.map( e | e.name))
+		assertEquals(expected, actual)
+	}
+					
+	
+	
 }

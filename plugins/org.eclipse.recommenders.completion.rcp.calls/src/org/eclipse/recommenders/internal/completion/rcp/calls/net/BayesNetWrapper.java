@@ -66,7 +66,6 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     private void initializeNetwork(final BayesianNetwork network) {
         bayesNet = new BayesNet();
-
         initializeNodes(network);
         initializeArcs(network);
         initializeProbabilities(network);
@@ -179,7 +178,8 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         clearEvidence();
         setMethodContext(query.contextFirst);
         setKind(query.kind);
-        setDefinition(query.definition);
+        if (query.definition != null && !query.definition.equals(ObjectUsage.UNKNOWN_METHOD))
+            setDefinition(query.definition);
         setObservedMethodCalls(query.type, query.calls);
     }
 

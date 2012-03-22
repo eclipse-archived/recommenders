@@ -10,25 +10,22 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.overrides;
 
+import static java.lang.Math.rint;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
-import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.Signature;
-import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
-import org.eclipse.jdt.internal.ui.text.java.MethodProposalInfo;
-import org.eclipse.jdt.internal.ui.text.java.OverrideCompletionProposal;
-import org.eclipse.jdt.ui.text.java.CompletionProposalLabelProvider;
+import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
-import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.model.InstantOverridesRecommender;
@@ -131,68 +128,32 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
     private void computeProposals() {
         proposals = Lists.newLinkedList();
         final String prefix = ctx.getPrefix();
-        for (final OverridesRecommendation r : recommendations) {
-            if (!r.method.getName().startsWith(prefix)) {
-                continue;
-            }
+        for (Entry<IJavaCompletionProposal, CompletionProposal> pair : ctx.getProposals().entrySet()) {
+            IJavaCompletionProposal uiProposal = pair.getKey();
+            CompletionProposal cProposal = pair.getValue();
+            switch (cProposal.getKind()) {
+            case CompletionProposal.METHOD_DECLARATION:
+                final String signature = String.valueOf(cProposal.getSignature()).replace('.', '/');
+                final String name = String.valueOf(cProposal.getName());
+                final String propSignature = (name + signature).replaceAll("<\\.>", "");
+                for (final OverridesRecommendation r : recommendations) {
+                    if (!r.method.getName().startsWith(prefix)) {
+                        continue;
+                    }
 
-            final Optional<IMethod> optMethod = jdtCache.toJdtMethod(r.method);
-            if (!optMethod.isPresent()) {
-                continue;
-            }
-            final IMethod method = optMethod.get();
-
-            final int start = ctx.getInvocationOffset() - prefix.length();
-            final int end = ctx.getInvocationOffset();
-            final CompletionProposal proposal = JdtUtils.createProposal(method, CompletionProposal.METHOD_DECLARATION,
-                    start, end, end);
-
-            final StringBuffer sb = new StringBuffer();
-            try {
-                sb.append(Flags.toString(method.getFlags()));
-                sb.append(" ");
-                sb.append(Signature.getSignatureSimpleName(method.getReturnType()));
-                sb.append(" ");
-                sb.append(method.getElementName());
-                sb.append("(");
-                final String[] parameterTypes = method.getParameterTypes();
-                for (final String param : parameterTypes) {
-                    final String name = Signature.getSignatureSimpleName(param);
-                    sb.append(name);
-                    sb.append(" %, ");
+                    final String recSignature = r.method.getSignature();
+                    if (recSignature.equals(propSignature)) {
+                        if (uiProposal instanceof AbstractJavaCompletionProposal) {
+                            int baseRelevance = uiProposal.getRelevance();
+                            baseRelevance += (int) rint(r.probability * 100);
+                            ((AbstractJavaCompletionProposal) uiProposal).setRelevance(baseRelevance);
+                        }
+                        final CompletionProposalDecorator decoratedProposal = new CompletionProposalDecorator(
+                                uiProposal, r.probability);
+                        proposals.add(decoratedProposal);
+                    }
                 }
-                if (parameterTypes.length > 0) {
-                    sb.delete(sb.length() - 2, sb.length());
-                }
-                sb.append(")");
-            } catch (final JavaModelException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
-            proposal.setCompletion(sb.toString().toCharArray());
-            proposal.setRelevance(100 + (int) Math.rint(r.probability * 100));
-
-            final CompletionProposalLabelProvider fLabelProvider = new CompletionProposalLabelProvider();
-            final StyledString createStyledLabel = fLabelProvider.createStyledLabel(proposal);
-            final String[] parameterTypes = method.getParameterTypes();
-            final String[] proposalParameterTypes = new String[parameterTypes.length];
-            try {
-                for (int i = 0; i < parameterTypes.length; i++) {
-                    proposalParameterTypes[i] = Signature.toString(parameterTypes[i]);
-                }
-            } catch (final IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            final JavaCompletionProposal javaProposal = new OverrideCompletionProposal(ctx.getProject(),
-                    ctx.getCompilationUnit(), method.getElementName(), proposalParameterTypes, start, ctx.getPrefix()
-                            .length(), createStyledLabel, String.valueOf(proposal.getCompletion()));
-            javaProposal.setImage(fLabelProvider.createImageDescriptor(proposal).createImage());
-            javaProposal.setProposalInfo(new MethodProposalInfo(ctx.getProject(), proposal));
-            javaProposal.setRelevance(proposal.getRelevance() << 20);
-
-            final CompletionProposalDecorator decorator = new CompletionProposalDecorator(javaProposal, r.probability);
-            proposals.add(decorator);
         }
     }
 

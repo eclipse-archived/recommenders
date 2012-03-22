@@ -30,7 +30,6 @@ import java.util.LinkedHashMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -587,95 +586,6 @@ public class JdtUtils {
         }
         final ASTNode node = org.eclipse.jdt.core.dom.NodeFinder.perform(astRoot, textSelection.getOffset(), 0);
         return Optional.fromNullable(node);
-    }
-
-    public static CompletionProposal createProposal(final IMethod method, final int CompletionProposalType,
-            final int startIndex, final int endIndex, final int invocationIndex) {
-
-        final JdtCompletionProposal proposal = new JdtCompletionProposal(CompletionProposalType, invocationIndex);
-        try {
-
-            final IType declaringType = method.getDeclaringType();
-            final String returnType = method.getReturnType();
-
-            final char[] declaringTypeFullyQualifiedSourceName = declaringType.getFullyQualifiedName().toCharArray();
-            final char[][] parameterTypeNames = toSimpleCharArray(method.getParameterTypes());
-            final char[][] parameterPackageNames = toQualifierCharArray(parameterTypeNames);
-
-            final char[] completion = (method.getElementName() + "()").toCharArray();
-            final char[][] parameterNames = toSimpleCharArray(method.getParameterNames());
-
-            final char[] declaringClassSignature = declaringType.getKey().replace('/', '.').toCharArray();
-
-            final char[] declarationPackageName = Signature.getSignatureQualifier(declaringClassSignature);
-            // dot separate package - not L no ;
-            proposal.setDeclarationPackageName(declarationPackageName);
-
-            // starts with L, uses '.', ends with ;
-            proposal.setDeclarationKey(declaringClassSignature);
-            // starts with L, uses '.', ends with ;
-            proposal.setDeclarationSignature(declaringClassSignature);
-            // ??? simple name only?
-            final char[] declarationTypeName = declaringType.getElementName().toCharArray();
-            proposal.setDeclarationTypeName(declarationTypeName);
-
-            final char[] name = method.getElementName().toCharArray();
-            proposal.setName(name);
-
-            final char[] methodSignature = method.getSignature().replace('/', '.').toCharArray();
-            // (Lorg.e.Type;I)V
-            proposal.setSignature(methodSignature);
-            // proposal.setKey(method.getHandleIdentifier().toCharArray());
-
-            // simple package names:
-            proposal.setParameterPackageNames(parameterPackageNames);
-
-            // simple type names
-            proposal.setParameterTypeNames(parameterTypeNames);
-
-            final char[] methodReturnTypeQualifiedPackageName = Signature.getSignatureQualifier(returnType)
-                    .toCharArray();
-
-            // package name?
-            proposal.setPackageName(methodReturnTypeQualifiedPackageName);
-
-            final char[] methodReturnTypeQualifiedSourceName = Signature.getSimpleName(returnType).toCharArray();
-            // simple type name?
-            proposal.setTypeName(methodReturnTypeQualifiedSourceName);
-
-            proposal.setCompletion(completion);
-
-            proposal.setFlags(method.getFlags());
-
-            proposal.setReplaceRange(startIndex, endIndex);
-
-            proposal.setTokenRange(startIndex, endIndex);
-
-            proposal.setRelevance(8);
-            if (parameterNames != null) {
-                proposal.setParameterNames(parameterNames);
-            }
-
-        } catch (final Exception e) {
-            log(e);
-        }
-        return proposal;
-    }
-
-    private static char[][] toQualifierCharArray(final char[][] parameterTypeNames) {
-        final char[][] res = new char[parameterTypeNames.length][];
-        for (int i = 0; i < parameterTypeNames.length; i++) {
-            res[i] = Signature.getQualifier(parameterTypeNames[i]);
-        }
-        return res;
-    }
-
-    private static char[][] toSimpleCharArray(final String[] parameterNames) {
-        final char[][] res = new char[parameterNames.length][];
-        for (int i = 0; i < parameterNames.length; i++) {
-            res[i] = Signature.getSimpleName(parameterNames[i]).toCharArray();
-        }
-        return res;
     }
 
     public static Optional<File> getLocation(final IPackageFragmentRoot packageRoot) {
