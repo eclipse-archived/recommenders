@@ -56,20 +56,21 @@ public class Zips {
         }
     }
 
-    public static void zip(File in, File out) throws IOException {
+    public static void zip(File directory, File out) throws IOException {
         ZipOutputStream zos = null;
         try {
             OutputSupplier<FileOutputStream> s = Files.newOutputStreamSupplier(out);
             zos = new ZipOutputStream(s.getOutput());
-            for (File f : FileUtils.listFiles(in, FILE, DIRECTORY)) {
-                String path = removeStart(f.getPath(), in.getAbsolutePath());
+            for (File f : FileUtils.listFiles(directory, FILE, DIRECTORY)) {
+                String path = removeStart(f.getPath(), directory.getAbsolutePath() + "/");
                 ZipEntry e = new ZipEntry(path);
                 zos.putNextEntry(e);
-                Files.copy(f, out);
+                byte[] data = Files.toByteArray(f);
+                zos.write(data);
                 zos.closeEntry();
             }
         } finally {
-            Closeables.closeQuietly(zos);
+            Closeables.close(zos, false);
         }
     }
 

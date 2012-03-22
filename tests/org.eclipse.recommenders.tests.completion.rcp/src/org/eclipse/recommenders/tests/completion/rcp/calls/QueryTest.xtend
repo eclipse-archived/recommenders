@@ -36,6 +36,48 @@ class QueryTest {
 		verifyDefinition(DefinitionSite$Kind::METHOD_RETURN)		
 	}
 	
+	@Test
+	def testDefField(){
+		code = CodeBuilder::classbody('''
+		List l;
+		void __test(){
+			l.$;
+		}''')
+		exercise()
+		verifyDefinition(DefinitionSite$Kind::FIELD)		
+	}
+
+	
+	@Test
+	def testDefThis01(){
+		code = CodeBuilder::method('''$''')
+		exercise()
+		verifyDefinition(DefinitionSite$Kind::THIS)		
+	}
+	
+	@Test
+	def testDefThis02(){
+		code = CodeBuilder::method('''$''')
+		exercise()
+		verifyDefinition(DefinitionSite$Kind::THIS)		
+	}
+	
+	@Test
+	def testDefThis03(){
+		code = CodeBuilder::method('''this.$''')
+		exercise()
+		verifyDefinition(DefinitionSite$Kind::THIS)		
+	}
+	
+	@Test
+	def testDefThis04(){
+		code = CodeBuilder::method('''super.$''')
+		exercise()
+		verifyDefinition(DefinitionSite$Kind::THIS)		
+	}
+	
+	
+	
 	def exercise(){
 		val actual = CallCompletionProposalComputerSmokeTest::exercise(code)
 		sut = actual.second
@@ -43,7 +85,6 @@ class QueryTest {
 	}
 	
 	def verifyDefinition(DefinitionSite$Kind kind){
-
-		assertTrue(sut.query.kind == kind)
+		assertEquals(kind, sut.query.kind)
 	}
 }

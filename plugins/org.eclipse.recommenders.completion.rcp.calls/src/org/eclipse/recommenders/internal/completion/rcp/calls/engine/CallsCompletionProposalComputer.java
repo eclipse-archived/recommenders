@@ -203,6 +203,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             if (methodDef.isPresent()) {
                 query.definition = methodDef.get();
                 query.kind = Kind.METHOD_RETURN;
+            } else if (query.kind == Kind.UNKNOWN) {
+                query.kind = Kind.FIELD;
             }
         } else if (query.definition != null && query.kind == Kind.PARAMETER) {
             query.definition = query.contextFirst;

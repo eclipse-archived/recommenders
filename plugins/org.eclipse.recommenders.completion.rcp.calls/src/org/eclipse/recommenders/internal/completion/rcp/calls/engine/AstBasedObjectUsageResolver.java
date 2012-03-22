@@ -132,9 +132,14 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
         ensureIsNotNull(varname);
         ensureIsNotNull(method);
         setVarname(varname);
-
         initializeResult();
+        if ("".equals(varname) || "this".equals(varname) || "super".equals(varname)) {
+            res.kind = Kind.THIS;
+        }
         method.accept(this);
+
+        if (res.kind == null)
+            res.kind = Kind.FIELD;
         return res;
     }
 
