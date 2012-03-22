@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.6"?>
+<?pde version="3.8"?>
 
 <target name="Code Recommenders: Eclipse 3.x Build Server Target Platform" sequenceNumber="56">
 <locations>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtext.xbase.feature.group" version="2.2.1.v201112130541"/>
 <unit id="org.eclipse.xtext.xtend2.sdk.feature.group" version="2.2.1.v201112130541"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
 </location>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.jdt.feature.group" version="3.8.0.v20111130-1318-8-8lFnfFNOfwRQFKyWVBz0c89B15"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.0.v20111122-1556-7P7OFvNFLWUl76ponNOCoeY"/>
 <unit id="org.eclipse.equinox.executable" version="3.6.0.v20111122-1556-7P7OFvNFLWUl76ponNOCoeY"/>
 <unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.8.0.v20111114-2124-9Q7dFb8FRWt32-_vXXd00E_mbe9G"/>
 <repository location="http://download.eclipse.org/eclipse/updates/3.8milestones/"/>
 </location>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="3.7.2.M20120208-0800"/>
 <unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="3.7.1.R37x_v20110907-7u7PFvHFN5LiN7iUIYPvl4cz-WiW"/>
-<unit id="org.eclipse.m2e.feature.feature.group" version="1.0.200.20111228-1245"/>
-<unit id="org.eclipse.m2e.logback.feature.feature.group" version="1.0.200.20111228-1245"/>
 <repository location="http://download.eclipse.org/releases/indigo"/>
 </location>
-<location includeAllPlatforms="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201203191215"/>
-<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201203191215"/>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.recommenders.feature.3rd.nonorbit.feature.group" version="0.1.0.201203212256"/>
+<unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.1.0.201203212256"/>
 <repository location="http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd/"/>
 </location>
 </locations>

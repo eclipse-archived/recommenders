@@ -20,5 +20,6 @@
    </feature>
    <feature url="features/org.eclipse.recommenders.feature.3rd.orbit_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.orbit" version="0.5.1.qualifier"/>
    <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonorbit_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.5.1.qualifier"/>
+   <feature url="features/org.eclipse.recommenders.feature.3rd.nonjuno_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.nonjuno" version="0.5.1.qualifier"/>
    <category-def name="main" label="Code Recommenders - Eclipse 3.7"/>
 </site>
