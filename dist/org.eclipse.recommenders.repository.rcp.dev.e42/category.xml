@@ -32,7 +32,7 @@
    <feature url="features/org.eclipse.recommenders.feature.rcp.core.source_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.rcp.core.source" version="0.5.1.qualifier">
       <category name="sources"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.3rd.nonjuno_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.nonjuno" version="0.5.1.qualifier"/>
+   <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonjuno_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonjuno" version="0.5.1.qualifier"/>
    <category-def name="main" label="Code Recommenders - Eclipse 4.2"/>
    <category-def name="sources" label="Code Recommenders - Eclipse 4.2 Sources"/>
 </site>
