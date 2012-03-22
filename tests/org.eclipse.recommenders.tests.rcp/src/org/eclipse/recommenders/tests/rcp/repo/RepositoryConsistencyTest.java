@@ -22,11 +22,13 @@ import org.eclipse.recommenders.internal.rcp.repo.UpdateModelIndexJob;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sonatype.aether.artifact.Artifact;
 
 import com.google.common.base.Optional;
 
+@Ignore
 public class RepositoryConsistencyTest {
 
     private static ModelRepository repo;
