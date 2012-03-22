@@ -61,6 +61,7 @@ import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.recommenders.utils.rcp.ast.MethodDeclarationFinder;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -90,7 +91,8 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     private IRecommendersCompletionContext ctx;
     private String receiverName;
     private IType receiverType;
-    private ObjectUsage query;
+    @VisibleForTesting
+    public ObjectUsage query;
     private IObjectMethodCallsNet model;
     private List<ICompletionProposal> proposals;
     private List<CallsRecommendation> recommendations;
@@ -200,6 +202,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             Optional<IMethodName> methodDef = ctx.getMethodDef();
             if (methodDef.isPresent()) {
                 query.definition = methodDef.get();
+                query.kind = Kind.METHOD_RETURN;
             }
         } else if (query.definition != null && query.kind == Kind.PARAMETER) {
             query.definition = query.contextFirst;

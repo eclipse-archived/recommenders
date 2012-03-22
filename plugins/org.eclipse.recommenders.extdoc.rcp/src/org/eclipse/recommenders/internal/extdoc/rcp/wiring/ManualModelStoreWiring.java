@@ -48,7 +48,7 @@ public class ManualModelStoreWiring {
     public static class ClassOverridesPatternsModelStore extends DefaultModelArchiveStore<IType, ClassOverridePatterns> {
 
         static final Class gson = ClassOverridePatterns.class;
-        static final String classifier = "edovrp";
+        static final String classifier = "ovrp";
 
         @Inject
         public ClassOverridesPatternsModelStore(final IModelRepository repository,
@@ -74,7 +74,7 @@ public class ManualModelStoreWiring {
     public static class ClassOverridesModelStore extends DefaultModelArchiveStore<IType, ClassOverrideDirectives> {
 
         static final Class gson = ClassOverrideDirectives.class;
-        static final String classifier = "edovr";
+        static final String classifier = "ovrd";
 
         @Inject
         public ClassOverridesModelStore(final IModelRepository repository, final JavaElementResolver jdtResolver,
@@ -99,7 +99,9 @@ public class ManualModelStoreWiring {
     public static class ClassSelfcallsModelStore extends DefaultModelArchiveStore<IType, ClassSelfcallDirectives> {
 
         static final Class gson = ClassOverrideDirectives.class;
-        static final String classifier = "edself";
+        static final String classifier = "selfc";
+
+        // XXX static final String classifier = "selfm";
 
         @Inject
         public ClassSelfcallsModelStore(final IModelRepository repository, final JavaElementResolver jdtResolver,

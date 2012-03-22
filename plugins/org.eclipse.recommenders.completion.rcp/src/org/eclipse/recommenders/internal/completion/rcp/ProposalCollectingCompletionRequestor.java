@@ -39,12 +39,15 @@ import java.util.Map;
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.ui.text.java.FillArgumentNamesCompletionProposalCollector;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
@@ -52,6 +55,7 @@ import com.google.common.collect.Maps;
 @SuppressWarnings("restriction")
 public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
+    private Logger log = LoggerFactory.getLogger(getClass());
     private final Map<IJavaCompletionProposal, CompletionProposal> proposals = Maps.newIdentityHashMap();
     private final JavaContentAssistInvocationContext jdtuiContext;
     private CompletionProposalCollector collector;
@@ -170,5 +174,10 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     public Map<IJavaCompletionProposal, CompletionProposal> getProposals() {
         return proposals;
+    }
+
+    @Override
+    public void completionFailure(IProblem problem) {
+        log.debug(problem.toString());
     }
 }

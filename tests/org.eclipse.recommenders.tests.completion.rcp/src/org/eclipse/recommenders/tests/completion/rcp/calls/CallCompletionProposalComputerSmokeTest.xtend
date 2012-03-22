@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.tests.completion.rcp.calls
 
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.jdt.core.dom.AST
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallsCompletionProposalComputer
 import org.eclipse.recommenders.tests.CodeBuilder
@@ -8,11 +9,14 @@ import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMoc
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver
+import org.eclipse.recommenders.utils.Tuple
 import org.junit.Before
 import org.junit.Test
 
 import static junit.framework.Assert.*
-import static org.eclipse.recommenders.tests.completion.rcp.calls.CallCompletionProposalComputerSmokeTest.* 
+import static org.eclipse.recommenders.tests.completion.rcp.calls.CallCompletionProposalComputerSmokeTest.*
+import java.util.List
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal 
 class CallCompletionProposalComputerSmokeTest { 
   
 	static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
@@ -124,7 +128,21 @@ class CallCompletionProposalComputerSmokeTest {
 		}
 	}
 
-
+ 	def static Tuple<List<IJavaCompletionProposal>, CallsCompletionProposalComputer> exercise(CharSequence code){
+ 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
+ 		fixture.clear
+		val struct = fixture.createFileAndParseWithMarkers(code.toString)
+		val cu = struct.first;
+		cu.becomeWorkingCopy(null)
+		// just be sure that this file still compiles...
+		val ast = cu.reconcile(AST::JLS4, true,true, null,null);
+		assertNotNull(ast)
+		val CallsCompletionProposalComputer sut = new CallsCompletionProposalComputer(new ModelStoreMock(), new JavaElementResolver(),
+            new RecommendersCompletionContextFactoryMock())
+        val proposals = sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, struct.second.head), new NullProgressMonitor());
+        
+        Tuple::newTuple(proposals, sut) as Tuple
+ }
 	
 	
 	

@@ -135,9 +135,6 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
 
         initializeResult();
         method.accept(this);
-        if (res.kind == null) {
-            res.kind = Kind.FIELD;
-        }
         return res;
     }
 
@@ -200,6 +197,8 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
             // e.g. int j=anotherValue;
             final SimpleName sn = cast(expression);
             // some alias thing...
+            // it might be that we found an assignment before and this simpleName is just "$missing". Then ignore this
+            if (res.kind == null)
             res.kind = Kind.UNKNOWN;
             break;
         default:
