@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.env.AccessRestriction;
 import org.eclipse.jdt.internal.core.DefaultWorkingCopyOwner;
 import org.eclipse.jdt.internal.core.JavaProject;
@@ -64,6 +65,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -74,8 +76,8 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public final class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-    private enum CompletionMode {
-        TYPE_NAME, MEMBER_ACCESS, UNKNOWN, VAR_NAME
+    public static enum CompletionMode {
+        TYPE_NAME, MEMBER_ACCESS, UNKNOWN, THIS
     }
 
     private AbstractJavaContextType templateContextType;
@@ -120,6 +122,11 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         }
     }
 
+    @VisibleForTesting
+    public CompletionMode getCompletionMode() {
+        return mode;
+    }
+
     // /**
     // * Initializes the proposal builder.
     // *
@@ -157,7 +164,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         }
 
         findCompletionMode();
-        if (mode != CompletionMode.TYPE_NAME && mode != CompletionMode.VAR_NAME) {
+        if (mode != CompletionMode.TYPE_NAME && mode != CompletionMode.THIS) {
             return Collections.emptyList();
         }
         if (!findPotentialTypes()) {
@@ -251,12 +258,22 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             if (isPotentialClassName((CompletionOnSingleNameReference) n)) {
                 mode = CompletionMode.TYPE_NAME;
             } else {
-                mode = CompletionMode.VAR_NAME;
+                // eq$ --> receiver is this
+                mode = CompletionMode.THIS;
             }
         } else if (n instanceof CompletionOnQualifiedNameReference) {
-            mode = CompletionMode.VAR_NAME;
+            if (isPotentialClassName((CompletionOnQualifiedNameReference) n)) {
+                mode = CompletionMode.TYPE_NAME;
+            } else {
+                mode = CompletionMode.MEMBER_ACCESS;
+            }
         } else if (n instanceof CompletionOnMemberAccess) {
-            mode = CompletionMode.MEMBER_ACCESS;
+            Expression ma = ((CompletionOnMemberAccess) n).receiver;
+            if (ma.isImplicitThis() || ma.isSuper() || ma.isThis()) {
+                mode = CompletionMode.THIS;
+            } else {
+                mode = CompletionMode.MEMBER_ACCESS;
+            }
         } else {
             mode = CompletionMode.UNKNOWN;
         }
@@ -271,6 +288,11 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             candidates = findTypesBySimpleName(c.token);
         }
         return candidates != null;
+    }
+
+    private boolean isPotentialClassName(final CompletionOnQualifiedNameReference c) {
+        char[] name = c.completionIdentifier;
+        return name != null && name.length > 0 && CharUtils.isAsciiAlphaUpper(name[0]);
     }
 
     private boolean isPotentialClassName(final CompletionOnSingleNameReference c) {

@@ -1,118 +1,114 @@
 package org.eclipse.recommenders.tests.completion.rcp.templates
 
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.List
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.dom.AST
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal
+import org.eclipse.recommenders.internal.completion.rcp.templates.TemplatesCompletionProposalComputer
+import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
+import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock
+import org.eclipse.recommenders.tests.completion.rcp.calls.ModelStoreMock
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
-import org.junit.Before
-import org.junit.Ignore
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.junit.Test
 
 import static junit.framework.Assert.*
+import static org.eclipse.recommenders.internal.completion.rcp.templates.TemplatesCompletionProposalComputer$CompletionMode.*
+import static org.eclipse.recommenders.tests.CodeBuilder.*
+import org.junit.Ignore
 
-@Ignore 
+
 class TemplateCompletionProposalComputerTest { 
   
-  static AtomicInteger classId = new AtomicInteger()
-	static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
-	@Before
-	def void before(){
-		fixture.clear
-	}
-
-	def method(CharSequence code){
-		'''
-		import javax.swing.*;
-		public class Template«classId.incrementAndGet()» {
-			void test (){
-				«code»
-			}
-		}
-		'''
-	}
-	
-	@Test
-	def void testNotImportedTypeNameCompletion(){
-		val code = '''
-			// import java.awt.Button;
-			public class Template«classId.incrementAndGet()» {
-				void test() {
-					Button$
-				}
-			}'''
-		test(code)
-	}
-	
-	@Test
-	def void testOnQulifiedTypeName(){
-		val code = '''
-			// import java.awt.Button;
-			public class Template«classId.incrementAndGet()» {
-				void test() {
-					java.awt.Button$
-				}
-			}'''
-		test(code)
-	}
-	
-	@Test
-	def void testImportedTypeNameCompletion(){
-		val code = '''
-			import java.awt.Button;
-			public class Template«classId.incrementAndGet()» {
-				void test() {
-					Button$
-				}
-			}'''
-		test(code)
-	}
-	
-	@Test
-	def void testInMessageSend(){
-		val code = method('''
-			List l;
-			l.add(l$);
-			''')
-		test(code)
-	}
+  TemplatesCompletionProposalComputer sut 
+  List<IJavaCompletionProposal> proposals
+  CharSequence code
+  
+  	@Test
+  	def testThis01(){
+  		code = method('''
+  			$
+  		''')
+  		exercise()
+  		assertEquals(THIS, sut.getCompletionMode())
+  	}
+  
+  	@Test
+  	def testThis01a(){
+  		code = method('''
+  			this.$
+  		''')
+  		exercise()
+  		assertEquals(THIS, sut.getCompletionMode())
+  	}
 
 	@Test
-	def void testInCompletionOnQualifiedNameRef(){
-		val code = method('''
-			List l;
-			l.$
-			''')
-		test(code)
-	}
-
+  	def testThis01b(){
+  		code = method('''
+  			super.$
+  		''')
+  		exercise()
+  		assertEquals(THIS, sut.getCompletionMode())
+  	}
+    
+	@Test
+  	def testThis02(){
+  		code = method('''
+  			eq$
+  		''')
+  		exercise()
+  		assertEquals(THIS, sut.getCompletionMode())
+  	}
+  
 
 	@Test
-	def void testInMessageSend2(){
-		val code = method('''
-			List l;
-			l.add(l.$);
-			''')
-		test(code)
-	}
+  	def testTypeName01(){
+  		code = method('''
+  			List$
+  		''')
+  		exercise()
+  		assertEquals(TYPE_NAME, sut.getCompletionMode())
+  	}
+  
+  	@Test
+  	def testTypeName02(){
+  		code = method('''
+  			java.util.List$
+  		''')
+  		exercise()
+  		assertEquals(TYPE_NAME, sut.getCompletionMode())
+  	}
+	@Test
+  	def testThis01c(){
+  		code = method('''
+  			Event evt;
+  			evt$
+  		''')
+  		exercise()
+  		assertEquals(THIS, sut.getCompletionMode())
+  	}
 
 	@Test
-	def void testLocalWithTypeName(){
-		val code = '''
-			import java.awt.Button;
-			public class Template«classId.incrementAndGet()» {
-				void test() {
-					Integer i= null;
-					i$
-				}
-			}'''
-		test(code)
-	}
+  	def testVar02(){
+  		code = method('''
+  			Event evt;
+  			evt.$
+  		''')
+  		exercise()
+  		assertEquals(MEMBER_ACCESS, sut.getCompletionMode())
+  	}
 
-	def private test(CharSequence code){
-		test(code,1)
-	}
+	@Test
+  	def testVar03(){
+  		code = method('''
+  			Event evt;
+  			evt.evt.$
+  		''')
+  		exercise()
+  		assertEquals(MEMBER_ACCESS, sut.getCompletionMode())
+  	}
 
-	def private test(CharSequence code, int numberOfExpectedProposals){
+	def private exercise(){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.createFileAndParseWithMarkers(code.toString)
 		val cu = struct.first;
@@ -120,9 +116,9 @@ class TemplateCompletionProposalComputerTest {
 		// just be sure that this file still compiles...
 		val ast = cu.reconcile(AST::JLS4, true,true, null,null);
 		assertNotNull(ast)
-//		val sut = new TemplatesCompletionProposalComputer(new RecommendersCompletionContextFactoryMock())
-//		val pos = struct.second.head;
-//		val proposals = sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, pos), null);
-//		assertEquals("wrong number of proposals", numberOfExpectedProposals, proposals.size())
+		sut = new TemplatesCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(),
+			new ModelStoreMock(), new JavaElementResolver())
+		val pos = struct.second.head;
+		proposals = sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, pos), null);
 	}
 }
