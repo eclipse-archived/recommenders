@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.commons.bayesnet;
 
+import org.eclipse.recommenders.utils.names.VmMethodName;
 
 public class CallsNetConstants {
 	public static final String NODE_ID_PATTERNS = "patterns";
@@ -20,4 +21,6 @@ public class CallsNetConstants {
 
 	public static final String STATE_TRUE = "true";
 	public static final String STATE_FALSE = "false";
+    public static String STATE_DUMMY_DEF = VmMethodName.get("L_dummy.dummy()V").getIdentifier();
+
 }

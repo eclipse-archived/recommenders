@@ -14,6 +14,7 @@ import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_I
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_DEFINITION;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_KIND;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_PATTERNS;
+import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_DUMMY_DEF;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_TRUE;
 import static org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage.UNKNOWN_METHOD;
 import static org.eclipse.recommenders.utils.Checks.ensureEquals;
@@ -29,6 +30,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
+import org.eclipse.recommenders.commons.bayesnet.CallsNetConstants;
 import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
@@ -158,7 +160,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public void setDefinition(final IMethodName newDefinition) {
-        final String identifier = newDefinition == null ? NetworkUtils.STATE_DUMMY_DEF : newDefinition.getIdentifier();
+        final String identifier = newDefinition == null ? STATE_DUMMY_DEF : newDefinition.getIdentifier();
         if (definitionNode.getOutcomes().contains(identifier)) {
             junctionTreeAlgorithm.addEvidence(definitionNode, identifier);
         }
