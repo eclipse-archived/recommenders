@@ -160,13 +160,17 @@ public class JavaElementResolver {
         final SearchEngine search = new SearchEngine();
         final String srcTypeName = Names.vm2srcTypeName(recType.getIdentifier());
         final SearchPattern pattern = SearchPattern.createPattern(srcTypeName, IJavaSearchConstants.TYPE,
-                IJavaSearchConstants.DECLARATIONS, SearchPattern.R_EXACT_MATCH);
+                IJavaSearchConstants.DECLARATIONS, SearchPattern.R_FULL_MATCH);
         try {
             search.search(pattern, SearchUtils.getDefaultSearchParticipants(), scope, new SearchRequestor() {
 
                 @Override
                 public void acceptSearchMatch(final SearchMatch match) throws CoreException {
-                    res[0] = (IType) match.getElement();
+                    IType element = (IType) match.getElement();
+                    // with the current settings the engine matches 'Lnull' with 'Ljava/lang/ref/ReferenceQueue$Null'
+                    if (toRecType(element).equals(recType)) {
+                        res[0] = element;
+                    }
                 }
             }, null);
         } catch (final CoreException e) {
@@ -319,8 +323,7 @@ public class JavaElementResolver {
             if (!jdtType.isPresent()) {
                 return false;
             }
-
-            if (!sameSimpleTypes(recTypes[i], jdtType.get()) || !sameArrayDimensions(recTypes[i], jdtType.get())) {
+            if (!sameSimpleTypes(recTypes[i], jdtType.get()) || !sameArrayDimensions(recTypes[i], jdtTypes[i])) {
                 return false;
             }
         }
@@ -331,8 +334,10 @@ public class JavaElementResolver {
         return t1.getClassName().equals(t2.getClassName());
     }
 
-    private boolean sameArrayDimensions(final ITypeName t1, final ITypeName t2) {
-        return t1.getArrayDimensions() == t2.getArrayDimensions();
+    private boolean sameArrayDimensions(final ITypeName t1, final String jdtTypes) {
+        int dim1 = t1.getArrayDimensions();
+        int dim2 = Signature.getArrayCount(jdtTypes.toCharArray());
+        return dim1 == dim2;
     }
 
     private boolean sameNumberOfParameters(final IMethodName recMethod, final IMethod m) throws JavaModelException {
@@ -351,27 +356,4 @@ public class JavaElementResolver {
         return jdtType != null && jdtType.isStructureKnown();
     }
 
-    private String[] createJDTParameterTypeStrings(final IMethodName method) {
-        /*
-         * Note, JDT expects declared-types (also declared array-types) given as parameters to (i) use dots as
-         * separator, and (ii) end with a semicolon. this conversion is done here:
-         */
-        final ITypeName[] paramTypes = method.getParameterTypes();
-        final String[] jdtParamTypes = new String[paramTypes.length];
-        for (int i = 0; i < paramTypes.length; i++) {
-            jdtParamTypes[i] = createJdtParameterTypeString(paramTypes[i]);
-        }
-        return jdtParamTypes;
-    }
-
-    private String createJdtParameterTypeString(final ITypeName type) {
-        final String identifier = type.getIdentifier();
-        if (type.isDeclaredType()) {
-            return identifier.replace('/', '.') + ";";
-        } else if (type.isArrayType() && type.getArrayBaseType().isDeclaredType()) {
-            return identifier.replace('/', '.') + ";";
-        } else {
-            return identifier;
-        }
-    }
 }

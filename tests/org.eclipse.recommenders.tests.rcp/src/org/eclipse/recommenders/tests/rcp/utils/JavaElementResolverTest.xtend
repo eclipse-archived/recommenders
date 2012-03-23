@@ -9,8 +9,10 @@ import org.junit.Test
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.CodeBuilder.*
+import org.eclipse.recommenders.utils.names.VmMethodName
+import org.eclipse.recommenders.utils.names.VmTypeName
 
-class JavaElementResolver4GenericsTest {
+class JavaElementResolverTest {
 
  	JavaElementResolver sut  = new JavaElementResolver()
  
@@ -35,7 +37,7 @@ class JavaElementResolver4GenericsTest {
 		val code = classbody('''public void $m(Iterable<? extends Executor> e){}''')
 		val method = getMethod(code)
 		val actual =  sut.toRecMethod(method)
-		assertNotNull(actual)
+		assertTrue(actual.present)
 	}
 	
 	@Test
@@ -43,9 +45,24 @@ class JavaElementResolver4GenericsTest {
 		val code = classbody('''public <T> void $m(T s){}''')
 		val method = getMethod(code)
 		val actual =  sut.toRecMethod(method)
-		assertNotNull(actual)
+		assertTrue(actual.present)
+	}
+
+	@Test
+	def void testJdtMethods() {
+		assertTrue("no hashCode?",sut.toJdtMethod(VmMethodName::get("Ljava/lang/Object.hashCode()I")).present);
+		assertTrue("no Arrays.sort?",sut.toJdtMethod(VmMethodName::get("Ljava/util/Arrays.sort([J)V")).present);
+		assertTrue("no Arrays.equals?",sut.toJdtMethod(VmMethodName::get("Ljava/util/Arrays.equals([Ljava/lang/Object;[Ljava/lang/Object;)Z")).present);
 	}
 	
+	@Test
+	def void testJdtClass() {
+		assertFalse("Lnull found???",sut.toJdtType(VmTypeName::NULL).present)
+		assertFalse("primitive found???",sut.toJdtType(VmTypeName::BOOLEAN).present)
+		assertTrue("Object not found???", sut.toJdtType(VmTypeName::OBJECT).present)
+		assertTrue("NPE not found???", sut.toJdtType(VmTypeName::JavaLangNullPointerException).present)
+		assertTrue("NPE not found???", sut.toJdtType(VmTypeName::get("Ljava/util/Map$Entry")).present)
+	}
 
 	def IMethod getMethod(CharSequence code){
 		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")

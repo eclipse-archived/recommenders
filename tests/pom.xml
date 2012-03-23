@@ -97,9 +97,8 @@
 
 													<structure name="Eclipse Code Recommenders">
 														<classfiles>
-															<fileset dir="${source-prefix}.rcp/target/classes/" />
 															<fileset dir="${source-prefix}.completion.rcp/target/classes/" />
-															<fileset dir="${source-prefix}.rcp.calls/target/classes/" />
+															<fileset dir="${source-prefix}.completion.rcp.calls/target/classes/" />
 															<fileset dir="${source-prefix}.completion.rcp.chain/target/classes/" />
 															<fileset dir="${source-prefix}.completion.rcp.e38/target/classes/" />
 															<fileset dir="${source-prefix}.completion.rcp.overrides/target/classes/" />
@@ -117,7 +116,6 @@
 															<fileset dir="${source-prefix}.webclient/target/classes/" />
 														</classfiles>
 														<sourcefiles encoding="UTF-8">
-															<fileset dir="${source-prefix}.rcp/src/" />
 															<fileset dir="${source-prefix}.completion.rcp/src/" />
 															<fileset dir="${source-prefix}.completion.rcp.calls/src/" />
 															<fileset dir="${source-prefix}.completion.rcp.chain/src/" />
