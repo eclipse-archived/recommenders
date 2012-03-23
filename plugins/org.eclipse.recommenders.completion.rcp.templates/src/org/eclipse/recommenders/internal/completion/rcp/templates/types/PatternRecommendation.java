@@ -10,13 +10,13 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.templates.types;
 
-import java.util.List;
-
-import com.google.common.collect.ImmutableList;
+import java.util.Collection;
 
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Encapsulates one recommendation received from the models store.
@@ -26,7 +26,7 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
     private final String name;
     private final ITypeName type;
     private final ImmutableList<IMethodName> methods;
-    private final int probability;
+    private final double probability;
 
     /**
      * @param name
@@ -36,11 +36,10 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
      * @param methods
      *            The pattern's methods as obtained from the model store.
      * @param probability
-     *            Probability that this pattern is used in the observed
-     *            occasion.
+     *            Probability that this pattern is used in the observed occasion.
      */
-    public PatternRecommendation(final String name, final ITypeName type, final List<IMethodName> methods,
-            final int probability) {
+    public PatternRecommendation(final String name, final ITypeName type, final Collection<IMethodName> methods,
+            final double probability) {
         this.name = Checks.ensureIsNotNull(name);
         this.type = Checks.ensureIsNotNull(type);
         this.methods = ImmutableList.copyOf(methods);
@@ -71,7 +70,7 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
     /**
      * @return Probability that this pattern is used in the observed occasion.
      */
-    public int getProbability() {
+    public double getProbability() {
         return probability;
     }
 
@@ -82,7 +81,7 @@ public final class PatternRecommendation implements Comparable<PatternRecommenda
 
     @Override
     public int compareTo(final PatternRecommendation other) {
-        return Integer.valueOf(probability).compareTo(Integer.valueOf(other.probability));
+        return Double.valueOf(probability).compareTo(other.probability);
     }
 
     @Override

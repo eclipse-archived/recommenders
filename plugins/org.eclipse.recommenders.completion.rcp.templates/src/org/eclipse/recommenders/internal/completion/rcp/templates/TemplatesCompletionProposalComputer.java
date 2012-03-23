@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.internal.codeassist.ISearchRequestor;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.env.AccessRestriction;
@@ -38,6 +39,7 @@ import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.IContextInformation;
@@ -47,14 +49,20 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFac
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.completion.rcp.templates.code.CodeBuilder;
 import org.eclipse.recommenders.internal.completion.rcp.templates.types.CompletionTargetVariable;
+import org.eclipse.recommenders.internal.completion.rcp.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite;
 import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -81,6 +89,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     private CompletionMode mode;
     private final IModelArchiveStore<IType, IObjectMethodCallsNet> store;
     private final JavaElementResolver jdtCache;
+    private Image icon;
 
     /**
      * @param patternRecommender
@@ -93,11 +102,22 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
      */
     @Inject
     public TemplatesCompletionProposalComputer(final IRecommendersCompletionContextFactory ctxFactory,
-            IModelArchiveStore<IType, IObjectMethodCallsNet> store, JavaElementResolver jdtCache) {
+            final IModelArchiveStore<IType, IObjectMethodCallsNet> store, final JavaElementResolver jdtCache) {
         this.ctxFactory = ctxFactory;
         this.store = store;
         this.jdtCache = jdtCache;
+        loadImage();
         initializeTemplateContextType();
+    }
+
+    private void loadImage() {
+        final Bundle bundle = FrameworkUtil.getBundle(TemplatesCompletionProposalComputer.class);
+        icon = null;
+        if (bundle != null) {
+            final ImageDescriptor desc = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(),
+                    "metadata/icon2.gif");
+            icon = desc.createImage();
+        }
     }
 
     // /**
@@ -137,60 +157,65 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         }
 
         findCompletionMode();
-        if (mode != CompletionMode.TYPE_NAME) {
+        if (mode != CompletionMode.TYPE_NAME && mode != CompletionMode.VAR_NAME) {
             return Collections.emptyList();
         }
         if (!findPotentialTypes()) {
             return Collections.emptyList();
         }
 
-        for (IType t : candidates) {
-            Optional<IObjectMethodCallsNet> opt = store.aquireModel(t);
+        final ProposalBuilder proposalBuilder = new ProposalBuilder(icon, rCtx, jdtCache);
+
+        for (final IType t : candidates) {
+            final Optional<IObjectMethodCallsNet> opt = store.aquireModel(t);
             if (!opt.isPresent()) {
                 continue;
             }
-            IObjectMethodCallsNet net = opt.get();
+            final IObjectMethodCallsNet net = opt.get();
 
-            ObjectUsage query = new ObjectUsage();
-            Optional<IMethod> ovrMethod = JdtUtils.findOverriddenMethod(enclosingMethod);
+            final ObjectUsage query = new ObjectUsage();
+            final Optional<IMethod> ovrMethod = JdtUtils.findOverriddenMethod(enclosingMethod);
             query.contextSuper = jdtCache.toRecMethod(ovrMethod.orNull()).orNull();
 
-            IMethod firstMethod = JdtUtils.findFirstDeclaration(enclosingMethod);
+            final IMethod firstMethod = JdtUtils.findFirstDeclaration(enclosingMethod);
             query.contextFirst = jdtCache.toRecMethod(firstMethod).orNull();
             net.setQuery(query);
 
-            double sum = 0.0d;
+            final double sum = 0.0d;
 
-            DefinitionSite.Kind[] values = { DefinitionSite.Kind.NEW };
+            final DefinitionSite.Kind[] values = { DefinitionSite.Kind.NEW };
 
-            for (DefinitionSite.Kind k : values) {
+            for (final DefinitionSite.Kind k : values) {
                 query.kind = k;
                 net.setQuery(query);
-                List<Tuple<String, Double>> callgroups = getMostLikelyPatternsSortedByProbability(net);
-                for (Tuple<String, Double> p : callgroups) {
-                    String patternId = p.getFirst();
+                final List<Tuple<String, Double>> callgroups = getMostLikelyPatternsSortedByProbability(net);
+                for (final Tuple<String, Double> p : callgroups) {
+                    final String patternId = p.getFirst();
                     net.setPattern(patternId);
-                    for (Tuple<String, Double> def : net.getDefinitions()) {
-                        double prob = p.getSecond();
-                        if (prob < 0.05) {
-                            break;
-                        }
+                    for (final Tuple<String, Double> def : net.getDefinitions()) {
+                        final double prob = p.getSecond();
 
-                        SortedSet<Tuple<IMethodName, Double>> rec = net.getRecommendedMethodCalls(0.2d);
+                        final SortedSet<Tuple<IMethodName, Double>> rec = net.getRecommendedMethodCalls(0.2d);
                         if (rec.isEmpty()) {
                             continue;
                         }
 
-                        TreeSet<IMethodName> calls = Sets.newTreeSet();
+                        final TreeSet<IMethodName> calls = Sets.newTreeSet();
+
+                        calls.add(VmMethodName.get(def.getFirst()));
+
                         for (final Tuple<IMethodName, Double> pair : rec) {
                             calls.add(pair.getFirst());
                         }
 
                         System.out.printf("%3.3f def:%s calls:\n", prob, def);
-                        for (IMethodName call : calls) {
+                        for (final IMethodName call : calls) {
                             System.out.printf("\t%s\n", call);
                         }
-                        continue;
+
+                        final PatternRecommendation pattern = new PatternRecommendation(patternId, net.getType(),
+                                calls, p.getSecond());
+                        proposalBuilder.addPattern(pattern);
                     }
                 }
             }
@@ -204,16 +229,16 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         // return Collections.emptyList();
         // }
         // findRequiredMethodNamePrefix();
-        return Collections.emptyList();
+        return proposalBuilder.createProposals();
     }
 
-    private List<Tuple<String, Double>> getMostLikelyPatternsSortedByProbability(IObjectMethodCallsNet net) {
-        List<Tuple<String, Double>> p = net.getPatternsWithProbability();
+    private List<Tuple<String, Double>> getMostLikelyPatternsSortedByProbability(final IObjectMethodCallsNet net) {
+        final List<Tuple<String, Double>> p = net.getPatternsWithProbability();
 
         Collections.sort(p, new Comparator<Tuple<String, Double>>() {
 
             @Override
-            public int compare(Tuple<String, Double> o1, Tuple<String, Double> o2) {
+            public int compare(final Tuple<String, Double> o1, final Tuple<String, Double> o2) {
                 return o2.getSecond().compareTo(o1.getSecond());
             }
         });
@@ -221,13 +246,15 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     }
 
     private void findCompletionMode() {
-        ASTNode n = rCtx.getCompletionNode();
+        final ASTNode n = rCtx.getCompletionNode();
         if (n instanceof CompletionOnSingleNameReference) {
             if (isPotentialClassName((CompletionOnSingleNameReference) n)) {
                 mode = CompletionMode.TYPE_NAME;
             } else {
                 mode = CompletionMode.VAR_NAME;
             }
+        } else if (n instanceof CompletionOnQualifiedNameReference) {
+            mode = CompletionMode.VAR_NAME;
         } else if (n instanceof CompletionOnMemberAccess) {
             mode = CompletionMode.MEMBER_ACCESS;
         } else {
@@ -236,8 +263,8 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     }
 
     private boolean findPotentialTypes() {
-        ASTNode n = rCtx.getCompletionNode();
-        ASTNode p = rCtx.getCompletionNodeParent();
+        final ASTNode n = rCtx.getCompletionNode();
+        final ASTNode p = rCtx.getCompletionNodeParent();
         CompletionOnSingleNameReference c = null;
         if (n instanceof CompletionOnSingleNameReference) {
             c = (CompletionOnSingleNameReference) n;
@@ -246,7 +273,7 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         return candidates != null;
     }
 
-    private boolean isPotentialClassName(CompletionOnSingleNameReference c) {
+    private boolean isPotentialClassName(final CompletionOnSingleNameReference c) {
         return c.token != null && c.token.length > 0 && CharUtils.isAsciiAlphaUpper(c.token[0]);
     }
 
@@ -364,21 +391,23 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
                     .newSearchableNameEnvironment(DefaultWorkingCopyOwner.PRIMARY);
             environment.findExactTypes(simpleTypeName, false, IJavaSearchConstants.TYPE, new ISearchRequestor() {
                 @Override
-                public void acceptConstructor(int modifiers, char[] simpleTypeName, int parameterCount,
-                        char[] signature, char[][] parameterTypes, char[][] parameterNames, int typeModifiers,
-                        char[] packageName, int extraFlags, String path, AccessRestriction access) {
+                public void acceptConstructor(final int modifiers, final char[] simpleTypeName,
+                        final int parameterCount, final char[] signature, final char[][] parameterTypes,
+                        final char[][] parameterNames, final int typeModifiers, final char[] packageName,
+                        final int extraFlags, final String path, final AccessRestriction access) {
                 }
 
                 @Override
-                public void acceptType(char[] packageName, char[] typeName, char[][] enclosingTypeNames, int modifiers,
-                        AccessRestriction accessRestriction) {
+                public void acceptType(final char[] packageName, final char[] typeName,
+                        final char[][] enclosingTypeNames, final int modifiers,
+                        final AccessRestriction accessRestriction) {
                     IType res;
                     try {
                         res = project.findType(String.valueOf(packageName), String.valueOf(typeName));
                         if (res != null) {
                             result.add(res);
                         }
-                    } catch (JavaModelException e) {
+                    } catch (final JavaModelException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }

@@ -23,8 +23,7 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Extends the {@link TemplateProposal} to customize the style of the template's
- * entry in the completion popup.
+ * Extends the {@link TemplateProposal} to customize the style of the template's entry in the completion popup.
  */
 @SuppressWarnings("restriction")
 public final class JavaTemplateProposal extends TemplateProposal implements Comparable<JavaTemplateProposal> {
@@ -45,8 +44,7 @@ public final class JavaTemplateProposal extends TemplateProposal implements Comp
      * @param patternRecommendation
      * @param targetVariable
      * @param probability
-     *            the probability that the represented pattern is applied in the
-     *            given context.
+     *            the probability that the represented pattern is applied in the given context.
      * @param isExactNameMatch
      */
     public JavaTemplateProposal(final Template template, final DocumentTemplateContext context, final Image image,
@@ -54,6 +52,7 @@ public final class JavaTemplateProposal extends TemplateProposal implements Comp
         super(template, context, calculateReplacementRegion(context), image);
         this.patternRecommendation = patternRecommendation;
         computeStyledDisplayString();
+        setRelevance((int) (getRelevance() + Math.round(patternRecommendation.getProbability() * 100)));
     }
 
     private static IRegion calculateReplacementRegion(final DocumentTemplateContext context) {
@@ -61,15 +60,15 @@ public final class JavaTemplateProposal extends TemplateProposal implements Comp
     }
 
     /**
-     * Sets the string to be displayed in the completion proposals view. It
-     * contains the template's name and its probability.
+     * Sets the string to be displayed in the completion proposals view. It contains the template's name and its
+     * probability.
      */
     private void computeStyledDisplayString() {
         final StyledString styledString = new StyledString();
         styledString.append(String.format("dynamic '%s'", getTemplate().getDescription()));
         styledString.append(" - ", StyledString.QUALIFIER_STYLER);
         styledString.append(getTemplate().getName().replace("pattern", "Pattern #"), StyledString.QUALIFIER_STYLER);
-        styledString.append(String.format(" - %d %%", patternRecommendation.getProbability()),
+        styledString.append(String.format(" - %d %%", Math.round(patternRecommendation.getProbability() * 100)),
                 StyledString.COUNTER_STYLER);
         setDisplayString(styledString);
     }
@@ -85,7 +84,7 @@ public final class JavaTemplateProposal extends TemplateProposal implements Comp
     }
 
     private int compareByProbability(final JavaTemplateProposal o) {
-        return Integer.valueOf(patternRecommendation.getProbability()).compareTo(
+        return Double.valueOf(patternRecommendation.getProbability()).compareTo(
                 o.patternRecommendation.getProbability());
     }
 
