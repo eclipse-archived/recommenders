@@ -36,6 +36,10 @@ public final class ClassSelfcallDirectives {
         return res;
     }
 
+    public ITypeName getType() {
+        return type;
+    }
+    
     public int getNumberOfSubclasses() {
         return numberOfSubclasses;
     }
