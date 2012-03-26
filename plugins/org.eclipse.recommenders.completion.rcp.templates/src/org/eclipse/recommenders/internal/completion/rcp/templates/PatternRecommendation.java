@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.templates.types;
+package org.eclipse.recommenders.internal.completion.rcp.templates;
 
 import java.util.Collection;
 

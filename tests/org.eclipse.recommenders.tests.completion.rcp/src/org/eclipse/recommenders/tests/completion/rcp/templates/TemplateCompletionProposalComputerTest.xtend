@@ -25,87 +25,137 @@ class TemplateCompletionProposalComputerTest {
   CharSequence code
   
   	@Test
-  	def testThis01(){
+  	def testThis(){
   		code = method('''
   			$
   		''')
   		exercise()
   		assertEquals(THIS, sut.getCompletionMode())
+  		assertEquals("", sut.getMethodPrefix())
+  		assertEquals("", sut.getVariableName())
   	}
   
   	@Test
-  	def testThis01a(){
+  	def testThisWithThisPrefix(){
   		code = method('''
   			this.$
   		''')
   		exercise()
   		assertEquals(THIS, sut.getCompletionMode())
+  		assertEquals("", sut.getMethodPrefix())
+  		assertEquals("", sut.getVariableName())
   	}
 
 	@Test
-  	def testThis01b(){
+  	def testThisWithSuperPrefix(){
   		code = method('''
   			super.$
   		''')
   		exercise()
   		assertEquals(THIS, sut.getCompletionMode())
+  		assertEquals("", sut.getMethodPrefix())
+  		assertEquals("", sut.getVariableName())
   	}
     
 	@Test
-  	def testThis02(){
+  	def testThisWithMethodPrefix(){
   		code = method('''
   			eq$
   		''')
   		exercise()
   		assertEquals(THIS, sut.getCompletionMode())
+  		assertEquals("eq", sut.getMethodPrefix())
+  		assertEquals("", sut.getVariableName())
   	}
   
 
 	@Test
-  	def testTypeName01(){
+  	def testType(){
   		code = method('''
   			List$
   		''')
   		exercise()
   		assertEquals(TYPE_NAME, sut.getCompletionMode())
+  		assertEquals("", sut.getMethodPrefix())
+  		assertEquals("", sut.getVariableName())
   	}
   
   	@Test
-  	def testTypeName02(){
+  	def testQualifiedType(){
   		code = method('''
   			java.util.List$
   		''')
   		exercise()
   		assertEquals(TYPE_NAME, sut.getCompletionMode())
+  		assertEquals("", sut.getMethodPrefix())
+  		assertEquals("", sut.getVariableName())
   	}
+  	
 	@Test
-  	def testThis01c(){
+  	def testThisOnVariableName(){
   		code = method('''
   			Event evt;
   			evt$
   		''')
   		exercise()
   		assertEquals(THIS, sut.getCompletionMode())
+  		assertEquals("evt", sut.getMethodPrefix())
+  		assertEquals("", sut.getVariableName())
+  	}
+  	
+  	@Test
+  	def testBehindQualifiedType(){
+  		code = method('''
+  			List $
+  		''')
+  		exercise()
+  		assertNull(sut.getCompletionMode())
   	}
 
 	@Test
-  	def testVar02(){
+  	def testMemberAccess(){
   		code = method('''
   			Event evt;
   			evt.$
   		''')
   		exercise()
   		assertEquals(MEMBER_ACCESS, sut.getCompletionMode())
+  		assertEquals("", sut.getMethodPrefix())
+  		assertEquals("evt", sut.getVariableName())
   	}
 
 	@Test
-  	def testVar03(){
+  	def testQualifiedMemberAccess(){
   		code = method('''
   			Event evt;
   			evt.evt.$
   		''')
   		exercise()
   		assertEquals(MEMBER_ACCESS, sut.getCompletionMode())
+  		assertEquals("", sut.getMethodPrefix())
+  		assertEquals("evt.evt", sut.getVariableName())
+  	}
+  	
+  	@Test
+  	def testQualifiedMemberAccessWithMethodPrefix(){
+  		code = method('''
+  			Event evt;
+  			evt.evt.eq$
+  		''')
+  		exercise()
+  		assertEquals(MEMBER_ACCESS, sut.getCompletionMode())
+  		assertEquals("eq", sut.getMethodPrefix())
+  		assertEquals("evt.evt", sut.getVariableName())
+  	}
+  	
+  	@Test
+  	@Ignore("Not possible to distinguish this case and testThisOnVariableName")
+  	def testNoTemplates(){
+  		code = method('''
+  			Event evt = $
+  		''')
+  		exercise()
+  		assertEquals(null, sut.getCompletionMode())
   	}
 
 	def private exercise(){

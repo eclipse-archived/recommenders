@@ -15,8 +15,8 @@ class QueryTest {
   
 
 
-	CallsCompletionProposalComputer sut;
-	List<IJavaCompletionProposal> proposals;
+	CallsCompletionProposalComputer sut
+	List<IJavaCompletionProposal> proposals
 	CharSequence code
 	
 	@Test

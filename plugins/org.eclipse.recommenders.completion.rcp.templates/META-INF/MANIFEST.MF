@@ -6,8 +6,7 @@ Bundle-Version: 0.5.1.qualifier
 Bundle-ClassPath: .,
  /metadata
 Bundle-Vendor: Eclipse Code Recommenders
-Export-Package: org.eclipse.recommenders.internal.completion.rcp.templates,
- org.eclipse.recommenders.internal.completion.rcp.templates.types
+Export-Package: org.eclipse.recommenders.internal.completion.rcp.templates
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,

@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.templates;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +22,10 @@ import org.apache.commons.lang3.CharUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.internal.codeassist.ISearchRequestor;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
@@ -33,33 +37,28 @@ import org.eclipse.jdt.internal.compiler.env.AccessRestriction;
 import org.eclipse.jdt.internal.core.DefaultWorkingCopyOwner;
 import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.SearchableEnvironment;
-import org.eclipse.jdt.internal.corext.template.java.AbstractJavaContextType;
-import org.eclipse.jdt.internal.corext.template.java.JavaContext;
-import org.eclipse.jdt.internal.corext.template.java.JavaContextType;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.internal.corext.util.JdtFlags;
+import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.IContextInformation;
-import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
+import org.eclipse.recommenders.internal.completion.rcp.calls.engine.AstBasedObjectUsageResolver;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.completion.rcp.templates.code.CodeBuilder;
-import org.eclipse.recommenders.internal.completion.rcp.templates.types.CompletionTargetVariable;
-import org.eclipse.recommenders.internal.completion.rcp.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
-import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite;
+import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
+import org.eclipse.recommenders.utils.rcp.ast.MethodDeclarationFinder;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
@@ -77,39 +76,28 @@ import com.google.inject.Inject;
 public final class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
     public static enum CompletionMode {
-        TYPE_NAME, MEMBER_ACCESS, UNKNOWN, THIS
+        TYPE_NAME, MEMBER_ACCESS, THIS
     }
 
-    private AbstractJavaContextType templateContextType;
     private final IRecommendersCompletionContextFactory ctxFactory;
     private IRecommendersCompletionContext rCtx;
     private IMethod enclosingMethod;
-    private IType receiverType;
     private Set<IType> candidates;
-    private String receiverName;
-    private String methodNamePrefix;
+    private String variableName;
+    private boolean requiresConstructor;
+    private String methodPrefix;
     private CompletionMode mode;
     private final IModelArchiveStore<IType, IObjectMethodCallsNet> store;
-    private final JavaElementResolver jdtCache;
+    private final JavaElementResolver elementResolver;
     private Image icon;
 
-    /**
-     * @param patternRecommender
-     *            Computes and returns patterns suitable for the active completion request.
-     * @param codeBuilder
-     *            The {@link CodeBuilder} will turn MethodCalls into the code to be used by the eclipse template engine.
-     * @param contextResolver
-     *            Responsible for computing an {@link IIntelligentCompletionContext} from a
-     *            {@link ContentAssistInvocationContext} which is given by the editor for each completion request.
-     */
     @Inject
     public TemplatesCompletionProposalComputer(final IRecommendersCompletionContextFactory ctxFactory,
-            final IModelArchiveStore<IType, IObjectMethodCallsNet> store, final JavaElementResolver jdtCache) {
+            final IModelArchiveStore<IType, IObjectMethodCallsNet> store, final JavaElementResolver elementResolver) {
         this.ctxFactory = ctxFactory;
         this.store = store;
-        this.jdtCache = jdtCache;
+        this.elementResolver = elementResolver;
         loadImage();
-        initializeTemplateContextType();
     }
 
     private void loadImage() {
@@ -127,32 +115,14 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         return mode;
     }
 
-    // /**
-    // * Initializes the proposal builder.
-    // *
-    // * @param codeBuilder
-    // * The {@link CodeBuilder} will turn {@link MethodCall}s into the code to be used by the eclipse template
-    // * engine.
-    // */
-    // private void initializeProposalBuilder(final CodeBuilder codeBuilder) {
-    // final Bundle bundle = FrameworkUtil.getBundle(TemplatesCompletionProposalComputer.class);
-    // Image icon = null;
-    // if (bundle != null) {
-    // final ImageDescriptor desc = imageDescriptorFromPlugin(bundle.getSymbolicName(), "metadata/icon2.gif");
-    // icon = desc.createImage();
-    // }
-    // completionProposalsBuilder = new CompletionProposalsBuilder(icon, codeBuilder);
-    // }
+    @VisibleForTesting
+    public String getVariableName() {
+        return variableName;
+    }
 
-    /**
-     * Sets the appropriate <code>ContextType</code> for all computed templates.
-     */
-    private void initializeTemplateContextType() {
-        final JavaPlugin plugin = JavaPlugin.getDefault();
-        if (plugin != null) {
-            templateContextType = (AbstractJavaContextType) plugin.getTemplateContextRegistry().getContextType(
-                    JavaContextType.ID_ALL);
-        }
+    @VisibleForTesting
+    public String getMethodPrefix() {
+        return methodPrefix;
     }
 
     @Override
@@ -162,81 +132,138 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         if (!findEnclosingMethod()) {
             return Collections.emptyList();
         }
-
-        findCompletionMode();
-        if (mode != CompletionMode.TYPE_NAME && mode != CompletionMode.THIS) {
+        if (!findCompletionMode()) {
             return Collections.emptyList();
         }
         if (!findPotentialTypes()) {
             return Collections.emptyList();
         }
 
-        final ProposalBuilder proposalBuilder = new ProposalBuilder(icon, rCtx, jdtCache);
-
+        final ProposalBuilder proposalBuilder = new ProposalBuilder(icon, rCtx, elementResolver, variableName);
         for (final IType t : candidates) {
-            final Optional<IObjectMethodCallsNet> opt = store.aquireModel(t);
-            if (!opt.isPresent()) {
-                continue;
+            addPatternsForType(t, proposalBuilder);
+        }
+        return proposalBuilder.createProposals();
+    }
+
+    private void addPatternsForType(final IType t, final ProposalBuilder proposalBuilder) {
+        final Optional<IObjectMethodCallsNet> optModel = store.aquireModel(t);
+        if (!optModel.isPresent()) {
+            return;
+        }
+        final IObjectMethodCallsNet model = optModel.get();
+
+        final ObjectUsage query = createQuery(t);
+        model.setQuery(query);
+
+        final List<Tuple<String, Double>> callgroups = getMostLikelyPatternsSortedByProbability(model);
+        for (final Tuple<String, Double> p : callgroups) {
+            final String patternId = p.getFirst();
+            model.setPattern(patternId);
+            for (final Tuple<String, Double> def : model.getDefinitions()) {
+                final Collection<IMethodName> calls = getCallsForDefinition(model, VmMethodName.get(def.getFirst()));
+                if (calls.removeAll(query.calls)) {
+                    System.out.println();
+                }
+                if (calls.size() == 0) {
+                    continue;
+                }
+
+                final PatternRecommendation pattern = new PatternRecommendation(patternId, model.getType(), calls,
+                        p.getSecond());
+                proposalBuilder.addPattern(pattern);
             }
-            final IObjectMethodCallsNet net = opt.get();
+        }
 
-            final ObjectUsage query = new ObjectUsage();
-            final Optional<IMethod> ovrMethod = JdtUtils.findOverriddenMethod(enclosingMethod);
-            query.contextSuper = jdtCache.toRecMethod(ovrMethod.orNull()).orNull();
+        store.releaseModel(model);
+    }
 
-            final IMethod firstMethod = JdtUtils.findFirstDeclaration(enclosingMethod);
-            query.contextFirst = jdtCache.toRecMethod(firstMethod).orNull();
-            net.setQuery(query);
+    private Collection<IMethodName> getCallsForDefinition(final IObjectMethodCallsNet model,
+            final IMethodName definition) {
+        boolean constructorAdded = false;
 
-            final double sum = 0.0d;
+        final TreeSet<IMethodName> calls = Sets.newTreeSet();
+        final SortedSet<Tuple<IMethodName, Double>> rec = model.getRecommendedMethodCalls(0.2d);
+        if (rec.isEmpty()) {
+            return Collections.emptyList();
+        }
+        if (requiresConstructor && definition.isInit()) {
+            calls.add(definition);
+            constructorAdded = true;
+        }
+        if (requiresConstructor && !constructorAdded) {
+            return Collections.emptyList();
+        }
+        for (final Tuple<IMethodName, Double> pair : rec) {
+            calls.add(pair.getFirst());
+        }
+        if (!containsCallWithMethodPrefix(calls)) {
+            return Collections.emptyList();
+        }
+        return calls;
+    }
 
-            final DefinitionSite.Kind[] values = { DefinitionSite.Kind.NEW };
+    private boolean containsCallWithMethodPrefix(final TreeSet<IMethodName> calls) {
+        for (final IMethodName call : calls) {
+            if (call.getName().startsWith(methodPrefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-            for (final DefinitionSite.Kind k : values) {
-                query.kind = k;
-                net.setQuery(query);
-                final List<Tuple<String, Double>> callgroups = getMostLikelyPatternsSortedByProbability(net);
-                for (final Tuple<String, Double> p : callgroups) {
-                    final String patternId = p.getFirst();
-                    net.setPattern(patternId);
-                    for (final Tuple<String, Double> def : net.getDefinitions()) {
-                        final double prob = p.getSecond();
+    private ObjectUsage createQuery(final IType t) {
+        final ObjectUsage query = new ObjectUsage();
+        query.type = elementResolver.toRecType(t);
+        setContextOnQuery(query);
+        query.kind = Kind.NEW;
+        requiresConstructor = true;
 
-                        final SortedSet<Tuple<IMethodName, Double>> rec = net.getRecommendedMethodCalls(0.2d);
-                        if (rec.isEmpty()) {
-                            continue;
-                        }
-
-                        final TreeSet<IMethodName> calls = Sets.newTreeSet();
-
-                        calls.add(VmMethodName.get(def.getFirst()));
-
-                        for (final Tuple<IMethodName, Double> pair : rec) {
-                            calls.add(pair.getFirst());
-                        }
-
-                        System.out.printf("%3.3f def:%s calls:\n", prob, def);
-                        for (final IMethodName call : calls) {
-                            System.out.printf("\t%s\n", call);
-                        }
-
-                        final PatternRecommendation pattern = new PatternRecommendation(patternId, net.getType(),
-                                calls, p.getSecond());
-                        proposalBuilder.addPattern(pattern);
+        if (mode == CompletionMode.THIS || mode == CompletionMode.MEMBER_ACCESS) {
+            final Optional<ObjectUsage> optUsage = findCompletionObjectUsage();
+            if (optUsage.isPresent()) {
+                final ObjectUsage usage = optUsage.get();
+                query.calls = usage.calls;
+                if (usage.kind != null) {
+                    query.kind = usage.kind;
+                    requiresConstructor = query.kind == Kind.UNKNOWN;
+                }
+                if (usage.definition != null) {
+                    query.definition = usage.definition;
+                    final Optional<IMethodName> def = rCtx.getMethodDef();
+                    if (def.isPresent()) {
+                        query.definition = def.get();
+                        query.kind = Kind.METHOD_RETURN;
+                        requiresConstructor = false;
                     }
                 }
             }
-            store.releaseModel(net);
         }
 
-        // if (!findReceiverType()) {
-        // return Collections.emptyList();
-        // }
-        // if (!findReceiverName()) {
-        // return Collections.emptyList();
-        // }
-        // findRequiredMethodNamePrefix();
-        return proposalBuilder.createProposals();
+        return query;
+    }
+
+    private Optional<ObjectUsage> findCompletionObjectUsage() {
+        final CompilationUnit ast = rCtx.getAST();
+        final Optional<IMethod> enclosingMethod = rCtx.getEnclosingMethod();
+        if (enclosingMethod.isPresent()) {
+            final IMethod jdtMethod = enclosingMethod.get();
+            final IMethodName recMethod = elementResolver.toRecMethod(jdtMethod).or(VmMethodName.NULL);
+            final Optional<MethodDeclaration> astMethod = MethodDeclarationFinder.find(ast, recMethod);
+            if (astMethod.isPresent()) {
+                final AstBasedObjectUsageResolver r = new AstBasedObjectUsageResolver();
+                return Optional.of(r.findObjectUsage(variableName, astMethod.get()));
+            }
+        }
+        return Optional.absent();
+    }
+
+    private void setContextOnQuery(final ObjectUsage query) {
+        final Optional<IMethod> ovrMethod = JdtUtils.findOverriddenMethod(enclosingMethod);
+        query.contextSuper = elementResolver.toRecMethod(ovrMethod.orNull()).orNull();
+
+        final IMethod firstMethod = JdtUtils.findFirstDeclaration(enclosingMethod);
+        query.contextFirst = elementResolver.toRecMethod(firstMethod).orNull();
     }
 
     private List<Tuple<String, Double>> getMostLikelyPatternsSortedByProbability(final IObjectMethodCallsNet net) {
@@ -252,7 +279,11 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         return p;
     }
 
-    private void findCompletionMode() {
+    private boolean findCompletionMode() {
+        variableName = "";
+        methodPrefix = "";
+        mode = null;
+
         final ASTNode n = rCtx.getCompletionNode();
         if (n instanceof CompletionOnSingleNameReference) {
             if (isPotentialClassName((CompletionOnSingleNameReference) n)) {
@@ -260,38 +291,66 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             } else {
                 // eq$ --> receiver is this
                 mode = CompletionMode.THIS;
+                methodPrefix = rCtx.getReceiverName();
             }
         } else if (n instanceof CompletionOnQualifiedNameReference) {
             if (isPotentialClassName((CompletionOnQualifiedNameReference) n)) {
                 mode = CompletionMode.TYPE_NAME;
             } else {
                 mode = CompletionMode.MEMBER_ACCESS;
+                variableName = rCtx.getReceiverName();
+                methodPrefix = rCtx.getPrefix();
             }
         } else if (n instanceof CompletionOnMemberAccess) {
-            Expression ma = ((CompletionOnMemberAccess) n).receiver;
+            final Expression ma = ((CompletionOnMemberAccess) n).receiver;
             if (ma.isImplicitThis() || ma.isSuper() || ma.isThis()) {
                 mode = CompletionMode.THIS;
             } else {
                 mode = CompletionMode.MEMBER_ACCESS;
             }
-        } else {
-            mode = CompletionMode.UNKNOWN;
         }
+        return mode != null;
     }
 
     private boolean findPotentialTypes() {
-        final ASTNode n = rCtx.getCompletionNode();
-        final ASTNode p = rCtx.getCompletionNodeParent();
-        CompletionOnSingleNameReference c = null;
-        if (n instanceof CompletionOnSingleNameReference) {
-            c = (CompletionOnSingleNameReference) n;
-            candidates = findTypesBySimpleName(c.token);
+        if (mode == CompletionMode.TYPE_NAME) {
+            final ASTNode n = rCtx.getCompletionNode();
+            CompletionOnSingleNameReference c = null;
+            if (n instanceof CompletionOnSingleNameReference) {
+                c = (CompletionOnSingleNameReference) n;
+                candidates = findTypesBySimpleName(c.token);
+            }
+        } else if (mode == CompletionMode.THIS) {
+            createCandidatesFromOptional(getSupertypeOfThis());
+        } else {
+            createCandidatesFromOptional(rCtx.getReceiverType());
         }
         return candidates != null;
     }
 
+    private Optional<IType> getSupertypeOfThis() {
+        try {
+            final IMethod m = rCtx.getEnclosingMethod().orNull();
+            if (m == null || JdtFlags.isStatic(m)) {
+                return Optional.absent();
+            }
+            final IType type = m.getDeclaringType();
+            final ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(type);
+            return Optional.of(hierarchy.getSuperclass(type));
+        } catch (final Exception e) {
+            RecommendersPlugin.logError(e, "Failed to resolve super type of %s", rCtx.getEnclosingElement());
+            return Optional.absent();
+        }
+    }
+
+    private void createCandidatesFromOptional(final Optional<IType> optType) {
+        if (optType.isPresent()) {
+            candidates = Sets.newHashSet(optType.get());
+        }
+    }
+
     private boolean isPotentialClassName(final CompletionOnQualifiedNameReference c) {
-        char[] name = c.completionIdentifier;
+        final char[] name = c.completionIdentifier;
         return name != null && name.length > 0 && CharUtils.isAsciiAlphaUpper(name[0]);
     }
 
@@ -299,89 +358,10 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
         return c.token != null && c.token.length > 0 && CharUtils.isAsciiAlphaUpper(c.token[0]);
     }
 
-    private void findRequiredMethodNamePrefix() {
-        methodNamePrefix = rCtx.getPrefix();
-    }
-
-    private boolean findReceiverName() {
-        receiverName = rCtx.getReceiverName();
-        // actually, this is never null, right?
-        return receiverName != null;
-    }
-
-    private boolean findReceiverType() {
-        receiverType = rCtx.getReceiverType().orNull();
-        return receiverType != null;
-    }
-
     private boolean findEnclosingMethod() {
         enclosingMethod = rCtx.getEnclosingMethod().orNull();
         return enclosingMethod != null;
 
-    }
-
-    //
-    // /**
-    // * @param context
-    // * The context from which the completion request was invoked.
-    // * @return True, if the computer should try to find proposals for the given context.
-    // */
-    // private boolean shouldComputeProposalsForContext() {
-    // if (!rCtx.getEnclosingMethod().isPresent()) {
-    // return false;
-    // }
-    // if (!rCtx.getExpectedType().isPresent()) {
-    // return !(rCtx.getCompletionNode() instanceof CompletionOnMemberAccess) || context.getVariable() != null
-    // && context.getVariable().isThis();
-    // }
-    // return rCtx.getCompletionNode() instanceof CompletionOnLocalName
-    // || rCtx.getCompletionNode() instanceof CompletionOnSingleNameReference;
-    // }
-
-    // /**
-    // * @param rCtx
-    // * The context from where the completion request was invoked.
-    // * @return The completion proposals to be displayed in the editor.
-    // */
-    // public ImmutableList<? extends IJavaCompletionProposal> computeCompletionProposals() {
-    // final CompletionTargetVariable completionTargetVariable = CompletionTargetVariableBuilder
-    // .createInvokedVariable(rCtx);
-    // if (completionTargetVariable == null) {
-    // return ImmutableList.of();
-    // }
-    // return computeCompletionProposalsForTargetVariable(completionTargetVariable);
-    // }
-    //
-    // /**
-    // * @param completionTargetVariable
-    // * The variable for which the completion proposals shall be created.
-    // * @return The completion proposals to be displayed in the editor.
-    // */
-    // private ImmutableList<? extends IJavaCompletionProposal> computeCompletionProposalsForTargetVariable(
-    // final CompletionTargetVariable completionTargetVariable) {
-    // final Collection<PatternRecommendation> patternRecommendations = patternRecommender
-    // .computeRecommendations(completionTargetVariable);
-    // if (patternRecommendations.isEmpty()) {
-    // return ImmutableList.of();
-    // }
-    // final DocumentTemplateContext templateContext = getTemplateContext(completionTargetVariable);
-    // return completionProposalsBuilder.computeProposals(patternRecommendations, templateContext,
-    // completionTargetVariable);
-    //
-    // }
-
-    /**
-     * @param completionTargetVariable
-     *            The variable on which the completion request was executed.
-     * @return A {@link DocumentTemplateContext} suiting the completion context.
-     */
-    private DocumentTemplateContext getTemplateContext(final CompletionTargetVariable completionTargetVariable) {
-        final Region region = completionTargetVariable.getDocumentRegion();
-        final IDocument document = rCtx.getJavaContext().getDocument();
-        final JavaContext templateContext = new JavaContext(templateContextType, document, region.getOffset(),
-                region.getLength(), rCtx.getCompilationUnit());
-        templateContext.setForceEvaluation(true);
-        return templateContext;
     }
 
     @Override
@@ -430,7 +410,6 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
                             result.add(res);
                         }
                     } catch (final JavaModelException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }

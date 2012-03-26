@@ -31,5 +31,6 @@ Require-Bundle: org.mockito,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.utils.rcp,
  org.eclipse.recommenders.jayes;bundle-version="0.5.1",
- org.eclipse.recommenders.jayes.serialization;bundle-version="0.5.1"
+ org.eclipse.recommenders.jayes.serialization;bundle-version="0.5.1",
+ org.eclipse.recommenders.completion.rcp.templates;bundle-version="0.5.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -24,8 +24,6 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.internal.completion.rcp.templates.types.JavaTemplateProposal;
-import org.eclipse.recommenders.internal.completion.rcp.templates.types.PatternRecommendation;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -45,12 +43,14 @@ public class ProposalBuilder {
     private final IRecommendersCompletionContext rCtx;
     private JavaContext documentContext;
     private final JavaElementResolver resolver;
+    private final String variableName;
 
     public ProposalBuilder(final Image icon, final IRecommendersCompletionContext rCtx,
-            final JavaElementResolver resolver) {
+            final JavaElementResolver resolver, final String variableName) {
         this.icon = icon;
         this.rCtx = rCtx;
         this.resolver = resolver;
+        this.variableName = variableName;
         createDocumentContext();
     }
 
@@ -62,7 +62,9 @@ public class ProposalBuilder {
 
             final JavaContentAssistInvocationContext javaContext = rCtx.getJavaContext();
             final Region region = rCtx.getReplacementRange();
-            documentContext = new JavaContext(type, javaContext.getDocument(), region.getOffset(), region.getLength(),
+            final int offset = region.getOffset() - variableName.length();
+            final int length = Math.max(0, region.getLength() - 1);
+            documentContext = new JavaContext(type, javaContext.getDocument(), offset, length,
                     rCtx.getCompilationUnit());
             documentContext.setForceEvaluation(true);
         } else {
@@ -119,7 +121,7 @@ public class ProposalBuilder {
                 builder.append(String.format("${constructedType:newType(%s)}",
                         getTypeIdentifier(method.getDeclaringType())));
                 builder.append(" ");
-                builder.append(getVariableName(method));
+                builder.append(getNewVariableNameFromMethod(method));
                 builder.append(" = ");
             } else if (!method.isVoid()) {
                 if (method.getReturnType().isPrimitiveType()) {
@@ -135,7 +137,7 @@ public class ProposalBuilder {
                                     .getArrayDimensions()) : ""));
                 }
                 builder.append(" ");
-                builder.append(getVariableName(method));
+                builder.append(getNewVariableNameFromMethod(method));
                 builder.append(" = ");
             }
         }
@@ -143,12 +145,9 @@ public class ProposalBuilder {
         private void appendInvocationPrefix(final IMethodName method) {
             if (method.isInit()) {
                 builder.append("new ");
-            } else if (!isImplicitThis() && (rCtx.getReceiverName() == null || rCtx.getReceiverName().isEmpty())) {
-                builder.append("${unconstructed}.");
-            } else if (rCtx.getReceiverName() != null && !rCtx.getReceiverName().isEmpty()) {
-                builder.append("${unconstructed}.");
-                // builder.append(rCtx.getReceiverName());
-                // builder.append(".");
+            } else if (!isImplicitThis() && !variableName.isEmpty()) {
+                builder.append(variableName);
+                builder.append(".");
             }
         }
 
@@ -214,27 +213,18 @@ public class ProposalBuilder {
             return name;
         }
 
-        private String getVariableName(final IMethodName method) {
-            if (rCtx.getReceiverType().isPresent()) {
-                return rCtx.getReceiverName();
-            } else {
-                return getNewVariableNameFromMethod(method);
-            }
-        }
-
         private String getNewVariableNameFromMethod(final IMethodName method) {
-            String variableName;
             if (method.isInit()) {
-                variableName = String.format("${unconstructed:newName(%s)}",
-                        getTypeIdentifier(method.getDeclaringType()));
-            } else {
+                return String.format("${unconstructed:newName(%s)}", getTypeIdentifier(method.getDeclaringType()));
+            } else if (!method.isVoid()) {
                 if (method.getName().startsWith("get")) {
-                    variableName = StringUtils.uncapitalize(method.getName().substring(3));
+                    return StringUtils.uncapitalize(method.getName().substring(3));
                 } else {
-                    variableName = StringUtils.uncapitalize(method.getReturnType().getClassName());
+                    return StringUtils.uncapitalize(method.getReturnType().getClassName());
                 }
+            } else {
+                throw new IllegalStateException();
             }
-            return variableName;
         }
 
         public String build() {
@@ -250,4 +240,5 @@ public class ProposalBuilder {
                     .replace('/', '.').substring(1);
         }
     }
+
 }

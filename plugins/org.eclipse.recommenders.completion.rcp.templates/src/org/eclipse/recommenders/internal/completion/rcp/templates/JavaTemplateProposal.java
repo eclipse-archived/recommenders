@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.templates.types;
+package org.eclipse.recommenders.internal.completion.rcp.templates;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;

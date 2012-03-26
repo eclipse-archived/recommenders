@@ -1,218 +1,238 @@
 package org.eclipse.recommenders.tests.completion.rcp.templates;
 
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import junit.framework.Assert;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
+import org.eclipse.recommenders.internal.completion.rcp.templates.TemplatesCompletionProposalComputer;
+import org.eclipse.recommenders.internal.completion.rcp.templates.TemplatesCompletionProposalComputer.CompletionMode;
+import org.eclipse.recommenders.tests.CodeBuilder;
+import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
+import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
+import org.eclipse.recommenders.tests.completion.rcp.calls.ModelStoreMock;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Exceptions;
-import org.eclipse.xtext.xbase.lib.Functions.Function0;
-import org.junit.Before;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("all")
-@Ignore
 public class TemplateCompletionProposalComputerTest {
-  private static AtomicInteger classId = new Function0<AtomicInteger>() {
-    public AtomicInteger apply() {
-      AtomicInteger _atomicInteger = new AtomicInteger();
-      return _atomicInteger;
-    }
-  }.apply();
+  private TemplatesCompletionProposalComputer sut;
   
-  private static JavaProjectFixture fixture = new Function0<JavaProjectFixture>() {
-    public JavaProjectFixture apply() {
-      IWorkspace _workspace = ResourcesPlugin.getWorkspace();
-      JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
-      return _javaProjectFixture;
-    }
-  }.apply();
+  private List<IJavaCompletionProposal> proposals;
   
-  @Before
-  public void before() {
+  private CharSequence code;
+  
+  @Test
+  public void testThis() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.THIS, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("", _variableName);
+  }
+  
+  @Test
+  public void testThisWithThisPrefix() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("this.$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.THIS, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("", _variableName);
+  }
+  
+  @Test
+  public void testThisWithSuperPrefix() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("super.$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.THIS, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("", _variableName);
+  }
+  
+  @Test
+  public void testThisWithMethodPrefix() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("eq$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.THIS, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("eq", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("", _variableName);
+  }
+  
+  @Test
+  public void testType() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("List$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.TYPE_NAME, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("", _variableName);
+  }
+  
+  @Test
+  public void testQualifiedType() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("java.util.List$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.TYPE_NAME, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("", _variableName);
+  }
+  
+  @Test
+  public void testThisOnVariableName() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Event evt;");
+      _builder.newLine();
+      _builder.append("evt$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.THIS, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("evt", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("", _variableName);
+  }
+  
+  @Test
+  public void testBehindQualifiedType() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("List $");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertNull(_completionMode);
+  }
+  
+  @Test
+  public void testMemberAccess() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Event evt;");
+      _builder.newLine();
+      _builder.append("evt.$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.MEMBER_ACCESS, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("evt", _variableName);
+  }
+  
+  @Test
+  public void testQualifiedMemberAccess() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Event evt;");
+      _builder.newLine();
+      _builder.append("evt.evt.$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.MEMBER_ACCESS, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("evt.evt", _variableName);
+  }
+  
+  @Test
+  public void testQualifiedMemberAccessWithMethodPrefix() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Event evt;");
+      _builder.newLine();
+      _builder.append("evt.evt.eq$");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(CompletionMode.MEMBER_ACCESS, _completionMode);
+      String _methodPrefix = this.sut.getMethodPrefix();
+      Assert.assertEquals("eq", _methodPrefix);
+      String _variableName = this.sut.getVariableName();
+      Assert.assertEquals("evt.evt", _variableName);
+  }
+  
+  @Test
+  @Ignore("Not possible to distinguish this case and testThisOnVariableName")
+  public void testNoTemplates() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Event evt = $");
+      _builder.newLine();
+      CharSequence _method = CodeBuilder.method(_builder);
+      this.code = _method;
+      this.exercise();
+      CompletionMode _completionMode = this.sut.getCompletionMode();
+      Assert.assertEquals(null, _completionMode);
+  }
+  
+  private List<IJavaCompletionProposal> exercise() {
     try {
-      TemplateCompletionProposalComputerTest.fixture.clear();
-    } catch (Exception _e) {
-      throw Exceptions.sneakyThrow(_e);
-    }
-  }
-  
-  public CharSequence method(final CharSequence code) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import javax.swing.*;");
-    _builder.newLine();
-    _builder.append("public class Template");
-    int _incrementAndGet = TemplateCompletionProposalComputerTest.classId.incrementAndGet();
-    _builder.append(_incrementAndGet, "");
-    _builder.append(" {");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t");
-    _builder.append("void test (){");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append(code, "		");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t");
-    _builder.append("}");
-    _builder.newLine();
-    _builder.append("}");
-    _builder.newLine();
-    return _builder;
-  }
-  
-  @Test
-  public void testNotImportedTypeNameCompletion() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("// import java.awt.Button;");
-      _builder.newLine();
-      _builder.append("public class Template");
-      int _incrementAndGet = TemplateCompletionProposalComputerTest.classId.incrementAndGet();
-      _builder.append(_incrementAndGet, "");
-      _builder.append(" {");
-      _builder.newLineIfNotEmpty();
-      _builder.append("\t");
-      _builder.append("void test() {");
-      _builder.newLine();
-      _builder.append("\t\t");
-      _builder.append("Button$");
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.append("}");
-      final CharSequence code = _builder;
-      this.test(code);
-  }
-  
-  @Test
-  public void testOnQulifiedTypeName() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("// import java.awt.Button;");
-      _builder.newLine();
-      _builder.append("public class Template");
-      int _incrementAndGet = TemplateCompletionProposalComputerTest.classId.incrementAndGet();
-      _builder.append(_incrementAndGet, "");
-      _builder.append(" {");
-      _builder.newLineIfNotEmpty();
-      _builder.append("\t");
-      _builder.append("void test() {");
-      _builder.newLine();
-      _builder.append("\t\t");
-      _builder.append("java.awt.Button$");
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.append("}");
-      final CharSequence code = _builder;
-      this.test(code);
-  }
-  
-  @Test
-  public void testImportedTypeNameCompletion() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("import java.awt.Button;");
-      _builder.newLine();
-      _builder.append("public class Template");
-      int _incrementAndGet = TemplateCompletionProposalComputerTest.classId.incrementAndGet();
-      _builder.append(_incrementAndGet, "");
-      _builder.append(" {");
-      _builder.newLineIfNotEmpty();
-      _builder.append("\t");
-      _builder.append("void test() {");
-      _builder.newLine();
-      _builder.append("\t\t");
-      _builder.append("Button$");
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.append("}");
-      final CharSequence code = _builder;
-      this.test(code);
-  }
-  
-  @Test
-  public void testInMessageSend() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("List l;");
-      _builder.newLine();
-      _builder.append("l.add(l$);");
-      _builder.newLine();
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
-  }
-  
-  @Test
-  public void testInCompletionOnQualifiedNameRef() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("List l;");
-      _builder.newLine();
-      _builder.append("l.$");
-      _builder.newLine();
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
-  }
-  
-  @Test
-  public void testInMessageSend2() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("List l;");
-      _builder.newLine();
-      _builder.append("l.add(l.$);");
-      _builder.newLine();
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
-  }
-  
-  @Test
-  public void testLocalWithTypeName() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("import java.awt.Button;");
-      _builder.newLine();
-      _builder.append("public class Template");
-      int _incrementAndGet = TemplateCompletionProposalComputerTest.classId.incrementAndGet();
-      _builder.append(_incrementAndGet, "");
-      _builder.append(" {");
-      _builder.newLineIfNotEmpty();
-      _builder.append("\t");
-      _builder.append("void test() {");
-      _builder.newLine();
-      _builder.append("\t\t");
-      _builder.append("Integer i= null;");
-      _builder.newLine();
-      _builder.append("\t\t");
-      _builder.append("i$");
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.append("}");
-      final CharSequence code = _builder;
-      this.test(code);
-  }
-  
-  private void test(final CharSequence code) {
-    this.test(code, 1);
-  }
-  
-  private void test(final CharSequence code, final int numberOfExpectedProposals) {
-    try {
+      List<IJavaCompletionProposal> _xblockexpression = null;
       {
         IWorkspace _workspace = ResourcesPlugin.getWorkspace();
         JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
         final JavaProjectFixture fixture = _javaProjectFixture;
-        String _string = code.toString();
+        String _string = this.code.toString();
         Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(_string);
         final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
         ICompilationUnit _first = struct.getFirst();
@@ -221,7 +241,20 @@ public class TemplateCompletionProposalComputerTest {
         CompilationUnit _reconcile = cu.reconcile(AST.JLS4, true, true, null, null);
         final CompilationUnit ast = _reconcile;
         Assert.assertNotNull(ast);
+        RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
+        ModelStoreMock _modelStoreMock = new ModelStoreMock();
+        JavaElementResolver _javaElementResolver = new JavaElementResolver();
+        TemplatesCompletionProposalComputer _templatesCompletionProposalComputer = new TemplatesCompletionProposalComputer(_recommendersCompletionContextFactoryMock, _modelStoreMock, _javaElementResolver);
+        this.sut = _templatesCompletionProposalComputer;
+        Set<Integer> _second = struct.getSecond();
+        Integer _head = IterableExtensions.<Integer>head(_second);
+        final Integer pos = _head;
+        JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (pos).intValue());
+        List _computeCompletionProposals = this.sut.computeCompletionProposals(_javaContentAssistContextMock, null);
+        List<IJavaCompletionProposal> _proposals = this.proposals = _computeCompletionProposals;
+        _xblockexpression = (_proposals);
       }
+      return _xblockexpression;
     } catch (Exception _e) {
       throw Exceptions.sneakyThrow(_e);
     }
