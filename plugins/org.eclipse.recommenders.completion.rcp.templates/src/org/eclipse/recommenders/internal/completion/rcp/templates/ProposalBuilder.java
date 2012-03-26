@@ -43,7 +43,7 @@ public class ProposalBuilder {
     private final IRecommendersCompletionContext rCtx;
     private JavaContext documentContext;
     private final JavaElementResolver resolver;
-    private final String variableName;
+    private String variableName;
 
     public ProposalBuilder(final Image icon, final IRecommendersCompletionContext rCtx,
             final JavaElementResolver resolver, final String variableName) {
@@ -215,6 +215,7 @@ public class ProposalBuilder {
 
         private String getNewVariableNameFromMethod(final IMethodName method) {
             if (method.isInit()) {
+                variableName = "${unconstructed}";
                 return String.format("${unconstructed:newName(%s)}", getTypeIdentifier(method.getDeclaringType()));
             } else if (!method.isVoid()) {
                 if (method.getName().startsWith("get")) {
