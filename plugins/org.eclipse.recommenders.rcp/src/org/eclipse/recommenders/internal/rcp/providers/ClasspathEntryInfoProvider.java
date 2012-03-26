@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.providers;
 
 import static com.google.common.base.Optional.fromNullable;
+import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.io.File;
@@ -19,12 +20,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
@@ -36,9 +42,12 @@ import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JarPackageFragmentRootAdded;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectOpened;
 import org.eclipse.recommenders.rcp.events.NewClasspathEntryFound;
+import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.archive.ArchiveDetailsExtractor;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
+import org.eclipse.recommenders.utils.parser.OsgiVersionParser;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
+import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,6 +148,35 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
     @Subscribe
     public void onEvent(final JavaProjectOpened e) {
         try {
+            // XXX flight hack...
+            IResource mf = e.project.getProject().findMember(new Path("META-INF/MANIFEST.MF"));
+            if (mf != null && mf.exists() && mf.getType() == IResource.FILE) {
+                Manifest mf_ = new Manifest(((IFile) mf).getContents());
+                final Attributes attributes = mf_.getMainAttributes();
+                // names may look like this: "symbolic.name;singleton=true":
+                String symbolicName = substringBefore(attributes.getValue(Constants.BUNDLE_SYMBOLICNAME), ";");
+                final String version = attributes.getValue(Constants.BUNDLE_VERSION);
+                Version osgiversion = null;
+                if (version != null) {
+                    osgiversion = new OsgiVersionParser().parse(version);
+                }
+                for (IPackageFragmentRoot root : e.project.getPackageFragmentRoots()) {
+                    if (root.isArchive())
+                        continue;
+                    ClasspathEntryInfo res = new ClasspathEntryInfo();
+                    res.setSymbolicName(symbolicName);
+                    res.setVersion(osgiversion);
+                    File file = JdtUtils.getLocation(root).get();
+                    res.setModificationDate(new Date(file.lastModified()));
+                    cpeInfos.put(file, res);
+                    bus.post(new NewClasspathEntryFound(root, file, res));
+                }
+            }
+        } catch (Exception e1) {
+            log.warn("failed to read bundle manifest for project " + e.project.getElementName(), e1);
+        }
+
+        try {
             for (final IPackageFragmentRoot r : e.project.getAllPackageFragmentRoots()) {
                 final Optional<File> location = JdtUtils.getLocation(r);
                 if (isInterestingPackageFragmentRoot(r, location)) {
@@ -161,8 +199,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
                 }
                 if (r.isArchive()) {
                     try {
-                        final ArchiveDetailsExtractor extractor = new ArchiveDetailsExtractor(
-                                file);
+                        final ArchiveDetailsExtractor extractor = new ArchiveDetailsExtractor(file);
                         ClasspathEntryInfo res = new ClasspathEntryInfo();
                         res.setSymbolicName(extractor.extractName());
                         res.setVersion(extractor.extractVersion());

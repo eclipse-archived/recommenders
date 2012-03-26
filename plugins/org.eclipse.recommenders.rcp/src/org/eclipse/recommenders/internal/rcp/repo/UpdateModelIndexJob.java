@@ -51,10 +51,11 @@ public class UpdateModelIndexJob extends Job {
                 cleanDirectory(location);
                 downloadAndUnzipIndex(monitor);
             }
-            index.open();
         } catch (Exception e) {
             log.debug("Updating index cancelled.", e);
             return Status.CANCEL_STATUS;
+        } finally {
+            index.open();
         }
         return Status.OK_STATUS;
     }

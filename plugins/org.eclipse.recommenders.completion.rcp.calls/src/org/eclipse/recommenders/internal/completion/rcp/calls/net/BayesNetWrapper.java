@@ -30,7 +30,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
-import org.eclipse.recommenders.commons.bayesnet.CallsNetConstants;
 import org.eclipse.recommenders.commons.bayesnet.Node;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;

@@ -30,6 +30,7 @@ import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocIconLoader;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassOverridesModelStore;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassOverridesPatternsModelStore;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassSelfcallsModelStore;
+import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.MethodSelfcallsModelStore;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.webclient.ClientConfiguration;
 import org.eclipse.recommenders.webclient.WebServiceClient;
@@ -56,6 +57,7 @@ public class ExtdocModule extends AbstractModule {
         bind(ClassOverridesPatternsModelStore.class).in(Scopes.SINGLETON);
         bind(ClassOverridesModelStore.class).in(Scopes.SINGLETON);
         bind(ClassSelfcallsModelStore.class).in(Scopes.SINGLETON);
+        bind(MethodSelfcallsModelStore.class).in(Scopes.SINGLETON);
 
     }
 

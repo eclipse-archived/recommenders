@@ -67,7 +67,7 @@ public class RepositoryConsistencyManualChecks {
                 "org.eclipse.swt.win32.win32.x86_64", "org.eclipse.swt.win32.win32.x86",
                 "org.eclipse.swt.gtk.linux.x86_64", "org.eclipse.swt.gtk.linux.x86", };
 
-        String[] classifierIds = { "call", "ovrd", "ovrp" };
+        String[] classifierIds = { "call", "ovrd", "ovrp", "selfc", "selfm" };
 
         for (String cid : classifierIds) {
             for (String bid : bundleIds) {

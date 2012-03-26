@@ -27,10 +27,12 @@ import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassSelfcallsModelStore;
+import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.MethodSelfcallsModelStore;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.TreeBag;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
+import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -44,11 +46,13 @@ public final class SelfCallsProvider extends ExtdocProvider {
     private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
     private final ClassSelfcallsModelStore cStore;
+    private final MethodSelfcallsModelStore mStore;
 
     @Inject
-    public SelfCallsProvider(ClassSelfcallsModelStore cStore, final JavaElementResolver resolver,
-            final EventBus workspaceBus) {
+    public SelfCallsProvider(ClassSelfcallsModelStore cStore, MethodSelfcallsModelStore mStore,
+            final JavaElementResolver resolver, final EventBus workspaceBus) {
         this.cStore = cStore;
+        this.mStore = mStore;
         this.resolver = resolver;
         this.workspaceBus = workspaceBus;
 
@@ -75,22 +79,18 @@ public final class SelfCallsProvider extends ExtdocProvider {
         return Status.OK;
     }
 
-    // @JavaSelectionSubscriber
-    // public Status onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
+    @JavaSelectionSubscriber
+    public Status onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
 
-    // for (IMethod current = method; current != null; current = JdtUtils.findOverriddenMethod(current).orNull()) {
-    // final Optional<IMethodName> opt = resolver.toRecMethod(current);
-    // if (!opt.isPresent()) {
-    // continue;
-    // }
-    // final MethodSelfcallDirectives selfcalls = proxy.findMethodSelfcallDirectives(opt.get());
-    // if (selfcalls != null) {
-    // runSyncInUiThread(new MethodSelfcallDirectivesRenderer(method, selfcalls, parent));
-    // return Status.OK;
-    // }
-    // }
-    // return Status.NOT_AVAILABLE;
-    // }
+        for (IMethod current = method; current != null; current = JdtUtils.findOverriddenMethod(current).orNull()) {
+            final Optional<MethodSelfcallDirectives> selfcalls = mStore.aquireModel(current);
+            if (selfcalls.isPresent()) {
+                runSyncInUiThread(new MethodSelfcallDirectivesRenderer(method, selfcalls.get(), parent));
+                return Status.OK;
+            }
+        }
+        return Status.NOT_AVAILABLE;
+    }
 
     private class TypeSelfcallDirectivesRenderer implements Runnable {
 

@@ -108,6 +108,9 @@ public final class ExtdocUtils {
 
             final int frequency = methods.count(method);
             final int percentage = (int) Math.round(frequency * 100.0d / total);
+            if (percentage < 5d) {
+                continue;
+            }
             final String phraseText = percentageToRecommendationPhrase(percentage);
             final String stats = format(" -   (%d %% - %d times)", percentage, frequency);
 

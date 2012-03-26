@@ -14,10 +14,12 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.ClassOverridePatterns;
 import org.eclipse.recommenders.extdoc.ClassSelfcallDirectives;
+import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchive;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
 import org.eclipse.recommenders.internal.rcp.models.archive.CachingModelArchive;
@@ -98,7 +100,7 @@ public class ManualModelStoreWiring {
 
     public static class ClassSelfcallsModelStore extends DefaultModelArchiveStore<IType, ClassSelfcallDirectives> {
 
-        static final Class gson = ClassOverrideDirectives.class;
+        static final Class gson = ClassSelfcallDirectives.class;
         static final String classifier = "selfc";
 
         // XXX static final String classifier = "selfm";
@@ -109,7 +111,32 @@ public class ManualModelStoreWiring {
             super(store("class-selfcalls.json"), classifier, repository, new IDependenciesFactory() {
 
                 @Override
-                public ModelArchiveResolutionJob newResolutionJob(ModelArchiveMetadata metadata, String classifier) {
+                public ModelArchiveResolutionJob newResolutionJob(final ModelArchiveMetadata metadata, String classifier) {
+                    return new ModelArchiveResolutionJob(metadata, cpeInfoProvider, repository, searchindex, classifier);
+                }
+
+                @Override
+                public IModelArchive newModelArchive(File file) throws IOException {
+                    MemberGsonZipPoolableModelFactory loader = new MemberGsonZipPoolableModelFactory(file, gson,
+                            jdtResolver);
+                    return new CachingModelArchive(loader);
+                }
+            });
+        }
+    }
+
+    public static class MethodSelfcallsModelStore extends DefaultModelArchiveStore<IMethod, MethodSelfcallDirectives> {
+
+        static final Class gson = MethodSelfcallDirectives.class;
+        static final String classifier = "selfm";
+
+        @Inject
+        public MethodSelfcallsModelStore(final IModelRepository repository, final JavaElementResolver jdtResolver,
+                final IClasspathEntryInfoProvider cpeInfoProvider, final IModelRepositoryIndex searchindex) {
+            super(store("method-selfcalls.json"), classifier, repository, new IDependenciesFactory() {
+
+                @Override
+                public ModelArchiveResolutionJob newResolutionJob(final ModelArchiveMetadata metadata, String classifier) {
                     return new ModelArchiveResolutionJob(metadata, cpeInfoProvider, repository, searchindex, classifier);
                 }
 

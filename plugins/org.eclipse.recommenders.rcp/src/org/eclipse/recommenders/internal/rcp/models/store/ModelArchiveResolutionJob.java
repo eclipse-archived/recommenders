@@ -14,7 +14,6 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.eclipse.core.runtime.Status.CANCEL_STATUS;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
-import static org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus.FAILED;
 import static org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus.RESOLVED;
 import static org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils.asCoordinate;
 
@@ -78,12 +77,10 @@ public class ModelArchiveResolutionJob extends Job {
                 return CANCEL_STATUS;
             }
 
-            if (isEmpty(cpeInfo.getFingerprint())) {
-                metadata.setError(format("Fingerprint for '%s' was null.", cpeInfo.getLocation()));
-                return CANCEL_STATUS;
+            Optional<Artifact> handle = Optional.absent();
+            if (!isEmpty(cpeInfo.getFingerprint())) {
+                handle = index.searchByFingerprint(cpeInfo.getFingerprint(), classifier);
             }
-
-            Optional<Artifact> handle = index.searchByFingerprint(cpeInfo.getFingerprint(), classifier);
             if (!handle.isPresent() && !isEmpty(cpeInfo.getSymbolicName())) {
                 handle = index.searchByArtifactId(cpeInfo.getSymbolicName(), classifier);
             }
@@ -116,7 +113,7 @@ public class ModelArchiveResolutionJob extends Job {
             return OK_STATUS;
 
         } catch (Exception x) {
-            metadata.setStatus(FAILED);
+            metadata.setStatus(ModelArchiveResolutionStatus.UNRESOLVED);
             metadata.setError(x.getMessage());
             return CANCEL_STATUS;
         } finally {
