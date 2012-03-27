@@ -65,7 +65,8 @@ public class ModelArchiveResolutionJob extends Job {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
 
-        monitor.beginTask("Model requested for " + metadata.getLocation().getName(), 4);
+        monitor.beginTask(String.format("Looking for '%s' model for %s", classifier, metadata.getLocation().getName()),
+                4);
         monitor.worked(1);
         metadata.setStatus(ModelArchiveResolutionStatus.UNRESOLVED);
         try {

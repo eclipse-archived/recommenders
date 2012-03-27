@@ -41,14 +41,11 @@ public class UpdateModelIndexJob extends Job {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         try {
-            index.close();
             File location = index.getLocation();
             if (doesNotExistOrIsAlmostEmptyFolder(location)) {
                 downloadAndUnzipIndex(monitor);
             } else if (!repo.isLatest(INDEX_COORDINATE)) {
                 repo.delete(INDEX_COORDINATE);
-                index.close();
-                cleanDirectory(location);
                 downloadAndUnzipIndex(monitor);
             }
         } catch (Exception e) {
@@ -67,13 +64,19 @@ public class UpdateModelIndexJob extends Job {
     }
 
     private void downloadAndUnzipIndex(IProgressMonitor monitor) throws Exception {
-        repo.resolve(INDEX_COORDINATE, monitor);
+        try {
+            repo.resolve(INDEX_COORDINATE, monitor);
+        } catch (NullPointerException e) {
+            // we may have no internet... XXX this needs investigation
+        }
 
         File f = repo.location(INDEX_COORDINATE);
         if (!f.exists()) {
             return;
         }
+        index.close();
         File basedir = index.getLocation();
+        cleanDirectory(basedir);
         Zips.unzip(f, basedir);
     }
 }

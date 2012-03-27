@@ -14,6 +14,7 @@ import org.eclipse.recommenders.injection.InjectionService;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassOverridesModelStore;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassOverridesPatternsModelStore;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassSelfcallsModelStore;
+import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.MethodSelfcallsModelStore;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -40,7 +41,8 @@ public class ExtdocPlugin extends AbstractUIPlugin {
         INSTANCE = null;
         Injector i = InjectionService.getInstance().getInjector();
         IModelArchiveStore[] stores = { i.getInstance(ClassOverridesPatternsModelStore.class),
-                i.getInstance(ClassOverridesModelStore.class), i.getInstance(ClassSelfcallsModelStore.class) };
+                i.getInstance(ClassOverridesModelStore.class), i.getInstance(ClassSelfcallsModelStore.class),
+                i.getInstance(MethodSelfcallsModelStore.class) };
         for (IModelArchiveStore<?, ?> store : stores) {
             try {
                 store.close();

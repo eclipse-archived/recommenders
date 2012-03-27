@@ -277,9 +277,11 @@ public class RecommendersModule extends AbstractModule implements Module {
         public final IClasspathEntryInfoProvider pgkInfoProvider;
 
         @Inject
-        private ServicesInitializer(final IAstProvider astProvider, final JavaModelEventsProvider eventsProvider,
-                final JavaSelectionProvider selectionProvider, IClasspathEntryInfoProvider pgkInfoProvider) {
+        private ServicesInitializer(IModelRepository repo, IModelRepositoryIndex index, final IAstProvider astProvider,
+                final JavaModelEventsProvider eventsProvider, final JavaSelectionProvider selectionProvider,
+                IClasspathEntryInfoProvider pgkInfoProvider) {
             this.pgkInfoProvider = pgkInfoProvider;
+            index.open();
         }
     }
 
