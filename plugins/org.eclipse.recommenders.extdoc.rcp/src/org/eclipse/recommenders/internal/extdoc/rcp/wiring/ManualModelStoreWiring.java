@@ -27,6 +27,7 @@ import org.eclipse.recommenders.internal.rcp.models.archive.MemberGsonZipPoolabl
 import org.eclipse.recommenders.internal.rcp.models.store.DefaultModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.models.store.IDependenciesFactory;
 import org.eclipse.recommenders.internal.rcp.models.store.ModelArchiveResolutionJob;
+import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.AutoCloseOnWorkbenchShutdown;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
@@ -47,6 +48,7 @@ public class ManualModelStoreWiring {
         return new File(basedir, VERSION + filename);
     }
 
+    @AutoCloseOnWorkbenchShutdown
     public static class ClassOverridesPatternsModelStore extends DefaultModelArchiveStore<IType, ClassOverridePatterns> {
 
         static final Class gson = ClassOverridePatterns.class;
@@ -73,6 +75,7 @@ public class ManualModelStoreWiring {
         }
     }
 
+    @AutoCloseOnWorkbenchShutdown
     public static class ClassOverridesModelStore extends DefaultModelArchiveStore<IType, ClassOverrideDirectives> {
 
         static final Class gson = ClassOverrideDirectives.class;
@@ -98,6 +101,7 @@ public class ManualModelStoreWiring {
         }
     }
 
+    @AutoCloseOnWorkbenchShutdown
     public static class ClassSelfcallsModelStore extends DefaultModelArchiveStore<IType, ClassSelfcallDirectives> {
 
         static final Class gson = ClassSelfcallDirectives.class;
@@ -125,6 +129,7 @@ public class ManualModelStoreWiring {
         }
     }
 
+    @AutoCloseOnWorkbenchShutdown
     public static class MethodSelfcallsModelStore extends DefaultModelArchiveStore<IMethod, MethodSelfcallDirectives> {
 
         static final Class gson = MethodSelfcallDirectives.class;

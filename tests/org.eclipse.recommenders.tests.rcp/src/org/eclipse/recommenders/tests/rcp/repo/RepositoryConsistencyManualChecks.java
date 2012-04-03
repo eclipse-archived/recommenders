@@ -79,6 +79,12 @@ public class RepositoryConsistencyManualChecks {
     }
 
     @Test
+    public void testFindHigestVersion() {
+        Optional<Artifact> opt = repo.findHigestVersion(SWT_30_CALL);
+        assertTrue(opt.isPresent());
+    }
+
+    @Test
     public void repoPhases() throws Exception {
         // check not available on startup
         File location = repo.location(SWT_30_CALL);

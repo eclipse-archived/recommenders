@@ -13,9 +13,13 @@ package org.eclipse.recommenders.internal.rcp.wiring;
 import static java.lang.Thread.MIN_PRIORITY;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.eclipse.recommenders.rcp.RecommendersPlugin.P_REPOSITORY_URL;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.concurrent.Callable;
@@ -35,6 +39,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.internal.rcp.providers.CachingAstProvider;
 import org.eclipse.recommenders.internal.rcp.providers.ClasspathEntryInfoProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaModelEventsProvider;
@@ -54,6 +59,7 @@ import org.eclipse.recommenders.utils.rcp.ast.BindingUtils;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -69,6 +75,11 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
+import com.google.inject.TypeLiteral;
+import com.google.inject.matcher.Matchers;
+import com.google.inject.spi.InjectionListener;
+import com.google.inject.spi.TypeEncounter;
+import com.google.inject.spi.TypeListener;
 
 @SuppressWarnings("restriction")
 public class RecommendersModule extends AbstractModule implements Module {
@@ -79,7 +90,7 @@ public class RecommendersModule extends AbstractModule implements Module {
         configureAstProvider();
         bindRepository();
         initalizeSingletonServices();
-
+        bindShutdownListener();
     }
 
     @Singleton
@@ -87,7 +98,7 @@ public class RecommendersModule extends AbstractModule implements Module {
     protected IClasspathEntryInfoProvider configurePackageFragmentRootInfoProvider(final EventBus bus,
             IWorkspaceRoot workspace) {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
-        File stateLocation = Platform.getStateLocation(bundle).toFile();
+        File stateLocation = new File(Platform.getStateLocation(bundle).toFile(), "v0.5-package-root-infos.json");
         IClasspathEntryInfoProvider cpeInfoProvider = new ClasspathEntryInfoProvider(stateLocation, workspace, bus);
         bus.register(cpeInfoProvider);
         return cpeInfoProvider;
@@ -112,10 +123,11 @@ public class RecommendersModule extends AbstractModule implements Module {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         File stateLocation = Platform.getStateLocation(bundle).toFile();
 
-        File repo = new File(stateLocation, "repo");
+        File repo = new File(stateLocation, "repository");
         repo.mkdirs();
-        String url = RecommendersPlugin.getDefault().getPreferenceStore()
-                .getString(RecommendersPlugin.P_REPOSITORY_URL);
+        RecommendersPlugin plugin = RecommendersPlugin.getDefault();
+        IPreferenceStore store = plugin.getPreferenceStore();
+        String url = store.getString(P_REPOSITORY_URL);
         bind(File.class).annotatedWith(LocalModelRepositoryLocation.class).toInstance(repo);
         bind(String.class).annotatedWith(RemoteModelRepositoryLocation.class).toInstance(url
         // "file:/Volumes/usb/juno/m2/"
@@ -130,10 +142,47 @@ public class RecommendersModule extends AbstractModule implements Module {
         bind(ModelRepositoryService.class).asEagerSingleton();
     }
 
+    private void bindShutdownListener() {
+        bindListener(Matchers.any(), new TypeListener() {
+            @Override
+            public <I> void hear(TypeLiteral<I> typeLiteral, TypeEncounter<I> typeEncounter) {
+                typeEncounter.register(new InjectionListener<I>() {
+                    @Override
+                    public void afterInjection(final I i) {
+                        if (i instanceof Closeable && i.getClass().isAnnotationPresent(AutoCloseOnWorkbenchShutdown.class)) {
+                            PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
+
+                                @Override
+                                public boolean preShutdown(IWorkbench workbench, boolean forced) {
+                                    try {
+                                        ((Closeable) i).close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    return true;
+                                }
+
+                                @Override
+                                public void postShutdown(IWorkbench workbench) {
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     @BindingAnnotation
     @Target(PARAMETER)
     @Retention(RUNTIME)
     public static @interface LocalModelRepositoryLocation {
+    }
+
+    @BindingAnnotation
+    @Target(ElementType.TYPE)
+    @Retention(RUNTIME)
+    public static @interface AutoCloseOnWorkbenchShutdown {
     }
 
     @BindingAnnotation

@@ -7,7 +7,10 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
@@ -23,155 +26,135 @@ import org.junit.Test;
 public class RecommendersCompletionContextTest {
   @Test
   public void test01() {
-      CharSequence _methodbody = this.methodbody("s1.$;");
-      final CharSequence code = _methodbody;
-      IRecommendersCompletionContext _exercise = this.exercise(code);
-      final IRecommendersCompletionContext sut = _exercise;
-      this.assertCompletionNode(sut, org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference.class);
-      this.assertCompletionNodeParentIsNull(sut);
+    final CharSequence code = this.methodbody("s1.$;");
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    this.assertCompletionNode(sut, CompletionOnQualifiedNameReference.class);
+    this.assertCompletionNodeParentIsNull(sut);
   }
   
   @Test
   public void test02() {
-      CharSequence _methodbody = this.methodbody("s1.equals(s1.$);");
-      final CharSequence code = _methodbody;
-      IRecommendersCompletionContext _exercise = this.exercise(code);
-      final IRecommendersCompletionContext sut = _exercise;
-      this.assertCompletionNode(sut, org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference.class);
-      this.assertCompletionNodeParent(sut, org.eclipse.jdt.internal.compiler.ast.MessageSend.class);
+    final CharSequence code = this.methodbody("s1.equals(s1.$);");
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    this.assertCompletionNode(sut, CompletionOnQualifiedNameReference.class);
+    this.assertCompletionNodeParent(sut, MessageSend.class);
   }
   
   @Test
   public void test03() {
-      CharSequence _methodbody = this.methodbody("String s1 = new String();\n\t\t\ts1.\n\t\t\tString s2 = new String();\n\t\t\ts2.$");
-      final CharSequence code = _methodbody;
-      IRecommendersCompletionContext _exercise = this.exercise(code);
-      final IRecommendersCompletionContext sut = _exercise;
-      Optional<?> _absent = Optional.absent();
-      Optional<IType> _receiverType = sut.getReceiverType();
-      Assert.assertEquals(_absent, _receiverType);
+    final CharSequence code = this.methodbody("String s1 = new String();\n\t\t\ts1.\n\t\t\tString s2 = new String();\n\t\t\ts2.$");
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    Optional<?> _absent = Optional.absent();
+    Optional<IType> _receiverType = sut.getReceiverType();
+    Assert.assertEquals(_absent, _receiverType);
   }
   
   @Test
   public void test04() {
-      CharSequence _methodbody = this.methodbody("s1.concat(\"\").$;");
-      final CharSequence code = _methodbody;
-      IRecommendersCompletionContext _exercise = this.exercise(code);
-      final IRecommendersCompletionContext sut = _exercise;
-      this.assertCompletionNode(sut, org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess.class);
-      Optional<IMethodName> _methodDef = sut.getMethodDef();
-      boolean _isPresent = _methodDef.isPresent();
-      Assert.assertTrue(_isPresent);
+    final CharSequence code = this.methodbody("s1.concat(\"\").$;");
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    this.assertCompletionNode(sut, CompletionOnMemberAccess.class);
+    Optional<IMethodName> _methodDef = sut.getMethodDef();
+    boolean _isPresent = _methodDef.isPresent();
+    Assert.assertTrue(_isPresent);
   }
   
   @Test
   public void testTypeParameters01() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("public <T> void m(T t){t.$}");
-      CharSequence _classbody = this.classbody(_builder);
-      final CharSequence code = _classbody;
-      IRecommendersCompletionContext _exercise = this.exercise(code);
-      final IRecommendersCompletionContext sut = _exercise;
-      Optional<IType> _receiverType = sut.getReceiverType();
-      boolean _isPresent = _receiverType.isPresent();
-      Assert.assertTrue(_isPresent);
-      Optional<IType> _receiverType_1 = sut.getReceiverType();
-      IType _get = _receiverType_1.get();
-      String _elementName = _get.getElementName();
-      Assert.assertEquals("Object", _elementName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public <T> void m(T t){t.$}");
+    final CharSequence code = this.classbody(_builder);
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    Optional<IType> _receiverType = sut.getReceiverType();
+    boolean _isPresent = _receiverType.isPresent();
+    Assert.assertTrue(_isPresent);
+    Optional<IType> _receiverType_1 = sut.getReceiverType();
+    IType _get = _receiverType_1.get();
+    String _elementName = _get.getElementName();
+    Assert.assertEquals("Object", _elementName);
   }
   
   @Test
   public void testTypeParameters02() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("public <T extends Collection> void m(T t){t.$}");
-      CharSequence _classbody = this.classbody(_builder);
-      final CharSequence code = _classbody;
-      IRecommendersCompletionContext _exercise = this.exercise(code);
-      final IRecommendersCompletionContext sut = _exercise;
-      Optional<IType> _receiverType = sut.getReceiverType();
-      boolean _isPresent = _receiverType.isPresent();
-      Assert.assertTrue(_isPresent);
-      Optional<IType> _receiverType_1 = sut.getReceiverType();
-      IType _get = _receiverType_1.get();
-      String _elementName = _get.getElementName();
-      Assert.assertEquals("Collection", _elementName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public <T extends Collection> void m(T t){t.$}");
+    final CharSequence code = this.classbody(_builder);
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    Optional<IType> _receiverType = sut.getReceiverType();
+    boolean _isPresent = _receiverType.isPresent();
+    Assert.assertTrue(_isPresent);
+    Optional<IType> _receiverType_1 = sut.getReceiverType();
+    IType _get = _receiverType_1.get();
+    String _elementName = _get.getElementName();
+    Assert.assertEquals("Collection", _elementName);
   }
   
   @Test
   public void testTypeParameters021() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("public <T super List> void m(T t){t.$}");
-      CharSequence _classbody = this.classbody(_builder);
-      final CharSequence code = _classbody;
-      IRecommendersCompletionContext _exercise = this.exercise(code);
-      final IRecommendersCompletionContext sut = _exercise;
-      Optional<IType> _receiverType = sut.getReceiverType();
-      boolean _isPresent = _receiverType.isPresent();
-      Assert.assertFalse(_isPresent);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public <T super List> void m(T t){t.$}");
+    final CharSequence code = this.classbody(_builder);
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    Optional<IType> _receiverType = sut.getReceiverType();
+    boolean _isPresent = _receiverType.isPresent();
+    Assert.assertFalse(_isPresent);
   }
   
   @Test
   public void testTypeParameters03() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Class<?> clazz = null;");
-      _builder.newLine();
-      _builder.append("clazz.$");
-      CharSequence _methodbody = this.methodbody(_builder);
-      final CharSequence code = _methodbody;
-      IRecommendersCompletionContext _exercise = this.exercise(code);
-      final IRecommendersCompletionContext sut = _exercise;
-      Optional<IType> _receiverType = sut.getReceiverType();
-      boolean _isPresent = _receiverType.isPresent();
-      Assert.assertTrue(_isPresent);
-      Optional<IType> _receiverType_1 = sut.getReceiverType();
-      IType _get = _receiverType_1.get();
-      String _elementName = _get.getElementName();
-      Assert.assertEquals("Class", _elementName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Class<?> clazz = null;");
+    _builder.newLine();
+    _builder.append("clazz.$");
+    final CharSequence code = this.methodbody(_builder);
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    Optional<IType> _receiverType = sut.getReceiverType();
+    boolean _isPresent = _receiverType.isPresent();
+    Assert.assertTrue(_isPresent);
+    Optional<IType> _receiverType_1 = sut.getReceiverType();
+    IType _get = _receiverType_1.get();
+    String _elementName = _get.getElementName();
+    Assert.assertEquals("Class", _elementName);
   }
   
   @Test
   public void testTypeParameters04() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Class<? super String> clazz = null;");
-      _builder.newLine();
-      _builder.append("clazz.$");
-      CharSequence _methodbody = this.methodbody(_builder);
-      final CharSequence code = _methodbody;
-      IRecommendersCompletionContext _exercise = this.exercise(code);
-      final IRecommendersCompletionContext sut = _exercise;
-      Optional<IType> _receiverType = sut.getReceiverType();
-      boolean _isPresent = _receiverType.isPresent();
-      Assert.assertTrue(_isPresent);
-      Optional<IType> _receiverType_1 = sut.getReceiverType();
-      IType _get = _receiverType_1.get();
-      String _elementName = _get.getElementName();
-      Assert.assertEquals("Class", _elementName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Class<? super String> clazz = null;");
+    _builder.newLine();
+    _builder.append("clazz.$");
+    final CharSequence code = this.methodbody(_builder);
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    Optional<IType> _receiverType = sut.getReceiverType();
+    boolean _isPresent = _receiverType.isPresent();
+    Assert.assertTrue(_isPresent);
+    Optional<IType> _receiverType_1 = sut.getReceiverType();
+    IType _get = _receiverType_1.get();
+    String _elementName = _get.getElementName();
+    Assert.assertEquals("Class", _elementName);
   }
   
   private void assertCompletionNode(final IRecommendersCompletionContext sut, final Class<?> type) {
-      ASTNode _completionNode = sut.getCompletionNode();
-      final ASTNode node = _completionNode;
-      this.assertInstanceof(node, type);
+    final ASTNode node = sut.getCompletionNode();
+    this.assertInstanceof(node, type);
   }
   
   private void assertInstanceof(final ASTNode node, final Class<?> type) {
-      Assert.assertNotNull("completion node is null!", node);
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("unexpected completion node type. Expected ");
-      _builder.append(type, "");
-      _builder.append(" but got ");
-      Class<? extends Object> _class = node.getClass();
-      _builder.append(_class, "");
-      String _string = _builder.toString();
-      Class<? extends Object> _class_1 = node.getClass();
-      Assert.assertEquals(_string, type, _class_1);
+    Assert.assertNotNull("completion node is null!", node);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("unexpected completion node type. Expected ");
+    _builder.append(type, "");
+    _builder.append(" but got ");
+    Class<? extends Object> _class = node.getClass();
+    _builder.append(_class, "");
+    String _string = _builder.toString();
+    Class<? extends Object> _class_1 = node.getClass();
+    Assert.assertEquals(_string, type, _class_1);
   }
   
   private void assertCompletionNodeParent(final IRecommendersCompletionContext sut, final Class<?> type) {
-      ASTNode _completionNodeParent = sut.getCompletionNodeParent();
-      final ASTNode node = _completionNodeParent;
-      this.assertInstanceof(node, type);
+    final ASTNode node = sut.getCompletionNodeParent();
+    this.assertInstanceof(node, type);
   }
   
   private void assertCompletionNodeParentIsNull(final IRecommendersCompletionContext sut) {
@@ -187,13 +170,10 @@ public class RecommendersCompletionContextTest {
         JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
         final JavaProjectFixture fixture = _javaProjectFixture;
         String _string = code.toString();
-        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(_string);
-        final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
-        ICompilationUnit _first = struct.getFirst();
-        final ICompilationUnit cu = _first;
+        final Tuple<ICompilationUnit,Set<Integer>> struct = fixture.createFileAndParseWithMarkers(_string);
+        final ICompilationUnit cu = struct.getFirst();
         Set<Integer> _second = struct.getSecond();
-        Integer _head = IterableExtensions.<Integer>head(_second);
-        final Integer completionIndex = _head;
+        final Integer completionIndex = IterableExtensions.<Integer>head(_second);
         JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (completionIndex).intValue());
         final JavaContentAssistContextMock ctx = _javaContentAssistContextMock;
         RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();

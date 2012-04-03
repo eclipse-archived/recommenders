@@ -238,4 +238,27 @@ public class ChecksTest {
     public void testEnsureIsTrueBoolean_WithFalse() {
         ensureIsTrue(false);
     }
+
+    @Test
+    public void testEnsureIsProbablity_Pass() {
+        Checks.ensureIsProbability(0.0);
+        Checks.ensureIsProbability(0.99);
+        Checks.ensureIsProbability(1.0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEnsureIsProbablity_Fail_01() {
+        Checks.ensureIsProbability(-0.01);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEnsureIsProbablity_Fail_02() {
+        Checks.ensureIsProbability(1.0001);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEnsureIsProbablity_Fail_03() {
+        Checks.ensureIsProbability(100);
+    }
+
 }

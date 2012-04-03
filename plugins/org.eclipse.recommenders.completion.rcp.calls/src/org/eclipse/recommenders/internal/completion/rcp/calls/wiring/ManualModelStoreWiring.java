@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.completion.rcp.calls.wiring;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jdt.core.IType;
@@ -48,6 +49,9 @@ public class ManualModelStoreWiring {
 
                 @Override
                 public IModelArchive<IType, IObjectMethodCallsNet> newModelArchive(File location) throws IOException {
+                    if (!location.exists()) {
+                        throw new FileNotFoundException("Model file not found: " + location.getAbsolutePath());
+                    }
                     return new PoolingModelArchive(new CallNetZipModelFactory(location, jdtResolver));
                 }
             });

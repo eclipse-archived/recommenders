@@ -9,10 +9,27 @@
             activate="true"
             categoryId="org.eclipse.recommenders.subwords.rcp.category"
             class="org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer"
-            needsSortingAfterFiltering="true">
-      </javaCompletionProposalComputer>
+            needsSortingAfterFiltering="true"/>
    </extension>
-   <extension
+	<extension
+		point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
+		id="cr.JavadocHTMLCompletionProposalComputer_no">
+		<javaCompletionProposalComputer 
+			class="org.eclipse.jdt.internal.ui.text.javadoc.HTMLTagCompletionProposalComputer"
+            categoryId="org.eclipse.recommenders.subwords.rcp.category">
+			<partition type="__java_javadoc"/>
+		</javaCompletionProposalComputer>
+	</extension>
+	<extension
+		point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
+		id="cr.LegacyJavadocCompletionProposalComputer_all">
+		<javaCompletionProposalComputer 
+			class="org.eclipse.jdt.internal.ui.text.javadoc.LegacyJavadocCompletionProposalComputer"
+			categoryId="org.eclipse.recommenders.subwords.rcp.category">
+			<partition type="__java_javadoc"/>
+		</javaCompletionProposalComputer>
+	</extension>
+ <extension
          id="org.eclipse.recommenders.subwords.rcp.category"
          name="Subwords Completion"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">

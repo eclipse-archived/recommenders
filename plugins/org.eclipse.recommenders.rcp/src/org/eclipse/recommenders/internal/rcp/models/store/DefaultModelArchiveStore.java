@@ -30,9 +30,8 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchive;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
-import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus;
-import org.eclipse.recommenders.internal.rcp.models.archive.NullModelArchive;
 import org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils;
+import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.AutoCloseOnWorkbenchShutdown;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
@@ -40,12 +39,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 
+@AutoCloseOnWorkbenchShutdown
 public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable, IModelArchiveStore<K, V> {
 
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -86,7 +87,7 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
                 return absent();
             }
 
-            final Optional<File> location = JdtUtils.getLocation(pkgRoot.get());
+            final Optional<File> location = getLocation(pkgRoot.get());
             if (!location.isPresent()) {
                 return absent();
             }
@@ -108,13 +109,18 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
         }
     }
 
+    @VisibleForTesting
+    protected Optional<File> getLocation(final IPackageFragmentRoot root) {
+        return JdtUtils.getLocation(root);
+    }
+
     private Optional<IPackageFragmentRoot> findPackageFragmentRoot(final K key) {
         IPackageFragmentRoot pkgRoot = (IPackageFragmentRoot) key.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
         return fromNullable(pkgRoot);
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<IModelArchive<K, V>> findModelArchive(File location) {
+    private Optional<IModelArchive<K, V>> findModelArchive(File location) throws IOException {
         ModelArchiveMetadata<K, V> meta = findOrCreateMetadata(location);
         switch (meta.getStatus()) {
         case UNRESOLVED:
@@ -131,22 +137,12 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
             return absent();
         }
 
-        IModelArchive<K, V> model = meta.getModel();
+        IModelArchive<K, V> model = meta.getModelArchive();
         if (model == null) {
             Artifact modelArtifact = RepositoryUtils.newArtifact(meta.getCoordinate());
             File file = repository.location(modelArtifact);
-            if (!file.exists()) {
-                meta.setStatus(ModelArchiveResolutionStatus.FAILED);
-                meta.setError(String.format("File %s does not exist", file.getAbsolutePath()));
-                return absent();
-            }
-            try {
-                model = factory.newModelArchive(file);
-            } catch (Exception e) {
-                e.printStackTrace();
-                model = NullModelArchive.empty();
-            }
-            meta.setModel(model);
+            model = factory.newModelArchive(file);
+            meta.setModelArchive(model);
         }
         return fromNullable(model);
     }
@@ -160,15 +156,8 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
         return fromNullable(model);
     }
 
-    // public Map<File, ModelArchiveMetadata<K, V>> getMappings() {
-    // return mappings;
-    // }
-
-    @SuppressWarnings("unchecked")
+    @Override
     public ModelArchiveMetadata<K, V> findOrCreateMetadata(File f) {
-        if (f == null) {
-            return ModelArchiveMetadata.NULL;
-        }
         ModelArchiveMetadata<K, V> ref = mappings.get(f);
         if (ref == null) {
             ref = new ModelArchiveMetadata<K, V>();
@@ -188,7 +177,8 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
     @Override
     public void releaseModel(final V model) {
         final IModelArchive<K, V> archive = pool.get(model);
-        archive.releaseModel(model);
+        if (archive != null)
+            archive.releaseModel(model);
     }
 
     @Override

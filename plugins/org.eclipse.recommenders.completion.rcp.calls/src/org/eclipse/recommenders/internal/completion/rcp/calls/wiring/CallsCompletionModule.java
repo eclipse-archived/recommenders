@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.SectionsFactory;
 import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.ManualModelStoreWiring.CallModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.models.store.DefaultModelArchiveStore;
@@ -33,7 +32,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 public class CallsCompletionModule extends AbstractModule {
 
@@ -49,9 +47,7 @@ public class CallsCompletionModule extends AbstractModule {
         final IPath stateLocation = Platform.getStateLocation(FrameworkUtil.getBundle(getClass()));
         final File index = new File(stateLocation.toFile(), format("call-models-%s.json", MODEL_VERSION));
         bind(File.class).annotatedWith(CallModelStore.class).toInstance(index);
-
         bind(STORE).to(CallModelArchiveStore.class).in(Scopes.SINGLETON);
-        install(new FactoryModuleBuilder().build(SectionsFactory.class));
     }
 
     @BindingAnnotation

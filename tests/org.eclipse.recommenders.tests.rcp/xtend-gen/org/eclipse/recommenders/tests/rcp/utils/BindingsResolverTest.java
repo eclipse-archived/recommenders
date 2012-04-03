@@ -38,68 +38,58 @@ public class BindingsResolverTest {
   
   @Test
   public void test01() {
-      ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList("String", "Integer", "List", "List<Integer>", "List<? extends Number>");
-      final ArrayList<String> names = _newArrayList;
-      for (final String name : names) {
-        {
-          StringConcatenation _builder = new StringConcatenation();
-          _builder.append(name, "");
-          _builder.append("$ var;");
-          CharSequence _method = CodeBuilder.method(_builder);
-          final CharSequence code = _method;
-          ITypeBinding _findTypeBinding = this.findTypeBinding(code);
-          final ITypeBinding binding = _findTypeBinding;
-          Optional<ITypeName> _typeName = BindingUtils.toTypeName(binding);
-          ITypeName _get = _typeName.get();
-          final ITypeName recTypeName = _get;
-          Optional<IType> _jdtType = this.jdtResolver.toJdtType(recTypeName);
-          boolean _isPresent = _jdtType.isPresent();
-          Assert.assertTrue(_isPresent);
-        }
+    final ArrayList<String> names = CollectionLiterals.<String>newArrayList("String", "Integer", "List", "List<Integer>", "List<? extends Number>");
+    for (final String name : names) {
+      {
+        StringConcatenation _builder = new StringConcatenation();
+        _builder.append(name, "");
+        _builder.append("$ var;");
+        final CharSequence code = CodeBuilder.method(_builder);
+        final ITypeBinding binding = this.findTypeBinding(code);
+        Optional<ITypeName> _typeName = BindingUtils.toTypeName(binding);
+        final ITypeName recTypeName = _typeName.get();
+        Optional<IType> _jdtType = this.jdtResolver.toJdtType(recTypeName);
+        boolean _isPresent = _jdtType.isPresent();
+        Assert.assertTrue(_isPresent);
       }
+    }
   }
   
   public ITypeBinding findTypeBinding(final CharSequence code) {
-      IWorkspace _workspace = ResourcesPlugin.getWorkspace();
-      JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
-      final JavaProjectFixture fixture = _javaProjectFixture;
-      String _string = code.toString();
-      Tuple<CompilationUnit,Set<Integer>> _parseWithMarkers = fixture.parseWithMarkers(_string);
-      final Tuple<CompilationUnit,Set<Integer>> struct = _parseWithMarkers;
-      CompilationUnit _first = struct.getFirst();
-      final CompilationUnit cu = _first;
-      Set<Integer> _second = struct.getSecond();
-      Integer _head = IterableExtensions.<Integer>head(_second);
-      final Integer pos = _head;
-      ASTNode _perform = NodeFinder.perform(cu, (pos).intValue(), 0);
-      final ASTNode selection = _perform;
-      boolean matched = false;
-      if (!matched) {
-        if (selection instanceof SimpleName) {
-          final SimpleName _simpleName = (SimpleName)selection;
-          matched=true;
-          IBinding _resolveBinding = _simpleName.resolveBinding();
-          return ((ITypeBinding) _resolveBinding);
-        }
+    IWorkspace _workspace = ResourcesPlugin.getWorkspace();
+    JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
+    final JavaProjectFixture fixture = _javaProjectFixture;
+    String _string = code.toString();
+    final Tuple<CompilationUnit,Set<Integer>> struct = fixture.parseWithMarkers(_string);
+    final CompilationUnit cu = struct.getFirst();
+    Set<Integer> _second = struct.getSecond();
+    final Integer pos = IterableExtensions.<Integer>head(_second);
+    final ASTNode selection = NodeFinder.perform(cu, (pos).intValue(), 0);
+    boolean _matched = false;
+    if (!_matched) {
+      if (selection instanceof SimpleName) {
+        final SimpleName _simpleName = (SimpleName)selection;
+        _matched=true;
+        IBinding _resolveBinding = _simpleName.resolveBinding();
+        return ((ITypeBinding) _resolveBinding);
       }
-      if (!matched) {
-        if (selection instanceof TypeParameter) {
-          final TypeParameter _typeParameter = (TypeParameter)selection;
-          matched=true;
-          ITypeBinding _resolveBinding = _typeParameter.resolveBinding();
-          return _resolveBinding;
-        }
+    }
+    if (!_matched) {
+      if (selection instanceof TypeParameter) {
+        final TypeParameter _typeParameter = (TypeParameter)selection;
+        _matched=true;
+        return _typeParameter.resolveBinding();
       }
-      if (!matched) {
-        if (selection instanceof ParameterizedType) {
-          final ParameterizedType _parameterizedType = (ParameterizedType)selection;
-          matched=true;
-          ITypeBinding _resolveBinding = _parameterizedType.resolveBinding();
-          return _resolveBinding;
-        }
+    }
+    if (!_matched) {
+      if (selection instanceof ParameterizedType) {
+        final ParameterizedType _parameterizedType = (ParameterizedType)selection;
+        _matched=true;
+        return _parameterizedType.resolveBinding();
       }
-      IllegalArgumentException _illegalArgumentException = new IllegalArgumentException();
-      throw _illegalArgumentException;
+    }
+    IllegalArgumentException _illegalArgumentException = new IllegalArgumentException();
+    throw _illegalArgumentException;
   }
   
   private CharSequence classbody(final CharSequence classbody) {

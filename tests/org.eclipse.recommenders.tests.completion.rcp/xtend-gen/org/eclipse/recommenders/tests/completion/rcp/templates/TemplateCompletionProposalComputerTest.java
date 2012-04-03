@@ -34,195 +34,195 @@ public class TemplateCompletionProposalComputerTest {
   
   @Test
   public void testThis() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.THIS, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.THIS, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("", _variableName);
   }
   
   @Test
   public void testThisWithThisPrefix() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("this.$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.THIS, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("this.$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.THIS, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("", _variableName);
   }
   
   @Test
   public void testThisWithSuperPrefix() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("super.$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.THIS, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("super.$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.THIS, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("", _variableName);
   }
   
   @Test
   public void testThisWithMethodPrefix() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("eq$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.THIS, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("eq", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("eq$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.THIS, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("eq", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("", _variableName);
   }
   
   @Test
   public void testType() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("List$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.TYPE_NAME, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("List$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.TYPE_NAME, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("", _variableName);
   }
   
   @Test
   public void testQualifiedType() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("java.util.List$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.TYPE_NAME, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("java.util.List$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.TYPE_NAME, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("", _variableName);
   }
   
   @Test
   public void testThisOnVariableName() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Event evt;");
-      _builder.newLine();
-      _builder.append("evt$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.THIS, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("evt", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Event evt;");
+    _builder.newLine();
+    _builder.append("evt$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.THIS, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("evt", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("", _variableName);
   }
   
   @Test
   public void testBehindQualifiedType() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("List $");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertNull(_completionMode);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("List $");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertNull(_completionMode);
   }
   
   @Test
   public void testMemberAccess() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Event evt;");
-      _builder.newLine();
-      _builder.append("evt.$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.MEMBER_ACCESS, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("evt", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Event evt;");
+    _builder.newLine();
+    _builder.append("evt.$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.MEMBER_ACCESS, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("evt", _variableName);
   }
   
   @Test
   public void testQualifiedMemberAccess() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Event evt;");
-      _builder.newLine();
-      _builder.append("evt.evt.$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.MEMBER_ACCESS, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("evt.evt", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Event evt;");
+    _builder.newLine();
+    _builder.append("evt.evt.$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.MEMBER_ACCESS, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("evt.evt", _variableName);
   }
   
   @Test
   public void testQualifiedMemberAccessWithMethodPrefix() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Event evt;");
-      _builder.newLine();
-      _builder.append("evt.evt.eq$");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(CompletionMode.MEMBER_ACCESS, _completionMode);
-      String _methodPrefix = this.sut.getMethodPrefix();
-      Assert.assertEquals("eq", _methodPrefix);
-      String _variableName = this.sut.getVariableName();
-      Assert.assertEquals("evt.evt", _variableName);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Event evt;");
+    _builder.newLine();
+    _builder.append("evt.evt.eq$");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(CompletionMode.MEMBER_ACCESS, _completionMode);
+    String _methodPrefix = this.sut.getMethodPrefix();
+    Assert.assertEquals("eq", _methodPrefix);
+    String _variableName = this.sut.getVariableName();
+    Assert.assertEquals("evt.evt", _variableName);
   }
   
   @Test
   @Ignore("Not possible to distinguish this case and testThisOnVariableName")
   public void testNoTemplates() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Event evt = $");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      CompletionMode _completionMode = this.sut.getCompletionMode();
-      Assert.assertEquals(null, _completionMode);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Event evt = $");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    CompletionMode _completionMode = this.sut.getCompletionMode();
+    Assert.assertEquals(null, _completionMode);
   }
   
   private List<IJavaCompletionProposal> exercise() {
@@ -233,13 +233,10 @@ public class TemplateCompletionProposalComputerTest {
         JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
         final JavaProjectFixture fixture = _javaProjectFixture;
         String _string = this.code.toString();
-        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(_string);
-        final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
-        ICompilationUnit _first = struct.getFirst();
-        final ICompilationUnit cu = _first;
+        final Tuple<ICompilationUnit,Set<Integer>> struct = fixture.createFileAndParseWithMarkers(_string);
+        final ICompilationUnit cu = struct.getFirst();
         cu.becomeWorkingCopy(null);
-        CompilationUnit _reconcile = cu.reconcile(AST.JLS4, true, true, null, null);
-        final CompilationUnit ast = _reconcile;
+        final CompilationUnit ast = cu.reconcile(AST.JLS4, true, true, null, null);
         Assert.assertNotNull(ast);
         RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
         ModelStoreMock _modelStoreMock = new ModelStoreMock();
@@ -247,8 +244,7 @@ public class TemplateCompletionProposalComputerTest {
         TemplatesCompletionProposalComputer _templatesCompletionProposalComputer = new TemplatesCompletionProposalComputer(_recommendersCompletionContextFactoryMock, _modelStoreMock, _javaElementResolver);
         this.sut = _templatesCompletionProposalComputer;
         Set<Integer> _second = struct.getSecond();
-        Integer _head = IterableExtensions.<Integer>head(_second);
-        final Integer pos = _head;
+        final Integer pos = IterableExtensions.<Integer>head(_second);
         JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (pos).intValue());
         List _computeCompletionProposals = this.sut.computeCompletionProposals(_javaContentAssistContextMock, null);
         List<IJavaCompletionProposal> _proposals = this.proposals = _computeCompletionProposals;

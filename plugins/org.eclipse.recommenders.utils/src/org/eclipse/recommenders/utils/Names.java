@@ -11,10 +11,8 @@
 package org.eclipse.recommenders.utils;
 
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,13 +22,12 @@ import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IName;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
-import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
 /**
  * 
- * Contains utility methods for parsing and converting plain vm strings (or
- * their corresponding {@link IName}s respectively) to source strings.
+ * Contains utility methods for parsing and converting plain vm strings (or their corresponding {@link IName}s
+ * respectively) to source strings.
  * 
  */
 public class Names {
@@ -320,8 +317,7 @@ public class Names {
     }
 
     /**
-     * @return the <b>&lt;method name&gt;(&lt;parameter simple types...&gt;)</b>
-     *         - no return value.
+     * @return the <b>&lt;method name&gt;(&lt;parameter simple types...&gt;)</b> - no return value.
      */
     public static String vm2srcSimpleMethod(final IMethodName name) {
         ensureIsNotNull(name, "name");
@@ -331,32 +327,6 @@ public class Names {
         } else {
             sb.append(name.isInit() ? vm2srcSimpleTypeName(name.getDeclaringType()) : name.getName());
         }
-        //
-        sb.append('(');
-        for (final ITypeName param : name.getParameterTypes()) {
-            sb.append(vm2srcSimpleTypeName(param)).append(", ");
-        }
-        if (name.getParameterTypes().length > 0) {
-            sb.delete(sb.length() - 2, sb.length());
-        }
-        //
-        //
-        sb.append(')');
-        return sb.toString();
-    }
-
-    /**
-     * Example:
-     * 
-     * <pre>
-     * Composite.<init>(...) --&gt; super(...)
-     * </pre>
-     */
-    public static String vm2srcSimpleSuperConstructorCall(final IMethodName name) {
-        ensureIsNotNull(name, "name");
-        ensureIsTrue(name.isInit());
-        final StringBuilder sb = new StringBuilder();
-        sb.append("super");
         //
         sb.append('(');
         for (final ITypeName param : name.getParameterTypes()) {
@@ -435,38 +405,5 @@ public class Names {
     public static ITypeName java2vmType(final Class<?> clazz) {
         final String vmName = src2vmType(clazz.getName());
         return VmTypeName.get(vmName);
-    }
-
-    public static IMethodName java2vmType(final Method method) {
-        final String declaringType = method.getDeclaringClass().getName();
-        final String returnType = method.getReturnType().getName();
-        final String[] parameterTypes = java2srcTypeNames(method.getParameterTypes());
-        final String methodName = src2vmMethod(declaringType, method.getName(), parameterTypes, returnType);
-        return VmMethodName.get(methodName);
-    }
-
-    private static String[] java2srcTypeNames(final Class<?>[] types) {
-        final String[] res = new String[types.length];
-
-        for (int i = types.length; i-- > 0;) {
-            final Tuple<Class<?>, Integer> typeInfo = getDimension(types[i]);
-            res[i] = toSrcType(typeInfo);
-        }
-        return res;
-    }
-
-    private static String toSrcType(final Tuple<Class<?>, Integer> typeInfo) {
-        final String res = typeInfo.getFirst().getName() + StringUtils.repeat("[]", typeInfo.getSecond());
-        return res;
-    }
-
-    public static Tuple<Class<?>, Integer> getDimension(Class<?> type) {
-        int dimension = 0;
-        while (type.isArray()) {
-            dimension++;
-            type = type.getComponentType();
-        }
-        return Tuple.create(type, dimension);
-
     }
 }

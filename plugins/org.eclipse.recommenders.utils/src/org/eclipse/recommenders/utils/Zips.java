@@ -79,21 +79,17 @@ public class Zips {
         return suffix == null ? name : name + suffix;
     }
 
-    public static VmTypeName toType(ZipEntry entry, @Nullable String suffix) {
+    public static ITypeName type(ZipEntry entry, @Nullable String suffix) {
         String name = StringUtils.removeEnd(entry.getName(), suffix);
         return VmTypeName.get("L" + name);
     }
 
-    public static ITypeName type(ZipEntry e, String suffix) {
-        String name = "L" + StringUtils.substringBefore(e.getName(), suffix);
-        return VmTypeName.get(name);
-    }
-
     public static IMethodName method(ZipEntry e, String suffix) {
         String name = "L" + StringUtils.substringBefore(e.getName(), suffix);
-        int start = name.indexOf('(');
+        int start = name.lastIndexOf('/');
         char[] chars = name.toCharArray();
-        for (int i = start; i < chars.length; i++) {
+        chars[start] = '.';
+        for (int i = start + 1; i < chars.length; i++) {
             if (chars[i] == '.')
                 chars[i] = '/';
         }

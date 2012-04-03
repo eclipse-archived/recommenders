@@ -28,164 +28,163 @@ public class QueryTest {
   
   @Test
   public void testDefMethodReturn01() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("List l = Collections.emptyList();");
-      _builder.newLine();
-      _builder.append("l.get(0).$");
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      this.verifyDefinition(Kind.METHOD_RETURN);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("List l = Collections.emptyList();");
+    _builder.newLine();
+    _builder.append("l.get(0).$");
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    this.verifyDefinition(Kind.METHOD_RETURN);
   }
   
   @Test
   public void testDefMethodReturn012() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("List l;");
-      _builder.newLine();
-      _builder.append("Object o = l.get(0);");
-      _builder.newLine();
-      _builder.append("o.$");
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      this.verifyDefinition(Kind.METHOD_RETURN);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("List l;");
+    _builder.newLine();
+    _builder.append("Object o = l.get(0);");
+    _builder.newLine();
+    _builder.append("o.$");
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    this.verifyDefinition(Kind.METHOD_RETURN);
   }
   
   @Test
   public void testDefField() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("List l;");
-      _builder.newLine();
-      _builder.append("void __test(){");
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("l.$;");
-      _builder.newLine();
-      _builder.append("}");
-      CharSequence _classbody = CodeBuilder.classbody(_builder);
-      this.code = _classbody;
-      this.exercise();
-      this.verifyDefinition(Kind.FIELD);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("List l;");
+    _builder.newLine();
+    _builder.append("void __test(){");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("l.$;");
+    _builder.newLine();
+    _builder.append("}");
+    CharSequence _classbody = CodeBuilder.classbody(_builder);
+    this.code = _classbody;
+    this.exercise();
+    this.verifyDefinition(Kind.FIELD);
   }
   
   @Test
   public void testFindCalls01() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Object o = null;");
-      _builder.newLine();
-      _builder.append("o.equals(new Object() {");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("public boolean equals(Object obj) {");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.append("o.hashCode();");
-      _builder.newLine();
-      _builder.append("        ");
-      _builder.append("return false;");
-      _builder.newLine();
-      _builder.append("    ");
-      _builder.append("}");
-      _builder.newLine();
-      _builder.append("});");
-      _builder.newLine();
-      _builder.append("o.$");
-      _builder.newLine();
-      _builder.append("}");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      HashSet<String> _newHashSet = CollectionLiterals.<String>newHashSet("equals");
-      this.verifyCalls(_newHashSet);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Object o = null;");
+    _builder.newLine();
+    _builder.append("o.equals(new Object() {");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("public boolean equals(Object obj) {");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("o.hashCode();");
+    _builder.newLine();
+    _builder.append("        ");
+    _builder.append("return false;");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("});");
+    _builder.newLine();
+    _builder.append("o.$");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    HashSet<String> _newHashSet = CollectionLiterals.<String>newHashSet("equals");
+    this.verifyCalls(_newHashSet);
   }
   
   @Test
   public void testFindCalls02() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Object o = null;");
-      _builder.newLine();
-      _builder.append("o.equals();");
-      _builder.newLine();
-      _builder.append("Object o2 = null;");
-      _builder.newLine();
-      _builder.append("o2.hashCode();");
-      _builder.newLine();
-      _builder.append("o.$");
-      _builder.newLine();
-      _builder.append("}");
-      _builder.newLine();
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      HashSet<String> _newHashSet = CollectionLiterals.<String>newHashSet("equals");
-      this.verifyCalls(_newHashSet);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Object o = null;");
+    _builder.newLine();
+    _builder.append("o.equals();");
+    _builder.newLine();
+    _builder.append("Object o2 = null;");
+    _builder.newLine();
+    _builder.append("o2.hashCode();");
+    _builder.newLine();
+    _builder.append("o.$");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    HashSet<String> _newHashSet = CollectionLiterals.<String>newHashSet("equals");
+    this.verifyCalls(_newHashSet);
   }
   
   @Test
   public void testDefThis01() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("$");
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      this.verifyDefinition(Kind.THIS);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("$");
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    this.verifyDefinition(Kind.THIS);
   }
   
   @Test
   public void testDefThis02() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("$");
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      this.verifyDefinition(Kind.THIS);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("$");
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    this.verifyDefinition(Kind.THIS);
   }
   
   @Test
   public void testDefThis03() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("this.$");
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      this.verifyDefinition(Kind.THIS);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("this.$");
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    this.verifyDefinition(Kind.THIS);
   }
   
   @Test
   public void testDefThis04() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("super.$");
-      CharSequence _method = CodeBuilder.method(_builder);
-      this.code = _method;
-      this.exercise();
-      this.verifyDefinition(Kind.THIS);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("super.$");
+    CharSequence _method = CodeBuilder.method(_builder);
+    this.code = _method;
+    this.exercise();
+    this.verifyDefinition(Kind.THIS);
   }
   
   @Test
   public void testDefThis05() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("public boolean equals(Object o){");
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("boolean res = super.equals(o);");
-      _builder.newLine();
-      _builder.append("\t");
-      _builder.append("this.hash$");
-      _builder.newLine();
-      _builder.append("}");
-      CharSequence _classbody = CodeBuilder.classbody(_builder);
-      this.code = _classbody;
-      this.exercise();
-      this.verifyDefinition(Kind.THIS);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public boolean equals(Object o){");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("boolean res = super.equals(o);");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("this.hash$");
+    _builder.newLine();
+    _builder.append("}");
+    CharSequence _classbody = CodeBuilder.classbody(_builder);
+    this.code = _classbody;
+    this.exercise();
+    this.verifyDefinition(Kind.THIS);
   }
   
   public List<IJavaCompletionProposal> exercise() {
     List<IJavaCompletionProposal> _xblockexpression = null;
     {
-      Tuple<List<IJavaCompletionProposal>,CallsCompletionProposalComputer> _exercise = CallCompletionProposalComputerSmokeTest.exercise(this.code);
-      final Tuple<List<IJavaCompletionProposal>,CallsCompletionProposalComputer> actual = _exercise;
+      final Tuple<List<IJavaCompletionProposal>,CallsCompletionProposalComputer> actual = CallCompletionProposalComputerSmokeTest.exercise(this.code);
       CallsCompletionProposalComputer _second = actual.getSecond();
       this.sut = _second;
       List<IJavaCompletionProposal> _first = actual.getFirst();
@@ -200,16 +199,15 @@ public class QueryTest {
   }
   
   public void verifyCalls(final Set<String> expected) {
-      HashSet<Object> _newHashSet = CollectionLiterals.<Object>newHashSet();
-      final HashSet<Object> actual = _newHashSet;
-      final Function1<IMethodName,String> _function = new Function1<IMethodName,String>() {
-          public String apply(final IMethodName e) {
-            String _name = e.getName();
-            return _name;
-          }
-        };
-      Iterable<String> _map = IterableExtensions.<IMethodName, String>map(this.sut.query.calls, _function);
-      CollectionExtensions.<Object>addAll(actual, _map);
-      Assert.assertEquals(expected, actual);
+    final HashSet<Object> actual = CollectionLiterals.<Object>newHashSet();
+    final Function1<IMethodName,String> _function = new Function1<IMethodName,String>() {
+        public String apply(final IMethodName e) {
+          String _name = e.getName();
+          return _name;
+        }
+      };
+    Iterable<String> _map = IterableExtensions.<IMethodName, String>map(this.sut.query.calls, _function);
+    CollectionExtensions.<Object>addAll(actual, _map);
+    Assert.assertEquals(expected, actual);
   }
 }

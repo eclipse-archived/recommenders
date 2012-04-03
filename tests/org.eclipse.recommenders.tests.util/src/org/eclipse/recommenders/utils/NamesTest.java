@@ -212,4 +212,11 @@ public class NamesTest {
         final String actual = Names.vm2srcQualifiedMethod(STRING_VIRTUAL);
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void testJava2vmType() {
+        final String expected = "Ljava/lang/String";
+        final String actual = Names.java2vmType(String.class).getIdentifier();
+        assertEquals(expected, actual);
+    }
 }

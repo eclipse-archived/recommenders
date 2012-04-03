@@ -17,6 +17,7 @@ import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor
 import java.io.File;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -37,6 +38,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.AutoCloseOnWorkbenchShutdown;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JarPackageFragmentRootAdded;
@@ -52,14 +54,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.io.Files;
 import com.google.gson.reflect.TypeToken;
 
 @SuppressWarnings("restriction")
 @Singleton
+@AutoCloseOnWorkbenchShutdown
 public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
 
     /**
@@ -70,24 +73,33 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
             "Recommenders-Dependency-Info-Service-");
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final BiMap<File, ClasspathEntryInfo> cpeInfos = HashBiMap.create();
-    private final File storageLocation;
-    private final File infosFile;
+    private final Map<File, ClasspathEntryInfo> cpeInfos = Maps.newHashMap();
+    private final File state;
     private final EventBus bus;
 
     @Inject
-    public ClasspathEntryInfoProvider(File storeLocation, IWorkspaceRoot workspace, EventBus bus) {
-        this.storageLocation = storeLocation;
+    public ClasspathEntryInfoProvider(File state, IWorkspaceRoot workspace, EventBus bus) {
+        this.state = state;
         this.bus = bus;
-        this.infosFile = new File(storeLocation, "archives.json");
         initialize();
         scanOpenProjects(workspace);
     }
 
     private void initialize() {
-        initializeMap(infosFile, cpeInfos, new TypeToken<Map<File, ClasspathEntryInfo>>() {
-        });
-
+        if (!state.exists()) {
+            return;
+        }
+        TypeToken token = new TypeToken<List<ClasspathEntryInfo>>() {
+        };
+        try {
+            List<ClasspathEntryInfo> data = GsonUtil.deserialize(state, token.getType());
+            for (ClasspathEntryInfo info : data) {
+                cpeInfos.put(info.getLocation(), info);
+                ensureFileInfosStillConsistent(info);
+            }
+        } catch (Exception e) {
+            log.warn("Exception during deserialization of cached classpath infos. Discaring old state.", e);
+        }
     }
 
     private void scanOpenProjects(IWorkspaceRoot workspace) {
@@ -99,26 +111,11 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
         }
     }
 
-    private <T> void initializeMap(final File f, final Map<File, T> map, final TypeToken<?> token) {
-        try {
-            if (f.exists()) {
-                final Map<File, T> deserializedMap = GsonUtil.deserialize(f, token.getType());
-                if (deserializedMap != null) {
-                    map.putAll(deserializedMap);
-                }
-                for (File archive : getFiles()) {
-                    ensureFileInfosStillConsistent(archive);
-                }
-            }
-        } catch (final Exception e) {
-            log.error("Exception occurred during deserialization of cached package fragment root infos.", e);
-        }
-    }
-
     @Override
     public Optional<ClasspathEntryInfo> getInfo(final File file) {
-        ensureFileInfosStillConsistent(file);
-        return fromNullable(cpeInfos.get(file));
+        ClasspathEntryInfo res = cpeInfos.get(file);
+        ensureFileInfosStillConsistent(res);
+        return fromNullable(res);
     }
 
     @Override
@@ -126,23 +123,25 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
         return new HashSet<File>(cpeInfos.keySet());
     }
 
-    private void ensureFileInfosStillConsistent(final File file) {
-        final ClasspathEntryInfo cpeInfo = cpeInfos.get(file);
-        if (cpeInfo == null) {
+    private void ensureFileInfosStillConsistent(final ClasspathEntryInfo info) {
+        if (info == null)
             return;
-        } else if (hasFileChanged(file, cpeInfo)) {
-            cpeInfos.remove(file);
-        }
-    }
 
-    private boolean hasFileChanged(final File file, final ClasspathEntryInfo cpeInfo) {
-        return file.lastModified() != cpeInfo.getModificationDate().getTime();
+        File location = info.getLocation();
+        if (location == null)
+            return;
+        if (location.lastModified() != info.getModificationDate().getTime())
+            cpeInfos.remove(location);
     }
 
     @Override
     public void close() {
-        storageLocation.mkdirs();
-        GsonUtil.serialize(cpeInfos, infosFile);
+        try {
+            Files.createParentDirs(state);
+            GsonUtil.serialize(cpeInfos.values(), state);
+        } catch (Exception e) {
+            log.error("Failed to store classpath info state.", e);
+        }
     }
 
     @Subscribe
@@ -168,6 +167,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
                     res.setVersion(osgiversion);
                     File file = JdtUtils.getLocation(root).get();
                     res.setModificationDate(new Date(file.lastModified()));
+                    res.setLocation(file);
                     cpeInfos.put(file, res);
                     bus.post(new NewClasspathEntryFound(root, file, res));
                 }
@@ -205,6 +205,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
                         res.setVersion(extractor.extractVersion());
                         res.setFingerprint(extractor.createFingerprint());
                         res.setModificationDate(new Date(file.lastModified()));
+                        res.setLocation(file);
                         cpeInfos.put(file, res);
                         bus.post(new NewClasspathEntryFound(r, file, res));
                     } catch (final Exception e) {

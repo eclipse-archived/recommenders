@@ -11,6 +11,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.models.archive;
 
+import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
@@ -64,25 +65,24 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
     @SuppressWarnings("unchecked")
     @Override
     public Optional<M> acquireModel(final K key) {
-        M model = null;
         try {
-            model = (M) pool.borrowObject(key);
-            if (model != null) {
+            M model = (M) pool.borrowObject(key);
+            if (model != null)
                 objects.put(model, key);
-            }
+            return fromNullable(model);
         } catch (final Exception e) {
             log.error("Exception while loading model for key '" + key + "'", e);
+            return absent();
         }
-        return fromNullable(model);
     }
 
     @Override
     public void releaseModel(final M model) {
-        if (model == null)
-            return;
         try {
-            K key = objects.get(model);
-            pool.returnObject(key, model);
+            if (objects.containsKey(model)) {
+                K key = objects.get(model);
+                pool.returnObject(key, model);
+            }
         } catch (final Exception e) {
             log.error("Exception while releasing model'" + model + "'", e);
         }

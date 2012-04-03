@@ -9,6 +9,7 @@ bin/
 target/
 .recommenders/
 aggregators/
+screenshots/
 
 ## various other file types we don't want to have in the repository:
 .DS_Store
@@ -16,6 +17,7 @@ aggregators/
 *#
 *.licensed
 *.aux
+*_trace
 
 /plugins/org.eclipse.recommenders.mining/
 /tests/org.eclipse.recommenders.tests.mining/

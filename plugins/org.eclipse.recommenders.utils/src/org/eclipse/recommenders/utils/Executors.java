@@ -28,9 +28,10 @@ public class Executors {
     public static ThreadPoolExecutor coreThreadsTimoutExecutor(final int numberOfThreads, final int threadPriority,
             final String threadNamePrefix) {
         final ThreadFactory factory = new ThreadFactoryBuilder().setPriority(threadPriority)
-                .setNameFormat(threadNamePrefix + "%d").build();
+                .setNameFormat(threadNamePrefix + "%d").setDaemon(true).build();
         final ThreadPoolExecutor pool = new ThreadPoolExecutor(numberOfThreads, numberOfThreads, 100L, MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(), factory);
+
         pool.allowCoreThreadTimeOut(true);
         return pool;
     }
@@ -38,7 +39,7 @@ public class Executors {
     public static ThreadPoolExecutor coreThreadsTimoutExecutor(final int numberOfThreads, final int threadPriority,
             final String threadNamePrefix, final long timeout, final TimeUnit unit) {
         final ThreadFactory factory = new ThreadFactoryBuilder().setPriority(threadPriority)
-                .setNameFormat(threadNamePrefix + "%d").build();
+                .setNameFormat(threadNamePrefix + "%d").setDaemon(true).build();
         final ThreadPoolExecutor pool = new ThreadPoolExecutor(numberOfThreads, numberOfThreads, timeout, unit,
                 new LinkedBlockingQueue<Runnable>(), factory);
         pool.allowCoreThreadTimeOut(true);

@@ -15,7 +15,6 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.eclipse.core.runtime.Status.CANCEL_STATUS;
 import static org.eclipse.core.runtime.Status.OK_STATUS;
 import static org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus.RESOLVED;
-import static org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils.asCoordinate;
 
 import java.io.File;
 
@@ -33,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -49,6 +49,7 @@ public class ModelArchiveResolutionJob extends Job {
     private File pkgRoot;
     private final IModelRepositoryIndex index;
     private final String classifier;
+    private Artifact model;
 
     @Inject
     public ModelArchiveResolutionJob(@Assisted ModelArchiveMetadata metadata,
@@ -63,56 +64,32 @@ public class ModelArchiveResolutionJob extends Job {
     }
 
     @Override
-    protected IStatus run(IProgressMonitor monitor) {
-
+    @VisibleForTesting
+    public IStatus run(IProgressMonitor monitor) {
         monitor.beginTask(String.format("Looking for '%s' model for %s", classifier, metadata.getLocation().getName()),
-                4);
+                5);
         monitor.worked(1);
         metadata.setStatus(ModelArchiveResolutionStatus.UNRESOLVED);
         try {
-            monitor.subTask("Looking up available models in index...");
-            pkgRoot = metadata.getLocation();
-            cpeInfo = cpeInfos.getInfo(pkgRoot).orNull();
-            if (cpeInfo == null) {
+
+            if (!findClasspathInfo()) {
                 metadata.setError(format("No class path info available for '%s'. Skipped.", pkgRoot));
                 return CANCEL_STATUS;
             }
 
-            Optional<Artifact> handle = Optional.absent();
-            if (!isEmpty(cpeInfo.getFingerprint())) {
-                handle = index.searchByFingerprint(cpeInfo.getFingerprint(), classifier);
-            }
-            if (!handle.isPresent() && !isEmpty(cpeInfo.getSymbolicName())) {
-                handle = index.searchByArtifactId(cpeInfo.getSymbolicName(), classifier);
-            }
-            if (!handle.isPresent()) {
+            if (!findInIndex()) {
                 metadata.setError(format(
                         "No call model found for '%s'. Neither fingerprint '%s' nor symbolic name '%s' are known.",
                         cpeInfo.getLocation(), cpeInfo.getFingerprint(), cpeInfo.getSymbolicName()));
                 return CANCEL_STATUS;
             }
-
-            Optional<Artifact> bestMatch = findBestMatch(handle.get(), cpeInfo.getVersion());
-            if (!bestMatch.isPresent()) {
-                metadata.setError(format("No best matching model found for '%s'. This is probably a bug.",
-                        cpeInfo.getLocation()));
-                return CANCEL_STATUS;
-            }
-
             monitor.worked(1);
-            repository.resolve(bestMatch.get(), monitor);
+            findBestMatchingLatestModel();
+            monitor.worked(1);
+            repository.resolve(model, monitor);
             monitor.worked(2);
-            File local = repository.location(bestMatch.get());
-            if (!local.exists()) {
-                metadata.setError(format("Failed to download and install model artifact '%s' to local repostiory",
-                        asCoordinate(bestMatch.get())));
-                return CANCEL_STATUS;
-            }
-            metadata.setStatus(RESOLVED);
-            metadata.setArtifact(bestMatch.get());
-            metadata.setCoordinate(bestMatch.get().toString());
+            updateMetadata();
             return OK_STATUS;
-
         } catch (Exception x) {
             metadata.setStatus(ModelArchiveResolutionStatus.UNRESOLVED);
             metadata.setError(x.getMessage());
@@ -122,26 +99,43 @@ public class ModelArchiveResolutionJob extends Job {
         }
     }
 
-    private Optional<Artifact> findBestMatch(Artifact artifact, Version version) {
+    private void updateMetadata() {
+        metadata.setStatus(RESOLVED);
+        metadata.setArtifact(model);
+        metadata.setCoordinate(model.toString());
+    }
+
+    private boolean findClasspathInfo() {
+        pkgRoot = metadata.getLocation();
+        cpeInfo = cpeInfos.getInfo(pkgRoot).orNull();
+        return cpeInfo != null;
+    }
+
+    private boolean findInIndex() {
+        Optional<Artifact> tmp = Optional.absent();
+        if (!isEmpty(cpeInfo.getFingerprint())) {
+            tmp = index.searchByFingerprint(cpeInfo.getFingerprint(), classifier);
+        }
+        if (!tmp.isPresent() && !isEmpty(cpeInfo.getSymbolicName())) {
+            tmp = index.searchByArtifactId(cpeInfo.getSymbolicName(), classifier);
+        }
+        model = tmp.orNull();
+        return tmp.isPresent();
+    }
+
+    private void findBestMatchingLatestModel() {
+        Version version = cpeInfo.getVersion();
+        Artifact copy = model;
         Artifact query = null;
-        if (version.isUnknown()) {
-            query = artifact.setVersion("([0,");
-            return repository.findHigestVersion(query);
+        String upperBound = version.isUnknown() ? "10000.0" : format("%d.%d", version.major, version.minor + 1);
+        query = model.setVersion("[0," + upperBound + ")");
+        copy = repository.findHigestVersion(query).orNull();
+        if (copy == null) {
+            query = model.setVersion("[" + upperBound + ",)");
+            copy = repository.findLowestVersion(query).orNull();
         }
-
-        String upperBound = Version.create(version.major, version.minor + 1).toString();
-        query = artifact.setVersion("[0," + upperBound + ")");
-        Optional<Artifact> match = repository.findHigestVersion(query);
-        if (match.isPresent()) {
-            return match;
+        if (copy != null) {
+            model = copy;
         }
-
-        query = artifact.setVersion("[" + upperBound + ",)");
-        match = repository.findLowestVersion(query);
-        if (!match.isPresent()) {
-            log.warn("using hard-wired model coordinate known at indexing time {}.", artifact);
-            match = Optional.of(artifact);
-        }
-        return match;
     }
 }

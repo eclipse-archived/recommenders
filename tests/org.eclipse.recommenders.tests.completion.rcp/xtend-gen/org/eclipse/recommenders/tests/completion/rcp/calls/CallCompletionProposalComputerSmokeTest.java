@@ -60,101 +60,90 @@ public class CallCompletionProposalComputerSmokeTest {
   
   @Test
   public void testStdCompletion() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("o.$");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("o.$");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testOnConstructor() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("new Object().$");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("new Object().$");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testOnReturn() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("l.get(0).$");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("l.get(0).$");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testInIf() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("if(o.$)");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("if(o.$)");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testExpectsPrimitive() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("int i = o.$");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("int i = o.$");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testExpectsNonPrimitive() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("Object o1 = o.$");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("Object o1 = o.$");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testInMessageSend() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("l.add(o.$)");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("l.add(o.$)");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testPrefix01() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("o.has$");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("o.has$");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testPrefix02() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("o.hashc$");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("o.hashc$");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testPrefix03() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("o.hashC$");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("o.hashC$");
+    final CharSequence code = this.method(_builder);
+    this.test(code);
   }
   
   @Test
   public void testPrefix04() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("o.x$");
-      CharSequence _method = this.method(_builder);
-      final CharSequence code = _method;
-      this.test(code, 0);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("o.x$");
+    final CharSequence code = this.method(_builder);
+    this.test(code, 0);
   }
   
   private void test(final CharSequence code) {
@@ -163,33 +152,27 @@ public class CallCompletionProposalComputerSmokeTest {
   
   private void test(final CharSequence code, final int numberOfExpectedProposals) {
     try {
-      {
-        IWorkspace _workspace = ResourcesPlugin.getWorkspace();
-        JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
-        final JavaProjectFixture fixture = _javaProjectFixture;
-        String _string = code.toString();
-        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(_string);
-        final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
-        ICompilationUnit _first = struct.getFirst();
-        final ICompilationUnit cu = _first;
-        cu.becomeWorkingCopy(null);
-        CompilationUnit _reconcile = cu.reconcile(AST.JLS4, true, true, null, null);
-        final CompilationUnit ast = _reconcile;
-        Assert.assertNotNull(ast);
-        ModelStoreMock _modelStoreMock = new ModelStoreMock();
-        JavaElementResolver _javaElementResolver = new JavaElementResolver();
-        RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
-        CallsCompletionProposalComputer _callsCompletionProposalComputer = new CallsCompletionProposalComputer(_modelStoreMock, _javaElementResolver, _recommendersCompletionContextFactoryMock);
-        final CallsCompletionProposalComputer sut = _callsCompletionProposalComputer;
-        Set<Integer> _second = struct.getSecond();
-        for (final Integer pos : _second) {
-          {
-            JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (pos).intValue());
-            List<ICompletionProposal> _computeCompletionProposals = sut.computeCompletionProposals(_javaContentAssistContextMock, null);
-            final List<ICompletionProposal> proposals = _computeCompletionProposals;
-            int _size = proposals.size();
-            Assert.assertEquals("wrong number of proposals", numberOfExpectedProposals, _size);
-          }
+      IWorkspace _workspace = ResourcesPlugin.getWorkspace();
+      JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
+      final JavaProjectFixture fixture = _javaProjectFixture;
+      String _string = code.toString();
+      final Tuple<ICompilationUnit,Set<Integer>> struct = fixture.createFileAndParseWithMarkers(_string);
+      final ICompilationUnit cu = struct.getFirst();
+      cu.becomeWorkingCopy(null);
+      final CompilationUnit ast = cu.reconcile(AST.JLS4, true, true, null, null);
+      Assert.assertNotNull(ast);
+      ModelStoreMock _modelStoreMock = new ModelStoreMock();
+      JavaElementResolver _javaElementResolver = new JavaElementResolver();
+      RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
+      CallsCompletionProposalComputer _callsCompletionProposalComputer = new CallsCompletionProposalComputer(_modelStoreMock, _javaElementResolver, _recommendersCompletionContextFactoryMock);
+      final CallsCompletionProposalComputer sut = _callsCompletionProposalComputer;
+      Set<Integer> _second = struct.getSecond();
+      for (final Integer pos : _second) {
+        {
+          JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (pos).intValue());
+          final List<ICompletionProposal> proposals = sut.computeCompletionProposals(_javaContentAssistContextMock, null);
+          int _size = proposals.size();
+          Assert.assertEquals("wrong number of proposals", numberOfExpectedProposals, _size);
         }
       }
     } catch (Exception _e) {
@@ -206,13 +189,10 @@ public class CallCompletionProposalComputerSmokeTest {
         final JavaProjectFixture fixture = _javaProjectFixture;
         fixture.clear();
         String _string = code.toString();
-        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(_string);
-        final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
-        ICompilationUnit _first = struct.getFirst();
-        final ICompilationUnit cu = _first;
+        final Tuple<ICompilationUnit,Set<Integer>> struct = fixture.createFileAndParseWithMarkers(_string);
+        final ICompilationUnit cu = struct.getFirst();
         cu.becomeWorkingCopy(null);
-        CompilationUnit _reconcile = cu.reconcile(AST.JLS4, true, true, null, null);
-        final CompilationUnit ast = _reconcile;
+        final CompilationUnit ast = cu.reconcile(AST.JLS4, true, true, null, null);
         Assert.assertNotNull(ast);
         ModelStoreMock _modelStoreMock = new ModelStoreMock();
         JavaElementResolver _javaElementResolver = new JavaElementResolver();
@@ -223,8 +203,7 @@ public class CallCompletionProposalComputerSmokeTest {
         Integer _head = IterableExtensions.<Integer>head(_second);
         JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (_head).intValue());
         NullProgressMonitor _nullProgressMonitor = new NullProgressMonitor();
-        List<ICompletionProposal> _computeCompletionProposals = sut.computeCompletionProposals(_javaContentAssistContextMock, _nullProgressMonitor);
-        final List<ICompletionProposal> proposals = _computeCompletionProposals;
+        final List<ICompletionProposal> proposals = sut.computeCompletionProposals(_javaContentAssistContextMock, _nullProgressMonitor);
         Tuple<?,?> _newTuple = Tuple.newTuple(proposals, sut);
         _xblockexpression = (((Tuple) _newTuple));
       }

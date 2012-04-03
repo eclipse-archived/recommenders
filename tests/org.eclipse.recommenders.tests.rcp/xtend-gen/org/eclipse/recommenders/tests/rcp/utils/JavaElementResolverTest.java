@@ -36,96 +36,84 @@ public class JavaElementResolverTest {
   
   @Test
   public void testBoundReturn() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("public Iterable<? extends Executor> $m(){return null;}");
-      CharSequence _classbody = CodeBuilder.classbody(_builder);
-      final CharSequence code = _classbody;
-      IMethod _method = this.getMethod(code);
-      final IMethod method = _method;
-      Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
-      IMethodName _get = _recMethod.get();
-      final IMethodName actual = _get;
-      String _signature = actual.getSignature();
-      Assert.assertEquals("m()Ljava/lang/Iterable;", _signature);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public Iterable<? extends Executor> $m(){return null;}");
+    final CharSequence code = CodeBuilder.classbody(_builder);
+    final IMethod method = this.getMethod(code);
+    Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
+    final IMethodName actual = _recMethod.get();
+    String _signature = actual.getSignature();
+    Assert.assertEquals("m()Ljava/lang/Iterable;", _signature);
   }
   
   @Test
   public void testArrays() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("public Iterable[][] $m(String[][] s){return null;}");
-      CharSequence _classbody = CodeBuilder.classbody(_builder);
-      final CharSequence code = _classbody;
-      IMethod _method = this.getMethod(code);
-      final IMethod method = _method;
-      Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
-      IMethodName _get = _recMethod.get();
-      final IMethodName actual = _get;
-      String _signature = actual.getSignature();
-      Assert.assertEquals("m([[Ljava/lang/String;)[[Ljava/lang/Iterable;", _signature);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public Iterable[][] $m(String[][] s){return null;}");
+    final CharSequence code = CodeBuilder.classbody(_builder);
+    final IMethod method = this.getMethod(code);
+    Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
+    final IMethodName actual = _recMethod.get();
+    String _signature = actual.getSignature();
+    Assert.assertEquals("m([[Ljava/lang/String;)[[Ljava/lang/Iterable;", _signature);
   }
   
   @Test
   public void testBoundArg() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("public void $m(Iterable<? extends Executor> e){}");
-      CharSequence _classbody = CodeBuilder.classbody(_builder);
-      final CharSequence code = _classbody;
-      IMethod _method = this.getMethod(code);
-      final IMethod method = _method;
-      Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
-      final Optional<IMethodName> actual = _recMethod;
-      boolean _isPresent = actual.isPresent();
-      Assert.assertTrue(_isPresent);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public void $m(Iterable<? extends Executor> e){}");
+    final CharSequence code = CodeBuilder.classbody(_builder);
+    final IMethod method = this.getMethod(code);
+    final Optional<IMethodName> actual = this.sut.toRecMethod(method);
+    boolean _isPresent = actual.isPresent();
+    Assert.assertTrue(_isPresent);
   }
   
   @Test
   public void testUnboundArg() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("public <T> void $m(T s){}");
-      CharSequence _classbody = CodeBuilder.classbody(_builder);
-      final CharSequence code = _classbody;
-      IMethod _method = this.getMethod(code);
-      final IMethod method = _method;
-      Optional<IMethodName> _recMethod = this.sut.toRecMethod(method);
-      final Optional<IMethodName> actual = _recMethod;
-      boolean _isPresent = actual.isPresent();
-      Assert.assertTrue(_isPresent);
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public <T> void $m(T s){}");
+    final CharSequence code = CodeBuilder.classbody(_builder);
+    final IMethod method = this.getMethod(code);
+    final Optional<IMethodName> actual = this.sut.toRecMethod(method);
+    boolean _isPresent = actual.isPresent();
+    Assert.assertTrue(_isPresent);
   }
   
   @Test
   public void testJdtMethods() {
-      VmMethodName _get = VmMethodName.get("Ljava/lang/Object.hashCode()I");
-      Optional<IMethod> _jdtMethod = this.sut.toJdtMethod(_get);
-      boolean _isPresent = _jdtMethod.isPresent();
-      Assert.assertTrue("no hashCode?", _isPresent);
-      VmMethodName _get_1 = VmMethodName.get("Ljava/util/Arrays.sort([J)V");
-      Optional<IMethod> _jdtMethod_1 = this.sut.toJdtMethod(_get_1);
-      boolean _isPresent_1 = _jdtMethod_1.isPresent();
-      Assert.assertTrue("no Arrays.sort?", _isPresent_1);
-      VmMethodName _get_2 = VmMethodName.get("Ljava/util/Arrays.equals([Ljava/lang/Object;[Ljava/lang/Object;)Z");
-      Optional<IMethod> _jdtMethod_2 = this.sut.toJdtMethod(_get_2);
-      boolean _isPresent_2 = _jdtMethod_2.isPresent();
-      Assert.assertTrue("no Arrays.equals?", _isPresent_2);
+    VmMethodName _get = VmMethodName.get("Ljava/lang/Object.hashCode()I");
+    Optional<IMethod> _jdtMethod = this.sut.toJdtMethod(_get);
+    boolean _isPresent = _jdtMethod.isPresent();
+    Assert.assertTrue("no hashCode?", _isPresent);
+    VmMethodName _get_1 = VmMethodName.get("Ljava/util/Arrays.sort([J)V");
+    Optional<IMethod> _jdtMethod_1 = this.sut.toJdtMethod(_get_1);
+    boolean _isPresent_1 = _jdtMethod_1.isPresent();
+    Assert.assertTrue("no Arrays.sort?", _isPresent_1);
+    VmMethodName _get_2 = VmMethodName.get("Ljava/util/Arrays.equals([Ljava/lang/Object;[Ljava/lang/Object;)Z");
+    Optional<IMethod> _jdtMethod_2 = this.sut.toJdtMethod(_get_2);
+    boolean _isPresent_2 = _jdtMethod_2.isPresent();
+    Assert.assertTrue("no Arrays.equals?", _isPresent_2);
   }
   
   @Test
   public void testJdtClass() {
-      Optional<IType> _jdtType = this.sut.toJdtType(VmTypeName.NULL);
-      boolean _isPresent = _jdtType.isPresent();
-      Assert.assertFalse("Lnull found???", _isPresent);
-      Optional<IType> _jdtType_1 = this.sut.toJdtType(VmTypeName.BOOLEAN);
-      boolean _isPresent_1 = _jdtType_1.isPresent();
-      Assert.assertFalse("primitive found???", _isPresent_1);
-      Optional<IType> _jdtType_2 = this.sut.toJdtType(VmTypeName.OBJECT);
-      boolean _isPresent_2 = _jdtType_2.isPresent();
-      Assert.assertTrue("Object not found???", _isPresent_2);
-      Optional<IType> _jdtType_3 = this.sut.toJdtType(VmTypeName.JavaLangNullPointerException);
-      boolean _isPresent_3 = _jdtType_3.isPresent();
-      Assert.assertTrue("NPE not found???", _isPresent_3);
-      VmTypeName _get = VmTypeName.get("Ljava/util/Map$Entry");
-      Optional<IType> _jdtType_4 = this.sut.toJdtType(_get);
-      boolean _isPresent_4 = _jdtType_4.isPresent();
-      Assert.assertTrue("NPE not found???", _isPresent_4);
+    Optional<IType> _jdtType = this.sut.toJdtType(VmTypeName.NULL);
+    boolean _isPresent = _jdtType.isPresent();
+    Assert.assertFalse("Lnull found???", _isPresent);
+    Optional<IType> _jdtType_1 = this.sut.toJdtType(VmTypeName.BOOLEAN);
+    boolean _isPresent_1 = _jdtType_1.isPresent();
+    Assert.assertFalse("primitive found???", _isPresent_1);
+    Optional<IType> _jdtType_2 = this.sut.toJdtType(VmTypeName.OBJECT);
+    boolean _isPresent_2 = _jdtType_2.isPresent();
+    Assert.assertTrue("Object not found???", _isPresent_2);
+    Optional<IType> _jdtType_3 = this.sut.toJdtType(VmTypeName.JavaLangNullPointerException);
+    boolean _isPresent_3 = _jdtType_3.isPresent();
+    Assert.assertTrue("NPE not found???", _isPresent_3);
+    VmTypeName _get = VmTypeName.get("Ljava/util/Map$Entry");
+    Optional<IType> _jdtType_4 = this.sut.toJdtType(_get);
+    boolean _isPresent_4 = _jdtType_4.isPresent();
+    Assert.assertTrue("NPE not found???", _isPresent_4);
   }
   
   public IMethod getMethod(final CharSequence code) {
@@ -135,17 +123,12 @@ public class JavaElementResolverTest {
         IWorkspace _workspace = ResourcesPlugin.getWorkspace();
         JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
         final JavaProjectFixture fixture = _javaProjectFixture;
-        Tuple<ICompilationUnit,Set<Integer>> _createFileAndParseWithMarkers = fixture.createFileAndParseWithMarkers(code);
-        final Tuple<ICompilationUnit,Set<Integer>> struct = _createFileAndParseWithMarkers;
-        ICompilationUnit _first = struct.getFirst();
-        final ICompilationUnit cu = _first;
+        final Tuple<ICompilationUnit,Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code);
+        final ICompilationUnit cu = struct.getFirst();
         Set<Integer> _second = struct.getSecond();
-        Integer _head = IterableExtensions.<Integer>head(_second);
-        final Integer pos = _head;
-        IJavaElement[] _codeSelect = cu.codeSelect((pos).intValue(), 0);
-        final IJavaElement[] selected = _codeSelect;
-        final IJavaElement[] _typeConverted_selected = (IJavaElement[])selected;
-        IJavaElement _get = ((List<IJavaElement>)Conversions.doWrapArray(_typeConverted_selected)).get(0);
+        final Integer pos = IterableExtensions.<Integer>head(_second);
+        final IJavaElement[] selected = cu.codeSelect((pos).intValue(), 0);
+        IJavaElement _get = ((List<IJavaElement>)Conversions.doWrapArray(selected)).get(0);
         final IMethod method = ((IMethod) _get);
         IMethod _ensureIsNotNull = Checks.<IMethod>ensureIsNotNull(method);
         _xblockexpression = (_ensureIsNotNull);

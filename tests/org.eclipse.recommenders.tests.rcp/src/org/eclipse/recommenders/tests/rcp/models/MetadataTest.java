@@ -1,8 +1,8 @@
 package org.eclipse.recommenders.tests.rcp.models;
 
+import static com.google.common.base.Optional.absent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -11,6 +11,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
@@ -32,7 +33,8 @@ public class MetadataTest implements PropertyChangeListener {
             InvocationTargetException {
         BeanInfo info = Introspector.getBeanInfo(ModelArchiveMetadata.class);
         for (PropertyDescriptor d : info.getPropertyDescriptors()) {
-            d.getReadMethod().invoke(sut);
+            Method m = d.getReadMethod();
+            m.invoke(sut);
         }
 
     }
@@ -51,7 +53,7 @@ public class MetadataTest implements PropertyChangeListener {
         assertEquals(++count, events.size());
 
         sut.addPropertyChangeListener(ModelArchiveMetadata.P_MODEL, this);
-        sut.setModel(null);
+        sut.setModelArchive(null);
         assertEquals(++count, events.size());
 
         sut.addPropertyChangeListener(ModelArchiveMetadata.P_STATUS, this);
@@ -71,7 +73,7 @@ public class MetadataTest implements PropertyChangeListener {
         sut.setCoordinate(null);
         count++;
 
-        assertNull(sut.getArtifact());
+        assertEquals(absent(), sut.getArtifact());
         sut.toString();
 
         sut.removePropertyChangeListener(this);

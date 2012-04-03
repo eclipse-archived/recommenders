@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.rcp.models;
 
+import static com.google.common.base.Optional.fromNullable;
 import static org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus.UNINITIALIZED;
 
 import java.beans.PropertyChangeListener;
@@ -22,6 +23,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
+
+import com.google.common.base.Optional;
 
 @SuppressWarnings("rawtypes")
 public class ModelArchiveMetadata<K, V> {
@@ -55,7 +58,7 @@ public class ModelArchiveMetadata<K, V> {
     protected String error;
 
     protected transient Artifact artifact;
-    protected transient IModelArchive<K, V> model;
+    protected transient IModelArchive<K, V> modelArchive;
 
     public ModelArchiveMetadata() {
     }
@@ -74,11 +77,11 @@ public class ModelArchiveMetadata<K, V> {
         return coordinate;
     }
 
-    public Artifact getArtifact() {
+    public Optional<Artifact> getArtifact() {
         if (artifact == null && !StringUtils.isEmpty(coordinate)) {
             artifact = new DefaultArtifact(coordinate);
         }
-        return artifact;
+        return fromNullable(artifact);
     }
 
     public void setCoordinate(String newCoordinates) {
@@ -108,12 +111,12 @@ public class ModelArchiveMetadata<K, V> {
         chg.firePropertyChange(P_ERROR, error, error = newError);
     }
 
-    public IModelArchive<K, V> getModel() {
-        return model;
+    public IModelArchive<K, V> getModelArchive() {
+        return modelArchive;
     }
 
-    public void setModel(IModelArchive<K, V> newModel) {
-        chg.firePropertyChange(P_MODEL, model, model = newModel);
+    public void setModelArchive(IModelArchive<K, V> newModel) {
+        chg.firePropertyChange(P_MODEL, modelArchive, modelArchive = newModel);
     }
 
     @Override

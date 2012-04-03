@@ -10,6 +10,7 @@ Export-Package: org.eclipse.recommenders.internal.rcp.models,
  org.eclipse.recommenders.internal.rcp.models.store,
  org.eclipse.recommenders.internal.rcp.providers,
  org.eclipse.recommenders.internal.rcp.repo,
+ org.eclipse.recommenders.internal.rcp.wiring,
  org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.rcp.events,
  org.eclipse.recommenders.rcp.repo

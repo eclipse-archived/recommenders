@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.models;
 
 import java.io.Closeable;
+import java.io.File;
 import java.util.Collection;
 
 import com.google.common.base.Optional;
@@ -22,5 +23,7 @@ public interface IModelArchiveStore<K, V> extends Closeable {
     void releaseModel(final V model);
 
     Collection<ModelArchiveMetadata<K, V>> getMetadata();
+
+    ModelArchiveMetadata<K, V> findOrCreateMetadata(File root);
 
 }

@@ -9,7 +9,11 @@ import org.eclipse.xtext.xbase.lib.Functions.Function0;
 @SuppressWarnings("all")
 public class SmokeTestScenarios {
   public static List<CharSequence> scenarios() {
-    List<CharSequence> _asList = Arrays.<CharSequence>asList(SmokeTestScenarios.IMPORT_01, SmokeTestScenarios.IMPORT_02, SmokeTestScenarios.PACKAGE_01, SmokeTestScenarios.PACKAGE_02, SmokeTestScenarios.PACKAGE_03, SmokeTestScenarios.METHOD_STMT_01, SmokeTestScenarios.METHOD_STMT_02, SmokeTestScenarios.METHOD_STMT_03, SmokeTestScenarios.METHOD_STMT_04, SmokeTestScenarios.METHOD_STMT_05, SmokeTestScenarios.METHOD_STMT_06, SmokeTestScenarios.COMMENTS_01, SmokeTestScenarios.COMMENTS_02);
+    List<CharSequence> _asList = Arrays.<CharSequence>asList(
+      SmokeTestScenarios.IMPORT_01, SmokeTestScenarios.IMPORT_02, 
+      SmokeTestScenarios.PACKAGE_01, SmokeTestScenarios.PACKAGE_02, SmokeTestScenarios.PACKAGE_03, 
+      SmokeTestScenarios.METHOD_STMT_01, SmokeTestScenarios.METHOD_STMT_02, SmokeTestScenarios.METHOD_STMT_03, SmokeTestScenarios.METHOD_STMT_04, SmokeTestScenarios.METHOD_STMT_05, SmokeTestScenarios.METHOD_STMT_06, 
+      SmokeTestScenarios.COMMENTS_01, SmokeTestScenarios.COMMENTS_02);
     return _asList;
   }
   

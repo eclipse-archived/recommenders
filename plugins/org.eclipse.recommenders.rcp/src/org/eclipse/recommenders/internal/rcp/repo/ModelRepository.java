@@ -290,7 +290,7 @@ public class ModelRepository implements IModelRepository {
         // File("target/dist-repo").toURI().toString());
     }
 
-    private final class TheArtifactOnlyDependencySelector implements DependencySelector {
+    public static class TheArtifactOnlyDependencySelector implements DependencySelector {
         @Override
         public boolean selectDependency(Dependency d) {
             // we don't want any dependencies to be returned. Just the artifact itself.
