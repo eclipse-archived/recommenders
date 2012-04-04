@@ -1,3 +1,6 @@
+RULE #1: YOU DON'T EDIT BUILD TARGET FILES IN THE EDITOR!
+RULE #2: YOU DON'T EDIT BUILD TARGET FILES IN THE EDITOR!
+
 These .target files define several different development environments. Some of 
 these target platform definitions are used for building Recommenders with Maven; others
 are defined for use inside your IDE as Eclipse target platforms. 

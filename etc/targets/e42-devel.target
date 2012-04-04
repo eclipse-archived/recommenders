@@ -172,7 +172,6 @@
 <plugin id="org.eclipse.osgi.services.source"/>
 <plugin id="org.eclipse.jsch.ui"/>
 <plugin id="org.eclipse.jetty.continuation.source"/>
-<plugin id="org.hamcrest.library" version="0.0.0"/>
 <plugin id="org.eclipse.pde.runtime"/>
 <plugin id="com.ibm.icu"/>
 <plugin id="org.eclipse.core.net"/>
@@ -272,7 +271,6 @@
 <plugin id="org.eclipse.xtext.xtext.ui"/>
 <plugin id="org.eclipse.emf.converter.source"/>
 <plugin id="org.eclipse.m2e.scm"/>
-<plugin id="org.hamcrest.library.source" version="0.0.0"/>
 <plugin id="org.eclipse.equinox.p2.ui.source"/>
 <plugin id="org.eclipse.xtext.ecore"/>
 <plugin id="org.eclipse.equinox.console"/>
@@ -307,7 +305,6 @@
 <plugin id="org.eclipse.equinox.p2.extensionlocation.source"/>
 <plugin id="org.eclipse.ui.intro.universal.source"/>
 <plugin id="org.eclipse.emf.importer.java"/>
-<plugin id="org.hamcrest.core.source" version="0.0.0"/>
 <plugin id="org.eclipse.pde.doc.user"/>
 <plugin id="org.eclipse.emf.mapping.ecore2xml.ui"/>
 <plugin id="org.eclipse.jetty.server.source"/>
@@ -413,7 +410,6 @@
 <plugin id="org.eclipse.ui.workbench"/>
 <plugin id="org.eclipse.equinox.p2.director.app.source"/>
 <plugin id="org.eclipse.equinox.security.macosx"/>
-<plugin id="org.hamcrest" version="0.0.0"/>
 <plugin id="org.eclipse.emf.exporter.source"/>
 <plugin id="org.eclipse.jdt.compiler.tool"/>
 <plugin id="org.eclipse.equinox.frameworkadmin.equinox.source"/>
@@ -477,7 +473,6 @@
 <plugin id="org.eclipse.equinox.frameworkadmin"/>
 <plugin id="org.eclipse.e4.core.contexts"/>
 <plugin id="org.eclipse.jetty.io.source"/>
-<plugin id="org.hamcrest.text" version="0.0.0"/>
 <plugin id="org.eclipse.emf.ant.source"/>
 <plugin id="org.eclipse.xtext.xbase"/>
 <plugin id="org.eclipse.xtext.purexbase.source"/>
@@ -498,11 +493,18 @@
 <plugin id="org.eclipse.pde.junit.runtime.source"/>
 <plugin id="org.eclipse.emf.edit"/>
 <plugin id="org.eclipse.jdt.annotation"/>
-<plugin id="org.hamcrest.text.source" version="0.0.0"/>
 <plugin id="org.eclipse.e4.ui.workbench.addons.swt"/>
 <plugin id="org.eclipse.core.contenttype"/>
 <plugin id="org.eclipse.emf.common.ui.source"/>
-<plugin id="org.hamcrest.core" version="0.0.0"/>
+<plugin id="org.hamcrest"/>
+<plugin id="org.hamcrest.library"/>
+<plugin id="org.hamcrest.library.source"/>
+<plugin id="org.hamcrest.core"/>
+<plugin id="org.hamcrest.core.source"/>
+<plugin id="org.hamcrest.text"/>
+<plugin id="org.hamcrest.text.source"/>
+<plugin id="org.hamcrest.integration"/>
+<plugin id="org.hamcrest.integration.source"/>
 <plugin id="org.eclipse.e4.ui.bindings.source"/>
 <plugin id="org.eclipse.jdt.junit.runtime.source"/>
 <plugin id="org.eclipse.xtext.common.types.source"/>
@@ -564,7 +566,6 @@
 <plugin id="org.eclipse.jdt.junit.source"/>
 <plugin id="org.eclipse.equinox.p2.metadata"/>
 <plugin id="org.eclipse.emf.importer.rose"/>
-<plugin id="org.hamcrest.integration.source" version="0.0.0"/>
 <plugin id="org.eclipse.core.databinding.observable.source"/>
 <plugin id="org.eclipse.equinox.app"/>
 <plugin id="org.eclipse.e4.ui.di.source"/>
@@ -657,7 +658,6 @@
 <plugin id="org.eclipse.xtext.xtend2.doc"/>
 <plugin id="org.eclipse.equinox.p2.core"/>
 <plugin id="org.w3c.dom.svg"/>
-<plugin id="org.hamcrest.integration" version="0.0.0"/>
 <plugin id="org.eclipse.emf.ecore.editor.source"/>
 <plugin id="org.eclipse.xtext.ui.codetemplates.ui.source"/>
 <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
