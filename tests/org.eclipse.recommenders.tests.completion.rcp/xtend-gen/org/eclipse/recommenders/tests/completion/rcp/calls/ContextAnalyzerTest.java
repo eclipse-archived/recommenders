@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.tests.completion.rcp.calls;
 
+import com.google.common.base.Objects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -18,14 +19,11 @@ import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.xtend2.lib.StringConcatenation;
-import org.eclipse.xtext.xbase.lib.BooleanExtensions;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
-import org.eclipse.xtext.xbase.lib.ObjectExtensions;
-import org.eclipse.xtext.xbase.lib.StringExtensions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -203,12 +201,12 @@ public class ContextAnalyzerTest {
     {
       final ASTNode node = NodeFinder.perform(ast, pos, 0);
       ASTNode parent = node;
-      boolean _not = BooleanExtensions.operator_not((parent instanceof MethodDeclaration));
+      boolean _not = (!(parent instanceof MethodDeclaration));
       boolean _while = _not;
       while (_while) {
         ASTNode _parent = parent.getParent();
         parent = _parent;
-        boolean _not_1 = BooleanExtensions.operator_not((parent instanceof MethodDeclaration));
+        boolean _not_1 = (!(parent instanceof MethodDeclaration));
         _while = _not_1;
       }
       _xblockexpression = (((MethodDeclaration) parent));
@@ -238,11 +236,11 @@ public class ContextAnalyzerTest {
             }
           };
         final IMethodName match = IterableExtensions.<IMethodName>findFirst(usage.calls, _function);
-        boolean _equals = ObjectExtensions.operator_equals(match, null);
+        boolean _equals = Objects.equal(match, null);
         if (_equals) {
-          String _plus = StringExtensions.operator_plus("method ", name);
-          String _plus_1 = StringExtensions.operator_plus(_plus, " not found in ");
-          String _plus_2 = StringExtensions.operator_plus(_plus_1, usage.calls);
+          String _plus = ("method " + name);
+          String _plus_1 = (_plus + " not found in ");
+          String _plus_2 = (_plus_1 + usage.calls);
           Assert.fail(_plus_2);
         }
       }
@@ -253,13 +251,13 @@ public class ContextAnalyzerTest {
   }
   
   private void assertDef(final ObjectUsage usage, final String method) {
-    boolean _equals = ObjectExtensions.operator_equals(usage.definition, null);
+    boolean _equals = Objects.equal(usage.definition, null);
     if (_equals) {
       Assert.fail("no definition found");
     }
     String _name = usage.definition.getName();
     boolean _equals_1 = _name.equals(method);
-    boolean _not = BooleanExtensions.operator_not(_equals_1);
+    boolean _not = (!_equals_1);
     if (_not) {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("Def did not match ");

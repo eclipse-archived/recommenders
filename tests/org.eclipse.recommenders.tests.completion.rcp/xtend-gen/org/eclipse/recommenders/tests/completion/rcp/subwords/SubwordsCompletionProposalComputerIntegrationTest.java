@@ -21,11 +21,9 @@ import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
-import org.eclipse.xtext.xbase.lib.ComparableExtensions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
-import org.eclipse.xtext.xbase.lib.IntegerExtensions;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -183,7 +181,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     final IJavaCompletionProposal pGetChars = ((IJavaCompletionProposal) _findFirst_1);
     int _relevance = pGetChars.getRelevance();
     int _relevance_1 = pHashCode.getRelevance();
-    boolean _lessThan = IntegerExtensions.operator_lessThan(_relevance, _relevance_1);
+    boolean _lessThan = (_relevance < _relevance_1);
     Assert.assertTrue(_lessThan);
   }
   
@@ -316,7 +314,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     String _get = doc.get();
     int _length = _get.length();
     int _length_1 = code.length();
-    boolean _greaterThan = IntegerExtensions.operator_greaterThan(_length, _length_1);
+    boolean _greaterThan = (_length > _length_1);
     Assert.assertTrue(_string_1, _greaterThan);
   }
   
@@ -375,7 +373,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   
   public void failIfComputerTookTooLong(final CharSequence code) {
     long _elapsedMillis = this.stopwatch.elapsedMillis();
-    boolean _greaterThan = ComparableExtensions.<Long>operator_greaterThan(Long.valueOf(_elapsedMillis), Long.valueOf(this.MAX_COMPUTATION_LIMIT_MILLIS));
+    boolean _greaterThan = (_elapsedMillis > this.MAX_COMPUTATION_LIMIT_MILLIS);
     if (_greaterThan) {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("completion took FAR too long: ");
