@@ -25,6 +25,7 @@ public class ShowExtdocViewTest {
 
     @Test
     public void test() {
+        bot.sleep(1000);
         bot.menu("Window").menu("Show View").menu("Other...").click();
         bot.shell("Show View").activate();
         bot.tree().expandNode("Recommenders").select("Extdoc View");
@@ -35,7 +36,8 @@ public class ShowExtdocViewTest {
     @Test
     public void testClick() {
         bot.viewByTitle("Package Explorer").show();
+        bot.sleep(1000);
         bot.tree().expandNode("test").getNode(1).expand().getNode(1).select();
-        bot.sleep(5000);
+        bot.sleep(2000);
     }
 }
