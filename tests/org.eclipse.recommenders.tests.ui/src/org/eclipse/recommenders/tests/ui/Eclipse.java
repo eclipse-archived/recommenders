@@ -25,7 +25,7 @@ public class Eclipse {
         s.activate();
         bot.textWithLabel("Project name:").setText(name);
         bot.button("Finish").click();
-        s.close();
+        // s.close();
     }
 
     public static void switchToJavaPerspective(SWTBot bot) {
