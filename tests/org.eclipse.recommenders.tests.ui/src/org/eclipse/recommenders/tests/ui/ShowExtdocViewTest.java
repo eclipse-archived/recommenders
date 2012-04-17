@@ -20,7 +20,9 @@ public class ShowExtdocViewTest {
         bot.viewByTitle("Package Explorer").show();
         // bot.viewByTitle("Welcome").close();
         // Eclipse.switchToJavaPerspective(bot);
+        bot.sleep(1000);
         Eclipse.createProject("test", bot);
+        bot.sleep(500);
     }
 
     @Test
