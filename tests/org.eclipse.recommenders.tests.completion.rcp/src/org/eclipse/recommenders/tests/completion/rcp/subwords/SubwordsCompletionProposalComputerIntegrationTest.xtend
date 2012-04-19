@@ -122,12 +122,10 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		d.set(code.toString)
 		proposal.apply(d);
 		var after  = d.get
-		assertTrue("couldn't find completion body in doc:\n" + after, after.contains('''@Override
-		public boolean awaitTermination(long arg0, TimeUnit arg1)
-				throws InterruptedException {
-			// TODO Auto-generated method stub
-			return super.awaitTermination(arg0, arg1);
-		}'''))
+		assertTrue("doc:\n" + after, after.contains('''public boolean awaitTermination(long'''))
+		assertTrue("doc:\n" + after, after.contains(''', TimeUnit'''))
+		assertTrue("doc:\n" + after, after.contains('''throws InterruptedException {'''))
+		assertTrue("doc:\n" + after, after.contains('''return super.awaitTermination('''))
 	}
 		
 	@Test 

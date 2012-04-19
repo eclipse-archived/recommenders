@@ -182,26 +182,26 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     d.set(_string);
     proposal.apply(d);
     String after = d.get();
-    String _plus = ("couldn\'t find completion body in doc:\n" + after);
+    String _plus = ("doc:\n" + after);
     StringConcatenation _builder_1 = new StringConcatenation();
-    _builder_1.append("@Override");
-    _builder_1.newLine();
-    _builder_1.append("\t\t");
-    _builder_1.append("public boolean awaitTermination(long arg0, TimeUnit arg1)");
-    _builder_1.newLine();
-    _builder_1.append("\t\t\t\t");
-    _builder_1.append("throws InterruptedException {");
-    _builder_1.newLine();
-    _builder_1.append("\t\t\t");
-    _builder_1.append("// TODO Auto-generated method stub");
-    _builder_1.newLine();
-    _builder_1.append("\t\t\t");
-    _builder_1.append("return super.awaitTermination(arg0, arg1);");
-    _builder_1.newLine();
-    _builder_1.append("\t\t");
-    _builder_1.append("}");
+    _builder_1.append("public boolean awaitTermination(long");
     boolean _contains = after.contains(_builder_1);
     Assert.assertTrue(_plus, _contains);
+    String _plus_1 = ("doc:\n" + after);
+    StringConcatenation _builder_2 = new StringConcatenation();
+    _builder_2.append(", TimeUnit");
+    boolean _contains_1 = after.contains(_builder_2);
+    Assert.assertTrue(_plus_1, _contains_1);
+    String _plus_2 = ("doc:\n" + after);
+    StringConcatenation _builder_3 = new StringConcatenation();
+    _builder_3.append("throws InterruptedException {");
+    boolean _contains_2 = after.contains(_builder_3);
+    Assert.assertTrue(_plus_2, _contains_2);
+    String _plus_3 = ("doc:\n" + after);
+    StringConcatenation _builder_4 = new StringConcatenation();
+    _builder_4.append("return super.awaitTermination(");
+    boolean _contains_3 = after.contains(_builder_4);
+    Assert.assertTrue(_plus_3, _contains_3);
   }
   
   @Test
