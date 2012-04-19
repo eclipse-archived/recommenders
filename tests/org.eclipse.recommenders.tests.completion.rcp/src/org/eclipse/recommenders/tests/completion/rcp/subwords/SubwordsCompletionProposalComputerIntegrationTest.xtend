@@ -1,26 +1,24 @@
 package org.eclipse.recommenders.tests.completion.rcp.subwords
 
+import com.google.common.base.Stopwatch
 import java.util.List
-import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.NullProgressMonitor
+import org.eclipse.jdt.ui.text.java.CompletionProposalCollector
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal
+import org.eclipse.jface.text.Document
+import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer
+import org.eclipse.recommenders.tests.SmokeTestScenarios
+import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
+import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.junit.Ignore
 import org.junit.Test
 
-import static junit.framework.Assert.*
-import org.eclipse.recommenders.tests.*
-import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
-import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer
-import static org.eclipse.recommenders.tests.CodeBuilder.*
 import static java.util.Arrays.*
-import org.eclipse.jdt.core.CompletionProposal
-import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal
-import com.google.common.base.Stopwatch
-import org.junit.Before
-import org.eclipse.jdt.core.CompletionRequestorAdapter
-import org.eclipse.jdt.ui.text.java.CompletionProposalCollector
-import org.eclipse.jface.text.Document
-import org.eclipse.core.runtime.NullProgressMonitor
+import static junit.framework.Assert.*
+import static org.eclipse.recommenders.tests.CodeBuilder.*
+import static org.eclipse.recommenders.tests.completion.rcp.subwords.SubwordsCompletionProposalComputerIntegrationTest.*
+import org.eclipse.osgi.internal.loader.buddy.SystemPolicy$ParentClassLoader
  
 class SubwordsCompletionProposalComputerIntegrationTest { 
   
@@ -106,6 +104,30 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 	def void test011_NewCompletionOnCompleteStatement(){
 		val code = method('''new LinkedLis$t(){};''')
 		exerciseAndVerifyLenient(code, asList("LinkedList("))
+	}
+	
+	@Test 
+	def void test012_OverrideWithNewImports(){
+		val code =
+		'''import java.util.concurrent.ThreadPoolExecutor;
+		import java.util.concurrent.TimeUnit;
+		public class MyThreadPool extends ThreadPoolExecutor {
+		
+		awaitTermination$
+		}''' 
+		
+		
+		val proposal = exercise(code).head
+		val d = new Document ()
+		d.set(code.toString)
+		proposal.apply(d);
+		val after  = d.get
+		assertTrue(after.contains('''@Override
+		public boolean awaitTermination(long arg0, TimeUnit arg1)
+				throws InterruptedException {
+			// TODO Auto-generated method stub
+			return super.awaitTermination(arg0, arg1);
+		}'''))
 	}
 		
 	@Test 

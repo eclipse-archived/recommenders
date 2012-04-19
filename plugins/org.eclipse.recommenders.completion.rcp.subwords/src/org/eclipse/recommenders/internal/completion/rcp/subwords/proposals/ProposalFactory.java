@@ -157,13 +157,18 @@ public class ProposalFactory {
         final JavaContentAssistInvocationContext context = subwordsContext.getContext();
         final JavaCompletionProposal jdtProposal = subwordsContext.getJdtProposal();
         final CompletionProposal proposal = subwordsContext.getProposal();
-        final String signature = String.valueOf(proposal.getSignature());
         final String completionText = String.valueOf(proposal.getCompletion());
         final String proposalName = String.valueOf(proposal.getName());
+
+        // parameter types do not contain any ; and don't start with L:
+        String[] paramTypes = Signature.getParameterTypes(String.valueOf(proposal.getSignature()));
+        for (int index = 0; index < paramTypes.length; index++)
+            paramTypes[index] = Signature.toString(paramTypes[index]);
+
         final SwOverrideCompletionProposal res = new SwOverrideCompletionProposal(context.getProject(),
-                context.getCompilationUnit(), proposalName, Signature.getParameterTypes(signature),
-                proposal.getReplaceStart(), jdtProposal.getReplacementLength(), jdtProposal.getStyledDisplayString(),
-                completionText, subwordsContext);
+                context.getCompilationUnit(), proposalName, paramTypes, proposal.getReplaceStart(),
+                jdtProposal.getReplacementLength(), jdtProposal.getStyledDisplayString(), completionText,
+                subwordsContext);
         final Image image = jdtProposal.getImage();
         res.setImage(image);
         res.setRelevance(jdtProposal.getRelevance());

@@ -156,6 +156,54 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   }
   
   @Test
+  public void test012_OverrideWithNewImports() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("import java.util.concurrent.ThreadPoolExecutor;");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("import java.util.concurrent.TimeUnit;");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("public class MyThreadPool extends ThreadPoolExecutor {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("awaitTermination$");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("}");
+    final CharSequence code = _builder;
+    List<IJavaCompletionProposal> _exercise = this.exercise(code);
+    final IJavaCompletionProposal proposal = IterableExtensions.<IJavaCompletionProposal>head(_exercise);
+    Document _document = new Document();
+    final Document d = _document;
+    String _string = code.toString();
+    d.set(_string);
+    proposal.apply(d);
+    final String after = d.get();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("@Override");
+    _builder_1.newLine();
+    _builder_1.append("\t\t");
+    _builder_1.append("public boolean awaitTermination(long arg0, TimeUnit arg1)");
+    _builder_1.newLine();
+    _builder_1.append("\t\t\t\t");
+    _builder_1.append("throws InterruptedException {");
+    _builder_1.newLine();
+    _builder_1.append("\t\t\t");
+    _builder_1.append("// TODO Auto-generated method stub");
+    _builder_1.newLine();
+    _builder_1.append("\t\t\t");
+    _builder_1.append("return super.awaitTermination(arg0, arg1);");
+    _builder_1.newLine();
+    _builder_1.append("\t\t");
+    _builder_1.append("}");
+    boolean _contains = after.contains(_builder_1);
+    Assert.assertTrue(_contains);
+  }
+  
+  @Test
   public void test008_ranking() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("String s=\"\"; s.has$");
