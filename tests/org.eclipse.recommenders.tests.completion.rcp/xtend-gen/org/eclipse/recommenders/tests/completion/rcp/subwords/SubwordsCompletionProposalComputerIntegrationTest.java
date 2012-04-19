@@ -181,7 +181,8 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     String _string = code.toString();
     d.set(_string);
     proposal.apply(d);
-    final String after = d.get();
+    String after = d.get();
+    String _plus = ("couldn\'t find completion body in doc:\n" + after);
     StringConcatenation _builder_1 = new StringConcatenation();
     _builder_1.append("@Override");
     _builder_1.newLine();
@@ -200,7 +201,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     _builder_1.append("\t\t");
     _builder_1.append("}");
     boolean _contains = after.contains(_builder_1);
-    Assert.assertTrue(_contains);
+    Assert.assertTrue(_plus, _contains);
   }
   
   @Test

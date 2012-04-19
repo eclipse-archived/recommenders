@@ -121,8 +121,8 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		val d = new Document ()
 		d.set(code.toString)
 		proposal.apply(d);
-		val after  = d.get
-		assertTrue(after.contains('''@Override
+		var after  = d.get
+		assertTrue("couldn't find completion body in doc:\n" + after, after.contains('''@Override
 		public boolean awaitTermination(long arg0, TimeUnit arg1)
 				throws InterruptedException {
 			// TODO Auto-generated method stub
