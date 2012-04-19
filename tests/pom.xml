@@ -17,7 +17,7 @@
 		<module>org.eclipse.recommenders.tests.rcp</module>
 		<module>org.eclipse.recommenders.tests.util</module>
 		<module>org.eclipse.recommenders.tests.webclient</module>
-		<module>org.eclipse.recommenders.tests.ui</module>
+		<!--module>org.eclipse.recommenders.tests.ui</module-->
 	</modules>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -152,7 +152,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 </project>
