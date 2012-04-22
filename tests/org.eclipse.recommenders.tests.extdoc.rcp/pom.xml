@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders.tests</groupId>
 		<artifactId>org.eclipse.recommenders.tests.parent</artifactId>
-		<version>0.5.0-SNAPSHOT</version>
+        <version>0.5.2-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.eclipse.recommenders.tests.extdoc.rcp</artifactId>
@@ -24,4 +24,4 @@
 			</plugin>
 		</plugins>
 	</build>
-<version>0.5.1-SNAPSHOT</version></project>
+</project>

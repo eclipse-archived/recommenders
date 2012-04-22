@@ -2,9 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: UI Test Suite (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.ui
-Bundle-Version: 0.5.1.qualifier
+Bundle-Version: 0.5.2.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4,
  org.eclipse.swtbot.eclipse.core,
  org.eclipse.swtbot.eclipse.finder,
@@ -18,3 +17,4 @@ Require-Bundle: org.junit4,
  org.eclipse.jdt.core,
  org.eclipse.recommenders.extdoc.rcp,
  org.eclipse.jdt.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
