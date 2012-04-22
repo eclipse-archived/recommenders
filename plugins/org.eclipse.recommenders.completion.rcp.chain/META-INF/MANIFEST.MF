@@ -2,8 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: JDT Chain Completion (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.chain;singleton:=true
-Bundle-Version: 0.5.1.qualifier
+Bundle-Version: 0.5.2.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
+Export-Package: org.eclipse.recommenders.internal.completion.rcp.chain
 Require-Bundle: com.google.guava,
  org.eclipse.jdt.core,
  org.eclipse.jdt.ui,
@@ -17,4 +18,3 @@ Require-Bundle: com.google.guava,
  org.eclipse.recommenders.utils.rcp,
  org.eclipse.ui.editors
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.eclipse.recommenders.internal.completion.rcp.chain

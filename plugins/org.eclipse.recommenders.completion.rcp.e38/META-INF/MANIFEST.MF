@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Completion API for Eclipse 3.8 (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.e38;singleton:=true
-Bundle-Version: 0.5.1.qualifier
+Bundle-Version: 0.5.2.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.completion.rcp
 Require-Bundle: org.eclipse.jdt.core;bundle-version="[3.8.0,3.9.0)"

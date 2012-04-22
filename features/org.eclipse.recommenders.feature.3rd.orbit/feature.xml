@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.3rd.orbit"
       label="Code Recommenders: 3rd Party Dependencies hosted on Orbit (Incubation)"
-      version="0.5.1.qualifier"
+      version="0.5.2.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.eclipse.org/recommenders/">

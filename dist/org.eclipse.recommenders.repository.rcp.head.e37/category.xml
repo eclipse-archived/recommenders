@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.subwords_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.subwords" version="0.5.1.qualifier">
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.subwords_0.5.2.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.subwords" version="0.5.2.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.extdoc.rcp_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.extdoc.rcp" version="0.5.1.qualifier">
+   <feature url="features/org.eclipse.recommenders.feature.extdoc.rcp_0.5.2.qualifier.jar" id="org.eclipse.recommenders.feature.extdoc.rcp" version="0.5.2.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.chain.e37_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.chain.e37" version="0.5.1.qualifier">
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.chain.e37_0.5.2.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.chain.e37" version="0.5.2.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.intellig.e37_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.intellig.e37" version="0.5.1.qualifier">
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.intellig.e37_0.5.2.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.intellig.e37" version="0.5.2.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.subwords2_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.subwords2" version="0.5.1.qualifier">
+   <feature url="features/org.eclipse.recommenders.feature.completion.rcp.subwords2_0.5.2.qualifier.jar" id="org.eclipse.recommenders.feature.completion.rcp.subwords2" version="0.5.2.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.rcp.core_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.rcp.core" version="0.5.1.qualifier">
+   <feature url="features/org.eclipse.recommenders.feature.rcp.core_0.5.2.qualifier.jar" id="org.eclipse.recommenders.feature.rcp.core" version="0.5.2.qualifier">
       <category name="main"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.3rd.orbit_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.orbit" version="0.5.1.qualifier"/>
-   <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonorbit_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.5.1.qualifier"/>
-   <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonjuno_0.5.1.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonjuno" version="0.5.1.qualifier"/>
+   <feature url="features/org.eclipse.recommenders.feature.3rd.orbit_0.5.2.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.orbit" version="0.5.2.qualifier"/>
+   <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonorbit_0.5.2.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.5.2.qualifier"/>
+   <feature url="features/org.eclipse.recommenders.feature.3rd.rcp.nonjuno_0.5.2.qualifier.jar" id="org.eclipse.recommenders.feature.3rd.rcp.nonjuno" version="0.5.2.qualifier"/>
    <category-def name="main" label="Code Recommenders - Eclipse 3.7"/>
 </site>
