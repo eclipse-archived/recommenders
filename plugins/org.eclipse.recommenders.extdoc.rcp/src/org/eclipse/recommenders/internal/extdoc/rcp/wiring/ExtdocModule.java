@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProviderDescription;
-import org.eclipse.recommenders.internal.extdoc.rcp.preferences.PreferenceConstants;
 import org.eclipse.recommenders.internal.extdoc.rcp.preferences.PreferencesFacade;
 import org.eclipse.recommenders.internal.extdoc.rcp.preferences.ProviderConfigurationPersistenceService;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocIconLoader;
@@ -32,8 +31,6 @@ import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWirin
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassSelfcallsModelStore;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.MethodSelfcallsModelStore;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
-import org.eclipse.recommenders.webclient.ClientConfiguration;
-import org.eclipse.recommenders.webclient.WebServiceClient;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -73,22 +70,6 @@ public class ExtdocModule extends AbstractModule {
     @Extdoc
     IPreferenceStore providePreferenceStore() {
         return ExtdocPlugin.getDefault().getPreferenceStore();
-    }
-
-    @Provides
-    @Singleton
-    @Extdoc
-    ClientConfiguration provideWebserviceClientConfig(@Extdoc final IPreferenceStore store) {
-        final String baseurl = store.getString(PreferenceConstants.WEBSERVICE_HOST);
-        final ClientConfiguration config = ClientConfiguration.create(baseurl);
-        return config;
-    }
-
-    @Provides
-    @Singleton
-    @Extdoc
-    WebServiceClient provideExtdocWebserviceClient(@Extdoc final ClientConfiguration config) {
-        return new WebServiceClient(config);
     }
 
     @Provides
