@@ -32,7 +32,6 @@ import static org.eclipse.jdt.core.CompletionProposal.TYPE_IMPORT;
 import static org.eclipse.jdt.core.CompletionProposal.TYPE_REF;
 import static org.eclipse.jdt.core.CompletionProposal.VARIABLE_DECLARATION;
 import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket;
-import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.matchesPrefixPattern;
 
 import java.util.List;
 import java.util.Set;
@@ -163,20 +162,15 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         }
 
         final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal);
-        if (!subwordsMatchingRegion.isEmpty()) {
-            if (!matchesPrefixPattern(prefix, subwordsMatchingRegion)) {
-                if (!matchesPrefixPattern(prefix.toLowerCase(), subwordsMatchingRegion)) {
-                    return;
-                }
-                proposal.setRelevance(proposal.getRelevance() - 1);
-            }
+
+        if (!LCSS.containsSubsequence(subwordsMatchingRegion, prefix)) {
+            return;
         }
 
         for (final IJavaCompletionProposal p : tryCreateJdtProposal(proposal)) {
             final SubwordsProposalContext subwordsContext = new SubwordsProposalContext(prefix, proposal, p, ctx);
             createSubwordsProposal(subwordsContext);
         }
-
     }
 
     private boolean isDuplicate(final CompletionProposal proposal) {
@@ -195,22 +189,6 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         final String key = sb.toString();
         return !duplicates.add(key);
     }
-
-    // private boolean isSmallTypo(final String prefix, final String subwordsMatchingRegion) {
-    // if (prefix.length() < 2) {
-    // return false;
-    // }
-    // final int maxDistance = max((int) floor(log(prefix.length())));
-    //
-    // final String lowerTokenPrefix = prefix.toLowerCase();
-    // final String lowerCompletionPrefix = substring(subwordsMatchingRegion, 0, prefix.length()).toLowerCase();
-    // final int distance = getLevenshteinDistance(lowerCompletionPrefix, lowerTokenPrefix, maxDistance);
-    // // no exact matches:
-    // if (distance <= 0) {
-    // return false;
-    // }
-    // return true;
-    // }
 
     private IJavaCompletionProposal[] tryCreateJdtProposal(final CompletionProposal proposal) {
         final int oldLength = collector.getJavaCompletionProposals().length;

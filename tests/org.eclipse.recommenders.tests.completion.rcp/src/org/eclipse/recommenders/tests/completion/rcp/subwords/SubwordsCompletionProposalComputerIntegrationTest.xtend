@@ -102,7 +102,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 	
 	@Test 
 	def void test011_NewCompletionOnCompleteStatement(){
-		val code = method('''new LinkedLis$t(){};''')
+		val code = method('''new LinkedLis$;''')
 		exerciseAndVerifyLenient(code, asList("LinkedList("))
 	}
 	
@@ -129,12 +129,21 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 	}
 		
 	@Test 
-	def void test008_ranking(){
-		val code = method('''String s=""; s.has$''')
+	def void test013_ranking(){
+		val code = method('''String s=""; s.at$''')
 		val actual = exercise(code) 
-		val pHashCode = actual.findFirst(p | p.toString.startsWith("hashCode")) as IJavaCompletionProposal
-		val pGetChars= actual.findFirst(p | p.toString.startsWith("getChars")) as IJavaCompletionProposal
-		assertTrue(pGetChars.relevance< pHashCode.relevance)
+		val pHashCode = actual.findFirst(p | p.toString.startsWith("charAt")) as IJavaCompletionProposal
+		val plastIndexOf= actual.findFirst(p | p.toString.startsWith("lastIndexOf")) as IJavaCompletionProposal
+		assertTrue(plastIndexOf.relevance< pHashCode.relevance)
+	}
+	
+		@Test 
+	def void test014_ranking_prefix(){
+		val code = method('''String s=""; s.char$''')
+		val actual = exercise(code) 
+		val p1 = actual.findFirst(p | p.toString.startsWith("charAt")) as IJavaCompletionProposal
+		val p2= actual.findFirst(p | p.toString.startsWith("getChars")) as IJavaCompletionProposal
+		assertTrue(p1.relevance > p2.relevance)
 	}
  	/**
   	 * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=370572

@@ -100,7 +100,7 @@ public class SubwordsCompletionRequestorTest {
         // setup:
         final CompletionProposal proposal = mockCompletionProposal(CompletionProposal.ANONYMOUS_CLASS_DECLARATION,
                 "TestClass");
-        final SubwordsCompletionRequestor sut = createSut("est");
+        final SubwordsCompletionRequestor sut = createSut("tclas");
         // exercise:
         sut.accept(proposal);
         // verify:

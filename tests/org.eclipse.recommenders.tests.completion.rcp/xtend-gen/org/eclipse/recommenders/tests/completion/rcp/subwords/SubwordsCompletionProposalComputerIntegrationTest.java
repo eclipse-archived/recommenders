@@ -149,7 +149,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   @Test
   public void test011_NewCompletionOnCompleteStatement() {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("new LinkedLis$t(){};");
+    _builder.append("new LinkedLis$;");
     final CharSequence code = CodeBuilder.method(_builder);
     List<String> _asList = Arrays.<String>asList("LinkedList(");
     this.exerciseAndVerifyLenient(code, _asList);
@@ -205,15 +205,15 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   }
   
   @Test
-  public void test008_ranking() {
+  public void test013_ranking() {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("String s=\"\"; s.has$");
+    _builder.append("String s=\"\"; s.at$");
     final CharSequence code = CodeBuilder.method(_builder);
     final List<IJavaCompletionProposal> actual = this.exercise(code);
     final Function1<IJavaCompletionProposal,Boolean> _function = new Function1<IJavaCompletionProposal,Boolean>() {
         public Boolean apply(final IJavaCompletionProposal p) {
           String _string = p.toString();
-          boolean _startsWith = _string.startsWith("hashCode");
+          boolean _startsWith = _string.startsWith("charAt");
           return Boolean.valueOf(_startsWith);
         }
       };
@@ -222,16 +222,46 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     final Function1<IJavaCompletionProposal,Boolean> _function_1 = new Function1<IJavaCompletionProposal,Boolean>() {
         public Boolean apply(final IJavaCompletionProposal p) {
           String _string = p.toString();
+          boolean _startsWith = _string.startsWith("lastIndexOf");
+          return Boolean.valueOf(_startsWith);
+        }
+      };
+    IJavaCompletionProposal _findFirst_1 = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function_1);
+    final IJavaCompletionProposal plastIndexOf = ((IJavaCompletionProposal) _findFirst_1);
+    int _relevance = plastIndexOf.getRelevance();
+    int _relevance_1 = pHashCode.getRelevance();
+    boolean _lessThan = (_relevance < _relevance_1);
+    Assert.assertTrue(_lessThan);
+  }
+  
+  @Test
+  public void test014_ranking_prefix() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("String s=\"\"; s.char$");
+    final CharSequence code = CodeBuilder.method(_builder);
+    final List<IJavaCompletionProposal> actual = this.exercise(code);
+    final Function1<IJavaCompletionProposal,Boolean> _function = new Function1<IJavaCompletionProposal,Boolean>() {
+        public Boolean apply(final IJavaCompletionProposal p) {
+          String _string = p.toString();
+          boolean _startsWith = _string.startsWith("charAt");
+          return Boolean.valueOf(_startsWith);
+        }
+      };
+    IJavaCompletionProposal _findFirst = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function);
+    final IJavaCompletionProposal p1 = ((IJavaCompletionProposal) _findFirst);
+    final Function1<IJavaCompletionProposal,Boolean> _function_1 = new Function1<IJavaCompletionProposal,Boolean>() {
+        public Boolean apply(final IJavaCompletionProposal p) {
+          String _string = p.toString();
           boolean _startsWith = _string.startsWith("getChars");
           return Boolean.valueOf(_startsWith);
         }
       };
     IJavaCompletionProposal _findFirst_1 = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function_1);
-    final IJavaCompletionProposal pGetChars = ((IJavaCompletionProposal) _findFirst_1);
-    int _relevance = pGetChars.getRelevance();
-    int _relevance_1 = pHashCode.getRelevance();
-    boolean _lessThan = (_relevance < _relevance_1);
-    Assert.assertTrue(_lessThan);
+    final IJavaCompletionProposal p2 = ((IJavaCompletionProposal) _findFirst_1);
+    int _relevance = p1.getRelevance();
+    int _relevance_1 = p2.getRelevance();
+    boolean _greaterThan = (_relevance > _relevance_1);
+    Assert.assertTrue(_greaterThan);
   }
   
   /**
