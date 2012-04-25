@@ -264,6 +264,24 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     Assert.assertTrue(_greaterThan);
   }
   
+  @Test
+  public void test015() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("new File$(\"\")");
+    final CharSequence code = CodeBuilder.method(_builder);
+    final List<IJavaCompletionProposal> actual = this.exercise(code);
+    final Function1<IJavaCompletionProposal,Boolean> _function = new Function1<IJavaCompletionProposal,Boolean>() {
+        public Boolean apply(final IJavaCompletionProposal p) {
+          String _string = p.toString();
+          boolean _startsWith = _string.startsWith("File(");
+          return Boolean.valueOf(_startsWith);
+        }
+      };
+    IJavaCompletionProposal _findFirst = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function);
+    final IJavaCompletionProposal p1 = ((IJavaCompletionProposal) _findFirst);
+    Assert.assertNotNull(p1);
+  }
+  
   /**
    * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=370572
    */

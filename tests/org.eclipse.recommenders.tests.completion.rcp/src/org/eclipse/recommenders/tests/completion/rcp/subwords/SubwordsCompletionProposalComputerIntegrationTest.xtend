@@ -145,6 +145,16 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		val p2= actual.findFirst(p | p.toString.startsWith("getChars")) as IJavaCompletionProposal
 		assertTrue(p1.relevance > p2.relevance)
 	}
+
+	@Test 
+	def void test015(){
+		val code = method('''new File$("")''')
+		val actual = exercise(code) 
+		val p1 = actual.findFirst(p | p.toString.startsWith("File(")) as IJavaCompletionProposal
+		assertNotNull(p1)
+	}	
+	
+	
  	/**
   	 * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=370572
  	 */

@@ -163,7 +163,7 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
 
         final String subwordsMatchingRegion = getTokensBetweenLastWhitespaceAndFirstOpeningBracket(proposal);
 
-        if (!LCSS.containsSubsequence(subwordsMatchingRegion, prefix)) {
+        if (!subwordsMatchingRegion.isEmpty() && !LCSS.containsSubsequence(subwordsMatchingRegion, prefix)) {
             return;
         }
 
