@@ -77,7 +77,7 @@ public class LCSS {
                         if (wordBoundaryFound && !Character.isUpperCase(c1))
                             continue;
 
-                        wordBoundaryFound = false;
+                        // wordBoundaryFound = false;
                         int[] copy = Arrays.copyOf(s, s.length + 1);
                         copy[i] = j;
                         next.add(copy);

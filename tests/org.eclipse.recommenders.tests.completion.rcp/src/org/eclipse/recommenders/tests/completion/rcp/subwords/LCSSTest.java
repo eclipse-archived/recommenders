@@ -11,6 +11,10 @@
 package org.eclipse.recommenders.tests.completion.rcp.subwords;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.recommenders.internal.completion.rcp.subwords.LCSS;
 import org.junit.Test;
@@ -62,6 +66,15 @@ public class LCSSTest {
         assertEquals(2, LCSS.findSequences("aaBaaCaaDaa", "badaa").size()); // ba_* & b_a*
         assertEquals(1, LCSS.findSequences("initializeDialogUnits", "dial").size());
         assertEquals(2, LCSS.findSequences("setDateData", "dat").size());
+    }
+
+    @Test
+    public void testBug001() {
+        List<int[]> s = LCSS.findSequences("newLabeledStatement", "le");
+        assertEquals(2, s.size());
+        assertTrue(Arrays.equals(s.get(0), new int[] { 3, 6 }));
+        assertTrue(Arrays.equals(s.get(1), new int[] { 3, 8 }));
+
     }
 
     @Test
