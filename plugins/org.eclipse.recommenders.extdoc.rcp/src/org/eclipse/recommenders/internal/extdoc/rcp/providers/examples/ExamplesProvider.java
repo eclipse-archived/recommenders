@@ -21,7 +21,6 @@ import org.eclipse.recommenders.extdoc.CodeExamples;
 import org.eclipse.recommenders.extdoc.CodeSnippet;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
-import org.eclipse.recommenders.internal.extdoc.rcp.providers.ExtdocResourceProxy;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
@@ -31,12 +30,10 @@ import org.eclipse.swt.widgets.Composite;
 
 public final class ExamplesProvider extends ExtdocProvider {
 
-    private final ExtdocResourceProxy proxy;
     private final JavaElementResolver resolver;
 
     @Inject
-    public ExamplesProvider(final ExtdocResourceProxy proxy, final JavaElementResolver resolver) {
-        this.proxy = proxy;
+    public ExamplesProvider(final JavaElementResolver resolver) {
         this.resolver = resolver;
 
     }
@@ -53,12 +50,7 @@ public final class ExamplesProvider extends ExtdocProvider {
     @JavaSelectionSubscriber
     public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent) {
         final ITypeName typeName = resolver.toRecType(type);
-        final CodeExamples examples = proxy.findCodeExamples(typeName);
-        if (examples == null) {
-            return Status.NOT_AVAILABLE;
-        }
-        runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, examples, parent));
-        return Status.OK;
+        return Status.NOT_AVAILABLE;
     }
 
     private class TypeSelfcallDirectivesRenderer implements Runnable {
