@@ -28,13 +28,10 @@ public class ExtdocViewTest {
                     Optional<IWorkbenchPage> opt = RCPUtils.getActiveWorkbenchPage();
                     IViewPart view = opt.get().showView(ExtdocView.ID);
                     assertNotNull(view);
-                } catch (NullPointerException e) {
+                } catch (Exception e) {
                     // XXX E4 odd thing.
                     System.err.println("NPE in Eclipse - probably e4... need to be verfied again soon!");
                     System.err.println(e);
-
-                } catch (PartInitException e) {
-                    // Assert.fail();
                 }
             }
         });
