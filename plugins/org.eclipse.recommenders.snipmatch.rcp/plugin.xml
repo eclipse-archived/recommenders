@@ -169,6 +169,27 @@
         </description>
     </fontDefinition>
 </extension>
+<extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.eclipse.recommenders.snipmatch.preferences.SnipMatchPreferencePage"
+            id="org.eclipse.recommenders.snipmatch.preferences.SnipMatchPreferencePage"
+            category="org.eclipse.recommenders.rcp.category.preferences"
+            name="SnipMatch">
+      </page>
+      <page
+            class="org.eclipse.recommenders.snipmatch.preferences.GitRepositorySettingPreferencePage"
+            id="org.eclipse.recommenders.snipmatch.preferences.SnipMatchGeneralPreferencePage"
+            category="org.eclipse.recommenders.snipmatch.preferences.SnipMatchPreferencePage"
+            name="Local setting">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.recommenders.snipmatch.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
    <extension
          point="org.eclipse.ui.menus">
    <menuContribution
