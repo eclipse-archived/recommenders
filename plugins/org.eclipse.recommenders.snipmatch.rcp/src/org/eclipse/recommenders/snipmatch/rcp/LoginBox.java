@@ -12,8 +12,9 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.recommenders.snipmatch.search.ClientSwitcher;
+import org.eclipse.recommenders.snipmatch.search.SearchClient;
 import org.eclipse.recommenders.snipmatch.web.ILoginListener;
-import org.eclipse.recommenders.snipmatch.web.MatchClient;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -35,9 +36,8 @@ import org.eclipse.ui.PlatformUI;
 /**
  * The login interface.
  */
-public class LoginBox {
+public class LoginBox extends ClientSwitcher{
 	
-	private MatchClient client;
 	private Shell shell;
 	private Text usernameText;
 	private Text passwordText;
@@ -46,9 +46,7 @@ public class LoginBox {
 	private Runnable onSuccess;
 	private Runnable onFail;
 	
-	public LoginBox(MatchClient client) {
-		
-		this.client = client;
+	public LoginBox() {
 	}
 
 	public void show(final String username, final String password,

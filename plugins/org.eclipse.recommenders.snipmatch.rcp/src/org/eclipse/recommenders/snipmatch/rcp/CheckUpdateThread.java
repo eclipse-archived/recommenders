@@ -13,7 +13,7 @@ import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.recommenders.snipmatch.web.MatchClient;
+import org.eclipse.recommenders.snipmatch.search.SearchClient;
 import org.eclipse.recommenders.snipmatch.web.PostThread;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
  */
 public class CheckUpdateThread extends PostThread {
 
-	public CheckUpdateThread(MatchClient client) {
+	public CheckUpdateThread(SearchClient client) {
 		super(client, SnipMatchPlugin.UPDATE_SITE_INFO_URL);
 	}
 	

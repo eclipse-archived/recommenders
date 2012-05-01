@@ -15,9 +15,11 @@ import java.util.Collections;
 import org.eclipse.recommenders.snipmatch.core.Effect;
 import org.eclipse.recommenders.snipmatch.core.EffectParameter;
 import org.eclipse.recommenders.snipmatch.core.MatchEnvironment;
+import org.eclipse.recommenders.snipmatch.search.ClientSwitcher;
+import org.eclipse.recommenders.snipmatch.search.SearchClient;
 import org.eclipse.recommenders.snipmatch.web.IDeleteEffectListener;
 import org.eclipse.recommenders.snipmatch.web.ISubmitEffectListener;
-import org.eclipse.recommenders.snipmatch.web.MatchClient;
+import org.eclipse.recommenders.snipmatch.web.RemoteMatchClient;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -48,9 +50,8 @@ import org.eclipse.ui.PlatformUI;
 /**
  * This is the interface for creating an editing snippets.
  */
-public class SubmitBox {
+public class SubmitBox extends ClientSwitcher{
 	
-	private MatchClient client;
 	private MatchEnvironment[] envs;
 	private MatchEnvironment activeEnv;
 	private Effect effect;
@@ -84,12 +85,11 @@ public class SubmitBox {
 	private static final Font codeFont = new Font(
 			PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NORMAL);
 	
-	public SubmitBox(MatchClient client) {
-		
-		this.client = client;
+	public SubmitBox() {
 	}
 
 	/**
+	 * Show the snippet creation/editing interface.
 	 * @param toEdit The snippet to edit. If null, then the interface is used to create a new snippet.
 	 */
 	public void show(Effect toEdit) {
@@ -1369,14 +1369,13 @@ public class SubmitBox {
 			/* This was an edit, so first make a request to delete the snippet,
 			 * then make a request to add the edited snippet.
 			 */
-		
 			client.startDeleteEffect(effect, new IDeleteEffectListener() {
 				
 				@Override
 				public void deleteEffectSucceeded() {
 					
 					try {
-						Thread.sleep(MatchClient.TIMEOUT);
+						Thread.sleep(RemoteMatchClient.TIMEOUT);
 					}
 					catch (InterruptedException e) {
 						e.printStackTrace();

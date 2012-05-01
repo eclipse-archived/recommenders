@@ -11,9 +11,9 @@ package org.eclipse.recommenders.snipmatch.rcp;
 import java.util.ArrayList;
 
 import org.eclipse.recommenders.snipmatch.core.Effect;
+import org.eclipse.recommenders.snipmatch.search.ClientSwitcher;
 import org.eclipse.recommenders.snipmatch.web.IDeleteEffectListener;
 import org.eclipse.recommenders.snipmatch.web.ILoadProfileListener;
-import org.eclipse.recommenders.snipmatch.web.MatchClient;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -34,9 +34,8 @@ import org.eclipse.ui.PlatformUI;
  * This is the interface that shows the user's own created snippets, and offers controls
  * to delete or edit them, or to create a new one.
  */
-public class ProfileBox {
+public class ProfileBox extends ClientSwitcher{
 	
-	private MatchClient client;
 	private Shell shell;
 	private List effectList;
 	private Button newButton;
@@ -45,9 +44,7 @@ public class ProfileBox {
 	private Button okButton;
 	private ArrayList<Effect> effects;
 	
-	public ProfileBox(MatchClient client) {
-		
-		this.client = client;
+	public ProfileBox() {
 		this.effects = new ArrayList<Effect>();
 	}
 
