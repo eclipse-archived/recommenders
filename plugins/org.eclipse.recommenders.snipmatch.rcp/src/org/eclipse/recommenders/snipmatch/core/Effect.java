@@ -177,7 +177,7 @@ public class Effect {
 	public int getParameterIndex(String name) {
 
 		for (int i = 0; i < params.size(); i++) {
-			if (params.get(i).getName() == name) {
+			if (params.get(i).getName().equals(name)) {
 				return i;
 			}
 		}

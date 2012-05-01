@@ -171,7 +171,7 @@ public abstract class MatchEnvironment {
 	 * @param node The match node to evaluate.
 	 * @return The result of the evaluation.
 	 */
-	private Object evaluateMatchNode(MatchNode node) {
+	protected Object evaluateMatchNode(MatchNode node) {
 		
 		/* For argument nodes, simply return the argument. 
 		 * For effect nodes, use evaluateEffect and pass in the arguments.
@@ -184,7 +184,12 @@ public abstract class MatchEnvironment {
 			Object[] args = new Object[effectNode.getEffect().numParameters()];
 			
 			for (int i = 0; i < args.length; i++) {
-				args[i] = evaluateMatchNode(effectNode.getChild(i));
+				String value = (String) evaluateMatchNode(effectNode.getChild(i));;
+				//If param value is empty, just use param name as dummy param value
+				if(value.isEmpty()){
+			        value = ((ArgumentMatchNode) effectNode.getChild(i)).getParameter().getName();
+			    }
+				args[i] = value;
 			}
 			
 			return evaluateEffect(effectNode, args);
