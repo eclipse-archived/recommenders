@@ -4,6 +4,10 @@ import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -84,6 +88,26 @@ public class DefaultModelArchiveStoreTest {
         Optional<Object> model = sut.aquireModel(type);
         assertTrue(model.isPresent());
         sut.releaseModel(model.get());
+    }
+
+    @Test
+    public void testResolutionSkippedIfAlreadyTriggeredBefore() {
+        meta.setStatus(ModelArchiveResolutionStatus.UNRESOLVED);
+        meta.setCoordinate("some:some:2.0.0");
+        meta.setResolutionRequestedSinceStartup(true);
+        sut.aquireModel(type);
+
+        verify(factory, times(0)).newResolutionJob(any(ModelArchiveMetadata.class), anyString());
+    }
+
+    @Test
+    public void testResolutionSkippedIfTriggeredSecondTime() {
+        meta.setStatus(ModelArchiveResolutionStatus.UNRESOLVED);
+        meta.setCoordinate("some:some:2.0.0");
+        sut.aquireModel(type);
+        sut.aquireModel(type);
+        verify(factory, times(1)).newResolutionJob(any(ModelArchiveMetadata.class), anyString());
+
     }
 
     @Test

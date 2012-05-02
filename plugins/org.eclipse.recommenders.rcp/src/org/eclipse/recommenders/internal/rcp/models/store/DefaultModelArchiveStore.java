@@ -122,9 +122,13 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
     @SuppressWarnings("unchecked")
     private Optional<IModelArchive<K, V>> findModelArchive(File location) throws IOException {
         ModelArchiveMetadata<K, V> meta = findOrCreateMetadata(location);
+
         switch (meta.getStatus()) {
         case UNRESOLVED:
-            factory.newResolutionJob(meta, classifier).schedule();
+            if (!meta.isResolutionRequestedSinceStartup()) {
+                meta.setResolutionRequestedSinceStartup(true);
+                factory.newResolutionJob(meta, classifier).schedule();
+            }
         case FAILED:
         case PROHIBITED:
         case UNINITIALIZED:

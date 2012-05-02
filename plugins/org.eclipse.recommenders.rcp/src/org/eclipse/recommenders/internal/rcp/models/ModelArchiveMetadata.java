@@ -57,6 +57,11 @@ public class ModelArchiveMetadata<K, V> {
     protected ModelArchiveResolutionStatus status;
     protected String error;
 
+    /**
+     * transient flag used to determine whether resolving this artifact already happened once during startup.
+     */
+    private transient boolean resolutionRequestedSinceStartup;
+
     protected transient Artifact artifact;
     protected transient IModelArchive<K, V> modelArchive;
 
@@ -140,4 +145,14 @@ public class ModelArchiveMetadata<K, V> {
     public void setLocation(File newLocation) {
         chg.firePropertyChange(P_MODEL, location, location = newLocation);
     }
+
+    // TODO that's not exactly a speaking name here..
+    public boolean isResolutionRequestedSinceStartup() {
+        return resolutionRequestedSinceStartup;
+    }
+
+    public void setResolutionRequestedSinceStartup(boolean tested) {
+        this.resolutionRequestedSinceStartup = tested;
+    }
+
 }
