@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.rcp.repo;
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import java.io.File;
 import java.net.URI;
@@ -121,7 +122,7 @@ public class ModelRepository implements IModelRepository {
             Response r = http.prepareHead(url).execute().get();
 
             String header = r.getHeader("ETag");
-            if (header != null && !header.isEmpty()) {
+            if (isNotEmpty(header)) {
                 header = StringUtils.remove(header, "\"");
                 return of(header);
             }
@@ -258,7 +259,8 @@ public class ModelRepository implements IModelRepository {
         VersionRangeRequest rangeRequest = new VersionRangeRequest(a, Collections.singletonList(remote),
                 a.getClassifier());
         try {
-            return of(system.resolveVersionRange(newSession(), rangeRequest));
+            VersionRangeResult range = system.resolveVersionRange(newSession(), rangeRequest);
+            return of(range);
         } catch (Exception e) {
             log.error("Failed to resolve version range for artifact " + a + ".", e);
             return absent();

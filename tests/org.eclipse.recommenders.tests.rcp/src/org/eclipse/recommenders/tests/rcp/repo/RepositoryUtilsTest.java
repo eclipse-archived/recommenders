@@ -12,12 +12,19 @@ package org.eclipse.recommenders.tests.rcp.repo;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils;
 import org.junit.Test;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 public class RepositoryUtilsTest {
+
+    public static File LOCAL_M2_REPO = new File(SystemUtils.getUserHome(), ".m2/repository");
+    public static String MAVEN_CENTRAL = "http://repo1.maven.org/maven2/";
+    public static String VANDYK_JUNO = "http://vandyk.st.informatik.tu-darmstadt.de/juno/";
 
     public static Artifact SWT_37_CALLS = new DefaultArtifact("org.eclipse.swt", "org.eclipse.swt", "cr-calls", "zip",
             "3.7.0");

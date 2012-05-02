@@ -30,7 +30,7 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import com.google.common.base.Optional;
 
-public class RepositoryConsistencyManualChecks {
+public class RepositoryConsistencyManualTests {
 
     private static ModelRepository repo;
     private static ModelRepositoryIndex index;
