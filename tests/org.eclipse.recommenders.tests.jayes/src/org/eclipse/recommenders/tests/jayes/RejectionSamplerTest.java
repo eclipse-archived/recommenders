@@ -33,7 +33,7 @@ public class RejectionSamplerTest {
         sampler.addEvidence(a, "false");
         sampler.addEvidence(b, "lu");
 
-        assertArrayEquals(sampler.getBeliefs(c), new double[] { 0.7, 0.3 }, 0.01);
+        assertArrayEquals(sampler.getBeliefs(c), new double[] { 0.7, 0.3 }, 0.015);
     }
 
 }
