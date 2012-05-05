@@ -22,7 +22,6 @@ import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
-import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -1544,9 +1543,6 @@ public class ChainCompletionScenariosTest {
       final ChainCompletionProposalComputer sut = _chainCompletionProposalComputer;
       sut.sessionStarted();
       final List<ICompletionProposal> proposals = sut.computeCompletionProposals(ctx, null);
-      String _string_1 = code.toString();
-      InputOutput.<String>println(_string_1);
-      InputOutput.<List<ICompletionProposal>>println(proposals);
       for (final ICompletionProposal proposal : proposals) {
         {
           final List<String> names = ((ChainCompletionProposal) proposal).getChainElementNames();
@@ -1554,9 +1550,9 @@ public class ChainCompletionScenariosTest {
           _builder.append("couldn\'t find ");
           _builder.append(names, "");
           _builder.append(" in expected.");
-          String _string_2 = _builder.toString();
+          String _string_1 = _builder.toString();
           boolean _remove = expected.remove(names);
-          Assert.assertTrue(_string_2, _remove);
+          Assert.assertTrue(_string_1, _remove);
         }
       }
       StringConcatenation _builder = new StringConcatenation();
@@ -1564,9 +1560,9 @@ public class ChainCompletionScenariosTest {
       _builder.append("some expected values were not found ");
       _builder.append(expected, " ");
       _builder.append(" ");
-      String _string_2 = _builder.toString();
+      String _string_1 = _builder.toString();
       boolean _isEmpty = expected.isEmpty();
-      Assert.assertTrue(_string_2, _isEmpty);
+      Assert.assertTrue(_string_1, _isEmpty);
     } catch (Exception _e) {
       throw Exceptions.sneakyThrow(_e);
     }
