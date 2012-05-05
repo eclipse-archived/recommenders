@@ -56,7 +56,11 @@ public class CodeBuilder {
     _builder.newLine();
     _builder.append("import java.text.*;");
     _builder.newLine();
+    _builder.append("import java.io.*;");
+    _builder.newLine();
     _builder.append("import java.util.concurrent.*;");
+    _builder.newLine();
+    _builder.append("import java.util.concurrent.atomic.*;");
     _builder.newLine();
     _builder.append("import javax.annotation.*;");
     _builder.newLine();
@@ -91,6 +95,8 @@ public class CodeBuilder {
     _builder.append("import javax.annotation.*;");
     _builder.newLine();
     _builder.append("import javax.xml.ws.Action;");
+    _builder.newLine();
+    _builder.append("import java.math.*;");
     _builder.newLine();
     _builder.append("public class Class");
     int _addAndGet = CodeBuilder.classCounter.addAndGet(1);
@@ -273,6 +279,18 @@ public class CodeBuilder {
     _builder.newLineIfNotEmpty();
     _builder.append("}");
     CharSequence _classbody = CodeBuilder.classbody(_builder);
+    return _classbody;
+  }
+  
+  public static CharSequence method(final CharSequence classname, final CharSequence methodbody) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public void __test() throws Exception {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append(methodbody, "	");
+    _builder.newLineIfNotEmpty();
+    _builder.append("}");
+    CharSequence _classbody = CodeBuilder.classbody(classname, _builder);
     return _classbody;
   }
   
