@@ -34,6 +34,7 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
@@ -54,6 +55,7 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFac
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.inject.Inject;
 
@@ -70,7 +72,6 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     private IRecommendersCompletionContext ctx;
     private IType expectedType;
     private List<MemberEdge> entrypoints;
-    private List<ICompletionProposal> proposals;
     private String error;
     private final IRecommendersCompletionContextFactory ctxFactory;
 
@@ -93,15 +94,15 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
             return Collections.emptyList();
         }
         try {
-            executeCallChainSearch();
+            return executeCallChainSearch();
         } catch (final Exception e) {
             logError(e);
+            return Collections.emptyList();
         }
-        return proposals;
     }
 
     /**
-     * @return true iff the context could be initialized successfully, i.e., completion context is a java context, and
+     * @return true if the context could be initialized successfully, i.e., completion context is a java context, and
      *         the core context is an extended context
      */
     private void initalizeContexts(final ContentAssistInvocationContext context) {
@@ -222,6 +223,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
             // TODO Review: could this be a field?
             final ILocalVariable var = createUnresolvedLocaVariable((VariableBinding) b, findEnclosingElement());
             addPublicInstanceMembersToEntrypoints(var);
+            break;
         default:
             break;
         }
@@ -251,31 +253,32 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         return elementName.startsWith(prefix);
     }
 
-    private void executeCallChainSearch() throws JavaModelException {
-        proposals.clear();
+    private List<ICompletionProposal> executeCallChainSearch() throws JavaModelException {
         final GraphBuilder b = new GraphBuilder();
-        final List<List<MemberEdge>> chains = b.getChains();
+        final int expectedDimension = Signature.getArrayCount(ctx.getExpectedTypeSignature().get().toCharArray());
         try {
             new SimpleTimeLimiter().callWithTimeout(new Callable<Void>() {
 
                 public Void call() throws Exception {
-                    b.build(entrypoints);
-                    b.findChains(expectedType);
+                    b.startChainSearch(findEnclosingElement(), entrypoints, expectedType, expectedDimension);
                     return null;
                 }
             }, 3500, TimeUnit.MILLISECONDS, true);
         } catch (final Exception e) {
             setError("Timeout limit hit during call chain computation.");
         }
-        for (final List<MemberEdge> chain : chains) {
-            final TemplateProposal completion = new CompletionTemplateBuilder().create(chain, ctx.getJavaContext());
+        final List<ICompletionProposal> proposals = Lists.newLinkedList();
+        for (final List<MemberEdge> chain : b.getChains()) {
+            final TemplateProposal completion = new CompletionTemplateBuilder().create(chain, expectedDimension,
+                    ctx.getJavaContext());
             final ChainCompletionProposal completionProposal = new ChainCompletionProposal(completion, chain);
             proposals.add(completionProposal);
         }
+        return proposals;
     }
 
     private void setError(final String errorMessage) {
-        this.error = errorMessage;
+        error = errorMessage;
     }
 
     private void logError(final Exception e) {
@@ -289,7 +292,6 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     public void sessionStarted() {
-        proposals = new LinkedList<ICompletionProposal>();
         setError(null);
     }
 

@@ -27,7 +27,9 @@ class CodeBuilder {
 		'''
 		import java.util.*;
 		import java.text.*;
+		import java.io.*;
 		import java.util.concurrent.*;
+		import java.util.concurrent.atomic.*;
 		import javax.annotation.*;
 		import javax.xml.ws.Action;
 		public class «classname» {
@@ -46,6 +48,7 @@ class CodeBuilder {
 		import java.util.concurrent.*;
 		import javax.annotation.*;
 		import javax.xml.ws.Action;
+		import java.math.*;
 		public class Class«classCounter.addAndGet(1)» {
 			«classbody»
 		}
@@ -117,6 +120,13 @@ class CodeBuilder {
 	
 	def static method(CharSequence methodbody){
 		classbody('''
+		public void __test() throws Exception {
+			«methodbody»
+		}''')
+	}
+	
+	def static method(CharSequence classname, CharSequence methodbody){
+		classbody(classname, '''
 		public void __test() throws Exception {
 			«methodbody»
 		}''')

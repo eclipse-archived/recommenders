@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.Point;
  * testing such as {@link #getChain()}, and {@link #getChainElementNames()} etc. It may be extended to track user click
  * feedback to continuously improve chain completion.
  */
+@SuppressWarnings("restriction")
 public class ChainCompletionProposal implements IJavaCompletionProposal, ICompletionProposalExtension2,
         ICompletionProposalExtension3, ICompletionProposalExtension4, ICompletionProposalExtension6 {
 

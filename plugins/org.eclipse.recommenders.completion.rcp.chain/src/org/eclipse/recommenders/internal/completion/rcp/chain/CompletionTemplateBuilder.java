@@ -42,19 +42,18 @@ public class CompletionTemplateBuilder {
 
     private HashBag<String> varNames;
     private StringBuilder sb;
-    private JavaContentAssistInvocationContext context;
 
-    public TemplateProposal create(final List<MemberEdge> chain, final JavaContentAssistInvocationContext context) {
-        this.context = context;
+    public TemplateProposal create(final List<MemberEdge> chain, final int expectedDimension,
+            final JavaContentAssistInvocationContext context) {
         final String title = createCompletionTitle(chain);
-        final String body = createCompletionBody(chain);
+        final String body = createCompletionBody(chain, expectedDimension);
 
         final Template template = new Template(title, chain.size() + " elements", "java", body, false);
         return createTemplateProposal(template, context);
     }
 
     private static String createCompletionTitle(final List<MemberEdge> chain) {
-        final StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder(64);
         for (final MemberEdge edge : chain) {
             switch (edge.getEdgeType()) {
             case FIELD:
@@ -66,6 +65,7 @@ public class CompletionTemplateBuilder {
                 final IMethod method = edge.getEdgeElement();
                 final String label = getElementLabel(method, M_PARAMETER_NAMES | M_PARAMETER_TYPES);
                 sb.append(label);
+                break;
             default:
                 break;
             }
@@ -78,9 +78,9 @@ public class CompletionTemplateBuilder {
         return sb.toString();
     }
 
-    private String createCompletionBody(final List<MemberEdge> chain) {
+    private String createCompletionBody(final List<MemberEdge> chain, final int expectedDimension) {
         varNames = HashBag.newHashBag();
-        sb = new StringBuilder();
+        sb = new StringBuilder(64);
         for (final MemberEdge edge : chain) {
             switch (edge.getEdgeType()) {
             case FIELD:
@@ -95,7 +95,7 @@ public class CompletionTemplateBuilder {
             default:
                 break;
             }
-            appendArrayDimensions(edge.getDimension());
+            appendArrayDimensions(edge.getDimension(), expectedDimension);
             sb.append(".");
         }
         deleteLastChar();
@@ -112,7 +112,7 @@ public class CompletionTemplateBuilder {
             final String[] paramNames = method.getParameterNames();
             final String[] paramTypes = method.getParameterTypes();
             final int numberOfParams = paramNames.length;
-            for (int i = 0; i < numberOfParams; i++) {
+            for (int i = 0; i < numberOfParams; ++i) {
                 appendTemplateVariable(paramNames[i], paramTypes[i]);
                 sb.append(", ");
             }
@@ -143,16 +143,12 @@ public class CompletionTemplateBuilder {
         return sb.deleteCharAt(sb.length() - 1);
     }
 
-    private void appendArrayDimensions(final int dimension) {
-        for (int i = dimension; i-- > 0;) {
-            addArrayDimension();
+    private void appendArrayDimensions(final int dimension, final int expectedDimension) {
+        for (int i = dimension; i-- > expectedDimension;) {
+            sb.append("[");
+            appendTemplateVariable("i", "I");
+            sb.append("]");
         }
-    }
-
-    private void addArrayDimension() {
-        sb.append("[");
-        appendTemplateVariable("index", "I");
-        sb.append("]");
     }
 
     static TemplateProposal createTemplateProposal(final Template template,
