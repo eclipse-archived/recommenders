@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.tests.completion.rcp
 
+import static com.google.common.base.Optional.*
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext
@@ -11,7 +12,6 @@ import org.eclipse.jdt.internal.compiler.ast.MessageSend
 import org.eclipse.jdt.internal.compiler.ast.ASTNode
 import com.google.common.base.Optional
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess
- 
 class RecommendersCompletionContextTest { 
   
 	@Test
@@ -101,6 +101,17 @@ class RecommendersCompletionContextTest {
 		assertEquals("Class",sut.receiverType.get.elementName);
 	}
 	
+	def void testSignatureParseException(){
+		val code = '''
+		public class Part {
+
+		public Part(String string,$ S) {
+		}
+		}
+		'''
+		val sut = exercise(code)
+		assertEquals(absent(),sut.enclosingElement)
+	}
 	
 	def private assertCompletionNode(IRecommendersCompletionContext sut, Class<?> type){
 		val node = sut.completionNode;

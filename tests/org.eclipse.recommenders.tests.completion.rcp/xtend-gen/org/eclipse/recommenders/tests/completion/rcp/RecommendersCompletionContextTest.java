@@ -6,6 +6,7 @@ import junit.framework.Assert;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
@@ -132,6 +133,24 @@ public class RecommendersCompletionContextTest {
     IType _get = _receiverType_1.get();
     String _elementName = _get.getElementName();
     Assert.assertEquals("Class", _elementName);
+  }
+  
+  public void testSignatureParseException() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public class Part {");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("public Part(String string,$ S) {");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    final CharSequence code = _builder;
+    final IRecommendersCompletionContext sut = this.exercise(code);
+    Optional<?> _absent = Optional.absent();
+    Optional<IJavaElement> _enclosingElement = sut.getEnclosingElement();
+    Assert.assertEquals(_absent, _enclosingElement);
   }
   
   private void assertCompletionNode(final IRecommendersCompletionContext sut, final Class<?> type) {
