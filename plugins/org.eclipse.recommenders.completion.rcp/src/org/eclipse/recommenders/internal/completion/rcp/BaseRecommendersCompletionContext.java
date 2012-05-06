@@ -128,8 +128,13 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<IJavaElement> getEnclosingElement() {
-        if (coreContext.isExtended()) {
-            return fromNullable(coreContext.getEnclosingElement());
+        try {
+            if (coreContext.isExtended()) {
+                return fromNullable(coreContext.getEnclosingElement());
+            }
+        } catch (IllegalArgumentException e) {
+            // thrown by JDT if it fails to parse the signature.
+            // we silently ignore that and return nothing instead.
         }
         return absent();
     }
