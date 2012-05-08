@@ -31,7 +31,7 @@
 	</extension>
  <extension
          id="org.eclipse.recommenders.subwords.rcp.category"
-         name="Subwords Completion"
+         name="Java Subwords Completion"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <proposalCategory
             icon="icons/elcl16/category.gif"></proposalCategory>
