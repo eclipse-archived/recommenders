@@ -38,5 +38,5 @@ public class SubwordsProposalContextTest {
         CompletionProposal mock = Mockito.mock(CompletionProposal.class);
         Mockito.when(mock.getCompletion()).thenReturn(completion.toCharArray());
         return mock;
-    }
+      }
 }

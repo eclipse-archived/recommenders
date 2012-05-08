@@ -45,11 +45,11 @@ public class SubwordsProposalContext {
 
     public SubwordsProposalContext(final String prefix, final CompletionProposal proposal,
             final IJavaCompletionProposal jdtProposal, final JavaContentAssistInvocationContext ctx) {
-        this.proposal = ensureIsNotNull(proposal);
-        this.ctx = ensureIsNotNull(ctx);
+        this.proposal = proposal;
+        this.ctx = ctx;
         this.subwordsMatchingRegion = SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket(jdtProposal
                 .getDisplayString());
-        this.jdtProposal = ensureIsNotNull(jdtProposal);
+        this.jdtProposal = jdtProposal;
         setPrefix(prefix);
     }
 
