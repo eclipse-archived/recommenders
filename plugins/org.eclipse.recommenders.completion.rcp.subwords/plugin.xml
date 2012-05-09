@@ -6,7 +6,7 @@
          name="Java Subwords Completion Engine"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <javaCompletionProposalComputer
-            activate="false"
+            activate="true"
             categoryId="org.eclipse.recommenders.subwords.rcp.category"
             class="org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer"
             needsSortingAfterFiltering="true"/>
