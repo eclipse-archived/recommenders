@@ -84,8 +84,9 @@ public class SubwordsProposalContext {
     }
 
     public int calculateRelevance() {
-        String commonPrefix = getCommonPrefix(subwordsMatchingRegion, prefix);
-        int relevance = jdtProposal.getRelevance() + commonPrefix.length() + bestSubsequenceScore;
+        String commonPrefix = getCommonPrefix(subwordsMatchingRegion.toLowerCase(), prefix.toLowerCase());
+        int score = commonPrefix.length() > 0 ? 200 + commonPrefix.length() : 0;
+        int relevance = jdtProposal.getRelevance() + score + bestSubsequenceScore;
         return relevance;
     }
 

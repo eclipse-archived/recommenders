@@ -305,7 +305,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             if (recSignature.equals(propSignature)) {
                 if (jdtuiProposal instanceof AbstractJavaCompletionProposal) {
                     int baseRelevance = jdtuiProposal.getRelevance();
-                    baseRelevance += 100 + (int) rint(call.probability * 100);
+                    baseRelevance += 250 + (int) rint(call.probability * 100);
                     ((AbstractJavaCompletionProposal) jdtuiProposal).setRelevance(baseRelevance);
                 }
                 final CompletionProposalDecorator decoratedProposal = new CompletionProposalDecorator(jdtuiProposal,
