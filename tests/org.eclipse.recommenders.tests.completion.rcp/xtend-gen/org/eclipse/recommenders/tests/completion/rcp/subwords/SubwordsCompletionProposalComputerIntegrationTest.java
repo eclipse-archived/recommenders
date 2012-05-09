@@ -17,6 +17,7 @@ import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsComplet
 import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.SmokeTestScenarios;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
+import org.eclipse.recommenders.tests.completion.rcp.subwords.SubwordsMockUtils;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -455,8 +456,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
       final Integer completionIndex = IterableExtensions.<Integer>head(_second);
       JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (completionIndex).intValue());
       final JavaContentAssistContextMock ctx = _javaContentAssistContextMock;
-      SubwordsCompletionProposalComputer _subwordsCompletionProposalComputer = new SubwordsCompletionProposalComputer();
-      final SubwordsCompletionProposalComputer sut = _subwordsCompletionProposalComputer;
+      final SubwordsCompletionProposalComputer sut = SubwordsMockUtils.createEngine();
       sut.sessionStarted();
       this.stopwatch.start();
       NullProgressMonitor _nullProgressMonitor = new NullProgressMonitor();

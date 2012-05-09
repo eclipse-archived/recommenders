@@ -251,7 +251,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		val cu = struct.first; 
 		val completionIndex = struct.second.head
 		val ctx = new JavaContentAssistContextMock(cu, completionIndex)
-		val sut = new SubwordsCompletionProposalComputer()
+		val sut = SubwordsMockUtils::createEngine
 		sut.sessionStarted
 		stopwatch.start
 		val actual = sut.computeCompletionProposals(ctx, new NullProgressMonitor())

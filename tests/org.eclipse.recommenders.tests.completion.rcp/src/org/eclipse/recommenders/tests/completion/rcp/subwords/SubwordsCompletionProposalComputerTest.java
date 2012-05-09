@@ -17,6 +17,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -33,7 +34,7 @@ public class SubwordsCompletionProposalComputerTest {
     @Test
     public void testSmokeComputeProposalsWithSomeToken() throws JavaModelException {
         // setup:
-        final SubwordsCompletionProposalComputer sut = new SubwordsCompletionProposalComputer();
+        final SubwordsCompletionProposalComputer sut = SubwordsMockUtils.createEngine();
         // exercise:
         final JavaContentAssistInvocationContext ctx = mockInvocationContext("aToken");
         sut.computeCompletionProposals(ctx, null);
@@ -41,6 +42,18 @@ public class SubwordsCompletionProposalComputerTest {
         final CompletionContext coreCtx = ctx.getCoreContext();
         verify(coreCtx, atLeastOnce()).getToken();
         verifyCodeCompleteIsCalled(ctx);
+    }
+
+    @Test
+    public void testNoExecuteIfJDTIsEnable() throws JavaModelException {
+        // setup:
+        final SubwordsCompletionProposalComputer sut = new SubwordsCompletionProposalComputer();
+        // exercise:
+        final JavaContentAssistInvocationContext ctx = mockInvocationContext("aToken");
+        sut.computeCompletionProposals(ctx, null);
+        // verify:
+        final CompletionContext coreCtx = ctx.getCoreContext();
+        verify(coreCtx, never()).getToken();
     }
 
     private void verifyCodeCompleteIsCalled(final JavaContentAssistInvocationContext ctx) throws JavaModelException {

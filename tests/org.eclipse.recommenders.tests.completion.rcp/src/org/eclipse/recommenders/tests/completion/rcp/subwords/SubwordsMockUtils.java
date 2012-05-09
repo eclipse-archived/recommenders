@@ -25,11 +25,21 @@ import org.eclipse.jdt.core.WorkingCopyOwner;
 import org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.mockito.Mockito;
 
 public class SubwordsMockUtils {
+
+    public static SubwordsCompletionProposalComputer createEngine() {
+        return new SubwordsCompletionProposalComputer() {
+            @Override
+            protected boolean shouldReturnResults() {
+                return true;
+            }
+        };
+    }
 
     public static CompletionProposal mockCompletionProposal() {
         return mock(CompletionProposal.class);
