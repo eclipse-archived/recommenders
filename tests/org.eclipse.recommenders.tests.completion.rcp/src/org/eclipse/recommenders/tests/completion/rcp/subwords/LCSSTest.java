@@ -78,6 +78,18 @@ public class LCSSTest {
     }
 
     @Test
+    public void testPackages() {
+        List<int[]> s = LCSS.findSequences("com.apple.coxcurrent", "comcon");
+        assertEquals(1, s.size());
+    }
+
+    @Test
+    public void testConstants() {
+        List<int[]> s = LCSS.findSequences("DLM_IMG_HELP", "el");
+        assertEquals(0, s.size());
+    }
+
+    @Test
     public void testTypeNames() {
         assertEquals(1, LCSS.findSequences("StringBuilder", "sb").size());
         assertEquals(1, LCSS.findSequences("StringBuilder", "sbu").size());

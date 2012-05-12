@@ -13,12 +13,10 @@ package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
@@ -27,32 +25,17 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 import org.eclipse.swt.graphics.Point;
 
-import com.google.common.annotations.VisibleForTesting;
-
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class SubwordsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
+    public static String CATEGORY_ID = "org.eclipse.recommenders.subwords.rcp.category";
     private JavaContentAssistInvocationContext ctx;
 
     @Override
-    public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+    public List computeCompletionProposals(final ContentAssistInvocationContext context,
+            final IProgressMonitor monitor) {
         ctx = (JavaContentAssistInvocationContext) context;
-        if (!shouldReturnResults())
-            return Collections.emptyList();
         return findSubwordMatchingProposals(monitor);
-    }
-
-    @VisibleForTesting
-    protected boolean shouldReturnResults() {
-        if (JavaUiUtil.isDefaultAssistActive(JavaUiUtil.ASSIST_JDT_ALL)) {
-            // do not return duplicates if the default JDT processor is already enabled on Eclipse 3.5
-            return false;
-        }
-        Set<String> disabledIds = JavaUiUtil.getDisabledIds(JavaPlugin.getDefault().getPreferenceStore());
-        if (!disabledIds.contains(JavaUiUtil.ASSIST_JDT_NOTYPE) && !disabledIds.contains(JavaUiUtil.ASSIST_JDT_TYPE)) {
-            // do not return duplicates if the default JDT processors are already enabled on on Eclipse 3.3 and 3.4
-            return false;
-        }
-        return true;
     }
 
     private String getToken() {

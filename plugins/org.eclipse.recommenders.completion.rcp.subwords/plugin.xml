@@ -2,8 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="org.eclipse.recommenders.subwords.rcp"
-         name="Java Subwords Completion Engine"
+         id="org.eclipse.recommenders.subwords.rcp.category"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <javaCompletionProposalComputer
             activate="true"
@@ -12,10 +11,19 @@
             needsSortingAfterFiltering="true"/>
    </extension>
  <extension
-         id="org.eclipse.recommenders.subwords.rcp.category"
-         name="Java Subwords Completion"
-         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+       id="org.eclipse.recommenders.subwords.rcp.category"
+       name="Java Subwords Proposals"
+       point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <proposalCategory
             icon="icons/elcl16/category.gif"></proposalCategory>
    </extension>
+ <extension
+       point="org.eclipse.ui.preferencePages">
+    <page
+          category="org.eclipse.recommenders.rcp.category.preferences"
+          class="org.eclipse.recommenders.internal.completion.rcp.subwords.PreferencePage"
+          id="org.eclipse.recommenders.internal.completion.rcp.subwords.PreferencePage"
+          name="Subwords">
+    </page>
+ </extension>
 </plugin>

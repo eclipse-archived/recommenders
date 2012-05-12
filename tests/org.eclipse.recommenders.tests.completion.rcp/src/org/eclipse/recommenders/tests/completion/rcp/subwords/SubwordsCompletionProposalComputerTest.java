@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsCompletionProposalComputer;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SubwordsCompletionProposalComputerTest {
@@ -45,6 +46,7 @@ public class SubwordsCompletionProposalComputerTest {
     }
 
     @Test
+    @Ignore("we don't exlude ourselves if jdt completion is active")
     public void testNoExecuteIfJDTIsEnable() throws JavaModelException {
         // setup:
         final SubwordsCompletionProposalComputer sut = new SubwordsCompletionProposalComputer();
