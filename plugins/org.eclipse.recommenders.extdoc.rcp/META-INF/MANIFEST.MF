@@ -19,7 +19,6 @@ Require-Bundle: org.eclipse.recommenders.injection,
  org.apache.commons.lang3,
  org.eclipse.core.expressions,
  org.eclipse.core.resources,
- org.eclipse.recommenders.webclient,
  org.eclipse.recommenders.extdoc,
  org.eclipse.ui.editors,
  com.google.gson
