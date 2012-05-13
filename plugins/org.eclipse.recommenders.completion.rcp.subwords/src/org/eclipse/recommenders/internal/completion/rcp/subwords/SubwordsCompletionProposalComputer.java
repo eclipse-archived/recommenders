@@ -11,12 +11,17 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
+import static org.eclipse.recommenders.internal.completion.rcp.subwords.PreferencePage.JDT_ALL_CATEGORY;
+import static org.eclipse.recommenders.internal.completion.rcp.subwords.PreferencePage.MYLYN_ALL_CATEGORY;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
@@ -25,6 +30,9 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 import org.eclipse.swt.graphics.Point;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Sets;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SubwordsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
@@ -32,10 +40,31 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
     private JavaContentAssistInvocationContext ctx;
 
     @Override
-    public List computeCompletionProposals(final ContentAssistInvocationContext context,
-            final IProgressMonitor monitor) {
+    public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         ctx = (JavaContentAssistInvocationContext) context;
+        if (!shouldReturnResults())
+            return Collections.emptyList();
         return findSubwordMatchingProposals(monitor);
+    }
+
+    @VisibleForTesting
+    protected boolean shouldReturnResults() {
+        Set<String> cats = Sets.newHashSet(PreferenceConstants.getExcludedCompletionProposalCategories());
+        if (cats.contains(CATEGORY_ID)) {
+            // we are excluded on default tab?
+            // then we are not on default tab NOW. We are on a subsequent tab.
+            // then make completions:
+            return true;
+        }
+
+        // is jdt all enabled?
+        // is mylyn all enabled?
+        if (!(cats.contains(JDT_ALL_CATEGORY) || cats.contains(MYLYN_ALL_CATEGORY))) {
+            // do not compute any recommendations and deactivate yourself in background
+            new DisableSubwordsJob().schedule(300);
+            return false;
+        }
+        return true;
     }
 
     private String getToken() {

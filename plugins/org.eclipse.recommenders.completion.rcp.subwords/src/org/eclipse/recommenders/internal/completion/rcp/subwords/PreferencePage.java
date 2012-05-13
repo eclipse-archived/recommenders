@@ -28,14 +28,14 @@ import com.google.common.collect.Sets;
 
 public class PreferencePage extends org.eclipse.jface.preference.PreferencePage implements IWorkbenchPreferencePage {
 
-    private static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory";
+    static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory";
+    static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory";
     private Button enablement;
 
     public PreferencePage() {
         setDescription("Subwords is a new experimental content assist for Java. It uses 'fuzzy word matching' which allows you to specify just a subsequence of the proposal's text you want to insert.\n\n"
-                + "Note that Subwords essentially makes the same proposals as the standard Java content assist, and thus, should be disabled when using Subwords to avoid duplicated proposals. "
-                + "The button below is a shortcut for enabling Subwords and disabling Java Standard Completion (and reverse) which is usually done via 'Java > Editor > Content Assist > Advanced > default'.");
-        setPreferenceStore(Activator.getDefault().getPreferenceStore());
+                + "Note that Subwords essentially makes the same proposals as the standard Java content assist, and thus, will automatically disabled itself when either JDT or Mylyn completion is active to avoid duplicated proposals. "
+                + "The button below is a shortcut for enabling Subwords and disabling standard Java content assist (and reverse) which is usually done via 'Java > Editor > Content Assist > Advanced > default'.");
     }
 
     @Override
@@ -76,7 +76,7 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
 
     private boolean isSubwordsEnabled() {
         String[] excluded = PreferenceConstants.getExcludedCompletionProposalCategories();
-        return ArrayUtils.contains(excluded, SubwordsCompletionProposalComputer.CATEGORY_ID);
+        return !ArrayUtils.contains(excluded, SubwordsCompletionProposalComputer.CATEGORY_ID);
     }
 
     @Override

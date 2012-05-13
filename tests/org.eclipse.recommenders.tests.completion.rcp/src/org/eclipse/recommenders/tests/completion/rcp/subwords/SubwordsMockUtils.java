@@ -33,7 +33,12 @@ import org.mockito.Mockito;
 public class SubwordsMockUtils {
 
     public static SubwordsCompletionProposalComputer createEngine() {
-        return new SubwordsCompletionProposalComputer();
+        return new SubwordsCompletionProposalComputer() {
+            @Override
+            protected boolean shouldReturnResults() {
+                return true;
+            }
+        };
     }
 
     public static CompletionProposal mockCompletionProposal() {
