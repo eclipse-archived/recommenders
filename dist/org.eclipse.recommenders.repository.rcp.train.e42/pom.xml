@@ -49,15 +49,11 @@
 								<goals>
 									<goal>pack</goal>
 								</goals>
-								<configuration>
-									<inputFile>${project.build.directory}/${project.artifactId}.zip</inputFile>
-								</configuration>
 							</execution>
 							<!-- Sign the p2 repository -->
 							<execution>
 								<id>sign</id>
 								<configuration>
-									<inputFile>${project.build.directory}/${project.artifactId}.zip</inputFile>
 									<signerInputDirectory>/home/data/httpd/download-staging.priv/technology/recommenders</signerInputDirectory>
 								</configuration>
 								<phase>package</phase>
@@ -68,9 +64,9 @@
 							<!-- Repack the p2 repository -->
 							<execution>
 								<id>repack</id>
-								<configuration>
-									<inputFile>${project.build.directory}/signed/site_assembly.zip</inputFile> <!-- this is output from signer mojo -->
-								</configuration>
+                                <configuration>
+                                    <inputFile>${project.build.directory}/signed/site_assembly.zip</inputFile> 
+                                </configuration>
 								<phase>package</phase>
 								<goals>
 									<goal>pack</goal>
