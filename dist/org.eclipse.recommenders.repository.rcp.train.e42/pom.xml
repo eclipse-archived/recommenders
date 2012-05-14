@@ -44,7 +44,55 @@
 			</pluginRepositories>
 			<build>
 				<plugins>
-					
+<plugin>
+           <groupId>org.eclipse.dash.maven</groupId>
+           <artifactId>eclipse-signing-maven-plugin</artifactId>
+           <version>${signing-plugin-version}</version>
+           <executions>
+             <execution>
+               <id>pack</id>
+               <configuration>
+                 <inputFile>${project.build.directory}/${project.artifactId}.zip</inputFile>
+               </configuration>
+               <phase>integration-test</phase>
+               <goals>
+                 <goal>pack</goal>
+               </goals>
+             </execution>
+             <execution>
+               <id>sign</id>
+               <configuration>
+                 <inputFile>${project.build.directory}/packed/${project.artifactId}.zip</inputFile>
+                 <signerInputDirectory>${signer-input-directory}</signerInputDirectory>
+               </configuration>
+               <phase>integration-test</phase>
+               <goals>
+                 <goal>sign</goal>
+               </goals>
+             </execution>
+             <execution>
+               <id>repack</id>
+               <configuration>
+                 <inputFile>${project.build.directory}/signed/site_assembly.zip</inputFile>
+               </configuration>
+               <phase>integration-test</phase>
+               <goals>
+                 <goal>pack</goal>
+               </goals>
+             </execution>
+             <execution>
+               <id>fixCheckSums</id>
+               <configuration>
+                 <inputFile>${project.build.directory}/packed/site_assembly.zip</inputFile>
+               </configuration>
+               <phase>integration-test</phase>
+               <goals>
+                 <goal>fixCheckSums</goal>
+               </goals>
+             </execution>
+           </executions>
+         </plugin>
+    <!--     					
         <plugin>
            <groupId>org.eclipse.dash.maven</groupId>
            <artifactId>eclipse-signing-maven-plugin</artifactId>
@@ -92,7 +140,10 @@
                </goals>
              </execution>
            </executions>
-         </plugin>					<plugin>
+         </plugin>
+         
+         -->
+         					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
 							<execution>
