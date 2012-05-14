@@ -12,7 +12,7 @@
 	<packaging>eclipse-repository</packaging>
     
     <properties>
-        <p2repo-zip-path>${project.build.directory}/org.eclipse.egit.repository.zip</p2repo-zip-path>
+        <p2repo-zip-path>${project.build.directory}/${artifactId}.zip</p2repo-zip-path>
         <signer-input-directory>/home/data/httpd/download-staging.priv/technology/recommenders</signer-input-directory>
     </properties>
 
