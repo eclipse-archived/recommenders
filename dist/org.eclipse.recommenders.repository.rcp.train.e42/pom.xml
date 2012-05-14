@@ -14,6 +14,7 @@
     <properties>
         <p2repo-zip-path>${project.build.directory}/${project.artifactId}.zip</p2repo-zip-path>
         <signer-input-directory>/home/data/httpd/download-staging.priv/technology/recommenders</signer-input-directory>
+        <signing-plugin-version>1.0.5</signing-plugin-version>
     </properties>
 
     
