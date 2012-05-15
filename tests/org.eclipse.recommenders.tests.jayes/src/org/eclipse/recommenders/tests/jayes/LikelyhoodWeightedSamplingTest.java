@@ -34,7 +34,7 @@ public class LikelyhoodWeightedSamplingTest {
         sampler.addEvidence(a, "false");
         sampler.addEvidence(b, "lu");
 
-        assertArrayEquals(sampler.getBeliefs(c), new double[] { 0.7, 0.3 }, 0.01);
+        assertArrayEquals(new double[] { 0.7, 0.3 }, sampler.getBeliefs(c), 0.015);
     }
 
 }
