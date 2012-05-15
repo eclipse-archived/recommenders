@@ -20,11 +20,14 @@ import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
+import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
 import org.eclipse.recommenders.utils.Version;
@@ -66,6 +69,9 @@ public class ModelArchiveResolutionJob extends Job {
     @Override
     @VisibleForTesting
     public IStatus run(IProgressMonitor monitor) {
+        if (!isAutoDownloadAllowed()) {
+            return Status.CANCEL_STATUS;
+        }
         monitor.beginTask(String.format("Looking for '%s' model for %s", classifier, metadata.getLocation().getName()),
                 5);
         monitor.worked(1);
@@ -97,6 +103,12 @@ public class ModelArchiveResolutionJob extends Job {
         } finally {
             monitor.done();
         }
+    }
+
+    @VisibleForTesting
+    protected boolean isAutoDownloadAllowed() {
+        IPreferenceStore store = RecommendersPlugin.getDefault().getPreferenceStore();
+        return store.getBoolean(RecommendersPlugin.P_REPOSITORY_ENABLE_AUTO_DOWNLOAD);
     }
 
     private void updateMetadata() {

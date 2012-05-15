@@ -5,6 +5,8 @@ import static org.apache.commons.lang3.SystemUtils.getJavaHome;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -62,7 +64,13 @@ public class ModelArchiveResolutionJobTest {
         metadata = new ModelArchiveMetadata();
         metadata.setLocation(location);
 
-        sut = new ModelArchiveResolutionJob(metadata, cpeInfoProvider, repository, index, CLASSIFIER);
+        sut = new ModelArchiveResolutionJob(metadata, cpeInfoProvider, repository, index, CLASSIFIER) {
+            @Override
+            protected boolean isAutoDownloadAllowed() {
+                return true;
+            };
+
+        };
 
         // define the default behavior:
 
@@ -139,4 +147,15 @@ public class ModelArchiveResolutionJobTest {
         assertEquals(MATCH.toString(), metadata.getCoordinate());
     }
 
+    @Test
+    public void testDisableIfAutomaticDownloadProhibited() {
+        sut = new ModelArchiveResolutionJob(metadata, cpeInfoProvider, repository, index, CLASSIFIER) {
+            @Override
+            protected boolean isAutoDownloadAllowed() {
+                return false;
+            };
+        };
+        sut.run(monitor);
+        verify(monitor, never()).beginTask(anyString(), Mockito.anyInt());
+    }
 }
