@@ -13,6 +13,8 @@ package org.eclipse.recommenders.internal.completion.rcp.subwords;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
+import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -35,7 +37,8 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
     public PreferencePage() {
         setDescription("Subwords is a new experimental content assist for Java. It uses 'fuzzy word matching' which allows you to specify just a subsequence of the proposal's text you want to insert.\n\n"
                 + "Note that Subwords essentially makes the same proposals as the standard Java content assist, and thus, will automatically disabled itself when either JDT or Mylyn completion is active to avoid duplicated proposals. "
-                + "The button below is a shortcut for enabling Subwords and disabling standard Java content assist (and reverse) which is usually done via 'Java > Editor > Content Assist > Advanced > default'.");
+                + "The button below is a shortcut for enabling Subwords and disabling standard Java and Mylyn content assist. Disabling Subwords here automatically enabled standard Java content assist (but not Mylyn)\n\n"
+                + "For full control of which content assistants should contribute to the default content assist tab check the advanced preference page found under 'Java > Editor > Content Assist > Advanced > default'");
     }
 
     @Override
@@ -50,15 +53,30 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
             public void widgetSelected(SelectionEvent e) {
                 Set<String> cats = Sets.newHashSet(PreferenceConstants.getExcludedCompletionProposalCategories());
                 if (enablement.getSelection()) {
-                    // enable
+                    // enable subwords - disable mylyn and jdt
                     cats.remove(SubwordsCompletionProposalComputer.CATEGORY_ID);
                     cats.add(JDT_ALL_CATEGORY);
+                    cats.add(MYLYN_ALL_CATEGORY);
                 } else {
-                    // disable
+                    // disable subwords - enable jdt -- or mylyn if installed.
                     cats.add(SubwordsCompletionProposalComputer.CATEGORY_ID);
-                    cats.remove(JDT_ALL_CATEGORY);
+                    if (isMylynInstalled()) {
+                        cats.remove(MYLYN_ALL_CATEGORY);
+                    } else {
+                        cats.remove(JDT_ALL_CATEGORY);
+                    }
                 }
                 PreferenceConstants.setExcludedCompletionProposalCategories(cats.toArray(new String[cats.size()]));
+            }
+
+            private boolean isMylynInstalled() {
+                CompletionProposalComputerRegistry reg = CompletionProposalComputerRegistry.getDefault();
+                for (CompletionProposalCategory cat : reg.getProposalCategories()) {
+                    if (cat.getId().equals(MYLYN_ALL_CATEGORY)) {
+                        return true;
+                    }
+                }
+                return false;
             }
 
         });
