@@ -30,6 +30,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchive;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
+import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelArchiveResolutionStatus;
 import org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils;
 import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.AutoCloseOnWorkbenchShutdown;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
@@ -125,10 +126,7 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
 
         switch (meta.getStatus()) {
         case UNRESOLVED:
-            if (!meta.isResolutionRequestedSinceStartup()) {
-                meta.setResolutionRequestedSinceStartup(true);
-                factory.newResolutionJob(meta, classifier).schedule();
-            }
+            requestModelResolution(meta);
         case FAILED:
         case PROHIBITED:
         case UNINITIALIZED:
@@ -143,12 +141,34 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
 
         IModelArchive<K, V> model = meta.getModelArchive();
         if (model == null) {
-            Artifact modelArtifact = RepositoryUtils.newArtifact(meta.getCoordinate());
-            File file = repository.location(modelArtifact);
-            model = factory.newModelArchive(file);
-            meta.setModelArchive(model);
+            model = loadModel(meta);
         }
         return fromNullable(model);
+    }
+
+    @SuppressWarnings("unchecked")
+    private IModelArchive<K, V> loadModel(ModelArchiveMetadata<K, V> meta) throws IOException {
+        IModelArchive<K, V> model = null;
+        Artifact modelArtifact = RepositoryUtils.newArtifact(meta.getCoordinate());
+        File file = repository.location(modelArtifact);
+        if (file.exists()) {
+            // just load it:
+            model = factory.newModelArchive(file);
+            meta.setModelArchive(model);
+        } else {
+            // mark it as invalid and request resolution:
+            // this happens when someone deletes the repository but not the configuration files.
+            meta.setStatus(ModelArchiveResolutionStatus.UNRESOLVED);
+            requestModelResolution(meta);
+        }
+        return model;
+    }
+
+    private void requestModelResolution(ModelArchiveMetadata<K, V> meta) {
+        if (!meta.isResolutionRequestedSinceStartup()) {
+            meta.setResolutionRequestedSinceStartup(true);
+            factory.newResolutionJob(meta, classifier).schedule();
+        }
     }
 
     private Optional<V> findModel(final K key, IModelArchive<K, V> archive) {
