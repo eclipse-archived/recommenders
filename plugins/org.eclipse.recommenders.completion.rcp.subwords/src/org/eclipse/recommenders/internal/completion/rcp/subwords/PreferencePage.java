@@ -23,8 +23,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import com.google.common.collect.Sets;
 
@@ -37,14 +39,24 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
     public PreferencePage() {
         setDescription("Subwords is a new experimental content assist for Java. It uses 'fuzzy word matching' which allows you to specify just a subsequence of the proposal's text you want to insert.\n\n"
                 + "Note that Subwords essentially makes the same proposals as the standard Java content assist, and thus, will automatically disabled itself when either JDT or Mylyn completion is active to avoid duplicated proposals. "
-                + "The button below is a shortcut for enabling Subwords and disabling standard Java and Mylyn content assist. Disabling Subwords here automatically enabled standard Java content assist (but not Mylyn)\n\n"
-                + "For full control of which content assistants should contribute to the default content assist tab check the advanced preference page found under 'Java > Editor > Content Assist > Advanced > default'");
+                + "The button below is a shortcut for enabling Subwords and disabling standard Java and Mylyn content assist (and reverse).");
     }
 
     @Override
     protected Control createContents(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout());
+
+        final Link link = new Link(container, SWT.NONE | SWT.WRAP);
+        link.setText("See <a>'Java > Editor > Content Assist > Advanced'</a> to configure content assist directly.");
+        link.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                PreferencesUtil.createPreferenceDialogOn(getShell(),
+                        "org.eclipse.jdt.ui.preferences.CodeAssistPreferenceAdvanced", null, null);
+            }
+        });
+
         enablement = new Button(container, SWT.CHECK);
         enablement.setText("Enable Java Subwords Proposals.");
         enablement.addSelectionListener(new SelectionAdapter() {
