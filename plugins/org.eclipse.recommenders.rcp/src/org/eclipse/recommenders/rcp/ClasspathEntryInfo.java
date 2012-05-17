@@ -51,6 +51,7 @@ public class ClasspathEntryInfo {
     }
 
     private transient PropertyChangeSupport chg = new PropertyChangeSupport(this);
+    private boolean javaRuntime;
 
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         chg.addPropertyChangeListener(propertyName, listener);
@@ -98,5 +99,13 @@ public class ClasspathEntryInfo {
 
     public void setModificationDate(Date newModificationDate) {
         chg.firePropertyChange(P_LAST_MOD, jarFileModificationDate, jarFileModificationDate = newModificationDate);
+    }
+
+    public void setJavaRuntime(boolean partOfJavaRuntime) {
+        this.javaRuntime = partOfJavaRuntime;
+    }
+
+    public boolean isJavaRuntime() {
+        return javaRuntime;
     }
 }

@@ -15,6 +15,7 @@ import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -32,12 +33,17 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IClasspathContainer;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
+import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.AutoCloseOnWorkbenchShutdown;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
@@ -146,6 +152,34 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
 
     @Subscribe
     public void onEvent(final JavaProjectOpened e) {
+        mapSourcePluginProjects(e);
+
+        try {
+            for (IClasspathEntry entry : e.project.getRawClasspath()) {
+                if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
+                    boolean isJREContainer = entry.getPath().toString().contains("org.eclipse.jdt.launching.JRE_CONTAINER");
+                    for (IPackageFragmentRoot sub : e.project.findPackageFragmentRoots(entry)) {
+                        final Optional<File> location = JdtUtils.getLocation(sub);
+                        if (isInterestingPackageFragmentRoot(sub, location)) {
+                            resolve(sub, location.get(), isJREContainer);
+                        }
+                    }
+                } else {
+                }
+            }
+
+            for (final IPackageFragmentRoot r : e.project.getAllPackageFragmentRoots()) {
+                final Optional<File> location = JdtUtils.getLocation(r);
+                if (isInterestingPackageFragmentRoot(r, location)) {
+                    resolve(r, location.get(), false);
+                }
+            }
+        } catch (final JavaModelException x) {
+            log.error("Exception occurred while resolving project dependencies for " + e.project, x);
+        }
+    }
+
+    private void mapSourcePluginProjects(final JavaProjectOpened e) {
         try {
             // XXX flight hack...
             IResource mf = e.project.getProject().findMember(new Path("META-INF/MANIFEST.MF"));
@@ -175,20 +209,9 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
         } catch (Exception e1) {
             log.warn("failed to read bundle manifest for project " + e.project.getElementName(), e1);
         }
-
-        try {
-            for (final IPackageFragmentRoot r : e.project.getAllPackageFragmentRoots()) {
-                final Optional<File> location = JdtUtils.getLocation(r);
-                if (isInterestingPackageFragmentRoot(r, location)) {
-                    resolve(r, location.get());
-                }
-            }
-        } catch (final JavaModelException x) {
-            log.error("Exception occurred while resolving project dependencies for " + e.project, x);
-        }
     }
 
-    private void resolve(final IPackageFragmentRoot r, final File file) {
+    private void resolve(final IPackageFragmentRoot r, final File file, final boolean isPartOfJavaRuntime) {
         pool.submit(new Runnable() {
 
             @Override
@@ -206,6 +229,12 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
                         res.setFingerprint(extractor.createFingerprint());
                         res.setModificationDate(new Date(file.lastModified()));
                         res.setLocation(file);
+                        res.setJavaRuntime(isPartOfJavaRuntime);
+                        if(isPartOfJavaRuntime) {
+                            // XXX jre jars are hard coded to JRE 1.0.0
+                            res.setSymbolicName("jre");
+                            res.setVersion(Version.create(1, 0));
+                        }
                         cpeInfos.put(file, res);
                         bus.post(new NewClasspathEntryFound(r, file, res));
                     } catch (final Exception e) {
@@ -217,11 +246,19 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
     }
 
     @Subscribe
-    public void onEvent(final JarPackageFragmentRootAdded e) {
+    public void onEvent(final JarPackageFragmentRootAdded e) throws JavaModelException {
         final JarPackageFragmentRoot r = e.root;
+
+        IJavaProject p = r.getJavaProject();
+        for (IClasspathEntry entry : p.getResolvedClasspath(true)) {
+            if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
+                System.out.println();
+            }
+
+        }
         final Optional<File> location = JdtUtils.getLocation(r);
         if (isInterestingPackageFragmentRoot(r, location)) {
-            resolve(r, location.get());
+            resolve(r, location.get(), false);
         }
     }
 

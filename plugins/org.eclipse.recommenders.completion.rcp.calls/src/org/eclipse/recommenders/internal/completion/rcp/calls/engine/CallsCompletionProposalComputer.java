@@ -66,9 +66,6 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-    // 65 * 16 + 4 = 1038 is the proposal score for proposals that match the expected type of an assignment
-    private static final int BASIS_RELEVANCE = 935;
-
     // private static final int MAX_NUM_PROPOSALS = 5;
     private static final double MIN_PROBABILITY_THRESHOLD = 0.01d;
 
