@@ -27,13 +27,12 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
-
+import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.*;
 import com.google.common.collect.Sets;
 
 public class PreferencePage extends org.eclipse.jface.preference.PreferencePage implements IWorkbenchPreferencePage {
 
-    static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory";
-    static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory";
+   
     private Button enablement;
 
     public PreferencePage() {
@@ -79,16 +78,6 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
                     }
                 }
                 PreferenceConstants.setExcludedCompletionProposalCategories(cats.toArray(new String[cats.size()]));
-            }
-
-            private boolean isMylynInstalled() {
-                CompletionProposalComputerRegistry reg = CompletionProposalComputerRegistry.getDefault();
-                for (CompletionProposalCategory cat : reg.getProposalCategories()) {
-                    if (cat.getId().equals(MYLYN_ALL_CATEGORY)) {
-                        return true;
-                    }
-                }
-                return false;
             }
 
         });

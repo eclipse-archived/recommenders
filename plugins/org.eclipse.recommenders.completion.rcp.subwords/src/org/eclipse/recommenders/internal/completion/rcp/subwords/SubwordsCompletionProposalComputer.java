@@ -11,8 +11,9 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
-import static org.eclipse.recommenders.internal.completion.rcp.subwords.PreferencePage.JDT_ALL_CATEGORY;
-import static org.eclipse.recommenders.internal.completion.rcp.subwords.PreferencePage.MYLYN_ALL_CATEGORY;
+import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.JDT_ALL_CATEGORY;
+import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.MYLYN_ALL_CATEGORY;
+import static org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsUtils.isMylynInstalled;
 
 import java.util.Collections;
 import java.util.List;
@@ -59,12 +60,20 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
 
         // is jdt all enabled?
         // is mylyn all enabled?
-        if (!(cats.contains(JDT_ALL_CATEGORY) || cats.contains(MYLYN_ALL_CATEGORY))) {
+        if (isJdtAllEnabled(cats) || isMylynInstalledAndEnabled(cats)) {
             // do not compute any recommendations and deactivate yourself in background
             new DisableSubwordsJob().schedule(300);
             return false;
         }
         return true;
+    }
+
+    private boolean isMylynInstalledAndEnabled(Set<String> cats) {
+        return isMylynInstalled() && !cats.contains(MYLYN_ALL_CATEGORY);
+    }
+
+    private boolean isJdtAllEnabled(Set<String> cats) {
+        return !cats.contains(JDT_ALL_CATEGORY);
     }
 
     private String getToken() {
