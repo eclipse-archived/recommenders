@@ -99,7 +99,26 @@ public class RecommendersModule extends AbstractModule implements Module {
             IWorkspaceRoot workspace) {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         File stateLocation = new File(Platform.getStateLocation(bundle).toFile(), "v0.5-package-root-infos.json");
-        IClasspathEntryInfoProvider cpeInfoProvider = new ClasspathEntryInfoProvider(stateLocation, workspace, bus);
+        final IClasspathEntryInfoProvider cpeInfoProvider = new ClasspathEntryInfoProvider(stateLocation, workspace,
+                bus);
+
+        PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
+
+            @Override
+            public boolean preShutdown(IWorkbench workbench, boolean forced) {
+                try {
+                    ((Closeable) cpeInfoProvider).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+
+            @Override
+            public void postShutdown(IWorkbench workbench) {
+            }
+        });
+
         bus.register(cpeInfoProvider);
         return cpeInfoProvider;
     }
@@ -149,7 +168,8 @@ public class RecommendersModule extends AbstractModule implements Module {
                 typeEncounter.register(new InjectionListener<I>() {
                     @Override
                     public void afterInjection(final I i) {
-                        if (i instanceof Closeable && i.getClass().isAnnotationPresent(AutoCloseOnWorkbenchShutdown.class)) {
+                        if (i instanceof Closeable
+                                && i.getClass().isAnnotationPresent(AutoCloseOnWorkbenchShutdown.class)) {
                             PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
 
                                 @Override

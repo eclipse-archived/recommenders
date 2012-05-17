@@ -10,17 +10,16 @@
  */
 package org.eclipse.recommenders.rcp;
 
+import java.io.Closeable;
 import java.io.File;
 import java.util.Set;
 
 import com.google.common.base.Optional;
 
-public interface IClasspathEntryInfoProvider {
+public interface IClasspathEntryInfoProvider extends Closeable {
 
     Optional<ClasspathEntryInfo> getInfo(final File file);
 
     Set<File> getFiles();
-
-    void close();
 
 }

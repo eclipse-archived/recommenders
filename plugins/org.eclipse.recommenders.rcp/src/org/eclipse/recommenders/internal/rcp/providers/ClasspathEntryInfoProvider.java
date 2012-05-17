@@ -15,7 +15,6 @@ import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -32,18 +31,18 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.core.IClasspathContainer;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
-import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.AutoCloseOnWorkbenchShutdown;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
@@ -59,6 +58,7 @@ import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
@@ -84,14 +84,31 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
     private final EventBus bus;
 
     @Inject
-    public ClasspathEntryInfoProvider(File state, IWorkspaceRoot workspace, EventBus bus) {
+    public ClasspathEntryInfoProvider(File state, final IWorkspaceRoot workspace, EventBus bus) {
         this.state = state;
         this.bus = bus;
-        initialize();
-        scanOpenProjects(workspace);
+        initialize(workspace);
     }
 
-    private void initialize() {
+    @VisibleForTesting
+    protected void initialize(final IWorkspaceRoot workspace) {
+        new Job("") {
+            {
+                setSystem(true);
+                setPriority(Job.LONG);
+                schedule();
+            }
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                initializeIndex();
+                scanOpenProjects(workspace);
+                return Status.OK_STATUS;
+            }
+        };
+    }
+
+    private void initializeIndex() {
         if (!state.exists()) {
             return;
         }
@@ -157,7 +174,8 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
         try {
             for (IClasspathEntry entry : e.project.getRawClasspath()) {
                 if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-                    boolean isJREContainer = entry.getPath().toString().contains("org.eclipse.jdt.launching.JRE_CONTAINER");
+                    boolean isJREContainer = entry.getPath().toString()
+                            .contains("org.eclipse.jdt.launching.JRE_CONTAINER");
                     for (IPackageFragmentRoot sub : e.project.findPackageFragmentRoots(entry)) {
                         final Optional<File> location = JdtUtils.getLocation(sub);
                         if (isInterestingPackageFragmentRoot(sub, location)) {
@@ -230,7 +248,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
                         res.setModificationDate(new Date(file.lastModified()));
                         res.setLocation(file);
                         res.setJavaRuntime(isPartOfJavaRuntime);
-                        if(isPartOfJavaRuntime) {
+                        if (isPartOfJavaRuntime) {
                             // XXX jre jars are hard coded to JRE 1.0.0
                             res.setSymbolicName("jre");
                             res.setVersion(Version.create(1, 0));
