@@ -54,6 +54,10 @@ public class SequenceFinder {
                 for (pCompletion = startIndex; pCompletion < completion.length(); pCompletion++) {
                     char c = completion.charAt(pCompletion);
                     if (!Character.isLetter(c)) {
+                        if(c==t) {
+                            addNewSubsequenceForNext(activeSequence);
+                            continue;
+                        }
                         mustmatch = true;
                         continue;
                     } else if (Character.isUpperCase(c)) {
@@ -111,6 +115,7 @@ public class SequenceFinder {
 
             if (!isLetter(next)) {
                 // . or _ word boundary found:
+                // XXX numbers are also considered as word boundaries then. this may cause some trouble...
                 break;
             }
 

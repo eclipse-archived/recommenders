@@ -90,6 +90,13 @@ public class LCSSTest {
     }
 
     @Test
+    public void testUnderscore() {
+        List<int[]> s = LCSS.findSequences("FF_HELP", "FF_");
+        assertEquals(1, s.size());
+        assertTrue(Arrays.equals(s.get(0), new int[] { 0, 1, 2 }));
+    }
+
+    @Test
     public void testTypeNames() {
         assertEquals(1, LCSS.findSequences("StringBuilder", "sb").size());
         assertEquals(1, LCSS.findSequences("StringBuilder", "sbu").size());

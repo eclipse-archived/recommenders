@@ -62,7 +62,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
         // is mylyn all enabled?
         if (isJdtAllEnabled(cats) || isMylynInstalledAndEnabled(cats)) {
             // do not compute any recommendations and deactivate yourself in background
-            new DisableSubwordsJob().schedule(300);
+            new DisableContentAssistCategoryJob(CATEGORY_ID).schedule(300);
             return false;
         }
         return true;
