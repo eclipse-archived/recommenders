@@ -37,6 +37,7 @@ import com.google.common.collect.Sets;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SubwordsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
+    private static final int TIMEOUT = 4000;
     public static String CATEGORY_ID = "org.eclipse.recommenders.subwords.rcp.category";
     private JavaContentAssistInvocationContext ctx;
 
@@ -45,7 +46,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
         ctx = (JavaContentAssistInvocationContext) context;
         if (!shouldReturnResults())
             return Collections.emptyList();
-        return findSubwordMatchingProposals(new TimeDelimitedProgressMonitor(monitor, 4000));
+        return findSubwordMatchingProposals(new TimeDelimitedProgressMonitor(monitor, TIMEOUT));
     }
 
     @VisibleForTesting
