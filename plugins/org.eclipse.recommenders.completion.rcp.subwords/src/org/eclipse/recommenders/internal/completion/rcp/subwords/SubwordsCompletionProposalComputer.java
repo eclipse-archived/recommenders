@@ -45,7 +45,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
         ctx = (JavaContentAssistInvocationContext) context;
         if (!shouldReturnResults())
             return Collections.emptyList();
-        return findSubwordMatchingProposals(monitor);
+        return findSubwordMatchingProposals(new TimeDelimitedProgressMonitor(monitor, 4000));
     }
 
     @VisibleForTesting
@@ -58,8 +58,6 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
             return true;
         }
 
-        // is jdt all enabled?
-        // is mylyn all enabled?
         if (isJdtAllEnabled(cats) || isMylynInstalledAndEnabled(cats)) {
             // do not compute any recommendations and deactivate yourself in background
             new DisableContentAssistCategoryJob(CATEGORY_ID).schedule(300);
