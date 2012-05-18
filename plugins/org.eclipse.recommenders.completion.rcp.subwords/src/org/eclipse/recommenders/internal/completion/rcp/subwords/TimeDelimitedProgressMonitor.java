@@ -9,7 +9,7 @@
  *    Marcel Bruch - initial API and implementation.
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
-
+ 
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public class TimeDelimitedProgressMonitor implements IProgressMonitor {
