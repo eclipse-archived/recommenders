@@ -29,6 +29,7 @@
 		<module>org.eclipse.recommenders.jayes</module>
 		<module>org.eclipse.recommenders.jayes.serialization</module>
 		<module>org.eclipse.recommenders.rcp</module>
+		<module>org.eclipse.recommenders.rdk</module>
 		<module>org.eclipse.recommenders.utils</module>
 		<module>org.eclipse.recommenders.utils.rcp</module>
 		<module>org.eclipse.recommenders.webclient</module>

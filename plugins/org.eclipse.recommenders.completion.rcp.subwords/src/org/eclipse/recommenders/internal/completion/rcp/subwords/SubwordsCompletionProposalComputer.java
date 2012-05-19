@@ -37,7 +37,7 @@ import com.google.common.collect.Sets;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SubwordsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-    private static final int TIMEOUT = 4000;
+    private static final int TIMEOUT = 8000;
     public static String CATEGORY_ID = "org.eclipse.recommenders.subwords.rcp.category";
     private JavaContentAssistInvocationContext ctx;
 
