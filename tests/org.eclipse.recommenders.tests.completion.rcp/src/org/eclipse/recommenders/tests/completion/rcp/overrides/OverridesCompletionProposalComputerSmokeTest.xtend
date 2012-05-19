@@ -58,8 +58,7 @@ class OverridesCompletionProposalComputerSmokeTest {
 		for(completionIndex : struct.second){
 			val ctx = new JavaContentAssistContextMock(cu, completionIndex)
 			val resolver = new JavaElementResolver()
-			val recommender = MockRecommender::get
-			val sut = new OverridesCompletionProposalComputer(recommender, new RecommendersCompletionContextFactoryMock(),resolver)
+			val sut = new OverridesCompletionProposalComputer(new ModelStoreMock(), new RecommendersCompletionContextFactoryMock(),resolver)
 			sut.sessionStarted
 			sut.computeCompletionProposals(ctx, null)
 		}

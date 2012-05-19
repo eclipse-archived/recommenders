@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.overrides.model;
+package org.eclipse.recommenders.internal.completion.rcp.overrides;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,28 +17,42 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.zip.ZipEntry;
 
-import org.eclipse.recommenders.internal.completion.rcp.overrides.net.ClassOverridesNetwork;
-import org.eclipse.recommenders.internal.completion.rcp.overrides.net.ClassOverridesNetworkBuilder;
-import org.eclipse.recommenders.internal.completion.rcp.overrides.net.ClassOverridesObservation;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.internal.rcp.models.archive.ZipPoolableModelFactory;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
 import com.google.gson.reflect.TypeToken;
 
-public final class OverridesZipModelFactory extends ZipPoolableModelFactory<ITypeName, ClassOverridesNetwork> {
-    OverridesZipModelFactory(File zip) throws IOException {
+public final class OverridesZipModelFactory extends ZipPoolableModelFactory<IType, ClassOverridesNetwork> {
+    private JavaElementResolver jdtResolver;
+
+    public OverridesZipModelFactory(File zip, JavaElementResolver jdtResolver) throws IOException {
         super(zip);
+        this.jdtResolver = jdtResolver;
     }
 
     @Override
-    public boolean hasModel(ITypeName key) {
-        return entry(key) != null;
+    public boolean hasModel(IType key) {
+        return getEntry(key) != null;
+    }
+
+    private ZipEntry getEntry(IType jType) {
+        ITypeName rType = toRecName(jType);
+        String name = rType.getIdentifier().substring(1) + ".json";
+        return zip.getEntry(name);
+    }
+
+    private ITypeName toRecName(IType jType) {
+        ITypeName rType = jdtResolver.toRecType(jType);
+        return rType;
     }
 
     @Override
-    public ClassOverridesNetwork createModel(ITypeName key) throws IOException {
-        InputStream is = zip.getInputStream(entry(key));
+    public ClassOverridesNetwork createModel(IType key) throws IOException {
+        ITypeName typeName = toRecName(key);
+        InputStream is = zip.getInputStream(getEntry(key));
 
         final Type listType = new TypeToken<List<ClassOverridesObservation>>() {
         }.getType();
@@ -48,20 +62,15 @@ public final class OverridesZipModelFactory extends ZipPoolableModelFactory<ITyp
             // we still need to ensure minimum quality for models .
             observations.add(new ClassOverridesObservation());
         }
-        final ClassOverridesNetworkBuilder b = new ClassOverridesNetworkBuilder(key, observations);
+        final ClassOverridesNetworkBuilder b = new ClassOverridesNetworkBuilder(typeName, observations);
         b.createPatternsNode();
         b.createMethodNodes();
         final ClassOverridesNetwork network = b.build();
         return network;
     }
 
-    private ZipEntry entry(ITypeName key) {
-        String name = "class-overrides-" + key.getIdentifier().replace('/', '.') + ".json";
-        return zip.getEntry(name);
-    }
-
     @Override
-    public void activateModel(ITypeName key, ClassOverridesNetwork model) {
+    public void activateModel(IType key, ClassOverridesNetwork model) {
         model.clearEvidence();
     };
 }

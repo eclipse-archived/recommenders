@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.completion.rcp.overrides.net;
+package org.eclipse.recommenders.internal.completion.rcp.overrides;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.utils.Checks.ensureEquals;

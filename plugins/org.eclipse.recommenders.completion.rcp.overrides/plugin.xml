@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.recommenders.injection.modules">
       <module
-            class="org.eclipse.recommenders.internal.completion.rcp.overrides.wiring.OverridesModule">
+            class="org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesModule">
       </module>
    </extension>
    <extension

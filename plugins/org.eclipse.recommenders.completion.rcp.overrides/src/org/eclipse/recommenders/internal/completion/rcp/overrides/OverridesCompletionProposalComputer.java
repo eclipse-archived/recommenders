@@ -28,11 +28,11 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
-import org.eclipse.recommenders.internal.completion.rcp.overrides.model.InstantOverridesRecommender;
-import org.eclipse.recommenders.internal.completion.rcp.overrides.model.OverridesRecommendation;
+import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.recommenders.internal.utils.codestructs.MethodDeclaration;
 import org.eclipse.recommenders.internal.utils.codestructs.TypeDeclaration;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
@@ -45,9 +45,10 @@ import com.google.inject.Inject;
 
 @SuppressWarnings({ "unchecked", "rawtypes", "restriction" })
 public class OverridesCompletionProposalComputer implements IJavaCompletionProposalComputer {
+    private final double MIN_PROBABILITY_THRESHOLD = 0.1d;
 
     private final IRecommendersCompletionContextFactory ctxFactory;
-    private final InstantOverridesRecommender recommender;
+    private IModelArchiveStore<IType, ClassOverridesNetwork> modelStore;
     private final JavaElementResolver jdtCache;
 
     private IRecommendersCompletionContext ctx;
@@ -55,11 +56,12 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
     private IType supertype;
     private List<OverridesRecommendation> recommendations;
     private List<IJavaCompletionProposal> proposals;
+    private ClassOverridesNetwork model;
 
     @Inject
-    public OverridesCompletionProposalComputer(final InstantOverridesRecommender recommender,
+    public OverridesCompletionProposalComputer(IModelArchiveStore<IType, ClassOverridesNetwork> modelStore,
             final IRecommendersCompletionContextFactory ctxFactory, final JavaElementResolver jdtCache) {
-        this.recommender = recommender;
+        this.modelStore = modelStore;
         this.ctxFactory = ctxFactory;
         this.jdtCache = jdtCache;
     };
@@ -102,12 +104,27 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private boolean hasModel() {
-        return recommender.hasModel(jdtCache.toRecType(supertype));
+        model = modelStore.aquireModel(supertype).orNull();
+        return model != null;
     }
 
     private void computeRecommendations() throws JavaModelException {
         final TypeDeclaration query = computeQuery();
-        recommendations = recommender.createRecommendations(query);
+        for (final MethodDeclaration method : query.methods) {
+            model.observeMethodNode(method.superDeclaration);
+        }
+        recommendations = readRecommendations();
+    }
+
+    private List<OverridesRecommendation> readRecommendations() {
+        final List<OverridesRecommendation> res = Lists.newLinkedList();
+        for (final Tuple<IMethodName, Double> item : model.getRecommendedMethodOverrides(MIN_PROBABILITY_THRESHOLD, 5)) {
+            final IMethodName method = item.getFirst();
+            final Double probability = item.getSecond();
+            final OverridesRecommendation recommendation = new OverridesRecommendation(method, probability);
+            res.add(recommendation);
+        }
+        return res;
     }
 
     private TypeDeclaration computeQuery() throws JavaModelException {
