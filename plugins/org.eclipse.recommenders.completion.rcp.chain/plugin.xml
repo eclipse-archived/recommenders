@@ -13,7 +13,7 @@
    </extension>
    <extension
          id="org.eclipse.recommenders.completion.rcp.chain.category"
-         name="Call Chain Proposal Computer"
+         name="Call Chain Proposals"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <proposalCategory
             icon="icons/view16/chain.gif">
@@ -43,8 +43,29 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.eclipse.recommenders.internal.completion.rcp.chain.CompletionKeyShortcutHandler"
+            class="org.eclipse.recommenders.internal.completion.rcp.chain.ui.CompletionKeyShortcutHandler"
             commandId="org.eclipse.recommenders.completion.rcp.chain.commands.TriggerCompletion">
       </handler>
    </extension>
+	<extension
+         point="org.eclipse.recommenders.injection.modules">
+         <module
+            class="org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionModule">
+      </module>
+	</extension>
+	<extension
+		point="org.eclipse.ui.preferencePages">
+		<page
+			category="org.eclipse.recommenders.rcp.category.preferences"
+			class="org.eclipse.recommenders.internal.completion.rcp.chain.ui.ChainPreferencePage"
+			id="org.eclipse.recommenders.internal.completion.rcp.chain.ChainPreferencePage"
+			name="Chains">
+		</page>
+	</extension>
+	<extension
+		point="org.eclipse.core.runtime.preferences">
+		<initializer
+			class="org.eclipse.recommenders.internal.completion.rcp.chain.ui.ChainPreferenceInitializer">
+		</initializer>
+	</extension>
 </plugin>

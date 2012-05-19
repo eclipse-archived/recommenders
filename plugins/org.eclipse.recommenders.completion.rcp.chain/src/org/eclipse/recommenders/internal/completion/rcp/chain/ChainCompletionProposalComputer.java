@@ -20,10 +20,8 @@ import static org.eclipse.recommenders.utils.rcp.JdtUtils.findTypeOfField;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -48,10 +46,13 @@ import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
+import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionModule.ChainCompletion;
+import org.eclipse.recommenders.internal.completion.rcp.chain.ui.ChainPreferencePage;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
@@ -62,27 +63,23 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public class ChainCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-    private final Set<String> excludedTypes = new HashSet<String>() {
-        {
-            add("java.lang.Object");
-            add("java.lang.String");
-        }
-
-    };
     private IRecommendersCompletionContext ctx;
     private IType expectedType;
     private List<MemberEdge> entrypoints;
     private String error;
     private final IRecommendersCompletionContextFactory ctxFactory;
+    private final IPreferenceStore prefStore;
 
     @Inject
-    public ChainCompletionProposalComputer(final IRecommendersCompletionContextFactory ctxFactory) {
+    public ChainCompletionProposalComputer(final IRecommendersCompletionContextFactory ctxFactory,
+            @ChainCompletion final IPreferenceStore preferenceStore) {
         this.ctxFactory = ctxFactory;
+        prefStore = preferenceStore;
     }
 
+    @Override
     public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context,
             final IProgressMonitor monitor) {
-
         initalizeContexts(context);
         if (!allRequiredContextsAvailable()) {
             return Collections.emptyList();
@@ -118,9 +115,13 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         if (expectedType == null) {
             return false;
         }
-        if (excludedTypes.contains(expectedType.getFullyQualifiedName())) {
-            expectedType = null;
-            return false;
+        final String[] excludedTypes = prefStore.getString(ChainPreferencePage.ID_IGNORE_TYPES).split("\\|");
+        final String fullyQualified = expectedType.getFullyQualifiedName();
+        for (final String excludedType : excludedTypes) {
+            if (excludedType.equals(fullyQualified)) {
+                expectedType = null;
+                return false;
+            }
         }
         return true;
     }
@@ -170,23 +171,19 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
 
     private void addPublicStaticMembersToEntrypoints(final IType type) {
         for (final IMember m : findAllPublicStaticFieldsAndNonVoidNonPrimitiveStaticMethods(type)) {
-            if (passesPrefixCheck(m)) {
+            if (matchesExpectedPrefix(m)) {
                 final MemberEdge edge = new MemberEdge(m);
                 entrypoints.add(edge);
             }
         }
     }
 
-    private boolean passesPrefixCheck(final IMember m) {
-        final String token = ctx.getPrefix();
-        final boolean prefixMatch = m.getElementName().startsWith(token);
-        return prefixMatch;
+    private boolean matchesExpectedPrefix(final IMember m) {
+        return m.getElementName().startsWith(ctx.getPrefix());
     }
 
     private JavaElement findEnclosingElement() {
-        // should be save to call .get() here:
-        final IJavaElement enclosing = ctx.getEnclosingElement().get();
-        return (JavaElement) enclosing;
+        return (JavaElement) ctx.getEnclosingElement().get();
     }
 
     private void addPublicInstanceMembersToEntrypoints(final ILocalVariable var) {
@@ -199,9 +196,8 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
 
     private void addPublicInstanceMembersToEntrypoints(final IType type) {
         for (final IMember m : findAllPublicInstanceFieldsAndNonVoidNonPrimitiveInstanceMethods(type)) {
-            if (passesPrefixCheck(m)) {
-                final MemberEdge edge = new MemberEdge(m);
-                entrypoints.add(edge);
+            if (matchesExpectedPrefix(m)) {
+                entrypoints.add(new MemberEdge(m));
             }
         }
     }
@@ -223,8 +219,6 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
             // TODO Review: could this be a field?
             final ILocalVariable var = createUnresolvedLocaVariable((VariableBinding) b, findEnclosingElement());
             addPublicInstanceMembersToEntrypoints(var);
-            break;
-        default:
             break;
         }
     }
@@ -248,9 +242,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean matchesPrefixToken(final IJavaElement decl) {
-        final String prefix = ctx.getPrefix();
-        final String elementName = decl.getElementName();
-        return elementName.startsWith(prefix);
+        return decl.getElementName().startsWith(ctx.getPrefix());
     }
 
     private List<ICompletionProposal> executeCallChainSearch() throws JavaModelException {
@@ -259,16 +251,24 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         try {
             new SimpleTimeLimiter().callWithTimeout(new Callable<Void>() {
 
+                @Override
                 public Void call() throws Exception {
-                    b.startChainSearch(findEnclosingElement(), entrypoints, expectedType, expectedDimension);
+                    b.startChainSearch(findEnclosingElement(), entrypoints, expectedType, expectedDimension,
+                            prefStore.getInt(ChainPreferencePage.ID_MAX_CHAINS),
+                            prefStore.getInt(ChainPreferencePage.ID_MAX_DEPTH));
                     return null;
                 }
-            }, 3500, TimeUnit.MILLISECONDS, true);
+            }, prefStore.getInt(ChainPreferencePage.ID_TIMEOUT), TimeUnit.SECONDS, true);
         } catch (final Exception e) {
             setError("Timeout limit hit during call chain computation.");
         }
+        return buildCompletionProposals(b.getChains(), expectedDimension);
+    }
+
+    private List<ICompletionProposal> buildCompletionProposals(final List<List<MemberEdge>> chains,
+            final int expectedDimension) {
         final List<ICompletionProposal> proposals = Lists.newLinkedList();
-        for (final List<MemberEdge> chain : b.getChains()) {
+        for (final List<MemberEdge> chain : chains) {
             final TemplateProposal completion = new CompletionTemplateBuilder().create(chain, expectedDimension,
                     ctx.getJavaContext());
             final ChainCompletionProposal completionProposal = new ChainCompletionProposal(completion, chain);
@@ -286,19 +286,23 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
                 .logError(e, "Chain completion failed in %s.", ctx.getCompilationUnit().getElementName());
     }
 
+    @Override
     public List<IContextInformation> computeContextInformation(final ContentAssistInvocationContext context,
             final IProgressMonitor monitor) {
         return Collections.emptyList();
     }
 
+    @Override
     public void sessionStarted() {
         setError(null);
     }
 
+    @Override
     public String getErrorMessage() {
         return error;
     }
 
+    @Override
     public void sessionEnded() {
 
     }

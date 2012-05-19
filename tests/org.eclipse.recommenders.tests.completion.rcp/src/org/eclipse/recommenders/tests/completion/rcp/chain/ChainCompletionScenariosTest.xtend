@@ -34,7 +34,7 @@ class ChainCompletionScenariosTest {
 	
 			for(completionIndex : struct.second){
 				val ctx = new org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock(cu, completionIndex)
-				val sut = new org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock())
+				val sut = new ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(), PreferenceStoreMock::create())
 				sut.sessionStarted
 				sut.computeCompletionProposals(ctx, null)
 			}
@@ -967,11 +967,9 @@ class ChainCompletionScenariosTest {
 		val completionIndex = struct.second.head
 		val ctx = new org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock(cu, completionIndex)
 		
-		val sut = new org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock())
+		val sut = new ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(), PreferenceStoreMock::create())
 		sut.sessionStarted
 		val proposals = sut.computeCompletionProposals(ctx, null)
-//		println(code.toString)
-//		println(proposals)
 		for(proposal : proposals){
 			val names = (proposal as org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposal).getChainElementNames
 			assertTrue('''couldn't find «names» in expected.'''.toString, expected.remove(names))

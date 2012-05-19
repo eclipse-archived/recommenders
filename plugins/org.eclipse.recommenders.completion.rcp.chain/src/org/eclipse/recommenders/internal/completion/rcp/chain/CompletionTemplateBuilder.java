@@ -65,9 +65,6 @@ public class CompletionTemplateBuilder {
                 final IMethod method = edge.getEdgeElement();
                 final String label = getElementLabel(method, M_PARAMETER_NAMES | M_PARAMETER_TYPES);
                 sb.append(label);
-                break;
-            default:
-                break;
             }
             for (int i = edge.getDimension(); i-- > 0;) {
                 sb.append("[]");
@@ -92,8 +89,6 @@ public class CompletionTemplateBuilder {
                 final IMethod method = edge.getEdgeElement();
                 appendIdentifier(method);
                 appendParameters(method);
-            default:
-                break;
             }
             appendArrayDimensions(edge.getDimension(), expectedDimension);
             sb.append(".");

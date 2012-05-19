@@ -16,7 +16,6 @@ import static org.eclipse.jdt.internal.corext.util.JdtFlags.isStatic;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.findAllRelevanFieldsAndMethods;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.hasPrimitiveReturnType;
-import static org.eclipse.recommenders.utils.rcp.JdtUtils.isVoid;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -29,6 +28,7 @@ import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
+import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -44,11 +44,9 @@ import com.google.common.collect.Table;
  */
 public class GraphBuilder {
 
-    private static final int maxdepth = 4;
-    private static final int maxchains = 20;
+    private static final Predicate<IField> FILTER_FIELDS = new Predicate<IField>() {
 
-    private static Predicate<IField> FILTER_FIELDS = new Predicate<IField>() {
-
+        @Override
         public boolean apply(final IField m) {
             try {
                 return isStatic(m);
@@ -57,11 +55,12 @@ public class GraphBuilder {
             }
         }
     };
-    private static Predicate<IMethod> FILTER_METHODS = new Predicate<IMethod>() {
+    private static final Predicate<IMethod> FILTER_METHODS = new Predicate<IMethod>() {
 
+        @Override
         public boolean apply(final IMethod m) {
             try {
-                if (isVoid(m) || m.isConstructor() || isStatic(m) || hasPrimitiveReturnType(m)) {
+                if (JdtUtils.isVoid(m) || m.isConstructor() || isStatic(m) || hasPrimitiveReturnType(m)) {
                     return true;
                 }
                 return m.getElementName().equals("toString") && m.getSignature().equals("()java.lang.String;");
@@ -78,9 +77,10 @@ public class GraphBuilder {
     private final Table<MemberEdge, IType, Boolean> assignableCache = HashBasedTable.create();
 
     void startChainSearch(final IJavaElement enclosingElement, final List<MemberEdge> entrypoints,
-            final IType expectedType, final int expectedDimension) {
+            final IType expectedType, final int expectedDimension, final int maxChains, final int maxDepth) {
         final LinkedList<LinkedList<MemberEdge>> incompleteChains = prepareQueue(entrypoints);
         final IType enclosingType = (IType) enclosingElement.getAncestor(IJavaElement.TYPE);
+
         while (!incompleteChains.isEmpty()) {
             final LinkedList<MemberEdge> chain = incompleteChains.poll();
             final MemberEdge edge = chain.getLast();
@@ -91,13 +91,13 @@ public class GraphBuilder {
             if (isAssignableTo(edge, expectedType, expectedDimension)) {
                 if (chain.size() > 1) {
                     chains.add(chain);
-                    if (chains.size() == maxchains) {
+                    if (chains.size() == maxChains) {
                         break;
                     }
                 }
                 continue;
             }
-            if (chain.size() >= maxdepth) {
+            if (chain.size() >= maxDepth) {
                 continue;
             }
             final Collection<IMember> allMethodsAndFields = findAllFieldsAndMethods(returnTypeOpt.get(), enclosingType);
@@ -149,8 +149,7 @@ public class GraphBuilder {
                         continue;
                     }
                 } catch (final Exception e) {
-                    // TODO: proper exception handling.
-                    e.printStackTrace();
+                    RecommendersUtilsPlugin.logError(e, "Exception in JDT");
                     continue;
                 }
                 cached.add(element);
