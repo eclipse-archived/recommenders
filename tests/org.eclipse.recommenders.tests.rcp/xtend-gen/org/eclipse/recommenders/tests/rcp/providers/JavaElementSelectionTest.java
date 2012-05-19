@@ -132,7 +132,7 @@ public class JavaElementSelectionTest {
   }
   
   @Test
-  @Ignore("Only for debugging the ui")
+  @Ignore(value = "Only for debugging the ui")
   public void waitAlongTime() {
     try {
       int _multiply = (120 * 1000);

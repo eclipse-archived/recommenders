@@ -316,7 +316,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   }
   
   @Test
-  @Ignore("this fails because JDT does not propose anything at m($afl) (note, *we* trigger code completion before the first token))")
+  @Ignore(value = "this fails because JDT does not propose anything at m($afl) (note, *we* trigger code completion before the first token))")
   public void testBug370572_2() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public class SubwordsBug {");

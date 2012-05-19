@@ -213,7 +213,7 @@ public class TemplateCompletionProposalComputerTest {
   }
   
   @Test
-  @Ignore("Not possible to distinguish this case and testThisOnVariableName")
+  @Ignore(value = "Not possible to distinguish this case and testThisOnVariableName")
   public void testNoTemplates() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("Event evt = $");

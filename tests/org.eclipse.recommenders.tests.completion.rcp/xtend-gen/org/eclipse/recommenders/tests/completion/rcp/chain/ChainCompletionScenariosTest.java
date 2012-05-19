@@ -74,7 +74,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("TODO: Doesn\'t seem to work for some target platforms")
+  @Ignore(value = "TODO: Doesn\'t seem to work for some target platforms")
   public void testAccessMethodParameter() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public void method(final List list){");
@@ -393,7 +393,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Bug! However, it already existed in old version.")
+  @Ignore(value = "Bug! However, it already existed in old version.")
   public void testCompletionOnGenericTypeInMethod2() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public List<String> findMe = new ArrayList<String>();");
@@ -460,7 +460,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Bug! However, it already existed in old version.")
+  @Ignore(value = "Bug! However, it already existed in old version.")
   public void testCompletionOnGenericTypeInMethod5() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public List<String> findMe = new ArrayList<String>();");
@@ -505,7 +505,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Bug! However, it already existed in old version.")
+  @Ignore(value = "Bug! However, it already existed in old version.")
   public void testCompletionOnGenericTypeInMethod7() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public List<String> findMe = new ArrayList<String>();");
@@ -569,7 +569,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Bug! Chains using this.a are expected as well.")
+  @Ignore(value = "Bug! Chains using this.a are expected as well.")
   public void testCompletionOnMemberCallChainDepth2() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public class A {");
@@ -620,7 +620,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Bug! Chains using this.a are expected as well.")
+  @Ignore(value = "Bug! Chains using this.a are expected as well.")
   public void testCompletionOnMemberCallChainDepth3() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public class A {");
@@ -757,7 +757,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Context does not seem to resolve primitives as target types")
+  @Ignore(value = "Context does not seem to resolve primitives as target types")
   public void testCompletionOnPrimitiveTypeInMethod1() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("private class A {");
@@ -951,7 +951,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("This doesn\'t seem to have worked before as well")
+  @Ignore(value = "This doesn\'t seem to have worked before as well")
   public void testCompletionViaGenericTypeInMethod() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("final Iterator<CompletionViaGenericTypeInMethod> useMe = Arrays.asList(");
@@ -1086,7 +1086,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Rework so it returns chains of more than 1 element")
+  @Ignore(value = "Rework so it returns chains of more than 1 element")
   public void testFindLocalAnchorWithIsExactMatch() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.util.*;");
@@ -1205,7 +1205,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Rework so it returns chains of more than 1 element")
+  @Ignore(value = "Rework so it returns chains of more than 1 element")
   public void testFindFieldInSuperType() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.util.*;");
@@ -1275,7 +1275,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Rework so it returns chains of more than 1 element")
+  @Ignore(value = "Rework so it returns chains of more than 1 element")
   public void testCompletionOnLocaVariable() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.util.*;");
@@ -1424,7 +1424,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Rework so it returns chains of more than 1 element")
+  @Ignore(value = "Rework so it returns chains of more than 1 element")
   public void testFindMatchingSubtypeForAssignment() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.util.concurrent.*;");
@@ -1453,7 +1453,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Rework so it returns chains of more than 1 element")
+  @Ignore(value = "Rework so it returns chains of more than 1 element")
   public void testCompletionOnFieldField() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.awt.*;");
@@ -1482,7 +1482,7 @@ public class ChainCompletionScenariosTest {
   }
   
   @Test
-  @Ignore("Rework so it returns chains of more than 1 element")
+  @Ignore(value = "Rework so it returns chains of more than 1 element")
   public void testPrefixFilter() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.awt.*;");

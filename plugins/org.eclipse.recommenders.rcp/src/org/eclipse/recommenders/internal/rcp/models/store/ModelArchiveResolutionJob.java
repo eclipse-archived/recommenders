@@ -80,6 +80,8 @@ public class ModelArchiveResolutionJob extends Job {
 
             if (!findClasspathInfo()) {
                 metadata.setError(format("No class path info available for '%s'. Skipped.", pkgRoot));
+                // we didn't found it yet. The system is currently starting and indexing. Try again later.
+                metadata.setResolutionRequestedSinceStartup(false);
                 return CANCEL_STATUS;
             }
 
