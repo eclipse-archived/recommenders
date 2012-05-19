@@ -47,6 +47,7 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 
 /**
  * Creates a model index file from the given repository, i.e., it scans the whole maven repository for model archives
@@ -56,15 +57,15 @@ import com.google.common.collect.Maps;
 public class ModelDocumentsWriter {
     private static Logger log = LoggerFactory.getLogger(ModelDocumentsWriter.class);
 
-    private String[] classifiers = { "call", "ovrd", "ovrp", "selfs" };
+    private String[] classifiers = { "call", "ovrm", "ovrd", "ovrp", "selfs" };
 
     private File basedir;
     private File dest;
     private Map<Artifact, ModelDocument> modelDocs = Maps.newHashMap();
 
     public static void main(String[] args) {
-        new ModelDocumentsWriter(new File("/Volumes/usb/juno-m6/m2/"), new File(
-                "/Volumes/usb/juno-m6/m2/metadata.json")).run();
+        new ModelDocumentsWriter(new File("/Volumes/usb/juno-m6/m2/"),
+                new File("/Volumes/usb/juno-m6/m2/metadata.json")).run();
     }
 
     public ModelDocumentsWriter(final File mavenRepository, final File dest) {
@@ -179,6 +180,7 @@ public class ModelDocumentsWriter {
         c.entries.addAll(modelDocs.values());
         try {
             System.out.println("writing index contents to file " + dest.getAbsoluteFile());
+            Files.createParentDirs(dest);
             final FileWriter writer = new FileWriter(dest);
             GsonUtil.serialize(c, writer);
             writer.close();

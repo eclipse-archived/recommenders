@@ -30,11 +30,11 @@ import org.eclipse.recommenders.utils.annotations.Provisional;
 public class IndexCommands {
 
     @Descriptor("generates the model index from a index file")
-    public void generateModelIndex(
-            @Descriptor("the generated model file in json format.") @Parameter(absentValue = "models.json", names = {
-                    "-m", "--models" }) File modelFile,
-            @Descriptor("destination of the zipped search index.") @Parameter(absentValue = "index.zip", names = {
-                    "-d", "--dest" }) File out) {
+    public void generateModelIndex(@Descriptor("the recommenders model repository") File crBasedir) throws Exception {
+        File indexJson = new File(crBasedir, "org/eclipse/recommenders/index/0.0.0/index-0.0.0.json");
+        File indexZip = new File(crBasedir, "org/eclipse/recommenders/index/0.0.0/index-0.0.0.zip");
+        collectModelData(crBasedir, indexJson);
+        writeModelIndex(indexJson, indexZip);
     }
 
     @Descriptor("")
@@ -45,7 +45,7 @@ public class IndexCommands {
     }
 
     @Descriptor("")
-    public void collectModelData(@Descriptor("the m2 basedir") File basedir,
+    public void collectModelData(@Descriptor("the cr model repository basedir") File basedir,
             @Descriptor("the destination of the metadata file") File out) throws Exception {
         new ModelDocumentsWriter(basedir, out).run();
     }
