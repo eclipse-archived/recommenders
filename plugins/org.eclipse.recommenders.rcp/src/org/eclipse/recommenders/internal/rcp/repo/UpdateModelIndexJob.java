@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.repo;
 
 import static org.apache.commons.io.FileUtils.cleanDirectory;
-import static org.eclipse.recommenders.internal.rcp.repo.ModelRepositoryIndex.INDEX_COORDINATE;
+import static org.eclipse.recommenders.internal.rcp.repo.ModelRepositoryIndex.INDEX_ARTIFACT;
 
 import java.io.File;
 
@@ -44,8 +44,8 @@ public class UpdateModelIndexJob extends Job {
             File location = index.getLocation();
             if (doesNotExistOrIsAlmostEmptyFolder(location)) {
                 downloadAndUnzipIndex(monitor);
-            } else if (!repo.isLatest(INDEX_COORDINATE)) {
-                repo.delete(INDEX_COORDINATE);
+            } else if (!repo.isLatest(INDEX_ARTIFACT)) {
+                repo.delete(INDEX_ARTIFACT);
                 downloadAndUnzipIndex(monitor);
             }
         } catch (Exception e) {
@@ -65,12 +65,12 @@ public class UpdateModelIndexJob extends Job {
 
     private void downloadAndUnzipIndex(IProgressMonitor monitor) throws Exception {
         try {
-            repo.resolve(INDEX_COORDINATE, monitor);
+            repo.resolve(INDEX_ARTIFACT, monitor);
         } catch (NullPointerException e) {
             // we may have no internet... XXX this needs investigation
         }
 
-        File f = repo.location(INDEX_COORDINATE);
+        File f = repo.location(INDEX_ARTIFACT);
         if (!f.exists()) {
             return;
         }

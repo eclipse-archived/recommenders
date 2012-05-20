@@ -31,8 +31,6 @@ import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
 import org.eclipse.recommenders.utils.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -43,7 +41,6 @@ import com.google.inject.assistedinject.Assisted;
 @SuppressWarnings("rawtypes")
 public class ModelArchiveResolutionJob extends Job {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
     private final ModelArchiveMetadata metadata;
     private final IClasspathEntryInfoProvider cpeInfos;
     private final IModelRepository repository;

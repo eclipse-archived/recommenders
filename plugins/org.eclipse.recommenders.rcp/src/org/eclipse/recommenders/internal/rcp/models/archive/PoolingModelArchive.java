@@ -28,6 +28,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
     private Logger log = LoggerFactory.getLogger(getClass());
     private GenericKeyedObjectPool pool;
@@ -62,7 +63,6 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
         return factory.hasModel(key);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Optional<M> acquireModel(final K key) {
         try {
@@ -88,7 +88,6 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private class PoolFactory implements KeyedPoolableObjectFactory {
         @Override
         public boolean validateObject(Object key, Object obj) {

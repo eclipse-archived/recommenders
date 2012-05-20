@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.rcp.repo;
 
 import static com.google.common.base.Optional.absent;
+import static org.eclipse.recommenders.utils.Constants.*;
 import static com.google.common.base.Optional.of;
 import static com.google.common.io.Closeables.closeQuietly;
 import static org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils.newArtifact;
@@ -44,12 +45,7 @@ import com.google.common.collect.Lists;
 
 public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
 
-    public static final Artifact INDEX_COORDINATE = newArtifact("org.eclipse.recommenders:index:zip:0.0.0");
-    public static final String F_FINGERPRINTS = "fingerprints";
-    public static final String F_COORDINATE = "coordinate";
-    public static final String F_CLASSIFIER = "classifier";
-    public static final String F_ARTIFACT_ID = "artifactId";
-    public static final String SYMBOLIC_NAMES = "symbolic-names";
+    public static final Artifact INDEX_ARTIFACT = newArtifact(COORD_INDEX);
 
     private Logger log = LoggerFactory.getLogger(getClass());
     private Directory directory;

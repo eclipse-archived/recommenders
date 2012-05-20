@@ -22,7 +22,7 @@
 <stringAttribute key="selected_workspace_plugins" value="org.eclipse.recommenders.completion.rcp.calls@default:default,org.eclipse.recommenders.completion.rcp.e38@default:false,org.eclipse.recommenders.completion.rcp.overrides@default:default,org.eclipse.recommenders.completion.rcp.subwords@default:default,org.eclipse.recommenders.completion.rcp@default:default,org.eclipse.recommenders.extdoc.rcp@default:default,org.eclipse.recommenders.extdoc@default:default,org.eclipse.recommenders.injection@default:default,org.eclipse.recommenders.jayes.serialization@default:default,org.eclipse.recommenders.jayes@default:default,org.eclipse.recommenders.rcp@default:default,org.eclipse.recommenders.utils.rcp@default:default,org.eclipse.recommenders.utils@default:default"/>
 <booleanAttribute key="show_selected_only" value="false"/>
 <stringAttribute key="templateConfig" value="${target_home}/configuration/config.ini"/>
-<stringAttribute key="timestamp" value="1337445613976"/>
+<stringAttribute key="timestamp" value="1337448325968"/>
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfig" value="true"/>

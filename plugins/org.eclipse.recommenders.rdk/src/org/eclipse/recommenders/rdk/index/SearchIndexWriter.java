@@ -28,10 +28,10 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
-import org.eclipse.recommenders.internal.rcp.repo.ModelRepositoryIndex;
 import org.eclipse.recommenders.rdk.index.ModelDocuments.ModelDocument;
 import org.eclipse.recommenders.rdk.utils.Artifacts;
 import org.eclipse.recommenders.rdk.utils.Commands.CommandProvider;
+import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.annotations.Provisional;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
@@ -92,23 +92,23 @@ public class SearchIndexWriter {
                 continue;
 
             Document lDoc = new Document();
-            lDoc.add(newStored(ModelRepositoryIndex.F_COORDINATE, mDoc.coordinate));
+            lDoc.add(newStored(Constants.F_COORDINATE, mDoc.coordinate));
 
             for (String fingerprint : mDoc.fingerprints)
-                lDoc.add(newSearchable(ModelRepositoryIndex.F_FINGERPRINTS, fingerprint));
+                lDoc.add(newSearchable(Constants.F_FINGERPRINTS, fingerprint));
 
             for (String symbolicName : mDoc.symbolicNames)
-                lDoc.add(newSearchable(ModelRepositoryIndex.SYMBOLIC_NAMES, symbolicName));
+                lDoc.add(newSearchable(Constants.SYMBOLIC_NAMES, symbolicName));
 
             for (String modeCoordinate : mDoc.models) {
                 Artifact a = Artifacts.asArtifact(modeCoordinate);
-                lDoc.add(newSearchable(ModelRepositoryIndex.F_CLASSIFIER, a.getClassifier()));
+                lDoc.add(newSearchable(Constants.F_CLASSIFIER, a.getClassifier()));
                 lDoc.add(newStored(a.getClassifier(), modeCoordinate));
             }
             writer.addDocument(lDoc);
         }
         closeQuietly(writer);
-//        closeQuietly(writer.getDirectory());
+        // closeQuietly(writer.getDirectory());
         log.debug("Wrote index to {}.", workingDir);
     }
 

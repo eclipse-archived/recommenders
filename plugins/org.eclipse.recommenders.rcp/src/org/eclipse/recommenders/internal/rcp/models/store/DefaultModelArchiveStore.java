@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -127,7 +125,6 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements
 		return fromNullable(pkgRoot);
 	}
 
-	@SuppressWarnings("unchecked")
 	private Optional<IModelArchive<K, V>> findModelArchive(File location)
 			throws IOException {
 		ModelArchiveMetadata<K, V> meta = findOrCreateMetadata(location);

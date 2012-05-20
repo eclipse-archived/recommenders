@@ -179,7 +179,6 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private boolean acquireModel() {
         model = modelStore.aquireModel(receiverType).orNull();
-        // model = modelStore.aquireModel(receiverType).orNull();
         return model != null;
     }
 
