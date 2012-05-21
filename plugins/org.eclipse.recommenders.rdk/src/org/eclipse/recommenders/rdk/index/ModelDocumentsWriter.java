@@ -16,6 +16,7 @@ import static com.google.common.base.Optional.of;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.apache.commons.io.filefilter.HiddenFileFilter.VISIBLE;
 import static org.eclipse.recommenders.rdk.utils.Artifacts.toArtifactFileName;
+import static org.eclipse.recommenders.utils.Constants.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,7 +58,8 @@ import com.google.common.io.Files;
 public class ModelDocumentsWriter {
     private static Logger log = LoggerFactory.getLogger(ModelDocumentsWriter.class);
 
-    private String[] classifiers = { "call", "ovrm", "ovrd", "ovrp", "selfs" };
+    private String[] classifiers = { CLASS_CALL_MODELS, CLASS_OVRM_MODEL, CLASS_OVRD_MODEL, CLASS_OVRP_MODEL,
+            CLASS_SELFM_MODEL, CLASS_SELFC_MODEL };
 
     private File basedir;
     private File dest;
