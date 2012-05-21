@@ -26,6 +26,7 @@ import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
+import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -281,6 +282,28 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     IJavaCompletionProposal _findFirst = IterableExtensions.<IJavaCompletionProposal>findFirst(actual, _function);
     final IJavaCompletionProposal p1 = ((IJavaCompletionProposal) _findFirst);
     Assert.assertNotNull(p1);
+  }
+  
+  @Test
+  public void test016() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public class MyClass {");
+    _builder.newLine();
+    _builder.append("\t\t\t");
+    _builder.append("main$");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("}");
+    final CharSequence code = _builder;
+    List<IJavaCompletionProposal> _exercise = this.exercise(code);
+    final Procedure1<IJavaCompletionProposal> _function = new Procedure1<IJavaCompletionProposal>() {
+        public void apply(final IJavaCompletionProposal p) {
+          String _displayString = p.getDisplayString();
+          boolean _startsWith = _displayString.startsWith("Main");
+          Assert.assertTrue(_startsWith);
+        }
+      };
+    IterableExtensions.<IJavaCompletionProposal>forEach(_exercise, _function);
   }
   
   /**

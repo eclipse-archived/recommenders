@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
 import org.eclipse.jface.viewers.StyledString;
@@ -45,9 +46,14 @@ public class SubwordsUtils {
     }
 
     public static String getTokensBetweenLastWhitespaceAndFirstOpeningBracket(final CompletionProposal proposal) {
+        boolean isPotentialMethodDecl = proposal.getKind() == CompletionProposal.POTENTIAL_METHOD_DECLARATION;
         char[] token = proposal.getCompletion();
         if (Arrays.equals(token, new char[] { '(', ')' })) {
             token = proposal.getName();
+        } else if (isPotentialMethodDecl && proposal.getCompletion().length == 0) {
+            char[] signature = proposal.getDeclarationSignature();
+            char[] typeName = Signature.getSignatureSimpleName(signature);
+            return String.valueOf(typeName);
         }
         return getTokensBetweenLastWhitespaceAndFirstOpeningBracket(String.valueOf(token));
     }

@@ -155,6 +155,16 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 	}	
 	
 	
+	@Test 
+	def void test016(){
+		val code = '''public class MyClass {
+			main$
+		}'''
+		exercise(code).forEach( p| 
+			assertTrue(p.displayString.startsWith("Main"))
+		)
+	}	
+	
  	/**
   	 * @see https://bugs.eclipse.org/bugs/show_bug.cgi?id=370572
  	 */
