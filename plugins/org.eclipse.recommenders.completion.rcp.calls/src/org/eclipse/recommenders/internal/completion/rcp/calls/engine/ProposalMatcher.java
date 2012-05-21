@@ -26,7 +26,6 @@ public class ProposalMatcher {
 
     public ProposalMatcher(CompletionProposal proposal) {
         jSignature = String.valueOf(proposal.getSignature());
-        System.out.println(jSignature);
         jName = String.valueOf(proposal.getName());
         jParams = Signature.getParameterTypes(jSignature);
 
