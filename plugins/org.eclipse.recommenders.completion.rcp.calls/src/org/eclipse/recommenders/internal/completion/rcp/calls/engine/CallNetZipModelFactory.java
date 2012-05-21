@@ -28,6 +28,9 @@ import com.google.common.io.Closeables;
 
 public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObjectMethodCallsNet> {
 
+    // 64mb object output stream
+    private static final long MAX_MODEL_SIZE = 64 * 1024 * 1024;
+
     private final JavaElementResolver jdtResolver;
 
     public CallNetZipModelFactory(File zip, JavaElementResolver jdtResolver) throws IOException {
@@ -43,7 +46,11 @@ public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObje
     private ZipEntry getEntry(IType jType) {
         ITypeName rType = toRecName(jType);
         String name = rType.getIdentifier().substring(1) + ".data";
-        return zip.getEntry(name);
+        ZipEntry entry = zip.getEntry(name);
+        if (entry.getSize() > MAX_MODEL_SIZE) {
+            return null;
+        }
+        return entry;
     }
 
     private ITypeName toRecName(IType jType) {
