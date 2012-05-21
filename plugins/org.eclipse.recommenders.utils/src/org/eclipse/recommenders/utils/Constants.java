@@ -10,6 +10,12 @@
  */
 package org.eclipse.recommenders.utils;
 
+import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite;
+import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmMethodName;
+import org.eclipse.recommenders.utils.names.VmTypeName;
+
 public interface Constants {
     String COORD_INDEX = "org.eclipse.recommenders:index:zip:0.0.0";
     String F_FINGERPRINTS = "fingerprints";
@@ -36,4 +42,20 @@ public interface Constants {
     String CLASS_OVERRIDES_PATTERNS = "ovrp";
     String CLASS_OVR_DATA = "ovr";
     String CLASS_OUS_DATA = "ous";
+    String CLASS_OVRM_MODEL = "ovrm";
+    String CLASS_OVRP_MODEL = "ovrp";
+    String CLASS_OVRD_MODEL = "ovrd";
+    String CLASS_SELFC_MODEL = "selfc";
+    String CLASS_SELFM_MODEL = "selfm";
+
+    ITypeName UNKNOWN_TYPE = VmTypeName.get("LUnkown");
+    ITypeName NULL_TYPE = VmTypeName.NULL;
+
+    IMethodName UNKNOWN_METHOD = VmMethodName.get("LUnkown.unknown()V");
+    IMethodName NULL_METHOD = VmMethodName.get("LNull.null()V"); // param/fields
+
+    IMethodName DUMMY_METHOD = VmMethodName.get("LDummy.dummy()V"); // crash prevention
+
+    DefinitionSite.Kind UNKNOWN_KIND = DefinitionSite.Kind.UNKNOWN;
+
 }

@@ -16,7 +16,7 @@ import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_I
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_PATTERNS;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_DUMMY_DEF;
 import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_TRUE;
-import static org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage.UNKNOWN_METHOD;
+import static org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD;
 import static org.eclipse.recommenders.utils.Checks.ensureEquals;
 
 import java.util.Collection;
@@ -179,7 +179,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         clearEvidence();
         setMethodContext(query.contextFirst);
         setKind(query.kind);
-        if (query.definition != null && !query.definition.equals(ObjectUsage.UNKNOWN_METHOD))
+        if (query.definition != null && !query.definition.equals(UNKNOWN_METHOD))
             setDefinition(query.definition);
         setObservedMethodCalls(query.type, query.calls);
     }
@@ -330,7 +330,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
                 if (outcomeName.equals("LNone.none()V")) {
                     continue;
                 }
-                if (outcomeName.equals(ObjectUsage.UNKNOWN_METHOD.getIdentifier())) {
+                if (outcomeName.equals(UNKNOWN_METHOD.getIdentifier())) {
                     continue;
                 }
                 res.add(Tuple.newTuple(outcomeName, beliefs[i]));

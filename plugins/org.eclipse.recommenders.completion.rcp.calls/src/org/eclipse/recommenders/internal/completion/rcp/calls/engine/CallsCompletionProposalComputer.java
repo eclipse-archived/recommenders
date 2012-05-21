@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.engine;
 
 import static java.lang.Math.rint;
 import static java.util.Collections.emptyList;
+import static org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
@@ -34,6 +36,7 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.corext.template.java.SignatureUtil;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
@@ -50,8 +53,10 @@ import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.internal.utils.codestructs.Variable;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
@@ -191,7 +196,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private void setDefinition() {
-        if (query.definition.equals(ObjectUsage.UNKNOWN_METHOD)) {
+        if (query.definition.equals(UNKNOWN_METHOD)) {
             Optional<IMethodName> methodDef = ctx.getMethodDef();
             if (methodDef.isPresent()) {
                 query.definition = methodDef.get();
@@ -293,21 +298,23 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private void createCallProposalIfRecommended(final CompletionProposal compilerProposal,
             final IJavaCompletionProposal jdtuiProposal) {
-        final String signature = String.valueOf(compilerProposal.getSignature()).replace('.', '/');
-        final String name = String.valueOf(compilerProposal.getName());
-        final String propSignature = (name + signature).replaceAll("<\\.>", "");
+        ProposalMatcher matcher = new ProposalMatcher(compilerProposal);
         for (final CallsRecommendation call : recommendations) {
-            final String recSignature = call.method.getSignature();
-            if (recSignature.equals(propSignature)) {
-                if (jdtuiProposal instanceof AbstractJavaCompletionProposal) {
-                    int baseRelevance = jdtuiProposal.getRelevance();
-                    baseRelevance += 250 + (int) rint(call.probability * 100);
-                    ((AbstractJavaCompletionProposal) jdtuiProposal).setRelevance(baseRelevance);
-                }
-                final CompletionProposalDecorator decoratedProposal = new CompletionProposalDecorator(jdtuiProposal,
-                        call.probability);
-                proposals.add(decoratedProposal);
+            IMethodName crMethod = call.method;
+            if (!matcher.match(crMethod)) {
+                continue;
             }
+            // final String recSignature = crMethod.getSignature();
+            // if (recSignature.equals(propSignature)) {
+            if (jdtuiProposal instanceof AbstractJavaCompletionProposal) {
+                int baseRelevance = jdtuiProposal.getRelevance();
+                baseRelevance += 250 + (int) rint(call.probability * 100);
+                ((AbstractJavaCompletionProposal) jdtuiProposal).setRelevance(baseRelevance);
+            }
+            final CompletionProposalDecorator decoratedProposal = new CompletionProposalDecorator(jdtuiProposal,
+                    call.probability);
+            proposals.add(decoratedProposal);
+            // }
         }
     }
 
