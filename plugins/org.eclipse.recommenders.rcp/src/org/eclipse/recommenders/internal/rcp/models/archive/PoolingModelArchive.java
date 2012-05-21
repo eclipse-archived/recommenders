@@ -43,7 +43,7 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
 
     private GenericKeyedObjectPool createPool() {
         GenericKeyedObjectPool pool = new GenericKeyedObjectPool(new PoolFactory());
-        pool.setMaxTotal(100);
+        pool.setMaxTotal(50);
         pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
         return pool;
     }
