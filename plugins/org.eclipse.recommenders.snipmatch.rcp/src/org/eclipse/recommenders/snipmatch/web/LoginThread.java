@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
-*/
+ */
 
 package org.eclipse.recommenders.snipmatch.web;
 
@@ -21,92 +21,91 @@ import org.w3c.dom.Document;
  */
 class LoginThread extends PostThread {
 
-	private String username;
-	private String password;
-	private ArrayList<ILoginListener> listeners;
-	
-	public LoginThread(MatchClient client, String username, String password) {
+    private String username;
+    private String password;
+    private ArrayList<ILoginListener> listeners;
 
-		super(client, MatchClient.LOGIN_URL);
-		this.username = username;
-		this.password = password;
-		this.listeners = new ArrayList<ILoginListener>();
-	}
-	
-	public void addListener(ILoginListener listener) {
-		
-		listeners.add(listener);
-	}
-	
-	public void removeListener(ILoginListener listener) {
-		
-		listeners.remove(listener);
-	}
+    public LoginThread(RemoteMatchClient client, String username, String password) {
 
-	public void clearListeners() {
-		
-		listeners.clear();
-	}
-	
-	@Override
-	public void run() {
+        super(client, RemoteMatchClient.LOGIN_URL);
+        this.username = username;
+        this.password = password;
+        this.listeners = new ArrayList<ILoginListener>();
+    }
 
-		addParameter("username", username);
-		addParameter("password", password);
-		addParameter("clientName", client.getName());
-		addParameter("clientVersion", client.getVersion());
+    public void addListener(ILoginListener listener) {
 
-		InputStream response = post();
-		
-		if (response == null) {
-			
-			for (ILoginListener listener : listeners) {
-				listener.loginFailed("Connection error.");
-			}
+        listeners.add(listener);
+    }
 
-			done = true;
-			return;
-		}
-		
-		if (done) return;
+    public void removeListener(ILoginListener listener) {
 
-		DocumentBuilderFactory dbf;
-		DocumentBuilder db;
-		Document responseXml;
+        listeners.remove(listener);
+    }
 
-		try {
+    public void clearListeners() {
 
-			dbf = DocumentBuilderFactory.newInstance();
-			db = dbf.newDocumentBuilder();
-			responseXml = db.parse(response);
-		}
-		catch (Exception e) {
+        listeners.clear();
+    }
 
-			e.printStackTrace();
+    @Override
+    public void run() {
 
-			for (ILoginListener listener : listeners) {
-				listener.loginFailed("Bad response format.");
-			}
-			
-			done = true;
-			return;
-		}
+        addParameter("username", username);
+        addParameter("password", password);
+        addParameter("clientName", client.getName());
+        addParameter("clientVersion", client.getVersion());
 
-		String msg = responseXml.getDocumentElement().getTextContent();
-		
-		if (msg.equals("User authenticated.")) {
-			
-			for (ILoginListener listener : listeners) {
-				listener.loginSucceeded();
-			}
-		}
-		else {
-			
-			for (ILoginListener listener : listeners) {
-				listener.loginFailed(msg);
-			}
-		}
-		
-		done = true;
-	}
+        InputStream response = post();
+
+        if (response == null) {
+
+            for (ILoginListener listener : listeners) {
+                listener.loginFailed("Connection error.");
+            }
+
+            done = true;
+            return;
+        }
+
+        if (done)
+            return;
+
+        DocumentBuilderFactory dbf;
+        DocumentBuilder db;
+        Document responseXml;
+
+        try {
+
+            dbf = DocumentBuilderFactory.newInstance();
+            db = dbf.newDocumentBuilder();
+            responseXml = db.parse(response);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            for (ILoginListener listener : listeners) {
+                listener.loginFailed("Bad response format.");
+            }
+
+            done = true;
+            return;
+        }
+
+        String msg = responseXml.getDocumentElement().getTextContent();
+
+        if (msg.equals("User authenticated.")) {
+
+            for (ILoginListener listener : listeners) {
+                listener.loginSucceeded();
+            }
+        } else {
+
+            for (ILoginListener listener : listeners) {
+                listener.loginFailed(msg);
+            }
+        }
+
+        done = true;
+    }
 }
