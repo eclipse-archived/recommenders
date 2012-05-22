@@ -10,12 +10,23 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.engine;
 
+import static java.lang.String.valueOf;
+import static org.eclipse.jdt.core.Signature.C_TYPE_VARIABLE;
+import static org.eclipse.jdt.core.Signature.getArrayCount;
+import static org.eclipse.jdt.core.Signature.getElementType;
+import static org.eclipse.jdt.core.Signature.getParameterTypes;
+import static org.eclipse.jdt.core.Signature.getTypeErasure;
+
+import java.lang.reflect.Field;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.internal.codeassist.InternalCompletionProposal;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+@SuppressWarnings("restriction")
 public class ProposalMatcher {
 
     private String jSignature;
@@ -24,23 +35,65 @@ public class ProposalMatcher {
     private String rName;
     private ITypeName[] rParams;
 
+    private static Field fOriginalSignature;
+    static {
+        // workaround needed to handle proposals with generics properly.
+        // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=380203
+        try {
+            fOriginalSignature = InternalCompletionProposal.class.getDeclaredField("originalSignature");
+            fOriginalSignature.setAccessible(true);
+        } catch (Exception e) {
+        }
+    }
+
+    private static boolean canUseReflection(CompletionProposal proposal) {
+        // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=380203
+        return proposal instanceof InternalCompletionProposal && fOriginalSignature != null
+                && fOriginalSignature.isAccessible();
+    }
+
     public ProposalMatcher(CompletionProposal proposal) {
-        jSignature = String.valueOf(proposal.getSignature());
-        jName = String.valueOf(proposal.getName());
-        jParams = Signature.getParameterTypes(jSignature);
+        jSignature = getSignature(proposal);
+        jName = valueOf(proposal.getName());
+        jParams = getParameterTypes(jSignature);
 
         for (int i = 0; i < jParams.length; i++) {
-            String param = Signature.getTypeErasure(jParams[i]);
+            String param = getTypeErasure(jParams[i]);
+            String paramBaseType = getElementType(param);
             param = param.replace('.', '/');
             param = StringUtils.removeEnd(param, ";");
-            if ("!*".equals(param)) {
-                param = "Ljava/lang/Object";
-                // XXX that TT stuff must be solved better... forum thread started on this.
-            } else if (param.endsWith("TT")) {
-                param = param.replace("TT", "Ljava/lang/Object");
+            if (isWildcardCapture(paramBaseType) || isTypeParameter(paramBaseType)) {
+                int dimensions = getArrayCount(param);
+                param = StringUtils.repeat('[', dimensions) + "Ljava/lang/Object";
             }
             jParams[i] = param;
         }
+    }
+
+    private boolean isWildcardCapture(String param) {
+        return param.charAt(0) == Signature.C_CAPTURE;
+    }
+
+    /**
+     * @param param
+     *            base type - no array dimensions are checked
+     */
+    private boolean isTypeParameter(String param) {
+        return param.charAt(0) == C_TYPE_VARIABLE;
+    }
+
+    private String getSignature(CompletionProposal proposal) {
+        try {
+            if (canUseReflection(proposal)) {
+                char[] s = (char[]) fOriginalSignature.get(proposal);
+                if (s != null) {
+                    return String.valueOf(s);
+                }
+            }
+        } catch (Exception e) {
+            // catch whatever goes wrong and return fall back instead
+        }
+        return String.valueOf(proposal.getSignature());
     }
 
     public boolean match(IMethodName rMethod) {
