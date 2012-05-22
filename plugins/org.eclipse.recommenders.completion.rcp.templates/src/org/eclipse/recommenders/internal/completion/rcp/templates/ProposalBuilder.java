@@ -90,8 +90,6 @@ public class ProposalBuilder {
 
     private Template createTemplate(final PatternRecommendation pattern) {
         final String code = createTemplateCode(pattern);
-        System.out.println("----");
-        System.out.println(code);
         return new Template(pattern.getName(), pattern.getType().getClassName(), "java", code, false);
     }
 
@@ -168,11 +166,9 @@ public class ProposalBuilder {
             try {
                 builder.append("(");
                 final String[] parameterNames = jdtMethod.get().getParameterNames();
-                final String[] parameterTypes = jdtMethod.get().getParameterTypes();
+                final ITypeName[] parameterTypes = method.getParameterTypes();
                 for (int i = 0; i < parameterNames.length; ++i) {
-                    final String typeIdentifier = StringUtils.removeEnd(parameterTypes[i].replace('.', '/'), ";");
-                    final VmTypeName parameterType = VmTypeName.get(typeIdentifier);
-                    appendParameter(parameterNames[i], parameterType);
+                    appendParameter(parameterNames[i], parameterTypes[i]);
                     if (i + 1 < parameterNames.length) {
                         builder.append(", ");
                     }

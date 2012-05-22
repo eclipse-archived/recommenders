@@ -162,10 +162,9 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             model.setPattern(patternId);
             for (final Tuple<String, Double> def : model.getDefinitions()) {
                 final Collection<IMethodName> calls = getCallsForDefinition(model, VmMethodName.get(def.getFirst()));
-                if (calls.removeAll(query.calls)) {
-                    System.out.println();
-                }
-                if (calls.size() == 0) {
+                calls.removeAll(query.calls);
+                // patterns with less than two calls are no patterns :)
+                if (calls.size() < 2) {
                     continue;
                 }
 
