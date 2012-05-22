@@ -406,6 +406,11 @@ public class JdtUtils {
                 return absent();
             }
 
+            if (qName.charAt(0) == Signature.C_TYPE_VARIABLE) {
+                String literal = StringUtils.repeat('[', dimensions) + VmTypeName.OBJECT.getIdentifier();
+                ITypeName name = VmTypeName.get(literal);
+                return of(name);
+            }
             if (qName.charAt(0) == Signature.C_UNRESOLVED) {
 
                 final String[][] resolvedNames = type.resolveType(qName.substring(1));

@@ -97,16 +97,27 @@ public class BindingUtils {
         return !p.isPrimitive();
     }
 
-    public static Optional<IMethodName> toMethodName(final IMethodBinding b) {
+    /**
+     * Converts a method binding to its IMethodName counterpart. Note that type variables filled in by JDT are ignored,
+     * i.e., the declaring method is used to find the IMethodName.
+     * 
+     * @param b
+     *            the binding to resolve.
+     * @see IMethodBinding#getMethodDeclaration()
+     */
+    public static Optional<IMethodName> toMethodName(IMethodBinding b) {
         if (b == null) {
             return absent();
+        }
+        IMethodBinding decl = b.getMethodDeclaration();
+        if (decl != null) {
+            b = decl;
         }
         final StringBuilder sb = new StringBuilder();
         final ITypeName declaringType = toTypeName(b.getDeclaringClass()).orNull();
         if (declaringType == null) {
             return absent();
         }
-
         final String methodName = b.isConstructor() ? "<init>" : b.getName();
         sb.append(declaringType).append(".").append(methodName).append("(");
         for (final ITypeBinding param : b.getParameterTypes()) {

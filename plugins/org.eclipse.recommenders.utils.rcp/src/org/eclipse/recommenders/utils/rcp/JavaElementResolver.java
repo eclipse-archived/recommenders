@@ -18,6 +18,7 @@ import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension;
 
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
@@ -293,8 +294,8 @@ public class JavaElementResolver {
             if (!isSuccessfullyResolvedType(jdtType)) {
                 return absent();
             }
-            final ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(jdtType);
-            for (final IType t : Lists.asList(jdtType, hierarchy.getAllSupertypes(jdtType))) {
+            List<IType> supertypes = createListOfSupertypes(jdtType);
+            for (final IType t : supertypes) {
                 for (final IMethod m : t.getMethods()) {
                     if (sameSignature(recMethod, m)) {
                         return of(m);
@@ -306,6 +307,21 @@ public class JavaElementResolver {
             RecommendersUtilsPlugin.logWarning(e, "failed to resolve method '%s' in workspace", recMethod);
             return absent();
         }
+    }
+
+    private List<IType> createListOfSupertypes(final IType jdtType) throws JavaModelException {
+        final ITypeHierarchy hierarchy = SuperTypeHierarchyCache.getTypeHierarchy(jdtType);
+        List<IType> supertypes = Lists.newArrayList(jdtType);
+        for (IType supertype : hierarchy.getAllSupertypes(jdtType)) {
+            supertypes.add(supertype);
+        }
+        if (jdtType.isInterface()) {
+            // ensure java.lang.Object is in the list to resolve, e.g., calls to 'interface.getClass()'
+            for (IType s : hierarchy.getRootClasses()) {
+                supertypes.add(s);
+            }
+        }
+        return supertypes;
     }
 
     private boolean sameSignature(final IMethodName recMethod, final IMethod jdtMethod) throws JavaModelException {
