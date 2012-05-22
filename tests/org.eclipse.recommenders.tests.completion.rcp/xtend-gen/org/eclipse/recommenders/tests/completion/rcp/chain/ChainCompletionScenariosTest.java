@@ -17,6 +17,7 @@ import org.eclipse.recommenders.tests.SmokeTestScenarios;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
 import org.eclipse.recommenders.tests.completion.rcp.chain.PreferenceStoreMock;
+import org.eclipse.recommenders.tests.completion.rcp.chain.TestingChainCompletionProposalComputer;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -1543,8 +1544,8 @@ public class ChainCompletionScenariosTest {
       final JavaContentAssistContextMock ctx = _javaContentAssistContextMock;
       RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
       IPreferenceStore _create = PreferenceStoreMock.create();
-      ChainCompletionProposalComputer _chainCompletionProposalComputer = new ChainCompletionProposalComputer(_recommendersCompletionContextFactoryMock, _create);
-      final ChainCompletionProposalComputer sut = _chainCompletionProposalComputer;
+      TestingChainCompletionProposalComputer _testingChainCompletionProposalComputer = new TestingChainCompletionProposalComputer(_recommendersCompletionContextFactoryMock, _create);
+      final TestingChainCompletionProposalComputer sut = _testingChainCompletionProposalComputer;
       sut.sessionStarted();
       final List<ICompletionProposal> proposals = sut.computeCompletionProposals(ctx, null);
       for (final ICompletionProposal proposal : proposals) {

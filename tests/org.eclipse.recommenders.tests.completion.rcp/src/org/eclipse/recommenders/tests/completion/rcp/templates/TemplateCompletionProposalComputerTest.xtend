@@ -166,7 +166,7 @@ class TemplateCompletionProposalComputerTest {
 		// just be sure that this file still compiles...
 		val ast = cu.reconcile(AST::JLS4, true,true, null,null);
 		assertNotNull(ast)
-		sut = new TemplatesCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(),
+		sut = new TestingTemplateCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(),
 			new ModelStoreMock(), new JavaElementResolver())
 		val pos = struct.second.head;
 		proposals = sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, pos), null);

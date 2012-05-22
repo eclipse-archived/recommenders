@@ -967,7 +967,7 @@ class ChainCompletionScenariosTest {
 		val completionIndex = struct.second.head
 		val ctx = new org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock(cu, completionIndex)
 		
-		val sut = new ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(), PreferenceStoreMock::create())
+		val sut = new TestingChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(), PreferenceStoreMock::create())
 		sut.sessionStarted
 		val proposals = sut.computeCompletionProposals(ctx, null)
 		for(proposal : proposals){

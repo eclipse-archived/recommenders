@@ -39,6 +39,7 @@ import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.internal.core.SearchableEnvironment;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
+import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
@@ -46,6 +47,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
+import org.eclipse.recommenders.internal.completion.rcp.DisableContentAssistCategoryJob;
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.AstBasedObjectUsageResolver;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
@@ -73,7 +75,9 @@ import com.google.inject.Inject;
  * Controls the process of template recommendations.
  */
 @SuppressWarnings("restriction")
-public final class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
+public class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
+
+    private static final String CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.templates.category";
 
     public static enum CompletionMode {
         TYPE_NAME, MEMBER_ACCESS, THIS
@@ -128,6 +132,10 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+        if (!shouldMakeProposals()) {
+            return Collections.EMPTY_LIST;
+        }
+
         rCtx = ctxFactory.create((JavaContentAssistInvocationContext) context);
         if (!findEnclosingMethod()) {
             return Collections.emptyList();
@@ -144,6 +152,18 @@ public final class TemplatesCompletionProposalComputer implements IJavaCompletio
             addPatternsForType(t, proposalBuilder);
         }
         return proposalBuilder.createProposals();
+    }
+
+    @VisibleForTesting
+    protected boolean shouldMakeProposals() {
+        String[] excluded = PreferenceConstants.getExcludedCompletionProposalCategories();
+        Set<String> ex = Sets.newHashSet(excluded);
+        if (!ex.contains(CATEGORY_ID)) {
+            new DisableContentAssistCategoryJob(CATEGORY_ID).schedule();
+            return false;
+        }
+        // we are not on the default tab
+        return true;
     }
 
     private void addPatternsForType(final IType t, final ProposalBuilder proposalBuilder) {

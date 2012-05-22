@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +44,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.core.JavaElement;
 import org.eclipse.jdt.internal.ui.text.template.contentassist.TemplateProposal;
+import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
@@ -51,17 +53,22 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
+import org.eclipse.recommenders.internal.completion.rcp.DisableContentAssistCategoryJob;
 import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionModule.ChainCompletion;
 import org.eclipse.recommenders.internal.completion.rcp.chain.ui.ChainPreferencePage;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public class ChainCompletionProposalComputer implements IJavaCompletionProposalComputer {
+
+    static final String CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.chain.category";
 
     private IRecommendersCompletionContext ctx;
     private IType expectedType;
@@ -80,6 +87,9 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     @Override
     public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context,
             final IProgressMonitor monitor) {
+        if (!shouldMakeProposals()) {
+            return Collections.emptyList();
+        }
         initalizeContexts(context);
         if (!allRequiredContextsAvailable()) {
             return Collections.emptyList();
@@ -96,6 +106,18 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
             logError(e);
             return Collections.emptyList();
         }
+    }
+
+    @VisibleForTesting
+    protected boolean shouldMakeProposals() {
+        String[] excluded = PreferenceConstants.getExcludedCompletionProposalCategories();
+        Set<String> ex = Sets.newHashSet(excluded);
+        if (!ex.contains(CATEGORY_ID)) {
+            new DisableContentAssistCategoryJob(CATEGORY_ID).schedule();
+            return false;
+        }
+        // we are not on the default tab
+        return true;
     }
 
     /**

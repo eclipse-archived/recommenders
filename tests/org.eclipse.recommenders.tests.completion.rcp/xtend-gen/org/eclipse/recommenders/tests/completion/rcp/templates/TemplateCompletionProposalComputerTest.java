@@ -15,6 +15,7 @@ import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
 import org.eclipse.recommenders.tests.completion.rcp.calls.ModelStoreMock;
+import org.eclipse.recommenders.tests.completion.rcp.templates.TestingTemplateCompletionProposalComputer;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
@@ -241,8 +242,8 @@ public class TemplateCompletionProposalComputerTest {
         RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
         ModelStoreMock _modelStoreMock = new ModelStoreMock();
         JavaElementResolver _javaElementResolver = new JavaElementResolver();
-        TemplatesCompletionProposalComputer _templatesCompletionProposalComputer = new TemplatesCompletionProposalComputer(_recommendersCompletionContextFactoryMock, _modelStoreMock, _javaElementResolver);
-        this.sut = _templatesCompletionProposalComputer;
+        TestingTemplateCompletionProposalComputer _testingTemplateCompletionProposalComputer = new TestingTemplateCompletionProposalComputer(_recommendersCompletionContextFactoryMock, _modelStoreMock, _javaElementResolver);
+        this.sut = _testingTemplateCompletionProposalComputer;
         Set<Integer> _second = struct.getSecond();
         final Integer pos = IterableExtensions.<Integer>head(_second);
         JavaContentAssistContextMock _javaContentAssistContextMock = new JavaContentAssistContextMock(cu, (pos).intValue());

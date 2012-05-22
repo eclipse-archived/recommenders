@@ -9,7 +9,7 @@
    </extension>
    <extension
          id="org.eclipse.recommenders.completion.rcp.templates.category"
-         name="Code Recommenders Dynamic Template Proposals"
+         name="Dynamic Template Proposals (Recommenders)"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <javaCompletionProposalComputer
             activate="false"
@@ -19,7 +19,7 @@
    </extension>
    <extension
          id="org.eclipse.recommenders.completion.rcp.templates.category"
-         name="Code Recommenders Dynamic Template Proposals"
+         name="Dynamic Template Proposals"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <proposalCategory
             icon="metadata/icon2.gif">
