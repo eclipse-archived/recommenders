@@ -76,10 +76,8 @@ public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEdito
 
         @Override
         protected String[] parseString(final String stringList) {
-            if (!getUpButton().isDisposed()) {
-                getUpButton().dispose();
-                getDownButton().dispose();
-            }
+            getUpButton().setVisible(false);
+            getDownButton().setVisible(false);
             return stringList.split("\\" + IGNORE_TYPES_SEPARATOR);
         }
 
