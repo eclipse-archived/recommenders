@@ -21,6 +21,15 @@ public class SubwordsProposalContextTest {
         assertTrue(s1 > s3);
     }
 
+    @Test
+    public void test02() {
+        int s1 = calculateRelevance("addmouselistener", "addMouseListener", 468);
+        int s2 = calculateRelevance("addmouselistener", "addMouseMotionListener", 564);
+        int s3 = calculateRelevance("addmouselistener", "addMouseWheelListener", 564);
+        assertTrue(s1 > s2);
+        assertTrue(s1 > s3);
+    }
+
     private int calculateRelevance(String token, String completion, int score) {
         SubwordsProposalContext ctx = new SubwordsProposalContext(token, createCoreProposal(completion),
                 createUiProposal(completion, score), Mockito.mock(JavaContentAssistInvocationContext.class));
@@ -38,5 +47,5 @@ public class SubwordsProposalContextTest {
         CompletionProposal mock = Mockito.mock(CompletionProposal.class);
         Mockito.when(mock.getCompletion()).thenReturn(completion.toCharArray());
         return mock;
-      }
+    }
 }

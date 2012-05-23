@@ -18,7 +18,6 @@ import static java.util.Arrays.*
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.CodeBuilder.*
 import static org.eclipse.recommenders.tests.completion.rcp.subwords.SubwordsCompletionProposalComputerIntegrationTest.*
-import org.eclipse.osgi.internal.loader.buddy.SystemPolicy$ParentClassLoader
  
 class SubwordsCompletionProposalComputerIntegrationTest { 
   
@@ -145,7 +144,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 		val p2= actual.findFirst(p | p.toString.startsWith("getChars")) as IJavaCompletionProposal
 		assertTrue(p1.relevance > p2.relevance)
 	}
-
+	
 	@Test 
 	def void test015(){
 		val code = method('''new File$("")''')
