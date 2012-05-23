@@ -148,6 +148,14 @@ public class ContextAnalyzerTest {
     this.assertType(res, "I");
   }
   
+  @Test
+  public void testDefFor() {
+    final CharSequence code = this.methodbody("\n\t\t List<String> l;\n\t\t for(Iterator<String> it = l.iterator();it.)\n\t\t\t");
+    final ObjectUsage res = this.exercise(code, "it");
+    Assert.assertNotNull(res.definition);
+    this.assertType(res, "Iterator");
+  }
+  
   private CharSequence classbody(final CharSequence classbody) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.util.*;");

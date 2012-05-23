@@ -45,6 +45,7 @@ import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
@@ -296,13 +297,25 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
     @Override
     public boolean visit(final VariableDeclarationStatement node) {
         for (final VariableDeclarationFragment f : (List<VariableDeclarationFragment>) node.fragments()) {
-            final SimpleName name = f.getName();
-            if (matchesVarName(name)) {
-                final Expression expression = f.getInitializer();
-                if (expression != null) {
-                    evaluateRightHandSideExpression(expression);
-                }
+            evaluateVariableDeclarationFragment(f);
+        }
+        return true;
+    }
+
+    private void evaluateVariableDeclarationFragment(final VariableDeclarationFragment f) {
+        final SimpleName name = f.getName();
+        if (matchesVarName(name)) {
+            final Expression expression = f.getInitializer();
+            if (expression != null) {
+                evaluateRightHandSideExpression(expression);
             }
+        }
+    }
+
+    @Override
+    public boolean visit(VariableDeclarationExpression node) {
+        for (VariableDeclarationFragment f : (List<VariableDeclarationFragment>) node.fragments()) {
+            evaluateVariableDeclarationFragment(f);
         }
         return true;
     }
