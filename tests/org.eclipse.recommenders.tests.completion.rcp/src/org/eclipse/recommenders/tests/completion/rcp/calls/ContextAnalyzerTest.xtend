@@ -166,6 +166,17 @@ class ContextAnalyzerTest {
 		res.assertType("I")
 	}
 	
+	@Test
+	def void testDefFor(){
+		val code = methodbody('
+		 List<String> l;
+		 for(Iterator<String> it = l.iterator();it.)
+			')
+		val res = exercise(code,"it")
+		assertNotNull(res.definition);
+		res.assertType("Iterator")
+	}
+
 	
 	def private classbody(CharSequence classbody)
 		'''
