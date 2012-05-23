@@ -108,7 +108,7 @@ public class RecommendersModule extends AbstractModule implements Module {
             public boolean preShutdown(IWorkbench workbench, boolean forced) {
                 try {
                     ((Closeable) cpeInfoProvider).close();
-                } catch (IOException e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
                 return true;
