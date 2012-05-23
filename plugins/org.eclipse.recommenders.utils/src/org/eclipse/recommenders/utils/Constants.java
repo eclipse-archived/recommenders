@@ -11,8 +11,10 @@
 package org.eclipse.recommenders.utils;
 
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite;
+import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmFieldName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
@@ -53,9 +55,11 @@ public interface Constants {
 
     IMethodName UNKNOWN_METHOD = VmMethodName.get("LUnkown.unknown()V");
     IMethodName NULL_METHOD = VmMethodName.get("LNull.null()V"); // param/fields
+    IMethodName NO_METHOD = VmMethodName.get("LNo.method()V"); // param/fields;
 
     IMethodName DUMMY_METHOD = VmMethodName.get("LDummy.dummy()V"); // crash prevention
 
     DefinitionSite.Kind UNKNOWN_KIND = DefinitionSite.Kind.UNKNOWN;
+    IFieldName UNKNOWN_FIELD = VmFieldName.get("LNo.field;LNoType");
 
 }
