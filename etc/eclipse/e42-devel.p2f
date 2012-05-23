@@ -1,22 +1,42 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?p2f version='1.0.0'?>
 <p2f version='1.0.0'>
-  <ius size='3'>
-    <iu id='org.eclipse.recommenders.feature.rcp.feature.group' name='Code Recommenders Developer Tools (Incubation)' version='0.5.2.v20120520-1054-b134'>
+  <ius size='7'>
+    <iu id='org.eclipse.e4.core.tools.feature.feature.group' name='Eclipse e4 Tools (Incubation)' version='0.10.0.v20110613-2030-28F1EVVFNSFhMz-8ReSX'>
       <repositories size='1'>
-        <repository location='http://download.eclipse.org/recommenders/updates/train/e42'/>
+        <repository location='http://download.eclipse.org/e4/downloads/drops/S-0.12RC1-201205162300/repository/'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.e4.core.tools.source.feature.feature.group' name='Eclipse e4 Tools Source (Incubation)' version='0.10.0.v20110613-2030-28F1EVVFNSFhMz-8ReSX'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/e4/downloads/drops/S-0.12RC1-201205162300/repository/'/>
       </repositories>
     </iu>
     <iu id='org.eclipse.egit.feature.group' name='Eclipse EGit' version='1.3.0.201202151440-r'>
       <repositories size='2'>
-        <repository location='http://download.eclipse.org/releases/juno'/>
         <repository location='http://download.eclipse.org/releases/juno/201204110900'/>
+        <repository location='http://download.eclipse.org/releases/juno'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jdt.astview.feature.feature.group' name='org.eclipse.jdt.astview.feature' version='1.1.8'>
+      <repositories size='1'>
+        <repository location='http://www.eclipse.org/jdt/ui/update-site'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.jdt.jeview.feature.feature.group' name='org.eclipse.jdt.jeview.feature' version='1.0.8'>
+      <repositories size='1'>
+        <repository location='http://www.eclipse.org/jdt/ui/update-site'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.reftracker.feature.feature.group' name='org.eclipse.reftracker.feature' version='1.0.0'>
+      <repositories size='1'>
+        <repository location='http://www.eclipse.org/jdt/ui/update-site'/>
       </repositories>
     </iu>
     <iu id='org.eclipse.xtend.sdk.feature.group' name='Xtend SDK' version='2.3.0.v201205081025'>
       <repositories size='2'>
-        <repository location='http://download.eclipse.org/releases/juno'/>
         <repository location='http://download.eclipse.org/releases/juno/201204110900'/>
+        <repository location='http://download.eclipse.org/releases/juno'/>
       </repositories>
     </iu>
   </ius>
