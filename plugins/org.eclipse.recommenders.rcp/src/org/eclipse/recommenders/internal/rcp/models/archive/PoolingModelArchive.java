@@ -71,7 +71,7 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
                 objects.put(model, key);
             return fromNullable(model);
         } catch (final Exception e) {
-            log.error("Exception while loading model for key '" + key + "'", e);
+            log.error("Exception while loading model for key '" + key + "'" + e.getMessage(), e);
             return absent();
         }
     }
