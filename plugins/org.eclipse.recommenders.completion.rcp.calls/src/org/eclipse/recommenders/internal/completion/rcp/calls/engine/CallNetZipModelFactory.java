@@ -15,12 +15,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.BayesNetWrapper;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.models.archive.ZipPoolableModelFactory;
+import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 
@@ -38,6 +40,11 @@ public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObje
         this.jdtResolver = jdtResolver;
     }
 
+    public CallNetZipModelFactory(ZipFile zip, JavaElementResolver jdtResolver) throws IOException {
+        super(zip);
+        this.jdtResolver = jdtResolver;
+    }
+
     @Override
     public boolean hasModel(IType key) {
         return getEntry(key) != null;
@@ -45,8 +52,12 @@ public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObje
 
     private ZipEntry getEntry(IType jType) {
         ITypeName rType = toRecName(jType);
-        String name = rType.getIdentifier().substring(1) + ".data";
+
+        String name = Zips.path(rType, ".data");
         ZipEntry entry = zip.getEntry(name);
+        if (entry == null) {
+            return null;
+        }
         if (entry.getSize() > MAX_MODEL_SIZE) {
             return null;
         }
