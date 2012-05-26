@@ -105,31 +105,34 @@ public final class CallsProvider extends ExtdocProvider {
         if (!acquireModel()) {
             return Status.NOT_AVAILABLE;
         }
-        final ASTNode node = opt.get();
+        try {
+            final ASTNode node = opt.get();
 
-        final Optional<MethodDeclaration> optAstMethod = findEnclosingMethod(node);
-        final Optional<IMethod> optJdtMethod = resolveMethod(optAstMethod.orNull());
-        if (!optJdtMethod.isPresent()) {
-            return Status.NOT_AVAILABLE;
+            final Optional<MethodDeclaration> optAstMethod = findEnclosingMethod(node);
+            final Optional<IMethod> optJdtMethod = resolveMethod(optAstMethod.orNull());
+            if (!optJdtMethod.isPresent()) {
+                return Status.NOT_AVAILABLE;
+            }
+
+            final AstBasedObjectUsageResolver r = new AstBasedObjectUsageResolver();
+            final ObjectUsage usage = r.findObjectUsage(variable.getElementName(), optAstMethod.get());
+            final IMethod first = JdtUtils.findFirstDeclaration(optJdtMethod.get());
+            usage.contextFirst = jdtResolver.toRecMethod(first).or(VmMethodName.NULL);
+            if (usage.kind == Kind.PARAMETER) {
+                usage.definition = usage.contextFirst;
+            }
+            model.setQuery(usage);
+
+            final Collection<Tuple<IMethodName, Double>> methodCalls = model.getRecommendedMethodCalls(0.05d);
+            final IMethodName ctx = model.getActiveContext();
+            final IMethodName def = model.getActiveDefinition();
+            final Kind kind = model.getActiveKind();
+            final Set<IMethodName> calls = model.getActiveCalls();
+            runSyncInUiThread(new CallRecommendationsRenderer(ctx, methodCalls, calls, variable.getElementName(), def,
+                    kind, parent));
+        } finally {
+            releaseModel();
         }
-
-        final AstBasedObjectUsageResolver r = new AstBasedObjectUsageResolver();
-        final ObjectUsage usage = r.findObjectUsage(variable.getElementName(), optAstMethod.get());
-        final IMethod first = JdtUtils.findFirstDeclaration(optJdtMethod.get());
-        usage.contextFirst = jdtResolver.toRecMethod(first).or(VmMethodName.NULL);
-        if (usage.kind == Kind.PARAMETER) {
-            usage.definition = usage.contextFirst;
-        }
-        model.setQuery(usage);
-
-        final Collection<Tuple<IMethodName, Double>> methodCalls = model.getRecommendedMethodCalls(0.05d);
-        final IMethodName ctx = model.getActiveContext();
-        final IMethodName def = model.getActiveDefinition();
-        final Kind kind = model.getActiveKind();
-        final Set<IMethodName> calls = model.getActiveCalls();
-        releaseModel();
-        runSyncInUiThread(new CallRecommendationsRenderer(ctx, methodCalls, calls, variable.getElementName(), def,
-                kind, parent));
         return Status.OK;
     }
 

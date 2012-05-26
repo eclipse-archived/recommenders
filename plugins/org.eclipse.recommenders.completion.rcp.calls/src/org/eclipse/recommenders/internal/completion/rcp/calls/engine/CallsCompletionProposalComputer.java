@@ -119,17 +119,20 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
         if (!findReceiver()) {
             return emptyList();
         }
-        if (!acquireModel()) {
-            return emptyList();
+        try {
+            if (!acquireModel()) {
+                return emptyList();
+            }
+            if (!completeQuery()) {
+                return emptyList();
+            }
+            if (!findRecommendations()) {
+                return emptyList();
+            }
+            createProspsals();
+        } finally {
+            releaseModel();
         }
-        if (!completeQuery()) {
-            return emptyList();
-        }
-        if (!findRecommendations()) {
-            return emptyList();
-        }
-        createProspsals();
-        releaseModel();
         return proposals;
 
     }
