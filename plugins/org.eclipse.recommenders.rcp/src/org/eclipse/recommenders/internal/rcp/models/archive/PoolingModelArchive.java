@@ -43,8 +43,13 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
 
     private GenericKeyedObjectPool createPool() {
         GenericKeyedObjectPool pool = new GenericKeyedObjectPool(new PoolFactory());
-        pool.setMaxTotal(50);
+        pool.setMaxTotal(8);
+        pool.setMaxIdle(3);
         pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
+        // run clean up every 5 minutes:
+        pool.setTimeBetweenEvictionRunsMillis(5 * 60 * 1000);
+        // models are evictable after 5 minutes
+        pool.setMinEvictableIdleTimeMillis(5 * 60 * 1000);
         return pool;
     }
 
