@@ -28,7 +28,6 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
-import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
@@ -36,7 +35,6 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.corext.template.java.SignatureUtil;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.jdt.internal.ui.text.java.AbstractJavaCompletionProposal;
@@ -44,19 +42,20 @@ import org.eclipse.jdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
+import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.CallPreferencePage;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CallCompletion;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.internal.utils.codestructs.Variable;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
-import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
@@ -71,8 +70,7 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-    // private static final int MAX_NUM_PROPOSALS = 5;
-    private static final double MIN_PROBABILITY_THRESHOLD = 0.01d;
+    public static String CATEGORY_ID = "org.eclipse.recommenders.rcp.category.completion";
 
     @SuppressWarnings("serial")
     private final Set<Class<?>> supportedCompletionRequests = new HashSet<Class<?>>() {
@@ -100,12 +98,16 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private final IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore;
 
+    private final IPreferenceStore prefStore;
+
     @Inject
     public CallsCompletionProposalComputer(final IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore,
-            final JavaElementResolver jdtResolver, final IRecommendersCompletionContextFactory ctxFactory) {
+            final JavaElementResolver jdtResolver, final IRecommendersCompletionContextFactory ctxFactory,
+            @CallCompletion final IPreferenceStore prefStore) {
         this.modelStore = modelStore;
         this.jdtResolver = jdtResolver;
         this.ctxFactory = ctxFactory;
+        this.prefStore = prefStore;
     }
 
     @Override
@@ -168,7 +170,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean isImplicitThis() {
-        return (receiverType == null) && receiverName.isEmpty();
+        return receiverType == null && receiverName.isEmpty();
     }
 
     private void setReceiverToSupertype() {
@@ -200,7 +202,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private void setDefinition() {
         if (query.definition.equals(UNKNOWN_METHOD)) {
-            Optional<IMethodName> methodDef = ctx.getMethodDef();
+            final Optional<IMethodName> methodDef = ctx.getMethodDef();
             if (methodDef.isPresent()) {
                 query.definition = methodDef.get();
                 query.kind = Kind.METHOD_RETURN;
@@ -255,8 +257,10 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
         model.setQuery(query);
 
+        final double minProbability = prefStore.getInt(CallPreferencePage.ID_MIN_PROBABILITY) * 0.01;
+        final int maxProposals = prefStore.getInt(CallPreferencePage.ID_MAX_PROPOSALS);
         final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model
-                .getRecommendedMethodCalls(MIN_PROBABILITY_THRESHOLD);
+                .getRecommendedMethodCalls(minProbability);
 
         final Variable var = Variable.create(receiverName, jdtResolver.toRecType(receiverType), null);
 
@@ -280,9 +284,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
             recommendations.add(recommendation);
 
         }
-        // XXX experimental. limit completion list to "magical number 7"
-        // http://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two
-        recommendations = recommendations.subList(0, Math.min(recommendations.size(), 7));
+        recommendations = recommendations.subList(0, Math.min(recommendations.size(), maxProposals));
         return !recommendations.isEmpty();
     }
 
@@ -301,9 +303,9 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
     private void createCallProposalIfRecommended(final CompletionProposal compilerProposal,
             final IJavaCompletionProposal jdtuiProposal) {
-        ProposalMatcher matcher = new ProposalMatcher(compilerProposal);
+        final ProposalMatcher matcher = new ProposalMatcher(compilerProposal);
         for (final CallsRecommendation call : recommendations) {
-            IMethodName crMethod = call.method;
+            final IMethodName crMethod = call.method;
             if (!matcher.match(crMethod)) {
                 continue;
             }

@@ -9,13 +9,13 @@ import org.eclipse.recommenders.tests.CodeBuilder
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
 import static org.eclipse.recommenders.tests.completion.rcp.chain.ChainCompletionScenariosTest.*
-import org.junit.Before
  
 class ChainCompletionScenariosTest { 
   
@@ -34,7 +34,7 @@ class ChainCompletionScenariosTest {
 	
 			for(completionIndex : struct.second){
 				val ctx = new org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock(cu, completionIndex)
-				val sut = new ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(), PreferenceStoreMock::create())
+				val sut = new ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(), org::eclipse::recommenders::tests::completion::rcp::chain::ChainPreferenceStoreMock::create())
 				sut.sessionStarted
 				sut.computeCompletionProposals(ctx, null)
 			}
@@ -967,7 +967,7 @@ class ChainCompletionScenariosTest {
 		val completionIndex = struct.second.head
 		val ctx = new org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock(cu, completionIndex)
 		
-		val sut = new TestingChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(), PreferenceStoreMock::create())
+		val sut = new ChainCompletionProposalComputer(new RecommendersCompletionContextFactoryMock(), ChainPreferenceStoreMock::create())
 		sut.sessionStarted
 		val proposals = sut.computeCompletionProposals(ctx, null)
 		for(proposal : proposals){

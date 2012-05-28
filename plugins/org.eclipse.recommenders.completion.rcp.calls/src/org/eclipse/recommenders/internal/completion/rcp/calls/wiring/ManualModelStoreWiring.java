@@ -17,7 +17,7 @@ import java.io.IOException;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallNetZipModelFactory;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
-import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CallModelStore;
+import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CallCompletion;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchive;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
 import org.eclipse.recommenders.internal.rcp.models.archive.PoolingModelArchive;
@@ -37,7 +37,7 @@ public class ManualModelStoreWiring {
     static class CallModelArchiveStore extends DefaultModelArchiveStore<IType, IObjectMethodCallsNet> {
 
         @Inject
-        public CallModelArchiveStore(@CallModelStore File store, final IModelRepository repository,
+        public CallModelArchiveStore(@CallCompletion File store, final IModelRepository repository,
                 final IModelRepositoryIndex searchindex, final IClasspathEntryInfoProvider cpeInfoProvider,
                 final JavaElementResolver jdtResolver) {
             super(store, "call", repository, new IDependenciesFactory() {

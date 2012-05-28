@@ -30,10 +30,14 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.FieldEditor;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -45,6 +49,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallsCompletionProposalComputer;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionPlugin;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
@@ -55,6 +60,7 @@ import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.rcp.RCPUtils;
+import org.eclipse.recommenders.utils.rcp.internal.ContentAssistEnablementBlock;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -77,12 +83,20 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
-public class CallPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class CallPreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IPropertyChangeListener {
+
+    public static final String ID_MAX_PROPOSALS = "recommenders.calls.max_proposals";
+    public static final String ID_MIN_PROBABILITY = "recommenders.calls.min_probability";
 
     private final IClasspathEntryInfoProvider cpeInfoProvider;
     private final IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore;
     private List<Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>>> mappings;
     final IModelRepository repository;
+
+    private ContentAssistEnablementBlock enablement;
+    private IntegerFieldEditor maxProposals;
+    private IntegerFieldEditor minProbability;
+
     private Text rootName;
     private Text rootVersion;
     private Text rootFingerprint;
@@ -93,8 +107,8 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
     private WritableValue rValue;
 
     @Inject
-    public CallPreferencePage(IClasspathEntryInfoProvider cpeInfoProvider,
-            IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore, IModelRepository repository) {
+    public CallPreferencePage(final IClasspathEntryInfoProvider cpeInfoProvider,
+            final IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore, final IModelRepository repository) {
         this.cpeInfoProvider = cpeInfoProvider;
         this.modelStore = modelStore;
         this.repository = repository;
@@ -102,27 +116,70 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
 
     @Override
     public void init(final IWorkbench workbench) {
-        final IPreferenceStore store = CallsCompletionPlugin.getDefault().getPreferenceStore();
-        setPreferenceStore(store);
-        noDefaultAndApplyButton();
-        setDescription("Lists all known class-path dependencies and their associated recommendation models if any."
-                + "Select models to view detail information.");
+        setPreferenceStore(CallsCompletionPlugin.getDefault().getPreferenceStore());
+        setDescription("Recommenders' intelligent call completion proposes likely method calls based on previously collected usage statistics.");
     }
 
     @Override
     protected Control createContents(final Composite parent) {
+        final Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayout(new GridLayout());
+        createConfigurationBlock(composite);
+        createModelInformationBlock(composite);
+        return composite;
+    }
+
+    private void createConfigurationBlock(final Composite composite) {
+        enablement = new ContentAssistEnablementBlock(composite, "Enable intelligent call completion",
+                CallsCompletionProposalComputer.CATEGORY_ID);
+        final Composite group = new Composite(composite, SWT.NONE);
+        group.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).create());
+        group.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        maxProposals = createIntegerField(group, ID_MAX_PROPOSALS, "Maximum number of proposals:", 1, 100);
+        minProbability = createIntegerField(group, ID_MIN_PROBABILITY, "Minimum proposal probability (%):", 1, 100);
+    }
+
+    private IntegerFieldEditor createIntegerField(final Composite parent, final String name, final String text,
+            final int min, final int max) {
+        final IntegerFieldEditor editor = new IntegerFieldEditor(name, text, parent);
+        editor.setPreferenceStore(getPreferenceStore());
+        editor.setPage(this);
+        editor.setValidRange(min, max);
+        editor.setPropertyChangeListener(this);
+        editor.load();
+        return editor;
+    }
+
+    private void createModelInformationBlock(final Composite composite) {
+        new Label(composite, SWT.NONE)
+                .setText("Lists all known class-path dependencies and their associated recommendation models if any. "
+                        + "Select\nmodels to view detail information.");
         computeMappings();
-        SashForm form = new SashForm(parent, SWT.HORIZONTAL);
+        final SashForm form = new SashForm(composite, SWT.HORIZONTAL);
         form.setLayout(new FillLayout());
         createTable(form);
         createDetails(form);
         bindValues();
         form.setWeights(new int[] { 50, 50 });
-        return form;
+    }
+
+    private void computeMappings() {
+        mappings = Lists.newLinkedList();
+        for (final File root : cpeInfoProvider.getFiles()) {
+            final Optional<ClasspathEntryInfo> opt = cpeInfoProvider.getInfo(root);
+            if (!opt.isPresent()) {
+                continue;
+            }
+            final ClasspathEntryInfo cpei = opt.get();
+
+            final ModelArchiveMetadata<?, ?> metadata = modelStore.findOrCreateMetadata(root);
+            final Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> entry = Tuple.newTuple(cpei, metadata);
+            mappings.add(entry);
+        }
     }
 
     private void bindValues() {
-        DataBindingContext ctx = new DataBindingContext();
+        final DataBindingContext ctx = new DataBindingContext();
         {
             rValue = new WritableValue();
             bindValue(ctx, rootName, ClasspathEntryInfo.class, ClasspathEntryInfo.P_SYMBOLIC_NAME, rValue);
@@ -133,26 +190,26 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
             mValue = new WritableValue();
             bindValue(ctx, modelCoordinate, ModelArchiveMetadata.class, ModelArchiveMetadata.P_COORDINATE, mValue);
 
-            IObservableValue widgetValue = ViewerProperties.singlePostSelection().observe(modelStatus);
-            IObservableValue modelValue = BeanProperties.value(ModelArchiveMetadata.class,
+            final IObservableValue widgetValue = ViewerProperties.singlePostSelection().observe(modelStatus);
+            final IObservableValue modelValue = BeanProperties.value(ModelArchiveMetadata.class,
                     ModelArchiveMetadata.P_STATUS).observeDetail(mValue);
             ctx.bindValue(widgetValue, modelValue);
         }
     }
 
-    private void bindValue(DataBindingContext ctx, Widget widget, Class<?> clazz, String property,
-            IObservableValue value) {
-        IObservableValue widgetValue = WidgetProperties.text(SWT.Modify).observe(widget);
-        IObservableValue modelValue = BeanProperties.value(clazz, property).observeDetail(value);
+    private void bindValue(final DataBindingContext ctx, final Widget widget, final Class<?> clazz,
+            final String property, final IObservableValue value) {
+        final IObservableValue widgetValue = WidgetProperties.text(SWT.Modify).observe(widget);
+        final IObservableValue modelValue = BeanProperties.value(clazz, property).observeDetail(value);
         ctx.bindValue(widgetValue, modelValue);
     }
 
-    private void createDetails(SashForm form) {
-        Composite parent = new Composite(form, SWT.NONE);
+    private void createDetails(final SashForm form) {
+        final Composite parent = new Composite(form, SWT.NONE);
         parent.setLayout(new GridLayout());
-        GridDataFactory f = GridDataFactory.fillDefaults().grab(true, false);
+        final GridDataFactory f = GridDataFactory.fillDefaults().grab(true, false);
         {
-            Group rootContainer = new Group(parent, SWT.SHADOW_ETCHED_IN);
+            final Group rootContainer = new Group(parent, SWT.SHADOW_ETCHED_IN);
             rootContainer.setText("Package Root Info:");
             rootContainer.setLayout(new GridLayout(2, false));
             rootContainer.setLayoutData(f.create());
@@ -167,7 +224,7 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
             rootFingerprint = createText(rootContainer, READ_ONLY | BORDER);
         }
         {
-            Group modelContainer = new Group(parent, SWT.SHADOW_ETCHED_IN);
+            final Group modelContainer = new Group(parent, SWT.SHADOW_ETCHED_IN);
             modelContainer.setText("Model Info:");
             modelContainer.setLayout(new GridLayout(2, false));
             modelContainer.setLayoutData(f.create());
@@ -179,20 +236,6 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
             modelStatus = new ComboViewer(modelContainer, SWT.BORDER);
             modelStatus.setContentProvider(new ArrayContentProvider());
             modelStatus.setInput(ModelArchiveResolutionStatus.values());
-        }
-    }
-
-    private void computeMappings() {
-        mappings = Lists.newLinkedList();
-        for (File root : cpeInfoProvider.getFiles()) {
-            Optional<ClasspathEntryInfo> opt = cpeInfoProvider.getInfo(root);
-            if (!opt.isPresent())
-                continue;
-            ClasspathEntryInfo cpei = opt.get();
-
-            ModelArchiveMetadata<?, ?> metadata = modelStore.findOrCreateMetadata(root);
-            Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> entry = Tuple.newTuple(cpei, metadata);
-            mappings.add(entry);
         }
     }
 
@@ -209,18 +252,19 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
         tableViewer.setComparator(new ViewerComparator() {
             @Override
             public int compare(final Viewer viewer, final Object e1, final Object e2) {
-                Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> t1 = cast(e1);
-                File f1 = t1.getSecond().getLocation();
-                Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> t2 = cast(e2);
-                File f2 = t2.getSecond().getLocation();
+                final Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> t1 = cast(e1);
+                final File f1 = t1.getSecond().getLocation();
+                final Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> t2 = cast(e2);
+                final File f2 = t2.getSecond().getLocation();
                 return reflectionCompare(f1, f2);
             }
         });
         tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                Optional<Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>>> e = RCPUtils.first(event.getSelection());
+            public void selectionChanged(final SelectionChangedEvent event) {
+                final Optional<Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>>> e = RCPUtils.first(event
+                        .getSelection());
                 mValue.setValue(e.get().getSecond());
                 rValue.setValue(e.get().getFirst());
             }
@@ -280,7 +324,31 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
     }
 
     @Override
+    protected void performDefaults() {
+        maxProposals.loadDefault();
+        minProbability.loadDefault();
+    }
+
+    @Override
     public boolean performOk() {
+        maxProposals.store();
+        minProbability.store();
         return super.performOk();
     }
+
+    @Override
+    public void setVisible(final boolean visible) {
+        // respond to changes in Java > Editor > Content Assist > Advanced:
+        // this works only one-way. We respond to changes made in JDT but JDT page may show deprecated values.
+        enablement.loadSelection();
+        super.setVisible(visible);
+    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent event) {
+        if (event.getProperty().equals(FieldEditor.IS_VALID)) {
+            setValid(maxProposals.isValid() && minProbability.isValid());
+        }
+    }
+
 }

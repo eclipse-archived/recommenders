@@ -10,11 +10,13 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallsCompletionProposalComputer;
 import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
+import org.eclipse.recommenders.tests.completion.rcp.calls.CallsPreferenceStoreMock;
 import org.eclipse.recommenders.tests.completion.rcp.calls.ModelStoreMock;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
@@ -164,7 +166,8 @@ public class CallCompletionProposalComputerSmokeTest {
       ModelStoreMock _modelStoreMock = new ModelStoreMock();
       JavaElementResolver _javaElementResolver = new JavaElementResolver();
       RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
-      CallsCompletionProposalComputer _callsCompletionProposalComputer = new CallsCompletionProposalComputer(_modelStoreMock, _javaElementResolver, _recommendersCompletionContextFactoryMock);
+      IPreferenceStore _create = CallsPreferenceStoreMock.create();
+      CallsCompletionProposalComputer _callsCompletionProposalComputer = new CallsCompletionProposalComputer(_modelStoreMock, _javaElementResolver, _recommendersCompletionContextFactoryMock, _create);
       final CallsCompletionProposalComputer sut = _callsCompletionProposalComputer;
       Set<Integer> _second = struct.getSecond();
       for (final Integer pos : _second) {
@@ -197,7 +200,8 @@ public class CallCompletionProposalComputerSmokeTest {
         ModelStoreMock _modelStoreMock = new ModelStoreMock();
         JavaElementResolver _javaElementResolver = new JavaElementResolver();
         RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
-        CallsCompletionProposalComputer _callsCompletionProposalComputer = new CallsCompletionProposalComputer(_modelStoreMock, _javaElementResolver, _recommendersCompletionContextFactoryMock);
+        IPreferenceStore _create = CallsPreferenceStoreMock.create();
+        CallsCompletionProposalComputer _callsCompletionProposalComputer = new CallsCompletionProposalComputer(_modelStoreMock, _javaElementResolver, _recommendersCompletionContextFactoryMock, _create);
         final CallsCompletionProposalComputer sut = _callsCompletionProposalComputer;
         Set<Integer> _second = struct.getSecond();
         Integer _head = IterableExtensions.<Integer>head(_second);

@@ -14,7 +14,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.internal.completion.rcp.chain.ui.ChainPreferencePage;
 import org.mockito.Mockito;
 
-public class PreferenceStoreMock {
+public class ChainPreferenceStoreMock {
 
     public static IPreferenceStore create() {
         final IPreferenceStore store = Mockito.mock(IPreferenceStore.class);

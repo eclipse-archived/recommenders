@@ -121,7 +121,7 @@ class CallCompletionProposalComputerSmokeTest {
 		val ast = cu.reconcile(AST::JLS4, true,true, null,null);
 		assertNotNull(ast)
 		val CallsCompletionProposalComputer sut = new CallsCompletionProposalComputer(new ModelStoreMock(), new JavaElementResolver(),
-            new RecommendersCompletionContextFactoryMock())
+            new RecommendersCompletionContextFactoryMock(), CallsPreferenceStoreMock::create())
 		for(pos : struct.second){
 			val proposals = sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, pos), null);
 			assertEquals("wrong number of proposals", numberOfExpectedProposals, proposals.size())
@@ -138,7 +138,7 @@ class CallCompletionProposalComputerSmokeTest {
 		val ast = cu.reconcile(AST::JLS4, true,true, null,null);
 		assertNotNull(ast)
 		val CallsCompletionProposalComputer sut = new CallsCompletionProposalComputer(new ModelStoreMock(), new JavaElementResolver(),
-            new RecommendersCompletionContextFactoryMock())
+            new RecommendersCompletionContextFactoryMock(), CallsPreferenceStoreMock::create())
         val proposals = sut.computeCompletionProposals(new JavaContentAssistContextMock(cu, struct.second.head), new NullProgressMonitor());
         
         Tuple::newTuple(proposals, sut) as Tuple
