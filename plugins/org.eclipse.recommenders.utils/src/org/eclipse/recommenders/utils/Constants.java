@@ -45,6 +45,8 @@ public interface Constants {
     /** {@value} */
     String R_COORD_INDEX = "org.eclipse.recommenders:index:zip:0.0.0";
     /** {@value} */
+    String R_COORD_CALL = "org.eclipse.recommenders:call:zip:0.0.0";
+    /** {@value} */
     String VERSION = "0.0.1";
 
     /** {@value} */

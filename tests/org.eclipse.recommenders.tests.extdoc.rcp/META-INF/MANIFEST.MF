@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Tests for ExtDoc (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.extdoc.rcp;singleton:=true
-Bundle-Version: 0.5.2.qualifier
+Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Fragment-Host: org.eclipse.recommenders.extdoc.rcp
 Require-Bundle: org.junit4,

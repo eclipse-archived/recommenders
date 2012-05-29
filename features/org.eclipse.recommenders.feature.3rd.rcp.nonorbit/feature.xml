@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit"
       label="Code Recommenders: 3rd Party Dependencies not hosted on Orbit (Incubation)"
-      version="0.5.2.qualifier"
+      version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.eclipse.org/recommenders/">

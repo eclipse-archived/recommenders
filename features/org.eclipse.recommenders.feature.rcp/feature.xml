@@ -14,7 +14,7 @@
 <feature
       id="org.eclipse.recommenders.feature.rcp"
       label="Code Recommenders Developer Tools (Incubation)"
-      version="0.5.2.qualifier"
+      version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders"
       plugin="org.eclipse.recommenders.rcp">
 

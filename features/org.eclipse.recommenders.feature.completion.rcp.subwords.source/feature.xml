@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.completion.rcp.subwords.source"
       label="Code Recommenders: Naive Subwords Completion Sources (Incubation)"
-      version="0.5.2.qualifier"
+      version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.eclipse.org/recommenders/">
