@@ -25,7 +25,10 @@ import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.IntegerExtensions;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
+import org.eclipse.xtext.xbase.lib.LongExtensions;
+import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -184,22 +187,22 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     d.set(_string);
     proposal.apply(d);
     String after = d.get();
-    String _plus = ("doc:\n" + after);
+    String _plus = ObjectExtensions.operator_plus("doc:\n", after);
     StringConcatenation _builder_1 = new StringConcatenation();
     _builder_1.append("public boolean awaitTermination(long");
     boolean _contains = after.contains(_builder_1);
     Assert.assertTrue(_plus, _contains);
-    String _plus_1 = ("doc:\n" + after);
+    String _plus_1 = ObjectExtensions.operator_plus("doc:\n", after);
     StringConcatenation _builder_2 = new StringConcatenation();
     _builder_2.append(", TimeUnit");
     boolean _contains_1 = after.contains(_builder_2);
     Assert.assertTrue(_plus_1, _contains_1);
-    String _plus_2 = ("doc:\n" + after);
+    String _plus_2 = ObjectExtensions.operator_plus("doc:\n", after);
     StringConcatenation _builder_3 = new StringConcatenation();
     _builder_3.append("throws InterruptedException {");
     boolean _contains_2 = after.contains(_builder_3);
     Assert.assertTrue(_plus_2, _contains_2);
-    String _plus_3 = ("doc:\n" + after);
+    String _plus_3 = ObjectExtensions.operator_plus("doc:\n", after);
     StringConcatenation _builder_4 = new StringConcatenation();
     _builder_4.append("return super.awaitTermination(");
     boolean _contains_3 = after.contains(_builder_4);
@@ -232,7 +235,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     final IJavaCompletionProposal plastIndexOf = ((IJavaCompletionProposal) _findFirst_1);
     int _relevance = plastIndexOf.getRelevance();
     int _relevance_1 = pHashCode.getRelevance();
-    boolean _lessThan = (_relevance < _relevance_1);
+    boolean _lessThan = IntegerExtensions.operator_lessThan(_relevance, _relevance_1);
     Assert.assertTrue(_lessThan);
   }
   
@@ -262,7 +265,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     final IJavaCompletionProposal p2 = ((IJavaCompletionProposal) _findFirst_1);
     int _relevance = p1.getRelevance();
     int _relevance_1 = p2.getRelevance();
-    boolean _greaterThan = (_relevance > _relevance_1);
+    boolean _greaterThan = IntegerExtensions.operator_greaterThan(_relevance, _relevance_1);
     Assert.assertTrue(_greaterThan);
   }
   
@@ -435,7 +438,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
     String _get = doc.get();
     int _length = _get.length();
     int _length_1 = code.length();
-    boolean _greaterThan = (_length > _length_1);
+    boolean _greaterThan = IntegerExtensions.operator_greaterThan(_length, _length_1);
     Assert.assertTrue(_string_1, _greaterThan);
   }
   
@@ -493,7 +496,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   
   public void failIfComputerTookTooLong(final CharSequence code) {
     long _elapsedMillis = this.stopwatch.elapsedMillis();
-    boolean _greaterThan = (_elapsedMillis > this.MAX_COMPUTATION_LIMIT_MILLIS);
+    boolean _greaterThan = LongExtensions.operator_greaterThan(_elapsedMillis, this.MAX_COMPUTATION_LIMIT_MILLIS);
     if (_greaterThan) {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("completion took FAR too long: ");

@@ -12,6 +12,7 @@ import org.eclipse.recommenders.tests.jdt.AstUtils;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
+import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.junit.Test;
 
@@ -27,7 +28,8 @@ public class JavaSelectionLocationTest {
     _builder.append("class X{}");
     _builder.newLine();
     final CharSequence code = _builder;
-    Pair<JavaSelectionLocation,Integer> _mappedTo = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(5));
+    Pair<JavaSelectionLocation,Integer> _mappedTo = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(5));
     final List<JavaSelectionLocation> expected = XtendUtils.<JavaSelectionLocation>newListWithFrequency(_mappedTo);
     this.exerciseAndVerify(code, expected);
   }
@@ -37,11 +39,16 @@ public class JavaSelectionLocationTest {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("$pu$blic$ $cl$ass$ $My$class$ $ex$tends$ $Supe$rclass$ $imp$lements$ $Interfac$e1$ {}");
     final CharSequence code = _builder;
-    Pair<JavaSelectionLocation,Integer> _mappedTo = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(9));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_1 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(3));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_2 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.TYPE_DECLARATION_EXTENDS, Integer.valueOf(3));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_3 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(3));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_4 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.TYPE_DECLARATION_IMPLEMENTS, Integer.valueOf(3));
+    Pair<JavaSelectionLocation,Integer> _mappedTo = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(9));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_1 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(3));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_2 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.TYPE_DECLARATION_EXTENDS, Integer.valueOf(3));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_3 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(3));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_4 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.TYPE_DECLARATION_IMPLEMENTS, Integer.valueOf(3));
     final List<JavaSelectionLocation> expected = XtendUtils.<JavaSelectionLocation>newListWithFrequency(_mappedTo, _mappedTo_1, _mappedTo_2, _mappedTo_3, _mappedTo_4);
     this.exerciseAndVerify(code, expected);
   }
@@ -62,8 +69,10 @@ public class JavaSelectionLocationTest {
     _builder.newLine();
     _builder.append("}");
     final CharSequence code = _builder;
-    Pair<JavaSelectionLocation,Integer> _mappedTo = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(2));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_1 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.TYPE_DECLARATION_IMPLEMENTS, Integer.valueOf(1));
+    Pair<JavaSelectionLocation,Integer> _mappedTo = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(2));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_1 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.TYPE_DECLARATION_IMPLEMENTS, Integer.valueOf(1));
     final List<JavaSelectionLocation> expected = XtendUtils.<JavaSelectionLocation>newListWithFrequency(_mappedTo, _mappedTo_1);
     this.exerciseAndVerify(code, expected);
   }
@@ -86,7 +95,8 @@ public class JavaSelectionLocationTest {
     _builder.newLine();
     _builder.append("}");
     final CharSequence code = _builder;
-    Pair<JavaSelectionLocation,Integer> _mappedTo = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER, Integer.valueOf(1));
+    Pair<JavaSelectionLocation,Integer> _mappedTo = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER, Integer.valueOf(1));
     final List<JavaSelectionLocation> expected = XtendUtils.<JavaSelectionLocation>newListWithFrequency(_mappedTo);
     this.exerciseAndVerify(code, expected);
   }
@@ -113,7 +123,8 @@ public class JavaSelectionLocationTest {
     _builder.newLine();
     _builder.append("}");
     final CharSequence code = _builder;
-    Pair<JavaSelectionLocation,Integer> _mappedTo = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.METHOD_BODY, Integer.valueOf(1));
+    Pair<JavaSelectionLocation,Integer> _mappedTo = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.METHOD_BODY, Integer.valueOf(1));
     final List<JavaSelectionLocation> expected = XtendUtils.<JavaSelectionLocation>newListWithFrequency(_mappedTo);
     this.exerciseAndVerify(code, expected);
   }
@@ -128,13 +139,20 @@ public class JavaSelectionLocationTest {
     _builder.newLine();
     _builder.append("}");
     final CharSequence code = _builder;
-    Pair<JavaSelectionLocation,Integer> _mappedTo = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.FIELD_DECLARATION, Integer.valueOf(3));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_1 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.FIELD_DECLARATION, Integer.valueOf(1));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_2 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.FIELD_DECLARATION, Integer.valueOf(2));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_3 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER, Integer.valueOf(1));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_4 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER, Integer.valueOf(4));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_5 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER, Integer.valueOf(5));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_6 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(1));
+    Pair<JavaSelectionLocation,Integer> _mappedTo = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.FIELD_DECLARATION, Integer.valueOf(3));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_1 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.FIELD_DECLARATION, Integer.valueOf(1));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_2 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.FIELD_DECLARATION, Integer.valueOf(2));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_3 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER, Integer.valueOf(1));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_4 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER, Integer.valueOf(4));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_5 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.FIELD_DECLARATION_INITIALIZER, Integer.valueOf(5));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_6 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.TYPE_DECLARATION, Integer.valueOf(1));
     final List<JavaSelectionLocation> expected = XtendUtils.<JavaSelectionLocation>newListWithFrequency(_mappedTo, _mappedTo_1, _mappedTo_2, _mappedTo_3, _mappedTo_4, _mappedTo_5, _mappedTo_6);
     this.exerciseAndVerify(code, expected);
   }
@@ -152,12 +170,18 @@ public class JavaSelectionLocationTest {
     _builder.newLine();
     _builder.append("}");
     final CharSequence code = _builder;
-    Pair<JavaSelectionLocation,Integer> _mappedTo = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.METHOD_DECLARATION, Integer.valueOf(3));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_1 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.METHOD_DECLARATION_RETURN, Integer.valueOf(3));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_2 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.METHOD_DECLARATION, Integer.valueOf(3));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_3 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.METHOD_DECLARATION_PARAMETER, Integer.valueOf(7));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_4 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.METHOD_DECLARATION, Integer.valueOf(1));
-    Pair<JavaSelectionLocation,Integer> _mappedTo_5 = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.METHOD_DECLARATION_THROWS, Integer.valueOf(3));
+    Pair<JavaSelectionLocation,Integer> _mappedTo = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.METHOD_DECLARATION, Integer.valueOf(3));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_1 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.METHOD_DECLARATION_RETURN, Integer.valueOf(3));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_2 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.METHOD_DECLARATION, Integer.valueOf(3));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_3 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.METHOD_DECLARATION_PARAMETER, Integer.valueOf(7));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_4 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.METHOD_DECLARATION, Integer.valueOf(1));
+    Pair<JavaSelectionLocation,Integer> _mappedTo_5 = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.METHOD_DECLARATION_THROWS, Integer.valueOf(3));
     final List<JavaSelectionLocation> expected = XtendUtils.<JavaSelectionLocation>newListWithFrequency(_mappedTo, _mappedTo_1, _mappedTo_2, _mappedTo_3, _mappedTo_4, _mappedTo_5);
     this.exerciseAndVerify(code, expected);
   }
@@ -192,7 +216,8 @@ public class JavaSelectionLocationTest {
     _builder.newLine();
     _builder.append("}");
     final CharSequence code = _builder;
-    Pair<JavaSelectionLocation,Integer> _mappedTo = Pair.<JavaSelectionLocation, Integer>of(JavaSelectionLocation.METHOD_BODY, Integer.valueOf(10));
+    Pair<JavaSelectionLocation,Integer> _mappedTo = ObjectExtensions.<JavaSelectionLocation, Integer>operator_mappedTo(
+      JavaSelectionLocation.METHOD_BODY, Integer.valueOf(10));
     final List<JavaSelectionLocation> expected = XtendUtils.<JavaSelectionLocation>newListWithFrequency(_mappedTo);
     this.exerciseAndVerify(code, expected);
   }

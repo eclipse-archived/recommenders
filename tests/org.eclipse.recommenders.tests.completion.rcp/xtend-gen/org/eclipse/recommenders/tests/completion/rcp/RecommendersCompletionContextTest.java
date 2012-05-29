@@ -153,12 +153,12 @@ public class RecommendersCompletionContextTest {
     Assert.assertEquals(_absent, _enclosingElement);
   }
   
-  private void assertCompletionNode(final IRecommendersCompletionContext sut, final Class<?> type) {
+  private void assertCompletionNode(final IRecommendersCompletionContext sut, final Class<? extends Object> type) {
     final ASTNode node = sut.getCompletionNode();
     this.assertInstanceof(node, type);
   }
   
-  private void assertInstanceof(final ASTNode node, final Class<?> type) {
+  private void assertInstanceof(final ASTNode node, final Class<? extends Object> type) {
     Assert.assertNotNull("completion node is null!", node);
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("unexpected completion node type. Expected ");
@@ -171,7 +171,7 @@ public class RecommendersCompletionContextTest {
     Assert.assertEquals(_string, type, _class_1);
   }
   
-  private void assertCompletionNodeParent(final IRecommendersCompletionContext sut, final Class<?> type) {
+  private void assertCompletionNodeParent(final IRecommendersCompletionContext sut, final Class<? extends Object> type) {
     final ASTNode node = sut.getCompletionNodeParent();
     this.assertInstanceof(node, type);
   }
