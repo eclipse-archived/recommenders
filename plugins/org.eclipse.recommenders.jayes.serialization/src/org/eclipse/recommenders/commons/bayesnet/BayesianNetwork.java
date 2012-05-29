@@ -10,6 +10,11 @@
  */
 package org.eclipse.recommenders.commons.bayesnet;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -77,5 +82,13 @@ public class BayesianNetwork implements Serializable {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public static BayesianNetwork read(InputStream in) throws Exception {
+        return (BayesianNetwork) new ObjectInputStream(in).readObject();
+    }
+
+    public static void write(BayesianNetwork net, OutputStream out) throws Exception {
+        new ObjectOutputStream(out).writeObject(net);
     }
 }

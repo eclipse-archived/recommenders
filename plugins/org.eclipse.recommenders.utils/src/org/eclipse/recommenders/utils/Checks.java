@@ -32,7 +32,16 @@ public class Checks {
         }
     }
 
-    public static void ensureEquals(int actual, int expected, final String message, Object... args) {
+    public static void ensureEquals(final Object value, final Object expected, final String message, Object... args) {
+        final boolean equals = value == null ? expected == null : value.equals(expected);
+        if (!equals) {
+            final String error = format(message, args);
+            final String formattedMessage = format("Expected %s but got %s -- %s ", expected, value, error);
+            throwIllegalArgumentException(formattedMessage);
+        }
+    }
+
+    public static void ensureSame(int actual, int expected, final String message, Object... args) {
         if (actual != expected) {
             final String formattedMessage = format("Expected %s but got %s -- %s ", expected, actual, message);
             throwIllegalArgumentException(formattedMessage);

@@ -25,6 +25,8 @@ import org.eclipse.recommenders.internal.rcp.models.archive.ZipPoolableModelFact
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Closeables;
 
@@ -34,6 +36,7 @@ public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObje
     private static final long MAX_MODEL_SIZE = 64 * 1024 * 1024;
 
     private final JavaElementResolver jdtResolver;
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     public CallNetZipModelFactory(File zip, JavaElementResolver jdtResolver) throws IOException {
         super(zip);
@@ -45,6 +48,13 @@ public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObje
         this.jdtResolver = jdtResolver;
     }
 
+    
+    @Override
+    public void destroyModel(IType key, IObjectMethodCallsNet obj) {
+        super.destroyModel(key, obj);
+        log.debug("Destroying model for '{}'", key.getElementName());
+    }
+    
     @Override
     public boolean hasModel(IType key) {
         return getEntry(key) != null;
@@ -71,7 +81,7 @@ public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObje
 
     @Override
     public IObjectMethodCallsNet createModel(IType key) throws Exception {
-
+        log.debug("Loading model for '{}'", key.getElementName());
         InputStream is = null;
         ObjectInputStream ois = null;
         try {

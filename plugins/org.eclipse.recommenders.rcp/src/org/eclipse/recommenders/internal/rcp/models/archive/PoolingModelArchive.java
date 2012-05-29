@@ -43,7 +43,7 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
 
     private GenericKeyedObjectPool createPool() {
         GenericKeyedObjectPool pool = new GenericKeyedObjectPool(new PoolFactory());
-        pool.setMaxTotal(8);
+        pool.setMaxTotal(10);
         pool.setMaxIdle(3);
         pool.setWhenExhaustedAction(GenericKeyedObjectPool.WHEN_EXHAUSTED_FAIL);
         // run clean up every 5 minutes:
@@ -106,7 +106,7 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
 
         @Override
         public Object makeObject(final Object key) throws Exception {
-            return factory.createModel((K) key);
+;            return factory.createModel((K) key);
         }
 
         @Override

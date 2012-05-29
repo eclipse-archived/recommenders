@@ -10,14 +10,16 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.net;
 
-import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_CONTEXT;
-import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_DEFINITION;
-import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_KIND;
-import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.NODE_ID_PATTERNS;
-import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_DUMMY_DEF;
-import static org.eclipse.recommenders.commons.bayesnet.CallsNetConstants.STATE_TRUE;
-import static org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD;
 import static org.eclipse.recommenders.utils.Checks.ensureEquals;
+import static org.eclipse.recommenders.utils.Constants.NO_METHOD;
+import static org.eclipse.recommenders.utils.Constants.N_NODEID_CALL_GROUPS;
+import static org.eclipse.recommenders.utils.Constants.N_NODEID_CONTEXT;
+import static org.eclipse.recommenders.utils.Constants.N_NODEID_DEF;
+import static org.eclipse.recommenders.utils.Constants.N_NODEID_DEF_KIND;
+import static org.eclipse.recommenders.utils.Constants.N_STATE_DUMMY_DEF;
+import static org.eclipse.recommenders.utils.Constants.N_STATE_FALSE;
+import static org.eclipse.recommenders.utils.Constants.N_STATE_TRUE;
+import static org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -37,6 +39,7 @@ import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
+import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -46,6 +49,46 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+/**
+ * Expected structure:
+ * 
+ * <ul>
+ * <li>every node must have at least <b>2 states</b>!
+ * <li>the first state is supposed to be a dummy state. Call it like {@link Constants#N_STATE_DUMMY_CTX}
+ * <li>the second state <b>may</b> to be a dummy state too if no valuable other state could be found.
+ * </ul>
+ * 
+ * <ul>
+ * <li><b>callgroup node (formerly called pattern node):</b>
+ * <ul>
+ * <li>node name: {@link Constants#N_NODEID_CALL_GROUPS}
+ * <li>state names: no constraints. recommended schema is to use 'p'#someNumber.
+ * </ul>
+ * <li><b>context node:</b>
+ * <ul>
+ * <li>node name: {@link Constants#N_NODEID_CONTEXT}
+ * <li>state names: fully-qualified method names as returned by {@link IMethodName#getIdentifier()}.
+ * </ul>
+ * <li><b>definition node:</b>
+ * <ul>
+ * <li>node name: {@link Constants#N_NODEID_DEF}
+ * <li>state names: fully-qualified names as returned by {@link IMethodName#getIdentifier()} or
+ * {@link IFieldName#getIdentifier()}.
+ * </ul>
+ * <li><b>definition kind node:</b>
+ * <ul>
+ * <li>node name: {@link Constants#N_NODEID_DEF_KIND}
+ * <li>state names: one of {@link DefinitionSite.Kind}, i.e., METHOD_RETURN, NEW, FIELD, PARAMETER, THIS, UNKNOWN, or
+ * ANY
+ * </ul>
+ * <li><b>method call node:</b>
+ * <ul>
+ * <li>node name: {@link IMethodName#getIdentifier()}
+ * <li>state names: {@link Constants#N_STATE_TRUE} or {@link Constants#N_STATE_FALSE}
+ * </ul>
+ * </ul>
+ */
+
 public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     private final ITypeName typeName;
@@ -53,7 +96,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
     private JunctionTreeAlgorithm junctionTreeAlgorithm;
 
     private BayesNet bayesNet;
-    private BayesNode patternNode;
+    private BayesNode callgroupNode;
     private BayesNode contextNode;
     private BayesNode kindNode;
     private BayesNode definitionNode;
@@ -85,13 +128,13 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
             }
             bayesNet.addNode(bayesNode);
 
-            if (node.getIdentifier().equals(NODE_ID_CONTEXT)) {
+            if (node.getIdentifier().equals(N_NODEID_CONTEXT)) {
                 contextNode = bayesNode;
-            } else if (node.getIdentifier().equals(NODE_ID_PATTERNS)) {
-                patternNode = bayesNode;
-            } else if (node.getIdentifier().equals(NODE_ID_KIND)) {
+            } else if (node.getIdentifier().equals(N_NODEID_CALL_GROUPS)) {
+                callgroupNode = bayesNode;
+            } else if (node.getIdentifier().equals(N_NODEID_DEF_KIND)) {
                 kindNode = bayesNode;
-            } else if (node.getIdentifier().equals(NODE_ID_DEFINITION)) {
+            } else if (node.getIdentifier().equals(N_NODEID_DEF)) {
                 definitionNode = bayesNode;
             } else {
                 final VmMethodName vmMethodName = VmMethodName.get(node.getIdentifier());
@@ -159,7 +202,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public void setDefinition(final IMethodName newDefinition) {
-        final String identifier = newDefinition == null ? STATE_DUMMY_DEF : newDefinition.getIdentifier();
+        final String identifier = newDefinition == null ? N_STATE_DUMMY_DEF : newDefinition.getIdentifier();
         if (definitionNode.getOutcomes().contains(identifier)) {
             junctionTreeAlgorithm.addEvidence(definitionNode, identifier);
         }
@@ -171,6 +214,11 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
             final IMethodName rebased = rebaseType == null ? invokedMethod : VmMethodName.rebase(rebaseType,
                     invokedMethod);
             setCalled(rebased);
+        }
+
+        if (rebaseType != null) {
+            final IMethodName no = VmMethodName.rebase(rebaseType, Constants.NO_METHOD);
+            setCalled(no, N_STATE_FALSE);
         }
     }
 
@@ -186,9 +234,13 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public void setCalled(final IMethodName calledMethod) {
+        setCalled(calledMethod, N_STATE_TRUE);
+    }
+
+    public void setCalled(final IMethodName calledMethod, String state) {
         final BayesNode node = bayesNet.getNode(calledMethod.getIdentifier());
         if (node != null) {
-            junctionTreeAlgorithm.addEvidence(node, STATE_TRUE);
+            junctionTreeAlgorithm.addEvidence(node, state);
         }
     }
 
@@ -199,10 +251,9 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
         for (final IMethodName method : callNodes.keySet()) {
             final BayesNode bayesNode = callNodes.get(method);
-
             final boolean isAlreadyUsedAsEvidence = junctionTreeAlgorithm.getEvidence().containsKey(bayesNode);
             if (!isAlreadyUsedAsEvidence) {
-                final int indexForTrue = bayesNode.getOutcomeIndex(STATE_TRUE);
+                final int indexForTrue = bayesNode.getOutcomeIndex(N_STATE_TRUE);
                 final double[] probabilities = junctionTreeAlgorithm.getBeliefs(bayesNode);
                 final double probability = probabilities[indexForTrue];
                 if (probability >= minProbabilityThreshold) {
@@ -245,11 +296,11 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public List<Tuple<String, Double>> getPatternsWithProbability() {
-        final double[] probs = junctionTreeAlgorithm.getBeliefs(patternNode);
+        final double[] probs = junctionTreeAlgorithm.getBeliefs(callgroupNode);
         final List<Tuple<String, Double>> res = Lists.newArrayListWithCapacity(probs.length);
-        final Set<String> outcomes = patternNode.getOutcomes();
+        final Set<String> outcomes = callgroupNode.getOutcomes();
         for (final String outcome : outcomes) {
-            final int probIndex = patternNode.getOutcomeIndex(outcome);
+            final int probIndex = callgroupNode.getOutcomeIndex(outcome);
             final double p = probs[probIndex];
             if (0.01 > p) {
                 continue;
@@ -261,7 +312,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public void setPattern(final String patternName) {
-        junctionTreeAlgorithm.addEvidence(patternNode, patternName);
+        junctionTreeAlgorithm.addEvidence(callgroupNode, patternName);
     }
 
     @Override
@@ -311,7 +362,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         final TreeSet<IMethodName> res = Sets.newTreeSet();
         final Map<BayesNode, String> evidence = junctionTreeAlgorithm.getEvidence();
         for (final BayesNode methodNode : callNodes.values()) {
-            if (evidence.containsKey(methodNode)) {
+            if (evidence.containsKey(methodNode) && evidence.get(methodNode).equals(Constants.N_STATE_TRUE)) {
                 res.add(VmMethodName.get(methodNode.getName()));
             }
         }

@@ -55,7 +55,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 public class ProviderExecutionScheduler {
 
     @Testing("visibility allows to set test values")
-    protected static int RENDER_TIMEOUT_IN_MS = 3000;
+    protected static int RENDER_TIMEOUT_IN_MS = 4000;
     private static final int NUMBER_OF_THREADS = 7;
 
     private static int poolId;

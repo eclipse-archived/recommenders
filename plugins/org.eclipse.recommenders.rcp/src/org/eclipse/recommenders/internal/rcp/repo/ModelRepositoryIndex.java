@@ -45,7 +45,7 @@ import com.google.common.collect.Lists;
 
 public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
 
-    public static final Artifact INDEX_ARTIFACT = newArtifact(COORD_INDEX);
+    public static final Artifact INDEX_ARTIFACT = newArtifact(R_COORD_INDEX);
 
     private Logger log = LoggerFactory.getLogger(getClass());
     private Directory directory;
