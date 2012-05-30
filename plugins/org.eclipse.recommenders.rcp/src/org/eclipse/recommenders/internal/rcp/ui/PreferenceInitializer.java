@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@ import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static final String SERVER_URL = "http://vandyk.st.informatik.tu-darmstadt.de/models/juno/";
+    private static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/juno-2012-05-15/";
 
     @Override
     public void initializeDefaultPreferences() {
