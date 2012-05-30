@@ -11,14 +11,12 @@
 package org.eclipse.recommenders.utils.names;
 
 /**
- * A {@link IPackageName} is simply a special formatted string that expresses a
- * package path.
+ * A {@link IPackageName} is simply a special formatted string that expresses a package path.
  */
-public interface IPackageName extends IName {
+public interface IPackageName extends IName, Comparable<IPackageName> {
 
     /**
-     * @return True, if the package is the default package, i.e. its identifier
-     *         is empty.
+     * @return True, if the package is the default package, i.e. its identifier is empty.
      */
     public boolean isDefaultPackage();
 

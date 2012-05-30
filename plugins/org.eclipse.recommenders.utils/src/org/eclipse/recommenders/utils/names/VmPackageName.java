@@ -11,8 +11,10 @@
 package org.eclipse.recommenders.utils.names;
 
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.MapMaker;
+import com.google.common.collect.Sets;
 
 public class VmPackageName implements IPackageName {
 
@@ -24,6 +26,17 @@ public class VmPackageName implements IPackageName {
         if (res == null) {
             res = new VmPackageName(vmPackageName);
             index.put(vmPackageName, res);
+        }
+        return res;
+    }
+
+    /**
+     * @return the packages of the given types as returned by {@link ITypeName#getPackage()}
+     */
+    public static Set<IPackageName> packages(Set<ITypeName> types) {
+        Set<IPackageName> res = Sets.newTreeSet();
+        for (ITypeName type : types) {
+            res.add(type.getPackage());
         }
         return res;
     }
@@ -47,7 +60,7 @@ public class VmPackageName implements IPackageName {
         return getIdentifier().isEmpty();
     }
 
-    public int compareTo(final IName o) {
+    public int compareTo(final IPackageName o) {
         return getIdentifier().compareTo(o.getIdentifier());
     }
 
@@ -55,4 +68,5 @@ public class VmPackageName implements IPackageName {
     public String toString() {
         return getIdentifier();
     }
+
 }
