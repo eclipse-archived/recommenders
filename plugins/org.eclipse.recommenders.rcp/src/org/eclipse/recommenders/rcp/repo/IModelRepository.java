@@ -54,4 +54,9 @@ public interface IModelRepository {
 
     Optional<Artifact> findLowestVersion(Artifact model);
 
+    /**
+     * @return the location of this model repository
+     */
+    File getLocation();
+
 }

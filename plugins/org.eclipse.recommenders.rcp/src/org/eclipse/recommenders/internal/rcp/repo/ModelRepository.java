@@ -308,4 +308,9 @@ public class ModelRepository implements IModelRepository {
     public String getRemote() {
         return remote.getUrl();
     }
+
+    @Override
+    public File getLocation() {
+        return location;
+    }
 }

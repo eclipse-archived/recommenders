@@ -16,7 +16,15 @@ import static org.eclipse.recommenders.rcp.RecommendersPlugin.P_REPOSITORY_URL;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.recommenders.internal.rcp.repo.ClearModelRepositoryJob;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.rcp.repo.ModelRepositoryService;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -32,6 +40,18 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
         addField(new StringFieldEditor(P_REPOSITORY_URL, "Model Repository:", getFieldEditorParent()));
         addField(new BooleanFieldEditor(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD, "Enable auto-download.",
                 getFieldEditorParent()));
+
+        Button clean = new Button(getFieldEditorParent(), SWT.PUSH);
+        clean.setText("Clear Repository");
+        GridData data = new GridData(SWT.END, SWT.CENTER, false, false);
+        data.horizontalSpan = 2;
+        clean.setLayoutData(data);
+        clean.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                new ClearModelRepositoryJob(ModelRepositoryService.getRepository()).schedule();
+            }
+        });
     }
 
     @Override
