@@ -78,12 +78,39 @@ public class Artifacts {
         return sb.toString();
     }
 
+    /**
+     * @return the repository-relative path to this artifact.
+     */
     public static File asFile(Artifact pom) {
         String gid = pom.getGroupId().replace('.', '/');
         String path = String.format("%s/%s/%s/%s", gid, pom.getArtifactId(), pom.getVersion(), toArtifactFileName(pom));
         return new File(path);
     }
 
+    public static String toArtifactFileName(Artifact artifact) {
+        String artifactId = artifact.getArtifactId();
+        String version = artifact.getVersion();
+        String classifier = artifact.getClassifier();
+        String extension = artifact.getExtension();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(artifactId).append('-').append(version);
+        if (!isEmpty(classifier)) {
+            sb.append('-').append(classifier);
+        }
+        sb.append('.').append(extension);
+        return sb.toString();
+    }
+
+    /**
+     * 
+     * @param reverseDomainName
+     *            e.g., org.eclipse.recommenders.rcp
+     * @return a best-guess group id that includes the first package under a known public suffix, e.g.,
+     *         org.eclipse.recommenders for org.eclipse.recommenders.rcp
+     * 
+     * @see InternetDomainName#isUnderPublicSuffix()
+     */
     public static String guessGroupId(String reverseDomainName) {
         String[] segments = split(reverseDomainName, ".");
         removeSlashes(segments);
@@ -111,21 +138,6 @@ public class Artifacts {
         }
     }
 
-    public static String toArtifactFileName(Artifact artifact) {
-        String artifactId = artifact.getArtifactId();
-        String version = artifact.getVersion();
-        String classifier = artifact.getClassifier();
-        String extension = artifact.getExtension();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(artifactId).append('-').append(version);
-        if (!isEmpty(classifier)) {
-            sb.append('-').append(classifier);
-        }
-        sb.append('.').append(extension);
-        return sb.toString();
-    }
-
     public static Artifact pom(Artifact a) {
         DefaultArtifact pom = new DefaultArtifact(a.getGroupId(), a.getArtifactId(), null, "pom", a.getVersion());
         return pom;
@@ -138,7 +150,7 @@ public class Artifacts {
     }
 
     /**
-     * returns an exact copy of the given artifact with a new extension attribute
+     * @return an exact copy of the given artifact coordinate with the new extension attribute
      */
     public static Artifact newExtension(Artifact a, String extension) {
         DefaultArtifact res = new DefaultArtifact(a.getGroupId(), a.getArtifactId(), a.getClassifier(), extension,
@@ -146,6 +158,10 @@ public class Artifacts {
         return res;
     }
 
+    /**
+     * Finds the pom artifact in the given directory and parses its contents. Neither file nor classifier are set
+     * (defaults only).
+     */
     public static Optional<Artifact> findCoordinate(final File f) {
         try {
             final File pom = computePomFileLocation(f);
@@ -161,14 +177,6 @@ public class Artifacts {
         }
     }
 
-    public static File computePomFileLocation(final File artifactFile) {
-        final String version = artifactFile.getParentFile().getName();
-        final String artifactId = artifactFile.getParentFile().getParentFile().getName();
-        final String pomFile = String.format("%s-%s.pom", artifactId, version);
-        final File pom = new File(artifactFile.getParentFile(), pomFile);
-        return pom;
-    }
-
     public static Optional<Artifact> findCoordinate(final JarFile jarFile) {
         final File f = new File(jarFile.getName());
         Optional<Artifact> opt = findCoordinate(f);
@@ -179,10 +187,24 @@ public class Artifacts {
     }
 
     /**
-     * @return artifact containing "groupid:artifactid:version" read from pom file
+     * @return a handle on the pom file in the current directory.
      */
-    public static Artifact extractCoordinateFromPom(final File pom) throws Exception {
-        Document doc = parsePom(pom);
+    public static File computePomFileLocation(final File artifactFile) {
+        final String version = artifactFile.getParentFile().getName();
+        final String artifactId = artifactFile.getParentFile().getParentFile().getName();
+        final String pomFile = String.format("%s-%s.pom", artifactId, version);
+        final File pom = new File(artifactFile.getParentFile(), pomFile);
+        return pom;
+    }
+
+    /**
+     * @param pomFile
+     *            the pom file - must exist
+     * @return artifact containing "groupid:artifactid:version" read from pom file
+     * 
+     */
+    public static Artifact extractCoordinateFromPom(final File pomFile) throws Exception {
+        Document doc = parsePom(pomFile);
         final String groupId = getGroupId(doc);
         final String artifactId = getArtifactId(doc);
         final String version = getVersion(doc);
