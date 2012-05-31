@@ -10,15 +10,10 @@
  */
 package org.eclipse.recommenders.internal.rcp.repo;
 
-import static org.apache.commons.io.FileUtils.listFiles;
-import static org.apache.commons.io.filefilter.DirectoryFileFilter.DIRECTORY;
-
 import java.io.File;
-import java.util.Collection;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -42,11 +37,11 @@ public class ClearModelRepositoryJob extends Job {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         monitor.beginTask("", IProgressMonitor.UNKNOWN);
-        Collection<File> zips = listFiles(repo.getLocation(), new SuffixFileFilter(".zip"), DIRECTORY);
-        for (File zip : zips) {
-            if (!zip.delete()) {
-                zip.deleteOnExit();
-            }
+        File location = repo.getLocation();
+        try {
+            FileUtils.deleteQuietly(location);
+            FileUtils.forceDeleteOnExit(location);
+        } catch (IOException e) {
         }
         monitor.done();
         return Status.OK_STATUS;

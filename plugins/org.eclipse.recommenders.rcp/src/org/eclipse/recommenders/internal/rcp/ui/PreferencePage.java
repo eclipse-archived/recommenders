@@ -42,7 +42,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
                 getFieldEditorParent()));
 
         Button clean = new Button(getFieldEditorParent(), SWT.PUSH);
-        clean.setText("Clear Repository");
+        clean.setText("Clear Caches");
         GridData data = new GridData(SWT.END, SWT.CENTER, false, false);
         data.horizontalSpan = 2;
         clean.setLayoutData(data);
