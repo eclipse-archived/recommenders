@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -84,10 +85,14 @@ public class MemberGsonZipPoolableModelFactory<T> extends ZipPoolableModelFactor
 
     @Override
     public T createModel(IMember key) throws Exception {
-        ZipEntry entry = getEntry(key);
-        InputStream is = zip.getInputStream(entry);
-        String data = new String(ByteStreams.toByteArray(is));
-        T res = GsonUtil.deserialize(data, type);
-        return res;
+        InputStream is = null;
+        try {
+            ZipEntry entry = getEntry(key);
+            is = zip.getInputStream(entry);
+            String data = new String(ByteStreams.toByteArray(is));
+            return GsonUtil.deserialize(data, type);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
     }
 }

@@ -19,6 +19,7 @@ import java.util.zip.ZipEntry;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.internal.rcp.models.archive.ZipPoolableModelFactory;
+import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
@@ -51,22 +52,27 @@ public final class OverridesZipModelFactory extends ZipPoolableModelFactory<ITyp
 
     @Override
     public ClassOverridesNetwork createModel(IType key) throws IOException {
-        ITypeName typeName = toRecName(key);
-        InputStream is = zip.getInputStream(getEntry(key));
+        InputStream is = null;
+        try {
+            ITypeName typeName = toRecName(key);
+            is = zip.getInputStream(getEntry(key));
 
-        final Type listType = new TypeToken<List<ClassOverridesObservation>>() {
-        }.getType();
-        final List<ClassOverridesObservation> observations = GsonUtil.deserialize(is, listType);
-        if (observations.size() == 0) {
-            // XXX sanitize bad models!
-            // we still need to ensure minimum quality for models .
-            observations.add(new ClassOverridesObservation());
+            final Type listType = new TypeToken<List<ClassOverridesObservation>>() {
+            }.getType();
+            final List<ClassOverridesObservation> observations = GsonUtil.deserialize(is, listType);
+            if (observations.size() == 0) {
+                // XXX sanitize bad models!
+                // we still need to ensure minimum quality for models .
+                observations.add(new ClassOverridesObservation());
+            }
+            final ClassOverridesNetworkBuilder b = new ClassOverridesNetworkBuilder(typeName, observations);
+            b.createPatternsNode();
+            b.createMethodNodes();
+            final ClassOverridesNetwork network = b.build();
+            return network;
+        } finally {
+            IOUtils.closeQuietly(is);
         }
-        final ClassOverridesNetworkBuilder b = new ClassOverridesNetworkBuilder(typeName, observations);
-        b.createPatternsNode();
-        b.createMethodNodes();
-        final ClassOverridesNetwork network = b.build();
-        return network;
     }
 
     @Override

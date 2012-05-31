@@ -48,13 +48,12 @@ public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObje
         this.jdtResolver = jdtResolver;
     }
 
-    
     @Override
     public void destroyModel(IType key, IObjectMethodCallsNet obj) {
         super.destroyModel(key, obj);
         log.debug("Destroying model for '{}'", key.getElementName());
     }
-    
+
     @Override
     public boolean hasModel(IType key) {
         return getEntry(key) != null;
@@ -83,16 +82,13 @@ public class CallNetZipModelFactory extends ZipPoolableModelFactory<IType, IObje
     public IObjectMethodCallsNet createModel(IType key) throws Exception {
         log.debug("Loading model for '{}'", key.getElementName());
         InputStream is = null;
-        ObjectInputStream ois = null;
         try {
             is = zip.getInputStream(getEntry(key));
-            ois = new ObjectInputStream(is);
-            BayesianNetwork net = (BayesianNetwork) ois.readObject();
+            BayesianNetwork net = BayesianNetwork.read(is);
             ITypeName rKey = toRecName(key);
             return new BayesNetWrapper(rKey, net);
         } finally {
             Closeables.closeQuietly(is);
-            Closeables.closeQuietly(ois);
         }
     }
 }
