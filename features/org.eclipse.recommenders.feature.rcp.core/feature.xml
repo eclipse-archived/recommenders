@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.feature.rcp.core"
-      label="Code Recommenders: RCP Core (Incubation)"
+      label="Code Recommenders: Core Runtime"
       version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

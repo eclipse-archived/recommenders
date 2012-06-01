@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Completion API for Eclipse 3.8 (Incubation)
+Bundle-Name: Code Recommenders: Intelligent Completion Extension for Eclipse 3.8
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.e38;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders

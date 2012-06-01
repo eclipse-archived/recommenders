@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.recommenders.feature.completion.rcp.chain.source"
-      label="Code Recommenders: Chain Completion Sources (Incubation)"
+      label="Code Recommenders: Chain Completion Sources"
       version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

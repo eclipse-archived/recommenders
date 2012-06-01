@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.recommenders.feature.rdk"
-      label="Code Recommenders: Recommender Developer Kit (Incubation)"
+      label="Code Recommenders: Recommender Developer Kit"
       version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

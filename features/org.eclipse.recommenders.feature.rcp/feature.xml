@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.feature.rcp"
-      label="Code Recommenders Developer Tools (Incubation)"
+      label="Code Recommenders Developer Tools"
       version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders"
       plugin="org.eclipse.recommenders.rcp">

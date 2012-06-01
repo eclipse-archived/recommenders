@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Tests RCP (Incubation)
+Bundle-Name: Code Recommenders: Tests RCP
 Bundle-SymbolicName: org.eclipse.recommenders.tests.rcp
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
@@ -23,5 +23,8 @@ Require-Bundle: org.eclipse.ui,
  org.mockito,
  org.hamcrest,
  org.objenesis,
- org.jboss.netty;bundle-version="3.0.0"
+ org.jboss.netty;bundle-version="3.0.0",
+ org.eclipse.recommenders.jayes;bundle-version="1.0.0",
+ org.eclipse.recommenders.jayes.serialization;bundle-version="1.0.0",
+ org.eclipse.recommenders.completion.rcp.calls;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

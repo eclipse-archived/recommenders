@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.feature.extdoc.rcp"
-      label="Code Recommenders: ExtDoc Client (Incubation)"
+      label="Code Recommenders: Extended Documentation Platform"
       version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

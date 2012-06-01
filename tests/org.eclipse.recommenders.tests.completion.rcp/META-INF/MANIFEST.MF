@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Codecompletion Test Suite (Incubation)
+Bundle-Name: Code Recommenders: Codecompletion Test Suite
 Bundle-SymbolicName: org.eclipse.recommenders.tests.completion.rcp;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders

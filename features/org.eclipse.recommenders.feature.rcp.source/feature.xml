@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.feature.rcp.source"
-      label="Code Recommenders Developer Tools Sources (Incubation)"
+      label="Code Recommenders Developer Tools Sources"
       version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

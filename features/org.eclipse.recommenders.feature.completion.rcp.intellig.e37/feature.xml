@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.feature.completion.rcp.intellig.e37"
-      label="Code Recommenders: Intelligent Code Completion Eclipse 3.7 (Incubation)"
+      label="Code Recommenders: Intelligent Completion Eclipse 3.7"
       version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 

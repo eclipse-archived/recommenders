@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.feature.completion.rcp.chain"
-      label="Code Recommenders: Chain Completion (Incubation)"
+      label="Code Recommenders: Chain Completion"
       version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
