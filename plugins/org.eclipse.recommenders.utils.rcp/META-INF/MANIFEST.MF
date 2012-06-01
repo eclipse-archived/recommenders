@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: RCP Utils
+Bundle-Name: Code Recommenders: IDE Utils
 Bundle-SymbolicName: org.eclipse.recommenders.utils.rcp;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin
