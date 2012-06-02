@@ -106,7 +106,8 @@ public class LCSSTest {
     }
 
     @Test
-    public void testSubsequences() {
-        LCSS.findSequences("setdatedata", "dat");
+    public void testSubsequence01() {
+        assertEquals(1, LCSS.findSequences("createTempFile", "tmp").size());
     }
+
 }

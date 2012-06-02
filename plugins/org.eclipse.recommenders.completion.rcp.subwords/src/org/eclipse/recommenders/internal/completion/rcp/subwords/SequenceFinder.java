@@ -47,8 +47,8 @@ public class SequenceFinder {
         for (pToken = 0; pToken < token.length(); pToken++) {
             char t = token.charAt(pToken);
 
-            boolean mustmatch = false;
             for (int[] activeSequence : curSequences) {
+                boolean mustmatch = false;
                 int startIndex = activeSequence.length == 0 ? 0 : activeSequence[activeSequence.length - 1] + 1;
 
                 for (pCompletion = startIndex; pCompletion < completion.length(); pCompletion++) {
