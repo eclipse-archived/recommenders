@@ -12,7 +12,6 @@
 	<packaging>eclipse-repository</packaging>
     
     <properties>
-        <p2repo-zip-path>${project.build.directory}/${project.artifactId}.zip</p2repo-zip-path>
         <signer-input-directory>/home/data/httpd/download-staging.priv/technology/recommenders</signer-input-directory>
         <signing-plugin-version>1.0.5</signing-plugin-version>
     </properties>
@@ -53,7 +52,7 @@
              <execution>
                <id>pack</id>
                <configuration>
-                 <inputFile>${project.build.directory}/${project.artifactId}.zip</inputFile>
+                 <inputFile>${project.build.directory}/${project.artifactId}-${project.version}.zip</inputFile>
                </configuration>
                <phase>integration-test</phase>
                <goals>
@@ -63,7 +62,7 @@
              <execution>
                <id>sign</id>
                <configuration>
-                 <inputFile>${project.build.directory}/packed/${project.artifactId}.zip</inputFile>
+                 <inputFile>${project.build.directory}/packed/${project.artifactId}-${project.version}.zip</inputFile>
                  <signerInputDirectory>${signer-input-directory}</signerInputDirectory>
                </configuration>
                <phase>integration-test</phase>
