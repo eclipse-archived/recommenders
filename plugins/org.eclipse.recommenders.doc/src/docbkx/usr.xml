@@ -85,10 +85,62 @@
                 are not supported as no data was available at generation time. For a detailed list of which libraries or
                 packages are supported, check the reports section on the Code Recommenders home page.
             </para>
+            <section>
+                <title>Configuration
+                </title>
+                <para>
+                    Code Recommenders intelligent completion engines can be enabled and disabled in its preference page:
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="media/figures/usr/completion/calls-preferences.png" />
+                        </imageobject>
+                        <caption>
+                            <para>Call Completion Preference Page
+                            </para>
+                        </caption>
+                    </mediaobject>
+                    Furthermore, how many proposals Recommenders computes as well as some recommendation model
+                    information can be configured here too.
+                    <variablelist>
+                        <varlistentry>
+                            <term></term>
+                            <listitem>
+                                <para></para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                </para>
+            </section>
         </section>
         <section>
             <title>Intelligent Code Templates (single-object, no-order)</title>
             <para>
+                Code templates are helpful when code is needed to iterate over an array of objects or when creating a
+                getter for a property of a class. But code templates
+                <emphasis>really</emphasis>
+                shine when developers have to use APIs they are not very familiar with. Then, code templates serve as
+                additional documentation that quickly shows how an API can be used and save developers lot of time
+                otherwise needed for reading API documentation.
+            </para>
+            <para>
+                Eclipse maintains more than 70 of such Java code templates - ranging from simple
+                <code>for</code>
+                loops up to complex API usage patterns like creating an SWT
+                <classname>Button</classname>
+                or
+                <classname>Composite</classname>
+                . Unfortunately, developing templates for API usage patterns is
+                <emphasis>extremely</emphasis>
+                costly and tedious - and in consequence only few templates for few APIs exist.
+            </para>
+            <para>
+                This is where Code Recommenders comes in again. In the previous section we showed how to recommend
+                single methods to invoke on an object. Templates completion takes this to the next level by recommending
+                not only
+                <emphasis>single</emphasis>
+                methods but complete
+                <emphasis>sets</emphasis>
+                of methods:
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="media/figures/usr/completion/templates-astparser.png" />
@@ -100,6 +152,8 @@
                         </para>
                     </caption>
                 </mediaobject>
+                As you probably have noticed in the example above, Recommenders' templates completion can be applied on
+                existing variables to complete existing usages but also works on type names as the example below shows:
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="media/figures/usr/completion/templates-tableviewer01.png" />
@@ -111,22 +165,40 @@
                         </para>
                     </caption>
                 </mediaobject>
+                The final result after applying the template looks as follows:
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="media/figures/usr/completion/templates-tableviewer02.png" />
                     </imageobject>
                     <caption>
                         <para>
-                            Resulting Code Snippet for JFace
+                            Resulting code snippet for JFace
                             <classname>TableViewer</classname>
                         </para>
                     </caption>
                 </mediaobject>
             </para>
+            <warning>
+                <para>The generated template proposals do not reflect method execution ordering constraints, i.e., the
+                    order of the proposed method may have to be changed manually after insertion.
+                </para>
+            </warning>
+            <section>
+                <title>Configuration
+                </title>
+                <para> Template Completion yet has no configurable options. Note that Templates Completion can not be
+                    run on the default content assist. As soon as it detects it was configured for default content
+                    assist it immediately deactivates itself. This decision was made because of performance reasons.
+                    Computing likely code snippets is a computation-intensive task developers should trigger explicitly.
+                </para>
+            </section>
         </section>
         <section>
             <title>Intelligent Overrides Completion</title>
             <para>
+                Similar to recommending method calls, one can also recommend which methods a developer should typically
+                override. This is what Recommenders intelligent overrides completion does. We'll discuss class extension
+                patterns in more detail in the extended documentatiton chapter below.
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="media/figures/usr/completion/overrides-dialog.png" />
@@ -139,6 +211,14 @@
                     </caption>
                 </mediaobject>
             </para>
+            <section>
+                <title>Configuration
+                </title>
+                <para>Intelligent Overrides Completion yet has no configurable options. It is enabled and disabled
+                    together with Recommenders Call Completion, i.e., deactivating Code Recommenders content assist
+                    category in JDT, will automatically disable Intelligent Overrides Completion.
+                </para>
+            </section>
         </section>
         <section>
             <title>Subwords Completion</title>
@@ -212,10 +292,10 @@
             <section>
                 <title>Configuration</title>
                 <para>
-                    Note that Subwords cannot be used together with JDT's or Mylyn's content assist engines. It actually
-                    disables itself immediately as soon as it detects that either Mylyn or JDT is enabled on the default
-                    content assist list. To use Subwords on the default (first) content assist list, you have to
-                    explicitly disable JDT and Mylyn and enable Subwords via
+                    Note that Subwords can not be used together with JDT's or Mylyn's content assist engines. It
+                    actually disables itself immediately as soon as it detects that either Mylyn or JDT is enabled on
+                    the default content assist list. To use Subwords on the default (first) content assist list, you
+                    have to explicitly disable JDT and Mylyn and enable Subwords via
                     <guimenu>Preferences</guimenu>
                     »
                     <guimenuitem>Java</guimenuitem>
@@ -236,7 +316,7 @@
                             <imagedata fileref="media/figures/usr/completion/subwords-preferences.png" />
                         </imageobject>
                         <caption>
-                            <para> Subwords Preferencepage: Configuration Shortcut
+                            <para> Subwords Preference Page: Configuration Shortcut
                             </para>
                         </caption>
                     </mediaobject>
@@ -379,15 +459,45 @@
         <para />
         <section>
             <title>Subclassing Directives Provider</title>
-            <para />
+            <para>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/usr/extdoc/class-overrides.png" />
+                    </imageobject>
+                    <caption>
+                        <para>
+                        </para>
+                    </caption>
+                </mediaobject>
+            </para>
         </section>
         <section>
             <title>Self-calls Directives Provider</title>
-            <para />
+            <para>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/usr/extdoc/method-self.png" />
+                    </imageobject>
+                    <caption>
+                        <para>
+                        </para>
+                    </caption>
+                </mediaobject>
+            </para>
         </section>
         <section>
             <title>Example Code Snippets Provider</title>
-            <para />
+            <para>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="media/figures/usr/extdoc/snippets.png" />
+                    </imageobject>
+                    <caption>
+                        <para>
+                        </para>
+                    </caption>
+                </mediaobject>
+            </para>
         </section>
         <section>
             <title>Calls Recommendation Provider</title>
@@ -396,12 +506,15 @@
     </section>
     <section>
         <title>Snipmatch</title>
-        <para>In progress.</para>
+        <para>Snipmatch is currently moving in an not ready for 1.0.0.</para>
     </section>
     <section>
-        <title>Local Code-search
+        <title>Local Code-Search
         </title>
-        <para>In progress.</para>
+        <para>Recommenders' local code-search engine is also not ready for 1.0.0., and thus, will not be part of the
+            Juno release. However, first prototype are available and can be installed from the Recommenders' lab
+            channel.
+        </para>
     </section>
     <section>
         <title>The Model Repository</title>
