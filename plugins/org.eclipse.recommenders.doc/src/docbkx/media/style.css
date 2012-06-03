@@ -116,12 +116,20 @@ a.command-link img {
     vertical-align: middle;
 }
 
-
 img {
-  margin-top:3px;
-  margin-bottom:3px;
-  margin-left:30px;
-  border:1px solid #444444;
+	display: block;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	-moz-box-shadow: 3px 3px 20px #333;
+	-webkit-box-shadow: 3px 3px 20px #333;
+	box-shadow: 3px 3px 20px #333;
+}
+
+div.caption p {
+    text-align: center;
+    font-weight: bold;
 }
 
 
@@ -133,6 +141,10 @@ div.navfooter {
     display: none;
 }
 
+.package {
+	font-family: "Courier New";
+	font-weight: normal;
+}
 .term {
 	font-family: "Courier New";
 	font-weight: normal;
