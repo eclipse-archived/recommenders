@@ -85,8 +85,15 @@ public class OverridesCompletionProposalComputer implements IJavaCompletionPropo
         } catch (final Exception e) {
             RecommendersPlugin.logError(e, "Exception caught in overrides completion proposal computer.");
             return Collections.emptyList();
+        } finally {
+            releaseModel();
         }
         return proposals;
+    }
+
+    private void releaseModel() {
+        if (model != null)
+            modelStore.releaseModel(model);
     }
 
     private void initializeContexts(final ContentAssistInvocationContext context) {
