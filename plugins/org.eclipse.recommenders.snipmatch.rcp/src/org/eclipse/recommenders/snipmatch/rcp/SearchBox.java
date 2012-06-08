@@ -105,8 +105,8 @@ public class SearchBox extends ClientSwitcher {
                         SWT.ICON_ERROR | SWT.OK | SWT.APPLICATION_MODAL);
 
                 popup.setText("SnipMatch");
-                popup.setMessage("Searching from independent source files is not supported at this time. Please " +
-                		"make sure the source file is part of an open Java project.");
+                popup.setMessage("Searching from independent source files is not supported at this time. Please "
+                        + "make sure the source file is part of an open Java project.");
                 popup.open();
 
                 return;
