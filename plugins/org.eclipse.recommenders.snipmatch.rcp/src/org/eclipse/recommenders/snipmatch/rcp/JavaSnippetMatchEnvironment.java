@@ -336,21 +336,15 @@ public class JavaSnippetMatchEnvironment extends SnippetMatchEnvironment {
 	 * @return An appropriate anchor point for the search box based on the current caret location.
 	 */
 	public Point getSearchBoxAnchor(int searchBoxHeight) {
-		
 		if (clean) {
-
 			// Initially, return the point right below the caret.
 			return styledText.toDisplay(styledText.getCaret().getLocation().x,
 					styledText.getCaret().getLocation().y + styledText.getCaret().getSize().y);
 		}
 		else {
-
-			/* For all subsequent queries, simply return a vertical offset based on the end of the inserted snippet.
-			 * The search box is also restricted from moving past the bottom of the editor window.
-			 */
+			// For all subsequent queries, simply return a vertical offset based on the end of the inserted snippet.
 			int endOfSnippet = styledText.getLinePixel(lastLine + 1) + 2;
-			int endOfWindow = styledText.getSize().y - searchBoxHeight;
-			return styledText.toDisplay(0, Math.min(endOfSnippet, endOfWindow));
+			return styledText.toDisplay(0, endOfSnippet);
 		}
 	}
 
@@ -665,6 +659,36 @@ public class JavaSnippetMatchEnvironment extends SnippetMatchEnvironment {
 		applyMatch(match);
 	}
 
+	/**
+	 * Build MatchNode overview text for search result display module
+	 * 
+	 * @param node
+	 * @return
+	 * 
+	 */
+	public Object evaluateMatchNodeOverview(EffectMatchNode node) {
+		String overViewText = (String) evaluateMatchNode(node);
+		//Helper content, usually classes, ignore imports here
+		String helper = null;
+		int start = node.getEffect().getCode().indexOf("${helper}");
+		int end = node.getEffect().getCode().indexOf("${endHelper}");
+		if(start>-1 && end>-1 && end>start+9){
+			helper = node.getEffect().getCode().substring(start+9, end);
+		}
+		
+		//Remove cursor label from overview text
+		if(overViewText !=null )
+			overViewText = overViewText.replace("/*${cursor}*/", "");
+		
+		//Add helper classes tips
+		if(helper != null && !helper.isEmpty())
+			overViewText = overViewText +"\r\n Helper Classes:\r\n"+ helper;
+		newImports.clear();
+		newHelpers.clear();
+		codeAssistCache.clear();
+		return overViewText;
+	}
+	
 	@Override
 	protected void applyResult(Object result, Effect effect) throws Exception {
 
@@ -732,7 +756,7 @@ public class JavaSnippetMatchEnvironment extends SnippetMatchEnvironment {
 		doc.getLineLength(destEndLine);
 		
 		String formattedCode = workingDoc.get(srcStart, srcEnd - srcStart);
-		
+	
 		// This version of the text edit still contains the special markers, so we can keep working with them.
 		ReplaceEdit markerCodeEdit = new ReplaceEdit(destStart, destEnd - destStart,
 				formattedCode);
@@ -792,7 +816,7 @@ public class JavaSnippetMatchEnvironment extends SnippetMatchEnvironment {
 					if (siblings.length == 0) cloneUnit.createType(source, null, false, null);
 					else cloneUnit.createType(source, siblings[0], false, null);
 				}
-				catch (Exception e) {}
+				catch (Exception e) {}			
 			}
 		}
 		
