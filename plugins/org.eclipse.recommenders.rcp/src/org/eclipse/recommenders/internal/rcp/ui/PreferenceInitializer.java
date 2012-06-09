@@ -19,7 +19,7 @@ import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/juno-2012-05-15/";
+    private static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/juno/";
 
     @Override
     public void initializeDefaultPreferences() {
