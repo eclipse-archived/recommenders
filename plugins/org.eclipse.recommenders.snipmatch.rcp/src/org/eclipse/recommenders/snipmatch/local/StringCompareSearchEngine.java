@@ -28,6 +28,7 @@ import org.eclipse.recommenders.snipmatch.core.Effect;
 import org.eclipse.recommenders.snipmatch.core.EffectMatchNode;
 import org.eclipse.recommenders.snipmatch.core.EffectParameter;
 import org.eclipse.recommenders.snipmatch.core.MatchNode;
+import org.eclipse.recommenders.snipmatch.core.SummaryFileMap;
 import org.eclipse.recommenders.snipmatch.preferences.PreferenceConstants;
 import org.eclipse.recommenders.snipmatch.rcp.SnipMatchPlugin;
 import org.eclipse.recommenders.snipmatch.search.SnipMatchSearchEngine;
@@ -202,14 +203,4 @@ class CreateIndexOperation implements IRunnableWithProgress {
         monitor.done();
     }
 
-}
-
-class SummaryFileMap {
-    public String summary;
-    public String filePath;
-
-    public SummaryFileMap(String s, String file) {
-        this.summary = s;
-        this.filePath = file;
-    }
 }
