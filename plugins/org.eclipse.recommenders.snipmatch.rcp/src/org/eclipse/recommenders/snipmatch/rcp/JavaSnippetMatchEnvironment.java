@@ -189,7 +189,8 @@ public class JavaSnippetMatchEnvironment extends SnippetMatchEnvironment {
         clean = true;
 
         // The styled text helps us obtain actual visual coordinates.
-        styledText = (StyledText) editor.getAdapter(Control.class);
+        if (editor != null)
+            styledText = (StyledText) editor.getAdapter(Control.class);
     }
 
     @Override

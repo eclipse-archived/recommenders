@@ -245,56 +245,6 @@ public class SnipMatchPlugin extends AbstractUIPlugin implements IStartup {
     }
 
     public void showSubmitBox(final Effect effect) {
-
-        if (workClient.isLoggedIn()) {
-
-            if (workClient.getUsername().equals("guest")) {
-
-                showRegisterDialog();
-                return;
-            }
-
-            submitBox.show(effect);
-        } else {
-
-            IEclipsePreferences prefs = new InstanceScope().getNode(PLUGIN_ID);
-            String username = prefs.get("login.username", "guest");
-            String password = prefs.get("login.password", "guest");
-
-            workClient.startLogin(username, password, new ILoginListener() {
-
-                @Override
-                public void loginSucceeded() {
-
-                    PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-
-                        @Override
-                        public void run() {
-
-                            if (workClient.getUsername().equals("guest")) {
-                                showRegisterDialog();
-                            } else {
-                                submitBox.show(effect);
-                                checkUpdates();
-                            }
-                        }
-                    });
-                }
-
-                @Override
-                public void loginFailed(String error) {
-
-                    PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-
-                        @Override
-                        public void run() {
-
-                            loginBox.show("guest", "guest", null, null);
-                        }
-                    });
-                }
-            });
-        }
     }
 
     public void showProfileBox() {
