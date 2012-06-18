@@ -5,8 +5,8 @@ Bundle-SymbolicName: org.eclipse.recommenders.tests.snipmatch.rcp
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.recommenders.snipmatch;bundle-version="0.5.1",
- org.eclipse.recommenders.utils;bundle-version="0.5.1",
+ org.eclipse.recommenders.snipmatch.rcp,
+ org.eclipse.recommenders.utils,
  org.junit
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
