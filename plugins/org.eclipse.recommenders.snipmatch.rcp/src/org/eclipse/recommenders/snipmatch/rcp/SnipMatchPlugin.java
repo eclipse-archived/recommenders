@@ -41,7 +41,7 @@ import org.osgi.framework.BundleContext;
  */
 public class SnipMatchPlugin extends AbstractUIPlugin implements IStartup {
 
-    public static final String PLUGIN_ID = "org.eclipse.recommenders.snipmatch";
+    public static final String PLUGIN_ID = "org.eclipse.recommenders.snipmatch.rcp";
     public static final String UPDATE_SITE_INFO_URL = "http://snipmatch.com/eclipsePlugin/site.xml";
     public static final String SUBMIT_HELP_URL = "http://snipmatch.com/help";
     public static final String REGISTER_URL = "http://snipmatch.com/register";
