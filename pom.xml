@@ -204,6 +204,9 @@
 							<validHeader>license-henss-2011.txt</validHeader>
 							<validHeader>license-proksch-2011.txt</validHeader>
 							<validHeader>license-google-wb.txt</validHeader>
+							<validHeader>license-chengchen-2012.txt</validHeader>
+							<validHeader>license-doug-ye-2011.txt</validHeader>
+							<validHeader>license-doug-ye-cheng.txt</validHeader>
 						</validHeaders>
 						<strictCheck>false</strictCheck>
 						<quiet>false</quiet>
