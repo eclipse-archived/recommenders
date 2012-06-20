@@ -21,5 +21,8 @@
    <feature id="org.eclipse.recommenders.feature.3rd.orbit" version="0.0.0"/>
    <feature id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit" version="0.0.0"/>
    <feature id="org.eclipse.recommenders.feature.3rd.rcp.nonjuno" version="0.0.0"/>
+   <feature id="org.eclipse.recommenders.feature.snipmatch.rcp" version="0.0.0">
+      <category name="main"/>
+   </feature>
    <category-def name="main" label="Code Recommenders - Eclipse 3.7"/>
 </site>
