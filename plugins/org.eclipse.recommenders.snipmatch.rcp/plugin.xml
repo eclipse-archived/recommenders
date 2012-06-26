@@ -216,10 +216,6 @@
     </extension>
    <extension
          point="org.eclipse.ui.views">
-         <category
-            name="SnipMatch"
-            id="org.eclipse.recommenders.rcp.category.views">
-         </category>
          <view id="org.eclipse.recommenders.snipmatch.views.snippetsview"
 	          name="SnipMatch View"
 	          class="org.eclipse.recommenders.snipmatch.view.SnippetsView"
