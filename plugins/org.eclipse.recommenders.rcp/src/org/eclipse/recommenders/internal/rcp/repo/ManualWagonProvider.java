@@ -21,7 +21,10 @@ public class ManualWagonProvider implements org.sonatype.aether.connector.wagon.
     @Override
     public Wagon lookup(String roleHint) throws Exception {
         if ("http".equals(roleHint) || "https".equals(roleHint)) {
-            return new AhcWagon();
+            AhcWagon ahcWagon = new AhcWagon();
+            // TODO set timeout to 300s instead of 60s to solve timeouts. experimental.
+            ahcWagon.setTimeout(300*1000);
+            return ahcWagon;
             // return new WebDavWagon();
         }
         return null;
