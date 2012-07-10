@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -66,6 +67,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.util.tracker.ServiceTracker;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
@@ -263,6 +265,16 @@ public class RecommendersModule extends AbstractModule implements Module {
     @Provides
     protected IWorkspaceRoot provideWorkspaceRoot() {
         return ResourcesPlugin.getWorkspace().getRoot();
+    }
+
+    @Provides
+    protected IProxyService provideProxyService() {
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        ServiceTracker tracker = new ServiceTracker(bundle.getBundleContext(), IProxyService.class.getName(), null);
+        tracker.open();
+        IProxyService service = (IProxyService) tracker.getService();
+        tracker.close();
+        return service;
     }
 
     @Provides

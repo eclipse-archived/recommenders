@@ -27,10 +27,13 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.repository.internal.DefaultServiceLocator;
 import org.apache.maven.repository.internal.MavenRepositorySystemSession;
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.LocalModelRepositoryLocation;
 import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.RemoteModelRepositoryLocation;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
+import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.AbstractRepositoryListener;
@@ -47,7 +50,9 @@ import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.installation.InstallRequest;
 import org.sonatype.aether.installation.InstallationException;
+import org.sonatype.aether.repository.Authentication;
 import org.sonatype.aether.repository.LocalRepository;
+import org.sonatype.aether.repository.Proxy;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResolutionException;
@@ -74,13 +79,20 @@ public class ModelRepository implements IModelRepository {
     private RepositorySystem system;
 
     private RemoteRepository remote;
+    private IProxyService proxy;
 
     @Inject
     public ModelRepository(@LocalModelRepositoryLocation File localLocation,
-            @RemoteModelRepositoryLocation String remoteLocation) throws Exception {
+            @RemoteModelRepositoryLocation String remoteLocation, @Nullable IProxyService proxy) throws Exception {
         this.location = localLocation;
+        this.proxy = proxy;
         this.system = createRepositorySystem();
         setRemote(remoteLocation);
+    }
+
+    public ModelRepository(@LocalModelRepositoryLocation File localLocation,
+            @RemoteModelRepositoryLocation String remoteLocation) throws Exception {
+        this(localLocation, remoteLocation, null);
     }
 
     protected RepositorySystem createRepositorySystem() throws Exception {
@@ -285,11 +297,22 @@ public class ModelRepository implements IModelRepository {
     @Override
     public void setRemote(String url) {
         remote = new RemoteRepository("remote-models", "default", url);
-        // "http://vandyk.st.informatik.tu-darmstadt.de/maven/"
-        // recommenders repository
-        // "http://213.133.100.41/recommenders/models/"
-        // local repository
-        // File("target/dist-repo").toURI().toString());
+        if (proxy == null)
+            return;
+
+        URI uri = URI.create(url);
+        for (IProxyData data : proxy.select(uri)) {
+            String host = data.getHost();
+            if (host != null) {
+                String type = data.getType();
+                int port = data.getPort();
+                String userId = data.getUserId();
+                String password = data.getPassword();
+                Authentication auth = new Authentication(userId, password);
+                Proxy p = new Proxy(type, host, port, auth);
+                remote.setProxy(p);
+            }
+        }
     }
 
     public static class TheArtifactOnlyDependencySelector implements DependencySelector {
