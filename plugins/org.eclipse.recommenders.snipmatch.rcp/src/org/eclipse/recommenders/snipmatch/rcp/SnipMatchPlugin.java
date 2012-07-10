@@ -25,7 +25,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.recommenders.snipmatch.core.Effect;
 import org.eclipse.recommenders.snipmatch.local.LocalMatchClient;
-import org.eclipse.recommenders.snipmatch.local.StringCompareSearchEngine;
+import org.eclipse.recommenders.snipmatch.local.PatternRankSearchEngine;
 import org.eclipse.recommenders.snipmatch.preferences.PreferenceConstants;
 import org.eclipse.recommenders.snipmatch.search.SearchClient;
 import org.eclipse.recommenders.snipmatch.search.SnipMatchSearchEngine;
@@ -51,7 +51,7 @@ public class SnipMatchPlugin extends AbstractUIPlugin implements IStartup {
     public static final String REGISTER_URL = "http://snipmatch.com/register";
 
     // We can switch different searchEngine here, default just use a simple string compare search engine
-    private final SnipMatchSearchEngine searchEngine = StringCompareSearchEngine.getInstance();
+    private final SnipMatchSearchEngine searchEngine = PatternRankSearchEngine.getInstance();
 
     private SearchClient workClient = null;
 
