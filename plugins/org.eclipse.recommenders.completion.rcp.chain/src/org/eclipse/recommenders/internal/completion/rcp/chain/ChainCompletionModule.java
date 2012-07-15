@@ -19,9 +19,8 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
-import com.google.inject.Module;
 
-public final class ChainCompletionModule extends AbstractModule implements Module {
+public final class ChainCompletionModule extends AbstractModule {
 
     @Override
     protected void configure() {

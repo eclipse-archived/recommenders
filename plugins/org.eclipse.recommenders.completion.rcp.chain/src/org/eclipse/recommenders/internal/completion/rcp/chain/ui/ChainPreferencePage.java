@@ -65,7 +65,7 @@ public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEdito
 
     private static final class IgnoredTypesEditor extends ListEditor {
 
-        private IgnoredTypesEditor(final String label, final Composite parent) {
+        IgnoredTypesEditor(final String label, final Composite parent) {
             super(ID_IGNORE_TYPES, label, parent);
         }
 

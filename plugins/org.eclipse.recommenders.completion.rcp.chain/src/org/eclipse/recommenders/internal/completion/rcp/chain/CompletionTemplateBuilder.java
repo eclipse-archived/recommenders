@@ -10,15 +10,12 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.chain;
 
-import static org.eclipse.jdt.ui.JavaElementLabels.M_PARAMETER_NAMES;
-import static org.eclipse.jdt.ui.JavaElementLabels.M_PARAMETER_TYPES;
-import static org.eclipse.jdt.ui.JavaElementLabels.getElementLabel;
-
 import java.util.List;
 
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.JavaModelException;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.corext.template.java.JavaContext;
 import org.eclipse.jdt.internal.corext.template.java.JavaContextType;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
@@ -34,123 +31,108 @@ import org.eclipse.recommenders.utils.HashBag;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 import org.eclipse.swt.graphics.Image;
 
-// TODO: field access may need to be qualified using "this." This is completely ignored ATM
 /**
- * Creates the templates for a give call chain.
+ * Creates the templates for a given call chain.
  */
-public class CompletionTemplateBuilder {
+@SuppressWarnings("restriction")
+public final class CompletionTemplateBuilder {
 
-    private HashBag<String> varNames;
-    private StringBuilder sb;
+    private CompletionTemplateBuilder() {
+    }
 
-    public TemplateProposal create(final List<MemberEdge> chain, final int expectedDimension,
+    public static TemplateProposal create(final List<ChainElement> chain, final int expectedDimension,
             final JavaContentAssistInvocationContext context) {
-        final String title = createCompletionTitle(chain);
-        final String body = createCompletionBody(chain, expectedDimension);
+        final String title = createChainCode(chain, true, 0);
+        final String body = createChainCode(chain, false, expectedDimension);
 
         final Template template = new Template(title, chain.size() + " elements", "java", body, false);
         return createTemplateProposal(template, context);
     }
 
-    private static String createCompletionTitle(final List<MemberEdge> chain) {
+    private static String createChainCode(final List<ChainElement> chain, final boolean createAsTitle,
+            final int expectedDimension) {
+        final HashBag<String> varNames = HashBag.newHashBag();
         final StringBuilder sb = new StringBuilder(64);
-        for (final MemberEdge edge : chain) {
-            switch (edge.getEdgeType()) {
+        for (final ChainElement edge : chain) {
+            switch (edge.getElementType()) {
             case FIELD:
             case LOCAL_VARIABLE:
-                final IJavaElement var = edge.getEdgeElement();
-                sb.append(var.getElementName());
+                appendVariableString(edge, sb);
                 break;
             case METHOD:
-                final IMethod method = edge.getEdgeElement();
-                final String label = getElementLabel(method, M_PARAMETER_NAMES | M_PARAMETER_TYPES);
-                sb.append(label);
+                final MethodBinding method = edge.getElementBinding();
+                if (createAsTitle) {
+                    sb.append(method.readableName());
+                } else {
+                    sb.append(method.selector);
+                    appendParameters(sb, method, varNames);
+                }
+                break;
+            default:
+                RecommendersUtilsPlugin.logWarning("Can't handle %s's element type.", edge);
             }
-            for (int i = edge.getDimension(); i-- > 0;) {
-                sb.append("[]");
-            }
+            final boolean appendVariables = !createAsTitle;
+            appendArrayDimensions(sb, edge.getReturnTypeDimension(), expectedDimension, appendVariables, varNames);
             sb.append(".");
         }
-        sb.deleteCharAt(sb.length() - 1);
+        deleteLastChar(sb);
         return sb.toString();
     }
 
-    private String createCompletionBody(final List<MemberEdge> chain, final int expectedDimension) {
-        varNames = HashBag.newHashBag();
-        sb = new StringBuilder(64);
-        for (final MemberEdge edge : chain) {
-            switch (edge.getEdgeType()) {
-            case FIELD:
-            case LOCAL_VARIABLE:
-                final IJavaElement var = edge.getEdgeElement();
-                appendIdentifier(var);
-                break;
-            case METHOD:
-                final IMethod method = edge.getEdgeElement();
-                appendIdentifier(method);
-                appendParameters(method);
-            }
-            appendArrayDimensions(edge.getDimension(), expectedDimension);
-            sb.append(".");
+    private static void appendVariableString(final ChainElement edge, final StringBuilder sb) {
+        if (edge.requiresThisForQualification() && sb.length() == 0) {
+            sb.append("this.");
         }
-        deleteLastChar();
-        return sb.toString();
+        sb.append(((VariableBinding) edge.getElementBinding()).name);
     }
 
-    private StringBuilder appendIdentifier(final IJavaElement var) {
-        return sb.append(var.getElementName());
-    }
-
-    private void appendParameters(final IMethod method) {
+    private static void appendParameters(final StringBuilder sb, final MethodBinding method,
+            final HashBag<String> varNames) {
         sb.append("(");
-        try {
-            final String[] paramNames = method.getParameterNames();
-            final String[] paramTypes = method.getParameterTypes();
-            final int numberOfParams = paramNames.length;
-            for (int i = 0; i < numberOfParams; ++i) {
-                appendTemplateVariable(paramNames[i], paramTypes[i]);
-                sb.append(", ");
-            }
-            if (numberOfParams > 0) {
-                deleteLastChar();
-                deleteLastChar();
-            }
-        } catch (final JavaModelException e) {
-            RecommendersUtilsPlugin.log(e);
+        for (final TypeBinding parameter : method.parameters) {
+            String parameterName = StringUtils.uncapitalize(String.valueOf(parameter.shortReadableName()));
+            parameterName = StringUtils.substringBefore(parameterName, "<");
+            appendTemplateVariable(sb, parameterName, varNames);
+            sb.append(", ");
+        }
+        if (method.parameters.length > 0) {
+            deleteLastChar(sb);
+            deleteLastChar(sb);
         }
         sb.append(")");
     }
 
-    private void appendTemplateVariable(final String varname, final String varType) {
+    private static void appendTemplateVariable(final StringBuilder sb, final String varname,
+            final HashBag<String> varNames) {
         varNames.add(varname);
         sb.append("${").append(varname);
         final int count = varNames.count(varname);
         if (count > 1) {
             sb.append(count);
         }
-        // final String resolvedTypeName = JdtUtils.resolveUnqualifiedTypeNamesAndStripOffGenericsAndArrayDimension(
-        // varType, context.getCompilationUnit().findPrimaryType()).or("null");
-        // sb.append(":var(").append(resolvedTypeName).append(")");
         sb.append("}");
     }
 
-    private StringBuilder deleteLastChar() {
-        return sb.deleteCharAt(sb.length() - 1);
-    }
-
-    private void appendArrayDimensions(final int dimension, final int expectedDimension) {
+    private static void appendArrayDimensions(final StringBuilder sb, final int dimension, final int expectedDimension,
+            final boolean appendVariables, final HashBag<String> varNames) {
         for (int i = dimension; i-- > expectedDimension;) {
             sb.append("[");
-            appendTemplateVariable("i", "I");
+            if (appendVariables) {
+                appendTemplateVariable(sb, "i", varNames);
+            }
             sb.append("]");
         }
     }
 
+    private static StringBuilder deleteLastChar(final StringBuilder sb) {
+        return sb.deleteCharAt(sb.length() - 1);
+    }
+
     static TemplateProposal createTemplateProposal(final Template template,
             final JavaContentAssistInvocationContext contentAssistContext) {
-        final DocumentTemplateContext javaTemplateContext = createJavaContext(contentAssistContext);
-        final TemplateProposal proposal = new TemplateProposal(template, javaTemplateContext, new Region(
-                javaTemplateContext.getCompletionOffset(), javaTemplateContext.getCompletionLength()),
+        final DocumentTemplateContext templateContext = createJavaContext(contentAssistContext);
+        final Region region = new Region(templateContext.getCompletionOffset(), templateContext.getCompletionLength());
+        final TemplateProposal proposal = new TemplateProposal(template, templateContext, region,
                 getChainCompletionIcon());
         return proposal;
     }
