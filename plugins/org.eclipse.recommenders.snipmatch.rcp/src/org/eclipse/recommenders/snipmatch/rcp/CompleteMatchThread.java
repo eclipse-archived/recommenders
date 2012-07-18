@@ -49,11 +49,11 @@ public class CompleteMatchThread implements Runnable {
 		if (env.testMatch(match)) {
 
 			// Generate completions for the match, and notify the caller via the listener.
-			for (MatchNode completeMatch : env.getMatchCompletions(match)) {
+			//for (MatchNode completeMatch : env.getMatchCompletions(match)) {
 
-				if (canceled) break;
-				if (listener != null) listener.completionFound(completeMatch);
-			}
+				//if (canceled) break;
+				if (!canceled && listener != null) listener.completionFound(match);
+			//}
 		}
 		
 		// Tell the caller that we are done.

@@ -15,7 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -44,6 +46,7 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
     private String commonSnippetsDir = "common";
     private String anonymouseSnippetsDir = "local";
     private List<SummaryFileMap> sfMapList = null;
+    private Map<String, String> values = new HashMap<String, String>();
 
     public static SnipMatchSearchEngine getInstance() {
         if (instance == null) {
@@ -61,7 +64,6 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
     }
 
     private PatternRankSearchEngine() {
-
     }
 
     @Override
@@ -119,24 +121,32 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
                     parent.setId(System.currentTimeMillis() + String.valueOf(Math.random()).substring(5));
 
                     MatchNode[] children = new MatchNode[parent.getParameters().length];
+                    if(rankResult.get(k).isInOrder()){
+                        values.clear();
+                        parseParameterValues(rankResult.get(k).getPattern(), query);
+                    }
                     for (int i = 0; i < children.length; i++) {
                         EffectParameter param = parent.getParameters()[i];
+                        if(values.get(param.getName()) != null)
+                            param.setValue(values.get(param.getName()));
                         ArgumentMatchNode childNode = new ArgumentMatchNode(param.getName(), param);
                         children[i] = childNode;
                     }
 
-                    // pattern was used to display in content assist list
-                    String pattern = parent.getSummary();
-                    for (String p : parent.getPatterns()) {
-                        if (p.toLowerCase().contains(query.toLowerCase().trim())) {
-                            pattern = p;
-                            break;
-                        }
-                    }
-                    result.add(new EffectMatchNode(parent, pattern, children));
+                    result.add(new EffectMatchNode(parent, rankResult.get(k).getPattern(), children));
                 }
             }
         return result;
+    }
+    
+    private void parseParameterValues(String pattern, String query){
+        String[] ps = pattern.split("\\s+");
+        String[] qs = query.split("\\s+");
+        for(int i=0; i<Math.min(ps.length, qs.length); i++){
+            if(ps[i].startsWith("$")){
+                this.values.put(ps[i].substring(1), qs[i]);
+            }
+        }
     }
     
     private void sortRankResult(List<PatternRankResult> rankResult){
@@ -158,6 +168,7 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
             boolean maxInOrder = false;
             int minMissParam = Integer.MAX_VALUE;
             int maxRankNumber = Integer.MIN_VALUE;
+            String matchPattern = "";
             for(String pattern : patterns){
                 boolean inOrder = true;
                 int missParam = 0;
@@ -201,10 +212,15 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
                     maxInOrder = inOrder;
                     minMissParam = missParam;
                     maxRankNumber = rankNumber;
+                    matchPattern = pattern;
                 }
+                
+                //Already the best match result, break
+                if(maxInOrder && minMissParam == 0)
+                    break;
             }
             if(maxInOrder || maxRankNumber>0){
-                rankResult.add(new PatternRankResult(maxInOrder, minMissParam, maxRankNumber, file));
+                rankResult.add(new PatternRankResult(maxInOrder, minMissParam, maxRankNumber, file, matchPattern));
             }
         }
     }
@@ -258,12 +274,14 @@ class PatternRankResult{
     private int rankNumber;
     private int missParam;
     private String filePath;
+    private String pattern;
     
-    public PatternRankResult(boolean maxInOrder, int minMissParam, int maxRankNumber, String file){
+    public PatternRankResult(boolean maxInOrder, int minMissParam, int maxRankNumber, String file, String patt){
         inOrder = maxInOrder;
         rankNumber = maxRankNumber;
         missParam = minMissParam;
         filePath = file;
+        pattern = patt;
     }
     
     public boolean isInOrder() {
@@ -292,6 +310,14 @@ class PatternRankResult{
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
     }
     
 }

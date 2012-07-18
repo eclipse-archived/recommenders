@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.recommenders.snipmatch.core.ArgumentMatchNode;
 import org.eclipse.recommenders.snipmatch.core.EffectMatchNode;
 import org.eclipse.recommenders.snipmatch.core.MatchEnvironment;
 import org.eclipse.recommenders.snipmatch.core.MatchNode;
@@ -153,13 +152,9 @@ public class SearchBox extends ClientSwitcher {
                             if (selection != -1) {
 
                                 EffectMatchNode match = (EffectMatchNode) matches.get(selection);
-
-                                ArrayList<int[]> argRanges = new ArrayList<int[]>();
-                                ArrayList<int[]> blankArgRanges = new ArrayList<int[]>();
-
                                 String matchString = "";
                                 try {
-                                    matchString = buildMatchString(match, argRanges, blankArgRanges, false, 0);
+                                    matchString = buildMatchString(match);
                                 } catch (Exception matche) {
                                     matche.printStackTrace();
                                 }
@@ -174,19 +169,6 @@ public class SearchBox extends ClientSwitcher {
 
                                 int nextStop = queryText.getCharCount();
                                 boolean changed = false;
-
-                                for (int[] argRange : argRanges) {
-
-                                    if (argRange[0] > nextStop) {
-                                        nextStop = argRange[0];
-                                        changed = true;
-                                        break;
-                                    }
-
-                                    if (argRange[1] == 0)
-                                        break;
-                                }
-
                                 if (match.isComplete() && nextStop == queryText.getCharCount()
                                         && nextStop < matchString.length()) {
                                     nextStop = matchString.length();
@@ -400,6 +382,7 @@ public class SearchBox extends ClientSwitcher {
 
             @Override
             public void matchFound(final MatchNode match) {
+
                 // When a match is found, generate completions from it, and add
                 // them.
 
@@ -643,11 +626,9 @@ public class SearchBox extends ClientSwitcher {
             resultDisplayTable.removeAll();
             for (int i = 0; i < matches.size(); i++) {
                 MatchNode match = matches.get(i);
-                ArrayList<int[]> argRanges = new ArrayList<int[]>();
-                ArrayList<int[]> blankArgRanges = new ArrayList<int[]>();
                 String dispStr = "";
                 try {
-                    dispStr = buildMatchString(match, argRanges, blankArgRanges, true, 0);
+                    dispStr = buildMatchString((EffectMatchNode) match);
                 } catch (Exception e) {
                     e.printStackTrace();
                     matches.remove(i);
@@ -691,51 +672,39 @@ public class SearchBox extends ClientSwitcher {
      *            The current length of the string. Used for recursion.
      * @return A string representation of the match.
      */
-    private String buildMatchString(MatchNode match, ArrayList<int[]> argRanges, ArrayList<int[]> blankArgRanges,
-            boolean showBlanks, int length) throws Exception {
+    private String buildMatchString(EffectMatchNode match) throws Exception {
+        return match.getPattern();
 
-        if (match instanceof EffectMatchNode) {
-
-            StringBuilder sb = new StringBuilder();
-            String[] tokens = ((EffectMatchNode) match).getPattern().split("\\s+");
-
-            if (length != 0 && showBlanks)
-                sb.append("(");
-
-            for (String token : tokens) {
-
-                if (token.startsWith("$")) {
-
-                    MatchNode child = ((EffectMatchNode) match).getChild(token.substring(1));
-                    sb.append(buildMatchString(child, argRanges, blankArgRanges, showBlanks, length + sb.length())
-                            + " ");
-                } else
-                    sb.append(token + " ");
-            }
-
-            sb.deleteCharAt(sb.length() - 1);
-
-            if (length != 0 && showBlanks)
-                sb.append(")");
-
-            return sb.toString();
-        } else {
-
-            ArgumentMatchNode argNode = (ArgumentMatchNode) match;
-
-            String token = argNode.getArgument();
-
-            if (token.isEmpty()) {
-
-                if (showBlanks)
-                    token = "<" + argNode.getParameter().getName() + ">";
-
-                blankArgRanges.add(new int[] { length, token.length() });
-            }
-
-            argRanges.add(new int[] { length, token.length() });
-            return token;
-        }
+        /*
+         * if (match instanceof EffectMatchNode) {
+         * 
+         * StringBuilder sb = new StringBuilder(); String[] tokens = ((EffectMatchNode)
+         * match).getPattern().split("\\s+");
+         * 
+         * if (length != 0 && showBlanks) sb.append("(");
+         * 
+         * for (String token : tokens) {
+         * 
+         * if (token.startsWith("$")) {
+         * 
+         * MatchNode child = ((EffectMatchNode) match).getChild(token.substring(1)); sb.append(buildMatchString(child,
+         * argRanges, blankArgRanges, showBlanks, length + sb.length()) + " "); } else sb.append(token + " "); }
+         * 
+         * sb.deleteCharAt(sb.length() - 1);
+         * 
+         * if (length != 0 && showBlanks) sb.append(")"); return sb.toString(); } else { ArgumentMatchNode argNode =
+         * (ArgumentMatchNode) match;
+         * 
+         * String token = argNode.getArgument();
+         * 
+         * if (token.isEmpty()) {
+         * 
+         * if (showBlanks) token = "<" + argNode.getParameter().getName() + ">";
+         * 
+         * blankArgRanges.add(new int[] { length, token.length() }); }
+         * 
+         * argRanges.add(new int[] { length, token.length() }); return "<" + token + ">"; }
+         */
     }
 
     /**

@@ -16,6 +16,7 @@ public class EffectParameter {
 	private String name = "";
 	private String majorType = "";
 	private String minorType = "";
+	private String value = "";
 	
 	public String getName() {
 
@@ -46,8 +47,15 @@ public class EffectParameter {
 
 		this.minorType = minorType;
 	}
+	public String getValue() {
+        return value;
+    }
 
-	public String getFullType() {
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getFullType() {
 		
 		if (!minorType.isEmpty()) return majorType + ":" + minorType;
 		else return majorType;
