@@ -111,7 +111,7 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
         if (sfMapList != null && sfMapList.size() > 0)
             for (SummaryFileMap map : sfMapList) {
                 String summary = map.summary;
-                rankQuery(summary, query, map.filePath, rankResult);
+                rankQuery(summary.toLowerCase(), query.toLowerCase(), map.filePath, rankResult);
             }
             sortRankResult(rankResult);
             for(int k=0; k<Math.min(15, rankResult.size()); k++){
@@ -122,13 +122,14 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
 
                     MatchNode[] children = new MatchNode[parent.getParameters().length];
                     if(rankResult.get(k).isInOrder()){
-                        values.clear();
+                        this.values.clear();
                         parseParameterValues(rankResult.get(k).getPattern(), query);
                     }
                     for (int i = 0; i < children.length; i++) {
                         EffectParameter param = parent.getParameters()[i];
-                        if(values.get(param.getName()) != null)
-                            param.setValue(values.get(param.getName()));
+                        String keyName = param.getName().toLowerCase();
+                        if(values.get(keyName) != null)
+                            param.setValue(values.get(keyName));
                         ArgumentMatchNode childNode = new ArgumentMatchNode(param.getName(), param);
                         children[i] = childNode;
                     }
@@ -169,12 +170,13 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
             int minMissParam = Integer.MAX_VALUE;
             int maxRankNumber = Integer.MIN_VALUE;
             String matchPattern = "";
-            for(String pattern : patterns){
+            for(int t=1; t<patterns.length; t++){
+                String pattern = patterns[t];
                 boolean inOrder = true;
                 int missParam = 0;
                 int rankNumber = 0;
-                String[] patternWords = pattern.split(" ");
-                String[] queryWords = query.split(" ");
+                String[] patternWords = pattern.split("\\s+");
+                String[] queryWords = query.split("\\s+");
                 int i;
                 for(i=0; i<Math.min(patternWords.length, queryWords.length); i++){
                     if(!patternWords[i].equals(queryWords[i])){
@@ -208,6 +210,11 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
                             }
                     }
                 }
+                
+                if(!inOrder && rankNumber == 0 && queryWords.length == 1 && pattern.startsWith(query)){
+                    rankNumber = 1;
+                }
+                
                 if(inBetterMatch(maxInOrder, minMissParam, maxRankNumber, inOrder, missParam, rankNumber)){
                     maxInOrder = inOrder;
                     minMissParam = missParam;

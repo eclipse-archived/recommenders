@@ -17,7 +17,6 @@ import org.eclipse.recommenders.snipmatch.core.MatchEnvironment;
 import org.eclipse.recommenders.snipmatch.core.MatchNode;
 import org.eclipse.recommenders.snipmatch.search.ClientSwitcher;
 import org.eclipse.recommenders.snipmatch.web.ISearchListener;
-import org.eclipse.recommenders.snipmatch.web.ISendFeedbackListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
@@ -64,7 +63,6 @@ public class SearchBox extends ClientSwitcher {
     private ArrayList<CompleteMatchThread> completeMatchThreads;
     private Shell buttonBar;
     private boolean noResultsYet;
-    private int selection;
     private boolean selectionConfirmed;
     private CloseOnIgnoreListener ignoredListener;
     private boolean ignoreTextChange;
@@ -147,45 +145,26 @@ public class SearchBox extends ClientSwitcher {
                         switch (e.keyCode) {
 
                         case '\t':
-                            // If tab is pressed, then tab-complete the search
-                            // query to the next argument.
-                            if (selection != -1) {
-
-                                EffectMatchNode match = (EffectMatchNode) matches.get(selection);
-                                String matchString = "";
-                                try {
-                                    matchString = buildMatchString(match);
-                                } catch (Exception matche) {
-                                    matche.printStackTrace();
+                            if(resultDisplayTable != null && resultDisplayTable.getSelectionIndex() > -1){
+                                int selection = resultDisplayTable.getSelectionIndex();
+                                EffectMatchNode matchSelection = (EffectMatchNode) matches.get(selection);
+                                String[] patterns = matchSelection.getPattern().split("\\s+");
+                                String query = queryText.getText();
+                                String[] querys = query.split("\\s+");
+                                if(querys.length <= patterns.length){
+                                    for(int i=0; i<querys.length; i++){
+                                        if(i == querys.length-1){
+                                            if(!patterns[i].equals(querys[i]) && patterns[i].startsWith(querys[i])){
+                                                String fullText = query + patterns[i].substring(querys[i].length());
+                                                queryText.setText(fullText);
+                                                queryText.setSelection(fullText.length());
+                                            }
+                                        }else if(!patterns[i].startsWith("$") && !patterns[i].equals(querys[i])){
+                                            break;
+                                        }
+                                    }
                                 }
-
-                                String newQuery;
-
-                                if (!matchString.toLowerCase().startsWith(queryText.getText().toLowerCase())) {
-
-                                    e.doit = false;
-                                    break;
-                                }
-
-                                int nextStop = queryText.getCharCount();
-                                boolean changed = false;
-                                if (match.isComplete() && nextStop == queryText.getCharCount()
-                                        && nextStop < matchString.length()) {
-                                    nextStop = matchString.length();
-                                    changed = true;
-                                }
-
-                                if (!changed) {
-                                    e.doit = false;
-                                    break;
-                                }
-
-                                newQuery = matchString.substring(0, nextStop);
-
-                                queryText.setText(newQuery);
-                                queryText.setCaretOffset(queryText.getCharCount());
                             }
-
                             e.doit = false;
                             break;
                         }
@@ -203,21 +182,6 @@ public class SearchBox extends ClientSwitcher {
             public void widgetDisposed(DisposeEvent evt) {
                 cancelThreads();
                 env.reset();
-                /*
-                 * If the search box was closed by confirming a selection rather than canceling it, then the selected
-                 * result should be re-applied fully (not just the preview).
-                 */
-                if (selectionConfirmed && selection != -1) {
-
-                    try {
-                        ((JavaSnippetMatchEnvironment) env).applyMatch(matches.get(selection), true, getTotalHeight());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (selection != -1)
-                    sendUsageData();
             }
         });
 
@@ -235,27 +199,9 @@ public class SearchBox extends ClientSwitcher {
         matches = new ArrayList<MatchNode>();
         completeMatchThreads = new ArrayList<CompleteMatchThread>();
         noResultsYet = false;
-        selection = -1;
         selectionConfirmed = false;
 
         shell.setFocus();
-    }
-
-    private void sendUsageData() {
-
-        ISendFeedbackListener listener = new ISendFeedbackListener() {
-            @Override
-            public void sendFeedbackSucceeded() {
-            }
-
-            @Override
-            public void sendFeedbackFailed(final String error) {
-            }
-        };
-
-        if (!client.isWorking())
-            client.startSendFeedback(queryText.getText(), matches.get(selection), null, 1, false, true, false,
-                    SnipMatchPlugin.getClientId(), selectionConfirmed, listener);
     }
 
     /**
@@ -382,10 +328,6 @@ public class SearchBox extends ClientSwitcher {
 
             @Override
             public void matchFound(final MatchNode match) {
-
-                // When a match is found, generate completions from it, and add
-                // them.
-
                 final CompleteMatchThread matchCompleter = new CompleteMatchThread(env, match);
 
                 ICompleteMatchListener listener = new ICompleteMatchListener() {
@@ -528,7 +470,6 @@ public class SearchBox extends ClientSwitcher {
             if (overViewText != null) {
                 resultOverviewPanel.setText(overViewText.toString());
             }
-            // resultOverviewPanel.setText(node.getEffect().getCode());
 
             resultOverviewShell.setLocation(point.x + resultDisplayShell.getSize().x, point.y);
             resultOverviewShell.open();
@@ -657,54 +598,8 @@ public class SearchBox extends ClientSwitcher {
             resultDisplayTableSelection(resultDisplayTable, 0);
     }
 
-    /**
-     * Gets a string representation of a match, along with some other information.
-     * 
-     * @param match
-     *            The match.
-     * @param argRanges
-     *            A list to be filled with the ranges of non-empty arguments.
-     * @param blankArgRanges
-     *            A list to be filled with the ranges of empty arguments.
-     * @param showBlanks
-     *            Whether or not to show place-holders for empty arguments.
-     * @param length
-     *            The current length of the string. Used for recursion.
-     * @return A string representation of the match.
-     */
     private String buildMatchString(EffectMatchNode match) throws Exception {
         return match.getPattern();
-
-        /*
-         * if (match instanceof EffectMatchNode) {
-         * 
-         * StringBuilder sb = new StringBuilder(); String[] tokens = ((EffectMatchNode)
-         * match).getPattern().split("\\s+");
-         * 
-         * if (length != 0 && showBlanks) sb.append("(");
-         * 
-         * for (String token : tokens) {
-         * 
-         * if (token.startsWith("$")) {
-         * 
-         * MatchNode child = ((EffectMatchNode) match).getChild(token.substring(1)); sb.append(buildMatchString(child,
-         * argRanges, blankArgRanges, showBlanks, length + sb.length()) + " "); } else sb.append(token + " "); }
-         * 
-         * sb.deleteCharAt(sb.length() - 1);
-         * 
-         * if (length != 0 && showBlanks) sb.append(")"); return sb.toString(); } else { ArgumentMatchNode argNode =
-         * (ArgumentMatchNode) match;
-         * 
-         * String token = argNode.getArgument();
-         * 
-         * if (token.isEmpty()) {
-         * 
-         * if (showBlanks) token = "<" + argNode.getParameter().getName() + ">";
-         * 
-         * blankArgRanges.add(new int[] { length, token.length() }); }
-         * 
-         * argRanges.add(new int[] { length, token.length() }); return "<" + token + ">"; }
-         */
     }
 
     /**
@@ -721,7 +616,6 @@ public class SearchBox extends ClientSwitcher {
             buttonBar.dispose();
 
         matches.clear();
-        selection = -1;
         queryText.setFocus();
     }
 
