@@ -172,7 +172,7 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
             String matchPattern = "";
             for(int t=1; t<patterns.length; t++){
                 String pattern = patterns[t];
-                boolean inOrder = true;
+                boolean inOrder = false;
                 int missParam = 0;
                 int rankNumber = 0;
                 String[] patternWords = pattern.split("\\s+");
@@ -184,18 +184,19 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
                             inOrder = false;
                             break;
                         }
-                    }
+                    }else
+                        inOrder = true;
                 }
                 if(inOrder)
                     rankNumber = i;
-                if(patternWords.length > i){
+                if(inOrder && patternWords.length > i){
                     for(; i<patternWords.length; i++)
                         if(!patternWords[i].startsWith("$")){
-                            inOrder = false;
-                            break;
+                            //inOrder = false;break;
+                            continue;
                         }else{
                             missParam++;
-                            rankNumber++;
+                            //rankNumber++;
                         }
                 }
                 //Rank match string number in _not-in-order_ condition
