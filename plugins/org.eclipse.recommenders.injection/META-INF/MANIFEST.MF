@@ -8,7 +8,7 @@ Export-Package: org.eclipse.recommenders.injection,
  org.eclipse.recommenders.internal.injection
 Require-Bundle: com.google.inject;bundle-version="3.0.0";visibility:=reexport,
  javax.inject;bundle-version="[1.0.0,2.0.0)";visibility:=reexport,
- com.google.guava,
+ com.google.guava;bundle-version="[10.0.0,11.0.0)",
  org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
