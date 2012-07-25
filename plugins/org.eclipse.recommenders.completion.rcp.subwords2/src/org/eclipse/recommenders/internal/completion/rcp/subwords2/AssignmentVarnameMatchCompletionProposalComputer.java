@@ -56,7 +56,7 @@ public class AssignmentVarnameMatchCompletionProposalComputer extends JavaComple
     @Override
     protected CompletionProposalCollector createCollector(final JavaContentAssistInvocationContext context) {
 
-        ASTNode node = ctx.getCompletionNodeParent();
+        ASTNode node = ctx.getCompletionNodeParent().orNull();
         final String varName;
         if (node instanceof Assignment) {
             varName = findVarName((Assignment) node);

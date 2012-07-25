@@ -154,7 +154,8 @@ public class RecommendersCompletionContextTest {
   }
   
   private void assertCompletionNode(final IRecommendersCompletionContext sut, final Class<? extends Object> type) {
-    final ASTNode node = sut.getCompletionNode();
+    Optional<ASTNode> _completionNode = sut.getCompletionNode();
+    final ASTNode node = _completionNode.orNull();
     this.assertInstanceof(node, type);
   }
   
@@ -172,13 +173,15 @@ public class RecommendersCompletionContextTest {
   }
   
   private void assertCompletionNodeParent(final IRecommendersCompletionContext sut, final Class<? extends Object> type) {
-    final ASTNode node = sut.getCompletionNodeParent();
+    Optional<ASTNode> _completionNodeParent = sut.getCompletionNodeParent();
+    final ASTNode node = _completionNodeParent.orNull();
     this.assertInstanceof(node, type);
   }
   
   private void assertCompletionNodeParentIsNull(final IRecommendersCompletionContext sut) {
-    ASTNode _completionNodeParent = sut.getCompletionNodeParent();
-    Assert.assertNull("parent node is not null!", _completionNodeParent);
+    Optional<ASTNode> _completionNodeParent = sut.getCompletionNodeParent();
+    ASTNode _orNull = _completionNodeParent.orNull();
+    Assert.assertNull("parent node is not null!", _orNull);
   }
   
   public IRecommendersCompletionContext exercise(final CharSequence code) {

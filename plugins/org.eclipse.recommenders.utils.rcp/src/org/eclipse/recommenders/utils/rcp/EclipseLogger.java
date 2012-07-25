@@ -34,7 +34,7 @@ public class EclipseLogger extends MarkerIgnoringBase {
 
     private IStatus newStatus(int status, Throwable t, String format, Object... arg) {
         String message = format(format == null ? "" : format, arg);
-        IStatus newStatus = LoggingUtils.newStatus(status, t, "org.eclise.recommenders.rcp.utils", message);
+        IStatus newStatus = LoggingUtils.newStatus(status, t, "org.eclipse.recommenders.rcp.utils", message);
         return newStatus;
     }
 

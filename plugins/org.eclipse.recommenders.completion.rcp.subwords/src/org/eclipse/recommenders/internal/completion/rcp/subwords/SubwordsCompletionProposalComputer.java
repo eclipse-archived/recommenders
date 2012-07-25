@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.PreferenceConstants;
@@ -76,7 +77,10 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
     }
 
     private String getToken() {
-        final char[] token = ctx.getCoreContext().getToken();
+        CompletionContext coreCtx = ctx.getCoreContext();
+        if (coreCtx == null)
+            return "";
+        final char[] token = coreCtx.getToken();
         if (token == null) {
             return "";
         }

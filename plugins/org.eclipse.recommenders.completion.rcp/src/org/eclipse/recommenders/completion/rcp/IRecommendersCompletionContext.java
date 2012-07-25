@@ -34,9 +34,9 @@ public interface IRecommendersCompletionContext {
 
     JavaContentAssistInvocationContext getJavaContext();
 
-    ASTNode getCompletionNode();
+    Optional<ASTNode> getCompletionNode();
 
-    ASTNode getCompletionNodeParent();
+    Optional<ASTNode> getCompletionNodeParent();
 
     Optional<IMethod> getEnclosingMethod();
 

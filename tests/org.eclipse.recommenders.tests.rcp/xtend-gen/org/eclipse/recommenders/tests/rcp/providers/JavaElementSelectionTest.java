@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.tests.rcp.providers;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import java.util.Collections;
 import java.util.List;
@@ -18,8 +19,6 @@ import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Exceptions;
-import org.eclipse.xtext.xbase.lib.IntegerExtensions;
-import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,8 +30,7 @@ public class JavaElementSelectionTest {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("class Myc$lass {}");
     final CharSequence code = _builder;
-    Pair<String,Integer> _mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(
-      "LMyclass;", Integer.valueOf(1));
+    Pair<String,Integer> _mappedTo = Pair.<String, Integer>of("LMyclass;", Integer.valueOf(1));
     final List<String> expected = XtendUtils.<String>newListWithFrequency(_mappedTo);
     this.exerciseAndVerify(code, expected);
   }
@@ -53,10 +51,8 @@ public class JavaElementSelectionTest {
     _builder.newLine();
     _builder.append("}");
     final CharSequence code = _builder;
-    Pair<String,Integer> _mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(
-      "Ljava/lang/String;", Integer.valueOf(1));
-    Pair<String,Integer> _mappedTo_1 = ObjectExtensions.<String, Integer>operator_mappedTo(
-      "Ljava/lang/String;.(Ljava/lang/String;)V", Integer.valueOf(1));
+    Pair<String,Integer> _mappedTo = Pair.<String, Integer>of("Ljava/lang/String;", Integer.valueOf(1));
+    Pair<String,Integer> _mappedTo_1 = Pair.<String, Integer>of("Ljava/lang/String;.(Ljava/lang/String;)V", Integer.valueOf(1));
     final List<String> expected = XtendUtils.<String>newListWithFrequency(_mappedTo, _mappedTo_1);
     this.exerciseAndVerify(code, expected);
   }
@@ -69,8 +65,7 @@ public class JavaElementSelectionTest {
     _builder.append("class Myclass123 extends L$ist {}");
     _builder.newLine();
     final CharSequence code = _builder;
-    Pair<String,Integer> _mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(
-      "Ljava/util/List<>;", Integer.valueOf(1));
+    Pair<String,Integer> _mappedTo = Pair.<String, Integer>of("Ljava/util/List<>;", Integer.valueOf(1));
     final List<String> expected = XtendUtils.<String>newListWithFrequency(_mappedTo);
     this.exerciseAndVerify(code, expected);
   }
@@ -85,10 +80,8 @@ public class JavaElementSelectionTest {
     _builder.newLine();
     _builder.append("}");
     final CharSequence code = _builder;
-    Pair<String,Integer> _mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(
-      "Ljava/lang/String;", Integer.valueOf(1));
-    Pair<String,Integer> _mappedTo_1 = ObjectExtensions.<String, Integer>operator_mappedTo(
-      "Ljava/lang/String;.(Ljava/lang/String;)V", Integer.valueOf(1));
+    Pair<String,Integer> _mappedTo = Pair.<String, Integer>of("Ljava/lang/String;", Integer.valueOf(1));
+    Pair<String,Integer> _mappedTo_1 = Pair.<String, Integer>of("Ljava/lang/String;.(Ljava/lang/String;)V", Integer.valueOf(1));
     final List<String> expected = XtendUtils.<String>newListWithFrequency(_mappedTo, _mappedTo_1);
     this.exerciseAndVerify(code, expected);
   }
@@ -131,12 +124,9 @@ public class JavaElementSelectionTest {
     _builder.newLine();
     _builder.append("}");
     final CharSequence code = _builder;
-    Pair<String,Integer> _mappedTo = ObjectExtensions.<String, Integer>operator_mappedTo(
-      "Ljava/lang/String;.concat(Ljava/lang/String;)Ljava/lang/String;", Integer.valueOf(1));
-    Pair<String,Integer> _mappedTo_1 = ObjectExtensions.<String, Integer>operator_mappedTo(
-      "Ljava/lang/String;.hashCode()I", Integer.valueOf(1));
-    Pair<String,Integer> _mappedTo_2 = ObjectExtensions.<String, Integer>operator_mappedTo(
-      "Ljava/lang/String;.equals(Ljava/lang/Object;)Z", Integer.valueOf(1));
+    Pair<String,Integer> _mappedTo = Pair.<String, Integer>of("Ljava/lang/String;.concat(Ljava/lang/String;)Ljava/lang/String;", Integer.valueOf(1));
+    Pair<String,Integer> _mappedTo_1 = Pair.<String, Integer>of("Ljava/lang/String;.hashCode()I", Integer.valueOf(1));
+    Pair<String,Integer> _mappedTo_2 = Pair.<String, Integer>of("Ljava/lang/String;.equals(Ljava/lang/Object;)Z", Integer.valueOf(1));
     final List<String> expected = XtendUtils.<String>newListWithFrequency(_mappedTo, _mappedTo_1, _mappedTo_2);
     this.exerciseAndVerify(code, expected);
   }
@@ -145,7 +135,7 @@ public class JavaElementSelectionTest {
   @Ignore(value = "Only for debugging the ui")
   public void waitAlongTime() {
     try {
-      int _multiply = IntegerExtensions.operator_multiply(120, 1000);
+      int _multiply = (120 * 1000);
       Thread.sleep(_multiply);
     } catch (Exception _e) {
       throw Exceptions.sneakyThrow(_e);
@@ -159,7 +149,7 @@ public class JavaElementSelectionTest {
       final JavaProjectFixture fixture = _javaProjectFixture;
       final Tuple<ICompilationUnit,Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code);
       final ICompilationUnit cu = struct.getFirst();
-      boolean _equals = ObjectExtensions.operator_equals(cu, null);
+      boolean _equals = Objects.equal(cu, null);
       if (_equals) {
         Assert.fail("cu is not allowed to be null!");
       }

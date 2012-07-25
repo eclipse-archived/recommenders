@@ -147,7 +147,7 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean isCompletionRequestSupported() {
-        final ASTNode node = ctx.getCompletionNode();
+        final ASTNode node = ctx.getCompletionNode().orNull();
         return node == null ? false : supportedCompletionRequests.contains(node.getClass());
     }
 

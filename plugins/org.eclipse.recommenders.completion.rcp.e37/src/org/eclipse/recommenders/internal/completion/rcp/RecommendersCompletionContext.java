@@ -1,5 +1,5 @@
-final/**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+/**
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,7 +51,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-@SuppressWarnings("restriction")
 public class RecommendersCompletionContext extends BaseRecommendersCompletionContext {
 
     private CompilerAstCompletionNodeFinder astCompletionNodeFinder;
@@ -61,8 +60,6 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
     private CompletionEngine completionEngine;
 
     private CompletionParser completionParser;
-
-    // private String token;
 
     private IntelligentCompletionRequestor completionRequestor;
 
@@ -159,13 +156,15 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
     }
 
     @Override
-    public ASTNode getCompletionNode() {
-        return astCompletionNodeFinder.completionNode;
+    public Optional<ASTNode> getCompletionNode() {
+        ASTNode node = astCompletionNodeFinder.completionNode;
+        return Optional.fromNullable(node);
     }
 
     @Override
-    public ASTNode getCompletionNodeParent() {
-        return astCompletionNodeFinder.completionNodeParent();
+    public Optional<ASTNode> getCompletionNodeParent() {
+        ASTNode node = astCompletionNodeFinder.completionNodeParent();
+        return Optional.fromNullable(node);
     }
 
     @Override

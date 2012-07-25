@@ -94,6 +94,9 @@ public class Node implements Serializable {
         return states;
     }
 
+    /**
+     * Returns the probabilities of this node column wise
+     */
     public double[] getProbabilities() {
         return probabilities;
     }
@@ -102,14 +105,14 @@ public class Node implements Serializable {
     public String toString() {
         return ReflectionToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
-    
+
     @Override
     public boolean equals(Object arg0) {
-    	return EqualsBuilder.reflectionEquals(this, arg0);
+        return EqualsBuilder.reflectionEquals(this, arg0);
     }
-    
+
     @Override
     public int hashCode() {
-    	return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

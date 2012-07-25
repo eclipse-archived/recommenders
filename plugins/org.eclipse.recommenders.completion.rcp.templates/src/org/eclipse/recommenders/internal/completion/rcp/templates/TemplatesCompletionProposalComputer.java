@@ -303,7 +303,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         methodPrefix = "";
         mode = null;
 
-        final ASTNode n = rCtx.getCompletionNode();
+        final ASTNode n = rCtx.getCompletionNode().orNull();
         if (n instanceof CompletionOnSingleNameReference) {
             if (isPotentialClassName((CompletionOnSingleNameReference) n)) {
                 mode = CompletionMode.TYPE_NAME;
@@ -333,7 +333,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
 
     private boolean findPotentialTypes() {
         if (mode == CompletionMode.TYPE_NAME) {
-            final ASTNode n = rCtx.getCompletionNode();
+            final ASTNode n = rCtx.getCompletionNode().orNull();
             CompletionOnSingleNameReference c = null;
             if (n instanceof CompletionOnSingleNameReference) {
                 c = (CompletionOnSingleNameReference) n;

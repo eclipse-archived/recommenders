@@ -1,5 +1,6 @@
 package org.eclipse.recommenders.tests.completion.rcp.calls;
 
+import com.google.common.collect.Iterables;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +13,6 @@ import org.eclipse.recommenders.tests.completion.rcp.calls.CallCompletionProposa
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.xtend2.lib.StringConcatenation;
-import org.eclipse.xtext.xbase.lib.CollectionExtensions;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
@@ -207,7 +207,7 @@ public class QueryTest {
         }
       };
     Iterable<String> _map = IterableExtensions.<IMethodName, String>map(this.sut.query.calls, _function);
-    CollectionExtensions.<Object>addAll(actual, _map);
+    Iterables.<Object>addAll(actual, _map);
     Assert.assertEquals(expected, actual);
   }
 }

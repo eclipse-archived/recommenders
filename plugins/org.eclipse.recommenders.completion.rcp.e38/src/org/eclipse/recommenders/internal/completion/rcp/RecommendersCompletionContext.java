@@ -45,19 +45,23 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
     }
 
     @Override
-    public ASTNode getCompletionNode() {
-        return getCoreContext().getCompletionNode();
+    public Optional<ASTNode> getCompletionNode() {
+        InternalCompletionContext ctx = getCoreContext().orNull();
+        ASTNode res = ctx != null ? ctx.getCompletionNode() : null;
+        return Optional.fromNullable(res);
     }
 
     @Override
-    public ASTNode getCompletionNodeParent() {
-        return getCoreContext().getCompletionNodeParent();
+    public Optional<ASTNode> getCompletionNodeParent() {
+        InternalCompletionContext ctx = getCoreContext().orNull();
+        ASTNode res = ctx != null ? ctx.getCompletionNodeParent() : null;
+        return Optional.fromNullable(res);
     }
 
     @Override
     public List<IField> getVisibleFields() {
-        final InternalCompletionContext ctx = getCoreContext();
-        if (!ctx.isExtended()) {
+        final InternalCompletionContext ctx = getCoreContext().orNull();
+        if (ctx == null || !ctx.isExtended()) {
             return Collections.emptyList();
         }
         final ObjectVector v = ctx.getVisibleFields();
@@ -74,8 +78,8 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
 
     @Override
     public List<ILocalVariable> getVisibleLocals() {
-        final InternalCompletionContext ctx = getCoreContext();
-        if (!ctx.isExtended()) {
+        final InternalCompletionContext ctx = getCoreContext().orNull();
+        if (ctx == null || !ctx.isExtended()) {
             return Collections.emptyList();
         }
         final ObjectVector v = ctx.getVisibleLocalVariables();
@@ -91,8 +95,8 @@ public class RecommendersCompletionContext extends BaseRecommendersCompletionCon
 
     @Override
     public List<IMethod> getVisibleMethods() {
-        final InternalCompletionContext ctx = getCoreContext();
-        if (!ctx.isExtended()) {
+        final InternalCompletionContext ctx = getCoreContext().orNull();
+        if (ctx == null || !ctx.isExtended()) {
             return Collections.emptyList();
         }
         final ObjectVector v = ctx.getVisibleMethods();

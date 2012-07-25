@@ -148,8 +148,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
 
     private boolean findEntrypoints() {
         entrypoints = new LinkedList<ChainElement>();
-        final ASTNode node = ctx.getCompletionNode();
-
+        final ASTNode node = ctx.getCompletionNode().orNull();
         if (node instanceof CompletionOnQualifiedNameReference) {
             invocationSite = (CompletionOnQualifiedNameReference) node;
             findEntrypointsForCompletionOnQualifiedName((CompletionOnQualifiedNameReference) node);

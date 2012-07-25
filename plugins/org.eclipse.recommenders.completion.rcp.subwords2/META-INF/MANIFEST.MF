@@ -9,6 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.ui,
  org.eclipse.recommenders.completion.rcp,
  org.eclipse.jface.text,
- org.eclipse.recommenders.injection
+ org.eclipse.recommenders.injection,
+ com.google.guava;bundle-version="[10.0.0,11.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

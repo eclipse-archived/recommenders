@@ -80,8 +80,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         coreContext = collector.getCoreContext();
     }
 
-    public InternalCompletionContext getCoreContext() {
-        return coreContext;
+    public Optional<InternalCompletionContext> getCoreContext() {
+        return fromNullable(coreContext);
     }
 
     @Override
@@ -128,6 +128,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<IJavaElement> getEnclosingElement() {
+        if (coreContext == null)
+            return absent();
         try {
             if (coreContext.isExtended()) {
                 return fromNullable(coreContext.getEnclosingElement());
@@ -185,6 +187,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<String> getExpectedTypeSignature() {
+        if (coreContext == null)
+            return absent();
         final char[][] keys = coreContext.getExpectedTypesKeys();
         if (keys == null) {
             return absent();
@@ -204,6 +208,9 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public String getPrefix() {
+        if (coreContext == null)
+            return "";
+
         final char[] token = coreContext.getToken();
         if (token == null) {
             return "";
@@ -214,7 +221,10 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     @Override
     public String getReceiverName() {
 
-        final ASTNode n = getCompletionNode();
+        final ASTNode n = getCompletionNode().orNull();
+        if (n == null)
+            return "";
+
         char[] name = null;
         if (n instanceof CompletionOnQualifiedNameReference) {
             final CompletionOnQualifiedNameReference c = cast(n);
@@ -268,7 +278,9 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     }
 
     private Optional<TypeBinding> findReceiverTypeBinding() {
-        final ASTNode n = getCompletionNode();
+        final ASTNode n = getCompletionNode().orNull();
+        if (n == null)
+            return absent();
         TypeBinding receiver = null;
         if (n instanceof CompletionOnLocalName) {
             // final CompletionOnLocalName c = cast(n);
@@ -321,7 +333,10 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<IMethodName> getMethodDef() {
-        final ASTNode node = getCompletionNode();
+        final ASTNode node = getCompletionNode().orNull();
+        if (node == null)
+            return absent();
+
         if (node instanceof CompletionOnMemberAccess) {
             final CompletionOnMemberAccess n = cast(node);
             if (n.receiver instanceof MessageSend) {

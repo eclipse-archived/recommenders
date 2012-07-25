@@ -114,7 +114,7 @@ class RecommendersCompletionContextTest {
 	}
 	
 	def private assertCompletionNode(IRecommendersCompletionContext sut, Class<?> type){
-		val node = sut.completionNode;
+		val node = sut.completionNode.orNull;
 		assertInstanceof(node,type)
 	}
 	
@@ -126,12 +126,12 @@ class RecommendersCompletionContextTest {
 	}
 	
 	def private assertCompletionNodeParent(IRecommendersCompletionContext sut, Class<?> type){
-		val node = sut.completionNodeParent;
+		val node = sut.completionNodeParent.orNull;
 		assertInstanceof(node,type)
 	}
 	
 	def private assertCompletionNodeParentIsNull(IRecommendersCompletionContext sut){
-		assertNull("parent node is not null!", sut.completionNodeParent)
+		assertNull("parent node is not null!", sut.completionNodeParent.orNull)
 	}
 
 	def exercise(CharSequence code){
