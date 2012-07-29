@@ -15,16 +15,20 @@ import static com.google.common.base.Optional.of;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
+import org.eclipse.recommenders.utils.names.VmPackageName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
@@ -155,6 +159,29 @@ public class BindingUtils {
         return (IVariableBinding) (b instanceof IVariableBinding ? b : null);
     }
 
+    public static Optional<IPackageName> toPackageName(IPackageBinding pkg) {
+        if (pkg == null)
+            return absent();
+        String s = pkg.getName().replace('.', '/');
+        return Optional.of((IPackageName) VmPackageName.get(s));
+    }
+
+    public static Optional<IPackageName> toPackageName(ITypeBinding b) {
+        if (b == null)
+            return absent();
+        return toPackageName(b.getPackage());
+    }
+
+    public static List<IPackageName> toPackageNames(final ITypeBinding[] types) {
+        final List<IPackageName> res = Lists.newLinkedList();
+        for (final ITypeBinding b : types) {
+            final Optional<IPackageName> opt = toPackageName(b);
+            if (opt.isPresent()) {
+                res.add(opt.get());
+            }
+        }
+        return res;
+    }
     // public static Optional<IMethod> getMethod(final IMethodBinding b) {
     // // assertNotNull(b);
     // final IJavaElement element = resolveJavaElementQuietly(b);
