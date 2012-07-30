@@ -121,8 +121,8 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
                     parent.setId(System.currentTimeMillis() + String.valueOf(Math.random()).substring(5));
 
                     MatchNode[] children = new MatchNode[parent.getParameters().length];
+                    this.values.clear();
                     if(rankResult.get(k).isInOrder()){
-                        this.values.clear();
                         parseParameterValues(rankResult.get(k).getPattern(), query);
                     }
                     for (int i = 0; i < children.length; i++) {
