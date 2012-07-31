@@ -192,11 +192,9 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
                 if(inOrder && patternWords.length > i){
                     for(; i<patternWords.length; i++)
                         if(!patternWords[i].startsWith("$")){
-                            //inOrder = false;break;
                             continue;
                         }else{
                             missParam++;
-                            //rankNumber++;
                         }
                 }
                 //Rank match string number in _not-in-order_ condition
@@ -212,8 +210,15 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
                     }
                 }
                 
-                if(!inOrder && rankNumber == 0 && queryWords.length == 1 && pattern.startsWith(query)){
-                    rankNumber = 1;
+                //Special situation when user is inputing characters of the first query word
+                if(queryWords.length == 1){
+                    if(!inOrder && rankNumber == 0){
+                        if(pattern.startsWith(query))
+                            rankNumber = 2;
+                        else if(startsWith(patternWords, query))
+                            rankNumber = 1;
+                    }else if(rankNumber > 0)
+                        rankNumber++;
                 }
                 
                 if(inBetterMatch(maxInOrder, minMissParam, maxRankNumber, inOrder, missParam, rankNumber)){
@@ -231,6 +236,13 @@ public class PatternRankSearchEngine implements SnipMatchSearchEngine {
                 rankResult.add(new PatternRankResult(maxInOrder, minMissParam, maxRankNumber, file, matchPattern));
             }
         }
+    }
+    
+    private boolean startsWith(String[] patterns, String query){
+        for(String pattern : patterns){
+            if(pattern.startsWith(query)) return true;
+        }
+        return false;
     }
 
     private boolean inBetterMatch(boolean maxInOrder, int minMissParam, int maxRankNumber,boolean inOrder, int missParam, int rankNumber){
