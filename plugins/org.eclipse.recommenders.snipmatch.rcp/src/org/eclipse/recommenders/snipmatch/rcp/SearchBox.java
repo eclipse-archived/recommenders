@@ -72,6 +72,8 @@ public class SearchBox extends ClientSwitcher {
     private Shell resultOverviewShell = null;
     private StyledText resultOverviewPanel = null;
 
+    private String lastSearchText = null;
+
     public SearchBox() {
     }
 
@@ -145,21 +147,21 @@ public class SearchBox extends ClientSwitcher {
                         switch (e.keyCode) {
 
                         case '\t':
-                            if(resultDisplayTable != null && resultDisplayTable.getSelectionIndex() > -1){
+                            if (resultDisplayTable != null && resultDisplayTable.getSelectionIndex() > -1) {
                                 int selection = resultDisplayTable.getSelectionIndex();
                                 EffectMatchNode matchSelection = (EffectMatchNode) matches.get(selection);
                                 String[] patterns = matchSelection.getPattern().split("\\s+");
                                 String query = queryText.getText();
                                 String[] querys = query.split("\\s+");
-                                if(querys.length <= patterns.length){
-                                    for(int i=0; i<querys.length; i++){
-                                        if(i == querys.length-1){
-                                            if(!patterns[i].equals(querys[i]) && patterns[i].startsWith(querys[i])){
+                                if (querys.length <= patterns.length) {
+                                    for (int i = 0; i < querys.length; i++) {
+                                        if (i == querys.length - 1) {
+                                            if (!patterns[i].equals(querys[i]) && patterns[i].startsWith(querys[i])) {
                                                 String fullText = query + patterns[i].substring(querys[i].length());
                                                 queryText.setText(fullText);
                                                 queryText.setSelection(fullText.length());
                                             }
-                                        }else if(!patterns[i].startsWith("$") && !patterns[i].equals(querys[i])){
+                                        } else if (!patterns[i].startsWith("$") && !patterns[i].equals(querys[i])) {
                                             break;
                                         }
                                     }
@@ -262,6 +264,10 @@ public class SearchBox extends ClientSwitcher {
             return;
         }
 
+        // If search query does not change exactly, do not search again
+        if (lastSearchText != null && lastSearchText.trim().equals(query.trim()))
+            return;
+
         // Set the tool tip to the query, in case the query doesn't fit in the
         // search box.
         queryText.setToolTipText(query);
@@ -306,6 +312,7 @@ public class SearchBox extends ClientSwitcher {
                         }
                     }
                 });
+                lastSearchText = query;
             }
 
             @Override
