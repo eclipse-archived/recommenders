@@ -18,9 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -35,12 +33,10 @@ import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.jdt.internal.corext.util.SuperTypeHierarchyCache;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
-import org.eclipse.recommenders.internal.completion.rcp.ProcessableCompletionProposalComputer;
+import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.CallPreferencePage;
 import org.eclipse.recommenders.internal.completion.rcp.calls.wiring.CallsCompletionModule.CallCompletion;
@@ -268,22 +264,12 @@ public class CallsSessionProcessor extends SessionProcessor {
             final ProposalMatcher matcher = new ProposalMatcher(coreProposal);
             for (final CallsRecommendation call : recommendations) {
                 final IMethodName crMethod = call.method;
-                if (!matcher.match(crMethod)) {
-                    continue;
-                }
-                final int percentage = (int) rint(call.probability * 100);
-                proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
-                    @Override
-                    public void modifyRelevance(AtomicInteger relevance) {
-                        int increment = 200 + percentage;
-                        relevance.addAndGet(increment);
-                    }
+                if (!matcher.match(crMethod)) continue;
 
-                    @Override
-                    public void modifyDisplayString(StyledString displayString) {
-                        displayString.append(" - " + percentage + " %", StyledString.COUNTER_STYLER);
-                    }
-                });
+                final int percentage = (int) rint(call.probability * 100);
+                int increment = 200 + percentage;
+                String label = percentage + " %";
+                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));
             }
         }
     }

@@ -19,7 +19,6 @@ import static org.eclipse.recommenders.utils.rcp.ast.BindingUtils.toPackageNames
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -42,10 +41,9 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMethodReturnType
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
+import org.eclipse.recommenders.completion.rcp.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
 import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 import org.eclipse.recommenders.utils.names.IPackageName;
@@ -58,6 +56,9 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 public final class TypeProposalsProcessor extends SessionProcessor {
+
+    private static final SimpleProposalProcessor PKG = new SimpleProposalProcessor(4, "pkg");
+    private static SimpleProposalProcessor EXACT = new SimpleProposalProcessor(1 << 30, "exact type");
 
     static final Set<Class<?>> SUPPORTED_COMPLETION_NODES = new HashSet<Class<?>>() {
         {
@@ -83,7 +84,6 @@ public final class TypeProposalsProcessor extends SessionProcessor {
     @Override
     public void startSession(IRecommendersCompletionContext context) {
         expectedType = context.getExpectedType().orNull();
-
         expectedSubwords = Sets.newHashSet();
         if (expectedType != null) {
             crExpectedType = jdtCache.toRecType(expectedType);
@@ -176,7 +176,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         sig = StringUtils.removeEnd(sig, ";");
         ITypeName type = VmTypeName.get(sig);
         if (crExpectedType.equals(type)) {
-            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(1 << 30));
+            proposal.getProposalProcessorManager().addProcessor(EXACT);
         }
     }
 
@@ -188,7 +188,8 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         returnType = StringUtils.removeEnd(returnType, ";");
         ITypeName type = VmTypeName.get(returnType);
         if (crExpectedType.equals(type)) {
-            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(1 << 30));
+            ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+            mgr.addProcessor(EXACT);
         }
     }
 
@@ -199,23 +200,26 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         ITypeName type = VmTypeName.get(sig);
         IPackageName pkg = type.getPackage();
         if (pkgs.contains(pkg)) {
-            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(4, "pkg"));
+            ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+            mgr.addProcessor(PKG);
         }
     }
 
     private void handleConstructorProposal(IProcessableProposal proposal, final CompletionProposal coreProposal) {
         String name = removeEnd(valueOf(coreProposal.getDeclarationSignature()).replace('.', '/'), ";");
         VmTypeName recType = VmTypeName.get(name);
+        ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
         if (pkgs.contains(recType.getPackage())) {
-            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(4, "pkg"));
+            mgr.addProcessor(PKG);
         }
         if (expectedType != null) {
             Set<String> s2 = Sets.newHashSet(recType.getClassName().split("(?=\\p{Upper})"));
             final SetView<String> intersection = Sets.intersection(s2, expectedSubwords);
 
-            if (!intersection.isEmpty())
-                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(intersection.size(),
-                        "partial"));
+            if (!intersection.isEmpty()) {
+                SimpleProposalProcessor p = new SimpleProposalProcessor(intersection.size(), "partial");
+                mgr.addProcessor(p);
+            }
         }
     }
 }

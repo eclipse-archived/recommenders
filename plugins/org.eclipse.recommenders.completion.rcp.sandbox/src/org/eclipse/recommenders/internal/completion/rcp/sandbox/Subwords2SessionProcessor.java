@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.sandbox;
 
+import static org.apache.commons.lang3.ArrayUtils.isEquals;
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.eclipse.jdt.core.Signature.getReturnType;
 import static org.eclipse.recommenders.internal.completion.rcp.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
 
@@ -26,11 +28,13 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
+import org.eclipse.recommenders.completion.rcp.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
 import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 
 public class Subwords2SessionProcessor extends SessionProcessor {
 
+    SimpleProposalProcessor processor = new SimpleProposalProcessor(5, "contains");
     private boolean skip = false;
     private String varName;
 
@@ -69,16 +73,27 @@ public class Subwords2SessionProcessor extends SessionProcessor {
         if (skip) return;
 
         CompletionProposal core = proposal.getCoreProposal().or(NULL_PROPOSAL);
+        ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+        String name = null;
+
         switch (core.getKind()) {
+        case CompletionProposal.FIELD_REF:
+        case CompletionProposal.LOCAL_VARIABLE_REF:
+            name = String.valueOf(core.getName());
+            if (containsIgnoreCase(name, varName)) {
+                mgr.addProcessor(processor);
+            }
+
+            break;
         case CompletionProposal.METHOD_REF:
-            String name = String.valueOf(core.getName());
-            if (StringUtils.containsIgnoreCase(name, varName) && !isVoid(core)) {
-                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(5, ".oO"));
+            name = String.valueOf(core.getName());
+            if (containsIgnoreCase(name, varName) && !isVoid(core)) {
+                mgr.addProcessor(processor);
             }
         }
     }
 
     private boolean isVoid(CompletionProposal core) {
-        return ArrayUtils.isEquals(getReturnType(core.getSignature()), new char[] { 'V' });
+        return isEquals(getReturnType(core.getSignature()), new char[] { 'V' });
     }
 }
