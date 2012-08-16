@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -82,6 +83,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
     private IType expectedType;
     private JavaElementResolver jdtCache;
     private HashSet<String> expectedSubwords;
+    private ITypeName crExpectedType;
 
     @Inject
     public TypeProposalsProcessor(JavaElementResolver jdtCache) {
@@ -94,12 +96,11 @@ public final class TypeProposalsProcessor extends SessionProcessor {
 
         expectedSubwords = Sets.newHashSet();
         if (expectedType != null) {
+            crExpectedType = jdtCache.toRecType(expectedType);
             String[] split1 = expectedType.getElementName().split("(?=\\p{Upper})");
-            {
-                for (String s : split1) {
-                    if (s.length() > 3) {
-                        expectedSubwords.add(s);
-                    }
+            for (String s : split1) {
+                if (s.length() > 3) {
+                    expectedSubwords.add(s);
                 }
             }
         }
@@ -155,9 +156,51 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         case CompletionProposal.CONSTRUCTOR_INVOCATION:
             handleConstructorProposal(proposal, coreProposal);
             break;
+        case CompletionProposal.METHOD_REF:
+        case CompletionProposal.METHOD_REF_WITH_CASTED_RECEIVER:
+            handleMethodProposal(proposal, coreProposal);
+            break;
+        case CompletionProposal.FIELD_REF:
+        case CompletionProposal.FIELD_REF_WITH_CASTED_RECEIVER:
+        case CompletionProposal.LOCAL_VARIABLE_REF:
+            handleVariableProposal(proposal, coreProposal);
+            break;
         case CompletionProposal.TYPE_REF:
         case CompletionProposal.TYPE_IMPORT:
             handleTypeProposal(proposal, coreProposal);
+            break;
+        }
+    }
+
+    private void handleVariableProposal(IProcessableProposal proposal, CompletionProposal variableProposal) {
+        String sig = new String(variableProposal.getSignature());
+        sig = sig.replace('.', '/');
+        sig = StringUtils.removeEnd(sig, ";");
+        ITypeName type = VmTypeName.get(sig);
+        if (crExpectedType.equals(type)) {
+            proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
+                @Override
+                public void modifyRelevance(AtomicInteger relevance) {
+                    relevance.addAndGet(1 << 15);
+                }
+            });
+        }
+    }
+
+    private void handleMethodProposal(IProcessableProposal proposal, CompletionProposal coreProposal) {
+        if (crExpectedType == null) return;
+        String methodSig = new String(coreProposal.getSignature());
+        String returnType = Signature.getReturnType(methodSig);
+        returnType = returnType.replace('.', '/');
+        returnType = StringUtils.removeEnd(returnType, ";");
+        ITypeName type = VmTypeName.get(returnType);
+        if (crExpectedType.equals(type)) {
+            proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
+                @Override
+                public void modifyRelevance(AtomicInteger relevance) {
+                    relevance.addAndGet(1 << 15);
+                }
+            });
         }
     }
 
