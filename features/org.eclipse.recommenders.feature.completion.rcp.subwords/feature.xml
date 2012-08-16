@@ -31,22 +31,12 @@
       %license
    </license>
 
+   <requires>
+      <import feature="org.eclipse.recommenders.feature.rcp.core" version="1.0.0.qualifier"/>
+   </requires>
+
    <plugin
          id="org.eclipse.recommenders.completion.rcp.subwords"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.utils"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.utils.rcp"
          download-size="0"
          install-size="0"
          version="0.0.0"
