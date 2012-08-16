@@ -17,5 +17,14 @@
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer">
       </javaCompletionProposalComputer>
    </extension>
+   <extension
+         point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
+      <processor
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesSessionProcessor"
+            icon="icons/obj16/overrides.png"
+            id="org.eclipse.recommenders.completion.rcp.overrides.sessionprocessor"
+            name="Overrides Completion Processor">
+      </processor>
+   </extension>
    
 </plugin>

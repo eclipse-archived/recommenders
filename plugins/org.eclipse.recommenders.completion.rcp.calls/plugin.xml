@@ -40,5 +40,14 @@
             name="Calls Recommender">
       </provider>
    </extension>
+      <extension
+            point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
+         <processor
+               class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallsSessionProcessor"
+               icon="icons/obj16/calls.gif"
+               id="org.eclipse.recommenders.completion.rcp.calls.processor"
+               name="Calls">
+         </processor>
+      </extension>
 
 </plugin>

@@ -30,7 +30,6 @@ public class DisableContentAssistCategoryJob extends UIJob {
     private String categoryId;
 
     /**
-     * 
      * @param categoryId
      *            the content assist category as specified in plugin.xml.
      */

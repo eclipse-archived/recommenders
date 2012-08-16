@@ -21,6 +21,7 @@ import org.eclipse.jface.preference.JFacePreferences;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
+import org.eclipse.recommenders.utils.rcp.RCPUtils;
 import org.eclipse.swt.graphics.TextStyle;
 
 public class SubwordsProposalContext {
@@ -47,8 +48,8 @@ public class SubwordsProposalContext {
             final IJavaCompletionProposal jdtProposal, final JavaContentAssistInvocationContext ctx) {
         this.proposal = proposal;
         this.ctx = ctx;
-        this.subwordsMatchingRegion = SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket(jdtProposal
-                .getDisplayString());
+        this.subwordsMatchingRegion =
+                SubwordsUtils.getTokensBetweenLastWhitespaceAndFirstOpeningBracket(jdtProposal.getDisplayString());
         this.jdtProposal = jdtProposal;
         setPrefix(prefix);
     }
@@ -73,7 +74,7 @@ public class SubwordsProposalContext {
     }
 
     public StyledString getStyledDisplayString(final StyledString origin) {
-        final StyledString copy = SubwordsUtils.deepCopy(origin);
+        final StyledString copy = RCPUtils.deepCopy(origin);
         for (int index : bestSubsequence)
             copy.setStyle(index, 1, BIGRAMS_STYLER);
         return copy;
@@ -86,9 +87,9 @@ public class SubwordsProposalContext {
     public int calculateRelevance() {
         String commonPrefix = getCommonPrefix(subwordsMatchingRegion.toLowerCase(), prefix.toLowerCase());
         int score = 0;
-        if(commonPrefix.length()==prefix.length()) {
+        if (commonPrefix.length() == prefix.length()) {
             // complete prefix match
-            score+=200;
+            score += 200;
         }
         int relevance = jdtProposal.getRelevance() + score + bestSubsequenceScore;
         return relevance;

@@ -16,7 +16,9 @@
       label="Code Recommenders Developer Tools"
       version="1.0.0.qualifier"
       provider-name="Eclipse Code Recommenders"
-      plugin="org.eclipse.recommenders.rcp">
+      plugin="org.eclipse.recommenders.rcp"
+      license-feature="org.eclipse.recommenders.feature.license"
+      license-feature-version="1.0.0.qualifier">
 
    <description url="http://www.eclipse.org/recommenders/">
       %description

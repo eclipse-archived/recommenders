@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 
-@SuppressWarnings("restriction")
 public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     private Logger log = LoggerFactory.getLogger(getClass());

@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer;
+import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesRecommender;
 import org.eclipse.recommenders.tests.SmokeTestScenarios;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.overrides.ModelStoreMock;
@@ -104,8 +105,9 @@ public class OverridesCompletionProposalComputerSmokeTest {
           JavaElementResolver _javaElementResolver = new JavaElementResolver();
           final JavaElementResolver resolver = _javaElementResolver;
           ModelStoreMock _modelStoreMock = new ModelStoreMock();
+          OverridesRecommender _overridesRecommender = new OverridesRecommender(_modelStoreMock, resolver);
           RecommendersCompletionContextFactoryMock _recommendersCompletionContextFactoryMock = new RecommendersCompletionContextFactoryMock();
-          OverridesCompletionProposalComputer _overridesCompletionProposalComputer = new OverridesCompletionProposalComputer(_modelStoreMock, _recommendersCompletionContextFactoryMock, resolver);
+          OverridesCompletionProposalComputer _overridesCompletionProposalComputer = new OverridesCompletionProposalComputer(_overridesRecommender, _recommendersCompletionContextFactoryMock);
           final OverridesCompletionProposalComputer sut = _overridesCompletionProposalComputer;
           sut.sessionStarted();
           sut.computeCompletionProposals(ctx, null);

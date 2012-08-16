@@ -9,6 +9,7 @@ import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMoc
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.junit.Test
+import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesRecommender
  
 class OverridesCompletionProposalComputerSmokeTest { 
   
@@ -58,7 +59,7 @@ class OverridesCompletionProposalComputerSmokeTest {
 		for(completionIndex : struct.second){
 			val ctx = new JavaContentAssistContextMock(cu, completionIndex)
 			val resolver = new JavaElementResolver()
-			val sut = new OverridesCompletionProposalComputer(new ModelStoreMock(), new RecommendersCompletionContextFactoryMock(),resolver)
+			val sut = new OverridesCompletionProposalComputer(new OverridesRecommender(new ModelStoreMock(), resolver), new RecommendersCompletionContextFactoryMock())
 			sut.sessionStarted
 			sut.computeCompletionProposals(ctx, null)
 		}

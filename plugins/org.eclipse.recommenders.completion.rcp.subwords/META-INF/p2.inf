@@ -1,0 +1,6 @@
+properties.4.name=p2.mirrorsURL
+properties.4.value=http://www.eclipse.org/downloads/download.php?file=/recommenders/updates/dev/e42/&amp;format=xml
+properties.3.name=p2.statsURI
+properties.3.value=http://your.stats.server/stats
+properties.0.name=p2.statsURI2
+properties.0.value=http://your.stats.server/stats

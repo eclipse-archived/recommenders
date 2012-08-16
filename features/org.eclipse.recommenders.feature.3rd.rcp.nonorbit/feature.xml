@@ -3,7 +3,9 @@
       id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit"
       label="Code Recommenders: 3rd Party Dependencies not hosted on Orbit"
       version="1.0.0.qualifier"
-      provider-name="Eclipse Code Recommenders">
+      provider-name="Eclipse Code Recommenders"
+      license-feature="org.eclipse.recommenders.feature.license"
+      license-feature-version="1.0.0.qualifier">
 
    <description url="http://www.eclipse.org/recommenders/">
       %description

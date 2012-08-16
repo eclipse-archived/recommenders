@@ -17,6 +17,10 @@ import java.util.List;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -62,5 +66,23 @@ public class RCPUtils {
         }
         final IWorkbenchPage page = window.getActivePage();
         return of(page);
+    }
+
+    public static StyledString deepCopy(final StyledString displayString) {
+        final StyledString copy = new StyledString(displayString.getString());
+        for (final StyleRange range : displayString.getStyleRanges()) {
+            copy.setStyle(range.start, range.length, new Styler() {
+
+                @Override
+                public void applyStyles(final TextStyle textStyle) {
+                    textStyle.background = range.background;
+                    textStyle.borderColor = range.borderColor;
+                    textStyle.borderStyle = range.borderStyle;
+                    textStyle.font = range.font;
+                    textStyle.foreground = range.foreground;
+                }
+            });
+        }
+        return copy;
     }
 }

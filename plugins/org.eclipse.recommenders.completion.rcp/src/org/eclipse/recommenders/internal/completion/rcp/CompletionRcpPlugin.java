@@ -13,9 +13,6 @@ package org.eclipse.recommenders.internal.completion.rcp;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-/**
- * The activator class controls the plug-in life cycle
- */
 public class CompletionRcpPlugin extends AbstractUIPlugin {
 
     public static final String PLUGIN_ID = "org.eclipse.recommenders.completion.rcp"; //$NON-NLS-1$
@@ -25,26 +22,6 @@ public class CompletionRcpPlugin extends AbstractUIPlugin {
     public static CompletionRcpPlugin getDefault() {
         return plugin;
     }
-
-    // public static void log(final CoreException e) {
-    // LoggingUtils.log(e, getDefault());
-    // }
-    //
-    // public static void log(final IStatus status) {
-    // LoggingUtils.log(status, getDefault());
-    // }
-    //
-    // public static void logError(final Throwable e, final String format, final Object... args) {
-    // LoggingUtils.logError(e, getDefault(), format, args);
-    // }
-    //
-    // public static void logWarning(final Throwable e, final String format, final Object... args) {
-    // LoggingUtils.logError(e, getDefault(), format, args);
-    // }
-    //
-    // public static void logWarning(final String format, final Object... args) {
-    // LoggingUtils.logWarning(null, getDefault(), format, args);
-    // }
 
     @Override
     public void start(final BundleContext context) throws Exception {

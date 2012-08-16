@@ -33,6 +33,7 @@ import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -101,8 +102,8 @@ public class RecommendersModule extends AbstractModule implements Module {
             IWorkspaceRoot workspace) {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         File stateLocation = new File(Platform.getStateLocation(bundle).toFile(), "v0.5-package-root-infos.json");
-        final IClasspathEntryInfoProvider cpeInfoProvider = new ClasspathEntryInfoProvider(stateLocation, workspace,
-                bus);
+        final IClasspathEntryInfoProvider cpeInfoProvider =
+                new ClasspathEntryInfoProvider(stateLocation, workspace, bus);
 
         PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
 
@@ -236,8 +237,12 @@ public class RecommendersModule extends AbstractModule implements Module {
     // @Workspace
     protected EventBus provideWorkspaceEventBus() {
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
-        final ExecutorService pool = coreThreadsTimoutExecutor(numberOfCores + 1, MIN_PRIORITY,
-                "Recommenders-Bus-Thread-", 1L, TimeUnit.MINUTES);
+        final ExecutorService pool =
+                coreThreadsTimoutExecutor(numberOfCores + 1,
+                        MIN_PRIORITY,
+                        "Recommenders-Bus-Thread-",
+                        1L,
+                        TimeUnit.MINUTES);
         final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool);
         return bus;
     }
@@ -334,6 +339,11 @@ public class RecommendersModule extends AbstractModule implements Module {
     @Provides
     protected JavaModelManager provideJavaModelManger() {
         return JavaModelManager.getJavaModelManager();
+    }
+
+    @Provides
+    protected IExtensionRegistry provideRegistry() {
+        return Platform.getExtensionRegistry();
     }
 
     private final class ActivePageFinder implements Callable<IWorkbenchPage> {

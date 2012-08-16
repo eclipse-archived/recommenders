@@ -51,7 +51,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@SuppressWarnings("restriction")
 public class SubwordsCompletionRequestor extends CompletionRequestor {
 
     private final List<IJavaCompletionProposal> proposals = Lists.newLinkedList();
@@ -116,8 +115,8 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
     protected boolean shouldFillArgumentNames() {
         try {
             // when running a test suite this throws a NPE
-            return PreferenceConstants.getPreferenceStore().getBoolean(
-                    PreferenceConstants.CODEASSIST_FILL_ARGUMENT_NAMES);
+            return PreferenceConstants.getPreferenceStore()
+                    .getBoolean(PreferenceConstants.CODEASSIST_FILL_ARGUMENT_NAMES);
         } catch (final Exception e) {
             return true;
         }
@@ -147,8 +146,9 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
     }
 
     private String[] getFavoriteStaticMembers() {
-        final String serializedFavorites = PreferenceConstants.getPreferenceStore().getString(
-                PreferenceConstants.CODEASSIST_FAVORITE_STATIC_MEMBERS);
+        final String serializedFavorites =
+                PreferenceConstants.getPreferenceStore()
+                        .getString(PreferenceConstants.CODEASSIST_FAVORITE_STATIC_MEMBERS);
         if (serializedFavorites != null && serializedFavorites.length() > 0) {
             return serializedFavorites.split(";"); //$NON-NLS-1$
         }
@@ -195,8 +195,8 @@ public class SubwordsCompletionRequestor extends CompletionRequestor {
         collector.accept(proposal);
         // order matters ;)
         final IJavaCompletionProposal[] jdtProposals = collector.getJavaCompletionProposals();
-        final IJavaCompletionProposal[] newProposals = ArrayUtils
-                .subarray(jdtProposals, oldLength, jdtProposals.length);
+        final IJavaCompletionProposal[] newProposals =
+                ArrayUtils.subarray(jdtProposals, oldLength, jdtProposals.length);
         return newProposals;
     }
 

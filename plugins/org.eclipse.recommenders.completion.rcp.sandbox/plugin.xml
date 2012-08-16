@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
+      <processor
+            class="org.eclipse.recommenders.internal.completion.rcp.sandbox.Subwords2SessionProcessor"
+            icon="icons/elcl16/category.gif"
+            id="org.eclipse.recommenders.completion.rcp.subwords2.processor"
+            name="Assigment Name Processor">
+      </processor>
+         <processor
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.subwords2.TypeProposalsProcessor"
+            icon="icons/elcl16/category.gif"
+            id="org.eclipse.recommenders.completion.rcp.types.processor"
+            name="Types">
+      </processor>
+         <processor
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.subwords2.HippieCompletionSessionProcessor"
+            icon="icons/elcl16/category.gif"
+            id="org.eclipse.recommenders.completion.rcp.hippie.processor"
+            name="Hippie">
+      </processor>
+   </extension>
+
+</plugin>

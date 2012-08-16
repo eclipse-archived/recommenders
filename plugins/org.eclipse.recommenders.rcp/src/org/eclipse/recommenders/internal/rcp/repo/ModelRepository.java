@@ -16,6 +16,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -46,6 +47,8 @@ import org.sonatype.aether.collection.DependencySelector;
 import org.sonatype.aether.connector.file.FileRepositoryConnectorFactory;
 import org.sonatype.aether.connector.wagon.WagonProvider;
 import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
+import org.sonatype.aether.deployment.DeployRequest;
+import org.sonatype.aether.deployment.DeploymentException;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.installation.InstallRequest;
@@ -67,6 +70,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.Response;
 
 @Singleton
@@ -127,8 +131,7 @@ public class ModelRepository implements IModelRepository {
             if (url.startsWith("file:")) {
                 // try file:
                 File file = new File(new URI(url));
-                if (file.exists())
-                    return of(file.lastModified() + "");
+                if (file.exists()) return of(file.lastModified() + "");
                 return absent();
             }
             Response r = http.prepareHead(url).execute().get();
@@ -195,8 +198,7 @@ public class ModelRepository implements IModelRepository {
     }
 
     @Override
-    public synchronized File resolve(Artifact artifact, final IProgressMonitor monitor)
-            throws DependencyResolutionException {
+    public synchronized File resolve(Artifact artifact, final IProgressMonitor monitor) throws DependencyResolutionException {
         monitor.subTask("Resolving...");
         DefaultRepositorySystemSession session = newSession();
         session.setDependencySelector(new TheArtifactOnlyDependencySelector());
@@ -245,6 +247,15 @@ public class ModelRepository implements IModelRepository {
         log.info("installed '{}' to {}", artifact, location);
     }
 
+    public void deploy(Artifact artifact) throws DeploymentException {
+        RepositorySystemSession session = newSession();
+        DeployRequest r = new DeployRequest();
+        r.addArtifact(artifact);
+        r.setRepository(remote);
+        system.deploy(session, r);
+        log.info("deployed '{}' to {}", artifact, remote.getUrl());
+    }
+
     @Override
     public String toString() {
         return location.getAbsolutePath();
@@ -268,8 +279,8 @@ public class ModelRepository implements IModelRepository {
     }
 
     private Optional<VersionRangeResult> resolveVersionRange(Artifact a) {
-        VersionRangeRequest rangeRequest = new VersionRangeRequest(a, Collections.singletonList(remote),
-                a.getClassifier());
+        VersionRangeRequest rangeRequest =
+                new VersionRangeRequest(a, Collections.singletonList(remote), a.getClassifier());
         try {
             VersionRangeResult range = system.resolveVersionRange(newSession(), rangeRequest);
             return of(range);
@@ -297,8 +308,7 @@ public class ModelRepository implements IModelRepository {
     @Override
     public void setRemote(String url) {
         remote = new RemoteRepository("remote-models", "default", url);
-        if (proxy == null)
-            return;
+        if (proxy == null) return;
 
         URI uri = URI.create(url);
         for (IProxyData data : proxy.select(uri)) {
@@ -335,5 +345,9 @@ public class ModelRepository implements IModelRepository {
     @Override
     public File getLocation() {
         return location;
+    }
+
+    public void setAuthentication(String user, String pass) {
+        remote.setAuthentication(new Authentication(user, pass));
     }
 }

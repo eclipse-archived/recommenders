@@ -14,21 +14,16 @@
 	<packaging>pom</packaging>
 
 	<modules>
+        <module>org.eclipse.recommenders.feature.license</module>
         <module>org.eclipse.recommenders.feature.rcp</module>
-        <module>org.eclipse.recommenders.feature.rcp.source</module>
         <module>org.eclipse.recommenders.feature.rcp.core</module>
-        <module>org.eclipse.recommenders.feature.rcp.core.source</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.intellig</module>
-		<module>org.eclipse.recommenders.feature.completion.rcp.intellig.source</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.intellig.e37</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.subwords</module>
-		<module>org.eclipse.recommenders.feature.completion.rcp.subwords.source</module>
-		<module>org.eclipse.recommenders.feature.completion.rcp.subwords2</module>
+		<module>org.eclipse.recommenders.feature.completion.rcp.sandbox</module>
         <module>org.eclipse.recommenders.feature.completion.rcp.chain</module>
-        <module>org.eclipse.recommenders.feature.completion.rcp.chain.source</module>
         <module>org.eclipse.recommenders.feature.completion.rcp.chain.e37</module>
 		<module>org.eclipse.recommenders.feature.extdoc.rcp</module>
-		<module>org.eclipse.recommenders.feature.extdoc.rcp.source</module>
         <module>org.eclipse.recommenders.feature.3rd.orbit</module>
         <module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>
         <module>org.eclipse.recommenders.feature.3rd.rcp.nonjuno</module>
@@ -51,10 +46,7 @@
 						<rules>
 							<requireFilesExist>
 								<files>
-									<file>${basedir}/about.html</file>
 									<file>${basedir}/feature.properties</file>
-									<file>${basedir}/license.html</file>
-									<file>${basedir}/epl-v10.html</file>
 								</files>
 							</requireFilesExist>
 						</rules>

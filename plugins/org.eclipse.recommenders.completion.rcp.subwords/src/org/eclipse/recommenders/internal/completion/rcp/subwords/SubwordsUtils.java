@@ -18,32 +18,10 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
-import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.graphics.TextStyle;
 
 public class SubwordsUtils {
     static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory";
     static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory";
-
-    public static StyledString deepCopy(final StyledString displayString) {
-        final StyledString copy = new StyledString(displayString.getString());
-        for (final StyleRange range : displayString.getStyleRanges()) {
-            copy.setStyle(range.start, range.length, new Styler() {
-
-                @Override
-                public void applyStyles(final TextStyle textStyle) {
-                    textStyle.background = range.background;
-                    textStyle.borderColor = range.borderColor;
-                    textStyle.borderStyle = range.borderStyle;
-                    textStyle.font = range.font;
-                    textStyle.foreground = range.foreground;
-                }
-            });
-        }
-        return copy;
-    }
 
     public static String getTokensBetweenLastWhitespaceAndFirstOpeningBracket(final CompletionProposal proposal) {
         boolean isPotentialMethodDecl = proposal.getKind() == CompletionProposal.POTENTIAL_METHOD_DECLARATION;
@@ -75,7 +53,6 @@ public class SubwordsUtils {
         return completion;
     }
 
-    @SuppressWarnings("restriction")
     public static boolean isMylynInstalled() {
         CompletionProposalComputerRegistry reg = CompletionProposalComputerRegistry.getDefault();
         for (CompletionProposalCategory cat : reg.getProposalCategories()) {

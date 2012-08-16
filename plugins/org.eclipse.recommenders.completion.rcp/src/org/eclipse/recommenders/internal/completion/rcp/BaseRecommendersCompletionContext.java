@@ -17,6 +17,7 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Map;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -50,8 +51,24 @@ import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 import com.google.common.base.Optional;
 
-@SuppressWarnings("restriction")
 public abstract class BaseRecommendersCompletionContext implements IRecommendersCompletionContext {
+
+    public static ASTNode NULL = new ASTNode() {
+
+        @Override
+        public StringBuffer print(int indent, StringBuffer output) {
+            return output;
+        }
+    };
+
+    private final class TimeoutProgressMonitor extends NullProgressMonitor {
+        long limit = System.currentTimeMillis() + 5000;
+
+        @Override
+        public boolean isCanceled() {
+            return System.currentTimeMillis() - limit > 0;
+        }
+    }
 
     private final JavaContentAssistInvocationContext javaContext;
     private InternalCompletionContext coreContext;
@@ -63,9 +80,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         this.javaContext = jdtContext;
         this.astProvider = astProvider;
         this.coreContext = cast(jdtContext.getCoreContext());
-        // if (!coreContext.isExtended()) {
         requestExtendedContext();
-        // }
     }
 
     private void requestExtendedContext() {
@@ -73,7 +88,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
         collector = new ProposalCollectingCompletionRequestor(javaContext);
         try {
-            cu.codeComplete(getInvocationOffset(), collector);
+            cu.codeComplete(getInvocationOffset(), collector, new TimeoutProgressMonitor());
         } catch (final JavaModelException e) {
             RecommendersPlugin.log(e);
         }
@@ -128,8 +143,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<IJavaElement> getEnclosingElement() {
-        if (coreContext == null)
-            return absent();
+        if (coreContext == null) return absent();
         try {
             if (coreContext.isExtended()) {
                 return fromNullable(coreContext.getEnclosingElement());
@@ -187,8 +201,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<String> getExpectedTypeSignature() {
-        if (coreContext == null)
-            return absent();
+        if (coreContext == null) return absent();
         final char[][] keys = coreContext.getExpectedTypesKeys();
         if (keys == null) {
             return absent();
@@ -208,8 +221,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public String getPrefix() {
-        if (coreContext == null)
-            return "";
+        if (coreContext == null) return "";
 
         final char[] token = coreContext.getToken();
         if (token == null) {
@@ -222,8 +234,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     public String getReceiverName() {
 
         final ASTNode n = getCompletionNode().orNull();
-        if (n == null)
-            return "";
+        if (n == null) return "";
 
         char[] name = null;
         if (n instanceof CompletionOnQualifiedNameReference) {
@@ -279,8 +290,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     private Optional<TypeBinding> findReceiverTypeBinding() {
         final ASTNode n = getCompletionNode().orNull();
-        if (n == null)
-            return absent();
+        if (n == null) return absent();
         TypeBinding receiver = null;
         if (n instanceof CompletionOnLocalName) {
             // final CompletionOnLocalName c = cast(n);
@@ -334,8 +344,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     @Override
     public Optional<IMethodName> getMethodDef() {
         final ASTNode node = getCompletionNode().orNull();
-        if (node == null)
-            return absent();
+        if (node == null) return absent();
 
         if (node instanceof CompletionOnMemberAccess) {
             final CompletionOnMemberAccess n = cast(node);

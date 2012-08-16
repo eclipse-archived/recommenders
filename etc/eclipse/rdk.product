@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product id="org.eclipse.sdk.ide" application="org.eclipse.ui.ide.workbench" useFeatures="true" includeLaunchers="true">
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <programArgs>-noExit</programArgs>
+      <vmArgs>-Xmx512m
+-XX:MaxPermSize=256m
+-Declipse.ignoreApp=true</vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+   </launcherArgs>
+
+   <launcher>
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="org.eclipse.recommenders.feature.3rd.nonorbit"/>
+      <feature id="org.eclipse.recommenders.feature.3rd.orbit"/>
+      <feature id="org.eclipse.recommenders.feature.rdk" version="1.0.0.qualifier"/>
+   </features>
+
+
+</product>

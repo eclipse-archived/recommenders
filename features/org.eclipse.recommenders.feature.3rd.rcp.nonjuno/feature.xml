@@ -3,7 +3,9 @@
       id="org.eclipse.recommenders.feature.3rd.rcp.nonjuno"
       label="Code Recommenders: Non-Juno 3rd Party Dependencies"
       version="1.0.0.qualifier"
-      provider-name="Eclipse Code Recommenders">
+      provider-name="Eclipse Code Recommenders"
+      license-feature="org.eclipse.recommenders.feature.license"
+      license-feature-version="1.0.0.qualifier">
 
    <description url="http://www.eclipse.org/recommenders/">
       %description

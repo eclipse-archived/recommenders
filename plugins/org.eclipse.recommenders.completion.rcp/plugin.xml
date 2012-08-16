@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="org.eclipse.recommenders.completion.rcp.sessionprocessors" name="Completion Session Processors" schema="schema/org.eclipse.recommenders.completion.rcp.sessionprocessors.exsd"/>
    <extension
          id="org.eclipse.recommenders.rcp.category.completion"
-         name="Code Recommenders Proposals"
+         name="Code Recommenders Proposals (addons)"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <proposalCategory
             icon="icons/view16/slice.gif">
+      </proposalCategory>
+   </extension>
+   <extension
+         id="org.eclipse.recommenders.completion.rcp.category.completion.all"
+         name="Code Recommenders Proposals (all)"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <proposalCategory
+            icon="icons/view16/braces.gif">
       </proposalCategory>
    </extension>
    <extension
@@ -14,5 +23,29 @@
       <module
             class="org.eclipse.recommenders.internal.completion.rcp.GuiceModule">
       </module>
+   </extension>
+   <extension
+         id="org.eclipse.recommenders.completion.rcp.all.engine"
+         name="Code Recommenders (all)"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.eclipse.recommenders.completion.rcp.category.completion.all"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.RecommendersAllCompletionProposalProcessor"   
+            needsSortingAfterFiltering="true">
+            <!--
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.allinone.AllInOneCompletionProposalProcessor"
+            -->
+      </javaCompletionProposalComputer>
+   </extension>
+   <extension
+         point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
+      <processor
+            class="org.eclipse.recommenders.internal.completion.rcp.BaseRelevanceProcessor"
+            icon="icons/view16/slice.gif"
+            id="org.eclipse.recommenders.completion.rcp.processor1"
+            name="Base Relevance"
+            priority="1000">
+      </processor>
    </extension>
  </plugin>
