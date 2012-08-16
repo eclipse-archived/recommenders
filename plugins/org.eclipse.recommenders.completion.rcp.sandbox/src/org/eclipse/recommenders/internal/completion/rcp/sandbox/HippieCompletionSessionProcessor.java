@@ -19,6 +19,7 @@ import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
+import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -42,17 +43,8 @@ public class HippieCompletionSessionProcessor extends SessionProcessor {
         if (c == null) return;
         final int count = keys.count(key(c));
         if (count > 0) {
-            proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
-                @Override
-                public void modifyRelevance(AtomicInteger relevance) {
-                    relevance.addAndGet(count);
-                }
-
-                @Override
-                public void modifyDisplayString(StyledString displayString) {
-                    displayString.append(" - hippie (" + count + ")", StyledString.COUNTER_STYLER);
-                }
-            });
+            String label = String.format("hippie (%d)", count);
+            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(count, label));
         }
     }
 

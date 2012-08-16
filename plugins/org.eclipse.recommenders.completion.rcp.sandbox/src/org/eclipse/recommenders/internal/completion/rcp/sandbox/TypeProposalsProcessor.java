@@ -31,8 +31,10 @@ import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnFieldType;
@@ -45,6 +47,7 @@ import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
+import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmPackageName;
@@ -56,19 +59,6 @@ import com.google.common.collect.Sets.SetView;
 
 public final class TypeProposalsProcessor extends SessionProcessor {
 
-    private final class TypesProposalProcessor extends ProposalProcessor {
-        @Override
-        public void modifyRelevance(AtomicInteger relevance) {
-            relevance.addAndGet(4);
-        }
-
-        @Override
-        public void modifyDisplayString(StyledString displayString) {
-            displayString.append(" - pkg", StyledString.COUNTER_STYLER);
-        }
-    }
-
-    static final String TRAILS = "trails";
     static final Set<Class<?>> SUPPORTED_COMPLETION_NODES = new HashSet<Class<?>>() {
         {
             add(CompletionOnMethodReturnType.class);
@@ -128,6 +118,13 @@ public final class TypeProposalsProcessor extends SessionProcessor {
             }
 
             @Override
+            public boolean visit(SimpleName node) {
+                ITypeBinding b = node.resolveTypeBinding();
+                pkgs.add(toPackageName(b).or(DEFAULT_PACKAGE));
+                return super.visit(node);
+            }
+
+            @Override
             public boolean visit(SuperMethodInvocation node) {
                 return visit(node.resolveMethodBinding());
             }
@@ -154,6 +151,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         final CompletionProposal coreProposal = proposal.getCoreProposal().or(NULL_PROPOSAL);
         switch (coreProposal.getKind()) {
         case CompletionProposal.CONSTRUCTOR_INVOCATION:
+        case CompletionProposal.ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION:
             handleConstructorProposal(proposal, coreProposal);
             break;
         case CompletionProposal.METHOD_REF:
@@ -178,12 +176,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         sig = StringUtils.removeEnd(sig, ";");
         ITypeName type = VmTypeName.get(sig);
         if (crExpectedType.equals(type)) {
-            proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
-                @Override
-                public void modifyRelevance(AtomicInteger relevance) {
-                    relevance.addAndGet(1 << 15);
-                }
-            });
+            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(1 << 30));
         }
     }
 
@@ -195,12 +188,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         returnType = StringUtils.removeEnd(returnType, ";");
         ITypeName type = VmTypeName.get(returnType);
         if (crExpectedType.equals(type)) {
-            proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
-                @Override
-                public void modifyRelevance(AtomicInteger relevance) {
-                    relevance.addAndGet(1 << 15);
-                }
-            });
+            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(1 << 30));
         }
     }
 
@@ -211,7 +199,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         ITypeName type = VmTypeName.get(sig);
         IPackageName pkg = type.getPackage();
         if (pkgs.contains(pkg)) {
-            proposal.getProposalProcessorManager().addProcessor(new TypesProposalProcessor());
+            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(4, "pkg"));
         }
     }
 
@@ -219,22 +207,15 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         String name = removeEnd(valueOf(coreProposal.getDeclarationSignature()).replace('.', '/'), ";");
         VmTypeName recType = VmTypeName.get(name);
         if (pkgs.contains(recType.getPackage())) {
-            proposal.getProposalProcessorManager().addProcessor(new TypesProposalProcessor());
+            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(4, "pkg"));
         }
         if (expectedType != null) {
             Set<String> s2 = Sets.newHashSet(recType.getClassName().split("(?=\\p{Upper})"));
             final SetView<String> intersection = Sets.intersection(s2, expectedSubwords);
-            if (!intersection.isEmpty()) proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
-                @Override
-                public void modifyRelevance(AtomicInteger relevance) {
-                    relevance.addAndGet(intersection.size());
-                }
 
-                @Override
-                public void modifyDisplayString(StyledString displayString) {
-                    displayString.append(" - partial", StyledString.COUNTER_STYLER);
-                }
-            });
+            if (!intersection.isEmpty())
+                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(intersection.size(),
+                        "partial"));
         }
     }
 }

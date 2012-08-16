@@ -27,6 +27,7 @@ import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
+import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 
 public class Subwords2SessionProcessor extends SessionProcessor {
 
@@ -72,16 +73,7 @@ public class Subwords2SessionProcessor extends SessionProcessor {
         case CompletionProposal.METHOD_REF:
             String name = String.valueOf(core.getName());
             if (StringUtils.containsIgnoreCase(name, varName) && !isVoid(core)) {
-                proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
-                    @Override
-                    public void modifyRelevance(AtomicInteger relevance) {
-                        relevance.addAndGet(5);
-                    }
-
-                    public void modifyDisplayString(StyledString displayString) {
-                        displayString.append(" .oO", StyledString.COUNTER_STYLER);
-                    };
-                });
+                proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(5, ".oO"));
             }
         }
     }
