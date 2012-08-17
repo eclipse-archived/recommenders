@@ -27,13 +27,15 @@
    <feature id="org.eclipse.recommenders.feature.completion.rcp.sandbox" version="0.0.0">
       <category name="main"/>
    </feature>
-   <feature  id="org.eclipse.recommenders.feature.rcp.core" version="0.0.0">
+   <feature id="org.eclipse.recommenders.feature.rcp.core" version="0.0.0">
       <category name="main"/>
    </feature>
    <feature id="org.eclipse.recommenders.feature.rdk" version="0.0.0">
-      <category name="rdk"/>
+      <category name="3rd"/>
+   </feature>
+   <feature url="features/org.eclipse.recommenders.feature.tests_1.0.0.qualifier.jar" id="org.eclipse.recommenders.feature.tests" version="1.0.0.qualifier">
+      <category name="3rd"/>
    </feature>
    <category-def name="main" label="Code Recommenders - Eclipse 4.2"/>
    <category-def name="3rd" label="Dependencies (don&apos;t install)"/>
-   <category-def name="rdk" label="Recommenders Developer Toolkit (don&apos;t install in Eclipse)"/>
 </site>

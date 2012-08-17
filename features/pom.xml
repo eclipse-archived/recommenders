@@ -28,6 +28,7 @@
         <module>org.eclipse.recommenders.feature.3rd.orbit</module>
         <module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>
         <module>org.eclipse.recommenders.feature.3rd.rcp.nonjuno</module>
+        <module>org.eclipse.recommenders.feature.tests</module>
         <module>org.eclipse.recommenders.feature.snipmatch.rcp</module>
 	</modules>
 
