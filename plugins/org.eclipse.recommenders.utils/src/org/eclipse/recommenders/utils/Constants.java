@@ -82,6 +82,10 @@ public interface Constants {
     String CLASS_SELFC_MODEL = "selfc";
     /** {@value} */
     String CLASS_SELFM_MODEL = "selfm";
+    /** MethodUsageExamples: {@value} */
+    String CLASS_MUE = "mue";
+    /** {@value} */
+    String CLASS_OUP_DATA = "oups";
 
     /*
      * Type and method name constants. Used in many different locations: analysis, networks, etc.

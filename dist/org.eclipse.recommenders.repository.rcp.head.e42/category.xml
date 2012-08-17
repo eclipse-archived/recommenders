@@ -30,6 +30,10 @@
    <feature url="features/org.eclipse.recommenders.feature.rcp.core_1.0.0.qualifier.jar" id="org.eclipse.recommenders.feature.rcp.core" version="1.0.0.qualifier">
       <category name="main"/>
    </feature>
+   <feature url="features/org.eclipse.recommenders.feature.rdk_1.0.0.qualifier.jar" id="org.eclipse.recommenders.feature.rdk" version="1.0.0.qualifier">
+      <category name="rdk"/>
+   </feature>
    <category-def name="main" label="Code Recommenders - Eclipse 4.2"/>
    <category-def name="3rd" label="Dependencies (don&apos;t install)"/>
+   <category-def name="rdk" label="Recommenders Developer Toolkit (don&apos;t install in Eclipse)"/>
 </site>
