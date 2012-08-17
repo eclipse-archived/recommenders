@@ -171,6 +171,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
     }
 
     private void handleVariableProposal(IProcessableProposal proposal, CompletionProposal variableProposal) {
+        if (crExpectedType == null) return;
         String sig = new String(variableProposal.getSignature());
         sig = sig.replace('.', '/');
         sig = StringUtils.removeEnd(sig, ";");
