@@ -72,21 +72,17 @@ public final class TypeProposalsProcessor extends SessionProcessor {
 
     private Set<IPackageName> pkgs;
     private IType expectedType;
-    private JavaElementResolver jdtCache;
     private HashSet<String> expectedSubwords;
-    private ITypeName crExpectedType;
+    private Set<ITypeName> expected;
 
     @Inject
     public TypeProposalsProcessor(JavaElementResolver jdtCache) {
-        this.jdtCache = jdtCache;
     }
 
     @Override
     public void startSession(IRecommendersCompletionContext context) {
-        expectedType = context.getExpectedType().orNull();
-        expectedSubwords = Sets.newHashSet();
+        expected = context.getExpectedTypeNames();
         if (expectedType != null) {
-            crExpectedType = jdtCache.toRecType(expectedType);
             String[] split1 = expectedType.getElementName().split("(?=\\p{Upper})");
             for (String s : split1) {
                 if (s.length() > 3) {
@@ -171,24 +167,24 @@ public final class TypeProposalsProcessor extends SessionProcessor {
     }
 
     private void handleVariableProposal(IProcessableProposal proposal, CompletionProposal variableProposal) {
-        if (crExpectedType == null) return;
+        if (expected.isEmpty()) return;
         String sig = new String(variableProposal.getSignature());
         sig = sig.replace('.', '/');
         sig = StringUtils.removeEnd(sig, ";");
         ITypeName type = VmTypeName.get(sig);
-        if (crExpectedType.equals(type)) {
+        if (expected.contains(type)) {
             proposal.getProposalProcessorManager().addProcessor(EXACT);
         }
     }
 
     private void handleMethodProposal(IProcessableProposal proposal, CompletionProposal coreProposal) {
-        if (crExpectedType == null) return;
+        if (expected.isEmpty()) return;
         String methodSig = new String(coreProposal.getSignature());
         String returnType = Signature.getReturnType(methodSig);
         returnType = returnType.replace('.', '/');
         returnType = StringUtils.removeEnd(returnType, ";");
         ITypeName type = VmTypeName.get(returnType);
-        if (crExpectedType.equals(type)) {
+        if (expected.contains(type)) {
             ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
             mgr.addProcessor(EXACT);
         }

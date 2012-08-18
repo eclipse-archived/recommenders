@@ -137,7 +137,7 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             public void modifyRelevance(AtomicInteger relevance) {
                 if (ArrayUtils.isEmpty(bestSequence)) return;
                 if (startsWithIgnoreCase(matchingArea, prefix)) {
-                    int newRelevance = 1 << 30 | relevance.get();
+                    int newRelevance = 1 << 29 | relevance.get();
                     relevance.set(newRelevance);
                 } else {
                     int score = LCSS.scoreSubsequence(bestSequence);
