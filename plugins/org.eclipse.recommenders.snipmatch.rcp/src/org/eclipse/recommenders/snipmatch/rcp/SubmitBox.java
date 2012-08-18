@@ -14,7 +14,6 @@
 package org.eclipse.recommenders.snipmatch.rcp;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -28,7 +27,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
@@ -40,7 +38,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -85,7 +82,6 @@ public class SubmitBox extends ClientSwitcher {
     private static final Font codeFont = new Font(PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NORMAL);
 
     private String editFilePath = null;
-    private String editSummary = null;
 
     public SubmitBox() {
     }
@@ -97,7 +93,6 @@ public class SubmitBox extends ClientSwitcher {
      *            The snippet to edit. If null, then the interface is used to create a new snippet.
      */
     public void show(String summary, String filePath, Effect toEdit) {
-        editSummary = summary;
         editFilePath = filePath;
 
         envs = new MatchEnvironment[] { new JavaSnippetMatchEnvironment() };

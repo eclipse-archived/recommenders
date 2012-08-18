@@ -25,6 +25,9 @@ import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.corext.template.java.JavaContext;
+import org.eclipse.jdt.internal.corext.template.java.JavaContextType;
+import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.IndentUtil;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.Document;
@@ -36,6 +39,7 @@ import org.eclipse.jface.text.source.LineRange;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionAnnotationModel;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
+import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.recommenders.snipmatch.core.ArgumentMatchNode;
 import org.eclipse.recommenders.snipmatch.core.Effect;
 import org.eclipse.recommenders.snipmatch.core.EffectMatchNode;
@@ -51,6 +55,7 @@ import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 
 /**
  * This match environment is specifically for integrating Java code snippets in the Eclipse editor.
@@ -685,7 +690,7 @@ public class JavaSnippetMatchEnvironment extends SnippetMatchEnvironment {
      * 
      */
     public Object evaluateMatchNodeOverview(EffectMatchNode node) {
-        String overViewText = (String) evaluateMatchNode(node);
+        String overViewText = (String) evaluateMatchNode(node, true);
         // Helper content, usually classes, ignore imports here
         String helper = null;
         int start = node.getEffect().getCode().indexOf("${helper}");
@@ -709,9 +714,11 @@ public class JavaSnippetMatchEnvironment extends SnippetMatchEnvironment {
 
     @Override
     protected void applyResult(Object result, Effect effect) throws Exception {
-
+        final ContextTypeRegistry templateContextRegistry = JavaPlugin.getDefault().getTemplateContextRegistry();
+        JavaContext javaContext = new JavaContext(
+                ContributionContextTypeRegistry.createContextType(JavaContextType.ID_ALL), new Document(doc.get()),
+                selOffset, selLength, unit.getWorkingCopy(null));
         clean = false;
-
         // This single, final text edit will have the combined effect of all code changes + imports + helper classes.
         MultiTextEdit finalEdit = new MultiTextEdit();
 

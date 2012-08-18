@@ -448,7 +448,6 @@ public class SearchBox extends ClientSwitcher {
      * 
      * @param selection
      * 
-     *            TODO: add resize feature for resultoverview shell after mouse click event
      */
     private void resultOverviewDisplay(int selection) {
         if (resultOverviewShell == null || resultOverviewShell.isDisposed()) {
