@@ -15,8 +15,11 @@ import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -46,10 +49,13 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.recommenders.utils.rcp.CompilerBindings;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
 
 public abstract class BaseRecommendersCompletionContext implements IRecommendersCompletionContext {
 
@@ -202,6 +208,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     @Override
     public Optional<String> getExpectedTypeSignature() {
         if (coreContext == null) return absent();
+        // keys contain '/' instead of dots and may end with ';'
         final char[][] keys = coreContext.getExpectedTypesKeys();
         if (keys == null) {
             return absent();
@@ -211,6 +218,24 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         }
         final String res = new String(keys[0]);
         return of(res);
+    }
+
+    @Override
+    public Set<ITypeName> getExpectedTypeNames() {
+        final char[][] keys = coreContext.getExpectedTypesKeys();
+        if (keys == null) {
+            return Collections.emptySet();
+        }
+        if (keys.length < 1) {
+            return Collections.emptySet();
+        }
+        Set<ITypeName> res = Sets.newHashSet();
+        // keys contain '/' instead of dots and may end with ';'
+        for (char[] key: keys) {
+            String typeName = StringUtils.removeEnd(new String(key), ";");
+            res.add(VmTypeName.get(typeName));
+        }
+        return res;
     }
 
     @Override

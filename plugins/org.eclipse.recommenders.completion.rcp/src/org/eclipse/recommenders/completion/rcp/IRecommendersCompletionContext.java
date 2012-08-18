@@ -12,6 +12,7 @@ package org.eclipse.recommenders.completion.rcp;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -27,6 +28,7 @@ import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.base.Optional;
 
@@ -98,4 +100,6 @@ public interface IRecommendersCompletionContext {
     Optional<IMethodName> getMethodDef();
 
     public Map<IJavaCompletionProposal, CompletionProposal> getProposals();
+
+    Set<ITypeName> getExpectedTypeNames();
 }
