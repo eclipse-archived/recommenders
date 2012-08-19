@@ -6,17 +6,19 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameRef
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.junit.Test
+import static org.eclipse.recommenders.tests.CodeBuilder.*
 
 import static junit.framework.Assert.*
 import org.eclipse.jdt.internal.compiler.ast.MessageSend
 import org.eclipse.jdt.internal.compiler.ast.ASTNode
 import com.google.common.base.Optional
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess
+import org.eclipse.recommenders.utils.names.VmTypeName
 class RecommendersCompletionContextTest { 
   
 	@Test
 	def void test01(){
-		val code = methodbody('s1.$;')
+		val code = method('s1.$;')
 		val sut = exercise(code)
 		
 		assertCompletionNode(sut, typeof(CompletionOnQualifiedNameReference));
@@ -26,7 +28,7 @@ class RecommendersCompletionContextTest {
 	
 	@Test
 	def void test02(){
-		val code = methodbody('s1.equals(s1.$);')
+		val code = method('s1.equals(s1.$);')
 		val sut = exercise(code)
 		
 		assertCompletionNode(sut, typeof(CompletionOnQualifiedNameReference));
@@ -36,7 +38,7 @@ class RecommendersCompletionContextTest {
 	
 	@Test
 	def void test03(){
-		val code = methodbody('String s1 = new String();
+		val code = method('String s1 = new String();
 			s1.
 			String s2 = new String();
 			s2.$')
@@ -47,7 +49,7 @@ class RecommendersCompletionContextTest {
 	
 	@Test
 	def void test04(){
-		val code = methodbody('s1.concat("").$;')
+		val code = method('String s1; s1.concat("").$;')
 		val sut = exercise(code)
 		assertCompletionNode(sut, typeof(CompletionOnMemberAccess));
 		assertTrue(sut.methodDef.present)
@@ -83,7 +85,7 @@ class RecommendersCompletionContextTest {
 
 	@Test
 	def void testTypeParameters03() {
-		val code = methodbody('''
+		val code = method('''
 		Class<?> clazz = null;
 		clazz.$''')
 		val sut = exercise(code)
@@ -93,7 +95,7 @@ class RecommendersCompletionContextTest {
 	
 	@Test
 	def void testTypeParameters04() {
-		val code = methodbody('''
+		val code = method('''
 		Class<? super String> clazz = null;
 		clazz.$''')
 		val sut = exercise(code)
@@ -112,6 +114,36 @@ class RecommendersCompletionContextTest {
 		val sut = exercise(code)
 		assertEquals(absent(),sut.enclosingElement)
 	}
+	
+	@Test
+	def void testExpectedTypesInIf(){
+		val code = method('''if($)''')
+		val expected = exercise(code).expectedTypeNames
+		assertTrue(expected.contains(VmTypeName::BOOLEAN))
+	}
+	
+	@Test
+	def void testExpectedTypesInNewFile(){
+		val code = method('''new File($)''')
+		val expected = exercise(code).expectedTypeNames
+		assertTrue(expected.contains(VmTypeName::STRING))
+		assertEquals(3, expected.size)
+	}
+	
+	@Test
+	def void testExpectedTypesInNewArrayListString(){
+		val code = method('''List<String> l = new ArrayList<String>($);''')
+		val expected = exercise(code).expectedTypeNames
+		assertTrue(expected.contains(VmTypeName::get("Ljava/util/Collection")))
+	}
+	
+	@Test
+	def void testExpectedTypesInListStringAdd(){
+		val code = method('''List<String> l = new ArrayList<String>();l.add($)''')
+		val expected = exercise(code).expectedTypeNames
+		assertTrue(expected.contains(VmTypeName::STRING))
+	}
+		
 	
 	def private assertCompletionNode(IRecommendersCompletionContext sut, Class<?> type){
 		val node = sut.completionNode.orNull;
@@ -143,23 +175,4 @@ class RecommendersCompletionContextTest {
 		
 		new RecommendersCompletionContextFactoryMock().create(ctx);
 	}
-	
-	
-	def private classbody(CharSequence classbody)
-		'''
-		import java.util.*;
-		import java.util.concurrent.*;
-		public class MyClass {
-			String s1;
-			String s2;
-			«classbody»
-		}
-  		'''
-
-	def private methodbody(CharSequence methodbody){
-		classbody('''
-			void test() {
-				«methodbody»
-			''')
-	  }
 }

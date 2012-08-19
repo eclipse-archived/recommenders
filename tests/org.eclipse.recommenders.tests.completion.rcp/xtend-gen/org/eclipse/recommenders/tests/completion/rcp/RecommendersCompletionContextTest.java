@@ -13,11 +13,14 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameRef
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.tests.CodeBuilder;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
@@ -27,7 +30,7 @@ import org.junit.Test;
 public class RecommendersCompletionContextTest {
   @Test
   public void test01() {
-    final CharSequence code = this.methodbody("s1.$;");
+    final CharSequence code = CodeBuilder.method("s1.$;");
     final IRecommendersCompletionContext sut = this.exercise(code);
     this.assertCompletionNode(sut, CompletionOnQualifiedNameReference.class);
     this.assertCompletionNodeParentIsNull(sut);
@@ -35,7 +38,7 @@ public class RecommendersCompletionContextTest {
   
   @Test
   public void test02() {
-    final CharSequence code = this.methodbody("s1.equals(s1.$);");
+    final CharSequence code = CodeBuilder.method("s1.equals(s1.$);");
     final IRecommendersCompletionContext sut = this.exercise(code);
     this.assertCompletionNode(sut, CompletionOnQualifiedNameReference.class);
     this.assertCompletionNodeParent(sut, MessageSend.class);
@@ -43,7 +46,7 @@ public class RecommendersCompletionContextTest {
   
   @Test
   public void test03() {
-    final CharSequence code = this.methodbody("String s1 = new String();\n\t\t\ts1.\n\t\t\tString s2 = new String();\n\t\t\ts2.$");
+    final CharSequence code = CodeBuilder.method("String s1 = new String();\n\t\t\ts1.\n\t\t\tString s2 = new String();\n\t\t\ts2.$");
     final IRecommendersCompletionContext sut = this.exercise(code);
     Optional<?> _absent = Optional.absent();
     Optional<IType> _receiverType = sut.getReceiverType();
@@ -52,7 +55,7 @@ public class RecommendersCompletionContextTest {
   
   @Test
   public void test04() {
-    final CharSequence code = this.methodbody("s1.concat(\"\").$;");
+    final CharSequence code = CodeBuilder.method("String s1; s1.concat(\"\").$;");
     final IRecommendersCompletionContext sut = this.exercise(code);
     this.assertCompletionNode(sut, CompletionOnMemberAccess.class);
     Optional<IMethodName> _methodDef = sut.getMethodDef();
@@ -64,7 +67,7 @@ public class RecommendersCompletionContextTest {
   public void testTypeParameters01() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public <T> void m(T t){t.$}");
-    final CharSequence code = this.classbody(_builder);
+    final CharSequence code = CodeBuilder.classbody(_builder);
     final IRecommendersCompletionContext sut = this.exercise(code);
     Optional<IType> _receiverType = sut.getReceiverType();
     boolean _isPresent = _receiverType.isPresent();
@@ -79,7 +82,7 @@ public class RecommendersCompletionContextTest {
   public void testTypeParameters02() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public <T extends Collection> void m(T t){t.$}");
-    final CharSequence code = this.classbody(_builder);
+    final CharSequence code = CodeBuilder.classbody(_builder);
     final IRecommendersCompletionContext sut = this.exercise(code);
     Optional<IType> _receiverType = sut.getReceiverType();
     boolean _isPresent = _receiverType.isPresent();
@@ -94,7 +97,7 @@ public class RecommendersCompletionContextTest {
   public void testTypeParameters021() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("public <T super List> void m(T t){t.$}");
-    final CharSequence code = this.classbody(_builder);
+    final CharSequence code = CodeBuilder.classbody(_builder);
     final IRecommendersCompletionContext sut = this.exercise(code);
     Optional<IType> _receiverType = sut.getReceiverType();
     boolean _isPresent = _receiverType.isPresent();
@@ -107,7 +110,7 @@ public class RecommendersCompletionContextTest {
     _builder.append("Class<?> clazz = null;");
     _builder.newLine();
     _builder.append("clazz.$");
-    final CharSequence code = this.methodbody(_builder);
+    final CharSequence code = CodeBuilder.method(_builder);
     final IRecommendersCompletionContext sut = this.exercise(code);
     Optional<IType> _receiverType = sut.getReceiverType();
     boolean _isPresent = _receiverType.isPresent();
@@ -124,7 +127,7 @@ public class RecommendersCompletionContextTest {
     _builder.append("Class<? super String> clazz = null;");
     _builder.newLine();
     _builder.append("clazz.$");
-    final CharSequence code = this.methodbody(_builder);
+    final CharSequence code = CodeBuilder.method(_builder);
     final IRecommendersCompletionContext sut = this.exercise(code);
     Optional<IType> _receiverType = sut.getReceiverType();
     boolean _isPresent = _receiverType.isPresent();
@@ -151,6 +154,53 @@ public class RecommendersCompletionContextTest {
     Optional<?> _absent = Optional.absent();
     Optional<IJavaElement> _enclosingElement = sut.getEnclosingElement();
     Assert.assertEquals(_absent, _enclosingElement);
+  }
+  
+  @Test
+  public void testExpectedTypesInIf() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("if($)");
+    final CharSequence code = CodeBuilder.method(_builder);
+    IRecommendersCompletionContext _exercise = this.exercise(code);
+    final Set<ITypeName> expected = _exercise.getExpectedTypeNames();
+    boolean _contains = expected.contains(VmTypeName.BOOLEAN);
+    Assert.assertTrue(_contains);
+  }
+  
+  @Test
+  public void testExpectedTypesInNewFile() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("new File($)");
+    final CharSequence code = CodeBuilder.method(_builder);
+    IRecommendersCompletionContext _exercise = this.exercise(code);
+    final Set<ITypeName> expected = _exercise.getExpectedTypeNames();
+    boolean _contains = expected.contains(VmTypeName.STRING);
+    Assert.assertTrue(_contains);
+    int _size = expected.size();
+    Assert.assertEquals(3, _size);
+  }
+  
+  @Test
+  public void testExpectedTypesInNewArrayListString() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("List<String> l = new ArrayList<String>($);");
+    final CharSequence code = CodeBuilder.method(_builder);
+    IRecommendersCompletionContext _exercise = this.exercise(code);
+    final Set<ITypeName> expected = _exercise.getExpectedTypeNames();
+    VmTypeName _get = VmTypeName.get("Ljava/util/Collection");
+    boolean _contains = expected.contains(_get);
+    Assert.assertTrue(_contains);
+  }
+  
+  @Test
+  public void testExpectedTypesInListStringAdd() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("List<String> l = new ArrayList<String>();l.add($)");
+    final CharSequence code = CodeBuilder.method(_builder);
+    IRecommendersCompletionContext _exercise = this.exercise(code);
+    final Set<ITypeName> expected = _exercise.getExpectedTypeNames();
+    boolean _contains = expected.contains(VmTypeName.STRING);
+    Assert.assertTrue(_contains);
   }
   
   private void assertCompletionNode(final IRecommendersCompletionContext sut, final Class<? extends Object> type) {
@@ -206,38 +256,5 @@ public class RecommendersCompletionContextTest {
     } catch (Exception _e) {
       throw Exceptions.sneakyThrow(_e);
     }
-  }
-  
-  private CharSequence classbody(final CharSequence classbody) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import java.util.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("public class MyClass {");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("String s1;");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("String s2;");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append(classbody, "	");
-    _builder.newLineIfNotEmpty();
-    _builder.append("}");
-    _builder.newLine();
-    return _builder;
-  }
-  
-  private CharSequence methodbody(final CharSequence methodbody) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("void test() {");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append(methodbody, "	");
-    _builder.newLineIfNotEmpty();
-    CharSequence _classbody = this.classbody(_builder);
-    return _classbody;
   }
 }
