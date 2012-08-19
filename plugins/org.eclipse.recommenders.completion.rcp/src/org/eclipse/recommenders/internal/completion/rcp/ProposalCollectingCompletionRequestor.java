@@ -46,6 +46,8 @@ import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jdt.ui.text.java.CompletionProposalCollector;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.swt.graphics.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +75,11 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         } else {
             collector = new CompletionProposalCollector(jdtuiContext.getCompilationUnit(), false);
         }
+        configureInterestedProposalTypes();
+        adjustProposalReplacementLength();
+    }
+
+    private void configureInterestedProposalTypes() {
         collector.setIgnored(ANNOTATION_ATTRIBUTE_REF, false);
         collector.setIgnored(ANONYMOUS_CLASS_DECLARATION, false);
         collector.setIgnored(ANONYMOUS_CLASS_CONSTRUCTOR_INVOCATION, false);
@@ -106,12 +113,18 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
         collector.setRequireExtendedContext(true);
     }
 
+    private void adjustProposalReplacementLength() {
+        ITextViewer viewer = jdtuiContext.getViewer();
+        Point selection = viewer.getSelectedRange();
+        if (selection.y > 0) collector.setReplacementLength(selection.y);
+    }
+
     @VisibleForTesting
     protected boolean shouldFillArgumentNames() {
         try {
             // when running a test suite this throws a NPE
-            return PreferenceConstants.getPreferenceStore().getBoolean(
-                    PreferenceConstants.CODEASSIST_FILL_ARGUMENT_NAMES);
+            return PreferenceConstants.getPreferenceStore()
+                    .getBoolean(PreferenceConstants.CODEASSIST_FILL_ARGUMENT_NAMES);
         } catch (final Exception e) {
             return true;
         }
@@ -139,8 +152,9 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
     }
 
     private String[] getFavoriteStaticMembers() {
-        final String serializedFavorites = PreferenceConstants.getPreferenceStore().getString(
-                PreferenceConstants.CODEASSIST_FAVORITE_STATIC_MEMBERS);
+        final String serializedFavorites =
+                PreferenceConstants.getPreferenceStore()
+                        .getString(PreferenceConstants.CODEASSIST_FAVORITE_STATIC_MEMBERS);
         if (serializedFavorites != null && serializedFavorites.length() > 0) {
             return serializedFavorites.split(";"); //$NON-NLS-1$
         }
