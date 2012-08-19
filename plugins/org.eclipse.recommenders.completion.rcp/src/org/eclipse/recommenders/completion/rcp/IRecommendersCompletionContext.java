@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -99,7 +99,18 @@ public interface IRecommendersCompletionContext {
      */
     Optional<IMethodName> getMethodDef();
 
+    /**
+     * Returns all completion proposals JDT would have made at the current completion location.
+     */
     public Map<IJavaCompletionProposal, CompletionProposal> getProposals();
 
+    /**
+     * Returns a set of expected types names at the given location.
+     * <p>
+     * for {@code if($)} the expected type is boolean, for {@code MessageSend} or
+     * {@code CompletionOnQualifiedAllocationExpression} it may be any argument that matches all potential methods to
+     * invoke at the current position, e.g., new File($) will return{@code String}, {@code File}, or {@code URI} as
+     * there are three different constructors taking values of these types.
+     */
     Set<ITypeName> getExpectedTypeNames();
 }

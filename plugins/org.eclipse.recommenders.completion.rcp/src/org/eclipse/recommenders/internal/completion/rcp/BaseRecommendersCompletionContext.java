@@ -13,6 +13,7 @@ package org.eclipse.recommenders.internal.completion.rcp;
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
+import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.util.Collections;
@@ -20,8 +21,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.CompletionProposal;
+import org.eclipse.jdt.core.CompletionRequestor;
+import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -32,6 +37,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnLocalName;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedAllocationExpression;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
@@ -222,7 +228,64 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Set<ITypeName> getExpectedTypeNames() {
-        final char[][] keys = coreContext.getExpectedTypesKeys();
+        ASTNode completion = getCompletionNode().orNull();
+        char[][] keys =
+                isArgumentCompletion(completion) && getPrefix().isEmpty() ? simulateCompletionWithFakePrefix()
+                        : coreContext.getExpectedTypesKeys();
+        return createTypeNamesFromKeys(keys);
+    }
+
+    private boolean isArgumentCompletion(ASTNode completion) {
+        return completion instanceof MessageSend || completion instanceof CompletionOnQualifiedAllocationExpression;
+    }
+
+    private char[][] simulateCompletionWithFakePrefix() {
+        final MutableObject<char[][]> res = new MutableObject<char[][]>(null);
+        ICompilationUnit cu = getCompilationUnit();
+        ICompilationUnit wc = null;
+        int offset = getInvocationOffset();
+        String fakePrefix = "___x";
+        try {
+            wc = cu.getWorkingCopy(new NullProgressMonitor());
+            IBuffer buffer = wc.getBuffer();
+            String contents = buffer.getContents();
+            String newContents =
+                    substring(contents, 0, offset) + fakePrefix + substring(contents, offset, contents.length());
+            buffer.setContents(newContents);
+            wc.codeComplete(offset + 1, new CompletionRequestor(true) {
+
+                @Override
+                public boolean isExtendedContextRequired() {
+                    return true;
+                }
+
+                @Override
+                public void acceptContext(CompletionContext context) {
+                    res.setValue(context.getExpectedTypesKeys());
+                    super.acceptContext(context);
+                }
+
+                @Override
+                public void accept(CompletionProposal proposal) {
+                }
+            });
+        } catch (JavaModelException x) {
+            RecommendersPlugin.log(x);
+        } finally {
+            discardWorkingCopy(wc);
+        }
+        return res.getValue();
+    }
+
+    private void discardWorkingCopy(ICompilationUnit wc) {
+        try {
+            if (wc != null) wc.discardWorkingCopy();
+        } catch (JavaModelException x) {
+            RecommendersPlugin.log(x);
+        }
+    }
+
+    private Set<ITypeName> createTypeNamesFromKeys(final char[][] keys) {
         if (keys == null) {
             return Collections.emptySet();
         }
@@ -231,7 +294,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         }
         Set<ITypeName> res = Sets.newHashSet();
         // keys contain '/' instead of dots and may end with ';'
-        for (char[] key: keys) {
+        for (char[] key : keys) {
             String typeName = StringUtils.removeEnd(new String(key), ";");
             res.add(VmTypeName.get(typeName));
         }
