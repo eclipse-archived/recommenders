@@ -258,4 +258,8 @@ public class Artifacts {
             return Optional.of(node.getTextContent());
         }
     }
+
+    public static Artifact newArtifact(String string) {
+        return new DefaultArtifact(string);
+    }
 }

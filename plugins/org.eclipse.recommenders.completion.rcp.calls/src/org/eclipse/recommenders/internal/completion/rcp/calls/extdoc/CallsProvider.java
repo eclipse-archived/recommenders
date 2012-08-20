@@ -12,9 +12,12 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.extdoc;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoForegroundColor;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_BODY;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.resolveMethod;
+import static org.eclipse.swt.SWT.COLOR_INFO_FOREGROUND;
 
 import java.util.Collection;
 import java.util.Set;
@@ -84,8 +87,7 @@ public final class CallsProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber(METHOD_BODY)
-    public Status onFieldSelection(final IField var, final JavaSelectionEvent event, final Composite parent)
-            throws JavaModelException {
+    public Status onFieldSelection(final IField var, final JavaSelectionEvent event, final Composite parent) throws JavaModelException {
         return handle(var, var.getElementName(), var.getTypeSignature(), event, parent);
     }
 
@@ -189,22 +191,29 @@ public final class CallsProvider extends ExtdocProvider {
         public void run() {
             final Composite container = ExtdocUtils.createComposite(parent, 4);
             final Label preamble2 = new Label(container, SWT.NONE);
+            setInfoForegroundColor(preamble2);
             preamble2.setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0).create());
             if (methodCalls.isEmpty()) {
-                preamble2.setText(format("For %s %s no recommendations are made.", receiverType.getElementName(),
+                preamble2.setText(format("For %s %s no recommendations are made.",
+                        receiverType.getElementName(),
                         varName));
             } else {
                 preamble2
-                        .setText(format(
-                                "For %s %s the following recommendations are made.\nIf you want to invoke a method on %s, then you...",
-                                receiverType.getElementName(), varName, varName));
+                        .setText(format("For %s %s the following recommendations are made.\nIf you want to invoke a method on %s, then you...",
+                                receiverType.getElementName(),
+                                varName,
+                                varName));
             }
             new Label(container, SWT.NONE).setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0)
                     .hint(SWT.DEFAULT, 1).create());
             for (final Tuple<IMethodName, Double> rec : methodCalls) {
                 final int percentage = (int) Math.rint(rec.getSecond() * 100);
-                createLabel(container, ExtdocUtils.percentageToRecommendationPhrase(percentage), true, false,
-                        SWT.COLOR_BLACK, false);
+                createLabel(container,
+                        ExtdocUtils.percentageToRecommendationPhrase(percentage),
+                        true,
+                        false,
+                        COLOR_INFO_FOREGROUND,
+                        false);
 
                 createLabel(container, "call", false);
                 createMethodLink(container, rec.getFirst());
@@ -217,10 +226,12 @@ public final class CallsProvider extends ExtdocProvider {
 
             final Label preamble = new Label(container, SWT.NONE);
             preamble.setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 5).create());
-            final String text = format("Proposals were computed based on variable type '%s' in '%s'.",
-                    receiverType.getElementName(),
-                    ctx == VmMethodName.NULL ? "untrained context" : Names.vm2srcSimpleTypeName(ctx.getDeclaringType())
-                            + "." + Names.vm2srcSimpleMethod(ctx));
+            setInfoForegroundColor(preamble);
+            final String text =
+                    format("Proposals were computed based on variable type '%s' in '%s'.",
+                            receiverType.getElementName(),
+                            ctx == VmMethodName.NULL ? "untrained context" : Names.vm2srcSimpleTypeName(ctx
+                                    .getDeclaringType()) + "." + Names.vm2srcSimpleMethod(ctx));
             preamble.setText(text);
 
             new Label(container, SWT.NONE).setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 5)
@@ -253,7 +264,7 @@ public final class CallsProvider extends ExtdocProvider {
 
             final Link link = new Link(parent, SWT.NONE);
             link.setText(text);
-            link.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+            setInfoBackgroundColor(link);
             link.setToolTipText(tooltip);
             link.addSelectionListener(new SelectionAdapter() {
                 @Override

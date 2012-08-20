@@ -26,7 +26,6 @@ import org.eclipse.jdt.internal.codeassist.InternalCompletionProposal;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
-@SuppressWarnings("restriction")
 public class ProposalMatcher {
 
     private String jSignature;

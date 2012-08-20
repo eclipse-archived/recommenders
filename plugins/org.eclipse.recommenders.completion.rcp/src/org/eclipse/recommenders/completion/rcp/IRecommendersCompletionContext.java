@@ -24,9 +24,12 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
+import org.eclipse.recommenders.utils.annotations.Provisional;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
@@ -113,4 +116,10 @@ public interface IRecommendersCompletionContext {
      * there are three different constructors taking values of these types.
      */
     Set<ITypeName> getExpectedTypeNames();
+
+    @Provisional
+    Optional<CompilationUnitDeclaration> getCompliationUnitDeclaration();
+
+    @Provisional
+    Optional<Scope> getAssistScope();
 }

@@ -13,7 +13,6 @@ package org.eclipse.recommenders.internal.completion.rcp.calls.engine;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 

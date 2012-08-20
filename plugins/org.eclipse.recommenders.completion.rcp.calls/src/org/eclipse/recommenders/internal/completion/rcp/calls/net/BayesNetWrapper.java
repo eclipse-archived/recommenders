@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.completion.rcp.calls.net;
 
 import static org.eclipse.recommenders.utils.Checks.ensureEquals;
-import static org.eclipse.recommenders.utils.Constants.NO_METHOD;
 import static org.eclipse.recommenders.utils.Constants.N_NODEID_CALL_GROUPS;
 import static org.eclipse.recommenders.utils.Constants.N_NODEID_CONTEXT;
 import static org.eclipse.recommenders.utils.Constants.N_NODEID_DEF;
@@ -41,6 +40,7 @@ import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;

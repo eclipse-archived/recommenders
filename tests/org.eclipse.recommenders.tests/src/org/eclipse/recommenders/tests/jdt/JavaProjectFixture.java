@@ -199,8 +199,7 @@ public class JavaProjectFixture {
         return cu;
     }
 
-    public Tuple<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers)
-            throws CoreException {
+    public Tuple<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers) throws CoreException {
         final Tuple<String, Set<Integer>> content = findMarkers(contentWithMarkers);
         final String fileName = findClassName(content.getFirst()) + ".java";
 

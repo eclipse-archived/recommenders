@@ -15,9 +15,13 @@ import static com.google.common.base.Optional.of;
 import static org.eclipse.jdt.ui.JavaElementLabels.M_APP_RETURNTYPE;
 import static org.eclipse.jdt.ui.JavaElementLabels.M_PARAMETER_TYPES;
 import static org.eclipse.jdt.ui.JavaElementLabels.getElementLabel;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createColor;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createComposite;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoForegroundColor;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
+import static org.eclipse.swt.SWT.COLOR_INFO_FOREGROUND;
 
 import java.util.Comparator;
 import java.util.List;
@@ -61,7 +65,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.eventbus.EventBus;
 
-@SuppressWarnings("restriction")
 public class StaticHooksFinder extends ExtdocProvider {
 
     private final class HooksRendererRunnable implements Runnable {
@@ -118,7 +121,8 @@ public class StaticHooksFinder extends ExtdocProvider {
             styledText = new StyledText(container, SWT.NONE);
             styledText.setRedraw(false);
             styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-            ExtdocUtils.setInfoBackgroundColor(styledText);
+            setInfoBackgroundColor(styledText);
+            setInfoForegroundColor(styledText);
             styledText.setEditable(false);
             styledText.setText(sb.toString());
             styledText.setStyleRanges(typeRanges.toArray(new StyleRange[0]));

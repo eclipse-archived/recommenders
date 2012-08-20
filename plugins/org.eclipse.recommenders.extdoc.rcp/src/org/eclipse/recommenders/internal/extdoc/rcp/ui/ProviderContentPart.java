@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoForegroundColor;
 import static org.eclipse.recommenders.rcp.RecommendersPlugin.logWarning;
 
 import java.util.List;
@@ -197,6 +198,7 @@ public class ProviderContentPart {
 
         selectionStatus = new CLabel(selectionArea, SWT.NONE);
         setInfoBackgroundColor(selectionStatus);
+        setInfoForegroundColor(selectionArea);
         selectionStatus.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
         selectionStatus.setBackground(selectionArea.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
     }

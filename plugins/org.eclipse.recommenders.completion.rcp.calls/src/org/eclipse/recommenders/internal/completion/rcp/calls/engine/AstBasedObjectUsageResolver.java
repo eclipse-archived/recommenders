@@ -10,9 +10,6 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.engine;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.of;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.rcp.ast.BindingUtils.getVariableBinding;
@@ -57,7 +54,6 @@ import org.eclipse.recommenders.utils.rcp.ast.BindingUtils;
 
 import com.google.common.base.Optional;
 
-@SuppressWarnings("restriction")
 public class AstBasedObjectUsageResolver extends ASTVisitor {
 
     private String varname;
@@ -312,6 +308,7 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean visit(VariableDeclarationExpression node) {
         for (VariableDeclarationFragment f : (List<VariableDeclarationFragment>) node.fragments()) {
@@ -341,23 +338,23 @@ public class AstBasedObjectUsageResolver extends ASTVisitor {
         return true;
     }
 
-    private Optional<IVariableBinding> findReceiver(final MethodInvocation call) {
-        final Expression exp = call.getExpression();
-        if ((exp == null) && !isStatic(call)) {
-            // might be this! but not necessarily! --> static imports!
-            return of((IVariableBinding) new ThisVariableBinding());
-        }
-        switch (exp.getNodeType()) {
-        case ASTNode.SIMPLE_NAME:
-        case ASTNode.QUALIFIED_NAME:
-            final Name name = cast(exp);
-            final IVariableBinding b = BindingUtils.getVariableBinding(name);
-            return fromNullable(b);
-        case ASTNode.THIS_EXPRESSION:
-            return of((IVariableBinding) new ThisVariableBinding());
-        }
-        return absent();
-    }
+    // private Optional<IVariableBinding> findReceiver(final MethodInvocation call) {
+    // final Expression exp = call.getExpression();
+    // if ((exp == null) && !isStatic(call)) {
+    // // might be this! but not necessarily! --> static imports!
+    // return of((IVariableBinding) new ThisVariableBinding());
+    // }
+    // switch (exp.getNodeType()) {
+    // case ASTNode.SIMPLE_NAME:
+    // case ASTNode.QUALIFIED_NAME:
+    // final Name name = cast(exp);
+    // final IVariableBinding b = BindingUtils.getVariableBinding(name);
+    // return fromNullable(b);
+    // case ASTNode.THIS_EXPRESSION:
+    // return of((IVariableBinding) new ThisVariableBinding());
+    // }
+    // return absent();
+    // }
 
     // private void evaluateDefinitionByAssignment(final ASTNode node) {
     //

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import static com.google.common.base.Optional.of;
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -35,17 +36,21 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
+import org.eclipse.jdt.internal.codeassist.InternalExtendedCompletionContext;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnLocalName;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedAllocationExpression;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -72,6 +77,11 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
             return output;
         }
     };
+    private static Field fAssistScope;
+    private static Field fAssistNode;
+    private static Field fAssistNodeParent;
+    private static Field fCompilationUnitDeclaration;
+    private static Field fExtendedContext;
 
     private final class TimeoutProgressMonitor extends NullProgressMonitor {
         long limit = System.currentTimeMillis() + 5000;
@@ -86,6 +96,11 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     private InternalCompletionContext coreContext;
     private final IAstProvider astProvider;
     private ProposalCollectingCompletionRequestor collector;
+    private InternalExtendedCompletionContext extCoreContext;
+    private ASTNode assistNode;
+    private ASTNode assistNodeParent;
+    private Scope assistScope;
+    private CompilationUnitDeclaration compilationUnitDeclaration;
 
     public BaseRecommendersCompletionContext(final JavaContentAssistInvocationContext jdtContext,
             final IAstProvider astProvider) {
@@ -93,6 +108,22 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         this.astProvider = astProvider;
         this.coreContext = cast(jdtContext.getCoreContext());
         requestExtendedContext();
+        initializeReflectiveFields();
+    }
+
+    private void initializeReflectiveFields() {
+        try {
+            extCoreContext = (InternalExtendedCompletionContext) fExtendedContext.get(coreContext);
+            if (extCoreContext == null) return;
+
+            assistNode = (ASTNode) fAssistNode.get(extCoreContext);
+            assistNodeParent = (ASTNode) fAssistNodeParent.get(extCoreContext);
+            assistScope = (MethodScope) fAssistScope.get(extCoreContext);
+            compilationUnitDeclaration = (CompilationUnitDeclaration) fCompilationUnitDeclaration.get(extCoreContext);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void requestExtendedContext() {
@@ -199,6 +230,15 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     @Override
     public ICompilationUnit getCompilationUnit() {
         return javaContext.getCompilationUnit();
+    }
+
+    @Override public Optional<CompilationUnitDeclaration> getCompliationUnitDeclaration() {
+        return fromNullable(compilationUnitDeclaration);
+    }
+
+    @Override
+    public Optional<Scope> getAssistScope() {
+        return fromNullable(assistScope);
     }
 
     @Override
@@ -444,4 +484,26 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         }
         return absent();
     }
+
+    static {
+        try {
+            Class<InternalCompletionContext> clazzCtx = InternalCompletionContext.class;
+            fExtendedContext = clazzCtx.getDeclaredField("extendedContext");
+            fExtendedContext.setAccessible(true);
+
+            Class<InternalExtendedCompletionContext> clazzExt = InternalExtendedCompletionContext.class;
+            fAssistScope = clazzExt.getDeclaredField("assistScope");
+            fAssistScope.setAccessible(true);
+            fAssistNode = clazzExt.getDeclaredField("assistNode");
+            fAssistNode.setAccessible(true);
+            fAssistNodeParent = clazzExt.getDeclaredField("assistNodeParent");
+            fAssistNodeParent.setAccessible(true);
+            fCompilationUnitDeclaration = clazzExt.getDeclaredField("compilationUnitDeclaration");
+            fCompilationUnitDeclaration.setAccessible(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

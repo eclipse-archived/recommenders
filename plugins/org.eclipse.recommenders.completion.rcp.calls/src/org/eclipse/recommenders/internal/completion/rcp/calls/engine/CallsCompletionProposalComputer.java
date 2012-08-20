@@ -67,7 +67,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-@SuppressWarnings("restriction")
 public class CallsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
     public static String CATEGORY_ID = "org.eclipse.recommenders.rcp.category.completion";

@@ -48,4 +48,11 @@
             priority="1000">
       </processor>
    </extension>
+   <extension
+         point="org.eclipse.jdt.ui.javaCompletionProposalSorters">
+      <proposalSorter
+            class="org.eclipse.recommenders.completion.rcp.AbstractProposalSorter1"
+            id="org.eclipse.recommenders.completion.rcp.proposalSorter1">
+      </proposalSorter>
+   </extension>
  </plugin>

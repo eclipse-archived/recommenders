@@ -11,8 +11,10 @@
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import static java.lang.String.format;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createColor;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.swt.SWT.COLOR_INFO_BACKGROUND;
+import static org.eclipse.swt.SWT.COLOR_INFO_FOREGROUND;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +68,6 @@ public final class ExtdocUtils {
 
     static final Font CODEFONT = JFaceResources.getTextFont();
     private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
-
     private static final Map<Integer, Color> COLORCACHE = new HashMap<Integer, Color>();
 
     private ExtdocUtils() {
@@ -78,12 +79,19 @@ public final class ExtdocUtils {
         c.setBackground(color);
     }
 
+    public static void setInfoForegroundColor(final Control c) {
+        final Display display = c.getDisplay();
+        final Color color = display.getSystemColor(SWT.COLOR_INFO_FOREGROUND);
+        c.setForeground(color);
+    }
+
     public static Composite createGridComposite(final Composite parent, final int columns, final int hSpacing,
             final int vSpacing, final int hMargin, final int vMargin) {
         final Composite composite = new Composite(parent, SWT.NONE);
         setInfoBackgroundColor(composite);
-        final GridLayout layout = GridLayoutFactory.swtDefaults().numColumns(columns).margins(hMargin, vMargin)
-                .spacing(hSpacing, vSpacing).create();
+        final GridLayout layout =
+                GridLayoutFactory.swtDefaults().numColumns(columns).margins(hMargin, vMargin)
+                        .spacing(hSpacing, vSpacing).create();
         composite.setLayout(layout);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         return composite;
@@ -97,7 +105,8 @@ public final class ExtdocUtils {
     public static Table renderMethodDirectivesBlock(final Composite parent, final TreeBag<IMethodName> methods,
             final int total, final EventBus bus, final JavaElementResolver resolver, final String middlePhrase) {
         final Table table = new Table(parent, SWT.NONE | SWT.HIDE_SELECTION);
-        table.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+        table.setBackground(createColor(COLOR_INFO_BACKGROUND));
+        table.setForeground(createColor(COLOR_INFO_FOREGROUND));
         table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
         final TableColumn column1 = new TableColumn(table, SWT.NONE);
         final TableColumn column2 = new TableColumn(table, SWT.NONE);
@@ -131,9 +140,10 @@ public final class ExtdocUtils {
     }
 
     public static Link createMethodLink(final Composite parent, final IMethod method, final EventBus workspaceBus) {
-        final String text = "<a>"
-                + JavaElementLabels.getElementLabel(method, JavaElementLabels.M_APP_RETURNTYPE
-                        | JavaElementLabels.M_PARAMETER_TYPES) + "</a>";
+        final String text =
+                "<a>"
+                        + JavaElementLabels.getElementLabel(method, JavaElementLabels.M_APP_RETURNTYPE
+                                | JavaElementLabels.M_PARAMETER_TYPES) + "</a>";
         final String tooltip = JavaElementLabels.getElementLabel(method, JavaElementLabels.DEFAULT_QUALIFIED);
 
         final Link link = new Link(parent, SWT.NONE);
@@ -184,7 +194,7 @@ public final class ExtdocUtils {
      * @return The label created with the specified parameters.
      */
     public static Label createLabel(final Composite parent, final String text, final boolean wrap) {
-        return createLabel(parent, text, false, false, SWT.COLOR_BLACK, wrap);
+        return createLabel(parent, text, false, false, SWT.COLOR_INFO_FOREGROUND, wrap);
     }
 
     public static Label createLabel(final Composite parent, final String text, final boolean bold, final boolean code,

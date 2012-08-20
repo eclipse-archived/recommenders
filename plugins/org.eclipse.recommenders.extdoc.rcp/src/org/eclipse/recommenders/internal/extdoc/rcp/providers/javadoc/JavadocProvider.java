@@ -62,7 +62,6 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
-@SuppressWarnings("restriction")
 public final class JavadocProvider extends ExtdocProvider {
 
     private final EventBus workspaceBus;

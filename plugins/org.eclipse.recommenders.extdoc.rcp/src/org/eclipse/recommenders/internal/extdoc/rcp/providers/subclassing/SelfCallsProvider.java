@@ -122,7 +122,9 @@ public final class SelfCallsProvider extends ExtdocProvider {
         private void addHeader() {
             final String message = format("Based on %d direct subclasses of %s we created the following statistics:",
                     directive.getNumberOfSubclasses(), type.getElementName());
-            new Label(container, SWT.NONE).setText(message);
+            Label label = new Label(container, SWT.NONE);
+            label.setText(message);
+            ExtdocUtils.setInfoForegroundColor(label);
         }
 
         private void addDirectives() {
@@ -164,7 +166,9 @@ public final class SelfCallsProvider extends ExtdocProvider {
             final String message = format(
                     "Based on %d direct implementors of %s we created the following statistics. Implementors...",
                     directive.getNumberOfDefinitions(), method.getElementName());
-            new Label(container, SWT.NONE).setText(message);
+            Label label = new Label(container, SWT.NONE);
+            label.setText(message);
+            ExtdocUtils.setInfoForegroundColor(label);
         }
 
         private void addDirectives() {

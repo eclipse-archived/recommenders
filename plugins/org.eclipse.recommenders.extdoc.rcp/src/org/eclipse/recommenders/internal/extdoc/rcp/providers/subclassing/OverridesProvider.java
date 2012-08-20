@@ -14,12 +14,14 @@ import static com.google.common.collect.Collections2.filter;
 import static com.google.common.collect.Lists.newLinkedList;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createColor;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createGridComposite;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createMethodLink;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.percentageToRecommendationPhrase;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
+import static org.eclipse.swt.SWT.COLOR_INFO_FOREGROUND;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -148,7 +150,9 @@ public final class OverridesProvider extends ExtdocProvider {
         private void addHeader() {
             final String message = format("Based on %d direct subclasses of %s, we created the following statistics:",
                     directive.getNumberOfSubclasses(), type.getElementName());
-            new Label(container, SWT.NONE).setText(message);
+            Label label = new Label(container, SWT.NONE);
+            label.setText(message);
+            ExtdocUtils.setInfoForegroundColor(label);
         }
 
         private void addDirectives() {
@@ -267,6 +271,8 @@ public final class OverridesProvider extends ExtdocProvider {
                 final TableItem item = new TableItem(table, SWT.NONE);
                 item.setText(new String[] { phraseText, "override", bar.getText(), stats });
                 item.setFont(0, JFaceResources.getBannerFont());
+                item.setForeground(createColor(COLOR_INFO_FOREGROUND));
+
                 final TableEditor editor = new TableEditor(table);
                 editor.grabHorizontal = editor.grabVertical = true;
                 editor.setEditor(bar, item, 2);
