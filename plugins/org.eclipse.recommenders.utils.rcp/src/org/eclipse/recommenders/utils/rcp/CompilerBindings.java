@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
+import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.corext.template.java.SignatureUtil;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
@@ -39,6 +40,16 @@ import com.google.common.base.Optional;
 
 @SuppressWarnings("restriction")
 public class CompilerBindings {
+
+    public static Optional<ITypeName> toTypeName(@Nullable Binding b) {
+        if (b instanceof TypeBinding) {
+            return toTypeName((TypeBinding) b);
+        } else if (b instanceof VariableBinding) {
+            TypeBinding type = ((VariableBinding) b).type;
+            return toTypeName(type);
+        } else
+            return absent();
+    }
 
     /**
      * TODO nested anonymous types are not resolved correctly. JDT uses line numbers for inner types instead of $1,..,$n
