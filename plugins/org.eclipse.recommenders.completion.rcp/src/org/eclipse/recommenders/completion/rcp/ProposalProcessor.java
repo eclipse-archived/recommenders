@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.completion.rcp;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.utils.annotations.Provisional;
 
@@ -41,8 +39,11 @@ public abstract class ProposalProcessor {
     /**
      * used to update the default relevance of this proposal by some increment. The initial relevance value is JDT's
      * default value.
+     * 
+     * @return the sub-relevance
      */
-    public void modifyRelevance(AtomicInteger relevance) {
+    public int modifyRelevance() {
+        return 0;
     }
 
 }

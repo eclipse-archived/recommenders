@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
+import org.eclipse.recommenders.completion.rcp.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
 import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 
@@ -44,7 +45,9 @@ public class HippieCompletionSessionProcessor extends SessionProcessor {
         final int count = keys.count(key(c));
         if (count > 0) {
             String label = String.format("hippie (%d)", count);
-            proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(count, label));
+            ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+            int increment = Math.min(10 << 2, count);
+            mgr.addProcessor(new SimpleProposalProcessor(increment, label));
         }
     }
 

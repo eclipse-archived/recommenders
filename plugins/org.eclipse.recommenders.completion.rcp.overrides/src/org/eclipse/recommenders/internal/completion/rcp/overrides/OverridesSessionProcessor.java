@@ -14,7 +14,6 @@ import static java.lang.Math.rint;
 import static org.eclipse.recommenders.internal.completion.rcp.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.CompletionProposal;
@@ -22,7 +21,9 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
+import org.eclipse.recommenders.completion.rcp.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
+import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 import com.google.inject.Inject;
@@ -60,19 +61,10 @@ public class OverridesSessionProcessor extends SessionProcessor {
                 final String recSignature = r.method.getSignature();
                 if (recSignature.equals(propSignature)) {
                     final int percentage = (int) rint(r.probability * 100);
-                    proposal.getProposalProcessorManager().addProcessor(new ProposalProcessor() {
-
-                        @Override
-                        public void modifyRelevance(AtomicInteger relevance) {
-                            int increment = 100 + percentage;
-                            relevance.addAndGet(increment);
-                        }
-
-                        @Override
-                        public void modifyDisplayString(StyledString displayString) {
-                            displayString.append(" - " + percentage + "%", StyledString.COUNTER_STYLER);
-                        }
-                    });
+                    int increment = 100 + percentage << 3;
+                    String label = percentage + "%";
+                    ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+                    mgr.addProcessor(new SimpleProposalProcessor(increment, label));
                 }
             }
         }

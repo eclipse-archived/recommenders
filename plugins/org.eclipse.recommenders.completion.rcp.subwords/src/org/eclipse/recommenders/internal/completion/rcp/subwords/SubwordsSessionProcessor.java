@@ -134,14 +134,12 @@ public class SubwordsSessionProcessor extends SessionProcessor {
             }
 
             @Override
-            public void modifyRelevance(AtomicInteger relevance) {
-                if (ArrayUtils.isEmpty(bestSequence)) return;
+            public int modifyRelevance() {
+                if (ArrayUtils.isEmpty(bestSequence)) return 0;
                 if (startsWithIgnoreCase(matchingArea, prefix)) {
-                    int newRelevance = 1 << 29 | relevance.get();
-                    relevance.set(newRelevance);
+                    return 1 << 30;
                 } else {
-                    int score = LCSS.scoreSubsequence(bestSequence);
-                    relevance.addAndGet(score);
+                    return LCSS.scoreSubsequence(bestSequence);
                 }
 
             }

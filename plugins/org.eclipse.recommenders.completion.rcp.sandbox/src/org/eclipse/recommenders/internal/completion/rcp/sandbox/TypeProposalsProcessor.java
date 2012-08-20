@@ -57,8 +57,8 @@ import com.google.common.collect.Sets.SetView;
 
 public final class TypeProposalsProcessor extends SessionProcessor {
 
-    private static final SimpleProposalProcessor PKG = new SimpleProposalProcessor(4, "pkg");
-    private static SimpleProposalProcessor EXACT = new SimpleProposalProcessor(1 << 30, "exact type");
+    private static final SimpleProposalProcessor PKG = new SimpleProposalProcessor(1 << 6, "pkg");
+    private static SimpleProposalProcessor EXACT = new SimpleProposalProcessor(1 << 25, "type");
 
     static final Set<Class<?>> SUPPORTED_COMPLETION_NODES = new HashSet<Class<?>>() {
         {
@@ -81,6 +81,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
 
     @Override
     public void startSession(IRecommendersCompletionContext context) {
+        pkgs = Sets.newHashSet();
         expected = context.getExpectedTypeNames();
         if (expectedType != null) {
             String[] split1 = expectedType.getElementName().split("(?=\\p{Upper})");
@@ -90,8 +91,6 @@ public final class TypeProposalsProcessor extends SessionProcessor {
                 }
             }
         }
-
-        pkgs = Sets.newHashSet();
 
         ASTNode completion = context.getCompletionNode().orNull();
         if (completion == null || !SUPPORTED_COMPLETION_NODES.contains(completion.getClass())) {

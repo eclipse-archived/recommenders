@@ -106,7 +106,7 @@ public class BaseRelevanceProcessor extends SessionProcessor {
         default:
             factor = 1;
         }
-        int score = factor << 24;
+        int score = factor << 13;
         ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
         mgr.addProcessor(new SimpleProposalProcessor(score));
     }

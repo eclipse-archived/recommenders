@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
 
@@ -30,8 +28,8 @@ public class SimpleProposalProcessor extends ProposalProcessor {
     }
 
     @Override
-    public void modifyRelevance(AtomicInteger relevance) {
-        relevance.addAndGet(increment);
+    public int modifyRelevance() {
+        return increment;
     }
 
     @Override

@@ -42,14 +42,14 @@ public class ProposalProcessorManager {
     public boolean prefixChanged(String prefix) {
         boolean discardProposal = false;
         StyledString tmpStyledString = deepCopy(orgDisplayString);
-        AtomicInteger tmpRelevance = new AtomicInteger(orgRelevance);
+        int tmpRelevance = 0;
 
         for (ProposalProcessor p : processors) {
             discardProposal |= p.isPrefix(prefix);
             p.modifyDisplayString(tmpStyledString);
-            p.modifyRelevance(tmpRelevance);
+            tmpRelevance += p.modifyRelevance();
         }
-        proposal.setRelevance(tmpRelevance.get());
+        proposal.setRelevance(tmpRelevance);
         proposal.setStyledDisplayString(tmpStyledString);
         return discardProposal;
     }
