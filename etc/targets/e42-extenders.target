@@ -31,12 +31,7 @@
 <unit id="org.eclipse.recommenders.feature.completion.rcp.intellig.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.recommenders.feature.snipmatch.rcp.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.recommenders.feature.completion.rcp.subwords.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.recommenders.feature.completion.rcp.chain.source.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.recommenders.feature.rcp.core.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.recommenders.feature.rcp.core.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.recommenders.feature.extdoc.rcp.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.recommenders.feature.completion.rcp.intellig.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.recommenders.feature.completion.rcp.subwords.source.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.recommenders.feature.3rd.orbit.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.recommenders.feature.3rd.rcp.nonjuno.feature.group" version="0.0.0"/>
