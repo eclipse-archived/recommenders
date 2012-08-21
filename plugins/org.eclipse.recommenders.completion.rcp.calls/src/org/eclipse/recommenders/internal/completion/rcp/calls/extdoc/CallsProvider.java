@@ -192,6 +192,7 @@ public final class CallsProvider extends ExtdocProvider {
             final Composite container = ExtdocUtils.createComposite(parent, 4);
             final Label preamble2 = new Label(container, SWT.NONE);
             setInfoForegroundColor(preamble2);
+            setInfoBackgroundColor(preamble2);
             preamble2.setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0).create());
             if (methodCalls.isEmpty()) {
                 preamble2.setText(format("For %s %s no recommendations are made.",
@@ -227,6 +228,7 @@ public final class CallsProvider extends ExtdocProvider {
             final Label preamble = new Label(container, SWT.NONE);
             preamble.setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 5).create());
             setInfoForegroundColor(preamble);
+            setInfoBackgroundColor(preamble);
             final String text =
                     format("Proposals were computed based on variable type '%s' in '%s'.",
                             receiverType.getElementName(),
