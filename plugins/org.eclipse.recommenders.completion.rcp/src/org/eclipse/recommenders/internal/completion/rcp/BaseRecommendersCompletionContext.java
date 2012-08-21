@@ -127,13 +127,12 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     }
 
     private void requestExtendedContext() {
-        final ICompilationUnit cu = getCompilationUnit();
-
+        ICompilationUnit cu = getCompilationUnit();
         collector = new ProposalCollectingCompletionRequestor(javaContext);
         try {
             cu.codeComplete(getInvocationOffset(), collector, new TimeoutProgressMonitor());
-        } catch (final JavaModelException e) {
-            RecommendersPlugin.log(e);
+        } catch (final Exception e) {
+            RecommendersPlugin.logError(e,"Exception during code completion");
         }
         coreContext = collector.getCoreContext();
     }
@@ -232,7 +231,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         return javaContext.getCompilationUnit();
     }
 
-    @Override public Optional<CompilationUnitDeclaration> getCompliationUnitDeclaration() {
+    @Override
+    public Optional<CompilationUnitDeclaration> getCompliationUnitDeclaration() {
         return fromNullable(compilationUnitDeclaration);
     }
 
