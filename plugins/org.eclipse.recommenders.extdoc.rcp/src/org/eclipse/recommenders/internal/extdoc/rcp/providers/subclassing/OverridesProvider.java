@@ -20,6 +20,7 @@ import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.create
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createMethodLink;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.percentageToRecommendationPhrase;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoForegroundColor;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 import static org.eclipse.swt.SWT.COLOR_INFO_FOREGROUND;
 
@@ -152,7 +153,8 @@ public final class OverridesProvider extends ExtdocProvider {
                     directive.getNumberOfSubclasses(), type.getElementName());
             Label label = new Label(container, SWT.NONE);
             label.setText(message);
-            ExtdocUtils.setInfoForegroundColor(label);
+            setInfoForegroundColor(label);
+            setInfoBackgroundColor(label);
         }
 
         private void addDirectives() {

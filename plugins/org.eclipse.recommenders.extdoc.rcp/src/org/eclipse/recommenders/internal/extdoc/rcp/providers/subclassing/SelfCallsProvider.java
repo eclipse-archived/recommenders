@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoForegroundColor;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
 
 import java.util.concurrent.ExecutionException;
@@ -124,7 +125,8 @@ public final class SelfCallsProvider extends ExtdocProvider {
                     directive.getNumberOfSubclasses(), type.getElementName());
             Label label = new Label(container, SWT.NONE);
             label.setText(message);
-            ExtdocUtils.setInfoForegroundColor(label);
+            setInfoForegroundColor(label);
+            setInfoBackgroundColor(label);
         }
 
         private void addDirectives() {
@@ -168,7 +170,8 @@ public final class SelfCallsProvider extends ExtdocProvider {
                     directive.getNumberOfDefinitions(), method.getElementName());
             Label label = new Label(container, SWT.NONE);
             label.setText(message);
-            ExtdocUtils.setInfoForegroundColor(label);
+            setInfoForegroundColor(label);
+            setInfoBackgroundColor(label);
         }
 
         private void addDirectives() {

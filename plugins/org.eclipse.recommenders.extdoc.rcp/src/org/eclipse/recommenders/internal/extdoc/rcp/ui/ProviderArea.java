@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoForegroundColor;
 import static org.eclipse.recommenders.utils.Throws.throwUnsupportedOperation;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -68,7 +69,8 @@ public class ProviderArea {
 
         final CLabel l = new CLabel(title, SWT.NONE);
         l.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
-        l.setBackground(l.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        setInfoForegroundColor(l);
+        setInfoBackgroundColor(l);
         l.setText(providerName);
         l.setImage(providerImage);
     }
