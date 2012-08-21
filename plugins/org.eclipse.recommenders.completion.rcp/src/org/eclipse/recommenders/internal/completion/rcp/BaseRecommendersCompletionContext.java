@@ -118,7 +118,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
             assistNode = (ASTNode) fAssistNode.get(extCoreContext);
             assistNodeParent = (ASTNode) fAssistNodeParent.get(extCoreContext);
-            assistScope = (MethodScope) fAssistScope.get(extCoreContext);
+            assistScope = (Scope) fAssistScope.get(extCoreContext);
             compilationUnitDeclaration = (CompilationUnitDeclaration) fCompilationUnitDeclaration.get(extCoreContext);
 
         } catch (Exception e) {
