@@ -44,18 +44,12 @@ import com.google.gson.reflect.TypeToken;
 
 public class SnippetsView extends ViewPart {
 
-    private final String[] SNIPPET_TYPE = new String[] { "All", "Public", "Personal" };
     private List snippetsList;
     private Text searchText;
-
     private Button editButton;
-    private Button enableButton;
-    private Button disableButton;
     private Button deleteButton;
 
     private Map<String, SummaryFileMap> snippetsMap = new HashMap<String, SummaryFileMap>();
-    private String currentFilePath = null;
-
     private SubmitBox editBox = null;
 
     @Override
@@ -153,11 +147,8 @@ public class SnippetsView extends ViewPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                SummaryFileMap map = snippetsMap.get(snippetsList.getSelection()[0]);
-                currentFilePath = map.filePath;
                 editButton.setEnabled(true);
                 deleteButton.setEnabled(true);
-
             }
 
             @Override
