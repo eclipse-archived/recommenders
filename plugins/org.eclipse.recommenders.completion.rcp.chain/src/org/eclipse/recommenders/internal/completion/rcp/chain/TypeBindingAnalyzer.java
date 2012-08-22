@@ -137,10 +137,18 @@ public final class TypeBindingAnalyzer {
             return Collections.emptyList();
         }
         final List<ReferenceBinding> supertypes = Lists.newLinkedList();
-        ReferenceBinding superclass = (ReferenceBinding) base;
-        while (superclass != null) {
-            supertypes.add(superclass);
-            superclass = superclass.superclass();
+        final LinkedList<ReferenceBinding> queue = Lists.newLinkedList();
+        queue.add((ReferenceBinding) base);
+        while (!queue.isEmpty()) {
+            final ReferenceBinding superType = queue.poll();
+            if (superType == null || supertypes.contains(superType)) {
+                continue;
+            }
+            supertypes.add(superType);
+            queue.add(superType.superclass());
+            for (final ReferenceBinding interfc : superType.superInterfaces()) {
+                queue.add(interfc);
+            }
         }
         return supertypes;
     }

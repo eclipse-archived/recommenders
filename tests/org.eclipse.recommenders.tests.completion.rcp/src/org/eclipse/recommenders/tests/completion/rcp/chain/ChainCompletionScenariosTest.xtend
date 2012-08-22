@@ -853,11 +853,13 @@ class ChainCompletionScenariosTest {
 		
 		// need to def expectations
 		var expected = w(newArrayList(
+			"asLifoQueue iterator",
 			"checkedCollection iterator",
 			"checkedList iterator",
 			"checkedList listIterator",
 			"checkedList listIterator",
 			"checkedSet iterator",
+			"checkedSortedSet iterator",
 			"emptyList iterator",
 			"emptyList listIterator",
 			"emptyList listIterator",
@@ -870,9 +872,7 @@ class ChainCompletionScenariosTest {
 			"nCopies listIterator",
 			"newSetFromMap iterator",
 			"singleton iterator",
-			"singletonList iterator",
-			"singletonList listIterator",
-			"singletonList listIterator"
+			"singletonList iterator"
 			))
 		exercise(code, expected);
 	}
