@@ -6,53 +6,30 @@ class CodeBuilder {
 	
 	public static CharSequence someClass = '''public class C {}'''
 	private static AtomicInteger classCounter = new AtomicInteger()
+
+	def static classbody(CharSequence classbody){
+		classbody("Class"+ classCounter.addAndGet(1), classbody);
+	}
+	
+	def static classbody(CharSequence classname, CharSequence classbody){
+		classDeclaration('''public class «classname» ''', classbody)
+	}
 	
 	def static classDeclaration(CharSequence declaration, CharSequence body) {
 		'''
-		import java.lang.annotation.*;
 		import java.lang.reflect.*;
+		import java.math.*;
+		import java.io.*;
+		import java.text.*;
 		import java.util.*;
 		import java.util.concurrent.*;
-		import java.util.concurrent.*;
-		import java.text.*;
+		import java.util.concurrent.atomic.*;
 		import javax.annotation.*;
 		import javax.xml.ws.Action;
 		«declaration» {
 			«body»
 		}
 		''' 
-	}
-	
-	def static classbody(CharSequence classname, CharSequence classbody){
-		'''
-		import java.util.*;
-		import java.text.*;
-		import java.io.*;
-		import java.util.concurrent.*;
-		import java.util.concurrent.atomic.*;
-		import javax.annotation.*;
-		import javax.xml.ws.Action;
-		public class «classname» {
-			«classbody»
-		}
-		'''
-	}
-	
-	def static classbody(CharSequence classbody){
-		'''
-		import java.util.*;
-		import java.lang.reflect.*;
-		import java.io.*;
-		import java.util.concurrent.*;
-		import java.text.*;
-		import java.util.concurrent.*;
-		import javax.annotation.*;
-		import javax.xml.ws.Action;
-		import java.math.*;
-		public class Class«classCounter.addAndGet(1)» {
-			«classbody»
-		}
-		'''
 	}
 	
 	def static OLD_TEST_CLASS(){

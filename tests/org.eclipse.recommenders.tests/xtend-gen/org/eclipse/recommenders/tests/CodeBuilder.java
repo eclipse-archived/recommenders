@@ -21,19 +21,37 @@ public class CodeBuilder {
     }
   }.apply();
   
+  public static CharSequence classbody(final CharSequence classbody) {
+    int _addAndGet = CodeBuilder.classCounter.addAndGet(1);
+    String _plus = ("Class" + Integer.valueOf(_addAndGet));
+    CharSequence _classbody = CodeBuilder.classbody(_plus, classbody);
+    return _classbody;
+  }
+  
+  public static CharSequence classbody(final CharSequence classname, final CharSequence classbody) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("public class ");
+    _builder.append(classname, "");
+    _builder.append(" ");
+    CharSequence _classDeclaration = CodeBuilder.classDeclaration(_builder, classbody);
+    return _classDeclaration;
+  }
+  
   public static CharSequence classDeclaration(final CharSequence declaration, final CharSequence body) {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import java.lang.annotation.*;");
-    _builder.newLine();
     _builder.append("import java.lang.reflect.*;");
+    _builder.newLine();
+    _builder.append("import java.math.*;");
+    _builder.newLine();
+    _builder.append("import java.io.*;");
+    _builder.newLine();
+    _builder.append("import java.text.*;");
     _builder.newLine();
     _builder.append("import java.util.*;");
     _builder.newLine();
     _builder.append("import java.util.concurrent.*;");
     _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("import java.text.*;");
+    _builder.append("import java.util.concurrent.atomic.*;");
     _builder.newLine();
     _builder.append("import javax.annotation.*;");
     _builder.newLine();
@@ -44,67 +62,6 @@ public class CodeBuilder {
     _builder.newLineIfNotEmpty();
     _builder.append("\t");
     _builder.append(body, "	");
-    _builder.newLineIfNotEmpty();
-    _builder.append("}");
-    _builder.newLine();
-    return _builder;
-  }
-  
-  public static CharSequence classbody(final CharSequence classname, final CharSequence classbody) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import java.util.*;");
-    _builder.newLine();
-    _builder.append("import java.text.*;");
-    _builder.newLine();
-    _builder.append("import java.io.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.atomic.*;");
-    _builder.newLine();
-    _builder.append("import javax.annotation.*;");
-    _builder.newLine();
-    _builder.append("import javax.xml.ws.Action;");
-    _builder.newLine();
-    _builder.append("public class ");
-    _builder.append(classname, "");
-    _builder.append(" {");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t");
-    _builder.append(classbody, "	");
-    _builder.newLineIfNotEmpty();
-    _builder.append("}");
-    _builder.newLine();
-    return _builder;
-  }
-  
-  public static CharSequence classbody(final CharSequence classbody) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import java.util.*;");
-    _builder.newLine();
-    _builder.append("import java.lang.reflect.*;");
-    _builder.newLine();
-    _builder.append("import java.io.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("import java.text.*;");
-    _builder.newLine();
-    _builder.append("import java.util.concurrent.*;");
-    _builder.newLine();
-    _builder.append("import javax.annotation.*;");
-    _builder.newLine();
-    _builder.append("import javax.xml.ws.Action;");
-    _builder.newLine();
-    _builder.append("import java.math.*;");
-    _builder.newLine();
-    _builder.append("public class Class");
-    int _addAndGet = CodeBuilder.classCounter.addAndGet(1);
-    _builder.append(_addAndGet, "");
-    _builder.append(" {");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t");
-    _builder.append(classbody, "	");
     _builder.newLineIfNotEmpty();
     _builder.append("}");
     _builder.newLine();
