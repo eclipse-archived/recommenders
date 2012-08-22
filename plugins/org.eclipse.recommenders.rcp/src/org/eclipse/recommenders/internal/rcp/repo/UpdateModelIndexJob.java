@@ -14,6 +14,7 @@ import static org.apache.commons.io.FileUtils.cleanDirectory;
 import static org.eclipse.recommenders.internal.rcp.repo.ModelRepositoryIndex.INDEX_ARTIFACT;
 
 import java.io.File;
+import java.io.StringWriter;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -49,7 +50,7 @@ public class UpdateModelIndexJob extends Job {
                 downloadAndUnzipIndex(monitor);
             }
         } catch (Exception e) {
-            log.debug("Updating index cancelled.", e);
+            log.warn("Updating index cancelled.", e);
             return Status.CANCEL_STATUS;
         } finally {
             index.open();
@@ -67,7 +68,8 @@ public class UpdateModelIndexJob extends Job {
         try {
             repo.resolve(INDEX_ARTIFACT, monitor);
         } catch (NullPointerException e) {
-            // we may have no internet... XXX this needs investigation
+            // we probably don't have internet... XXX this needs investigation
+            log.warn("Couldn't download search index. No (direct) internet connection? Need a proxy?", e);
         }
 
         File f = repo.location(INDEX_ARTIFACT);
