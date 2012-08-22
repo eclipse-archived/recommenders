@@ -76,9 +76,6 @@ public class SubmitBox extends ClientSwitcher {
     private StyledText codeText;
     private Button insertFormulaButton;
 
-    // page 4 widgets: Privacy
-    private Button publicButton;
-
     private static final Font codeFont = new Font(PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NORMAL);
 
     private String editFilePath = null;
@@ -94,9 +91,7 @@ public class SubmitBox extends ClientSwitcher {
      */
     public void show(String summary, String filePath, Effect toEdit) {
         editFilePath = filePath;
-
         envs = new MatchEnvironment[] { new JavaSnippetMatchEnvironment() };
-
         editing = toEdit != null;
 
         if (editing)
@@ -130,7 +125,7 @@ public class SubmitBox extends ClientSwitcher {
         CTabFolder tabFolder = new CTabFolder(shell, SWT.NONE);
         tabFolder.setLayoutData(fd);
 
-        String[] tabNames = new String[] { "General", "Input", "Code", "Privacy" };
+        String[] tabNames = new String[] { "General", "Input", "Code" };
 
         CTabItem[] tabs = new CTabItem[tabNames.length];
         pages = new Composite[tabNames.length];
@@ -500,39 +495,6 @@ public class SubmitBox extends ClientSwitcher {
                         showInsertFormulaDialog();
                     }
                 });
-            }
-        }
-
-        {
-            Composite page = pages[3];
-
-            {
-                publicButton = new Button(page, SWT.CHECK);
-            }
-
-            Text publicText;
-
-            {
-                fd = new FormData();
-                fd.left = new FormAttachment(publicButton);
-                fd.right = new FormAttachment(100);
-
-                publicText = new Text(page, SWT.MULTI | SWT.WRAP);
-                publicText.setText("");
-                publicText.setEditable(false);
-                publicText.setLayoutData(fd);
-            }
-
-            {
-                fd = new FormData();
-                fd.top = new FormAttachment(publicText);
-                fd.left = new FormAttachment(0);
-                fd.right = new FormAttachment(100);
-
-                publicText = new Text(page, SWT.MULTI | SWT.WRAP);
-                publicText.setText("");
-                publicText.setEditable(false);
-                publicText.setLayoutData(fd);
             }
         }
 
@@ -1337,8 +1299,6 @@ public class SubmitBox extends ClientSwitcher {
         effect.setMinorType(minorTypeText.getText());
         effect.setCode(codeText.getText());
         effect.setSummary(sumText.getText());
-
-        final boolean isPublic = publicButton.getSelection();
 
         if (editing) {
             GsonUtil.serialize(effect, new File(this.editFilePath));

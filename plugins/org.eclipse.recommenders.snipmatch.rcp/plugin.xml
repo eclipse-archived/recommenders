@@ -227,9 +227,9 @@
       <perspectiveExtension
             targetID="org.eclipse.jdt.ui.JavaPerspective">
          <view
-               closeable="false"
+               closeable="true"
                id="org.eclipse.recommenders.snipmatch.views.snippetsview"
-               moveable="false"
+               moveable="true"
                ratio="0.5"
                relationship="stack"
                relative="org.eclipse.ui.views.ProblemView">
