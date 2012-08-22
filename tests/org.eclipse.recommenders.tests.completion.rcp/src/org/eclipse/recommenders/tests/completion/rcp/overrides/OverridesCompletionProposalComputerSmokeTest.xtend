@@ -1,15 +1,16 @@
 package org.eclipse.recommenders.tests.completion.rcp.overrides
 
 import java.util.List
-import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesCompletionProposalComputer
+import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesRecommender
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.junit.Test
-import org.eclipse.recommenders.internal.completion.rcp.overrides.OverridesRecommender
+
+import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
  
 class OverridesCompletionProposalComputerSmokeTest { 
   

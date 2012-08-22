@@ -45,8 +45,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
     @Override
     public List computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
         ctx = (JavaContentAssistInvocationContext) context;
-        if (!shouldReturnResults())
-            return Collections.emptyList();
+        if (!shouldReturnResults()) return Collections.emptyList();
         return findSubwordMatchingProposals(new TimeDelimitedProgressMonitor(monitor, TIMEOUT));
     }
 
@@ -78,8 +77,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
 
     private String getToken() {
         CompletionContext coreCtx = ctx.getCoreContext();
-        if (coreCtx == null)
-            return "";
+        if (coreCtx == null) return "";
         final char[] token = coreCtx.getToken();
         if (token == null) {
             return "";
@@ -107,8 +105,8 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
                 // then on the 'virtual' position
                 cu.codeComplete(offsetBeforeTokenBegin, requestor, monitor);
             }
-        } catch (final JavaModelException e) {
-            RecommendersUtilsPlugin.log(e);
+        } catch (final Exception e) {
+            RecommendersUtilsPlugin.logWarning(e, "Code completion failed: %s", e.getMessage());
         }
         return requestor.getProposals();
     }

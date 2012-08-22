@@ -89,6 +89,28 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>e43</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<version>${tycho-version}</version>
+						<configuration>
+							<target>
+								<artifact>
+									<groupId>org.eclipse.recommenders</groupId>
+									<artifactId>targets</artifactId>
+									<version>${recommenders-version}</version>
+									<classifier>e42</classifier>
+								</artifact>
+							</target>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 	<build>
 		<plugins>

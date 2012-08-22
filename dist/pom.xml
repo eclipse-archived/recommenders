@@ -30,6 +30,12 @@
             </modules>
         </profile>
         <profile>
+            <id>e43</id>
+            <modules>
+                <module>org.eclipse.recommenders.repository.rcp.train.e43</module>
+            </modules>
+        </profile>
+        <profile>
             <id>server</id>
             <modules>
                <!-- <module>org.eclipse.recommenders.product.server</module> -->
