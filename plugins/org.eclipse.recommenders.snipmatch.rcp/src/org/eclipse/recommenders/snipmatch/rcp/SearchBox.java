@@ -51,7 +51,6 @@ public class SearchBox extends ClientSwitcher {
     private final int idealHeight = 200;
     private final int maxMatches = 10;
     private Color queryBackColor;
-    private Color queryDisabledBackColor;
     private Color matchSelectBackColor;
     private Color matchSelectOverviewBackColor;
     private Font searchFont;
@@ -83,9 +82,6 @@ public class SearchBox extends ClientSwitcher {
         ColorRegistry colorRegistry = currentTheme.getColorRegistry();
         queryBackColor = colorRegistry
                 .get("org.eclipse.recommenders.snipmatch.preferences.colorDefinition.queryBackColor");
-        queryDisabledBackColor = colorRegistry
-                .get("org.eclipse.recommenders.snipmatch.preferences.colorDefinition.queryDisabledBackColor");
-        ;
         matchSelectBackColor = colorRegistry
                 .get("org.eclipse.recommenders.snipmatch.preferences.colorDefinition.matchSelectBackColor");
         matchSelectOverviewBackColor = colorRegistry
@@ -629,19 +625,6 @@ public class SearchBox extends ClientSwitcher {
 
         if (!shell.isDisposed())
             shell.close();
-    }
-
-    /**
-     * Lock the search box while logging in, and display a message.
-     */
-    public void lock() {
-
-        if (queryText != null) {
-
-            queryText.setEditable(false);
-            queryText.setText("Logging in...");
-            queryText.setBackground(queryDisabledBackColor);
-        }
     }
 
     /**

@@ -99,70 +99,34 @@
     <colorDefinition
         categoryId="org.eclipse.recommenders.snipmatch.preferences.themeElementCategory"
         id="org.eclipse.recommenders.snipmatch.preferences.colorDefinition.queryBackColor"
-        label="Query Back Color"
+        label="Search box background"
         value="255, 255, 200">
         <description>
-            SnipMatch search box query back color
+            SnipMatch search box query background color
         </description>
     </colorDefinition>
     <colorDefinition
         categoryId="org.eclipse.recommenders.snipmatch.preferences.themeElementCategory"
         id="org.eclipse.recommenders.snipmatch.preferences.colorDefinition.matchSelectBackColor"
-        label="Match Select Back Color"
+        label="Search result background"
         value="255, 255, 255">
         <description>
-            SnipMatch search box match select back color
+            SnipMatch search box background color
         </description>
     </colorDefinition>
     <colorDefinition
         categoryId="org.eclipse.recommenders.snipmatch.preferences.themeElementCategory"
         id="org.eclipse.recommenders.snipmatch.preferences.colorDefinition.selectionOverviewBackColor"
-        label="Match Select Overview Back Color"
+        label="Overview background"
         value="255, 255, 225">
         <description>
             SnipMatch search box match select overview panel back color
         </description>
     </colorDefinition>
-    <colorDefinition
-        categoryId="org.eclipse.recommenders.snipmatch.preferences.themeElementCategory"
-        id="org.eclipse.recommenders.snipmatch.preferences.colorDefinition.matchBlankArgForeColor"
-        label="Match Blank Arg Fore Color"
-        value="125, 150, 255">
-        <description>
-            SnipMatch search box match blank argement fore color
-        </description>
-    </colorDefinition>
-    <colorDefinition
-        categoryId="org.eclipse.recommenders.snipmatch.preferences.themeElementCategory"
-        id="org.eclipse.recommenders.snipmatch.preferences.colorDefinition.queryDisabledBackColor"
-        label="Query Disable Back Color"
-        value="240, 240, 240">
-        <description>
-            SnipMatch search box query disable back color
-        </description>
-    </colorDefinition>
-    <colorDefinition
-        categoryId="org.eclipse.recommenders.snipmatch.preferences.themeElementCategory"
-        id="org.eclipse.recommenders.snipmatch.preferences.colorDefinition.matchKeywordForeColor"
-        label="Match Keyword Fore Color"
-        value="0, 0, 0">
-        <description>
-            SnipMatch search box match keyword fore color
-        </description>
-    </colorDefinition>
-    <colorDefinition
-        categoryId="org.eclipse.recommenders.snipmatch.preferences.themeElementCategory"
-        id="org.eclipse.recommenders.snipmatch.preferences.colorDefinition.matchArgForeColor"
-        label="Match Arg Fore Color"
-        value="0, 0, 255">
-        <description>
-            SnipMatch search box match argement fore color
-        </description>
-    </colorDefinition>
     <fontDefinition
         categoryId="org.eclipse.recommenders.snipmatch.preferences.themeElementCategory"
         id="org.eclipse.recommenders.snipmatch.preferences.fontDefinition"
-        label="SnipMatch Search Font"
+        label="Search text font"
         defaultsTo="org.eclipse.jface.textfont">
         <description>
             SnipMatch theme font
