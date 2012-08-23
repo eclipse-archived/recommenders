@@ -58,7 +58,7 @@ import com.google.common.collect.Sets.SetView;
 public final class TypeProposalsProcessor extends SessionProcessor {
 
     private static final SimpleProposalProcessor PKG = new SimpleProposalProcessor(1 << 6, "pkg");
-    private static SimpleProposalProcessor EXACT = new SimpleProposalProcessor(1 << 25, "type");
+    private static SimpleProposalProcessor EXACT = new SimpleProposalProcessor(1 << 25, "exact type");
 
     static final Set<Class<?>> SUPPORTED_COMPLETION_NODES = new HashSet<Class<?>>() {
         {
