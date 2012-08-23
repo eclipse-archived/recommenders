@@ -82,6 +82,8 @@ public final class TypeProposalsProcessor extends SessionProcessor {
     @Override
     public void startSession(IRecommendersCompletionContext context) {
         pkgs = Sets.newHashSet();
+        expectedSubwords = Sets.newHashSet();
+        expectedType = context.getExpectedType().orNull();
         expected = context.getExpectedTypeNames();
         if (expectedType != null) {
             String[] split1 = expectedType.getElementName().split("(?=\\p{Upper})");
