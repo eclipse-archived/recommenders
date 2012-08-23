@@ -10,9 +10,13 @@
  */
 package org.eclipse.recommenders.utils.gson;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.recommenders.utils.NamesTest;
@@ -68,6 +72,20 @@ public class GsonUtilTest {
     }
 
     @Test
+    public void testEmptyFileDeserialization() throws IOException {
+        // setup
+        File f = File.createTempFile("tmp", ".json");
+        f.deleteOnExit();
+
+        // exercise
+        Object res = GsonUtil.deserialize(f, new TypeToken<Map<File, String>>() {
+        }.getType());
+
+        // it's actually null :)
+        assertNull(res);
+    }
+
+    @Test
     public void testTypeNameDeserialization() {
         // setup
         final ITypeName expected = NamesTest.STRING;
@@ -103,8 +121,8 @@ public class GsonUtilTest {
         final GsonTestStruct input = GsonTestStruct.create("string", 0.43d, "s1", "s2");
         // exercise
         final String json = GsonUtil.serialize(input);
-        final GsonTestStruct output = GsonUtil.deserialize(new ByteArrayInputStream(json.getBytes()),
-                GsonTestStruct.class);
+        final GsonTestStruct output =
+                GsonUtil.deserialize(new ByteArrayInputStream(json.getBytes()), GsonTestStruct.class);
         // verify
         assertEquals(input, output);
     }
@@ -145,8 +163,8 @@ public class GsonUtilTest {
         // exercise:
         final String json = GsonUtil.getInstance().toJson(map, new TypeToken<Multimap<VersionRange, Version>>() {
         }.getType());
-        final Multimap<VersionRange, Version> output = GsonUtil.deserialize(json,
-                new TypeToken<Multimap<VersionRange, Version>>() {
+        final Multimap<VersionRange, Version> output =
+                GsonUtil.deserialize(json, new TypeToken<Multimap<VersionRange, Version>>() {
                 }.getType());
         // verify
         assertEquals(map, output);
