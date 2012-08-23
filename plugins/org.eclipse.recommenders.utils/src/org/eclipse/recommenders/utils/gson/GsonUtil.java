@@ -126,8 +126,8 @@ public class GsonUtil {
     }
 
     public static void serialize(final Object obj, final File dest) {
-        ensureIsNotNull(obj);
-        ensureIsNotNull(dest);
+        ensureIsNotNull(obj, "object to serialize cannot be null");
+        ensureIsNotNull(dest, "serialization destination cannot be null");
         Writer fw = null;
         try {
             fw = new BufferedWriter(new FileWriter(dest));
