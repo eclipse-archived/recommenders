@@ -30,7 +30,7 @@ public class CreateIndexOperation implements IRunnableWithProgress {
             .getString(PreferenceConstants.SNIPPETS_INDEX_FILE);
     private String dirPath = SnipMatchPlugin.getDefault().getPreferenceStore()
             .getString(PreferenceConstants.SNIPPETS_STORE_DIR);
-
+    private int indexNumber = 0;
     @Override
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         monitor.beginTask("Updating index file ...", 3);
@@ -63,8 +63,11 @@ public class CreateIndexOperation implements IRunnableWithProgress {
         }
         monitor.worked(1);
         GsonUtil.serialize(mapList, new File(indexFilePath));
+        indexNumber = mapList.size();
         monitor.worked(1);
         monitor.done();
     }
-
+    public int getIndexNumber() {
+        return indexNumber;
+    }
 }

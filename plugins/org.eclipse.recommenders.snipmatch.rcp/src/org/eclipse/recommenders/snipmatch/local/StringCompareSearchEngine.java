@@ -148,13 +148,13 @@ public class StringCompareSearchEngine implements SnipMatchSearchEngine {
             Shell shell = new Shell(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), SWT.NO_TRIM
                     | SWT.NO_FOCUS | SWT.NO_BACKGROUND);
             try {
-                new ProgressMonitorDialog(shell).run(true, true, new CreateIndexOperation());
+                CreateIndexOperation indexer = new CreateIndexOperation();
+                new ProgressMonitorDialog(shell).run(true, true, indexer);
                 initialized = false;
-                MessageDialog.openInformation(shell, "Recommenders tips", "Update search engine index file success!");
+                MessageDialog.openInformation(shell, Constants.MSG_DIALOG_TITLE, "Load "+indexer.getIndexNumber()+" tempaltes into index success!");
             } catch (Exception e) {
                 e.printStackTrace();
-                MessageDialog.openError(shell, "Recommenders tips",
-                        "Fail to upate index, check your snippet store directory!");
+                MessageDialog.openError(shell, Constants.MSG_DIALOG_TITLE, Constants.MSG_FAIL_TO_INDEX_TEMPLATES);
             }
         }
     }
