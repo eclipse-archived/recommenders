@@ -21,6 +21,7 @@ public class ChainPreferenceStoreMock {
         Mockito.when(store.getInt(ChainPreferencePage.ID_MAX_CHAINS)).thenReturn(20);
         Mockito.when(store.getInt(ChainPreferencePage.ID_MAX_DEPTH)).thenReturn(4);
         Mockito.when(store.getInt(ChainPreferencePage.ID_TIMEOUT)).thenReturn(3);
+        Mockito.when(store.getInt(ChainPreferencePage.ID_MIN_DEPTH)).thenReturn(1);
         Mockito.when(store.getString(ChainPreferencePage.ID_IGNORE_TYPES)).thenReturn(
                 "java.lang.Object" + ChainPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.String");
         return store;

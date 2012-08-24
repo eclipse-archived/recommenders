@@ -853,8 +853,8 @@ class ChainCompletionScenariosTest {
 		
 		// need to def expectations
 		var expected = w(newArrayList(
-			"emptyIterator",
-			"emptyListIterator",
+			// JDK 7 only: "emptyIterator",
+			// JDK 7 only: "emptyListIterator",
 			"asLifoQueue iterator",
 			"checkedCollection iterator",
 			"checkedList iterator",
@@ -869,6 +869,8 @@ class ChainCompletionScenariosTest {
 			"list iterator",
 			"list listIterator",
 			"list listIterator",
+			"singleton iterator",
+			"singletonList iterator",
 			"nCopies iterator",
 			"nCopies listIterator",
 			"nCopies listIterator",

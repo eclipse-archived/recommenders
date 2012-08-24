@@ -1363,8 +1363,6 @@ public class ChainCompletionScenariosTest {
     _builder.append("Iterator<String> l = Collections.$");
     final CharSequence code = CodeBuilder.method(_builder);
     ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList(
-      "emptyIterator", 
-      "emptyListIterator", 
       "asLifoQueue iterator", 
       "checkedCollection iterator", 
       "checkedList iterator", 
@@ -1379,6 +1377,8 @@ public class ChainCompletionScenariosTest {
       "list iterator", 
       "list listIterator", 
       "list listIterator", 
+      "singleton iterator", 
+      "singletonList iterator", 
       "nCopies iterator", 
       "nCopies listIterator", 
       "nCopies listIterator", 
