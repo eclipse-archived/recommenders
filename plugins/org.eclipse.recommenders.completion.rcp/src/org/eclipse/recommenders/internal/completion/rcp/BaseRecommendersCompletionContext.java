@@ -205,7 +205,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     @Override
     public Optional<IType> getClosestEnclosingType() {
         if (!hasEnclosingElement()) {
-            absent();
+            return absent();
         }
         final IJavaElement enclosing = getEnclosingElement().get();
         if (enclosing instanceof IType) {
