@@ -18,6 +18,7 @@ class CodeBuilder {
 	def static classDeclaration(CharSequence declaration, CharSequence body) {
 		'''
 		import java.lang.reflect.*;
+		import java.lang.annotation.*;
 		import java.math.*;
 		import java.io.*;
 		import java.text.*;

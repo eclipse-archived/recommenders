@@ -41,6 +41,8 @@ public class CodeBuilder {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import java.lang.reflect.*;");
     _builder.newLine();
+    _builder.append("import java.lang.annotation.*;");
+    _builder.newLine();
     _builder.append("import java.math.*;");
     _builder.newLine();
     _builder.append("import java.io.*;");
