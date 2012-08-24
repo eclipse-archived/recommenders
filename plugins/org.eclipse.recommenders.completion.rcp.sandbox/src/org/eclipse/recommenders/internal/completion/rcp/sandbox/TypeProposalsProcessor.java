@@ -180,14 +180,19 @@ public final class TypeProposalsProcessor extends SessionProcessor {
 
     private void handleMethodProposal(IProcessableProposal proposal, CompletionProposal coreProposal) {
         if (expected.isEmpty()) return;
-        String methodSig = new String(coreProposal.getSignature());
-        String returnType = Signature.getReturnType(methodSig);
-        returnType = returnType.replace('.', '/');
-        returnType = StringUtils.removeEnd(returnType, ";");
-        ITypeName type = VmTypeName.get(returnType);
-        if (expected.contains(type)) {
-            ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
-            mgr.addProcessor(EXACT);
+        try {
+            String methodSig = new String(coreProposal.getSignature());
+            String returnType = Signature.getReturnType(methodSig);
+            returnType = returnType.replace('.', '/');
+            returnType = StringUtils.removeEnd(returnType, ";");
+            ITypeName type = VmTypeName.get(returnType);
+            if (expected.contains(type)) {
+                ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+                mgr.addProcessor(EXACT);
+            }
+        } catch (Exception e) {
+            // generic TT causes excption
+            e.printStackTrace();
         }
     }
 
