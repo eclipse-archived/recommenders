@@ -1363,6 +1363,8 @@ public class ChainCompletionScenariosTest {
     _builder.append("Iterator<String> l = Collections.$");
     final CharSequence code = CodeBuilder.method(_builder);
     ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList(
+      "emptyIterator", 
+      "emptyListIterator", 
       "asLifoQueue iterator", 
       "checkedCollection iterator", 
       "checkedList iterator", 
@@ -1380,9 +1382,7 @@ public class ChainCompletionScenariosTest {
       "nCopies iterator", 
       "nCopies listIterator", 
       "nCopies listIterator", 
-      "newSetFromMap iterator", 
-      "singleton iterator", 
-      "singletonList iterator");
+      "newSetFromMap iterator");
     List<List<String>> expected = this.w(((String[])Conversions.unwrapArray(_newArrayList, String.class)));
     this.exercise(code, expected);
   }
@@ -1409,6 +1409,7 @@ public class ChainCompletionScenariosTest {
     _builder.append("}");
     final CharSequence code = _builder;
     ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList(
+      "m", 
       "l iterator", 
       "l listIterator", 
       "l listIterator", 

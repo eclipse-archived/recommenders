@@ -55,14 +55,15 @@ public class ChainFinder {
         this.scope = scope;
     }
 
-    void startChainSearch(final List<ChainElement> entrypoints, final int maxChains, final int maxDepth) {
+    void startChainSearch(final List<ChainElement> entrypoints, final int maxChains, final int minDepth,
+            final int maxDepth) {
         final LinkedList<LinkedList<ChainElement>> incompleteChains = prepareQueue(entrypoints);
 
         while (!incompleteChains.isEmpty()) {
             final LinkedList<ChainElement> chain = incompleteChains.poll();
             final ChainElement edge = chain.getLast();
             if (isValidEndOfChain(edge)) {
-                if (chain.size() > 1) {
+                if (isValidChain(chain, minDepth)) {
                     chains.add(chain);
                     if (chains.size() == maxChains) {
                         break;
@@ -101,6 +102,16 @@ public class ChainFinder {
             assignableCache.put(edge, isAssignable);
         }
         return isAssignable.booleanValue();
+    }
+
+    private static boolean isValidChain(final LinkedList<ChainElement> chain, final int minDepth) {
+        if (chain.size() < minDepth) {
+            return false;
+        }
+        if (chain.size() == 1 && chain.get(0).getElementType() != ChainElement.ElementType.METHOD) {
+            return false;
+        }
+        return true;
     }
 
     private void searchDeeper(final LinkedList<ChainElement> chain,

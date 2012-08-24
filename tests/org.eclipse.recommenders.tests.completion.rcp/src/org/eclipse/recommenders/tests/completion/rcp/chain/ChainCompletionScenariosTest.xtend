@@ -853,6 +853,8 @@ class ChainCompletionScenariosTest {
 		
 		// need to def expectations
 		var expected = w(newArrayList(
+			"emptyIterator",
+			"emptyListIterator",
 			"asLifoQueue iterator",
 			"checkedCollection iterator",
 			"checkedList iterator",
@@ -870,9 +872,7 @@ class ChainCompletionScenariosTest {
 			"nCopies iterator",
 			"nCopies listIterator",
 			"nCopies listIterator",
-			"newSetFromMap iterator",
-			"singleton iterator",
-			"singletonList iterator"
+			"newSetFromMap iterator"
 			))
 		exercise(code, expected);
 	}
@@ -886,10 +886,11 @@ class ChainCompletionScenariosTest {
 				List<String> l;
 				return $
 			}
-		}''' 
+		}'''
 		
 		// need to def expectations
 		var expected = w(newArrayList(
+			"m",
 			"l iterator",
 			"l listIterator",
 			"l listIterator",
@@ -909,7 +910,7 @@ class ChainCompletionScenariosTest {
 			void m(){
 				String s = Annotation.$
 			}
-		}''' 
+		}'''
 		
 		// don't expect anything.
 		var expected = w(newArrayList())

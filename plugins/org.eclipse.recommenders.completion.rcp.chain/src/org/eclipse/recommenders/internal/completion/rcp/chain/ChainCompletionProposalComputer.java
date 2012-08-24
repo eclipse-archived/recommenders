@@ -273,8 +273,9 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
                 @Override
                 public Void call() throws Exception {
                     final int maxChains = prefStore.getInt(ChainPreferencePage.ID_MAX_CHAINS);
+                    final int minDepth = prefStore.getInt(ChainPreferencePage.ID_MIN_DEPTH);
                     final int maxDepth = prefStore.getInt(ChainPreferencePage.ID_MAX_DEPTH);
-                    finder.startChainSearch(entrypoints, maxChains, maxDepth);
+                    finder.startChainSearch(entrypoints, maxChains, minDepth, maxDepth);
                     return null;
                 }
             }, prefStore.getInt(ChainPreferencePage.ID_TIMEOUT), TimeUnit.SECONDS, true);

@@ -20,6 +20,7 @@ public final class ChainPreferenceInitializer extends AbstractPreferenceInitiali
     public void initializeDefaultPreferences() {
         final IPreferenceStore store = ChainCompletionPlugin.getDefault().getPreferenceStore();
         store.setDefault(ChainPreferencePage.ID_MAX_CHAINS, 20);
+        store.setDefault(ChainPreferencePage.ID_MIN_DEPTH, 2);
         store.setDefault(ChainPreferencePage.ID_MAX_DEPTH, 4);
         store.setDefault(ChainPreferencePage.ID_TIMEOUT, 3);
         store.setDefault(ChainPreferencePage.ID_IGNORE_TYPES, "java.lang.Object"

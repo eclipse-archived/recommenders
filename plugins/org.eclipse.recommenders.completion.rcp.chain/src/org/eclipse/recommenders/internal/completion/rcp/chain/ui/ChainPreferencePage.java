@@ -32,6 +32,7 @@ public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEdito
         IWorkbenchPreferencePage {
 
     public static final String ID_MAX_CHAINS = "recommenders.chain.max_chains";
+    public static final String ID_MIN_DEPTH = "recommenders.chain.min_chain_length";
     public static final String ID_MAX_DEPTH = "recommenders.chain.max_chain_length";
     public static final String ID_TIMEOUT = "recommenders.chain.timeout";
     public static final String ID_IGNORE_TYPES = "recommenders.chain.ignore_types";
@@ -47,7 +48,8 @@ public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEdito
     @Override
     protected void createFieldEditors() {
         addField(ID_MAX_CHAINS, "Maximum number of chains:", 1, 99);
-        addField(ID_MAX_DEPTH, "Maximum chain depth:", 2, 99);
+        addField(ID_MIN_DEPTH, "Minimum chain depth:", 1, 99);
+        addField(ID_MAX_DEPTH, "Maximum chain depth:", 1, 99);
         addField(ID_TIMEOUT, "Chain search timeout (sec):", 1, 99);
 
         addField(new IgnoredTypesEditor("Return types to ignore:", getFieldEditorParent()));
