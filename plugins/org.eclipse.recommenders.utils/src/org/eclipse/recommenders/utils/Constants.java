@@ -84,6 +84,8 @@ public interface Constants {
     String CLASS_SELFM_MODEL = "selfm";
     /** MethodUsageExamples: {@value} */
     String CLASS_MUE = "mue";
+    /** MethodUsageExamples: {@value} */
+    String CLASS_CHAIN_MODEL = "chain";
     /** {@value} */
     String CLASS_OUP_DATA = "oups";
 

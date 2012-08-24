@@ -59,7 +59,7 @@ public class ModelDocumentsWriter {
     private static Logger log = LoggerFactory.getLogger(ModelDocumentsWriter.class);
 
     private String[] classifiers = { CLASS_CALL_MODELS, CLASS_OVRM_MODEL, CLASS_OVRD_MODEL, CLASS_OVRP_MODEL,
-            CLASS_SELFM_MODEL, CLASS_SELFC_MODEL };
+            CLASS_SELFM_MODEL, CLASS_SELFC_MODEL, CLASS_CHAIN_MODEL };
 
     private File basedir;
     private File dest;
