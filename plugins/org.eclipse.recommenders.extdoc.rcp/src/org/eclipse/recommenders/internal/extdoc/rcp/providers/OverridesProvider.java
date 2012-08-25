@@ -80,8 +80,7 @@ public final class OverridesProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public void onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent)
-            throws ExecutionException {
+    public void onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent) throws ExecutionException {
         final IType type = root.findPrimaryType();
         if (type != null) {
             onTypeSelection(type, event, parent);
@@ -89,8 +88,7 @@ public final class OverridesProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public void onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent)
-            throws ExecutionException {
+    public void onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent) throws ExecutionException {
         renderClassOverrideDirectives(type, parent);
         renderClassOverridesPatterns(type, parent);
     }
@@ -146,19 +144,24 @@ public final class OverridesProvider extends ExtdocProvider {
         }
 
         private void addHeader() {
-            final String message = format("Based on %d direct subclasses of %s, we created the following statistics:",
-                    directive.getNumberOfSubclasses(), type.getElementName());
+            final String message =
+                    format("Based on %d direct subclasses of %s, we created the following statistics:",
+                            directive.getNumberOfSubclasses(),
+                            type.getElementName());
             Label label = new Label(container, SWT.NONE);
             label.setText(message);
             setInfoForegroundColor(label);
             setInfoBackgroundColor(label);
-            label.setFont(JFaceResources.getDialogFont());
         }
 
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
             final TreeBag<IMethodName> b = newTreeBag(directive.getOverrides());
-            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver,
+            ExtdocUtils.renderMethodDirectivesBlock(container,
+                    b,
+                    numberOfSubclasses,
+                    workspaceBus,
+                    resolver,
                     "overrides");
         }
 
@@ -230,16 +233,20 @@ public final class OverridesProvider extends ExtdocProvider {
 
         private void addHeader() {
             new Label(container, SWT.None);
-            final String message = format("Based on the above examples, we identified the following patterns\nhow this class is typically extended:");
+            final String message =
+                    format("Based on the above examples, we identified the following patterns\nhow this class is typically extended:");
             createLabel(container, message, true);
         }
 
         private void addDirectives(final MethodPattern pattern, final int index) {
 
-            final int patternPercentage = (int) Math.rint(100 * pattern.getNumberOfObservations()
-                    / totalNumberOfExamples);
-            final String text = format("Pattern #%d (%d%% - %d examples):", index, patternPercentage,
-                    pattern.getNumberOfObservations());
+            final int patternPercentage =
+                    (int) Math.rint(100 * pattern.getNumberOfObservations() / totalNumberOfExamples);
+            final String text =
+                    format("Pattern #%d (%d%% - %d examples):",
+                            index,
+                            patternPercentage,
+                            pattern.getNumberOfObservations());
             createLabel(container, text, true, false, SWT.COLOR_DARK_GRAY, true);
             final Composite group = createGridComposite(container, 1, 0, 0, 0, 0);
             final List<Entry<IMethodName, Double>> s = Lists.newLinkedList(pattern.getMethods().entrySet());
@@ -255,16 +262,13 @@ public final class OverridesProvider extends ExtdocProvider {
             final Table table = new Table(group, SWT.NONE | SWT.HIDE_SELECTION);
             table.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
             table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
-            table.setFont(JFaceResources.getDialogFont());
             final TableColumn column1 = new TableColumn(table, SWT.NONE);
             final TableColumn column2 = new TableColumn(table, SWT.NONE);
             final TableColumn column3 = new TableColumn(table, SWT.NONE);
             final TableColumn column4 = new TableColumn(table, SWT.NONE);
 
             for (final Entry<IMethodName, Double> entry : s) {
-
                 final int percentage = (int) Math.rint(entry.getValue() * 100);
-
                 final String phraseText = percentageToRecommendationPhrase(percentage);
                 final String stats = format(" -   (%d %%)", percentage);
 

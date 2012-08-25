@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import static java.lang.String.format;
-import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createColor;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.swt.SWT.COLOR_INFO_BACKGROUND;
 import static org.eclipse.swt.SWT.COLOR_INFO_FOREGROUND;
@@ -43,6 +42,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -114,7 +114,6 @@ public final class ExtdocUtils {
         table.setBackground(createColor(COLOR_INFO_BACKGROUND));
         table.setForeground(createColor(COLOR_INFO_FOREGROUND));
         table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
-        table.setFont(JFaceResources.getDialogFont());
 
         final TableColumn column1 = new TableColumn(table, SWT.NONE);
         final TableColumn column2 = new TableColumn(table, SWT.NONE);
@@ -134,11 +133,10 @@ public final class ExtdocUtils {
             final Link bar = createMethodLink(table, method, resolver, bus);
             final TableItem item = new TableItem(table, SWT.NONE);
             item.setText(new String[] { phraseText, middlePhrase, bar.getText(), stats });
-            item.setFont(0, JFaceResources.getHeaderFont());
+            bold(item,0);
             final TableEditor editor = new TableEditor(table);
             editor.grabHorizontal = editor.grabVertical = true;
             editor.setEditor(bar, item, 2);
-
         }
         column1.pack();
         column2.pack();
@@ -300,6 +298,20 @@ public final class ExtdocUtils {
             range.font = CODEFONT;
         }
         return range;
+    }
+
+    public static Font bold(Font src, Display d) {
+        FontData[] fD = src.getFontData();
+        fD[0].setStyle(SWT.BOLD);
+        return new Font(d, fD[0]);
+    }
+
+    public static void bold(TableItem item, int index) {
+        item.setFont(index, bold(item.getFont(), item.getDisplay()));
+    }
+
+    public static void bold(Control item) {
+        item.setFont(bold(item.getFont(), item.getDisplay()));
     }
 
     // TODO: Use link and put together with a image into a grid.

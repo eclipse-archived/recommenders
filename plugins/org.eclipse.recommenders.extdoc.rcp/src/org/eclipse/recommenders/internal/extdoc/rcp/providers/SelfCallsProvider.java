@@ -11,6 +11,8 @@
 package org.eclipse.recommenders.internal.extdoc.rcp.providers;
 
 import static java.lang.String.format;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.renderMethodDirectivesBlock;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoForegroundColor;
 import static org.eclipse.recommenders.utils.TreeBag.newTreeBag;
@@ -119,17 +121,13 @@ public final class SelfCallsProvider extends ExtdocProvider {
         private void addHeader() {
             final String message = format("Based on %d direct subclasses of %s we created the following statistics:",
                     directive.getNumberOfSubclasses(), type.getElementName());
-            Label label = new Label(container, SWT.NONE);
-            label.setText(message);
-            setInfoForegroundColor(label);
-            setInfoBackgroundColor(label);
-            label.setFont(JFaceResources.getDialogFont());
+            createLabel(container, message, true);
         }
 
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
             final TreeBag<IMethodName> b = newTreeBag(directive.getCalls());
-            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, "calls ");
+            renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, "calls ");
         }
     }
 
@@ -165,17 +163,13 @@ public final class SelfCallsProvider extends ExtdocProvider {
             final String message = format(
                     "Based on %d direct implementors of %s we created the following statistics. Implementors...",
                     directive.getNumberOfDefinitions(), method.getElementName());
-            Label label = new Label(container, SWT.NONE);
-            label.setText(message);
-            setInfoForegroundColor(label);
-            setInfoBackgroundColor(label);
-            label.setFont(JFaceResources.getDialogFont());
+            createLabel(container, message, true);
         }
 
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfDefinitions();
             final TreeBag<IMethodName> b = newTreeBag(directive.getCalls());
-            ExtdocUtils.renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, "calls ");
+            renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, "calls ");
         }
     }
 }

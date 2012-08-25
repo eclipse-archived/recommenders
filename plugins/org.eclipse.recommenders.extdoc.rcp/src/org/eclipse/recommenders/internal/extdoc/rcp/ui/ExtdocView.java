@@ -10,6 +10,10 @@
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.createLabel;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
+import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoForegroundColor;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -256,8 +260,9 @@ public class ExtdocView extends ViewPart {
             text = element.getElementName();
             break;
         case IJavaElement.LOCAL_VARIABLE:
-            text = JavaElementLabels.getElementLabel(element, JavaElementLabels.F_PRE_TYPE_SIGNATURE
-                    | JavaElementLabels.F_POST_QUALIFIED);
+            text =
+                    JavaElementLabels.getElementLabel(element, JavaElementLabels.F_PRE_TYPE_SIGNATURE
+                            | JavaElementLabels.F_POST_QUALIFIED);
             break;
         default:
             text = JavaElementLabels.getElementLabel(element, LABEL_FLAGS);
@@ -266,9 +271,13 @@ public class ExtdocView extends ViewPart {
         Composite header = new Composite(content, SWT.NONE);
         ExtdocUtils.setInfoBackgroundColor(header);
         header.setLayout(new GridLayout(2, false));
-        new Label(header, SWT.NONE).setImage(labelProvider.getImage(element));
-        Label name = new Label(header, SWT.NONE);
-        name.setText(text);
+
+        Label img = new Label(header, SWT.NONE);
+        img.setImage(labelProvider.getImage(element));
+        setInfoForegroundColor(img);
+        setInfoBackgroundColor(img);
+
+        Label name = createLabel(header, text, true);
         name.setFont(JFaceResources.getHeaderFont());
     }
 
