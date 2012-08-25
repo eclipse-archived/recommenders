@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.internal.extdoc.rcp;
+package org.eclipse.recommenders.tests.extdoc;
 
 import static org.junit.Assert.assertNotNull;
 

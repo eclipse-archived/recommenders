@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2011 Sebastian Proksch.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,22 +8,20 @@
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.providers.debug;
+package org.eclipse.recommenders.tests.extdoc;
 
-import org.eclipse.jdt.core.IJavaElement;
+import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION;
+
+import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 
-public class ProviderWithoutData extends ExtdocProvider {
+public class ProviderImplementation extends ExtdocProvider {
 
-    @JavaSelectionSubscriber
-    public Status displayProposalsForType(final IJavaElement element, final JavaSelectionEvent selection,
-            final Composite parent) throws InterruptedException {
-        // No data available for selection...
-        Thread.sleep(1000);
-        return Status.NOT_AVAILABLE;
+    @JavaSelectionSubscriber(TYPE_DECLARATION)
+    public Status methodInSuperclass(IType type, JavaSelectionEvent selection, Composite parent) {
+        return null;
     }
-
 }

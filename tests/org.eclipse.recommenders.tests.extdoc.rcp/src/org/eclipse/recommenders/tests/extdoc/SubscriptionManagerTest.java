@@ -8,22 +8,22 @@
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.scheduling;
+package org.eclipse.recommenders.tests.extdoc;
 
 import static java.util.Arrays.asList;
-import static org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.JavaSelectionTestUtils.ANNOTATION_IN_METHOD_DECLARATION;
-import static org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.JavaSelectionTestUtils.METHOD_IN_METHOD_BODY;
-import static org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.JavaSelectionTestUtils.METHOD_IN_METHOD_DECLARATION;
-import static org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.JavaSelectionTestUtils.TYPE_IN_METHOD_BODY;
-import static org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.JavaSelectionTestUtils.TYPE_IN_METHOD_DECLARATION_PARAMS;
-import static org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.JavaSelectionTestUtils.TYPE_IN_METHOD_DECLARATION_THROWS;
-import static org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.JavaSelectionTestUtils.TYPE_IN_TYPE_DECLARATION;
-import static org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.JavaSelectionTestUtils.TYPE_IN_TYPE_DECLARATION_EXTENDS;
-import static org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.JavaSelectionTestUtils.TYPE_IN_TYPE_DECLARATION_IMPLEMENTS;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_BODY;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.METHOD_DECLARATION;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION;
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation.TYPE_DECLARATION_EXTENDS;
+import static org.eclipse.recommenders.tests.extdoc.JavaSelectionTestUtils.ANNOTATION_IN_METHOD_DECLARATION;
+import static org.eclipse.recommenders.tests.extdoc.JavaSelectionTestUtils.METHOD_IN_METHOD_BODY;
+import static org.eclipse.recommenders.tests.extdoc.JavaSelectionTestUtils.METHOD_IN_METHOD_DECLARATION;
+import static org.eclipse.recommenders.tests.extdoc.JavaSelectionTestUtils.TYPE_IN_METHOD_BODY;
+import static org.eclipse.recommenders.tests.extdoc.JavaSelectionTestUtils.TYPE_IN_METHOD_DECLARATION_PARAMS;
+import static org.eclipse.recommenders.tests.extdoc.JavaSelectionTestUtils.TYPE_IN_METHOD_DECLARATION_THROWS;
+import static org.eclipse.recommenders.tests.extdoc.JavaSelectionTestUtils.TYPE_IN_TYPE_DECLARATION;
+import static org.eclipse.recommenders.tests.extdoc.JavaSelectionTestUtils.TYPE_IN_TYPE_DECLARATION_EXTENDS;
+import static org.eclipse.recommenders.tests.extdoc.JavaSelectionTestUtils.TYPE_IN_TYPE_DECLARATION_IMPLEMENTS;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -33,8 +33,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
-import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.ProviderImplementation;
-import org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper.SubscriptionVerifier;
+import org.eclipse.recommenders.internal.extdoc.rcp.ui.SubscriptionManager;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.junit.Before;

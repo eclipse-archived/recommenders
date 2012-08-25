@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.providers.hooks;
+package org.eclipse.recommenders.internal.extdoc.rcp.providers;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
@@ -38,13 +38,13 @@ import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.jdt.ui.JavaElementLabels;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.IOUtils;
-import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -98,6 +98,7 @@ public class StaticHooksFinder extends ExtdocProvider {
                 styleRange.length = typeLabelEnd - typeLabelBegin;
                 styleRange.fontStyle = SWT.BOLD;
                 styleRange.data = type;
+                styleRange.font = JFaceResources.getHeaderFont();
                 typeRanges.add(styleRange);
                 sb.append(IOUtils.LINE_SEPARATOR);
                 for (final IMethod method : index.get(type)) {
@@ -111,6 +112,7 @@ public class StaticHooksFinder extends ExtdocProvider {
                     methodStyleRange.length = methodLabelEnd - methodLabelBegin;
                     methodStyleRange.data = method;
                     methodStyleRange.underline = true;
+                    methodStyleRange.font = JFaceResources.getDialogFont();
                     // methodStyleRange.fontStyle = SWT.BOLD;
                     methodStyleRange.foreground = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
                     typeRanges.add(methodStyleRange);
@@ -211,33 +213,6 @@ public class StaticHooksFinder extends ExtdocProvider {
         }
     }
 
-    // final GridDataFactory labelFactory = GridDataFactory.swtDefaults().indent(3, 5);
-    // for (final IType type : index.keySet()) {
-    // labelFactory.applyTo(createLabel(container, type.getFullyQualifiedName() + ":", true, false,
-    // SWT.COLOR_BLACK, true));
-    // final Table table = new Table(container, SWT.NONE | SWT.HIDE_SELECTION);
-    // table.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
-    // table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
-    // final TableColumn column1 = new TableColumn(table, SWT.NONE);
-    //
-    // for (final IMethod method : index.get(type)) {
-    // // final Link l = createMethodLink(container, method, workspaceBus);
-    // // linkFactory.applyTo(l);
-    //
-    // final Link bar = createMethodLink(table, method, workspaceBus);
-    // final TableItem item = new TableItem(table, SWT.NONE);
-    // item.setText(new String[] { bar.getText() });
-    // item.setFont(0, JFaceResources.getBannerFont());
-    // final TableEditor editor = new TableEditor(table);
-    // editor.grabHorizontal = editor.grabVertical = true;
-    // editor.setEditor(bar, item, 0);
-    //
-    // }
-    // column1.pack();
-    //
-    // }
-    // }
-
     private final class MethodNameComparator implements Comparator<IMethod> {
         @Override
         public int compare(final IMethod o1, final IMethod o2) {
@@ -256,18 +231,16 @@ public class StaticHooksFinder extends ExtdocProvider {
         }
     }
 
-    private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
 
     @Inject
-    public StaticHooksFinder(final JavaElementResolver resolver, final EventBus workspaceBus) {
-        this.resolver = resolver;
+    public StaticHooksFinder(final EventBus workspaceBus) {
         this.workspaceBus = workspaceBus;
 
     }
 
     @JavaSelectionSubscriber
-    public Status onPackageRootSelection(final IPackageFragmentRoot root, final JavaSelectionEvent event,
+    public void onPackageRootSelection(final IPackageFragmentRoot root, final JavaSelectionEvent event,
             final Composite parent) throws ExecutionException {
 
         final TreeMultimap<IType, IMethod> index = TreeMultimap.create(new TypeNameComparator(),
@@ -284,11 +257,10 @@ public class StaticHooksFinder extends ExtdocProvider {
             RecommendersPlugin.logError(x, "Failed to determine static members for %s", root.getElementName());
         }
         runSyncInUiThread(new HooksRendererRunnable(index, parent));
-        return Status.OK;
     }
 
     @JavaSelectionSubscriber
-    public Status onPackageSelection(final IPackageFragment pkg, final JavaSelectionEvent event, final Composite parent)
+    public void onPackageSelection(final IPackageFragment pkg, final JavaSelectionEvent event, final Composite parent)
             throws ExecutionException {
 
         final TreeMultimap<IType, IMethod> index = TreeMultimap.create(new TypeNameComparator(),
@@ -300,7 +272,6 @@ public class StaticHooksFinder extends ExtdocProvider {
         }
 
         runSyncInUiThread(new HooksRendererRunnable(index, parent));
-        return Status.OK;
     }
 
     private void findStaticHooks(final IPackageFragment pkg, final TreeMultimap<IType, IMethod> index)

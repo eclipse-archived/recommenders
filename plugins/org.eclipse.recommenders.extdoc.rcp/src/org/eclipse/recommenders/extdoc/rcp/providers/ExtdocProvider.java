@@ -16,8 +16,32 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.recommenders.utils.Throws;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * Base class to use when implementing your own extended Javadoc provider. Subclasses should provide one of more public
+ * methods annotated with {@link JavaSelectionSubscriber} and a signature of
+ * 
+ * <pre>
+ *     @JavaSelectionSubsriber
+ *     public void anyMethodName(AnySubtypeOfIJavaElement selectedElement, JavaSelectionEvent selection, Composite parent) {
+ *         ..
+ *     }
+ * </pre>
+ * 
+ * to respond to selection events in the IDE.
+ * 
+ * <p>
+ * Note that it these call back methods are always called on a background thread. It's up to the provider to call any UI
+ * operation in the UI thread. Providers may use {@link #runSyncInUiThread(Runnable)} for that purpose as convenient
+ * shortcut.
+ * </p>
+ * @see org.eclipse.recommenders.extdoc.rcp.provider extension point for details on how to register a new provider
+ */
 public abstract class ExtdocProvider {
 
+    @Deprecated
+    /**
+     * Used to indicate whether an extdoc provider has some content to display. This is not needed anymore since v1.1. 
+     */
     public enum Status {
         OK, NOT_AVAILABLE
     }

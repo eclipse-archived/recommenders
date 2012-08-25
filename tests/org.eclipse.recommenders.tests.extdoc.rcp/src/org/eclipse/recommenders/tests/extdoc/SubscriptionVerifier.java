@@ -8,7 +8,7 @@
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.scheduling.helper;
+package org.eclipse.recommenders.tests.extdoc;
 
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.junit.Assert.assertEquals;

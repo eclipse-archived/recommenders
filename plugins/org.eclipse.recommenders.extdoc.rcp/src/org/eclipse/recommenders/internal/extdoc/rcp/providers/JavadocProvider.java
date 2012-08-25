@@ -10,17 +10,14 @@
  *    Sebastian Proksch - integrated into new eventbus system
  *    Marcel Bruch - changed to own browser-based implementation
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc;
+package org.eclipse.recommenders.internal.extdoc.rcp.providers;
 
 import static org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils.resolveSelectionLocationFromJavaElement;
-import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
@@ -47,10 +44,7 @@ import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.ProgressAdapter;
-import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -74,76 +68,41 @@ public final class JavadocProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public Status onCompilationUnitSelection(final ITypeRoot root, final JavaSelectionEvent selection,
+    public void onCompilationUnitSelection(final ITypeRoot root, final JavaSelectionEvent selection,
             final Composite parent) throws JavaModelException {
         final IType type = root.findPrimaryType();
         if (type != null) {
             render(type, parent);
         }
-        return Status.OK;
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeSelection(final IType type, final JavaSelectionEvent selection, final Composite parent)
+    public void onTypeSelection(final IType type, final JavaSelectionEvent selection, final Composite parent)
             throws JavaModelException {
         render(type, parent);
-        return Status.OK;
     }
 
     @JavaSelectionSubscriber
-    public Status onMethodSelection(final IMethod method, final JavaSelectionEvent selection, final Composite parent)
+    public void onMethodSelection(final IMethod method, final JavaSelectionEvent selection, final Composite parent)
             throws JavaModelException {
         render(method, parent);
-        return Status.OK;
     }
 
     @JavaSelectionSubscriber
-    public Status onFieldSelection(final IField field, final JavaSelectionEvent selection, final Composite parent)
+    public void onFieldSelection(final IField field, final JavaSelectionEvent selection, final Composite parent)
             throws JavaModelException {
         render(field, parent);
-        return Status.OK;
     }
 
-    private Status render(final IMember element, final Composite parent) throws JavaModelException {
+    private void render(final IMember element, final Composite parent) throws JavaModelException {
         final String html = findJavadoc(element);
 
-        final CountDownLatch latch = new CountDownLatch(1);
         runSyncInUiThread(new Runnable() {
             @Override
             public void run() {
                 final Browser browser = new Browser(parent, SWT.NONE);
-                final Point maxBrowserSize = findParentWithSizeInformation(parent);
-
-                final GridData browserLayoutData = new GridData(maxBrowserSize.x, 0);
-                browser.setLayoutData(browserLayoutData);
-                browser.setSize(maxBrowserSize.x, 0);
+                browser.setLayoutData(new GridData(GridData.FILL_BOTH));
                 browser.setText(html);
-                browser.addProgressListener(new ProgressAdapter() {
-                    @Override
-                    public void completed(final ProgressEvent event) {
-                        browser.removeProgressListener(this);
-                        browser.getDisplay().timerExec(5, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                final String script = "function getDocHeight() { var D = document; return Math.max( Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),Math.max(D.body.clientHeight, D.documentElement.clientHeight));} return getDocHeight();";
-                                Double result = (Double) browser.evaluate(script);
-                                if (result == null) {
-                                    // terminate re-layout operation if browser
-                                    // widget fails to compute its size
-                                    result = Double.valueOf(SWT.DEFAULT);
-                                }
-                                final int height = (int) Math.ceil(result.doubleValue());
-                                final int width = maxBrowserSize.x;
-                                final Point computeSize = browser.computeSize(width, height);
-                                browserLayoutData.widthHint = computeSize.x;
-                                browserLayoutData.heightHint = computeSize.y;
-                                browser.setSize(computeSize);
-                                latch.countDown();
-                            }
-                        });
-                    };
-                });
                 browser.addLocationListener(JavaElementLinks
                         .createLocationListener(new JavaElementLinks.ILinkHandler() {
 
@@ -151,9 +110,7 @@ public final class JavadocProvider extends ExtdocProvider {
                             public void handleDeclarationLink(final IJavaElement target) {
                                 try {
                                     JavaUI.openInEditor(target);
-                                } catch (final PartInitException e) {
-                                    JavaPlugin.log(e);
-                                } catch (final JavaModelException e) {
+                                } catch (final Exception e) {
                                     JavaPlugin.log(e);
                                 }
                             }
@@ -205,22 +162,7 @@ public final class JavadocProvider extends ExtdocProvider {
                         }));
             }
 
-            private Point findParentWithSizeInformation(Composite parent) {
-                while (parent != null) {
-                    final Point size = parent.getSize();
-                    if (size.x > 0) {
-                        return size;
-                    }
-                    parent = parent.getParent();
-                }
-                throw throwUnreachable();
-            }
         });
-        try {
-            latch.await(10, TimeUnit.SECONDS);
-        } catch (final InterruptedException e) {
-        }
-        return Status.OK;
     }
 
     private static final String fgStyleSheet = loadStyleSheet();

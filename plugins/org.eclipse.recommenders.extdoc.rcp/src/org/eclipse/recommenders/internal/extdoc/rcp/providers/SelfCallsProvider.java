@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing;
+package org.eclipse.recommenders.internal.extdoc.rcp.providers;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInfoBackgroundColor;
@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.extdoc.ClassSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
@@ -60,37 +61,32 @@ public final class SelfCallsProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent)
+    public void onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent)
             throws ExecutionException {
         final IType type = root.findPrimaryType();
         if (type != null) {
-            return onTypeSelection(type, event, parent);
+            onTypeSelection(type, event, parent);
         }
-        return Status.NOT_AVAILABLE;
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent)
+    public void onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent)
             throws ExecutionException {
         Optional<ClassSelfcallDirectives> model = cStore.aquireModel(type);
-        if (!model.isPresent()) {
-            return Status.NOT_AVAILABLE;
+        if (model.isPresent()) {
+            runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, model.get(), parent));
         }
-        runSyncInUiThread(new TypeSelfcallDirectivesRenderer(type, model.get(), parent));
-        return Status.OK;
     }
 
     @JavaSelectionSubscriber
-    public Status onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
+    public void onMethodSelection(final IMethod method, final JavaSelectionEvent event, final Composite parent) {
 
         for (IMethod current = method; current != null; current = JdtUtils.findOverriddenMethod(current).orNull()) {
             final Optional<MethodSelfcallDirectives> selfcalls = mStore.aquireModel(current);
             if (selfcalls.isPresent()) {
                 runSyncInUiThread(new MethodSelfcallDirectivesRenderer(method, selfcalls.get(), parent));
-                return Status.OK;
             }
         }
-        return Status.NOT_AVAILABLE;
     }
 
     private class TypeSelfcallDirectivesRenderer implements Runnable {
@@ -127,6 +123,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
             label.setText(message);
             setInfoForegroundColor(label);
             setInfoBackgroundColor(label);
+            label.setFont(JFaceResources.getDialogFont());
         }
 
         private void addDirectives() {
@@ -172,6 +169,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
             label.setText(message);
             setInfoForegroundColor(label);
             setInfoBackgroundColor(label);
+            label.setFont(JFaceResources.getDialogFont());
         }
 
         private void addDirectives() {

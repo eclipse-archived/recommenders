@@ -8,7 +8,7 @@
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.scheduling;
+package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
@@ -85,7 +85,6 @@ public class SubscriptionManager {
         ensureFirstParameterTypeIsJavaElement(params, m);
         ensureSecondParameterTypeIsJavaSelectionEvent(params, m);
         ensureThirdParameterTypeIsComposite(params, m);
-        ensureThatAStatusIsReturned(m);
     }
 
     private static void ensureParameterLengthIsThree(final Class<?>[] params, final Method m) {
@@ -115,12 +114,6 @@ public class SubscriptionManager {
         }
     }
 
-    private static void ensureThatAStatusIsReturned(Method m) {
-        Class<?> actualType = m.getReturnType();
-        Class<?> expectedType = Status.class;
-        Checks.ensureEquals(actualType, expectedType, "subscribing methods need to return " + expectedType);
-    }
-
     private void addSubscription(final ExtdocProvider provider, final Method method,
             final JavaSelectionSubscriber annotation) {
         final JavaSelectionLocation[] locs = annotation.value();
@@ -140,14 +133,11 @@ public class SubscriptionManager {
     }
 
     /**
-     * Returns a method of the given provider that is subscribed for the
-     * selection event - or <em>absent</em> if none is found. If the
-     * subscription of multiple methods overlaps, no guarantee is given which
-     * method is returned
+     * Returns a method of the given provider that is subscribed for the selection event - or <em>absent</em> if none is
+     * found. If the subscription of multiple methods overlaps, no guarantee is given which method is returned
      */
     public Optional<Method> findSubscribedMethod(final ExtdocProvider provider, final JavaSelectionEvent selection) {
         for (final Subscription s : subscriptions.keySet()) {
-
             if (s.isInterestedIn(selection)) {
                 for (final Tuple<ExtdocProvider, Method> t : subscriptions.get(s)) {
                     if (provider.equals(t.getFirst())) {

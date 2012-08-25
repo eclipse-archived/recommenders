@@ -8,7 +8,7 @@
  * Contributors:
  *    Stefan Henss - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing;
+package org.eclipse.recommenders.internal.extdoc.rcp.providers;
 
 import static com.google.common.collect.Collections2.filter;
 import static com.google.common.collect.Lists.newLinkedList;
@@ -80,22 +80,19 @@ public final class OverridesProvider extends ExtdocProvider {
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent)
+    public void onTypeRootSelection(final ITypeRoot root, final JavaSelectionEvent event, final Composite parent)
             throws ExecutionException {
         final IType type = root.findPrimaryType();
         if (type != null) {
-            return onTypeSelection(type, event, parent);
+            onTypeSelection(type, event, parent);
         }
-        return Status.NOT_AVAILABLE;
     }
 
     @JavaSelectionSubscriber
-    public Status onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent)
+    public void onTypeSelection(final IType type, final JavaSelectionEvent event, final Composite parent)
             throws ExecutionException {
-        boolean hasData = false;
-        hasData |= renderClassOverrideDirectives(type, parent);
-        hasData |= renderClassOverridesPatterns(type, parent);
-        return hasData ? Status.OK : Status.NOT_AVAILABLE;
+        renderClassOverrideDirectives(type, parent);
+        renderClassOverridesPatterns(type, parent);
     }
 
     private boolean renderClassOverrideDirectives(final IType type, final Composite parent) throws ExecutionException {
@@ -155,6 +152,7 @@ public final class OverridesProvider extends ExtdocProvider {
             label.setText(message);
             setInfoForegroundColor(label);
             setInfoBackgroundColor(label);
+            label.setFont(JFaceResources.getDialogFont());
         }
 
         private void addDirectives() {
@@ -257,6 +255,7 @@ public final class OverridesProvider extends ExtdocProvider {
             final Table table = new Table(group, SWT.NONE | SWT.HIDE_SELECTION);
             table.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
             table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
+            table.setFont(JFaceResources.getDialogFont());
             final TableColumn column1 = new TableColumn(table, SWT.NONE);
             final TableColumn column2 = new TableColumn(table, SWT.NONE);
             final TableColumn column3 = new TableColumn(table, SWT.NONE);
@@ -274,7 +273,6 @@ public final class OverridesProvider extends ExtdocProvider {
                 item.setText(new String[] { phraseText, "override", bar.getText(), stats });
                 item.setFont(0, JFaceResources.getBannerFont());
                 item.setForeground(createColor(COLOR_INFO_FOREGROUND));
-
                 final TableEditor editor = new TableEditor(table);
                 editor.grabHorizontal = editor.grabVertical = true;
                 editor.setEditor(bar, item, 2);

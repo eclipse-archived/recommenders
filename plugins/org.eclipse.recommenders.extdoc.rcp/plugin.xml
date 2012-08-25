@@ -9,7 +9,7 @@
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocView"
             icon="icons/extdoc.png"
             id="org.eclipse.recommenders.extdoc.rcp.ExtdocView"
-            name="Extdoc View"
+            name="Extdoc"
             restorable="true">
       </view>
    </extension>
@@ -22,30 +22,47 @@
    <extension
          point="org.eclipse.recommenders.extdoc.rcp.provider">
       <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.javadoc.JavadocProvider"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.JavadocProvider"
             image="icons/provider.javadoc.gif"
-            name="Javadoc">
-      </provider>
+            name="Javadoc"/>
       <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing.OverridesProvider"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.OverridesProvider"
             image="icons/provider.subclassing.gif"
-            name="Overrides">
-      </provider>
+            name="Overrides"/>
      <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.subclassing.SelfCallsProvider"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.SelfCallsProvider"
             image="icons/provider.subclassing-patterns.gif"
-            name="Self Calls">
-      </provider>
-     <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.examples.ExamplesProvider"
-            image="icons/provider.examples.gif"
-            name="Snippets">
-      </provider>
+            name="Self Calls"/>
        <provider
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.hooks.StaticHooksFinder"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.extdoc.rcp.providers.StaticHooksFinder"
             image="icons/provider.hooks.png"
-            name="Static Hooks">
-      </provider>
+            name="Static Hooks"/>
    </extension>
+   <extension point="org.eclipse.ui.bindings">
+	<key
+		commandId="org.eclipse.ui.views.showView"
+		schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+		sequence="M2+M3+Q E">
+		<parameter
+			id="org.eclipse.ui.views.showView.viewId"
+			value="org.eclipse.recommenders.extdoc.rcp.ExtdocView">
+		</parameter>
+	</key>
+	<key
+		platform="carbon"
+		sequence="M2+M3+Q E"
+		commandId=""
+		schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+	<key
+		commandId="org.eclipse.ui.views.showView"
+		platform="carbon"
+		schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+		sequence="COMMAND+ALT+Q E">
+		<parameter
+			id="org.eclipse.ui.views.showView.viewId"
+			value="org.eclipse.recommenders.extdoc.rcp.ExtdocView">
+		</parameter>
+	</key>
+	 </extension>
 
 </plugin>

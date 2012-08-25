@@ -67,10 +67,16 @@ import com.google.common.eventbus.EventBus;
 public final class ExtdocUtils {
 
     static final Font CODEFONT = JFaceResources.getTextFont();
-    private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
+    private static final Font BOLDFONT = JFaceResources.getFontRegistry().getBold(JFaceResources.DIALOG_FONT);
     private static final Map<Integer, Color> COLORCACHE = new HashMap<Integer, Color>();
 
     private ExtdocUtils() {
+    }
+
+    public static void disposeChildren(Composite parent) {
+        for (Control c : parent.getChildren()) {
+            c.dispose();
+        }
     }
 
     public static void setInfoBackgroundColor(final Control c) {
@@ -108,6 +114,8 @@ public final class ExtdocUtils {
         table.setBackground(createColor(COLOR_INFO_BACKGROUND));
         table.setForeground(createColor(COLOR_INFO_FOREGROUND));
         table.setLayoutData(GridDataFactory.fillDefaults().indent(10, 0).create());
+        table.setFont(JFaceResources.getDialogFont());
+
         final TableColumn column1 = new TableColumn(table, SWT.NONE);
         final TableColumn column2 = new TableColumn(table, SWT.NONE);
         final TableColumn column3 = new TableColumn(table, SWT.NONE);
@@ -126,7 +134,7 @@ public final class ExtdocUtils {
             final Link bar = createMethodLink(table, method, resolver, bus);
             final TableItem item = new TableItem(table, SWT.NONE);
             item.setText(new String[] { phraseText, middlePhrase, bar.getText(), stats });
-            item.setFont(0, JFaceResources.getBannerFont());
+            item.setFont(0, JFaceResources.getHeaderFont());
             final TableEditor editor = new TableEditor(table);
             editor.grabHorizontal = editor.grabVertical = true;
             editor.setEditor(bar, item, 2);
@@ -150,6 +158,7 @@ public final class ExtdocUtils {
         link.setText(text);
         link.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
         link.setToolTipText(tooltip);
+        link.setFont(JFaceResources.getDialogFont());
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
@@ -168,6 +177,7 @@ public final class ExtdocUtils {
         final Link link = new Link(parent, SWT.NONE);
         link.setText(text);
         link.setBackground(ExtdocUtils.createColor(SWT.COLOR_INFO_BACKGROUND));
+        link.setFont(JFaceResources.getDialogFont());
         link.setToolTipText(tooltip);
         link.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -216,6 +226,7 @@ public final class ExtdocUtils {
 
     public static CLabel createCLabel(final Composite parent, final String text, final boolean bold, final Image image) {
         final CLabel label = new CLabel(parent, SWT.NONE);
+        setInfoBackgroundColor(label);
         label.setText(text);
         if (bold) {
             label.setFont(BOLDFONT);

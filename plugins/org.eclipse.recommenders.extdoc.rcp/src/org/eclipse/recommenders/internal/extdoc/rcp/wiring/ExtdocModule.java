@@ -16,6 +16,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -23,9 +25,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProviderDescription;
-import org.eclipse.recommenders.internal.extdoc.rcp.preferences.PreferencesFacade;
-import org.eclipse.recommenders.internal.extdoc.rcp.preferences.ProviderConfigurationPersistenceService;
-import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocIconLoader;
+import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocPreferences;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassOverridesModelStore;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassOverridesPatternsModelStore;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassSelfcallsModelStore;
@@ -47,22 +47,11 @@ public class ExtdocModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(ExtdocIconLoader.class).in(Scopes.SINGLETON);
-        bind(PreferencesFacade.class).in(Scopes.SINGLETON);
-        bind(ProviderConfigurationPersistenceService.class).in(Scopes.SINGLETON);
-
+        bind(ExtdocPreferences.class).in(Scopes.SINGLETON);
         bind(ClassOverridesPatternsModelStore.class).in(Scopes.SINGLETON);
         bind(ClassOverridesModelStore.class).in(Scopes.SINGLETON);
         bind(ClassSelfcallsModelStore.class).in(Scopes.SINGLETON);
         bind(MethodSelfcallsModelStore.class).in(Scopes.SINGLETON);
-
-    }
-
-    @Provides
-    @Singleton
-    @Extdoc
-    EventBus provideEventBus() {
-        return new EventBus("extdoc-eventbus");
     }
 
     @Provides
@@ -74,17 +63,15 @@ public class ExtdocModule extends AbstractModule {
 
     @Provides
     @Singleton
-    List<ExtdocProvider> provideProviders(@Extdoc final EventBus extdocBus,
-            final ProviderConfigurationPersistenceService providerService) {
+    List<ExtdocProvider> provideProviders() {
         final List<ExtdocProvider> providers = instantiateProvidersFromRegistry();
-        providerService.initializeProviderConfiguration(providers);
-        extdocBus.register(providerService);
         return providers;
     }
 
     static List<ExtdocProvider> instantiateProvidersFromRegistry() {
-        final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-                "org.eclipse.recommenders.extdoc.rcp.provider");
+        final IConfigurationElement[] elements =
+                Platform.getExtensionRegistry()
+                        .getConfigurationElementsFor("org.eclipse.recommenders.extdoc.rcp.provider");
         final List<ExtdocProvider> providers = Lists.newLinkedList();
 
         for (final IConfigurationElement element : elements) {
@@ -93,6 +80,22 @@ public class ExtdocModule extends AbstractModule {
                 providers.add(opt.get());
             }
         }
+
+        Collections.sort(providers, new Comparator<ExtdocProvider>() {
+
+            @Override
+            public int compare(ExtdocProvider o1, ExtdocProvider o2) {
+                String n1 = o1.getDescription().getName();
+                String n2 = o2.getDescription().getName();
+                if (n1.equals("Javadoc")) {
+                    return -1;
+                } else if (n2.equals("Javadoc")) {
+                    return 1;
+                } else {
+                    return n1.compareTo(n2);
+                }
+            }
+        });
         return providers;
     }
 
@@ -107,7 +110,9 @@ public class ExtdocModule extends AbstractModule {
             provider.setDescription(description);
             return Optional.of(provider);
         } catch (final Exception e) {
-            RecommendersPlugin.logError(e, "failed to instantiate provider %s:%s", pluginId,
+            RecommendersPlugin.logError(e,
+                    "failed to instantiate provider %s:%s",
+                    pluginId,
                     element.getAttribute("class"));
             return Optional.absent();
         }

@@ -8,7 +8,7 @@
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.providers;
+package org.eclipse.recommenders.tests.extdoc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

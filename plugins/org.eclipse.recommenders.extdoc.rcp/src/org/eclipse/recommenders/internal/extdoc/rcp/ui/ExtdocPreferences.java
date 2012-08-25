@@ -8,7 +8,7 @@
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  */
-package org.eclipse.recommenders.internal.extdoc.rcp.preferences;
+package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
 import static java.lang.Integer.parseInt;
 
@@ -22,7 +22,7 @@ import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocPlugin;
 import org.eclipse.recommenders.utils.Throws;
 import org.osgi.service.prefs.BackingStoreException;
 
-public class PreferencesFacade {
+public class ExtdocPreferences {
 
     private final IEclipsePreferences preferences;
 
@@ -30,7 +30,7 @@ public class PreferencesFacade {
     private static final String DISABLED_PROVIDERS = "disabledProviders";
     private static final String SASH_WEIGHTS = "sashWeights";
 
-    public PreferencesFacade() {
+    public ExtdocPreferences() {
         preferences = InstanceScope.INSTANCE.getNode(ExtdocPlugin.PLUGIN_ID);
     }
 
