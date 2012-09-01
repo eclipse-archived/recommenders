@@ -24,6 +24,7 @@ public final class ChainPreferenceInitializer extends AbstractPreferenceInitiali
         store.setDefault(ChainPreferencePage.ID_MAX_DEPTH, 4);
         store.setDefault(ChainPreferencePage.ID_TIMEOUT, 3);
         store.setDefault(ChainPreferencePage.ID_IGNORE_TYPES, "java.lang.Object"
+                + ChainPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.Class"
                 + ChainPreferencePage.IGNORE_TYPES_SEPARATOR + "java.lang.String");
     }
 }

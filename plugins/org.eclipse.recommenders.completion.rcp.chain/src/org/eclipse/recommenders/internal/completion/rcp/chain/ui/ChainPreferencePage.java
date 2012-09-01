@@ -17,11 +17,14 @@ import org.eclipse.jdt.ui.IJavaElementSearchConstants;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionPlugin;
 import org.eclipse.recommenders.utils.Throws;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.SelectionDialog;
@@ -48,17 +51,26 @@ public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEdito
     @Override
     protected void createFieldEditors() {
         addField(ID_MAX_CHAINS, "Maximum number of chains:", 1, 99);
-        addField(ID_MIN_DEPTH, "Minimum chain depth:", 1, 99);
-        addField(ID_MAX_DEPTH, "Maximum chain depth:", 1, 99);
+        addField(ID_MIN_DEPTH, "Minimum chain depth:", 1, 10);
+        addField(ID_MAX_DEPTH, "Maximum chain depth:", 1, 10);
         addField(ID_TIMEOUT, "Chain search timeout (sec):", 1, 99);
 
-        addField(new IgnoredTypesEditor("Return types to ignore:", getFieldEditorParent()));
+        addField(new IgnoredTypesEditor("Object types to ignore:", getFieldEditorParent()));
+        addText("Ignored object types will not have chain proposals displayed for.");
+        addText("Also, no chains through methods from ignored types will be found.");
     }
 
     private void addField(final String name, final String labeltext, final int min, final int max) {
         final IntegerFieldEditor field = new IntegerFieldEditor(name, labeltext, getFieldEditorParent());
         field.setValidRange(min, max);
         addField(field);
+    }
+
+    private void addText(final String text) {
+        final Label label = new Label(getFieldEditorParent(), NONE);
+        label.setText(text);
+        final GridData layoutData = GridDataFactory.fillDefaults().span(2, 1).create();
+        label.setLayoutData(layoutData);
     }
 
     @Override

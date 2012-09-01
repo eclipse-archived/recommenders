@@ -25,10 +25,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedAllocationExpression;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
@@ -128,22 +129,8 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private boolean shouldPerformCompletionOnExpectedType() {
-        final IType expected = ctx.getExpectedType().orNull();
-        if (expected == null) {
-            return false;
-        }
-        return !expectedTypeIsIgnoredByUser(expected);
-    }
-
-    private boolean expectedTypeIsIgnoredByUser(final IType expected) {
-        final String[] excludedTypes = prefStore.getString(ChainPreferencePage.ID_IGNORE_TYPES).split("\\|");
-        final String fullyQualified = expected.getFullyQualifiedName();
-        for (final String excludedType : excludedTypes) {
-            if (excludedType.equals(fullyQualified)) {
-                return true;
-            }
-        }
-        return false;
+        final Optional<IType> expected = ctx.getExpectedType();
+        return expected.isPresent() || !ctx.getExpectedTypeNames().isEmpty();
     }
 
     private boolean findEntrypoints() {
@@ -155,8 +142,9 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         } else if (node instanceof CompletionOnMemberAccess) {
             invocationSite = (CompletionOnMemberAccess) node;
             findEntrypointsForCompletionOnMemberAccess((CompletionOnMemberAccess) node);
-        } else if (node instanceof CompletionOnSingleNameReference) {
-            invocationSite = (CompletionOnSingleNameReference) node;
+        } else if (node instanceof CompletionOnSingleNameReference
+                || node instanceof CompletionOnQualifiedAllocationExpression || node instanceof CompletionOnMessageSend) {
+            invocationSite = (InvocationSite) node;
             findEntrypointsForCompletionOnSingleName();
         }
         return !entrypoints.isEmpty();
@@ -263,18 +251,21 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
     }
 
     private List<ICompletionProposal> executeCallChainSearch() {
-        final Optional<TypeBinding> expectedType = TypeBindingAnalyzer.resolveBindingForExpectedType(ctx);
-        if (!expectedType.isPresent()) {
-            return Collections.emptyList();
+        final int maxChains = prefStore.getInt(ChainPreferencePage.ID_MAX_CHAINS);
+        final int minDepth = prefStore.getInt(ChainPreferencePage.ID_MIN_DEPTH);
+        final int maxDepth = prefStore.getInt(ChainPreferencePage.ID_MAX_DEPTH);
+        final String[] excludedTypes = prefStore.getString(ChainPreferencePage.ID_IGNORE_TYPES).split("\\|");
+        for (int i = 0; i < excludedTypes.length; ++i) {
+            excludedTypes[i] = "L" + excludedTypes[i].replace('.', '/');
         }
-        final ChainFinder finder = new ChainFinder(expectedType.get(), invocationSite, scope);
+
+        final List<Optional<TypeBinding>> expectedTypes = TypeBindingAnalyzer.resolveBindingsForExpectedTypes(ctx,
+                scope);
+        final ChainFinder finder = new ChainFinder(expectedTypes, Sets.newHashSet(excludedTypes), invocationSite, scope);
         try {
             new SimpleTimeLimiter().callWithTimeout(new Callable<Void>() {
                 @Override
-                public Void call() throws Exception {
-                    final int maxChains = prefStore.getInt(ChainPreferencePage.ID_MAX_CHAINS);
-                    final int minDepth = prefStore.getInt(ChainPreferencePage.ID_MIN_DEPTH);
-                    final int maxDepth = prefStore.getInt(ChainPreferencePage.ID_MAX_DEPTH);
+                public Void call() {
                     finder.startChainSearch(entrypoints, maxChains, minDepth, maxDepth);
                     return null;
                 }
@@ -282,17 +273,13 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         } catch (final Exception e) {
             setError("Timeout limit hit during call chain computation.");
         }
-        final int dimensions = expectedType.get() instanceof ArrayBinding ? ((ArrayBinding) expectedType.get())
-                .dimensions() : 0;
-        return buildCompletionProposals(finder.getChains(), dimensions);
+        return buildCompletionProposals(finder.getChains());
     }
 
-    private List<ICompletionProposal> buildCompletionProposals(final List<List<ChainElement>> chains,
-            final int expectedDimension) {
+    private List<ICompletionProposal> buildCompletionProposals(final List<Chain> chains) {
         final List<ICompletionProposal> proposals = Lists.newLinkedList();
-        for (final List<ChainElement> chain : chains) {
-            final TemplateProposal proposal = CompletionTemplateBuilder.create(chain, expectedDimension,
-                    ctx.getJavaContext());
+        for (final Chain chain : chains) {
+            final TemplateProposal proposal = CompletionTemplateBuilder.create(chain, ctx.getJavaContext());
             final ChainCompletionProposal completionProposal = new ChainCompletionProposal(proposal, chain);
             proposals.add(completionProposal);
         }

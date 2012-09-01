@@ -40,10 +40,10 @@ import org.eclipse.swt.graphics.Point;
 public class ChainCompletionProposal implements IJavaCompletionProposal, ICompletionProposalExtension2,
         ICompletionProposalExtension3, ICompletionProposalExtension4, ICompletionProposalExtension6 {
 
-    private final List<ChainElement> chain;
+    private final Chain chain;
     private final TemplateProposal completion;
 
-    public ChainCompletionProposal(final TemplateProposal completion, final List<ChainElement> chain) {
+    public ChainCompletionProposal(final TemplateProposal completion, final Chain chain) {
         this.completion = completion;
         this.chain = chain;
     }
@@ -51,7 +51,7 @@ public class ChainCompletionProposal implements IJavaCompletionProposal, IComple
     @Testing
     public List<String> getChainElementNames() {
         final List<String> b = new LinkedList<String>();
-        for (final ChainElement edge : chain) {
+        for (final ChainElement edge : chain.getElements()) {
             final Binding bind = edge.getElementBinding();
             final char[] name = bind instanceof MethodBinding ? ((MethodBinding) bind).selector : bind.readableName();
             b.add(String.valueOf(name));
@@ -86,7 +86,7 @@ public class ChainCompletionProposal implements IJavaCompletionProposal, IComple
 
     @Override
     public int getRelevance() {
-        final int relevance = (2 ^ 12) - chain.size();
+        final int relevance = (2 ^ 12) - chain.getElements().size();
         return relevance;
     }
 

@@ -10,8 +10,6 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.chain;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -40,20 +38,18 @@ public final class CompletionTemplateBuilder {
     private CompletionTemplateBuilder() {
     }
 
-    public static TemplateProposal create(final List<ChainElement> chain, final int expectedDimension,
-            final JavaContentAssistInvocationContext context) {
+    public static TemplateProposal create(final Chain chain, final JavaContentAssistInvocationContext context) {
         final String title = createChainCode(chain, true, 0);
-        final String body = createChainCode(chain, false, expectedDimension);
+        final String body = createChainCode(chain, false, chain.getExpectedDimensions());
 
-        final Template template = new Template(title, chain.size() + " elements", "java", body, false);
+        final Template template = new Template(title, chain.getElements().size() + " elements", "java", body, false);
         return createTemplateProposal(template, context);
     }
 
-    private static String createChainCode(final List<ChainElement> chain, final boolean createAsTitle,
-            final int expectedDimension) {
+    private static String createChainCode(final Chain chain, final boolean createAsTitle, final int expectedDimension) {
         final HashBag<String> varNames = HashBag.newHashBag();
         final StringBuilder sb = new StringBuilder(64);
-        for (final ChainElement edge : chain) {
+        for (final ChainElement edge : chain.getElements()) {
             switch (edge.getElementType()) {
             case FIELD:
             case LOCAL_VARIABLE:

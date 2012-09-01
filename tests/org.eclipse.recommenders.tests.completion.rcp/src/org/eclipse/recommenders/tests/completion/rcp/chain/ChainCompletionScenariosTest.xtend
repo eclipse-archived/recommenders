@@ -652,7 +652,6 @@ class ChainCompletionScenariosTest {
 	}
 	 
 	@Test
-	@Ignore("Rework so it returns chains of more than 1 element")
 	def void testFindLocalAnchorWithIsExactMatch() {
 		// well, not really an exact match...!
 		val code = '''
@@ -662,14 +661,9 @@ class ChainCompletionScenariosTest {
 				List<Object> findMe;
 				List<String> l = $
 			}
-		}''' 
-		
+		}'''
 		// need to def expectations
-		var expected = w(newArrayList(
-			"findMe",
-			"findMe subList"
-			))
-		exercise(code, expected);
+		exercise(code, w(newArrayList("findMe")));
 	}
 	
 	@Test
@@ -705,7 +699,6 @@ class ChainCompletionScenariosTest {
 			"pool invokeAll listIterator next",
 			"pool invokeAll listIterator previous"
 			))
-			
 		exercise(code, expected);
 	}
 
@@ -742,7 +735,6 @@ class ChainCompletionScenariosTest {
 			"pool invokeAll listIterator next",
 			"pool invokeAll listIterator previous"
 			))
-			
 		exercise(code, expected);
 	}
 	@Test
@@ -782,7 +774,6 @@ class ChainCompletionScenariosTest {
 	}
 
 	@Test
-	@Ignore("Rework so it returns chains of more than 1 element")
 	def void testFindFieldInSuperType() {
 		val code = '''
 		import java.util.*;
@@ -791,13 +782,9 @@ class ChainCompletionScenariosTest {
 			void m(){
 				Event e = $
 			}
-		}''' 
-		
+		}'''
 		// need to def expectations
-		var expected = w(newArrayList(
-			"evt"
-			))
-		exercise(code, expected);
+		exercise(code, w(newArrayList("evt")));
 	}
 	
 	@Test 
@@ -830,7 +817,6 @@ class ChainCompletionScenariosTest {
 	}
 	
 	@Test
-	@Ignore("Rework so it returns chains of more than 1 element")
 	def void testCompletionOnLocaVariable() {
 		val code = '''
 		import java.util.*;
@@ -840,12 +826,8 @@ class ChainCompletionScenariosTest {
 				List<String> l = findMe.$
 			}
 		}'''
-		
 		// need to def expectations
-		var expected = w(newArrayList(
-			"subList"
-			))
-		exercise(code, expected);
+		exercise(code, w(newArrayList("subList")));
 	}
 	@Test 
 	def void testCompletionOnStaticType() {
@@ -936,12 +918,11 @@ class ChainCompletionScenariosTest {
 			}
 		}
 		'''
-		exercise(code, w(newArrayList("clazz pool")));
+		exercise(code, w(newArrayList("pool", "clazz pool")));
 	}
 	
 	// TODO we should qualify the proposed field with "this." 
 	@Test
-	@Ignore("Rework so it returns chains of more than 1 element")
 	def void testFindMatchingSubtypeForAssignment(){
 		val code = '''
 		import java.util.concurrent.*;
@@ -952,15 +933,10 @@ class ChainCompletionScenariosTest {
 			}
 		}
 		'''
-		var expected = w(newArrayList(
-			"pool"
-			))
-			
-		exercise(code, expected);
+		exercise(code, w(newArrayList("pool")));
 	}
 	
 	@Test
-	@Ignore("Rework so it returns chains of more than 1 element")
 	def void testCompletionOnFieldField(){
 		val code = '''
 		import java.awt.*;
@@ -971,15 +947,10 @@ class ChainCompletionScenariosTest {
 			}
 		}
 		'''
-		var expected = w(newArrayList(
-			"evt"
-			))
-			
-		exercise(code, expected);
+		exercise(code, w(newArrayList("evt")));
 	}
 	
 	@Test
-	@Ignore("Rework so it returns chains of more than 1 element")
 	def void testPrefixFilter(){
 		val code = '''
 		import java.awt.*;
@@ -991,11 +962,7 @@ class ChainCompletionScenariosTest {
 			}
 		}
 		'''
-		var expected = w(newArrayList(
-			"aevt","aevt evt"
-			))
-			
-		exercise(code, expected);
+		exercise(code, w(newArrayList("aevt")));
 	}
 	
 	
@@ -1007,8 +974,93 @@ class ChainCompletionScenariosTest {
 				public static Fields f = new Fields();
 				public static void test_protected() {
 				final Boolean c = $
-			''') 
-		exercise(code, w(newArrayList("f _public","f _protected")));
+			''')
+		exercise(code, w(newArrayList("f _public", "f _protected")));
+	}
+	
+	@Test
+	def void testParameters1(){
+		val code = CodeBuilder::classbody(
+			'''
+				ThreadPoolExecutor pool;
+				public void test() {
+					pool.getKeepAliveTime($);
+				}
+				private TimeUnit getTimeUnit() {
+					return TimeUnit.MICROSECONDS;
+				}
+			''')
+		exercise(code, w(newArrayList("getTimeUnit")));
+	}
+	
+	@Test
+	def void testParameters2(){
+		val code = CodeBuilder::classbody(
+			'''
+				ThreadPoolExecutor pool;
+				public void test() {
+					pool.getKeepAliveTime(g$);
+				}
+				private TimeUnit getTimeUnit() {
+					return TimeUnit.MICROSECONDS;
+				}
+			''')
+		exercise(code, w(newArrayList("getTimeUnit")));
+	}
+	
+	@Test
+	def void testParameters3(){
+		val code = CodeBuilder::classbody(
+			'''
+				public void test() {
+					File otherFile = null;
+					URI uri = null;
+					File file = new File($);
+				}
+			''')
+		exercise(code, w(newArrayList("otherFile", "uri")));
+	}
+	
+	@Test
+	@Ignore("This should only propose otherFile, since with the 2nd String param, only a File is a valid 1st param.")
+	def void testParameters4(){
+		val code = CodeBuilder::classbody(
+			'''
+				public void test() {
+					File otherFile = null;
+					URI uri = null;
+					File file = new File($,"");
+				}
+			''')
+		exercise(code, w(newArrayList("otherFile")));
+	}
+	
+	@Test
+	def void testParameters5(){
+		val code = CodeBuilder::classbody(
+			'''
+				public void test() {
+					Charset cs = null;
+					CharsetDecoder dec = null;
+					InputStream in = null;
+					InputStreamReader reader = new InputStreamReader($,dec);
+				}
+			''')
+		exercise(code, w(newArrayList("in")));
+	}
+	
+	@Test
+	def void testParameters6(){
+		val code = CodeBuilder::classbody(
+			'''
+				public void test() {
+					Charset cs = null;
+					CharsetDecoder dec = null;
+					InputStream in = null;
+					InputStreamReader reader = new InputStreamReader(null,$);
+				}
+			''')
+		exercise(code, w(newArrayList("dec", "cs")));
 	}
 	
 	def exercise(CharSequence code, List<? extends List<String>> expected){

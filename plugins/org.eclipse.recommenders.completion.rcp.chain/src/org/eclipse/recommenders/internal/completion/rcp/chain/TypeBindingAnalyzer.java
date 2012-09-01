@@ -18,10 +18,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.internal.codeassist.InternalCompletionContext;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
+import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.Assignment;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.eclipse.jdt.internal.compiler.lookup.BaseTypeBinding;
@@ -34,6 +37,7 @@ import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.util.ObjectVector;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
@@ -56,11 +60,7 @@ public final class TypeBindingAnalyzer {
 
         @Override
         public boolean apply(final MethodBinding m) {
-            if (m.isStatic() || isVoid(m) || m.isConstructor() || hasPrimitiveReturnType(m)) {
-                return true;
-            }
-            final String key = String.valueOf(m.computeUniqueKey());
-            return key.startsWith("Ljava/lang/Object;") || key.startsWith("Ljava/lang/Class<");
+            return m.isStatic() || isVoid(m) || m.isConstructor() || hasPrimitiveReturnType(m);
         }
     };
 
@@ -201,21 +201,33 @@ public final class TypeBindingAnalyzer {
         return base;
     }
 
-    public static Optional<TypeBinding> resolveBindingForExpectedType(final IRecommendersCompletionContext ctx) {
+    public static List<Optional<TypeBinding>> resolveBindingsForExpectedTypes(final IRecommendersCompletionContext ctx,
+            final Scope scope) {
         final InternalCompletionContext context = (InternalCompletionContext) ctx.getJavaContext().getCoreContext();
         final ASTNode parent = context.getCompletionNodeParent();
+        final List<Optional<TypeBinding>> bindings = Lists.newLinkedList();
         if (parent instanceof LocalDeclaration) {
-            return Optional.fromNullable(((LocalDeclaration) parent).type.resolvedType);
+            bindings.add(Optional.fromNullable(((LocalDeclaration) parent).type.resolvedType));
         } else if (parent instanceof ReturnStatement) {
-            return resolveReturnStatement(context);
+            bindings.add(resolveReturnStatement(context));
         } else if (parent instanceof FieldDeclaration) {
-            return Optional.fromNullable(((FieldDeclaration) parent).type.resolvedType);
+            bindings.add(Optional.fromNullable(((FieldDeclaration) parent).type.resolvedType));
         } else if (parent instanceof Assignment) {
-            return Optional.fromNullable(((Assignment) parent).resolvedType);
+            bindings.add(Optional.fromNullable(((Assignment) parent).resolvedType));
+        } else if (isCompletionOnMethodParameter(context)) {
+            for (final ITypeName type : ctx.getExpectedTypeNames()) {
+                bindings.add(Optional.of(scope.getType(type.getClassName().toCharArray())));
+            }
         } else {
             RecommendersUtilsPlugin.logWarning("Can't handle %s as parent of completion location.", parent.getClass());
-            return Optional.absent();
         }
+        return bindings;
+    }
+
+    private static boolean isCompletionOnMethodParameter(final InternalCompletionContext context) {
+        return context.getCompletionNode() instanceof CompletionOnQualifiedAllocationExpression
+                || context.getCompletionNode() instanceof CompletionOnMessageSend
+                || context.getCompletionNodeParent() instanceof MessageSend;
     }
 
     private static Optional<TypeBinding> resolveReturnStatement(final InternalCompletionContext context) {
