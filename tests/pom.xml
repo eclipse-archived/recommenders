@@ -117,7 +117,7 @@
 															<fileset dir="${source-prefix}.utils.rcp/target/classes/" />
 															<fileset dir="${source-prefix}.webclient/target/classes/" />
 														</classfiles>
-														<sourcefiles encoding="UTF-8">
+														<sourcefiles encoding="${project.build.sourceEncoding}">
 															<fileset dir="${source-prefix}.completion.rcp/src/" />
 															<fileset dir="${source-prefix}.completion.rcp.calls/src/" />
 															<fileset dir="${source-prefix}.completion.rcp.chain/src/" />

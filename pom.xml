@@ -211,7 +211,7 @@
 						</execution>
 					</executions>
 					<configuration>
-						<encoding>UTF-8</encoding>
+						<encoding>${project.build.sourceEncoding}</encoding>
 						<header>license-tu-darmstadt-2011.txt</header>
 						<validHeaders>
 							<validHeader>license-frankenberger-2011.txt</validHeader>
@@ -236,7 +236,6 @@
 						<includes>
 							<include>src/**/*.java</include>
 						</includes>
-						<encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
 				<plugin>
