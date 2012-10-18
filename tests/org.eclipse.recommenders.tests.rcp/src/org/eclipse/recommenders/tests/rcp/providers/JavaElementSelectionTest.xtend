@@ -13,8 +13,6 @@ import org.junit.Test
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.XtendUtils.*
 import static org.mockito.Mockito.*
-import org.eclipse.jdt.core.ITypeRoot
-import org.eclipse.jdt.core.JavaModelException
 
 class JavaElementSelectionTest {
 

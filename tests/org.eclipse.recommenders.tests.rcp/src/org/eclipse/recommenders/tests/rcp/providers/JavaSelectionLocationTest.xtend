@@ -7,7 +7,6 @@ import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.jdt.AstUtils.*
 import static org.eclipse.recommenders.tests.XtendUtils.*
 import static org.eclipse.recommenders.rcp.events.JavaSelectionEvent$JavaSelectionLocation.*
-import org.eclipse.recommenders.rcp.events.JavaSelectionEvent$JavaSelectionLocation 
 import static org.eclipse.recommenders.internal.rcp.providers.JavaSelectionUtils.*
 
 class JavaSelectionLocationTest {

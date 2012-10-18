@@ -10,14 +10,10 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.sandbox;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
-import org.eclipse.recommenders.completion.rcp.ProposalProcessor;
 import org.eclipse.recommenders.completion.rcp.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
 import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;

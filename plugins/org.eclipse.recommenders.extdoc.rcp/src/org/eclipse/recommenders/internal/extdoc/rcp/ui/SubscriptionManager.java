@@ -25,11 +25,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
-import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider.Status;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation;
-import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.swt.widgets.Composite;
 

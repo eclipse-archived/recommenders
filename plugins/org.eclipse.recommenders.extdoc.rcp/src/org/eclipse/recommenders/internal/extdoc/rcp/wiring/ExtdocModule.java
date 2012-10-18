@@ -36,7 +36,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Provides;

@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.completion.rcp;
 
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;

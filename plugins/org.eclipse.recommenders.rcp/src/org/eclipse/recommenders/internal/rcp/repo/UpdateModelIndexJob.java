@@ -14,7 +14,6 @@ import static org.apache.commons.io.FileUtils.cleanDirectory;
 import static org.eclipse.recommenders.internal.rcp.repo.ModelRepositoryIndex.INDEX_ARTIFACT;
 
 import java.io.File;
-import java.io.StringWriter;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;

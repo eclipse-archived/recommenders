@@ -15,7 +15,6 @@ import static org.eclipse.recommenders.utils.Checks.ensureExists;
 import java.io.File;
 
 import org.apache.felix.service.command.Descriptor;
-import org.apache.felix.service.command.Parameter;
 import org.eclipse.recommenders.rdk.utils.Commands.CommandProvider;
 import org.eclipse.recommenders.utils.annotations.Provisional;
 

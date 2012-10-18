@@ -8,9 +8,8 @@ import org.eclipse.recommenders.tests.CodeBuilder
 import org.junit.Test
 
 import static junit.framework.Assert.*
-import org.eclipse.recommenders.utils.names.IMethodName
 import java.util.Set
-import com.google.common.collect.Sets 
+
 class QueryTest { 
   
 

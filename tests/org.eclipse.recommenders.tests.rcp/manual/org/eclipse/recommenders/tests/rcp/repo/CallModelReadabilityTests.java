@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
@@ -16,7 +15,6 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.eclipse.recommenders.commons.bayesnet.BayesianNetwork;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.BayesNetWrapper;
-import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.junit.Test;
 

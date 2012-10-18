@@ -3,10 +3,7 @@ package org.eclipse.recommenders.tests.completion.rcp.chain
 import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposal
-import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionProposalComputer
 import org.eclipse.recommenders.tests.CodeBuilder
-import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.junit.Before

@@ -17,7 +17,6 @@ import static org.eclipse.recommenders.internal.completion.rcp.subwords.Subwords
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 

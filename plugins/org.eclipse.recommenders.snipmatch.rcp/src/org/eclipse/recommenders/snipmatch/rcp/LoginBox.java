@@ -13,7 +13,6 @@ import java.net.URL;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.recommenders.snipmatch.search.ClientSwitcher;
-import org.eclipse.recommenders.snipmatch.search.SearchClient;
 import org.eclipse.recommenders.snipmatch.web.ILoginListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;

@@ -1,8 +1,6 @@
 package org.eclipse.recommenders.tests.rcp.utils
 
 import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.runtime.NullProgressMonitor
-import org.eclipse.jdt.core.dom.AST
 import org.eclipse.jdt.core.dom.ITypeBinding
 import org.eclipse.jdt.core.dom.SimpleName
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
