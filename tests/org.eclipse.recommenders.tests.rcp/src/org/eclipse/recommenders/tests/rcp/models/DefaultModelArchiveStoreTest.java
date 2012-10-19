@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -88,6 +89,17 @@ public class DefaultModelArchiveStoreTest {
         Optional<Object> model = sut.aquireModel(type);
         assertTrue(model.isPresent());
         sut.releaseModel(model.get());
+    }
+
+    @Test
+    public void testUnparsebleStateFile() {
+        sut = new DefaultModelArchiveStore<IType, Object>(state, "some", repository, factory) {
+            @Override
+            protected Map<File, ModelArchiveMetadata<IType, Object>> deserializeMapping() {
+                throw new RuntimeException();
+            }
+        };
+        assertTrue(sut.getMetadata().isEmpty());
     }
 
     @Test
