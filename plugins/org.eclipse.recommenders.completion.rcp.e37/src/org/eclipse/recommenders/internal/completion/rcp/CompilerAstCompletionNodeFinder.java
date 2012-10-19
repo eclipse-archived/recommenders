@@ -126,13 +126,13 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
-import org.eclipse.recommenders.utils.annotations.Clumsy;
+import org.eclipse.recommenders.utils.annotations.Provisional;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@Clumsy
+@Provisional
 @SuppressWarnings("restriction")
 public class CompilerAstCompletionNodeFinder extends ASTVisitor {
 

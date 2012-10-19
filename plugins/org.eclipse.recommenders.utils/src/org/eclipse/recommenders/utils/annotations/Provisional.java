@@ -18,14 +18,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Members annotated with this annotation are considered to be very likely to change.
+ * Members annotated with this annotation are considered to be very likely to change; do
+ * not depend on them.
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PACKAGE })
 @Inherited
 public @interface Provisional {
-    String discussAPI() default "http://eclipse.org/projects/recommenders/";
 
-    String reportIssues() default "http://eclipse.org/projects/recommenders/bugs";
+    /**
+     * The reason why the annotated element is provisional.
+     */
+    String value() default "";
 }

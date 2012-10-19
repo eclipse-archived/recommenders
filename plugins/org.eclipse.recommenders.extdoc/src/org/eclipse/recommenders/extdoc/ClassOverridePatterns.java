@@ -33,7 +33,7 @@ public final class ClassOverridePatterns {
         return res;
     }
 
-    @Provisional(discussAPI = "Capture of null only for testing resons")
+    @Provisional("Capture of null only for testing resons")
     public MethodPattern[] getPatterns() {
         return patterns == null ? new MethodPattern[0] : patterns.clone();
     }

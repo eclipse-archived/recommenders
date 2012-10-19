@@ -44,7 +44,7 @@ import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.Tuple;
-import org.eclipse.recommenders.utils.annotations.Experimental;
+import org.eclipse.recommenders.utils.annotations.Provisional;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
@@ -59,12 +59,7 @@ import org.eclipse.swt.widgets.Link;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 
-/**
- * Experimental code.
- * <p>
- * XXX MB: this is dark force code... need to clean it up after provider layout fixed.
- */
-@Experimental
+@Provisional("Experimental code; needs to be cleaned up after provider layout is fixed.")
 public final class CallsProvider extends ExtdocProvider {
 
     private final IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore;
