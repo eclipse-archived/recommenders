@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
+ *     Patrick Gottschaemmer, Olav Lenz - add Drag'n'Drop support
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
@@ -16,6 +17,7 @@ import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInf
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,12 +31,15 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
-import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ExtdocModule.Extdoc;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.rcp.PartListener2Adapter;
@@ -42,6 +47,12 @@ import org.eclipse.recommenders.utils.rcp.RCPUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Image;
@@ -52,6 +63,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ViewPart;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.google.common.eventbus.AllowConcurrentEvents;
@@ -72,6 +84,8 @@ public class ExtdocView extends ViewPart {
             | JavaElementLabels.M_PARAMETER_TYPES | JavaElementLabels.M_PARAMETER_NAMES
             | JavaElementLabels.M_EXCEPTIONS | JavaElementLabels.F_PRE_TYPE_SIGNATURE
             | JavaElementLabels.T_TYPE_PARAMETERS;
+    private static final int MOVE_AFTER = 1;
+    private static final int MOVE_BEFORE = 0;
 
     private final JavaElementLabelProvider labelProvider = new JavaElementLabelProvider((int) LABEL_FLAGS);
 
@@ -79,6 +93,7 @@ public class ExtdocView extends ViewPart {
     private ScrolledComposite scrollable;
     private Composite content;
     private TableViewer viewer;
+    private List<ExtdocProvider> providerRanking;
 
     private boolean visible = true;
 
@@ -92,6 +107,7 @@ public class ExtdocView extends ViewPart {
         this.subscriptionManager = subscriptionManager;
         this.providers = providers;
         this.preferences = preferences;
+        this.providerRanking = new LinkedList<ExtdocProvider>(providers);
     }
 
     @Override
@@ -116,7 +132,21 @@ public class ExtdocView extends ViewPart {
     }
 
     private void createProviderOverview() {
-        viewer = new TableViewer(sash);
+        viewer = new TableViewer(sash, SWT.SINGLE);
+
+        addDnDSupport();
+
+        viewer.setComparator(new ViewerComparator() {
+
+            @Override
+            public int compare(Viewer viewer, Object first, Object second) {
+                int indexFirst = providerRanking.indexOf((ExtdocProvider) first);
+                int indexSecond = providerRanking.indexOf((ExtdocProvider) second);
+
+                return (indexFirst - indexSecond);
+            }
+        });
+
         viewer.setContentProvider(new ArrayContentProvider());
         viewer.setLabelProvider(new LabelProvider() {
 
@@ -153,6 +183,95 @@ public class ExtdocView extends ViewPart {
             }
         });
         viewer.setSelection(new StructuredSelection(Iterables.getFirst(providers, null)));
+    }
+
+    private void addDnDSupport() {
+        final int operations = DND.DROP_MOVE;
+        final Transfer[] transferTypes = new Transfer[] { ExtdocProviderTransfer.getInstance() };
+
+        viewer.addDragSupport(operations, transferTypes, new DragSourceAdapter() {
+
+            @Override
+            public void dragSetData(final DragSourceEvent event) {
+                final IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+
+                if (ExtdocProviderTransfer.getInstance().isSupportedType(event.dataType)) {
+                    final ExtdocProvider selectedProvider = (ExtdocProvider) selection.getFirstElement();
+                    ExtdocProviderTransfer.getInstance().setExtdocProvider(selectedProvider);
+                }
+            }
+        });
+
+        viewer.addDropSupport(operations, transferTypes, new ViewerDropAdapter(viewer) {
+
+            private int newIndex;
+            private int currentFeedback;
+
+            @Override
+            public boolean validateDrop(final Object target, final int operation, final TransferData transferType) {
+                return ExtdocProviderTransfer.getInstance().isSupportedType(transferType);
+            }
+
+            @Override
+            public void dragOver(final DropTargetEvent event) {
+                if (determineLocation(event) == ViewerDropAdapter.LOCATION_BEFORE && isFirstProvider(event)) {
+                    event.feedback = DND.FEEDBACK_INSERT_BEFORE;
+                } else {
+                    event.feedback = DND.FEEDBACK_INSERT_AFTER;
+                }
+                currentFeedback = event.feedback;
+            }
+
+            private boolean isFirstProvider(final DropTargetEvent event) {
+                return providerRanking.indexOf((ExtdocProvider) determineTarget(event)) == 0;
+            }
+
+            @Override
+            public void drop(final DropTargetEvent event) {
+                if (event.item != null) {
+                    newIndex = providerRanking.indexOf((ExtdocProvider) event.item.getData());
+                } else {
+                    newIndex = providerRanking.size() - 1;
+                }
+                performDrop(event.data);
+            }
+
+            @Override
+            public boolean performDrop(final Object data) {
+                final ExtdocProvider provider = (ExtdocProvider) data;
+                final int oldIndex = providerRanking.indexOf(provider);
+
+                if (currentFeedback == DND.FEEDBACK_INSERT_AFTER) {
+                    moveAfter(oldIndex, newIndex);
+                } else {
+                    moveBefore(oldIndex, newIndex);
+                }
+                viewer.refresh();
+                return true;
+            }
+        });
+    }
+
+    private void move(int oldIndex, int newIndex, int moveStyle) {
+        if (newIndex == oldIndex) {
+            return;
+        } else if (newIndex < oldIndex) {
+            ExtdocProvider tmp = providerRanking.remove(oldIndex);
+            providerRanking.add(newIndex + moveStyle, tmp);
+        } else {
+            ExtdocProvider tmp = providerRanking.remove(oldIndex);
+            providerRanking.add(newIndex - 1 + moveStyle, tmp);
+        }
+    }
+
+    @VisibleForTesting
+    public void moveAfter(int oldIndex, int newIndex) {
+        move(oldIndex, newIndex, MOVE_AFTER);
+    }
+
+    @VisibleForTesting
+    public void moveBefore(int oldIndex, int newIndex) {
+        move(oldIndex, newIndex, MOVE_BEFORE);
     }
 
     private void createContentArea() {
@@ -260,9 +379,8 @@ public class ExtdocView extends ViewPart {
             text = element.getElementName();
             break;
         case IJavaElement.LOCAL_VARIABLE:
-            text =
-                    JavaElementLabels.getElementLabel(element, JavaElementLabels.F_PRE_TYPE_SIGNATURE
-                            | JavaElementLabels.F_POST_QUALIFIED);
+            text = JavaElementLabels.getElementLabel(element, JavaElementLabels.F_PRE_TYPE_SIGNATURE
+                    | JavaElementLabels.F_POST_QUALIFIED);
             break;
         default:
             text = JavaElementLabels.getElementLabel(element, LABEL_FLAGS);
