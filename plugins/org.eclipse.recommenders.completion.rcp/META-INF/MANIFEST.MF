@@ -20,6 +20,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.recommenders.rcp,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.utils.rcp,
+ com.google.guava;bundle-version="[10.0.0,11.0.0)",
  org.apache.commons.lang3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-ExtensibleAPI: true
