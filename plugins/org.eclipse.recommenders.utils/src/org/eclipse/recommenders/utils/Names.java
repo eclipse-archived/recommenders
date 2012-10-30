@@ -390,20 +390,36 @@ public class Names {
     }
 
     /**
-     * converts:
+     * Converts a VM type descriptor to its Java source name:
      * <ul>
      * <li>Ljava/lang/String --&gt; java.lang.String
      * <li>I --&gt; int
      * </ul>
      */
-    public static String vm2srcTypeName(final String vmTypeName) {
-        ensureIsNotNull(vmTypeName, "vmTypeName");
+    public static String vm2srcTypeName(final String vmTypeDescriptor) {
+        ensureIsNotNull(vmTypeDescriptor, "vmTypeName");
         //
-        return internal_vm2srcTypeName(vmTypeName.toCharArray(), 0);
+        return internal_vm2srcTypeName(vmTypeDescriptor.toCharArray(), 0);
     }
 
     public static ITypeName java2vmType(final Class<?> clazz) {
         final String vmName = src2vmType(clazz.getName());
         return VmTypeName.get(vmName);
+    }
+
+    /**
+     * Takes a (dot-based) type descriptor as used in JDT completion proposals and returns a standardized VM type
+     * descriptor.
+     * 
+     * @see #src2vmType(String)
+     */
+    public static String jdt2vmType(String jdtTypeDescriptor) {
+        ensureIsNotNull(jdtTypeDescriptor, "jdtTypeDescriptor");
+        String tmp = jdtTypeDescriptor;
+        if (tmp.endsWith(";")) {
+            tmp = StringUtils.removeStart(tmp, "L");
+            tmp = StringUtils.removeEnd(tmp, ";");
+        }
+        return src2vmType(tmp);
     }
 }
