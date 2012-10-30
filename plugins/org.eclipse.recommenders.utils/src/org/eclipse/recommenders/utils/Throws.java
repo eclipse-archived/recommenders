@@ -43,14 +43,14 @@ public class Throws {
         throw new IllegalStateException(formattedMessage);
     }
 
-    public static IllegalStateException throwUnhandledException(final Exception e) {
-        throw new IllegalStateException(e);
+    public static RuntimeException throwUnhandledException(final Exception cause) {
+        throw new RuntimeException(cause);
     }
 
-    public static IllegalStateException throwUnhandledException(final Exception cause, final String msg,
+    public static RuntimeException throwUnhandledException(final Exception cause, final String msg,
             final Object... args) {
         final String formattedMessage = format(msg, args);
-        throw new IllegalStateException(formattedMessage, cause);
+        throw new RuntimeException(formattedMessage, cause);
     }
 
     public static IllegalStateException throwUnreachable() {

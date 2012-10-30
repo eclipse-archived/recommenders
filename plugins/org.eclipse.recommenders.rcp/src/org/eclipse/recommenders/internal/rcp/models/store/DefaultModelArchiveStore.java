@@ -34,6 +34,7 @@ import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelAr
 import org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils;
 import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.AutoCloseOnWorkbenchShutdown;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
+import org.eclipse.recommenders.utils.annotations.Testing;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 import org.slf4j.Logger;
@@ -72,14 +73,23 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
 
     public void open() {
         if (store.exists()) {
-            mappings = GsonUtil.deserialize(store, new TypeToken<Map<File, ModelArchiveMetadata<K, V>>>() {
-            }.getType());
+            try {
+                mappings = deserializeMapping();
+            } catch (final Exception e) {
+                log.warn("Loading mapping from '" + store + "' failed with exception.", e);
+            }
         }
         // GsonUtil may return null if the file exists but is empty
         // https://bugs.eclipse.org/bugs/show_bug.cgi?id=387837
         if (mappings == null) {
             mappings = Maps.newHashMap();
         }
+    }
+
+    @Testing
+    protected Map<File, ModelArchiveMetadata<K, V>> deserializeMapping() {
+        return GsonUtil.deserialize(store, new TypeToken<Map<File, ModelArchiveMetadata<K, V>>>() {
+        }.getType());
     }
 
     @Override
