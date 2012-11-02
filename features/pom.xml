@@ -33,12 +33,6 @@
 	</modules>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
         <pluginManagement>
 			<plugins>
 				<plugin>
