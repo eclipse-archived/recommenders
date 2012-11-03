@@ -274,6 +274,11 @@ public class ExtdocView extends ViewPart {
         move(oldIndex, newIndex, MOVE_BEFORE);
     }
 
+    @VisibleForTesting
+    public List<ExtdocProvider> getProviderRanking() {
+        return providerRanking;
+    }
+
     private void createContentArea() {
         scrollable = new ScrolledComposite(sash, SWT.H_SCROLL | SWT.V_SCROLL);
         scrollable.getVerticalBar().setIncrement(20);
