@@ -29,7 +29,7 @@
 	</properties>
 	<modules>
 		<module>etc/licenses</module>
-		<module>etc/targets</module>
+		<module>targets</module>
 		<module>plugins</module>
 		<module>tests</module>
 		<module>features</module>
@@ -49,14 +49,12 @@
 					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho-version}</version>
 						<configuration>
 							<target>
 								<artifact>
-									<groupId>org.eclipse.recommenders</groupId>
-									<artifactId>targets</artifactId>
+									<groupId>org.eclipse.recommenders.target</groupId>
+									<artifactId>e3x</artifactId>
 									<version>${recommenders-version}</version>
-									<classifier>e3x</classifier>
 								</artifact>
 							</target>
 						</configuration>
@@ -74,14 +72,12 @@
 					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho-version}</version>
 						<configuration>
 							<target>
 								<artifact>
-									<groupId>org.eclipse.recommenders</groupId>
-									<artifactId>targets</artifactId>
+									<groupId>org.eclipse.recommenders.target</groupId>
+									<artifactId>e42</artifactId>
 									<version>${recommenders-version}</version>
-									<classifier>e42</classifier>
 								</artifact>
 							</target>
 						</configuration>
@@ -96,14 +92,12 @@
 					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>target-platform-configuration</artifactId>
-						<version>${tycho-version}</version>
 						<configuration>
 							<target>
 								<artifact>
-									<groupId>org.eclipse.recommenders</groupId>
-									<artifactId>targets</artifactId>
+									<groupId>org.eclipse.recommenders.target</groupId>
+									<artifactId>e43</artifactId>
 									<version>${recommenders-version}</version>
-									<classifier>e42</classifier>
 								</artifact>
 							</target>
 						</configuration>
@@ -117,7 +111,6 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
-				<version>${tycho-version}</version>
 				<extensions>true</extensions>
 			</plugin>
 			<plugin>
@@ -143,6 +136,11 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>target-platform-configuration</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-maven-plugin</artifactId>
