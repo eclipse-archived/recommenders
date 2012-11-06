@@ -3,17 +3,32 @@
    <feature id="org.eclipse.recommenders.feature.completion.rcp.subwords" version="0.0.0">
       <category name="main"/>
    </feature>
+   <feature id="org.eclipse.recommenders.feature.completion.rcp.subwords.source" version="0.0.0">
+      <category name="source"/>
+   </feature>
    <feature id="org.eclipse.recommenders.feature.extdoc.rcp" version="0.0.0">
       <category name="main"/>
+   </feature>
+   <feature id="org.eclipse.recommenders.feature.extdoc.rcp.source" version="0.0.0">
+      <category name="source"/>
    </feature>
    <feature id="org.eclipse.recommenders.feature.completion.rcp.chain" version="0.0.0">
       <category name="main"/>
    </feature>
+   <feature id="org.eclipse.recommenders.feature.completion.rcp.chain.source" version="0.0.0">
+      <category name="source"/>
+   </feature>
    <feature id="org.eclipse.recommenders.feature.snipmatch.rcp" version="0.0.0">
       <category name="main"/>
    </feature>
+   <feature id="org.eclipse.recommenders.feature.snipmatch.rcp.source" version="0.0.0">
+      <category name="source"/>
+   </feature>
    <feature id="org.eclipse.recommenders.feature.completion.rcp.intellig" version="0.0.0">
       <category name="main"/>
+   </feature>
+   <feature id="org.eclipse.recommenders.feature.completion.rcp.intellig.source" version="0.0.0">
+      <category name="source"/>
    </feature>
    <feature id="org.eclipse.recommenders.feature.3rd.orbit" version="0.0.0">
       <category name="3rd"/>
@@ -27,8 +42,14 @@
    <feature id="org.eclipse.recommenders.feature.completion.rcp.sandbox" version="0.0.0">
       <category name="main"/>
    </feature>
+   <feature id="org.eclipse.recommenders.feature.completion.rcp.sandbox.source" version="0.0.0">
+      <category name="source"/>
+   </feature>
    <feature id="org.eclipse.recommenders.feature.rcp.core" version="0.0.0">
       <category name="main"/>
+   </feature>
+   <feature id="org.eclipse.recommenders.feature.rcp.core.source" version="0.0.0">
+      <category name="source"/>
    </feature>
    <feature id="org.eclipse.recommenders.feature.rdk" version="0.0.0">
       <category name="3rd"/>
@@ -37,5 +58,6 @@
       <category name="3rd"/>
    </feature>
    <category-def name="main" label="Code Recommenders - Eclipse 4.2"/>
+   <category-def name="source" label="Code Recommenders - Eclipse 4.2 Sources"/>
    <category-def name="3rd" label="Dependencies (don&apos;t install)"/>
 </site>

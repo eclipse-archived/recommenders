@@ -33,6 +33,43 @@
 	</modules>
 
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-source-feature-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>source-feature</id>
+						<goals>
+							<goal>source-feature</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<!-- Exclude 3rd party plugins without sources. -->
+							<excludes>
+								<plugin id="com.google.inject.assistedinject"/>
+								<plugin id="com.google.inject.multibindings"/>
+								<feature id="org.eclipse.recommenders.feature.3rd.orbit"/>
+								<feature id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit"/>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-p2-metadata</id>
+						<goals>
+							<goal>p2-metadata</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
         <pluginManagement>
 			<plugins>
 				<plugin>
