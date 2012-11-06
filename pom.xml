@@ -20,6 +20,8 @@
 	<properties>
         <recommenders-version>1.0.0-SNAPSHOT</recommenders-version>
 		<tycho-version>0.16.0</tycho-version>
+		<!-- Use HTTP, as it provides the most firewall-friendly access to the repository. -->
+		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
 		<jacoco-version>0.5.4.201111111111</jacoco-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<build-alias>b000</build-alias>
@@ -176,7 +178,17 @@
 					<configuration>
 						<format>'v'yyyyMMdd-HHmm'-${build-alias}'</format>
 						<archiveSite>false</archiveSite>
+						<sourceReferences>
+							<generate>true</generate>
+						</sourceReferences>
 					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.eclipse.tycho.extras</groupId>
+							<artifactId>tycho-sourceref-jgit</artifactId>
+							<version>${tycho-version}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
