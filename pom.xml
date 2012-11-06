@@ -17,6 +17,32 @@
 	<artifactId>org.eclipse.recommenders.parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<organization>
+		<name>Eclipse Foundation</name>
+		<url>http://www.eclipse.org/</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>Eclipse Public License</name>
+			<url>http://www.eclipse.org/legal/epl-v10.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<mailingLists>
+		<mailingList>
+			<name>Developer Mailing List</name>
+			<post>recommenders-dev@eclipse.org</post>
+			<archive>http://dev.eclipse.org/mhonarc/lists/recommenders-dev</archive>
+		</mailingList>
+	</mailingLists>
+	<issueManagement>
+		<system>Bugzilla</system>
+		<url>https://bugs.eclipse.org/bugs/describecomponents.cgi?product=Recommenders</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Hudson</system>
+		<url>https://hudson.eclipse.org/hudson</url>
+	</ciManagement>
 	<properties>
         <recommenders-version>1.0.0-SNAPSHOT</recommenders-version>
 		<tycho-version>0.16.0</tycho-version>
