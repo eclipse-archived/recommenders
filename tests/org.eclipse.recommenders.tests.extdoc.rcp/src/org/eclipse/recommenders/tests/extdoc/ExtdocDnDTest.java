@@ -12,6 +12,7 @@ package org.eclipse.recommenders.tests.extdoc;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -41,18 +42,23 @@ public class ExtdocDnDTest {
         EventBus bus = mock(EventBus.class);
         SubscriptionManager subManger = mock(SubscriptionManager.class);
 
-        provider0 = mock(ExtdocProvider.class);
-        provider1 = mock(ExtdocProvider.class);
-        provider2 = mock(ExtdocProvider.class);
-        provider3 = mock(ExtdocProvider.class);
-        provider4 = mock(ExtdocProvider.class);
+        provider0 = createProviderMock("provider0");
+        provider1 = createProviderMock("provider1");
+        provider2 = createProviderMock("provider2");
+        provider3 = createProviderMock("provider3");
+        provider4 = createProviderMock("provider4");
 
         List<ExtdocProvider> providers = Lists.newArrayList(provider0, provider1, provider2, provider3, provider4);
-
         defaultOrder = new LinkedList<ExtdocProvider>(providers);
 
         ExtdocPreferences preferences = mock(ExtdocPreferences.class);
         view = new ExtdocView(bus, subManger, providers, preferences);
+    }
+
+    private ExtdocProvider createProviderMock(String name) {
+        ExtdocProvider mock = mock(ExtdocProvider.class);
+        when(mock.getId()).thenReturn(name);
+        return mock;
     }
 
     @Test

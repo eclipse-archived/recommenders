@@ -17,8 +17,10 @@ import static org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils.setInf
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -107,7 +109,37 @@ public class ExtdocView extends ViewPart {
         this.subscriptionManager = subscriptionManager;
         this.providers = providers;
         this.preferences = preferences;
-        this.providerRanking = new LinkedList<ExtdocProvider>(providers);
+        this.providerRanking = loadProviderRanking();
+    }
+
+    private List<ExtdocProvider> loadProviderRanking() {
+        List<ExtdocProvider> providerRanking = new LinkedList<ExtdocProvider>();
+        Map<String, ExtdocProvider> providerMap = fillProviderMap();
+        List<String> providerIds = preferences.loadOrderedProviderIds();
+        LinkedList<ExtdocProvider> remainingProviders = new LinkedList<ExtdocProvider>(providers);
+
+        for (String providerName : providerIds) {
+            ExtdocProvider tmpProvider = providerMap.get(providerName);
+            if (tmpProvider != null) {
+                providerRanking.add(tmpProvider);
+                remainingProviders.remove(tmpProvider);
+            }
+        }
+        providerRanking.addAll(remainingProviders);
+        return providerRanking;
+    }
+
+    private HashMap<String, ExtdocProvider> fillProviderMap() {
+        HashMap<String, ExtdocProvider> providerMap = new HashMap<String, ExtdocProvider>();
+        for (ExtdocProvider provider : providers) {
+            providerMap.put(provider.getId(), provider);
+        }
+        return providerMap;
+    }
+
+    @VisibleForTesting
+    public void storeProviderRanking() {
+        preferences.storeProviderRanking(providerRanking);
     }
 
     @Override
@@ -246,6 +278,7 @@ public class ExtdocView extends ViewPart {
                 } else {
                     moveBefore(oldIndex, newIndex);
                 }
+                storeProviderRanking();
                 viewer.refresh();
                 return true;
             }

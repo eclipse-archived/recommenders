@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
+ *     Patrick Gottschaemmer, Olav Lenz - added getId() method
  */
 package org.eclipse.recommenders.extdoc.rcp.providers;
 
@@ -34,6 +35,7 @@ import org.eclipse.swt.widgets.Display;
  * operation in the UI thread. Providers may use {@link #runSyncInUiThread(Runnable)} for that purpose as convenient
  * shortcut.
  * </p>
+ * 
  * @see org.eclipse.recommenders.extdoc.rcp.provider extension point for details on how to register a new provider
  */
 public abstract class ExtdocProvider {
@@ -98,5 +100,9 @@ public abstract class ExtdocProvider {
                 Throws.throwUnhandledException(e);
             }
         }
+    }
+
+    public String getId() {
+        return getClass().getName();
     }
 }
