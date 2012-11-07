@@ -9,20 +9,5 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.eclipse.recommenders.repository.rcp.dev.e37</artifactId>
     <packaging>eclipse-repository</packaging>
-    <properties>
-        <source>${project.build.directory}/repository</source>
-        <target>/home/data/httpd/download.eclipse.org/recommenders/builds/${env.JOB_NAME}/dev/e37</target>
-    </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.eclipse.tycho</groupId>
-                <artifactId>tycho-p2-repository-plugin</artifactId>
-                <version>${tycho-version}</version>
-                <configuration>
-                    <repositoryName>Code Recommenders: Eclipse 3.7 Dev</repositoryName>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <name>Code Recommenders: Eclipse 3.7 Dev Update Site</name>
 </project>

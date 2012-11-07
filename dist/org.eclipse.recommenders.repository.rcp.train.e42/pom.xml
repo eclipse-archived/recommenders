@@ -10,25 +10,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.eclipse.recommenders.repository.rcp.train</artifactId>
 	<packaging>eclipse-repository</packaging>
-    
+    <name>Code Recommenders: Juno Release Train Update Site</name>
+
     <properties>
         <signer-input-directory>/home/data/httpd/download-staging.priv/technology/recommenders</signer-input-directory>
         <signing-plugin-version>1.0.5</signing-plugin-version>
     </properties>
 
-    
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-p2-repository-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<configuration>
-					<repositoryName>Code Recommenders: Juno Release Train</repositoryName>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 	<profiles>
 		<profile>
 			<id>build-server</id>
