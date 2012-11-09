@@ -12,7 +12,9 @@ public class SmokeTestScenarios {
     List<CharSequence> _asList = Arrays.<CharSequence>asList(
       SmokeTestScenarios.IMPORT_01, SmokeTestScenarios.IMPORT_02, 
       SmokeTestScenarios.PACKAGE_01, SmokeTestScenarios.PACKAGE_02, SmokeTestScenarios.PACKAGE_03, 
+      SmokeTestScenarios.CLASSBODY_01, SmokeTestScenarios.CLASSBODY_02, SmokeTestScenarios.CLASSBODY_03, SmokeTestScenarios.CLASSBODY_04, SmokeTestScenarios.CLASSBODY_05, 
       SmokeTestScenarios.METHOD_STMT_01, SmokeTestScenarios.METHOD_STMT_02, SmokeTestScenarios.METHOD_STMT_03, SmokeTestScenarios.METHOD_STMT_04, SmokeTestScenarios.METHOD_STMT_05, SmokeTestScenarios.METHOD_STMT_06, 
+      SmokeTestScenarios.METHOD_STMT_07, SmokeTestScenarios.METHOD_STMT_08, SmokeTestScenarios.METHOD_STMT_09, SmokeTestScenarios.METHOD_STMT_10, 
       SmokeTestScenarios.COMMENTS_01, SmokeTestScenarios.COMMENTS_02);
     return _asList;
   }
@@ -91,6 +93,55 @@ public class SmokeTestScenarios {
     }
   }.apply();
   
+  public static CharSequence CLASSBODY_01 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("class ExtendingClass1 extends UnknownType");
+      StringConcatenation _builder_1 = new StringConcatenation();
+      _builder_1.append("$");
+      CharSequence _classDeclaration = CodeBuilder.classDeclaration(_builder, _builder_1);
+      return _classDeclaration;
+    }
+  }.apply();
+  
+  public static CharSequence CLASSBODY_02 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("class ExtendingClass2 extends UnknownType");
+      StringConcatenation _builder_1 = new StringConcatenation();
+      _builder_1.append("siz$");
+      CharSequence _classDeclaration = CodeBuilder.classDeclaration(_builder, _builder_1);
+      return _classDeclaration;
+    }
+  }.apply();
+  
+  public static CharSequence CLASSBODY_03 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("private UnknownType field = $");
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
+      return _classbody;
+    }
+  }.apply();
+  
+  public static CharSequence CLASSBODY_04 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("modifier Object o = $");
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
+      return _classbody;
+    }
+  }.apply();
+  
+  public static CharSequence CLASSBODY_05 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("public List = $");
+      CharSequence _classbody = CodeBuilder.classbody(_builder);
+      return _classbody;
+    }
+  }.apply();
+  
   public static CharSequence METHOD_STMT_01 = new Function0<CharSequence>() {
     public CharSequence apply() {
       StringConcatenation _builder = new StringConcatenation();
@@ -151,6 +202,44 @@ public class SmokeTestScenarios {
       _builder.append("}");
       CharSequence _classbody = CodeBuilder.classbody(_builder);
       return _classbody;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_07 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("UnknownType.$exit$($)");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_08 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("UnknownType o = $new $File($to$String())");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_09 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("UnknownType o = \"\";");
+      _builder.newLine();
+      _builder.append("o.$");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_10 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("undef$inedMethod($).$call($)");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
     }
   }.apply();
   
