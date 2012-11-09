@@ -61,6 +61,14 @@
 				<artifactId>tycho-p2-plugin</artifactId>
 				<executions>
 					<execution>
+						<!-- Don't attach (default) metadata before the source-feature execution.-->
+						<id>default-p2-metadata-default</id>
+						<configuration>
+							<attachP2Metadata>false</attachP2Metadata>
+						</configuration>
+					</execution>
+					<execution>
+						<!-- Do attach metadata after the source-feature execution.-->
 						<id>attach-p2-metadata</id>
 						<goals>
 							<goal>p2-metadata</goal>
