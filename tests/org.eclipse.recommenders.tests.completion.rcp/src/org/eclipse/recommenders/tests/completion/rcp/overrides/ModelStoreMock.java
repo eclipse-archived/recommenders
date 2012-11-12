@@ -14,11 +14,13 @@ import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.internal.completion.rcp.overrides.ClassOverridesNetwork;
 import org.eclipse.recommenders.internal.rcp.models.store.DefaultModelArchiveStore;
+import org.eclipse.recommenders.tests.completion.rcp.ProposalComparator;
 import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -35,7 +37,9 @@ public class ModelStoreMock extends DefaultModelArchiveStore<IType, ClassOverrid
     @Override
     public Optional<ClassOverridesNetwork> aquireModel(final IType type) {
         final ClassOverridesNetwork net = Mockito.mock(ClassOverridesNetwork.class);
-        when(net.getRecommendedMethodOverrides(anyDouble())).thenReturn(new TreeSet<Tuple<IMethodName, Double>>() {
+        final Comparator<Tuple<IMethodName, Double>> c = new ProposalComparator();
+
+        when(net.getRecommendedMethodOverrides(anyDouble())).thenReturn(new TreeSet<Tuple<IMethodName, Double>>(c) {
             {
                 add(Tuple.newTuple((IMethodName) VmMethodName.get("Ljava/lang/Object.hashCode()I"), 0.8d));
             }

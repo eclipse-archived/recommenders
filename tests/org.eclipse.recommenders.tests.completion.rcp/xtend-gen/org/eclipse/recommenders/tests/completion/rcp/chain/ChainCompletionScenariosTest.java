@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import junit.framework.Assert;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -1355,7 +1356,7 @@ public class ChainCompletionScenariosTest {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("Iterator<String> l = Collections.$");
     final CharSequence code = CodeBuilder.method(_builder);
-    ArrayList<String> _newArrayList = CollectionLiterals.<String>newArrayList(
+    final ArrayList<String> wanted = CollectionLiterals.<String>newArrayList(
       "asLifoQueue iterator", 
       "checkedCollection iterator", 
       "checkedList iterator", 
@@ -1376,7 +1377,13 @@ public class ChainCompletionScenariosTest {
       "nCopies listIterator", 
       "nCopies listIterator", 
       "newSetFromMap iterator");
-    List<List<String>> expected = this.w(((String[])Conversions.unwrapArray(_newArrayList, String.class)));
+    if (SystemUtils.IS_JAVA_1_7) {
+      wanted.add("emptyIterator");
+      wanted.add("emptyListIterator");
+      wanted.remove("singleton iterator");
+      wanted.remove("singletonList iterator");
+    }
+    List<List<String>> expected = this.w(((String[])Conversions.unwrapArray(wanted, String.class)));
     this.exercise(code, expected);
   }
   
