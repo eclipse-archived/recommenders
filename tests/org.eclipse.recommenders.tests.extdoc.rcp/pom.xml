@@ -17,7 +17,7 @@
 				<configuration>
 					<useUIHarness>true</useUIHarness>
 					<useUIThread>false</useUIThread>
-					<appArgLine>-XstartOnFirstThread</appArgLine>
+                    <argLine>-Xmx1G -XX:MaxPermSize=256m ${tycho-test-jvmArgs}</argLine>
 					<product>org.eclipse.sdk.ide</product>
 					<application>org.eclipse.ui.ide.workbench</application>
 				</configuration>

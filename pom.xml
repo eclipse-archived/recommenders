@@ -46,6 +46,8 @@
 	<properties>
         <recommenders-version>1.0.0-SNAPSHOT</recommenders-version>
 		<tycho-version>0.16.0</tycho-version>
+		<tycho-test-jvmArgs></tycho-test-jvmArgs>
+		
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the repository. -->
 		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
 		<jacoco-version>0.5.4.201111111111</jacoco-version>
