@@ -32,6 +32,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.utils.Globs;
 import org.eclipse.recommenders.utils.annotations.Provisional;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
@@ -46,7 +48,7 @@ import com.google.common.net.InternetDomainName;
 public class Artifacts {
 
     /**
-     * groupId:artifactId:packaging:classifier:version.
+     * groupId:artifactId:extension:classifier:version.
      */
     public static Artifact asArtifact(String coordinate) {
         return new DefaultArtifact(coordinate);
@@ -137,9 +139,12 @@ public class Artifacts {
         return pom;
     }
 
+    /**
+     * @return an exact copy of the given artifact coordinate with the new extension and classifier attribute
+     */
     public static Artifact newClassifierAndExtension(Artifact a, String classifier, String extension) {
-        DefaultArtifact res = new DefaultArtifact(a.getGroupId(), a.getArtifactId(), classifier, extension,
-                a.getVersion());
+        DefaultArtifact res =
+                new DefaultArtifact(a.getGroupId(), a.getArtifactId(), classifier, extension, a.getVersion());
         return res;
     }
 
@@ -147,8 +152,8 @@ public class Artifacts {
      * @return an exact copy of the given artifact coordinate with the new extension attribute
      */
     public static Artifact newExtension(Artifact a, String extension) {
-        DefaultArtifact res = new DefaultArtifact(a.getGroupId(), a.getArtifactId(), a.getClassifier(), extension,
-                a.getVersion());
+        DefaultArtifact res =
+                new DefaultArtifact(a.getGroupId(), a.getArtifactId(), a.getClassifier(), extension, a.getVersion());
         return res;
     }
 
@@ -255,5 +260,31 @@ public class Artifacts {
 
     public static Artifact newArtifact(String string) {
         return new DefaultArtifact(string);
+    }
+
+    /**
+     * Tests whether the first artifact matches the second artifact. The second artifact may (but need not) be a glob
+     * artifact. If globs are specified this method performs the matching segement-wise, i.e., on each segment of the
+     * coordinate. E.g., {@code Artifacts.matches("com.me:me.my.app:3.0", "com.*:*:*")} will return true,
+     * {@code Artifacts.matches("com.me:me.my.app:3.0", "*:*test*:*")} will return false .
+     * <p>
+     * Note that glob matching on the version segment is unaware of additional semantics like version ranges and the
+     * like. It only performs a textual glob matching.
+     * 
+     * @param artifact
+     *            the Maven coordinate to match against the second artifact
+     * @param glob
+     *            the Maven artifact which may use the globs '*' and '?'
+     */
+    public static boolean matches(Artifact artifact, Artifact glob) {
+        return matches(artifact.getArtifactId(), glob.getArtifactId())
+                && matches(artifact.getGroupId(), glob.getGroupId())
+                && matches(artifact.getClassifier(), glob.getClassifier())
+                && matches(artifact.getExtension(), glob.getExtension())
+                && matches(artifact.getVersion(), glob.getVersion());
+    }
+
+    private static boolean matches(String text, String glob) {
+        return StringUtils.isEmpty(glob) || Globs.matches(text, glob);
     }
 }

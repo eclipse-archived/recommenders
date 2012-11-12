@@ -14,12 +14,45 @@
 		<module>org.eclipse.recommenders.tests.completion.rcp</module>
 		<module>org.eclipse.recommenders.tests.extdoc.rcp</module>
 		<module>org.eclipse.recommenders.tests.jayes</module>
+		<module>org.eclipse.recommenders.tests.rdk</module>
 		<module>org.eclipse.recommenders.tests.rcp</module>
 		<module>org.eclipse.recommenders.tests.util</module>
 		<!--module>org.eclipse.recommenders.tests.webclient</module-->
 		<!--module>org.eclipse.recommenders.tests.ui</module-->
 		<!--module>org.eclipse.recommenders.tests.snipmatch.rcp</module-->
 	</modules>
+    <profiles>
+        <profile>
+            <id>osx</id>
+            <activation>
+                <os><family>mac</family></os>
+            </activation>
+            <properties>
+                <tycho.test.jvmArgs>-XstartOnFirstThread</tycho.test.jvmArgs>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.eclipse.tycho</groupId>
+                            <artifactId>tycho-surefire-plugin</artifactId>
+                            <version>${tycho-version}</version>
+                            <configuration>
+                                <appArgLine>-XstartOnFirstThread</appArgLine>
+                                <dependencies combine.children="append">
+                                    <dependency>
+                                        <artifactId>org.eclipse.jdt.launching.macosx</artifactId>
+                                        <version>3.2.100</version>
+                                        <type>eclipse-plugin</type>
+                                    </dependency>
+                                </dependencies>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<pluginManagement>
