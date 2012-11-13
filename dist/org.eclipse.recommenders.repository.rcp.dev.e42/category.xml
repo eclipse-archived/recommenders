@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
+   <feature id="org.eclipse.recommenders.feature.rcp" version="0.0.0">
+      <category name="train"/>
+   </feature>
    <feature id="org.eclipse.recommenders.feature.completion.rcp.subwords" version="0.0.0">
       <category name="main"/>
    </feature>
@@ -36,6 +39,7 @@
    <feature url="features/org.eclipse.recommenders.feature.rcp.core_1.0.0.qualifier.jar" id="org.eclipse.recommenders.feature.rcp.core" version="1.0.0.qualifier">
       <category name="main"/>
    </feature>
-   <category-def name="main" label="Code Recommenders - Eclipse 4.2"/>
-   <category-def name="source" label="Code Recommenders - Eclipse 4.2 Sources"/>
+   <category-def name="main" label="Code Recommenders: Eclipse 4.2"/>
+   <category-def name="train" label="Code Recommenders: Eclipse 4.2 (Release-Train Updates)"/>
+   <category-def name="source" label="Code Recommenders: Eclipse 4.2 (Sources)"/>
 </site>
