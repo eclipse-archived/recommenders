@@ -3,9 +3,6 @@
    <feature id="org.eclipse.recommenders.feature.rcp" version="0.0.0">
       <category name="train"/>
    </feature>
-   <feature id="org.eclipse.recommenders.feature.completion.rcp" version="0.0.0">
-      <category name="train"/>
-   </feature>
    <feature id="org.eclipse.recommenders.feature.completion.rcp.subwords" version="0.0.0">
       <category name="main"/>
    </feature>
