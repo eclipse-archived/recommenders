@@ -18,6 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.apache.commons.lang3.StringUtils.replace;
 import static org.apache.commons.lang3.StringUtils.split;
+import static org.eclipse.recommenders.utils.Checks.ensureIsInRange;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,6 +73,38 @@ public class Artifacts {
         sb.append(artifact.getVersion());
 
         return sb.toString();
+    }
+
+    /**
+     * Creates a glob artifact from the give glob string. Glob strings may consist of group-id[:artifact-id[:version]]
+     * and may use '*' and '?' at any location.
+     * <p>
+     * Examples:
+     * <ul>
+     * <li>"*:*:*" -&gt; matches all artifacts
+     * <li>"com.*:*:*" -&gt; matches all artifacts whose group-id starts with 'com.'
+     * <li>"com.*" -&gt; matches all artifacts whose group id starts with 'com.'
+     * <li>"*:*core*" -&gt; matches all artifacts that have 'core' in their name
+     * <li>"???.*" -&gt; matches all artifacts whose group id starts with three characters followed by a '.' followed by
+     * any arbitrary char sequence.
+     * <li>"*:p?e*" -&gt; matches all artifacts with three characters starting with 'p' and ending with 'e' - like 'pde'
+     * </ul>
+     */
+    public static Artifact createGlobArtifact(String coordinate) {
+        // defaults:
+        String gid = "", aid = "", ext = "", ver = "";
+
+        String[] segments = coordinate.split(":");
+        ensureIsInRange(segments.length, 0, 3, "too many segments. glob coordinate cannot be parsed.", coordinate);
+        switch (segments.length) {
+        case 3:
+            ver = segments[2];
+        case 2:
+            aid = segments[1];
+        case 1:
+            gid = segments[0];
+        }
+        return new DefaultArtifact(gid, aid, ext, ver);
     }
 
     /**
