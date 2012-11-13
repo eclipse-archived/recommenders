@@ -30,6 +30,7 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
+import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.google.common.io.Files;
@@ -90,8 +91,7 @@ public class Zips {
         char[] chars = name.toCharArray();
         chars[start] = '.';
         for (int i = start + 1; i < chars.length; i++) {
-            if (chars[i] == '.')
-                chars[i] = '/';
+            if (chars[i] == '.') chars[i] = '/';
         }
         return VmMethodName.get(new String(chars));
     }
@@ -102,4 +102,13 @@ public class Zips {
         return suffix == null ? name : name + suffix;
     }
 
+    /**
+     * Appends the given data to the zip output stream using the specified path.
+     */
+    public static void append(ZipOutputStream zos, String path, String data) throws IOException {
+        ZipEntry e = new ZipEntry(path);
+        zos.putNextEntry(e);
+        zos.write(data.getBytes(Charsets.UTF_8));
+        zos.closeEntry();
+    }
 }
