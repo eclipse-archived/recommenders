@@ -18,7 +18,6 @@ import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentExceptio
 
 import java.io.File;
 
-import org.eclipse.recommenders.rdk.utils.Commands.CommandProvider;
 import org.eclipse.recommenders.utils.annotations.Provisional;
 
 import com.google.common.base.Optional;
@@ -31,7 +30,6 @@ import com.google.common.base.Optional;
  * 
  * @see System#getProperty(String)
  */
-@CommandProvider
 @Provisional
 public class Settings {
 
