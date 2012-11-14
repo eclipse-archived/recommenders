@@ -14,10 +14,10 @@
 <feature
       id="org.eclipse.recommenders.feature.completion.rcp.chain.e37"
       label="Code Recommenders: Chain Completion"
-      version="1.0.0.qualifier"
+      version="1.0.2.qualifier"
       provider-name="Eclipse Code Recommenders"
       license-feature="org.eclipse.recommenders.feature.license"
-      license-feature-version="1.0.0.qualifier">
+      license-feature-version="0.0.0">
 
    <description url="http://www.eclipse.org/recommenders/">
       %description

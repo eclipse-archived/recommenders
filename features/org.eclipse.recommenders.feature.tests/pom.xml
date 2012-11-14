@@ -5,10 +5,10 @@
 	<parent>
 		<groupId>org.eclipse.recommenders.feature</groupId>
 		<artifactId>org.eclipse.recommenders.feature.parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>org.eclipse.recommenders.feature.tests</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>eclipse-feature</packaging>
 	<build>
 		<plugins>

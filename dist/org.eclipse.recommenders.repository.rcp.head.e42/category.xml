@@ -57,7 +57,7 @@
    <feature id="org.eclipse.recommenders.feature.rdk" version="0.0.0">
       <category name="3rd"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.tests_1.0.0.qualifier.jar" id="org.eclipse.recommenders.feature.tests" version="1.0.0.qualifier">
+   <feature id="org.eclipse.recommenders.feature.tests" version="0.0.0">
       <category name="3rd"/>
    </feature>
    <category-def name="main" label="Code Recommenders: Eclipse 4.2"/>
