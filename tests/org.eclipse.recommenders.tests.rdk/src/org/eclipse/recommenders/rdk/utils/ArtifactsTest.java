@@ -2,7 +2,9 @@ package org.eclipse.recommenders.rdk.utils;
 
 import static java.lang.String.format;
 import static org.eclipse.recommenders.rdk.utils.Artifacts.asArtifact;
+import static org.eclipse.recommenders.rdk.utils.Artifacts.createGlobArtifact;
 import static org.eclipse.recommenders.rdk.utils.Artifacts.matches;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -26,11 +28,41 @@ public class ArtifactsTest {
     }
 
     @Test
+    public void testMatchesQuestionMarkInVersion() {
+        Artifact glob = Artifacts.asArtifact("*:*:1.??.0");
+        assertTrue(matches(GID_AID_EXT_VER, glob));
+        assertTrue(matches(GID_AID_EXT_CLS_VER, glob));
+    }
+
+    @Test
+    public void testMatchesQuestionMarkInGid() {
+        Artifact glob = Artifacts.asArtifact("???.*:*:*");
+        assertTrue(matches(GID_AID_EXT_VER, glob));
+    }
+
+    @Test
     public void testNoMatch() {
         Artifact glob = Artifacts.asArtifact("com.oracle.*:*:*");
         assertFalse(matches(GID_AID_VER, glob));
         assertFalse(matches(GID_AID_EXT_VER, glob));
         assertFalse(matches(GID_AID_EXT_CLS_VER, glob));
+    }
+
+    @Test
+    public void testNewGlob() {
+        verifyGlob(createGlobArtifact(""), "", "", "");
+        verifyGlob(createGlobArtifact("com.oracle"), "com.oracle", "", "");
+        verifyGlob(createGlobArtifact("com.oracle:te?t"), "com.oracle", "te?t", "");
+        verifyGlob(createGlobArtifact("com.oracle:test:3?"), "com.oracle", "test", "3?");
+        verifyGlob(createGlobArtifact("com.oracle:test:3"), "com.oracle", "test", "3");
+        verifyGlob(createGlobArtifact("com.oracle:*:*"), "com.oracle", "*", "*");
+    }
+
+    private void verifyGlob(Artifact glob, String gid, String aid, String ver) {
+        assertEquals(gid, glob.getGroupId());
+        assertEquals(aid, glob.getArtifactId());
+        assertEquals(ver, glob.getVersion());
+        assertEquals("", glob.getExtension());
     }
 
     /**
