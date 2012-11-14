@@ -54,7 +54,7 @@
    <feature id="org.eclipse.recommenders.feature.snipmatch.rcp.source" version="0.0.0">
       <category name="source"/>
    </feature>
-   <feature url="features/org.eclipse.recommenders.feature.rcp.core_1.0.0.qualifier.jar" id="org.eclipse.recommenders.feature.rcp.core" version="1.0.0.qualifier">
+   <feature id="org.eclipse.recommenders.feature.rcp.core" version="0.0.0">
       <category name="main"/>
    </feature>
    <category-def name="main" label="Code Recommenders: Eclipse 3.7"/>
