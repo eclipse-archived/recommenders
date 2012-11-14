@@ -1,22 +1,23 @@
 package org.eclipse.recommenders.tests.completion.rcp.calls
 
+import java.util.List
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.jdt.core.dom.AST
+import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallsCompletionProposalComputer
 import org.eclipse.recommenders.tests.CodeBuilder
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
-import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.eclipse.recommenders.utils.Tuple
+import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.junit.Before
 import org.junit.Test
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.completion.rcp.calls.CallCompletionProposalComputerSmokeTest.*
-import java.util.List
-import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal 
+import org.eclipse.recommenders.tests.SmokeTestScenarios 
 class CallCompletionProposalComputerSmokeTest { 
   
 	static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
@@ -32,6 +33,14 @@ class CallCompletionProposalComputerSmokeTest {
 			«code»
 		}
 		''')
+	}
+	
+	
+		@Test
+	def void test000_smoke(){
+		for(scenario : SmokeTestScenarios::scenarios){
+			exercise(scenario)
+		}
 	}
 	
 	@Test

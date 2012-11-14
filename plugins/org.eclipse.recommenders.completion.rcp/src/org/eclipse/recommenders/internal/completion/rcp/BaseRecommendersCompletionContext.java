@@ -58,6 +58,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.utils.annotations.Testing;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
@@ -91,9 +92,9 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         }
     }
 
-    private final JavaContentAssistInvocationContext javaContext;
+    private JavaContentAssistInvocationContext javaContext;
     private InternalCompletionContext coreContext;
-    private final IAstProvider astProvider;
+    private IAstProvider astProvider;
     private ProposalCollectingCompletionRequestor collector;
     private InternalExtendedCompletionContext extCoreContext;
     private ASTNode assistNode;
@@ -131,7 +132,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         try {
             cu.codeComplete(getInvocationOffset(), collector, new TimeoutProgressMonitor());
         } catch (final Exception e) {
-            RecommendersPlugin.logError(e,"Exception during code completion");
+            RecommendersPlugin.logError(e, "Exception during code completion");
         }
         coreContext = collector.getCoreContext();
     }
@@ -324,7 +325,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         }
     }
 
-    private Set<ITypeName> createTypeNamesFromKeys(final char[][] keys) {
+    @Testing
+    public static Set<ITypeName> createTypeNamesFromKeys(final char[][] keys) {
         if (keys == null) {
             return Collections.emptySet();
         }
@@ -334,8 +336,9 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         Set<ITypeName> res = Sets.newHashSet();
         // keys contain '/' instead of dots and may end with ';'
         for (char[] key : keys) {
-            String typeName = StringUtils.removeEnd(new String(key), ";");
-            res.add(VmTypeName.get(typeName));
+            String descriptor = new String(key);
+            descriptor = StringUtils.substringBeforeLast(descriptor, ";");
+            res.add(VmTypeName.get(descriptor));
         }
         return res;
     }

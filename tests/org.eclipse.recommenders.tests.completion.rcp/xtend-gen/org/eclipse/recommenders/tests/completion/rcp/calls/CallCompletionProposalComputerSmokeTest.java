@@ -14,6 +14,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.recommenders.internal.completion.rcp.calls.engine.CallsCompletionProposalComputer;
 import org.eclipse.recommenders.tests.CodeBuilder;
+import org.eclipse.recommenders.tests.SmokeTestScenarios;
 import org.eclipse.recommenders.tests.completion.rcp.JavaContentAssistContextMock;
 import org.eclipse.recommenders.tests.completion.rcp.RecommendersCompletionContextFactoryMock;
 import org.eclipse.recommenders.tests.completion.rcp.calls.CallsPreferenceStoreMock;
@@ -58,6 +59,14 @@ public class CallCompletionProposalComputerSmokeTest {
     _builder.newLine();
     CharSequence _classbody = CodeBuilder.classbody(_builder);
     return _classbody;
+  }
+  
+  @Test
+  public void test000_smoke() {
+    List<CharSequence> _scenarios = SmokeTestScenarios.scenarios();
+    for (final CharSequence scenario : _scenarios) {
+      CallCompletionProposalComputerSmokeTest.exercise(scenario);
+    }
   }
   
   @Test

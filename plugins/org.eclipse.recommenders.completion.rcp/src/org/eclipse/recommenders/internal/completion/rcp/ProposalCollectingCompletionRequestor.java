@@ -58,7 +58,7 @@ public class ProposalCollectingCompletionRequestor extends CompletionRequestor {
 
     private Logger log = LoggerFactory.getLogger(getClass());
     private final Map<IJavaCompletionProposal, CompletionProposal> proposals = Maps.newIdentityHashMap();
-    private final JavaContentAssistInvocationContext jdtuiContext;
+    private JavaContentAssistInvocationContext jdtuiContext;
     private CompletionProposalCollector collector;
     private InternalCompletionContext compilerContext;
 
