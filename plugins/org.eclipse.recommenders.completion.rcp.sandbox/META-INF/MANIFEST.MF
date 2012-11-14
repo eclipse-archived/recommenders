@@ -12,11 +12,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.recommenders.injection,
  com.google.guava;bundle-version="[10.0.0,11.0.0)",
- org.apache.commons.lang3;bundle-version="3.1.0",
- org.eclipse.jface;bundle-version="3.8.0",
- org.eclipse.recommenders.utils;bundle-version="1.0.0",
- org.eclipse.recommenders.utils.rcp;bundle-version="1.0.0",
- org.eclipse.ui.editors;bundle-version="3.8.0",
- org.eclipse.ui;bundle-version="3.103.0"
+ org.apache.commons.lang3,
+ org.eclipse.jface,
+ org.eclipse.recommenders.utils,
+ org.eclipse.recommenders.utils.rcp,
+ org.eclipse.ui.editors,
+ org.eclipse.ui
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

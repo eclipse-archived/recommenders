@@ -28,7 +28,7 @@
                 <os><family>mac</family></os>
             </activation>
             <properties>
-                <tycho.test.jvmArgs>-XstartOnFirstThread</tycho.test.jvmArgs>
+                <tycho-test-jvmArgs>-XstartOnFirstThread</tycho-test-jvmArgs>
             </properties>
             <build>
                 <pluginManagement>
