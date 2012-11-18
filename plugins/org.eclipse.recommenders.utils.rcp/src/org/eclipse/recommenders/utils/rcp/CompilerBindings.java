@@ -27,6 +27,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.corext.template.java.SignatureUtil;
@@ -114,7 +115,9 @@ public class CompilerBindings {
         }
         try {
             final String uniqueKey = String.valueOf(binding.computeUniqueKey());
-            final String qualifiedMethodName = StringUtils.substringBefore(uniqueKey, "(").replace(";.", ".");
+            String qualifiedMethodName = StringUtils.substringBefore(uniqueKey, "(").replace(";.", ".");
+            if (qualifiedMethodName.endsWith("."))
+                qualifiedMethodName += new String(TypeConstants.INIT);
             final String[] parameterTypes = Signature.getParameterTypes(uniqueKey);
             final String returnType = Signature.getReturnType(uniqueKey);
             final StringBuilder sb = new StringBuilder();
@@ -126,7 +129,7 @@ public class CompilerBindings {
             final IMethodName res = VmMethodName.get(sb.toString());
             return of(res);
         } catch (final RuntimeException e) {
-            // if the signature could not be parsed by JDT (because it it incomplete!):
+            // if the signature could not be parsed by JDT (because it is incomplete!):
             return absent();
         }
     }
