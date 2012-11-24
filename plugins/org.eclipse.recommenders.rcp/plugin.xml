@@ -9,6 +9,7 @@
 
     Contributors:
        Marcel Bruch - Configuration.
+       Patrick Gottschaemmer, Olav Lenz - add model preference page
 
 -->
 <?eclipse version="3.4"?>
@@ -29,9 +30,15 @@
      <extension
            point="org.eclipse.ui.preferencePages">
         <page
-              class="org.eclipse.recommenders.internal.rcp.ui.PreferencePage"
+              class="org.eclipse.recommenders.internal.rcp.ui.RecommendersPreferencePage"
               id="org.eclipse.recommenders.rcp.category.preferences"
               name="Code Recommenders">
+        </page>
+        <page
+              category="org.eclipse.recommenders.rcp.category.preferences"
+              class="org.eclipse.recommenders.internal.rcp.ui.ModelsPreferencePage"
+              id="org.eclipse.recommenders.rcp.modelpreferences"
+              name="Models">
         </page>
      </extension>
      <extension
