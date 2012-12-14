@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2011, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Kevin Munk - Extension of method for finding package names and correct regular expression for Java identifier.
  */
 package org.eclipse.recommenders.tests.jdt;
 
@@ -55,11 +56,18 @@ import com.google.common.collect.Sets;
 
 public class JavaProjectFixture {
 
+    /**
+     * A regular expression group that can be used to match Java identifier. Java identifier can not start with a digit,
+     * but can contain underscore and dollar signs. Java identifiers can contain ASCII or Unicode letters and digits.
+     */
+    public static final String JAVA_IDENTIFIER_REGEX = "([a-zA-Z_$\\p{Lu}\\p{Ll}]{1}"
+            + "[a-zA-Z_$0-9\\p{Lu}\\p{Ll}\\p{Nl}]*)";
+
     public static String findClassName(final CharSequence source) {
-        Pattern p = Pattern.compile(".*?class\\s+(\\w+).*", Pattern.DOTALL);
+        Pattern p = Pattern.compile(".*?class\\s+" + JAVA_IDENTIFIER_REGEX + ".*", Pattern.DOTALL);
         Matcher matcher = p.matcher(source);
         if (!matcher.matches()) {
-            p = Pattern.compile(".*interface\\s+(\\w+).*", Pattern.DOTALL);
+            p = Pattern.compile(".*interface\\s+" + JAVA_IDENTIFIER_REGEX + ".*", Pattern.DOTALL);
             matcher = p.matcher(source);
         }
         assertTrue(matcher.matches());
@@ -71,7 +79,7 @@ public class JavaProjectFixture {
         String declaringType = findClassName(source);
         List<String> names = newArrayList();
 
-        Pattern p = Pattern.compile("(class|interface)\\s+(\\w+)", Pattern.DOTALL);
+        Pattern p = Pattern.compile("(class|interface)\\s+" + JAVA_IDENTIFIER_REGEX, Pattern.DOTALL);
         Matcher matcher = p.matcher(source);
         while (matcher.find()) {
             final String name = matcher.group(2);
@@ -88,7 +96,7 @@ public class JavaProjectFixture {
         List<String> names = newArrayList();
 
         // new <name> ( ... ) {
-        Pattern p = Pattern.compile("new\\s*?(\\w+)\\s*?\\([^)]*?\\)\\s*?\\{", Pattern.DOTALL);
+        Pattern p = Pattern.compile("new\\s*?" + JAVA_IDENTIFIER_REGEX + "\\s*?\\([^)]*?\\)\\s*?\\{", Pattern.DOTALL);
         Matcher matcher = p.matcher(source);
         while (matcher.find()) {
             final String name = matcher.group(1);
@@ -97,6 +105,33 @@ public class JavaProjectFixture {
             }
         }
         return names;
+    }
+
+    /**
+     * Finds the package name from the package declaration inside the source code.
+     *
+     * @param source
+     *            the source code
+     * @return the package name or "" if no package declaration was found
+     */
+    public static String findPackageName(final CharSequence source) {
+        Pattern p = Pattern.compile(".*" // any characters at the beginning
+                + "package\\s+" // package declaration
+                + "(" // beginning of the package name group
+                + JAVA_IDENTIFIER_REGEX // the first part of the package
+                + "{1}" // must occur one time
+                + "([.]{1}" // the following parts of the package must begin with a dot
+                + JAVA_IDENTIFIER_REGEX // followed by a java identifier
+                + ")*" // the (.identifier) group can occur multiple times or not at all
+                + ")" // closing of the package name group
+                + "[;]+.*", // the following ; and the rest of the source code
+                Pattern.DOTALL);
+        Matcher matcher = p.matcher(source);
+        if (matcher.matches()) {
+            final String group = matcher.group(1);
+            return group;
+        }
+        return "";
     }
 
     private IJavaProject javaProject;
@@ -199,7 +234,8 @@ public class JavaProjectFixture {
         return cu;
     }
 
-    public Tuple<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers) throws CoreException {
+    public Tuple<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers)
+            throws CoreException {
         final Tuple<String, Set<Integer>> content = findMarkers(contentWithMarkers);
         final String fileName = findClassName(content.getFirst()) + ".java";
 
