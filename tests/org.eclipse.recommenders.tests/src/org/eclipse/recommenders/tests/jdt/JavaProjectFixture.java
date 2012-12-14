@@ -8,6 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  *    Kevin Munk - Extension of method for finding package names and correct regular expression for Java identifier.
+ *                 Extension for package creation and helper methods.
  */
 package org.eclipse.recommenders.tests.jdt;
 
@@ -23,6 +24,7 @@ import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 import static org.eclipse.recommenders.utils.Tuple.newTuple;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -62,6 +64,11 @@ public class JavaProjectFixture {
      */
     public static final String JAVA_IDENTIFIER_REGEX = "([a-zA-Z_$\\p{Lu}\\p{Ll}]{1}"
             + "[a-zA-Z_$0-9\\p{Lu}\\p{Ll}\\p{Nl}]*)";
+    
+    /**
+     * A null reference to make code more readable.
+     */
+    public static final IProgressMonitor NULL_PROGRESS_MONITOR = null;
 
     public static String findClassName(final CharSequence source) {
         Pattern p = Pattern.compile(".*?class\\s+" + JAVA_IDENTIFIER_REGEX + ".*", Pattern.DOTALL);
@@ -158,9 +165,9 @@ public class JavaProjectFixture {
 
             private void createAndOpenProject(final IProject project) throws CoreException {
                 if (!project.exists()) {
-                    project.create(null);
+                    project.create(NULL_PROGRESS_MONITOR);
                 }
-                project.open(null);
+                project.open(NULL_PROGRESS_MONITOR);
             }
 
             private boolean hasJavaNature(final IProject project) throws CoreException {
@@ -176,7 +183,7 @@ public class JavaProjectFixture {
                 entries.addAll(asList(rawClasspath));
                 entries.add(defaultJREContainerEntry);
                 final IClasspathEntry[] entriesArray = entries.toArray(new IClasspathEntry[entries.size()]);
-                javaProject.setRawClasspath(entriesArray, null);
+                javaProject.setRawClasspath(entriesArray, NULL_PROGRESS_MONITOR);
             }
 
             private void addJavaNature(final IProject project) throws CoreException {
@@ -184,13 +191,13 @@ public class JavaProjectFixture {
                 final String[] natures = description.getNatureIds();
                 final String[] newNatures = ArrayUtils.add(natures, JavaCore.NATURE_ID);
                 description.setNatureIds(newNatures);
-                project.setDescription(description, null);
+                project.setDescription(description, NULL_PROGRESS_MONITOR);
                 javaProject = JavaCore.create(project);
 
             }
         };
         try {
-            workspace.run(populate, null);
+            workspace.run(populate, NULL_PROGRESS_MONITOR);
         } catch (final Exception e) {
             throwUnhandledException(e);
         }
@@ -230,29 +237,152 @@ public class JavaProjectFixture {
     public CompilationUnit parse(final String content) {
         parser.setSource(content.toCharArray());
         parser.setUnitName(findClassName(content) + ".java");
-        final CompilationUnit cu = cast(parser.createAST(null));
+        final CompilationUnit cu = cast(parser.createAST(NULL_PROGRESS_MONITOR));
         return cu;
     }
 
+    /**
+     * Creates the file with the content in the default package folder. The markers in the content will be removed
+     * beforehand. The package specified in the content will not be created. After creation of the file the project will
+     * be refreshed and built.
+     *
+     * @param contentWithMarkers
+     *            the code with markers(see {@link AstUtils}.MARKER)
+     * @return the Tuple of the ICompilationUnit and the List of marker positions in the code provided
+     * @throws CoreException
+     */
     public Tuple<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers)
             throws CoreException {
         final Tuple<String, Set<Integer>> content = findMarkers(contentWithMarkers);
-        final String fileName = findClassName(content.getFirst()) + ".java";
 
-        final IProject project = javaProject.getProject();
-        final IPath path = new Path(fileName);
-        final IFile file = project.getFile(fileName);
-        if (file.exists()) {
-            file.delete(true, null);
-        }
-        final ByteArrayInputStream is = new ByteArrayInputStream(content.getFirst().getBytes());
-        file.create(is, true, null);
-        final ICompilationUnit cu = (ICompilationUnit) javaProject.findElement(path);
-        project.refreshLocal(IResource.DEPTH_INFINITE, null);
-        project.build(IncrementalProjectBuilder.FULL_BUILD, null);
+        final ICompilationUnit cu = createFile(content.getFirst(), false);
+        refreshAndBuildProject();
+
         return Tuple.newTuple(cu, content.getSecond());
     }
 
+    /**
+     * Creates the package folders and the file with the content inside of this package. The markers in the content will
+     * be removed beforehand. After creation of the file the project will be refreshed and built.
+     *
+     * @param contentWithMarkers
+     *            the code with markers(see {@link AstUtils}.MARKER)
+     * @return the Tuple of the ICompilationUnit and the List of marker positions in the code provided
+     * @throws CoreException
+     */
+    public Tuple<ICompilationUnit, Set<Integer>> createFileAndPackageAndParseWithMarkers(
+            final CharSequence contentWithMarkers) throws CoreException {
+        final Tuple<String, Set<Integer>> content = findMarkers(contentWithMarkers);
+
+        createPackage(content.getFirst());
+        final ICompilationUnit cu = createFile(content.getFirst(), true);
+        refreshAndBuildProject();
+
+        return Tuple.newTuple(cu, content.getSecond());
+    }
+
+    /**
+     * Refreshes the resources of this project and initiates a full build.
+     *
+     * @throws CoreException
+     */
+    public void refreshAndBuildProject() throws CoreException {
+        final IProject project = javaProject.getProject();
+        project.refreshLocal(IResource.DEPTH_INFINITE, NULL_PROGRESS_MONITOR);
+        project.build(IncrementalProjectBuilder.FULL_BUILD, NULL_PROGRESS_MONITOR);
+    }
+
+    /**
+     * Creates the folders that represent the package/s defined in the source string. If the package name was not found,
+     * no folders will be created. If some or all of the folders exist, these will not be overwritten. After the
+     * creation of the folders, the internal java project will be refreshed.
+     *
+     * @param content
+     *            the content of the file which package declaration will be used to create the package/s.
+     * @throws CoreException
+     */
+    public void createPackage(String content) throws CoreException {
+        // get package from the code
+        String packageName = findPackageName(content);
+
+        if (!packageName.equalsIgnoreCase("")) {
+            final IProject project = javaProject.getProject();
+
+            // append project and package folders
+            IPath projectPath = project.getLocation().addTrailingSeparator();
+
+            String relativeFilePath = packageName.replace('.', Path.SEPARATOR);
+            relativeFilePath += String.valueOf(Path.SEPARATOR);
+
+            // create package folders
+            IPath packagePath = new Path(projectPath.toString() + relativeFilePath);
+            File packageDirectory = packagePath.toFile();
+            packageDirectory.mkdirs();
+
+            // refresh to prevent that the file creation fails
+            project.refreshLocal(IResource.DEPTH_INFINITE, NULL_PROGRESS_MONITOR);
+        }
+    }
+
+    /**
+     * Creates the compilation unit with the class name found in the content. If the content has a package declaration
+     * the class will be put inside of this package. For this the package must be exist. The project will not be
+     * refreshed and built after creation of this file.<br>
+     * <br>
+     * To create a file that has markers in it, use the method createFileAndParseWithMarkers() or
+     * createFileAndPackageAndParseWithMarkers().
+     *
+     * @see createPackage(String)
+     * @see refreshAndBuildProject()
+     * @param content
+     *            the content of the compilation unit. Must be java source code with or without package declaration but
+     *            with a java class definition
+     * @param usePackage
+     *            if the package as declared in the content will be used to create the file. Means, if a package
+     *            declaration exists in the content this file will be created inside of this package, otherwise the
+     *            default package will be used.
+     * @return the created compilation compilation unit
+     * @throws CoreException
+     */
+    public ICompilationUnit createFile(final String content, boolean usePackage) throws CoreException {
+        final IProject project = javaProject.getProject();
+
+        // get filename
+        final String fileName = findClassName(content) + ".java";
+        StringBuilder relativeFilePath = new StringBuilder();
+
+        if (usePackage) {
+            // get package from the code
+            String packageName = findPackageName(content);
+            if (!packageName.equalsIgnoreCase("")) {
+                relativeFilePath.append(packageName.replace('.', Path.SEPARATOR));
+                relativeFilePath.append(String.valueOf(Path.SEPARATOR));
+            }
+        }
+
+        // add the file name and get the file
+        relativeFilePath.append(fileName);
+        final IPath path = new Path(relativeFilePath.toString());
+        final IFile file = project.getFile(path);
+
+        // delete file
+        if (file.exists()) {
+            file.delete(true, NULL_PROGRESS_MONITOR);
+        }
+
+        // create file
+        final ByteArrayInputStream is = new ByteArrayInputStream(content.getBytes());
+        file.create(is, true, NULL_PROGRESS_MONITOR);
+        final ICompilationUnit cu = (ICompilationUnit) javaProject.findElement(path);
+
+        return cu;
+    }
+
+    /**
+     * Goes through the project and deletes all Java and Class files.
+     *
+     * @throws CoreException
+     */
     public void clear() throws CoreException {
 
         final IProject project = javaProject.getProject();
@@ -262,7 +392,7 @@ public class JavaProjectFixture {
                 switch (resource.getType()) {
                 case IResource.FILE:
                     if (resource.getName().endsWith(".class") || resource.getName().endsWith(".java")) {
-                        resource.delete(true, null);
+                        resource.delete(true, NULL_PROGRESS_MONITOR);
                     }
                 }
                 return true;
@@ -270,10 +400,32 @@ public class JavaProjectFixture {
         });
     }
 
+    /**
+     * Deletes the project inclusive content from the disk. <b>Warning:</b> This Fixture is no longer usable after doing
+     * this.
+     *
+     * @throws CoreException
+     */
+    public void deleteProject() throws CoreException {
+        javaProject.getProject().delete(true, true, NULL_PROGRESS_MONITOR);
+    }
+
+    /**
+     * Retrieves the inner java project managed by this fixture.
+     *
+     * @return the inner java project managed by this fixture
+     */
     public IJavaProject getJavaProject() {
         return javaProject;
     }
 
+    /**
+     * Removes all markers from the content.
+     *
+     * @param content
+     *            where the markers will be removed
+     * @return the content without any markers
+     */
     public String removeMarkers(final String content) {
         return content.replaceAll(MARKER_ESCAPE, "");
     }
