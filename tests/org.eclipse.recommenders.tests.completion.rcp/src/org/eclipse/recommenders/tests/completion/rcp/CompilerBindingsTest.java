@@ -94,7 +94,7 @@ public class CompilerBindingsTest {
 
     private ReferenceBinding createTypeBinding(final String type) {
         final ReferenceBinding mock = mock(ReferenceBinding.class);
-        when(mock.computeUniqueKey()).thenReturn(type.toCharArray());
+        when(mock.genericTypeSignature()).thenReturn(type.toCharArray());
         return mock;
     }
 

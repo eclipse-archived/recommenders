@@ -12,7 +12,7 @@ class SmokeTestScenarios {
 			PACKAGE_01, PACKAGE_02, PACKAGE_03,
 			CLASSBODY_01, CLASSBODY_02, CLASSBODY_03, CLASSBODY_04, CLASSBODY_05,
 			METHOD_STMT_01, METHOD_STMT_02, METHOD_STMT_03, METHOD_STMT_04, METHOD_STMT_05,METHOD_STMT_06,
-			METHOD_STMT_07, METHOD_STMT_08, METHOD_STMT_09, METHOD_STMT_10,
+			METHOD_STMT_07, METHOD_STMT_08, METHOD_STMT_09, METHOD_STMT_10, METHOD_STMT_11, METHOD_STMT_12,
 			COMMENTS_01, COMMENTS_02
 		)
 	}
@@ -92,6 +92,11 @@ class SmokeTestScenarios {
 		o.$''')
 	
 	public static CharSequence METHOD_STMT_10 = method('''undef$inedMethod($).$call($)''')
+	
+	public static CharSequence METHOD_STMT_11 = method('''java.util.Arrays.asList(get$)''')
+	
+	public static CharSequence METHOD_STMT_12 = method('''List<?> l = new java.util.ArrayList();
+		l.$subList(0, 1).$''')
 	
 	public static CharSequence COMMENTS_01 = 
 		'''

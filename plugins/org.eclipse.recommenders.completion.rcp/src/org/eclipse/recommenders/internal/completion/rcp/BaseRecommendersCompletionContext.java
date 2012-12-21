@@ -64,11 +64,15 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.eclipse.recommenders.utils.rcp.CompilerBindings;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
 public abstract class BaseRecommendersCompletionContext implements IRecommendersCompletionContext {
+
+    private static Logger log = LoggerFactory.getLogger(BaseRecommendersCompletionContext.class);
 
     public static ASTNode NULL = new ASTNode() {
 
@@ -122,7 +126,7 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
             compilationUnitDeclaration = (CompilationUnitDeclaration) fCompilationUnitDeclaration.get(extCoreContext);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("reflection initalizer failed.", e);
         }
     }
 
@@ -336,9 +340,15 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         Set<ITypeName> res = Sets.newHashSet();
         // keys contain '/' instead of dots and may end with ';'
         for (char[] key : keys) {
-            String descriptor = new String(key);
-            descriptor = StringUtils.substringBeforeLast(descriptor, ";");
-            res.add(VmTypeName.get(descriptor));
+            try {
+                String descriptor = new String(key);
+                descriptor = StringUtils.substringBeforeLast(descriptor, ";");
+                res.add(VmTypeName.get(descriptor));
+            } catch (Exception e) {
+                // this fails sometimes on method argument completion.
+                // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=396595
+                log.error("Couldn't parse type name: '" + String.valueOf(key) + "'", e);
+            }
         }
         return res;
     }
