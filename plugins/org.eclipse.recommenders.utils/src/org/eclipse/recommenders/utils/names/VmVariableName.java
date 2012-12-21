@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.utils.annotations.Testing;
 
 import com.google.common.collect.MapMaker;
 
@@ -30,7 +31,7 @@ public class VmVariableName implements IVariableName {
      * @param variableName
      * @return
      */
-    public static VmVariableName get(final String variableName) {
+    public static synchronized VmVariableName get(final String variableName) {
 
         VmVariableName res = index.get(variableName);
         if (res == null) {
@@ -42,13 +43,10 @@ public class VmVariableName implements IVariableName {
 
     private String identifier;
 
-    protected VmVariableName() {
-        // no-one should instantiate this class. O
-    }
-
     /**
      * @see #get(String)
      */
+    @Testing("Outside of tests, VmVariableNames should be canonicalized through VmVariableName#get(String)")
     protected VmVariableName(final String vmVariableName) {
         identifier = vmVariableName;
         ensureIsNotNull(identifier);
