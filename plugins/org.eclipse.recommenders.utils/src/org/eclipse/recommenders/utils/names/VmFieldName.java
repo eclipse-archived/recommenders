@@ -15,6 +15,7 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.utils.annotations.Testing;
 
 import com.google.common.collect.MapMaker;
 
@@ -29,7 +30,7 @@ public class VmFieldName implements IFieldName {
      * @param fieldName
      * @return
      */
-    public static VmFieldName get(final String fieldName) {
+    public static synchronized VmFieldName get(final String fieldName) {
         // typeName = removeGenerics(typeName);
         VmFieldName res = index.get(fieldName);
         if (res == null) {
@@ -41,13 +42,10 @@ public class VmFieldName implements IFieldName {
 
     private String identifier;
 
-    protected VmFieldName() {
-        // no-one should instantiate this class. O
-    }
-
     /**
      * @see #get(String)
      */
+    @Testing("Outside of tests, VmFieldNames should be canonicalized through VmFieldName#get(String)")
     protected VmFieldName(final String vmFieldName) {
         identifier = vmFieldName;
         ensureIsNotNull(identifier);

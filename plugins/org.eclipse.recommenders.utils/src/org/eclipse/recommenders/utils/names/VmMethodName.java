@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.recommenders.utils.annotations.Testing;
 
 import com.google.common.collect.MapMaker;
 
@@ -36,7 +37,7 @@ public class VmMethodName implements IMethodName {
 
     private static Map<String /* name */, VmMethodName> index = new MapMaker().weakValues().makeMap();
 
-    public static VmMethodName get(final String vmFullQualifiedTypeName, final String vmMethodSignature) {
+    public static synchronized VmMethodName get(final String vmFullQualifiedTypeName, final String vmMethodSignature) {
         return get(vmFullQualifiedTypeName + "." + vmMethodSignature);
     }
 
@@ -81,14 +82,10 @@ public class VmMethodName implements IMethodName {
     // }
     private String identifier;
 
-    protected VmMethodName() {
-        // no-one should instantiate this class. But maybe we need subclasses
-        // later...
-    }
-
     /**
      * @see #get(String)
      */
+    @Testing("Outside of tests, VmMethodNames should be canonicalized through VmMethodName#get(String)")
     protected VmMethodName(final String vmFullQualifiedMethodName) {
         identifier = vmFullQualifiedMethodName;
         // // perform syntax check by creating every possible element from this
