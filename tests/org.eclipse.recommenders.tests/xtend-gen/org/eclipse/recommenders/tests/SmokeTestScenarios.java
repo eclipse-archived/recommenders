@@ -14,7 +14,7 @@ public class SmokeTestScenarios {
       SmokeTestScenarios.PACKAGE_01, SmokeTestScenarios.PACKAGE_02, SmokeTestScenarios.PACKAGE_03, 
       SmokeTestScenarios.CLASSBODY_01, SmokeTestScenarios.CLASSBODY_02, SmokeTestScenarios.CLASSBODY_03, SmokeTestScenarios.CLASSBODY_04, SmokeTestScenarios.CLASSBODY_05, 
       SmokeTestScenarios.METHOD_STMT_01, SmokeTestScenarios.METHOD_STMT_02, SmokeTestScenarios.METHOD_STMT_03, SmokeTestScenarios.METHOD_STMT_04, SmokeTestScenarios.METHOD_STMT_05, SmokeTestScenarios.METHOD_STMT_06, 
-      SmokeTestScenarios.METHOD_STMT_07, SmokeTestScenarios.METHOD_STMT_08, SmokeTestScenarios.METHOD_STMT_09, SmokeTestScenarios.METHOD_STMT_10, 
+      SmokeTestScenarios.METHOD_STMT_07, SmokeTestScenarios.METHOD_STMT_08, SmokeTestScenarios.METHOD_STMT_09, SmokeTestScenarios.METHOD_STMT_10, SmokeTestScenarios.METHOD_STMT_11, SmokeTestScenarios.METHOD_STMT_12, 
       SmokeTestScenarios.COMMENTS_01, SmokeTestScenarios.COMMENTS_02);
     return _asList;
   }
@@ -238,6 +238,27 @@ public class SmokeTestScenarios {
     public CharSequence apply() {
       StringConcatenation _builder = new StringConcatenation();
       _builder.append("undef$inedMethod($).$call($)");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_11 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("java.util.Arrays.asList(get$)");
+      CharSequence _method = CodeBuilder.method(_builder);
+      return _method;
+    }
+  }.apply();
+  
+  public static CharSequence METHOD_STMT_12 = new Function0<CharSequence>() {
+    public CharSequence apply() {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("List<?> l = new java.util.ArrayList();");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("l.$subList(0, 1).$");
       CharSequence _method = CodeBuilder.method(_builder);
       return _method;
     }

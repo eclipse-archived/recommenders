@@ -93,7 +93,7 @@ public class CompilerBindings {
             }
         }
 
-        String signature = String.valueOf(binding.computeUniqueKey());
+        String signature = String.valueOf(binding.genericTypeSignature());
         // if (binding instanceof BinaryTypeBinding) {
         // signature = StringUtils.substringBeforeLast(signature, ";");
         // }
@@ -116,8 +116,7 @@ public class CompilerBindings {
         try {
             final String uniqueKey = String.valueOf(binding.computeUniqueKey());
             String qualifiedMethodName = StringUtils.substringBefore(uniqueKey, "(").replace(";.", ".");
-            if (qualifiedMethodName.endsWith("."))
-                qualifiedMethodName += new String(TypeConstants.INIT);
+            if (qualifiedMethodName.endsWith(".")) qualifiedMethodName += new String(TypeConstants.INIT);
             final String[] parameterTypes = Signature.getParameterTypes(uniqueKey);
             final String returnType = Signature.getReturnType(uniqueKey);
             final StringBuilder sb = new StringBuilder();
