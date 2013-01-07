@@ -16,6 +16,7 @@ import java.util.jar.JarFile;
 
 import junit.framework.Assert;
 
+import org.eclipse.recommenders.tests.JarFileMockBuilder;
 import org.eclipse.recommenders.utils.archive.ClassId;
 import org.eclipse.recommenders.utils.archive.ClassIdExtractor;
 import org.eclipse.recommenders.utils.names.VmTypeName;
@@ -25,7 +26,7 @@ public class TypeCompilationExtractionTest {
 
     @Test
     public void testTypeExtraction() throws Exception {
-        final JarFileBuilderMock builder = new JarFileBuilderMock();
+        final JarFileMockBuilder builder = new JarFileMockBuilder();
         builder.addEntry("package/ClassName.class", new ByteArrayInputStream("hash".getBytes()));
         final JarFile jarFile = builder.build();
 
@@ -41,7 +42,7 @@ public class TypeCompilationExtractionTest {
 
     @Test
     public void testNonTypes() throws Exception {
-        final JarFileBuilderMock builder = new JarFileBuilderMock();
+        final JarFileMockBuilder builder = new JarFileMockBuilder();
         builder.addEntry("package/ClassName.java", new ByteArrayInputStream("hash".getBytes()));
         builder.addEntry("package/SomeName.jpg", new ByteArrayInputStream("hash".getBytes()));
         builder.addEntry("package/SomeName", new ByteArrayInputStream("hash".getBytes()));

@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 
 import junit.framework.Assert;
 
+import org.eclipse.recommenders.tests.JarFileMockBuilder;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.archive.MavenPomJarIdExtractor;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class PomExtractionTest {
 
     @Test
     public void testNoPom() throws Exception {
-        final JarFileBuilderMock builder = new JarFileBuilderMock();
+        final JarFileMockBuilder builder = new JarFileMockBuilder();
         builder.addEntry("xyz/no/pom.txt", null);
 
         final MavenPomJarIdExtractor extractor = new MavenPomJarIdExtractor();
@@ -34,7 +35,7 @@ public class PomExtractionTest {
 
     @Test
     public void testPom() throws Exception {
-        final JarFileBuilderMock builder = new JarFileBuilderMock();
+        final JarFileMockBuilder builder = new JarFileMockBuilder();
         builder.addEntry("xyz/pom.properties", new ByteArrayInputStream(
                 "version=1.2.3\ngroupId=test\nartifactId=project.pom".getBytes()));
 
@@ -47,7 +48,7 @@ public class PomExtractionTest {
 
     @Test
     public void testNoGroupId() throws Exception {
-        final JarFileBuilderMock builder = new JarFileBuilderMock();
+        final JarFileMockBuilder builder = new JarFileMockBuilder();
         builder.addEntry("xyz/pom.properties",
                 new ByteArrayInputStream("version=1.2.3\nartifactId=test.project.pom".getBytes()));
 
@@ -59,7 +60,7 @@ public class PomExtractionTest {
 
     @Test
     public void testGroupIdRepeatedInArtifactId() throws Exception {
-        final JarFileBuilderMock builder = new JarFileBuilderMock();
+        final JarFileMockBuilder builder = new JarFileMockBuilder();
         builder.addEntry("xyz/pom.properties", new ByteArrayInputStream(
                 "version=1.2.3\ngroupId=test\nartifactId=test.project.pom".getBytes()));
 
