@@ -10,6 +10,7 @@ class SmokeTestScenarios {
 		Arrays::asList(
 			IMPORT_01, IMPORT_02, 
 			PACKAGE_01, PACKAGE_02, PACKAGE_03,
+			EXTENDS_01, EXTENDS_02, IMPLEMENTS_01,
 			CLASSBODY_01, CLASSBODY_02, CLASSBODY_03, CLASSBODY_04, CLASSBODY_05,
 			METHOD_STMT_01, METHOD_STMT_02, METHOD_STMT_03, METHOD_STMT_04, METHOD_STMT_05,METHOD_STMT_06,
 			METHOD_STMT_07, METHOD_STMT_08, METHOD_STMT_09, METHOD_STMT_10, METHOD_STMT_11, METHOD_STMT_12,
@@ -18,45 +19,49 @@ class SmokeTestScenarios {
 	}
 	
 	
-	public static CharSequence someClass = '''public class C {}'''
-	
 	public static CharSequence IMPORT_01='''
 		$i$mport$ $java$.$uti$l.$
-		«someClass»
+		public class «classname» {}
 		'''
 	
 	public static CharSequence IMPORT_02='''
 		import $stat$ic$ $java$.$uti$l.Collection.$
-		«someClass»
+		public class «classname» {}
 		'''
 
 	public static CharSequence IMPORT_03='''
 		$
-		«someClass»
+		public class «classname» {}
 		'''
 		
 	public static CharSequence PACKAGE_01='''
 		$
-		«someClass»
+		public class «classname» {}
 		'''
 
 	public static CharSequence PACKAGE_02='''
 		pack$age $
-		«someClass»
+		public class «classname» {}
 		'''
 
 	public static CharSequence PACKAGE_03='''
 		package org.$
-		«someClass»
+		public class «classname» {}
 		'''
+	
+	public static CharSequence EXTENDS_01 = '''interface «classname» extends $Clo$sable {}'''
+	
+	public static CharSequence EXTENDS_02 = '''class «classname» extends $Your$Class {}'''
+	
+	public static CharSequence IMPLEMENTS_01 = '''class «classname» implements $Closab$le {}'''
 		
 	public static CharSequence CLASSBODY_01 = classDeclaration(
-		'''class ExtendingClass1 extends UnknownType''',
+		'''class «classname» extends UnknownType''',
 		'''$'''
 	)
 	
 	public static CharSequence CLASSBODY_02 = classDeclaration(
-		'''class ExtendingClass2 extends UnknownType''',
+		'''class «classname» extends UnknownType''',
 		'''siz$'''
 	)
 	

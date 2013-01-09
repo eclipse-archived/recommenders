@@ -6,14 +6,6 @@ import org.eclipse.xtext.xbase.lib.Functions.Function0;
 
 @SuppressWarnings("all")
 public class CodeBuilder {
-  public static CharSequence someClass = new Function0<CharSequence>() {
-    public CharSequence apply() {
-      StringConcatenation _builder = new StringConcatenation();
-      _builder.append("public class C {}");
-      return _builder;
-    }
-  }.apply();
-  
   private static AtomicInteger classCounter = new Function0<AtomicInteger>() {
     public AtomicInteger apply() {
       AtomicInteger _atomicInteger = new AtomicInteger();
@@ -21,10 +13,15 @@ public class CodeBuilder {
     }
   }.apply();
   
-  public static CharSequence classbody(final CharSequence classbody) {
+  public static String classname() {
     int _addAndGet = CodeBuilder.classCounter.addAndGet(1);
-    String _plus = ("Class" + Integer.valueOf(_addAndGet));
-    CharSequence _classbody = CodeBuilder.classbody(_plus, classbody);
+    String _plus = ("TestClass" + Integer.valueOf(_addAndGet));
+    return _plus;
+  }
+  
+  public static CharSequence classbody(final CharSequence classbody) {
+    String _classname = CodeBuilder.classname();
+    CharSequence _classbody = CodeBuilder.classbody(_classname, classbody);
     return _classbody;
   }
   
