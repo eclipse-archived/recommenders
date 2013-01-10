@@ -56,7 +56,7 @@ public class RepositoryConsistencyManualTests {
         assertFalse(call.isEmpty());
         for (Artifact model : call) {
             Optional<String> remoteEtag = repo.remoteEtag(model);
-            assertTrue("no etag for " + model + " in " + repo.getRemote(), remoteEtag.isPresent());
+            assertTrue("no etag for " + model + " in " + repo.getRemoteUrl(), remoteEtag.isPresent());
         }
         System.out.println();
     }
