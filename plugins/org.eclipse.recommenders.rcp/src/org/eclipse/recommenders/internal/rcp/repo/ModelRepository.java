@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Patrick Gottschaemmer, Olav Lenz - Introduced ProxySelector
  */
 package org.eclipse.recommenders.internal.rcp.repo;
 
@@ -27,13 +28,10 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.repository.internal.DefaultServiceLocator;
 import org.apache.maven.repository.internal.MavenRepositorySystemSession;
-import org.eclipse.core.net.proxy.IProxyData;
-import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.LocalModelRepositoryLocation;
 import org.eclipse.recommenders.internal.rcp.wiring.RecommendersModule.RemoteModelRepositoryLocation;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
-import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.AbstractRepositoryListener;
@@ -54,7 +52,7 @@ import org.sonatype.aether.installation.InstallRequest;
 import org.sonatype.aether.installation.InstallationException;
 import org.sonatype.aether.repository.Authentication;
 import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.repository.Proxy;
+import org.sonatype.aether.repository.ProxySelector;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResolutionException;
@@ -81,13 +79,13 @@ public class ModelRepository implements IModelRepository {
     private RepositorySystem system;
 
     private RemoteRepository remote;
-    private IProxyService proxy;
+    private ProxySelector proxySelector;
 
     @Inject
     public ModelRepository(@LocalModelRepositoryLocation File localLocation,
-            @RemoteModelRepositoryLocation String remoteLocation, @Nullable IProxyService proxy) throws Exception {
+            @RemoteModelRepositoryLocation String remoteLocation, ProxySelector proxySelector) throws Exception {
         this.location = localLocation;
-        this.proxy = proxy;
+        this.proxySelector = proxySelector;
         this.system = createRepositorySystem();
         setRemote(remoteLocation);
     }
@@ -106,8 +104,10 @@ public class ModelRepository implements IModelRepository {
         return locator.getService(RepositorySystem.class);
     }
 
-    private DefaultRepositorySystemSession newSession() {
+    private synchronized DefaultRepositorySystemSession newSession() {
         MavenRepositorySystemSession session = new MavenRepositorySystemSession();
+        session.setProxySelector(proxySelector);
+        remote.setProxy(proxySelector.getProxy(remote));
         LocalRepository localRepo = new LocalRepository(location);
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(localRepo));
         return session;
@@ -129,7 +129,8 @@ public class ModelRepository implements IModelRepository {
             if (url.startsWith("file:")) {
                 // try file:
                 File file = new File(new URI(url));
-                if (file.exists()) return of(file.lastModified() + "");
+                if (file.exists())
+                    return of(file.lastModified() + "");
                 return absent();
             }
             Response r = http.prepareHead(url).execute().get();
@@ -196,7 +197,8 @@ public class ModelRepository implements IModelRepository {
     }
 
     @Override
-    public synchronized File resolve(Artifact artifact, final IProgressMonitor monitor) throws DependencyResolutionException {
+    public synchronized File resolve(Artifact artifact, final IProgressMonitor monitor)
+            throws DependencyResolutionException {
         monitor.subTask("Resolving...");
         DefaultRepositorySystemSession session = newSession();
         session.setDependencySelector(new TheArtifactOnlyDependencySelector());
@@ -277,8 +279,8 @@ public class ModelRepository implements IModelRepository {
     }
 
     private Optional<VersionRangeResult> resolveVersionRange(Artifact a) {
-        VersionRangeRequest rangeRequest =
-                new VersionRangeRequest(a, Collections.singletonList(remote), a.getClassifier());
+        VersionRangeRequest rangeRequest = new VersionRangeRequest(a, Collections.singletonList(remote),
+                a.getClassifier());
         try {
             VersionRangeResult range = system.resolveVersionRange(newSession(), rangeRequest);
             return of(range);
@@ -303,24 +305,23 @@ public class ModelRepository implements IModelRepository {
         return absent();
     }
 
+    /**
+     * setRemote(String url) is kept for backwards compatibility with the interface, will be changed soon with
+     * refactoring of the new models api.
+     */
     @Override
-    public void setRemote(String url) {
+    public synchronized void setRemote(String url) {
         remote = new RemoteRepository("remote-models", "default", url);
-        if (proxy == null) return;
+        remote.setProxy(proxySelector.getProxy(remote));
+    }
 
-        URI uri = URI.create(url);
-        for (IProxyData data : proxy.select(uri)) {
-            String host = data.getHost();
-            if (host != null) {
-                String type = data.getType();
-                int port = data.getPort();
-                String userId = data.getUserId();
-                String password = data.getPassword();
-                Authentication auth = new Authentication(userId, password);
-                Proxy p = new Proxy(type, host, port, auth);
-                remote.setProxy(p);
-            }
-        }
+    public synchronized void setRemoteRepository(RemoteRepository remote) {
+        this.remote = remote;
+        remote.setProxy(proxySelector.getProxy(remote));
+    }
+
+    public synchronized RemoteRepository getRemoteRepository() {
+        return remote;
     }
 
     public static class TheArtifactOnlyDependencySelector implements DependencySelector {
@@ -336,7 +337,7 @@ public class ModelRepository implements IModelRepository {
         }
     }
 
-    public String getRemote() {
+    public String getRemoteUrl() {
         return remote.getUrl();
     }
 

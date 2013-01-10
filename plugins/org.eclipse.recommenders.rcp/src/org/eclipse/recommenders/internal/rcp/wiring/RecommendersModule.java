@@ -48,6 +48,7 @@ import org.eclipse.recommenders.internal.rcp.providers.JavaModelEventsProvider;
 import org.eclipse.recommenders.internal.rcp.providers.JavaSelectionProvider;
 import org.eclipse.recommenders.internal.rcp.repo.ModelRepository;
 import org.eclipse.recommenders.internal.rcp.repo.ModelRepositoryIndex;
+import org.eclipse.recommenders.internal.rcp.repo.ServiceBasedProxySelector;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
@@ -69,6 +70,7 @@ import org.eclipse.ui.progress.UIJob;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.util.tracker.ServiceTracker;
+import org.sonatype.aether.repository.ProxySelector;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
@@ -273,13 +275,13 @@ public class RecommendersModule extends AbstractModule implements Module {
     }
 
     @Provides
-    protected IProxyService provideProxyService() {
+    protected ProxySelector provideProxyService() {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         ServiceTracker tracker = new ServiceTracker(bundle.getBundleContext(), IProxyService.class.getName(), null);
         tracker.open();
         IProxyService service = (IProxyService) tracker.getService();
         tracker.close();
-        return service;
+        return new ServiceBasedProxySelector(service);
     }
 
     @Provides
