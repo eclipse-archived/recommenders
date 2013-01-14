@@ -34,7 +34,7 @@ public class VersionLabelProviderTest {
     @Test
     public void test01() {
         assertSame(IMG_NOT_FOUND, sut.getImage(data));
-        assertSame(sut.NLS_UNKNOWN, sut.getToolTipText(data));
+        assertSame(VersionLabelProvider.DEPENDENCY_DETAILS_UNKNOWN, sut.getToolTipText(data));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class VersionLabelProviderTest {
         when(info.getSymbolicName()).thenReturn("some");
         when(info.getVersion()).thenReturn(UNKNOWN);
         assertSame(IMG_NOT_FOUND, sut.getImage(data));
-        assertSame(sut.NLS_UNKNOWN, sut.getToolTipText(data));
+        assertSame(VersionLabelProvider.DEPENDENCY_DETAILS_UNKNOWN, sut.getToolTipText(data));
     }
 
     @Test
@@ -50,6 +50,6 @@ public class VersionLabelProviderTest {
         when(info.getSymbolicName()).thenReturn("some");
         when(info.getVersion()).thenReturn(Version.valueOf("1"));
         assertSame(IMG_FOUND, sut.getImage(data));
-        assertSame(sut.NLS_KNOWN, sut.getToolTipText(data));
+        assertSame(VersionLabelProvider.DEPENDENCY_DETAILS_KNOWN, sut.getToolTipText(data));
     }
 }

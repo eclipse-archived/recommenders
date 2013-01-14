@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch- initial API and implementation.
+ *    Patrick Gottschaemmer, Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.completion.rcp.calls.preferences;
 
@@ -15,6 +16,7 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import java.io.File;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.recommenders.completion.rcp.calls.l10n.Messages;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
@@ -22,11 +24,16 @@ import org.eclipse.recommenders.utils.Tuple;
 import org.eclipse.swt.graphics.Image;
 import org.sonatype.aether.artifact.Artifact;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
 public class ModelLabelProvider extends ColumnLabelProvider {
-    public static final String NLS_UNKNOWN = "No model for this dependency";
-    public static final String NLS_KNOWN = "Model for this dependency is available";
+
+    @VisibleForTesting
+    public static final String MODEL_NOT_AVAILABLE = Messages.PREFPAGE_MODLE_NOT_AVAILABLE;
+    @VisibleForTesting
+    public static final String MODEL_AVAILABLE = Messages.PREFPAGE_MODEL_AVAILABLE;
+
     private final Image modelImage;
     private final Image modelUnknownImage;
     private final IModelRepository repository;
@@ -44,7 +51,11 @@ public class ModelLabelProvider extends ColumnLabelProvider {
 
     @Override
     public String getToolTipText(final Object element) {
-        return hasModel(element) ? NLS_KNOWN : NLS_UNKNOWN;
+        if (hasModel(element)) {
+            return MODEL_AVAILABLE;
+        } else {
+            return MODEL_NOT_AVAILABLE;
+        }
     }
 
     private boolean hasModel(final Object element) {

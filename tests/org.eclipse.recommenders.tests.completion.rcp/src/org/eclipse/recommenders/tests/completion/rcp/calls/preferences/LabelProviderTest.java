@@ -71,7 +71,7 @@ public class LabelProviderTest {
     public void testModelTooltip01() {
         when(meta.getArtifact()).thenReturn(Optional.<Artifact> absent());
         assertSame(IMG_NOT_FOUND, modelSut.getImage(data));
-        assertSame(modelSut.NLS_UNKNOWN, modelSut.getToolTipText(data));
+        assertSame(ModelLabelProvider.MODEL_NOT_AVAILABLE, modelSut.getToolTipText(data));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class LabelProviderTest {
         when(meta.getArtifact()).thenReturn(of(someArtifact));
         when(repository.location(someArtifact)).thenReturn(new File("non-exist"));
         assertSame(IMG_NOT_FOUND, modelSut.getImage(data));
-        assertSame(modelSut.NLS_UNKNOWN, modelSut.getToolTipText(data));
+        assertSame(ModelLabelProvider.MODEL_NOT_AVAILABLE, modelSut.getToolTipText(data));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class LabelProviderTest {
         when(meta.getArtifact()).thenReturn(of(someArtifact));
         when(repository.location(someArtifact)).thenReturn(SystemUtils.getUserDir());
         assertSame(IMG_FOUND, modelSut.getImage(data));
-        assertSame(modelSut.NLS_KNOWN, modelSut.getToolTipText(data));
+        assertSame(ModelLabelProvider.MODEL_AVAILABLE, modelSut.getToolTipText(data));
     }
 
 }
