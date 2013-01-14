@@ -21,11 +21,11 @@ public class RecommendersPreferencePage extends PreferencePage implements IWorkb
 
     @Override
     public void init(final IWorkbench workbench) {
-        // unused
+        setDescription("Expand the tree to edit preferences for a specific feature.");
     }
 
     @Override
-    protected Control createContents(Composite parent) {
+    protected Control createContents(final Composite parent) {
         noDefaultAndApplyButton();
         return new Composite(parent, SWT.NONE);
     }
