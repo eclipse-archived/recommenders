@@ -40,7 +40,7 @@ import com.google.inject.Inject;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ManualModelStoreWiring {
 
-    private static String VERSION = "v0.5-";
+    private static String VERSION = "v0.5-"; //$NON-NLS-1$
 
     static File store(String filename) {
         Bundle bundle = FrameworkUtil.getBundle(ManualModelStoreWiring.class);
@@ -52,13 +52,13 @@ public class ManualModelStoreWiring {
     public static class ClassOverridesPatternsModelStore extends DefaultModelArchiveStore<IType, ClassOverridePatterns> {
 
         static final Class gson = ClassOverridePatterns.class;
-        static final String classifier = "ovrp";
+        static final String classifier = "ovrp"; //$NON-NLS-1$
 
         @Inject
         public ClassOverridesPatternsModelStore(final IModelRepository repository,
                 final JavaElementResolver jdtResolver, final IClasspathEntryInfoProvider cpeInfoProvider,
                 final IModelRepositoryIndex searchindex) {
-            super(store("class-overrides-patterns.json"), classifier, repository, new IDependenciesFactory() {
+            super(store("class-overrides-patterns.json"), classifier, repository, new IDependenciesFactory() { //$NON-NLS-1$
 
                 @Override
                 public ModelArchiveResolutionJob newResolutionJob(ModelArchiveMetadata metadata, String classifier) {
@@ -79,12 +79,12 @@ public class ManualModelStoreWiring {
     public static class ClassOverridesModelStore extends DefaultModelArchiveStore<IType, ClassOverrideDirectives> {
 
         static final Class gson = ClassOverrideDirectives.class;
-        static final String classifier = "ovrd";
+        static final String classifier = "ovrd"; //$NON-NLS-1$
 
         @Inject
         public ClassOverridesModelStore(final IModelRepository repository, final JavaElementResolver jdtResolver,
                 final IClasspathEntryInfoProvider cpeInfoProvider, final IModelRepositoryIndex searchindex) {
-            super(store("class-overrides.json"), classifier, repository, new IDependenciesFactory() {
+            super(store("class-overrides.json"), classifier, repository, new IDependenciesFactory() { //$NON-NLS-1$
 
                 @Override
                 public ModelArchiveResolutionJob newResolutionJob(ModelArchiveMetadata metadata, String classifier) {
@@ -105,14 +105,14 @@ public class ManualModelStoreWiring {
     public static class ClassSelfcallsModelStore extends DefaultModelArchiveStore<IType, ClassSelfcallDirectives> {
 
         static final Class gson = ClassSelfcallDirectives.class;
-        static final String classifier = "selfc";
+        static final String classifier = "selfc"; //$NON-NLS-1$
 
         // XXX static final String classifier = "selfm";
 
         @Inject
         public ClassSelfcallsModelStore(final IModelRepository repository, final JavaElementResolver jdtResolver,
                 final IClasspathEntryInfoProvider cpeInfoProvider, final IModelRepositoryIndex searchindex) {
-            super(store("class-selfcalls.json"), classifier, repository, new IDependenciesFactory() {
+            super(store("class-selfcalls.json"), classifier, repository, new IDependenciesFactory() { //$NON-NLS-1$
 
                 @Override
                 public ModelArchiveResolutionJob newResolutionJob(final ModelArchiveMetadata metadata, String classifier) {
@@ -133,12 +133,12 @@ public class ManualModelStoreWiring {
     public static class MethodSelfcallsModelStore extends DefaultModelArchiveStore<IMethod, MethodSelfcallDirectives> {
 
         static final Class gson = MethodSelfcallDirectives.class;
-        static final String classifier = "selfm";
+        static final String classifier = "selfm"; //$NON-NLS-1$
 
         @Inject
         public MethodSelfcallsModelStore(final IModelRepository repository, final JavaElementResolver jdtResolver,
                 final IClasspathEntryInfoProvider cpeInfoProvider, final IModelRepositoryIndex searchindex) {
-            super(store("method-selfcalls.json"), classifier, repository, new IDependenciesFactory() {
+            super(store("method-selfcalls.json"), classifier, repository, new IDependenciesFactory() { //$NON-NLS-1$
 
                 @Override
                 public ModelArchiveResolutionJob newResolutionJob(final ModelArchiveMetadata metadata, String classifier) {

@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Stefan Henss - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers;
 
@@ -39,6 +40,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.extdoc.ClassOverrideDirectives;
 import org.eclipse.recommenders.extdoc.ClassOverridePatterns;
 import org.eclipse.recommenders.extdoc.MethodPattern;
+import org.eclipse.recommenders.extdoc.rcp.l10n.Messages;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.internal.extdoc.rcp.ui.ExtdocUtils;
@@ -145,7 +147,7 @@ public final class OverridesProvider extends ExtdocProvider {
 
         private void addHeader() {
             final String message =
-                    format("Based on %d direct subclasses of %s, we created the following statistics:",
+                    format(Messages.EXTDOC_OVERRIDES_INTRO,
                             directive.getNumberOfSubclasses(),
                             type.getElementName());
             Label label = new Label(container, SWT.NONE);
@@ -162,7 +164,7 @@ public final class OverridesProvider extends ExtdocProvider {
                     numberOfSubclasses,
                     workspaceBus,
                     resolver,
-                    "overrides");
+                    Messages.EXTDOC_OVERRIDES_OVERRIDES);
         }
 
     }
@@ -234,7 +236,7 @@ public final class OverridesProvider extends ExtdocProvider {
         private void addHeader() {
             new Label(container, SWT.None);
             final String message =
-                    format("Based on the above examples, we identified the following patterns\nhow this class is typically extended:");
+                    format(Messages.EXTDOC_OVERRIDES_INTRO_PATTERN);
             createLabel(container, message, true);
         }
 
@@ -243,7 +245,7 @@ public final class OverridesProvider extends ExtdocProvider {
             final int patternPercentage =
                     (int) Math.rint(100 * pattern.getNumberOfObservations() / totalNumberOfExamples);
             final String text =
-                    format("Pattern #%d (%d%% - %d examples):",
+                    format(Messages.EXTDOC_OVERRIDES_PERCENTAGE_PATTERN,
                             index,
                             patternPercentage,
                             pattern.getNumberOfObservations());
@@ -270,11 +272,11 @@ public final class OverridesProvider extends ExtdocProvider {
             for (final Entry<IMethodName, Double> entry : s) {
                 final int percentage = (int) Math.rint(entry.getValue() * 100);
                 final String phraseText = percentageToRecommendationPhrase(percentage);
-                final String stats = format(" -   (%d %%)", percentage);
+                final String stats = format(Messages.EXTDOC_OVERRIDES_PERCENTAGE, percentage);
 
                 final Link bar = createMethodLink(table, entry.getKey(), resolver, workspaceBus);
                 final TableItem item = new TableItem(table, SWT.NONE);
-                item.setText(new String[] { phraseText, "override", bar.getText(), stats });
+                item.setText(new String[] { phraseText, Messages.EXTDOC_OVERRIDES_OVERRIDE, bar.getText(), stats });
                 item.setFont(0, JFaceResources.getBannerFont());
                 item.setForeground(createColor(COLOR_INFO_FOREGROUND));
                 final TableEditor editor = new TableEditor(table);

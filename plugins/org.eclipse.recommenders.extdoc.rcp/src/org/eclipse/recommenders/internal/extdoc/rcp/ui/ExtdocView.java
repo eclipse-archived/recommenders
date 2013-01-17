@@ -8,6 +8,7 @@
  * Contributors:
  *     Sebastian Proksch - initial API and implementation
  *     Patrick Gottschaemmer, Olav Lenz - add Drag'n'Drop support
+ *     Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
@@ -41,6 +42,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
+import org.eclipse.recommenders.extdoc.rcp.l10n.Messages;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
@@ -75,7 +77,7 @@ import com.google.inject.Inject;
 
 public class ExtdocView extends ViewPart {
 
-    public static final String ID = "org.eclipse.recommenders.extdoc.rcp.ExtdocView";
+    public static final String ID = "org.eclipse.recommenders.extdoc.rcp.ExtdocView"; //$NON-NLS-1$
 
     private final EventBus workspaceBus;
     private final SubscriptionManager subscriptionManager;
@@ -202,7 +204,7 @@ public class ExtdocView extends ViewPart {
                     return;
                 }
                 activeProvider = newProvider;
-                Job job = new Job("Update Extdoc") {
+                Job job = new Job(Messages.EXTDOC_UPDATE_JOB) {
 
                     @Override
                     protected IStatus run(IProgressMonitor monitor) {
@@ -369,7 +371,7 @@ public class ExtdocView extends ViewPart {
                 runProvider(selection);
                 refreshAndEnableDrawContentArea();
             } catch (Exception e) {
-                RecommendersPlugin.logError(e, "Exception during view update." + selection);
+                RecommendersPlugin.logError(e, "Exception during view update." + selection); //$NON-NLS-1$
             }
         }
     }

@@ -21,7 +21,7 @@ import org.eclipse.swt.dnd.TransferData;
 
 public class ExtdocProviderTransfer extends ByteArrayTransfer {
 
-    private static final String TYPE_NAME = "extdoc-provider-transfer-format";
+    private static final String TYPE_NAME = "extdoc-provider-transfer-format"; //$NON-NLS-1$
     private static final int TYPEID = registerType(TYPE_NAME);
     private static final ExtdocProviderTransfer INSTANCE = new ExtdocProviderTransfer();
     private ExtdocProvider extDocProvider;

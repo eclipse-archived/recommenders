@@ -53,7 +53,7 @@ public class SubscriptionManager {
         final Set<Tuple<Method, JavaSelectionSubscriber>> annotatedMethods = findAnnotatedMethods(provider);
 
         if (annotatedMethods.isEmpty()) {
-            throwIllegalArgumentException("no listeners found");
+            throwIllegalArgumentException("no listeners found"); //$NON-NLS-1$
         }
 
         for (final Tuple<Method, JavaSelectionSubscriber> t : annotatedMethods) {
@@ -87,27 +87,27 @@ public class SubscriptionManager {
 
     private static void ensureParameterLengthIsThree(final Class<?>[] params, final Method m) {
         if (params.length != 3) {
-            throwIllegalArgumentException("error in %s: at least 3 parameters expected", m.toGenericString());
+            throwIllegalArgumentException("error in %s: at least 3 parameters expected", m.toGenericString()); //$NON-NLS-1$
         }
     }
 
     private static void ensureFirstParameterTypeIsJavaElement(final Class<?>[] params, final Method m) {
         if (!IJavaElement.class.isAssignableFrom(params[0])) {
-            throwIllegalArgumentException("error in %s: first parameter needs to be %s or a subclass",
+            throwIllegalArgumentException("error in %s: first parameter needs to be %s or a subclass", //$NON-NLS-1$
                     m.toGenericString(), IJavaElement.class.getName());
         }
     }
 
     private static void ensureSecondParameterTypeIsJavaSelectionEvent(final Class<?>[] params, final Method m) {
         if (!JavaSelectionEvent.class.isAssignableFrom(params[1])) {
-            throwIllegalArgumentException("error in %s: second parameter needs to be %s or a subclass",
+            throwIllegalArgumentException("error in %s: second parameter needs to be %s or a subclass", //$NON-NLS-1$
                     m.toGenericString(), JavaSelectionEvent.class.getName());
         }
     }
 
     private static void ensureThirdParameterTypeIsComposite(final Class<?>[] params, final Method m) {
         if (!Composite.class.isAssignableFrom(params[2])) {
-            throwIllegalArgumentException("error in %s: third parameter needs to be %s or a subclass",
+            throwIllegalArgumentException("error in %s: third parameter needs to be %s or a subclass", //$NON-NLS-1$
                     m.toGenericString(), Composite.class.getName());
         }
     }

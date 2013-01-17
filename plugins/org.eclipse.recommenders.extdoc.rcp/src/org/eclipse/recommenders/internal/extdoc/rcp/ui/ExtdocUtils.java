@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Stefan Henss - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.ui;
 
@@ -23,6 +24,7 @@ import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.extdoc.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.TreeBag;
@@ -128,7 +130,7 @@ public final class ExtdocUtils {
                 continue;
             }
             final String phraseText = percentageToRecommendationPhrase(percentage);
-            final String stats = format(" -   (%d %% - %d times)", percentage, frequency);
+            final String stats = format(Messages.EXTDOC_PERCENTAGE_TIMES, percentage, frequency);
 
             final Link bar = createMethodLink(table, method, resolver, bus);
             final TableItem item = new TableItem(table, SWT.NONE);
@@ -147,9 +149,9 @@ public final class ExtdocUtils {
 
     public static Link createMethodLink(final Composite parent, final IMethod method, final EventBus workspaceBus) {
         final String text =
-                "<a>"
+                "<a>" //$NON-NLS-1$
                         + JavaElementLabels.getElementLabel(method, JavaElementLabels.M_APP_RETURNTYPE
-                                | JavaElementLabels.M_PARAMETER_TYPES) + "</a>";
+                                | JavaElementLabels.M_PARAMETER_TYPES) + "</a>"; //$NON-NLS-1$
         final String tooltip = JavaElementLabels.getElementLabel(method, JavaElementLabels.DEFAULT_QUALIFIED);
 
         final Link link = new Link(parent, SWT.NONE);
@@ -169,7 +171,7 @@ public final class ExtdocUtils {
 
     public static Link createMethodLink(final Composite parent, final IMethodName method,
             final JavaElementResolver resolver, final EventBus workspaceBus) {
-        final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>";
+        final String text = "<a>" + Names.vm2srcSimpleMethod(method) + "</a>"; //$NON-NLS-1$ //$NON-NLS-2$
         final String tooltip = Names.vm2srcQualifiedMethod(method);
 
         final Link link = new Link(parent, SWT.NONE);
@@ -347,15 +349,15 @@ public final class ExtdocUtils {
 
     public static String percentageToRecommendationPhrase(final int percentage) {
         if (percentage >= 95) {
-            return "always";
+            return Messages.EXTDOC_ALWAYS;
         } else if (percentage >= 65) {
-            return "usually";
+            return Messages.EXTDOC_USUALLY;
         } else if (percentage >= 25) {
-            return "sometimes";
+            return Messages.EXTDOC_SOMETIMES;
         } else if (percentage >= 10) {
-            return "occasionally";
+            return Messages.EXTDOC_OCCASIONALLY;
         } else {
-            return "rarely";
+            return Messages.EXTDOC_RARELY;
         }
     }
 

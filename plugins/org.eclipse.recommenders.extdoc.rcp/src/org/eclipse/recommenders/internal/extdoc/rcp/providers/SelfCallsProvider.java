@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Stefan Henss - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers;
 
@@ -25,6 +26,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.recommenders.extdoc.ClassSelfcallDirectives;
 import org.eclipse.recommenders.extdoc.MethodSelfcallDirectives;
+import org.eclipse.recommenders.extdoc.rcp.l10n.Messages;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.internal.extdoc.rcp.wiring.ManualModelStoreWiring.ClassSelfcallsModelStore;
@@ -115,7 +117,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
         }
 
         private void addHeader() {
-            final String message = format("Based on %d direct subclasses of %s we created the following statistics:",
+            final String message = format(Messages.EXTDOC_SELFCALLS_INTRO_SUBCLASSES,
                     directive.getNumberOfSubclasses(), type.getElementName());
             createLabel(container, message, true);
         }
@@ -123,7 +125,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfSubclasses();
             final TreeBag<IMethodName> b = newTreeBag(directive.getCalls());
-            renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, "calls ");
+            renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, Messages.EXTDOC_SELFCALLS_CALLS);
         }
     }
 
@@ -157,7 +159,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
 
         private void addHeader() {
             final String message = format(
-                    "Based on %d direct implementors of %s we created the following statistics. Implementors...",
+                    Messages.EXTDOC_SELFCALLS_INTRO_IMPLEMENTORS,
                     directive.getNumberOfDefinitions(), method.getElementName());
             createLabel(container, message, true);
         }
@@ -165,7 +167,7 @@ public final class SelfCallsProvider extends ExtdocProvider {
         private void addDirectives() {
             final int numberOfSubclasses = directive.getNumberOfDefinitions();
             final TreeBag<IMethodName> b = newTreeBag(directive.getCalls());
-            renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, "calls ");
+            renderMethodDirectivesBlock(container, b, numberOfSubclasses, workspaceBus, resolver, Messages.EXTDOC_SELFCALLS_CALLS);
         }
     }
 }

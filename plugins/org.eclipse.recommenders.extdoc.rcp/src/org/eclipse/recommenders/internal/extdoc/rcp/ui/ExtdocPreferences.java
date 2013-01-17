@@ -26,9 +26,9 @@ import org.osgi.service.prefs.Preferences;
 
 public class ExtdocPreferences {
 
-    public static final String PROVIDER_RANKING = "providerRanking";
-    private static final String DISABLED_PROVIDERS = "disabledProviders";
-    private static final String SASH_WEIGHTS = "sashWeights";
+    public static final String PROVIDER_RANKING = "providerRanking"; //$NON-NLS-1$
+    private static final String DISABLED_PROVIDERS = "disabledProviders"; //$NON-NLS-1$
+    private static final String SASH_WEIGHTS = "sashWeights"; //$NON-NLS-1$
 
     private final IEclipsePreferences pluginPreferences;
     private final Preferences providerRankingPreferences;
@@ -56,7 +56,7 @@ public class ExtdocPreferences {
             if (tmp != null) {
                 providerIds.add(tmp);
             } else {
-                RecommendersPlugin.logWarning("Loading entry for key " + i + " failed. No such entry.");
+                RecommendersPlugin.logWarning("Loading entry for key " + i + " failed. No such entry."); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         return providerIds;
@@ -67,7 +67,7 @@ public class ExtdocPreferences {
         try {
             keys = node.keys();
         } catch (BackingStoreException e) {
-            RecommendersPlugin.logError(e, "Exception during loading the keys of: " + node.absolutePath());
+            RecommendersPlugin.logError(e, "Exception during loading the keys of: " + node.absolutePath()); //$NON-NLS-1$
         }
         return keys;
     }
@@ -77,26 +77,26 @@ public class ExtdocPreferences {
             prefs.clear();
             return true;
         } catch (BackingStoreException e) {
-            RecommendersPlugin.logError(e, "Caught exception while clearing the preferences : " + prefs.absolutePath());
+            RecommendersPlugin.logError(e, "Caught exception while clearing the preferences : " + prefs.absolutePath()); //$NON-NLS-1$
             return false;
         }
     }
 
     private String createString(final String[] names) {
         if (names.length > 0) {
-            String out = "";
+            String out = ""; //$NON-NLS-1$
             for (final String name : names) {
-                out += "," + name;
+                out += "," + name; //$NON-NLS-1$
             }
             return out.substring(1);
         } else {
-            return "";
+            return ""; //$NON-NLS-1$
         }
     }
 
     public boolean isProviderEnabled(final ExtdocProvider p) {
-        final String arrayString = pluginPreferences.get(DISABLED_PROVIDERS, "");
-        final String[] deactivatedProviders = arrayString.split(",");
+        final String arrayString = pluginPreferences.get(DISABLED_PROVIDERS, ""); //$NON-NLS-1$
+        final String[] deactivatedProviders = arrayString.split(","); //$NON-NLS-1$
         final String providerName = p.getDescription().getName();
         for (final String deactivatedName : deactivatedProviders) {
             if (deactivatedName.equals(providerName)) {
@@ -124,13 +124,13 @@ public class ExtdocPreferences {
     }
 
     public int[] loadSashWeights() {
-        final String weightString = pluginPreferences.get(SASH_WEIGHTS, "1,3");
-        final String[] weights = weightString.split(",");
+        final String weightString = pluginPreferences.get(SASH_WEIGHTS, "1,3"); //$NON-NLS-1$
+        final String[] weights = weightString.split(","); //$NON-NLS-1$
         return new int[] { parseInt(weights[0]), parseInt(weights[1]) };
     }
 
     public void storeSashWeights(final int[] weights) {
-        final String toSave = weights[0] + "," + weights[1];
+        final String toSave = weights[0] + "," + weights[1]; //$NON-NLS-1$
         pluginPreferences.put(SASH_WEIGHTS, toSave);
         flush();
     }
@@ -140,7 +140,7 @@ public class ExtdocPreferences {
             pluginPreferences.flush();
             return true;
         } catch (BackingStoreException e) {
-            RecommendersPlugin.logError(e, "Caught exception while saving the order of ExtdocProviders");
+            RecommendersPlugin.logError(e, "Caught exception while saving the order of ExtdocProviders"); //$NON-NLS-1$
             return false;
         }
     }

@@ -33,7 +33,7 @@ import org.eclipse.text.edits.TextEdit;
 @SuppressWarnings({ "restriction", "unchecked" })
 public final class SourceCodeArea extends JavaSourceViewer {
 
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
 
     private static final IPreferenceStore store = JavaPlugin.getDefault().getCombinedPreferenceStore();
     private static final IColorManager colorManager = JavaPlugin.getDefault().getJavaTextTools().getColorManager();
@@ -45,7 +45,7 @@ public final class SourceCodeArea extends JavaSourceViewer {
 
     static {
         options = DefaultCodeFormatterConstants.getEclipseDefaultSettings();
-        options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, "120");
+        options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, "120"); //$NON-NLS-1$
         formatter = ToolFactory.createCodeFormatter(options);
     }
 

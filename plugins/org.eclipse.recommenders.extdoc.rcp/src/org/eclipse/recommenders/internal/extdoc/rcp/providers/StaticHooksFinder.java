@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2011 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers;
 
@@ -37,6 +38,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.jdt.ui.JavaElementLabels;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.extdoc.rcp.l10n.Messages;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
@@ -78,7 +80,7 @@ public class StaticHooksFinder extends ExtdocProvider {
         public void run() {
             final Composite container = createComposite(parent, 1);
             if (index.isEmpty()) {
-                createLabel(container, "No public static method found in selected package (-root)", true);
+                createLabel(container, Messages.EXTDOC_STATICHOCKS_NO_PUBLIC_STATIC_METHOD_FOUND, true);
             }
 
             final List<StyleRange> typeRanges = Lists.newLinkedList();
@@ -99,7 +101,7 @@ public class StaticHooksFinder extends ExtdocProvider {
                 typeRanges.add(styleRange);
                 sb.append(IOUtils.LINE_SEPARATOR);
                 for (final IMethod method : index.get(type)) {
-                    sb.append("    ");
+                    sb.append("    "); //$NON-NLS-1$
                     final int methodLabelBegin = sb.length();
                     final String methodLabel = getElementLabel(method, M_APP_RETURNTYPE | M_PARAMETER_TYPES);
                     sb.append(methodLabel);
@@ -251,7 +253,7 @@ public class StaticHooksFinder extends ExtdocProvider {
                 }
             }
         } catch (final Exception x) {
-            RecommendersPlugin.logError(x, "Failed to determine static members for %s", root.getElementName());
+            RecommendersPlugin.logError(x, "Failed to determine static members for %s", root.getElementName()); //$NON-NLS-1$
         }
         runSyncInUiThread(new HooksRendererRunnable(index, parent));
     }
@@ -265,7 +267,7 @@ public class StaticHooksFinder extends ExtdocProvider {
         try {
             findStaticHooks(pkg, index);
         } catch (final Exception e) {
-            RecommendersPlugin.logError(e, "Failed to determine static members for package %s", pkg.getElementName());
+            RecommendersPlugin.logError(e, "Failed to determine static members for package %s", pkg.getElementName()); //$NON-NLS-1$
         }
 
         runSyncInUiThread(new HooksRendererRunnable(index, parent));

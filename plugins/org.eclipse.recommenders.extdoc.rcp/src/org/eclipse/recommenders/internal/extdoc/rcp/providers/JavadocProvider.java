@@ -9,6 +9,7 @@
  *    Stefan Henss - initial API and implementation.
  *    Sebastian Proksch - integrated into new eventbus system
  *    Marcel Bruch - changed to own browser-based implementation
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.extdoc.rcp.providers;
 
@@ -35,6 +36,7 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.internal.text.html.HTMLPrinter;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.recommenders.extdoc.rcp.l10n.Messages;
 import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
@@ -118,12 +120,12 @@ public final class JavadocProvider extends ExtdocProvider {
                             @Override
                             public boolean handleExternalLink(final URL url, final Display display) {
                                 try {
-                                    if (url.getProtocol().equals("file")) {
+                                    if (url.getProtocol().equals("file")) { //$NON-NLS-1$
                                         // sometimes we have /, sometimes we have ///
                                         String path = url.getPath();
-                                        path = StringUtils.removeStart(path, "///");
-                                        path = StringUtils.removeStart(path, "/");
-                                        final String type = "L" + StringUtils.substring(path, 0, -".html".length());
+                                        path = StringUtils.removeStart(path, "///"); //$NON-NLS-1$
+                                        path = StringUtils.removeStart(path, "/"); //$NON-NLS-1$
+                                        final String type = "L" + StringUtils.substring(path, 0, -".html".length()); //$NON-NLS-1$ //$NON-NLS-2$
                                         final VmTypeName typeName = VmTypeName.get(type);
                                         final Optional<IType> opt = resolver.toJdtType(typeName);
                                         if (opt.isPresent()) {
@@ -134,13 +136,13 @@ public final class JavadocProvider extends ExtdocProvider {
                                     } else {
                                         try {
                                             PlatformUI.getWorkbench().getBrowserSupport()
-                                                    .createBrowser("recommenders.javadoc").openURL(url);
+                                                    .createBrowser("recommenders.javadoc").openURL(url); //$NON-NLS-1$
                                         } catch (final PartInitException e) {
-                                            RecommendersPlugin.logError(e, "Error during javadoc selection %s", url);
+                                            RecommendersPlugin.logError(e, "Error during javadoc selection %s", url); //$NON-NLS-1$
                                         }
                                     }
                                 } catch (final Exception e) {
-                                    RecommendersPlugin.logError(e, "Error during javadoc selection %s", url);
+                                    RecommendersPlugin.logError(e, "Error during javadoc selection %s", url); //$NON-NLS-1$
                                 }
                                 return true;
                             }
@@ -170,11 +172,11 @@ public final class JavadocProvider extends ExtdocProvider {
     private String findJavadoc(final IMember element) throws JavaModelException {
         String html = JavadocContentAccess2.getHTMLContent(element, true);
         if (html == null) {
-            html = "no javadoc found";
+            html = Messages.EXTDOC_JAVADOC_NOT_FOUND;
         }
 
         final int max = Math.min(100, html.length());
-        if (html.substring(0, max).indexOf("<html>") != -1) {
+        if (html.substring(0, max).indexOf("<html>") != -1) { //$NON-NLS-1$
             // there is already a header
             return html;
         }

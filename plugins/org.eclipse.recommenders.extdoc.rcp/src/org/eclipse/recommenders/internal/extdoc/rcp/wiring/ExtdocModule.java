@@ -70,7 +70,7 @@ public class ExtdocModule extends AbstractModule {
     static List<ExtdocProvider> instantiateProvidersFromRegistry() {
         final IConfigurationElement[] elements =
                 Platform.getExtensionRegistry()
-                        .getConfigurationElementsFor("org.eclipse.recommenders.extdoc.rcp.provider");
+                        .getConfigurationElementsFor("org.eclipse.recommenders.extdoc.rcp.provider"); //$NON-NLS-1$
         final List<ExtdocProvider> providers = Lists.newLinkedList();
 
         for (final IConfigurationElement element : elements) {
@@ -86,9 +86,9 @@ public class ExtdocModule extends AbstractModule {
             public int compare(ExtdocProvider o1, ExtdocProvider o2) {
                 String n1 = o1.getDescription().getName();
                 String n2 = o2.getDescription().getName();
-                if (n1.equals("Javadoc")) {
+                if (n1.equals("Javadoc")) { //$NON-NLS-1$
                     return -1;
-                } else if (n2.equals("Javadoc")) {
+                } else if (n2.equals("Javadoc")) { //$NON-NLS-1$
                     return 1;
                 } else {
                     return n1.compareTo(n2);
@@ -101,18 +101,18 @@ public class ExtdocModule extends AbstractModule {
     static Optional<ExtdocProvider> createProvider(final IConfigurationElement element) {
         final String pluginId = element.getContributor().getName();
         try {
-            final String imagePath = element.getAttribute("image");
-            final String name = element.getAttribute("name");
+            final String imagePath = element.getAttribute("image"); //$NON-NLS-1$
+            final String name = element.getAttribute("name"); //$NON-NLS-1$
             final Image image = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, imagePath).createImage();
-            final ExtdocProvider provider = (ExtdocProvider) element.createExecutableExtension("class");
+            final ExtdocProvider provider = (ExtdocProvider) element.createExecutableExtension("class"); //$NON-NLS-1$
             final ExtdocProviderDescription description = new ExtdocProviderDescription(name, image);
             provider.setDescription(description);
             return Optional.of(provider);
         } catch (final Exception e) {
             RecommendersPlugin.logError(e,
-                    "failed to instantiate provider %s:%s",
+                    "failed to instantiate provider %s:%s", //$NON-NLS-1$
                     pluginId,
-                    element.getAttribute("class"));
+                    element.getAttribute("class")); //$NON-NLS-1$
             return Optional.absent();
         }
     }

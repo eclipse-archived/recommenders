@@ -127,7 +127,7 @@ public class ProviderArea {
             // }
             // d.setLayoutData(gridData);
         } else {
-            throwUnsupportedOperation("layout of provided composite not supported");
+            throwUnsupportedOperation("layout of provided composite not supported"); //$NON-NLS-1$
         }
     }
 

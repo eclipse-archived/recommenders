@@ -14,7 +14,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 public class ExtdocPlugin extends AbstractUIPlugin {
-    public static final String PLUGIN_ID = "org.eclipse.recommenders.extdoc.rcp";
+    public static final String PLUGIN_ID = "org.eclipse.recommenders.extdoc.rcp"; //$NON-NLS-1$
     private static ExtdocPlugin INSTANCE;
 
     public static ExtdocPlugin getDefault() {
