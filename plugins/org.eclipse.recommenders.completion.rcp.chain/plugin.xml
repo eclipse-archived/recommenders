@@ -12,7 +12,7 @@
    </extension>
    <extension
          id="org.eclipse.recommenders.completion.rcp.chain.category"
-         name="Chain Proposals (Recommenders)"
+         name="%extension.name"
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <proposalCategory
             icon="icons/view16/chain.gif">
@@ -22,12 +22,12 @@
          point="org.eclipse.ui.commands">
       <category
             id="org.eclipse.recommenders.completion.rcp.chain.commands.category"
-            name="Chain Completion Category">
+            name="%category.name">
       </category>
       <command
             categoryId="org.eclipse.recommenders.completion.rcp.chain.commands.category"
             id="org.eclipse.recommenders.completion.rcp.chain.commands.TriggerCompletion"
-            name="Trigger Chain Completion Command">
+            name="%command.name">
       </command>
    </extension>
    <extension
@@ -58,7 +58,7 @@
 			category="org.eclipse.recommenders.rcp.category.preferences"
 			class="org.eclipse.recommenders.internal.completion.rcp.chain.ui.ChainPreferencePage"
 			id="org.eclipse.recommenders.internal.completion.rcp.chain.ChainPreferencePage"
-			name="Chains">
+			name="%page.name">
 		</page>
 	</extension>
 	<extension

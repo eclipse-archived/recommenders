@@ -111,7 +111,7 @@ public class ChainFinder {
     }
 
     private boolean isFromExcludedType(final Binding binding) {
-        final String key = StringUtils.substringBefore(String.valueOf(binding.computeUniqueKey()), ";");
+        final String key = StringUtils.substringBefore(String.valueOf(binding.computeUniqueKey()), ";"); //$NON-NLS-1$
         return excludedTypes.contains(key);
     }
 

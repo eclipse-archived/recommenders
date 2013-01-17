@@ -159,7 +159,7 @@ public final class TypeBindingAnalyzer {
 
     private static String createMethodKey(final MethodBinding method) {
         final String signature = String.valueOf(method.signature());
-        final String signatureWithoutReturnType = StringUtils.substringBeforeLast(signature, ")");
+        final String signatureWithoutReturnType = StringUtils.substringBeforeLast(signature, ")"); //$NON-NLS-1$
         return new StringBuilder().append(method.readableName()).append(signatureWithoutReturnType).toString();
     }
 
@@ -219,7 +219,7 @@ public final class TypeBindingAnalyzer {
                 bindings.add(Optional.of(scope.getType(type.getClassName().toCharArray())));
             }
         } else {
-            RecommendersUtilsPlugin.logWarning("Can't handle %s as parent of completion location.", parent.getClass());
+            RecommendersUtilsPlugin.logWarning("Can't handle %s as parent of completion location.", parent.getClass()); //$NON-NLS-1$
         }
         return bindings;
     }

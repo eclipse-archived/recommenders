@@ -34,9 +34,9 @@ public final class ScopeAccessWorkaround {
 
     static {
         try {
-            extendedContextField = InternalCompletionContext.class.getDeclaredField("extendedContext");
+            extendedContextField = InternalCompletionContext.class.getDeclaredField("extendedContext"); //$NON-NLS-1$
             extendedContextField.setAccessible(true);
-            assistScopeField = InternalExtendedCompletionContext.class.getDeclaredField("assistScope");
+            assistScopeField = InternalExtendedCompletionContext.class.getDeclaredField("assistScope"); //$NON-NLS-1$
             assistScopeField.setAccessible(true);
         } catch (final Exception e) {
             throw new IllegalStateException(e);

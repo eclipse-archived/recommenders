@@ -63,7 +63,7 @@ public class ChainElement {
             elementType = ElementType.METHOD;
             break;
         default:
-            RecommendersUtilsPlugin.logWarning("Can't handle %s as return type.", element);
+            RecommendersUtilsPlugin.logWarning("Can't handle %s as return type.", element); //$NON-NLS-1$
         }
         dimension = returnType.dimensions();
     }

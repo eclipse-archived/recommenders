@@ -63,7 +63,7 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public class ChainCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
-    static final String CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.chain.category";
+    static final String CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.chain.category"; //$NON-NLS-1$
 
     private IRecommendersCompletionContext ctx;
     private List<ChainElement> entrypoints;
@@ -166,7 +166,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
             addPublicInstanceMembersToEntrypoints(((VariableBinding) b).type);
             break;
         default:
-            RecommendersUtilsPlugin.logWarning("Can't handle %s as source for finding entrypoints.", b);
+            RecommendersUtilsPlugin.logWarning("Can't handle %s as source for finding entrypoints.", b); //$NON-NLS-1$
         }
     }
 
@@ -203,7 +203,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
             addPublicInstanceMembersToEntrypoints(((VariableBinding) b).type);
             break;
         default:
-            RecommendersUtilsPlugin.logWarning("Can't handle %s as class member.", b);
+            RecommendersUtilsPlugin.logWarning("Can't handle %s as class member.", b); //$NON-NLS-1$
         }
     }
 
@@ -232,7 +232,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
                 continue;
             }
             final String key = String.valueOf(decl.computeUniqueKey());
-            if (key.startsWith("Ljava/lang/Object;")) {
+            if (key.startsWith("Ljava/lang/Object;")) { //$NON-NLS-1$
                 continue;
             }
             boolean requiresThis = false;
@@ -254,9 +254,9 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
         final int maxChains = prefStore.getInt(ChainPreferencePage.ID_MAX_CHAINS);
         final int minDepth = prefStore.getInt(ChainPreferencePage.ID_MIN_DEPTH);
         final int maxDepth = prefStore.getInt(ChainPreferencePage.ID_MAX_DEPTH);
-        final String[] excludedTypes = prefStore.getString(ChainPreferencePage.ID_IGNORE_TYPES).split("\\|");
+        final String[] excludedTypes = prefStore.getString(ChainPreferencePage.ID_IGNORE_TYPES).split("\\|"); //$NON-NLS-1$
         for (int i = 0; i < excludedTypes.length; ++i) {
-            excludedTypes[i] = "L" + excludedTypes[i].replace('.', '/');
+            excludedTypes[i] = "L" + excludedTypes[i].replace('.', '/'); //$NON-NLS-1$
         }
 
         final List<Optional<TypeBinding>> expectedTypes = TypeBindingAnalyzer.resolveBindingsForExpectedTypes(ctx,
@@ -271,7 +271,7 @@ public class ChainCompletionProposalComputer implements IJavaCompletionProposalC
                 }
             }, prefStore.getInt(ChainPreferencePage.ID_TIMEOUT), TimeUnit.SECONDS, true);
         } catch (final Exception e) {
-            setError("Timeout limit hit during call chain computation.");
+            setError("Timeout limit hit during call chain computation."); //$NON-NLS-1$
         }
         return buildCompletionProposals(finder.getChains());
     }

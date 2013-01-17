@@ -61,7 +61,7 @@ public class ChainCompletionProposal implements IJavaCompletionProposal, IComple
 
     @Override
     public void apply(final IDocument document) {
-        throw new IllegalStateException("Applying proposals to documents is deprecated");
+        throw new IllegalStateException("Applying proposals to documents is deprecated"); //$NON-NLS-1$
     }
 
     @Override

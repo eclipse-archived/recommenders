@@ -30,7 +30,7 @@ import com.google.common.base.Optional;
  */
 @SuppressWarnings("restriction")
 public final class CompletionKeyShortcutHandler extends AbstractHandler {
-    private static final String CHAIN_COMPLETION_CATEGORY = "org.eclipse.recommenders.completion.rcp.chain.category";
+    private static final String CHAIN_COMPLETION_CATEGORY = "org.eclipse.recommenders.completion.rcp.chain.category"; //$NON-NLS-1$
     private final CompletionProposalComputerRegistry registry = CompletionProposalComputerRegistry.getDefault();
     private final SpecificContentAssistExecutor executor = new SpecificContentAssistExecutor(registry);
 
@@ -45,7 +45,7 @@ public final class CompletionKeyShortcutHandler extends AbstractHandler {
                 return;
             }
         }
-        Throws.throwIllegalStateException("Chain proposal engine category '%s' no found. Report this as bug.",
+        Throws.throwIllegalStateException("Chain proposal engine category '%s' no found. Report this as bug.", //$NON-NLS-1$
                 CHAIN_COMPLETION_CATEGORY);
     }
 

@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Stefan Henß - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.completion.rcp.chain.ui;
 
@@ -20,9 +21,10 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.ListEditor;
+import org.eclipse.recommenders.completion.rcp.chain.l10n.Messages;
 import org.eclipse.recommenders.internal.completion.rcp.chain.ChainCompletionPlugin;
 import org.eclipse.recommenders.utils.Throws;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
@@ -34,30 +36,29 @@ import com.google.common.base.Joiner;
 public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEditorPreferencePage implements
         IWorkbenchPreferencePage {
 
-    public static final String ID_MAX_CHAINS = "recommenders.chain.max_chains";
-    public static final String ID_MIN_DEPTH = "recommenders.chain.min_chain_length";
-    public static final String ID_MAX_DEPTH = "recommenders.chain.max_chain_length";
-    public static final String ID_TIMEOUT = "recommenders.chain.timeout";
-    public static final String ID_IGNORE_TYPES = "recommenders.chain.ignore_types";
+    public static final String ID_MAX_CHAINS = "recommenders.chain.max_chains"; //$NON-NLS-1$
+    public static final String ID_MIN_DEPTH = "recommenders.chain.min_chain_length"; //$NON-NLS-1$
+    public static final String ID_MAX_DEPTH = "recommenders.chain.max_chain_length"; //$NON-NLS-1$
+    public static final String ID_TIMEOUT = "recommenders.chain.timeout"; //$NON-NLS-1$
+    public static final String ID_IGNORE_TYPES = "recommenders.chain.ignore_types"; //$NON-NLS-1$
     public static final char IGNORE_TYPES_SEPARATOR = '|';
 
     public ChainPreferencePage() {
         super(GRID);
         setPreferenceStore(ChainCompletionPlugin.getDefault().getPreferenceStore());
-        setDescription("Call chains offer ways to obtain objects of the requested type by calling multiple methods in a row. "
-                + "Since those chains can become long and time-consuming to search, the following options allow to limit the proposals.");
+        setDescription(Messages.PREFPAGE_DESCRIPTION);
     }
 
     @Override
     protected void createFieldEditors() {
-        addField(ID_MAX_CHAINS, "Maximum number of chains:", 1, 99);
-        addField(ID_MIN_DEPTH, "Minimum chain depth:", 1, 10);
-        addField(ID_MAX_DEPTH, "Maximum chain depth:", 1, 10);
-        addField(ID_TIMEOUT, "Chain search timeout (sec):", 1, 99);
+        addField(ID_MAX_CHAINS, Messages.PREFPAGE_MAX_CHAINS, 1, 99);
+        addField(ID_MIN_DEPTH, Messages.PREFPAGE_MIN_CHAIN_DEPTH, 1, 10);
+        addField(ID_MAX_DEPTH, Messages.PREFPAGE_MAX_CHAIN_DEPTH, 1, 10);
+        addField(ID_TIMEOUT, Messages.PREFPAGE_SEARCH_TIMEOUT, 1, 99);
 
-        addField(new IgnoredTypesEditor("Object types to ignore:", getFieldEditorParent()));
-        addText("Ignored object types will not have chain proposals displayed for.");
-        addText("Also, no chains through methods from ignored types will be found.");
+        addField(new IgnoredTypesEditor(Messages.PREFPAGE_IGNORED_OBJECT_TYPES, getFieldEditorParent()));
+
+        addText(Messages.PREFPAGE_IGNORE_CONSEQUENCES);
     }
 
     private void addField(final String name, final String labeltext, final int min, final int max) {
@@ -67,10 +68,9 @@ public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEdito
     }
 
     private void addText(final String text) {
-        final Label label = new Label(getFieldEditorParent(), NONE);
+        final Label label = new Label(getFieldEditorParent(), SWT.WRAP);
         label.setText(text);
-        final GridData layoutData = GridDataFactory.fillDefaults().span(2, 1).create();
-        label.setLayoutData(layoutData);
+        label.setLayoutData(GridDataFactory.fillDefaults().span(2, 1).create());
     }
 
     @Override
@@ -92,7 +92,7 @@ public class ChainPreferencePage extends org.eclipse.jface.preference.FieldEdito
         protected String[] parseString(final String stringList) {
             getUpButton().setVisible(false);
             getDownButton().setVisible(false);
-            return stringList.split("\\" + IGNORE_TYPES_SEPARATOR);
+            return stringList.split("\\" + IGNORE_TYPES_SEPARATOR); //$NON-NLS-1$
         }
 
         @Override
