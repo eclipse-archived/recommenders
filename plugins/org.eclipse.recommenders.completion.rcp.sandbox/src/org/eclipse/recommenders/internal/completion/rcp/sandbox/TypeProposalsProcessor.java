@@ -57,8 +57,8 @@ import com.google.common.collect.Sets.SetView;
 
 public final class TypeProposalsProcessor extends SessionProcessor {
 
-    private static final SimpleProposalProcessor PKG = new SimpleProposalProcessor(1 << 6, "pkg");
-    private static SimpleProposalProcessor EXACT = new SimpleProposalProcessor(1 << 25, "exact type");
+    private static final SimpleProposalProcessor PKG = new SimpleProposalProcessor(1 << 6, "pkg"); //$NON-NLS-1$
+    private static SimpleProposalProcessor EXACT = new SimpleProposalProcessor(1 << 25, "exact type"); //$NON-NLS-1$
 
     static final Set<Class<?>> SUPPORTED_COMPLETION_NODES = new HashSet<Class<?>>() {
         {
@@ -86,7 +86,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         expectedType = context.getExpectedType().orNull();
         expected = context.getExpectedTypeNames();
         if (expectedType != null) {
-            String[] split1 = expectedType.getElementName().split("(?=\\p{Upper})");
+            String[] split1 = expectedType.getElementName().split("(?=\\p{Upper})"); //$NON-NLS-1$
             for (String s : split1) {
                 if (s.length() > 3) {
                     expectedSubwords.add(s);
@@ -139,7 +139,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
             }
         });
         // remove omnipresent package
-        pkgs.remove(VmPackageName.get("java/lang"));
+        pkgs.remove(VmPackageName.get("java/lang")); //$NON-NLS-1$
     }
 
     @Override
@@ -171,7 +171,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
         if (expected.isEmpty()) return;
         String sig = new String(variableProposal.getSignature());
         sig = sig.replace('.', '/');
-        sig = StringUtils.removeEnd(sig, ";");
+        sig = StringUtils.removeEnd(sig, ";"); //$NON-NLS-1$
         ITypeName type = VmTypeName.get(sig);
         if (expected.contains(type)) {
             proposal.getProposalProcessorManager().addProcessor(EXACT);
@@ -184,7 +184,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
             String methodSig = new String(coreProposal.getSignature());
             String returnType = Signature.getReturnType(methodSig);
             returnType = returnType.replace('.', '/');
-            returnType = StringUtils.removeEnd(returnType, ";");
+            returnType = StringUtils.removeEnd(returnType, ";"); //$NON-NLS-1$
             ITypeName type = VmTypeName.get(returnType);
             if (expected.contains(type)) {
                 ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
@@ -199,7 +199,7 @@ public final class TypeProposalsProcessor extends SessionProcessor {
     private void handleTypeProposal(IProcessableProposal proposal, final CompletionProposal coreProposal) {
         String sig = new String(coreProposal.getSignature());
         sig = sig.replace('.', '/');
-        sig = StringUtils.removeEnd(sig, ";");
+        sig = StringUtils.removeEnd(sig, ";"); //$NON-NLS-1$
         ITypeName type = VmTypeName.get(sig);
         IPackageName pkg = type.getPackage();
         if (pkgs.contains(pkg)) {
@@ -209,18 +209,18 @@ public final class TypeProposalsProcessor extends SessionProcessor {
     }
 
     private void handleConstructorProposal(IProcessableProposal proposal, final CompletionProposal coreProposal) {
-        String name = removeEnd(valueOf(coreProposal.getDeclarationSignature()).replace('.', '/'), ";");
+        String name = removeEnd(valueOf(coreProposal.getDeclarationSignature()).replace('.', '/'), ";"); //$NON-NLS-1$
         VmTypeName recType = VmTypeName.get(name);
         ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
         if (pkgs.contains(recType.getPackage())) {
             mgr.addProcessor(PKG);
         }
         if (expectedType != null) {
-            Set<String> s2 = Sets.newHashSet(recType.getClassName().split("(?=\\p{Upper})"));
+            Set<String> s2 = Sets.newHashSet(recType.getClassName().split("(?=\\p{Upper})")); //$NON-NLS-1$
             final SetView<String> intersection = Sets.intersection(s2, expectedSubwords);
 
             if (!intersection.isEmpty()) {
-                SimpleProposalProcessor p = new SimpleProposalProcessor(intersection.size(), "partial");
+                SimpleProposalProcessor p = new SimpleProposalProcessor(intersection.size(), "partial"); //$NON-NLS-1$
                 mgr.addProcessor(p);
             }
         }

@@ -12,7 +12,7 @@
    </extension>
  <extension
        id="org.eclipse.recommenders.subwords.rcp.category"
-       name="Java Subwords Proposals (Recommenders)"
+       name="%extension.name"
        point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <proposalCategory
             icon="icons/elcl16/category.gif"></proposalCategory>
@@ -23,7 +23,7 @@
           category="org.eclipse.recommenders.rcp.category.preferences"
           class="org.eclipse.recommenders.internal.completion.rcp.subwords.PreferencePage"
           id="org.eclipse.recommenders.internal.completion.rcp.subwords.PreferencePage"
-          name="Subwords">
+          name="%page.name">
     </page>
  </extension>
  <extension

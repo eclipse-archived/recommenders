@@ -1,10 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Subwords Completion
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.subwords;singleton:=true
 Bundle-Version: 1.0.3.qualifier
-Bundle-Vendor: Eclipse Code Recommenders
-Export-Package: org.eclipse.recommenders.internal.completion.rcp.subwords,
+Bundle-Vendor: %Bundle-Vendor
+Export-Package: org.eclipse.recommenders.completion.rcp.subwords.l10n,
+ org.eclipse.recommenders.internal.completion.rcp.subwords,
  org.eclipse.recommenders.internal.completion.rcp.subwords.proposals
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface.text,

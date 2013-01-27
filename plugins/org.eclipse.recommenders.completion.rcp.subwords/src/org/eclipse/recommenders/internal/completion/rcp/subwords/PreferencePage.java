@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
@@ -16,6 +17,8 @@ import static org.eclipse.recommenders.internal.completion.rcp.subwords.Subwords
 
 import java.util.Set;
 
+import org.eclipse.recommenders.completion.rcp.subwords.l10n.Utilities;
+import org.eclipse.recommenders.completion.rcp.subwords.l10n.Messages;
 import org.eclipse.recommenders.utils.rcp.internal.ContentAssistEnablementBlock;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -30,12 +33,11 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 
 public class PreferencePage extends org.eclipse.jface.preference.PreferencePage implements IWorkbenchPreferencePage {
 
+    private static final String PREFPAGE_ID_CODE_ASSIST_ADVANCED = "org.eclipse.jdt.ui.preferences.CodeAssistPreferenceAdvanced"; //$NON-NLS-1$
     private ContentAssistEnablementBlock enablement;
 
     public PreferencePage() {
-        setDescription("Subwords is a new experimental content assist for Java. It uses 'fuzzy word matching' which allows you to specify just a subsequence of the proposal's text you want to insert.\n\n"
-                + "Note that Subwords essentially makes the same proposals as the standard Java content assist, and thus, will automatically disabled itself when either JDT or Mylyn completion is active to avoid duplicated proposals. "
-                + "The button below is a shortcut for enabling Subwords and disabling standard Java and Mylyn content assist (and reverse).");
+        setDescription(Messages.PREFPAGE_INTRO);
     }
 
     @Override
@@ -44,16 +46,18 @@ public class PreferencePage extends org.eclipse.jface.preference.PreferencePage 
         container.setLayout(new GridLayout());
 
         final Link link = new Link(container, SWT.NONE | SWT.WRAP);
-        link.setText("See <a>'Java > Editor > Content Assist > Advanced'</a> to configure content assist directly.");
+        link.setText(String.format(
+                Messages.PREFPAGE_SEE_LINK_TO_CONTENT_ASSIST,
+                "<a>'" + Utilities.createLinkLabelToPreferencePage(PREFPAGE_ID_CODE_ASSIST_ADVANCED)+ "'</a>")); //$NON-NLS-1$ //$NON-NLS-2$
         link.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(final SelectionEvent e) {
                 PreferencesUtil.createPreferenceDialogOn(getShell(),
-                        "org.eclipse.jdt.ui.preferences.CodeAssistPreferenceAdvanced", null, null);
+                        PREFPAGE_ID_CODE_ASSIST_ADVANCED, null, null);
             }
         });
 
-        enablement = new ContentAssistEnablementBlock(container, "Enable Java Subwords Proposals.",
+        enablement = new ContentAssistEnablementBlock(container, Messages.PREFPAGE_ENABLE_PROPOSALS,
                 SubwordsCompletionProposalComputer.CATEGORY_ID) {
 
             @Override
