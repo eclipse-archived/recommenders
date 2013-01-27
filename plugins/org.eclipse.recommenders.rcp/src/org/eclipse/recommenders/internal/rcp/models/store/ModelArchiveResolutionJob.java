@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.rcp.models.store;
 
@@ -28,6 +29,7 @@ import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelAr
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
+import org.eclipse.recommenders.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
 import org.eclipse.recommenders.utils.Version;
@@ -55,7 +57,7 @@ public class ModelArchiveResolutionJob extends Job {
     public ModelArchiveResolutionJob(@Assisted ModelArchiveMetadata metadata,
             IClasspathEntryInfoProvider cpeInfoProvider, IModelRepository repository, IModelRepositoryIndex index,
             @Assisted String classifier) {
-        super("Resolving model for " + metadata.getLocation().getName() + "...");
+        super(String.format(Messages.JOB_RESOLVING_MODEL, metadata.getLocation().getName()));
         this.metadata = metadata;
         this.cpeInfos = cpeInfoProvider;
         this.repository = repository;
@@ -69,14 +71,14 @@ public class ModelArchiveResolutionJob extends Job {
         if (!isAutoDownloadAllowed()) {
             return Status.CANCEL_STATUS;
         }
-        monitor.beginTask(String.format("Looking for '%s' model for %s", classifier, metadata.getLocation().getName()),
+        monitor.beginTask(String.format(Messages.TASK_LOOKING_FOR_MODEL, classifier, metadata.getLocation().getName()),
                 5);
         monitor.worked(1);
         metadata.setStatus(ModelArchiveResolutionStatus.UNRESOLVED);
         try {
 
             if (!findClasspathInfo()) {
-                metadata.setError(format("No class path info available for '%s'. Skipped.", pkgRoot));
+                metadata.setError(format("No class path info available for '%s'. Skipped.", pkgRoot)); //$NON-NLS-1$
                 // we didn't found it yet. The system is currently starting and indexing. Try again later.
                 metadata.setResolutionRequestedSinceStartup(false);
                 return CANCEL_STATUS;
@@ -84,7 +86,7 @@ public class ModelArchiveResolutionJob extends Job {
 
             if (!findInIndex()) {
                 metadata.setError(format(
-                        "No call model found for '%s'. Neither fingerprint '%s' nor symbolic name '%s' are known.",
+                        "No call model found for '%1$s'. Neither fingerprint '%2$s' nor symbolic name '%3$s' are known.", //$NON-NLS-1$
                         cpeInfo.getLocation(), cpeInfo.getFingerprint(), cpeInfo.getSymbolicName()));
                 return CANCEL_STATUS;
             }
@@ -138,11 +140,11 @@ public class ModelArchiveResolutionJob extends Job {
         Version version = cpeInfo.getVersion();
         Artifact copy = model;
         Artifact query = null;
-        String upperBound = version.isUnknown() ? "10000.0" : format("%d.%d", version.major, version.minor + 1);
-        query = model.setVersion("[0," + upperBound + ")");
+        String upperBound = version.isUnknown() ? "10000.0" : format("%d.%d", version.major, version.minor + 1); //$NON-NLS-1$ //$NON-NLS-2$
+        query = model.setVersion("[0," + upperBound + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         copy = repository.findHigestVersion(query).orNull();
         if (copy == null) {
-            query = model.setVersion("[" + upperBound + ",)");
+            query = model.setVersion("[" + upperBound + ",)"); //$NON-NLS-1$ //$NON-NLS-2$
             copy = repository.findLowestVersion(query).orNull();
         }
         if (copy != null) {

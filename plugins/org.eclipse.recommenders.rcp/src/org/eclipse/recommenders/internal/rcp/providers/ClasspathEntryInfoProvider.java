@@ -76,7 +76,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
      * it's an disk-IO heavy computation. More than one thread will probably not give any performance gains here.
      */
     private final ExecutorService pool = coreThreadsTimoutExecutor(1, Thread.MIN_PRIORITY,
-            "Recommenders-Dependency-Info-Service-");
+            "Recommenders-Dependency-Info-Service-"); //$NON-NLS-1$
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<File, ClasspathEntryInfo> cpeInfos = Maps.newHashMap();
@@ -92,7 +92,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
 
     @VisibleForTesting
     protected void initialize(final IWorkspaceRoot workspace) {
-        new Job("") {
+        new Job("") { //$NON-NLS-1$
             {
                 setSystem(true);
                 setPriority(Job.LONG);
@@ -121,7 +121,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
                 ensureFileInfosStillConsistent(info);
             }
         } catch (Exception e) {
-            log.warn("Exception during deserialization of cached classpath infos. Discaring old state.", e);
+            log.warn("Exception during deserialization of cached classpath infos. Discaring old state.", e); //$NON-NLS-1$
         }
     }
 
@@ -163,7 +163,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
             Files.createParentDirs(state);
             GsonUtil.serialize(cpeInfos.values(), state);
         } catch (Exception e) {
-            log.error("Failed to store classpath info state.", e);
+            log.error("Failed to store classpath info state.", e); //$NON-NLS-1$
         }
     }
 
@@ -175,7 +175,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
             for (IClasspathEntry entry : e.project.getRawClasspath()) {
                 if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
                     boolean isJREContainer = entry.getPath().toString()
-                            .contains("org.eclipse.jdt.launching.JRE_CONTAINER");
+                            .contains("org.eclipse.jdt.launching.JRE_CONTAINER"); //$NON-NLS-1$
                     for (IPackageFragmentRoot sub : e.project.findPackageFragmentRoots(entry)) {
                         final Optional<File> location = JdtUtils.getLocation(sub);
                         if (isInterestingPackageFragmentRoot(sub, location)) {
@@ -193,19 +193,19 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
                 }
             }
         } catch (final JavaModelException x) {
-            log.error("Exception occurred while resolving project dependencies for " + e.project, x);
+            log.error("Exception occurred while resolving project dependencies for " + e.project, x); //$NON-NLS-1$
         }
     }
 
     private void mapSourcePluginProjects(final JavaProjectOpened e) {
         try {
             // XXX flight hack...
-            IResource mf = e.project.getProject().findMember(new Path("META-INF/MANIFEST.MF"));
+            IResource mf = e.project.getProject().findMember(new Path("META-INF/MANIFEST.MF")); //$NON-NLS-1$
             if (mf != null && mf.exists() && mf.getType() == IResource.FILE) {
                 Manifest mf_ = new Manifest(((IFile) mf).getContents());
                 final Attributes attributes = mf_.getMainAttributes();
                 // names may look like this: "symbolic.name;singleton=true":
-                String symbolicName = substringBefore(attributes.getValue(Constants.BUNDLE_SYMBOLICNAME), ";");
+                String symbolicName = substringBefore(attributes.getValue(Constants.BUNDLE_SYMBOLICNAME), ";"); //$NON-NLS-1$
                 final String version = attributes.getValue(Constants.BUNDLE_VERSION);
                 Version osgiversion = null;
                 if (version != null) {
@@ -225,7 +225,7 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
                 }
             }
         } catch (Exception e1) {
-            log.warn("failed to read bundle manifest for project " + e.project.getElementName(), e1);
+            log.warn("failed to read bundle manifest for project " + e.project.getElementName(), e1); //$NON-NLS-1$
         }
     }
 
@@ -250,13 +250,13 @@ public class ClasspathEntryInfoProvider implements IClasspathEntryInfoProvider {
                         res.setJavaRuntime(isPartOfJavaRuntime);
                         if (isPartOfJavaRuntime) {
                             // XXX jre jars are hard coded to JRE 1.0.0
-                            res.setSymbolicName("jre");
+                            res.setSymbolicName("jre"); //$NON-NLS-1$
                             res.setVersion(Version.create(1, 0));
                         }
                         cpeInfos.put(file, res);
                         bus.post(new NewClasspathEntryFound(r, file, res));
                     } catch (final Exception e) {
-                        log.error("Extracing jar information failed with exception.", e);
+                        log.error("Extracing jar information failed with exception.", e); //$NON-NLS-1$
                     }
                 }
             }

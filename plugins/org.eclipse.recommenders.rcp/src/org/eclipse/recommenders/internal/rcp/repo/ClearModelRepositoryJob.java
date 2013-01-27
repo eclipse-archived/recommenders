@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.rcp.repo;
 
@@ -18,6 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.recommenders.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 
 /**
@@ -29,14 +31,14 @@ public class ClearModelRepositoryJob extends Job {
     private IModelRepository repo;
 
     public ClearModelRepositoryJob(IModelRepository repo) {
-        super("Clearing model repository...");
+        super(Messages.JOB_CLEAR_MODEL_REPOSITORY);
         this.repo = repo;
         setPriority(Job.LONG);
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-        monitor.beginTask("", IProgressMonitor.UNKNOWN);
+        monitor.beginTask("", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
         File location = repo.getLocation();
         try {
             FileUtils.deleteQuietly(location);

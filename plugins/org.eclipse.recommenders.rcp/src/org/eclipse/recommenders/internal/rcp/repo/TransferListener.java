@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.rcp.repo;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.recommenders.rcp.l10n.Messages;
 import org.sonatype.aether.transfer.AbstractTransferListener;
 import org.sonatype.aether.transfer.TransferEvent;
 import org.sonatype.aether.transfer.TransferResource;
@@ -32,9 +34,12 @@ public class TransferListener extends AbstractTransferListener {
 
     @Override
     public void transferInitiated(TransferEvent event) {
-        String mode = event.getRequestType() == TransferEvent.RequestType.PUT ? "Uploading" : "Downloading";
         String resourceName = event.getResource().getRepositoryUrl() + event.getResource().getResourceName();
-        monitor.subTask(format("%s: %s", mode, resourceName));
+        if (event.getRequestType() == TransferEvent.RequestType.PUT) {
+            monitor.subTask(format(Messages.TASK_UPLOADING, resourceName));
+        } else {
+            monitor.subTask(format(Messages.TASK_DOWNLOADING, resourceName));
+        }
     }
 
     @Override
@@ -56,23 +61,23 @@ public class TransferListener extends AbstractTransferListener {
     public void transferSucceeded(TransferEvent event) {
         TransferResource resource = event.getResource();
         downloads.remove(resource);
-        monitor.subTask("Finished transfer: " + resource.getResourceName());
+        monitor.subTask(String.format(Messages.STATUS_DOWNLOAD_FINISHED, resource.getResourceName()));
     }
 
     private String getStatus(long complete, long total) {
         String status = byteCountToDisplaySize(complete);
         if (total > 0)
-            status += "/" + byteCountToDisplaySize(total);
+            status += "/" + byteCountToDisplaySize(total); //$NON-NLS-1$
         return status;
     }
 
     @Override
     public void transferFailed(TransferEvent event) {
-        monitor.subTask("Transfer failed: " + event.getException().getLocalizedMessage());
+        monitor.subTask(String.format(Messages.STATUS_DOWNLOAD_FAILED, event.getException().getLocalizedMessage()));
     }
 
     @Override
     public void transferCorrupted(TransferEvent event) {
-        monitor.subTask("Transfer corrupted: " + event.getException().getLocalizedMessage());
+        monitor.subTask(String.format(Messages.STATUS_DOWNLOAD_CORRUPTED, event.getException().getLocalizedMessage()));
     }
 }

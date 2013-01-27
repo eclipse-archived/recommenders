@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2012 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.rcp.providers;
 
@@ -42,6 +43,7 @@ import org.eclipse.recommenders.rcp.events.JavaModelEvents.JarPackageFragmentRoo
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JarPackageFragmentRootRemoved;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectClosed;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JavaProjectOpened;
+import org.eclipse.recommenders.rcp.l10n.Messages;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
@@ -60,7 +62,7 @@ public class JavaModelEventsProvider implements IElementChangedListener {
     }
 
     private void simulateProjectOpenEvents() {
-        new SimulateOpenJavaProjectsJob("Initializing projects with recommenders nature").schedule();
+        new SimulateOpenJavaProjectsJob(Messages.JOB_INITIALIZE_PROJECTS).schedule();
     }
 
     @Override
@@ -227,7 +229,7 @@ public class JavaModelEventsProvider implements IElementChangedListener {
         @Override
         public IStatus runInWorkspace(final IProgressMonitor monitor) throws CoreException {
             final Set<IProject> openProjects = getAllOpenProjects();
-            monitor.beginTask("", openProjects.size());
+            monitor.beginTask("", openProjects.size()); //$NON-NLS-1$
             for (final IProject project : openProjects) {
                 if (JavaProject.hasJavaNature(project)) {
                     final IJavaProject javaProject = toJavaProject(project);

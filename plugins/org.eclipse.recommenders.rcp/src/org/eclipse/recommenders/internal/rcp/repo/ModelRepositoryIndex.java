@@ -63,7 +63,7 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
             directory = FSDirectory.open(location);
             reader = IndexReader.open(directory);
         } catch (Exception e) {
-            log.error("Failed to open search index.", e);
+            log.error("Failed to open search index.", e); //$NON-NLS-1$
         }
     }
 
@@ -111,7 +111,7 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
                     res.add(newArtifact(value));
             }
         } catch (Exception e) {
-            log.error("Searching index failed with exception", e);
+            log.error("Searching index failed with exception", e); //$NON-NLS-1$
         }
         return res;
     }
@@ -135,7 +135,7 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
                 return absent();
             }
             if (matches.totalHits > 1) {
-                log.warn("More than one potential match for query {} found. Inconsistency in model store?", query);
+                log.warn("More than one potential match for query {} found. Inconsistency in model store?", query); //$NON-NLS-1$
             }
             Document doc = reader.document(matches.scoreDocs[0].doc);
             String modelCoordinate = doc.get(classifier);
@@ -144,7 +144,7 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
             }
             return of(newArtifact(modelCoordinate));
         } catch (Exception e) {
-            log.error("Searching index failed with exception", e);
+            log.error("Searching index failed with exception", e); //$NON-NLS-1$
             return absent();
         }
     }

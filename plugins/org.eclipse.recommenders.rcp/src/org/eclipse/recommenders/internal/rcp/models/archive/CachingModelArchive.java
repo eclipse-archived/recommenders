@@ -42,7 +42,7 @@ public class CachingModelArchive<K, M> implements IModelArchive<K, M> {
         try {
             return loader.hasModel(key);
         } catch (Exception e) {
-            log.debug("Exception occurred while checking model existence for key " + key, e);
+            log.debug("Exception occurred while checking model existence for key " + key, e); //$NON-NLS-1$
             return false;
         }
     }
@@ -52,7 +52,7 @@ public class CachingModelArchive<K, M> implements IModelArchive<K, M> {
         try {
             return fromNullable(cache.get(key));
         } catch (Exception e) {
-            log.debug("Exception occurred while fetching model for key " + key, e);
+            log.debug("Exception occurred while fetching model for key " + key, e); //$NON-NLS-1$
             return absent();
         }
     }
