@@ -72,12 +72,12 @@ public class MemberGsonZipPoolableModelFactory<T> extends ZipPoolableModelFactor
         switch (m.getElementType()) {
         case IJavaElement.TYPE:
             ITypeName rType = jdtResolver.toRecType((IType) m);
-            name = Zips.path(rType, ".json");
+            name = Zips.path(rType, ".json"); //$NON-NLS-1$
             break;
         case IJavaElement.METHOD:
             Optional<IMethodName> opt = jdtResolver.toRecMethod((IMethod) m);
             if (opt.isPresent())
-                name = Zips.path(opt.get(), ".json");
+                name = Zips.path(opt.get(), ".json"); //$NON-NLS-1$
             break;
         }
         return zip.getEntry(name);

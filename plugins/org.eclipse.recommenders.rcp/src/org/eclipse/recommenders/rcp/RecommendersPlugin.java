@@ -18,8 +18,8 @@ import org.osgi.framework.BundleContext;
 
 public class RecommendersPlugin extends AbstractUIPlugin {
     private static RecommendersPlugin plugin;
-    public static String P_REPOSITORY_URL = "recommenders.repository.url";
-    public static String P_REPOSITORY_ENABLE_AUTO_DOWNLOAD = "recommenders.repository.auto.download";
+    public static String P_REPOSITORY_URL = "recommenders.repository.url"; //$NON-NLS-1$
+    public static String P_REPOSITORY_ENABLE_AUTO_DOWNLOAD = "recommenders.repository.auto.download"; //$NON-NLS-1$
 
     public static RecommendersPlugin getDefault() {
         return plugin;

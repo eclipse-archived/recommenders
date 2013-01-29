@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.rcp.repo;
 
@@ -19,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.recommenders.rcp.l10n.Messages;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
 import org.eclipse.recommenders.rcp.repo.IModelRepositoryIndex;
 import org.eclipse.recommenders.utils.Zips;
@@ -33,7 +35,7 @@ public class UpdateModelIndexJob extends Job {
     private final IModelRepository repo;
 
     public UpdateModelIndexJob(IModelRepositoryIndex index, IModelRepository repo) {
-        super("Recommenders: Updating model index.");
+        super(Messages.JOB_UPDATE_MODEL_INDEX);
         this.index = index;
         this.repo = repo;
     }
@@ -49,7 +51,7 @@ public class UpdateModelIndexJob extends Job {
                 downloadAndUnzipIndex(monitor);
             }
         } catch (Exception e) {
-            log.warn("Updating index cancelled.", e);
+            log.warn("Updating index cancelled.", e); //$NON-NLS-1$
             return Status.CANCEL_STATUS;
         } finally {
             index.open();
@@ -68,7 +70,7 @@ public class UpdateModelIndexJob extends Job {
             repo.resolve(INDEX_ARTIFACT, monitor);
         } catch (NullPointerException e) {
             // we probably don't have internet... XXX this needs investigation
-            log.warn("Couldn't download search index. No (direct) internet connection? Need a proxy?", e);
+            log.warn("Couldn't download search index. No (direct) internet connection? Need a proxy?", e); //$NON-NLS-1$
         }
 
         File f = repo.location(INDEX_ARTIFACT);

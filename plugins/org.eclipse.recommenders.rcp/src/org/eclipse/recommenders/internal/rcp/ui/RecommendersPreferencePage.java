@@ -7,8 +7,11 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.rcp.ui;
+
+import static org.eclipse.recommenders.rcp.l10n.Messages.PREFPAGE_OVERVIEW_INTRO;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -21,7 +24,7 @@ public class RecommendersPreferencePage extends PreferencePage implements IWorkb
 
     @Override
     public void init(final IWorkbench workbench) {
-        setDescription("Expand the tree to edit preferences for a specific feature.");
+        setDescription(PREFPAGE_OVERVIEW_INTRO);
     }
 
     @Override

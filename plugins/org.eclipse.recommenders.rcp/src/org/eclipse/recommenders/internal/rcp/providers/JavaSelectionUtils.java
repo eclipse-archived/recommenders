@@ -170,7 +170,7 @@ public class JavaSelectionUtils {
             // actually, these can happen when using snipmatch's in-editor completion.
             // fractions of seconds seem potentially to lead to this exception, thus, we swallow them here.
             if (!isInvalidSelection(root, offset))
-                log(e, "Failed to resolve selection in '%s' at offset %d", root.getHandleIdentifier(), offset);
+                log(e, "Failed to resolve selection in '%s' at offset %d", root.getHandleIdentifier(), offset); //$NON-NLS-1$
             return absent();
         }
     }
@@ -181,7 +181,7 @@ public class JavaSelectionUtils {
             range = root.getSourceRange();
             return range == null || offset < 0 || offset > range.getLength();
         } catch (Exception e) {
-            log.debug("exception while checking editor offset", e);
+            log.debug("exception while checking editor offset", e); //$NON-NLS-1$
             return false;
         }
     }

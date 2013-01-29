@@ -76,7 +76,7 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
             try {
                 mappings = deserializeMapping();
             } catch (final Exception e) {
-                log.warn("Loading mapping from '" + store + "' failed with exception.", e);
+                log.warn("Loading mapping from '" + store + "' failed with exception.", e); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         // GsonUtil may return null if the file exists but is empty
@@ -117,7 +117,7 @@ public class DefaultModelArchiveStore<K extends IMember, V> implements Closeable
 
             return of(model.get());
         } catch (Exception e) {
-            log.warn("Loading model for '" + getElementLabel(key, ALL_DEFAULT) + "' failed with exception.", e);
+            log.warn("Loading model for '" + getElementLabel(key, ALL_DEFAULT) + "' failed with exception.", e); //$NON-NLS-1$ //$NON-NLS-2$
             return absent();
         }
     }

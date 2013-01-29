@@ -24,7 +24,7 @@
          point="org.eclipse.ui.views">
       <category
             id="org.eclipse.recommenders.rcp.category.views"
-            name="Recommenders">
+            name="%category.name">
       </category>
    </extension>
      <extension
@@ -32,13 +32,13 @@
         <page
               class="org.eclipse.recommenders.internal.rcp.ui.RecommendersPreferencePage"
               id="org.eclipse.recommenders.rcp.category.preferences"
-              name="Code Recommenders">
+              name="%page.name">
         </page>
         <page
               category="org.eclipse.recommenders.rcp.category.preferences"
               class="org.eclipse.recommenders.internal.rcp.ui.ModelsPreferencePage"
               id="org.eclipse.recommenders.rcp.modelpreferences"
-              name="Models">
+              name="%page.name.models">
         </page>
      </extension>
      <extension

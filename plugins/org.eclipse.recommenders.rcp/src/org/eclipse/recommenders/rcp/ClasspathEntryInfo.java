@@ -22,11 +22,11 @@ import org.eclipse.recommenders.utils.Version;
 public class ClasspathEntryInfo {
 
     public static final ClasspathEntryInfo NULL = new ClasspathEntryInfo();
-    public static final String P_LAST_MOD = "modificationDate";
-    public static final String P_LOCATION = "location";
-    public static final String P_FINGERPRINT = "fingerprint";
-    public static final String P_VERSION = "version";
-    public static final String P_SYMBOLIC_NAME = "symbolicName";
+    public static final String P_LAST_MOD = "modificationDate"; //$NON-NLS-1$
+    public static final String P_LOCATION = "location"; //$NON-NLS-1$
+    public static final String P_FINGERPRINT = "fingerprint"; //$NON-NLS-1$
+    public static final String P_VERSION = "version"; //$NON-NLS-1$
+    public static final String P_SYMBOLIC_NAME = "symbolicName"; //$NON-NLS-1$
 
     private String symbolicName;
     private Version version = Version.UNKNOWN;

@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Code Recommenders: Core Runtime
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipse.recommenders.rcp;singleton:=true
 Bundle-Version: 1.0.3.qualifier
 Bundle-Activator: org.eclipse.recommenders.rcp.RecommendersPlugin
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Vendor: %Bundle-Vendor
 Export-Package: org.eclipse.recommenders.internal.rcp.models,
  org.eclipse.recommenders.internal.rcp.models.archive,
  org.eclipse.recommenders.internal.rcp.models.store,

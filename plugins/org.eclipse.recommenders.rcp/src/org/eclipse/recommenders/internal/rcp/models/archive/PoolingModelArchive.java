@@ -76,7 +76,7 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
                 objects.put(model, key);
             return fromNullable(model);
         } catch (final Exception e) {
-            log.error("Exception while loading model for key '" + key + "'" + e.getMessage(), e);
+            log.error("Exception while loading model for key '" + key + "'" + e.getMessage(), e); //$NON-NLS-1$ //$NON-NLS-2$
             return absent();
         }
     }
@@ -89,7 +89,7 @@ public class PoolingModelArchive<K, M> implements IModelArchive<K, M> {
                 pool.returnObject(key, model);
             }
         } catch (final Exception e) {
-            log.error("Exception while releasing model'" + model + "'", e);
+            log.error("Exception while releasing model'" + model + "'", e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 

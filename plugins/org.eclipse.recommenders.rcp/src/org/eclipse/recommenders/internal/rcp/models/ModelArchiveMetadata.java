@@ -37,17 +37,17 @@ public class ModelArchiveMetadata<K, V> {
         MANUAL, DEFAULT, NEVER
     }
 
-    public static final String P_COORDINATE = "coordinate";
-    public static final String P_STATUS = "status";
-    public static final String P_ERROR = "error";
-    public static final String P_MODEL = "model";
-    public static final String P_LOCATION = "location";
+    public static final String P_COORDINATE = "coordinate"; //$NON-NLS-1$
+    public static final String P_STATUS = "status"; //$NON-NLS-1$
+    public static final String P_ERROR = "error"; //$NON-NLS-1$
+    public static final String P_MODEL = "model"; //$NON-NLS-1$
+    public static final String P_LOCATION = "location"; //$NON-NLS-1$
 
     @SuppressWarnings("unchecked")
     public static final ModelArchiveMetadata NULL = new ModelArchiveMetadata() {
         {
             // use fields instead of setters to bypass checks
-            coordinate = "";
+            coordinate = ""; //$NON-NLS-1$
             status = UNINITIALIZED;
         }
     };

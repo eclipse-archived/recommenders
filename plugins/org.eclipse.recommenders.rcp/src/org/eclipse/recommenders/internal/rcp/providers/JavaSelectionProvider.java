@@ -46,7 +46,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 public class JavaSelectionProvider implements ISelectionListener {
 
     ScheduledThreadPoolExecutor d = new ScheduledThreadPoolExecutor(1, new ThreadFactoryBuilder().setNameFormat(
-            "Recommenders-Timeout-Manager").build());
+            "Recommenders-Timeout-Manager").build()); //$NON-NLS-1$
     private final EventBus bus;
     private JavaSelectionEvent lastEvent = new JavaSelectionEvent(null, null);
 

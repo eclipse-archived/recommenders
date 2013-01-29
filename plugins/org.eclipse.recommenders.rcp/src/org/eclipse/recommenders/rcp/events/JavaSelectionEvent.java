@@ -58,7 +58,7 @@ public class JavaSelectionEvent {
 
     @Override
     public boolean equals(final Object obj) {
-        final boolean sameElementAndSameLocation = reflectionEquals(obj, this, "selection");
+        final boolean sameElementAndSameLocation = reflectionEquals(obj, this, "selection"); //$NON-NLS-1$
         if (!sameElementAndSameLocation) {
             return false;
         }

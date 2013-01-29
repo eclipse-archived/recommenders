@@ -55,7 +55,7 @@ public abstract class ZipPoolableModelFactory<K, M> implements IModelFactory<K, 
         try {
             zip.close();
         } catch (Exception e) {
-            log.warn("Failed to close zip'" + zip + "'", e);
+            log.warn("Failed to close zip'" + zip + "'", e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

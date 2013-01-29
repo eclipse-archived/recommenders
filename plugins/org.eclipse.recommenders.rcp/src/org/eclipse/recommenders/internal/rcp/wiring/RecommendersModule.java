@@ -103,7 +103,7 @@ public class RecommendersModule extends AbstractModule implements Module {
     protected IClasspathEntryInfoProvider configurePackageFragmentRootInfoProvider(final EventBus bus,
             IWorkspaceRoot workspace) {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
-        File stateLocation = new File(Platform.getStateLocation(bundle).toFile(), "v0.5-package-root-infos.json");
+        File stateLocation = new File(Platform.getStateLocation(bundle).toFile(), "v0.5-package-root-infos.json"); //$NON-NLS-1$
         final IClasspathEntryInfoProvider cpeInfoProvider =
                 new ClasspathEntryInfoProvider(stateLocation, workspace, bus);
 
@@ -147,7 +147,7 @@ public class RecommendersModule extends AbstractModule implements Module {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         File stateLocation = Platform.getStateLocation(bundle).toFile();
 
-        File repo = new File(stateLocation, "repository");
+        File repo = new File(stateLocation, "repository"); //$NON-NLS-1$
         repo.mkdirs();
         RecommendersPlugin plugin = RecommendersPlugin.getDefault();
         IPreferenceStore store = plugin.getPreferenceStore();
@@ -159,7 +159,7 @@ public class RecommendersModule extends AbstractModule implements Module {
                 );
         bind(IModelRepository.class).to(ModelRepository.class).in(Scopes.SINGLETON);
 
-        File index = new File(stateLocation, "index");
+        File index = new File(stateLocation, "index"); //$NON-NLS-1$
         index.mkdirs();
         bind(File.class).annotatedWith(ModelRepositoryIndexLocation.class).toInstance(index);
         bind(IModelRepositoryIndex.class).to(ModelRepositoryIndex.class).in(Scopes.SINGLETON);
@@ -242,10 +242,10 @@ public class RecommendersModule extends AbstractModule implements Module {
         final ExecutorService pool =
                 coreThreadsTimoutExecutor(numberOfCores + 1,
                         MIN_PRIORITY,
-                        "Recommenders-Bus-Thread-",
+                        "Recommenders-Bus-Thread-", //$NON-NLS-1$
                         1L,
                         TimeUnit.MINUTES);
-        final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool);
+        final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool); //$NON-NLS-1$
         return bus;
     }
 
@@ -253,7 +253,7 @@ public class RecommendersModule extends AbstractModule implements Module {
     @Singleton
     protected JavaSelectionProvider provideJavaSelectionProvider(final EventBus bus) {
         final JavaSelectionProvider provider = new JavaSelectionProvider(bus);
-        new UIJob("Registering workbench selection listener.") {
+        new UIJob("Registering workbench selection listener.") { //$NON-NLS-1$
             {
                 schedule();
             }
@@ -324,7 +324,7 @@ public class RecommendersModule extends AbstractModule implements Module {
                 task.get(2, TimeUnit.SECONDS);
             }
         } catch (final Exception e) {
-            RecommendersPlugin.logError(e, "Could not run 'active page finder' that early!");
+            RecommendersPlugin.logError(e, "Could not run 'active page finder' that early!"); //$NON-NLS-1$
         }
         return finder;
     }

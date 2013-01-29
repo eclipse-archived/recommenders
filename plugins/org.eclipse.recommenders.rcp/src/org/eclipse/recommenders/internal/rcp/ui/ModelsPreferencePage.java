@@ -7,11 +7,13 @@
  *
  * Contributors:
  *    Patrick Gottschaemmer, Olav Lenz - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.rcp.ui;
 
 import static org.eclipse.recommenders.rcp.RecommendersPlugin.P_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
 import static org.eclipse.recommenders.rcp.RecommendersPlugin.P_REPOSITORY_URL;
+import static org.eclipse.recommenders.rcp.l10n.Messages.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -51,7 +53,7 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
         createRemoteRepositorySection();
 
         Button clearCaches = new Button(getFieldEditorParent(), SWT.PUSH);
-        clearCaches.setText("Clear Caches");
+        clearCaches.setText(PREFPAGE_CLEAR_CACHES);
         GridData data = new GridData(SWT.END, SWT.CENTER, false, false);
         data.horizontalSpan = 3;
         clearCaches.setLayoutData(data);
@@ -68,27 +70,27 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
         layoutData.horizontalSpan = 3;
 
         Label headline = new Label(getFieldEditorParent(), SWT.LEFT);
-        headline.setText("Model Repository");
+        headline.setText(PREFPAGE_MODEL_REPOSITORY_HEADLINE);
         headline.setLayoutData(layoutData);
         headline.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DIALOG_FONT));
                 
         Label description = new Label(getFieldEditorParent(), SWT.LEFT);
-        description.setText("All models used by Code Recommenders will be downloaded from this repository.");
+        description.setText(PREFPAGE_MODEL_REPOSITORY_INTRO);
         description.setLayoutData(layoutData);
 
-        StringButtonFieldEditor modelRepoFieldEditor = new StringButtonFieldEditor(P_REPOSITORY_URL, "URI:",
+        StringButtonFieldEditor modelRepoFieldEditor = new StringButtonFieldEditor(P_REPOSITORY_URL, PREFPAGE_URI,
                 getFieldEditorParent()) {
             @Override
             protected String changePressed() {
-                InputDialog inputDialog = new InputDialog(getShell(), "Model Repository URI",
-                        "Please insert an URI for the Model Repository:", oldValue, new IInputValidator() {
+                InputDialog inputDialog = new InputDialog(getShell(), PREFPAGE_URI_MODEL_REPOSITORY,
+                        PREFPAGE_URI_INSERT, oldValue, new IInputValidator() {
 
                             @Override
                             public String isValid(String newText) {
                                 if (isValidRepoURI(newText)) {
                                     return null;
                                 } else {
-                                    return "Invalid URI";
+                                    return PREFPAGE_URI_INVALID;
                                 }
                             }
                         });
@@ -101,7 +103,7 @@ public class ModelsPreferencePage extends FieldEditorPreferencePage implements I
         modelRepoFieldEditor.getTextControl(getFieldEditorParent()).setEnabled(false);
         addField(modelRepoFieldEditor);
 
-        addField(new BooleanFieldEditor(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD, "Enable auto-download.",
+        addField(new BooleanFieldEditor(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD, PREFPAGE_ENABLE_AUTO_DOWNLOAD,
                 getFieldEditorParent()));
     }
 
