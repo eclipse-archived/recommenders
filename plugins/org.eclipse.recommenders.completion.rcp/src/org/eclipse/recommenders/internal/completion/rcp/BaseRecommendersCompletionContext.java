@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.CompletionRequestor;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
@@ -118,7 +119,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     private void initializeReflectiveFields() {
         try {
             extCoreContext = (InternalExtendedCompletionContext) fExtendedContext.get(coreContext);
-            if (extCoreContext == null) return;
+            if (extCoreContext == null)
+                return;
 
             assistNode = (ASTNode) fAssistNode.get(extCoreContext);
             assistNodeParent = (ASTNode) fAssistNodeParent.get(extCoreContext);
@@ -182,6 +184,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
         final IJavaElement enclosing = getEnclosingElement().orNull();
         if (enclosing instanceof IType) {
             return of((IType) enclosing);
+        } else if (enclosing instanceof IField) {
+            return of(((IField) enclosing).getDeclaringType());
         } else {
             return absent();
         }
@@ -189,7 +193,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<IJavaElement> getEnclosingElement() {
-        if (coreContext == null) return absent();
+        if (coreContext == null)
+            return absent();
         try {
             if (coreContext.isExtended()) {
                 return fromNullable(coreContext.getEnclosingElement());
@@ -257,7 +262,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public Optional<String> getExpectedTypeSignature() {
-        if (coreContext == null) return absent();
+        if (coreContext == null)
+            return absent();
         // keys contain '/' instead of dots and may end with ';'
         final char[][] keys = coreContext.getExpectedTypesKeys();
         if (keys == null) {
@@ -273,9 +279,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     @Override
     public Set<ITypeName> getExpectedTypeNames() {
         ASTNode completion = getCompletionNode().orNull();
-        char[][] keys =
-                isArgumentCompletion(completion) && getPrefix().isEmpty() ? simulateCompletionWithFakePrefix()
-                        : coreContext.getExpectedTypesKeys();
+        char[][] keys = isArgumentCompletion(completion) && getPrefix().isEmpty() ? simulateCompletionWithFakePrefix()
+                : coreContext.getExpectedTypesKeys();
         return createTypeNamesFromKeys(keys);
     }
 
@@ -293,8 +298,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
             wc = cu.getWorkingCopy(new NullProgressMonitor());
             IBuffer buffer = wc.getBuffer();
             String contents = buffer.getContents();
-            String newContents =
-                    substring(contents, 0, offset) + fakePrefix + substring(contents, offset, contents.length());
+            String newContents = substring(contents, 0, offset) + fakePrefix
+                    + substring(contents, offset, contents.length());
             buffer.setContents(newContents);
             wc.codeComplete(offset + 1, new CompletionRequestor(true) {
 
@@ -323,7 +328,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     private void discardWorkingCopy(ICompilationUnit wc) {
         try {
-            if (wc != null) wc.discardWorkingCopy();
+            if (wc != null)
+                wc.discardWorkingCopy();
         } catch (JavaModelException x) {
             RecommendersPlugin.log(x);
         }
@@ -361,7 +367,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     @Override
     public String getPrefix() {
-        if (coreContext == null) return "";
+        if (coreContext == null)
+            return "";
 
         final char[] token = coreContext.getToken();
         if (token == null) {
@@ -374,7 +381,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     public String getReceiverName() {
 
         final ASTNode n = getCompletionNode().orNull();
-        if (n == null) return "";
+        if (n == null)
+            return "";
 
         char[] name = null;
         if (n instanceof CompletionOnQualifiedNameReference) {
@@ -430,7 +438,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
 
     private Optional<TypeBinding> findReceiverTypeBinding() {
         final ASTNode n = getCompletionNode().orNull();
-        if (n == null) return absent();
+        if (n == null)
+            return absent();
         TypeBinding receiver = null;
         if (n instanceof CompletionOnLocalName) {
             // final CompletionOnLocalName c = cast(n);
@@ -484,7 +493,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
     @Override
     public Optional<IMethodName> getMethodDef() {
         final ASTNode node = getCompletionNode().orNull();
-        if (node == null) return absent();
+        if (node == null)
+            return absent();
 
         if (node instanceof CompletionOnMemberAccess) {
             final CompletionOnMemberAccess n = cast(node);
