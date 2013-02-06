@@ -29,7 +29,7 @@ import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 
 public class Subwords2SessionProcessor extends SessionProcessor {
 
-    SimpleProposalProcessor processor = new SimpleProposalProcessor(5, "contains");
+    SimpleProposalProcessor processor = new SimpleProposalProcessor(5, "contains"); //$NON-NLS-1$
     private boolean skip = false;
     private String varName;
 

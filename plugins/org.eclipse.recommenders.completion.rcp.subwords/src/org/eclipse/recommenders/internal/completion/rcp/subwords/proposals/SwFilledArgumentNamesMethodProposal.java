@@ -26,6 +26,7 @@ import org.eclipse.jface.text.link.LinkedModeUI;
 import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.recommenders.completion.rcp.subwords.l10n.Messages;
 import org.eclipse.recommenders.internal.completion.rcp.subwords.SubwordsProposalContext;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
@@ -191,7 +192,7 @@ public class SwFilledArgumentNamesMethodProposal extends JavaMethodCompletionPro
 
     private void openErrorDialog(final BadLocationException e) {
         final Shell shell = getTextViewer().getTextWidget().getShell();
-        MessageDialog.openError(shell, "Failed to guess method parameters", e.getMessage());
+        MessageDialog.openError(shell, Messages.DIALOG_FAIL_TO_GUESS_METHOD_PARAMETERS, e.getMessage());
     }
 
 }

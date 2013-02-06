@@ -62,7 +62,7 @@ public class ProposalFactory {
             } else if (GetterSetterCompletionProposal.class == c) {
             }
         } catch (final Exception e) {
-            RecommendersUtilsPlugin.logError(e, "wrapping jdt proposal failed");
+            RecommendersUtilsPlugin.logError(e, "wrapping jdt proposal failed"); //$NON-NLS-1$
         }
         return jdtProposal;
     }

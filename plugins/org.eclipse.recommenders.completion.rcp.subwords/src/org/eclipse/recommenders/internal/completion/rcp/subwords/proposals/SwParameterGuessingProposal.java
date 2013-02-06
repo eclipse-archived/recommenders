@@ -340,7 +340,7 @@ public class SwParameterGuessingProposal extends JavaMethodCompletionProposal {
 
     private void openErrorDialog(final Exception e) {
         final Shell shell = getTextViewer().getTextWidget().getShell();
-        MessageDialog.openError(shell, "parameter guessing error", e.getMessage());
+        MessageDialog.openError(shell, "parameter guessing error", e.getMessage()); //$NON-NLS-1$
     }
 
     private void ensurePositionCategoryInstalled(final IDocument document, final LinkedModeModel model) {

@@ -20,8 +20,8 @@ import org.eclipse.jdt.internal.ui.text.java.CompletionProposalCategory;
 import org.eclipse.jdt.internal.ui.text.java.CompletionProposalComputerRegistry;
 
 public class SubwordsUtils {
-    static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory";
-    static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory";
+    static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory"; //$NON-NLS-1$
+    static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory"; //$NON-NLS-1$
 
     public static String getTokensBetweenLastWhitespaceAndFirstOpeningBracket(final CompletionProposal proposal) {
         boolean isPotentialMethodDecl = proposal.getKind() == CompletionProposal.POTENTIAL_METHOD_DECLARATION;
@@ -37,18 +37,18 @@ public class SubwordsUtils {
     }
 
     public static String getTokensBetweenLastWhitespaceAndFirstOpeningBracket(String completion) {
-        if (completion.contains("(")) {
+        if (completion.contains("(")) { //$NON-NLS-1$
             completion = getMethodIdentifierFromProposalText(completion);
         } else {
-            completion = StringUtils.substringBefore(completion, " ");
+            completion = StringUtils.substringBefore(completion, " "); //$NON-NLS-1$
         }
         return completion;
     }
 
     private static String getMethodIdentifierFromProposalText(String completion) {
-        completion = StringUtils.substringBefore(completion, "(");
-        if (completion.contains(" ")) {
-            completion = StringUtils.substringAfterLast(completion, " ");
+        completion = StringUtils.substringBefore(completion, "("); //$NON-NLS-1$
+        if (completion.contains(" ")) { //$NON-NLS-1$
+            completion = StringUtils.substringAfterLast(completion, " "); //$NON-NLS-1$
         }
         return completion;
     }

@@ -133,8 +133,8 @@ public final class TypoSessionProcessor extends SessionProcessor {
                 if (distance == 0)
                     append = null;
                 else
-                    append = "typo!";
-                System.out.printf("pref %s compl %s dist %d\n", prefix, completion, distance);
+                    append = "typo!"; //$NON-NLS-1$
+                System.out.printf("pref %s compl %s dist %d\n", prefix, completion, distance); //$NON-NLS-1$
                 return distance >= 0 ? true : false;
             }
 
@@ -157,7 +157,7 @@ public final class TypoSessionProcessor extends SessionProcessor {
     private boolean isPotentialMatch(final String completion, String prefix) {
         String s = StringUtils.substring(completion, 0, prefix.length()).toLowerCase();
         int distance = StringUtils.getLevenshteinDistance(s, prefix.toLowerCase(), MAX_DISTANCE);
-        System.out.printf("-create pref %s compl %s dist %d\n", prefix, completion, distance);
+        System.out.printf("-create pref %s compl %s dist %d\n", prefix, completion, distance); //$NON-NLS-1$
         return distance > 0 ? true : false;
     }
 
@@ -175,18 +175,18 @@ public final class TypoSessionProcessor extends SessionProcessor {
     }
 
     public static String getTokensBetweenLastWhitespaceAndFirstOpeningBracket(String completion) {
-        if (completion.contains("(")) {
+        if (completion.contains("(")) { //$NON-NLS-1$
             completion = getMethodIdentifierFromProposalText(completion);
         } else {
-            completion = StringUtils.substringBefore(completion, " ");
+            completion = StringUtils.substringBefore(completion, " "); //$NON-NLS-1$
         }
         return completion;
     }
 
     private static String getMethodIdentifierFromProposalText(String completion) {
-        completion = StringUtils.substringBefore(completion, "(");
-        if (completion.contains(" ")) {
-            completion = StringUtils.substringAfterLast(completion, " ");
+        completion = StringUtils.substringBefore(completion, "("); //$NON-NLS-1$
+        if (completion.contains(" ")) { //$NON-NLS-1$
+            completion = StringUtils.substringAfterLast(completion, " "); //$NON-NLS-1$
         }
         return completion;
     }

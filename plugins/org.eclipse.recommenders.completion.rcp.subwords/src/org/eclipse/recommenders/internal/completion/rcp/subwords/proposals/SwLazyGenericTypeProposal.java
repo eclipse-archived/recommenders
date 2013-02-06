@@ -407,7 +407,7 @@ public final class SwLazyGenericTypeProposal extends LazyJavaTypeCompletionPropo
         final String[] bounds = parameter.getBounds();
         final String elementName = parameter.getElementName();
         final String displayName = computeTypeParameterDisplayName(parameter, bounds);
-        if (bounds.length == 1 && !"java.lang.Object".equals(bounds[0])) {
+        if (bounds.length == 1 && !"java.lang.Object".equals(bounds[0])) { //$NON-NLS-1$
             return new TypeArgumentProposal(Signature.getSimpleName(bounds[0]), true, displayName);
         } else {
             return new TypeArgumentProposal(elementName, true, displayName);
@@ -415,7 +415,7 @@ public final class SwLazyGenericTypeProposal extends LazyJavaTypeCompletionPropo
     }
 
     private String computeTypeParameterDisplayName(final ITypeParameter parameter, final String[] bounds) {
-        if (bounds.length == 0 || bounds.length == 1 && "java.lang.Object".equals(bounds[0])) {
+        if (bounds.length == 0 || bounds.length == 1 && "java.lang.Object".equals(bounds[0])) { //$NON-NLS-1$
             return parameter.getElementName();
         }
         final StringBuffer buf = new StringBuffer(parameter.getElementName());
@@ -848,7 +848,7 @@ public final class SwLazyGenericTypeProposal extends LazyJavaTypeCompletionPropo
 
     private void openErrorDialog(final BadLocationException e) {
         final Shell shell = getTextViewer().getTextWidget().getShell();
-        MessageDialog.openError(shell, "Failed", e.getMessage());
+        MessageDialog.openError(shell, "Failed", e.getMessage()); //$NON-NLS-1$
     }
 
     /*

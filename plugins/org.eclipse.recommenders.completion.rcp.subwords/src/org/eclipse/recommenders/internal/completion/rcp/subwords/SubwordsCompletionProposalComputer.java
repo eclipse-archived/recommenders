@@ -38,7 +38,7 @@ import com.google.common.collect.Sets;
 public class SubwordsCompletionProposalComputer implements IJavaCompletionProposalComputer {
 
     private static final int TIMEOUT = 8000;
-    public static String CATEGORY_ID = "org.eclipse.recommenders.subwords.rcp.category";
+    public static String CATEGORY_ID = "org.eclipse.recommenders.subwords.rcp.category"; //$NON-NLS-1$
     private JavaContentAssistInvocationContext ctx;
 
     @Override
@@ -76,10 +76,10 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
 
     private String getToken() {
         CompletionContext coreCtx = ctx.getCoreContext();
-        if (coreCtx == null) return "";
+        if (coreCtx == null) return ""; //$NON-NLS-1$
         final char[] token = coreCtx.getToken();
         if (token == null) {
-            return "";
+            return ""; //$NON-NLS-1$
         }
         return String.valueOf(token);
     }
@@ -105,7 +105,7 @@ public class SubwordsCompletionProposalComputer implements IJavaCompletionPropos
                 cu.codeComplete(offsetBeforeTokenBegin, requestor, monitor);
             }
         } catch (final Exception e) {
-            RecommendersUtilsPlugin.logWarning(e, "Code completion failed: %s", e.getMessage());
+            RecommendersUtilsPlugin.logWarning(e, "Code completion failed: %s", e.getMessage()); //$NON-NLS-1$
         }
         return requestor.getProposals();
     }

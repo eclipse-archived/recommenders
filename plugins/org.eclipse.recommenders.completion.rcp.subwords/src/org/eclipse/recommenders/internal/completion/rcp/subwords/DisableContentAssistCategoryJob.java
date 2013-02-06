@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Olav Lenz - externalize Strings.
  */
 package org.eclipse.recommenders.internal.completion.rcp.subwords;
 
@@ -16,6 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.ui.PreferenceConstants;
+import org.eclipse.recommenders.completion.rcp.subwords.l10n.Messages;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.collect.Sets;
@@ -35,7 +37,7 @@ public class DisableContentAssistCategoryJob extends UIJob {
      *            the content assist category as specified in plugin.xml.
      */
     public DisableContentAssistCategoryJob(String categoryId) {
-        super("Disabling " + categoryId);
+        super(String.format(Messages.JOB_DISABLING, categoryId));
         this.categoryId = categoryId;
         setSystem(true);
     }

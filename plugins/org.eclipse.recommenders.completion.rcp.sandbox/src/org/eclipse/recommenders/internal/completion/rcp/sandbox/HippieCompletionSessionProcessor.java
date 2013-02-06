@@ -16,6 +16,7 @@ import org.eclipse.recommenders.completion.rcp.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.SessionProcessor;
+import org.eclipse.recommenders.completion.rcp.sandbox.l10n.Messages;
 import org.eclipse.recommenders.internal.completion.rcp.SimpleProposalProcessor;
 
 import com.google.common.collect.HashMultiset;
@@ -40,7 +41,7 @@ public class HippieCompletionSessionProcessor extends SessionProcessor {
         if (c == null) return;
         final int count = keys.count(key(c));
         if (count > 0) {
-            String label = String.format("hippie (%d)", count);
+            String label = String.format(Messages.HIPPIE_COMPLETION_PROPOSAL, count);
             ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
             int increment = Math.min(10 << 2, count);
             mgr.addProcessor(new SimpleProposalProcessor(increment, label));
