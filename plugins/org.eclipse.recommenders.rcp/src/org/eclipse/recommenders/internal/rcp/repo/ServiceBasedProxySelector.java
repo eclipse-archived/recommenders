@@ -30,20 +30,25 @@ public class ServiceBasedProxySelector implements ProxySelector {
 
     @Override
     public Proxy getProxy(RemoteRepository remote) {
-        if (proxyService != null && proxyService.isProxiesEnabled()) {
-            URI uri = URI.create(remote.getUrl());
-            IProxyData[] entries = proxyService.select(uri);
+        if (proxyService == null)
+            return null;
 
-            if (entries.length > 0) {
-                IProxyData proxyData = entries[0];
-                String type = proxyData.getType().toLowerCase();
-                String host = proxyData.getHost();
-                int port = proxyData.getPort();
-                Authentication auth = new Authentication(proxyData.getUserId(), proxyData.getPassword());
-                return new Proxy(type, host, port, auth);
-            }
-        }
-        return null;
+        if (!proxyService.isProxiesEnabled())
+            return null;
+
+        URI uri = URI.create(remote.getUrl());
+        if (uri.getHost() == null)
+            return null; // IProxyService requires a host to select a proxy
+
+        IProxyData[] entries = proxyService.select(uri);
+        if (entries.length == 0)
+            return null;
+
+        IProxyData proxyData = entries[0];
+        String type = proxyData.getType().toLowerCase();
+        String host = proxyData.getHost();
+        int port = proxyData.getPort();
+        Authentication auth = new Authentication(proxyData.getUserId(), proxyData.getPassword());
+        return new Proxy(type, host, port, auth);
     }
-
 }
