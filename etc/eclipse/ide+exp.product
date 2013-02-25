@@ -30,7 +30,7 @@
       <feature id="org.eclipse.pde"/>
       <feature id="org.eclipse.jdt"/>
       <feature id="org.eclipse.emf"/>
-      <feature id="org.eclipse.recommenders.feature.completion.rcp.sandbox" version="1.0.0.qualifier"/>
+      <feature id="org.eclipse.recommenders.feature.completion.rcp.sandbox"/>
       <feature id="org.eclipse.recommenders.feature.codesearch.rcp"/>
       <feature id="org.eclipse.recommenders.feature.completion.rcp.chain"/>
       <feature id="org.eclipse.recommenders.feature.completion.rcp.intellig"/>
