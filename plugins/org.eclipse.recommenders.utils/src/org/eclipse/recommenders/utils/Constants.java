@@ -33,7 +33,7 @@ public interface Constants {
     /** {@value} */
     String F_ARTIFACT_ID = "artifactId";
     /** {@value} */
-    String SYMBOLIC_NAMES = "symbolic-names";
+    String F_SYMBOLIC_NAMES = "symbolic-names";
 
     /** {@value} */
     String GID_CR = "org.eclipse.recommenders";

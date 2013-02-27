@@ -92,7 +92,7 @@ public class ModelRepositoryIndex implements Closeable, IModelRepositoryIndex {
 
     @Override
     public Optional<Artifact> searchByArtifactId(String artifactId, String classifier) {
-        Term t1 = new Term(SYMBOLIC_NAMES, artifactId);
+        Term t1 = new Term(F_SYMBOLIC_NAMES, artifactId);
         Term t2 = new Term(F_CLASSIFIER, classifier);
 
         return findByTerm(classifier, t1, t2);
