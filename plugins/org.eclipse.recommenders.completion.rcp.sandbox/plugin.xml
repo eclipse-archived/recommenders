@@ -2,6 +2,24 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         id="org.eclipse.recommenders.completion.category.all"
+         name="Code Recommenders All (experimental)"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <proposalCategory
+            icon="icons/elcl16/slice.gif">
+      </proposalCategory>
+   </extension>
+   <extension
+         id="experimental"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.eclipse.recommenders.completion.category.all"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.RecommendersAllCompletionProposalProcessor"
+            needsSortingAfterFiltering="true">
+      </javaCompletionProposalComputer>
+   </extension>
+   <extension
          point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
       <processor
             class="org.eclipse.recommenders.internal.completion.rcp.sandbox.Subwords2SessionProcessor"
@@ -9,24 +27,23 @@
             id="org.eclipse.recommenders.completion.rcp.subwords2.processor"
             name="Assigment Name Processor">
       </processor>
-         <processor
+      <processor
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.sandbox.TypeProposalsProcessor"
             icon="icons/elcl16/category.gif"
             id="org.eclipse.recommenders.completion.rcp.types.processor"
             name="Types">
       </processor>
-         <processor
+      <processor
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.sandbox.HippieCompletionSessionProcessor"
             icon="icons/elcl16/category.gif"
             id="org.eclipse.recommenders.completion.rcp.hippie.processor"
             name="Hippie">
       </processor>
-         <processor
+      <processor
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.sandbox.TypoSessionProcessor"
             icon="icons/elcl16/category.gif"
             id="org.eclipse.recommenders.completion.rcp.typo.processor"
             name="Typo">
       </processor>
    </extension>
-
 </plugin>

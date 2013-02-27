@@ -98,7 +98,7 @@ public class SearchIndexWriter {
                 lDoc.add(newSearchable(Constants.F_FINGERPRINTS, fingerprint));
 
             for (String symbolicName : mDoc.symbolicNames)
-                lDoc.add(newSearchable(Constants.SYMBOLIC_NAMES, symbolicName));
+                lDoc.add(newSearchable(Constants.F_SYMBOLIC_NAMES, symbolicName));
 
             for (String modeCoordinate : mDoc.models) {
                 Artifact a = Artifacts.asArtifact(modeCoordinate);
