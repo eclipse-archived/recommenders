@@ -39,6 +39,7 @@
       <feature id="org.eclipse.recommenders.feature.3rd.nonorbit"/>
       <feature id="org.eclipse.recommenders.feature.3rd.orbit"/>
       <feature id="org.eclipse.recommenders.feature.rcp.core"/>
+      <feature id="org.eclipse.recommenders.feature.snipmatch.rcp" version="1.0.3.qualifier"/>
    </features>
 
 
