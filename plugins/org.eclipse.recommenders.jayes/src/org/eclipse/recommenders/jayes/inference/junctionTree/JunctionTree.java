@@ -17,9 +17,10 @@ import org.eclipse.recommenders.jayes.util.Graph.Edge;
 import org.eclipse.recommenders.jayes.util.Pair;
 
 public class JunctionTree {
+
     private List<List<Integer>> clusters;
     private List<Pair<Edge, List<Integer>>> sepSets;
-    private Graph junctionTreeGraph;
+    private final Graph junctionTreeGraph;
 
     public JunctionTree(Graph junctionTree) {
         this.junctionTreeGraph = junctionTree;

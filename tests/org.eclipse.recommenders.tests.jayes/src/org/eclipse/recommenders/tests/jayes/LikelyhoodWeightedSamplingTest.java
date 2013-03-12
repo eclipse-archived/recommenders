@@ -30,11 +30,12 @@ public class LikelyhoodWeightedSamplingTest {
 
         LikelihoodWeightedSampling sampler = new LikelihoodWeightedSampling();
         sampler.setSampleCount(10000);
+        sampler.seed(1337);	//for reproducibility
         sampler.setNetwork(net);
         sampler.addEvidence(a, "false");
         sampler.addEvidence(b, "lu");
 
-        assertArrayEquals(new double[] { 0.7, 0.3 }, sampler.getBeliefs(c), 0.015);
+        assertArrayEquals(sampler.getBeliefs(c), new double[] { 0.7, 0.3 }, 0.01);
     }
 
 }

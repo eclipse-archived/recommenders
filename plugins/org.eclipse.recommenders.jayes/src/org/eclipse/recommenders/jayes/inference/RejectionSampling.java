@@ -16,19 +16,17 @@ import java.util.Map.Entry;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.sampling.BasicSampler;
-import org.eclipse.recommenders.jayes.util.BayesUtils;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 
 public class RejectionSampling extends AbstractInferer {
 
     private int sampleCount = 200;
-    private BasicSampler sampler = new BasicSampler();
+    private final BasicSampler sampler = new BasicSampler();
 
     @Override
     public void setNetwork(BayesNet bn) {
         super.setNetwork(bn);
-        sampler.setBN(bn);
-
+        sampler.setNetwork(bn);
     }
 
     @Override
@@ -40,13 +38,12 @@ public class RejectionSampling extends AbstractInferer {
                 i--;
                 continue;
             }
-            for (Entry<Integer, Integer> e : BayesUtils.toIntegerMap(sample).entrySet()) {
-                beliefs[e.getKey()][e.getValue()]++;
+            for (BayesNode e : sample.keySet()) {
+                beliefs[e.getId()][e.getOutcomeIndex(sample.get(e))]++;
             }
         }
 
         normalizeBeliefs();
-
     }
 
     private void normalizeBeliefs() {
@@ -68,4 +65,7 @@ public class RejectionSampling extends AbstractInferer {
         this.sampleCount = sampleCount;
     }
 
+    public void seed(long seed) {
+        sampler.seed(seed);
+    }
 }

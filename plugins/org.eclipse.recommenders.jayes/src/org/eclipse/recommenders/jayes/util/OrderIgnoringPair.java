@@ -12,7 +12,7 @@ package org.eclipse.recommenders.jayes.util;
 
 public class OrderIgnoringPair<T> extends Pair<T, T> {
 
-    int hashcode;
+    private final int hashcode;
 
     public OrderIgnoringPair(final T o1, final T o2) {
         super(o1, o2);

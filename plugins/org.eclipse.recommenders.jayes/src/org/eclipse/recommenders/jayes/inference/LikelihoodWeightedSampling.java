@@ -11,12 +11,10 @@
 package org.eclipse.recommenders.jayes.inference;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.sampling.BasicSampler;
-import org.eclipse.recommenders.jayes.util.BayesUtils;
 import org.eclipse.recommenders.jayes.util.MathUtils;
 
 public class LikelihoodWeightedSampling extends AbstractInferer {
@@ -25,48 +23,44 @@ public class LikelihoodWeightedSampling extends AbstractInferer {
     private final BasicSampler sampler = new BasicSampler();
 
     @Override
-    public void setNetwork(final BayesNet bn) {
+    public void setNetwork(BayesNet bn) {
         super.setNetwork(bn);
-        sampler.setBN(bn);
-
+        sampler.setNetwork(bn);
     }
 
     @Override
     protected void updateBeliefs() {
         sampler.setEvidence(evidence);
         for (int i = 0; i < sampleCount; i++) {
-            final Map<BayesNode, String> sample = sampler.sample();
-            final double weight = computeEvidenceProbability(sample);
+            Map<BayesNode, String> sample = sampler.sample();
+            double weight = computeEvidenceProbability(sample);
 
-            for (final Entry<Integer, Integer> e : BayesUtils.toIntegerMap(sample).entrySet()) {
-                beliefs[e.getKey()][e.getValue()] += weight;
+            for (BayesNode e : sample.keySet()) {
+                beliefs[e.getId()][e.getOutcomeIndex(sample.get(e))] += weight;
             }
         }
 
         normalizeBeliefs();
-
     }
 
     private void normalizeBeliefs() {
-        for (int i = 0; i < beliefs.length; i++) {
+        for (int i = 0; i < beliefs.length; i++)
             beliefs[i] = MathUtils.normalize(beliefs[i]);
-        }
     }
 
-    private double computeEvidenceProbability(final Map<BayesNode, String> sample) {
+    private double computeEvidenceProbability(Map<BayesNode, String> sample) {
         double factor = 1.0;
-        for (final BayesNode n : net.getNodes()) {
-            // REVIEW: XXX integer is incompatible to evicende.BayesNode. This never returns true!
-            final int id = n.getId();
-            if (evidence.containsKey(id)) {
-                factor *= n.marginalize(sample)[n.getOutcomeIndex(evidence.get(n))];
-            }
+        for (BayesNode n : evidence.keySet()) {
+            factor *= n.marginalize(sample)[n.getOutcomeIndex(evidence.get(n))];
         }
         return factor;
     }
 
-    public void setSampleCount(final int sampleCount) {
+    public void setSampleCount(int sampleCount) {
         this.sampleCount = sampleCount;
     }
 
+    public void seed(long seed) {
+        sampler.seed(seed);
+    }
 }

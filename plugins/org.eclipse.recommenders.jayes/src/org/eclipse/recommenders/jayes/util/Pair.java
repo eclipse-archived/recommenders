@@ -12,13 +12,9 @@ package org.eclipse.recommenders.jayes.util;
 
 /**
  * simple pair class
- * 
- * @author Michael
- * 
- * @param <T1>
- * @param <T2>
  */
 public class Pair<T1, T2> {
+
     private final T1 o1;
     private final T2 o2;
 
@@ -58,4 +54,7 @@ public class Pair<T1, T2> {
         return o1.hashCode() + 67 * o2.hashCode();
     }
 
+    public static <S1, S2> Pair<S1, S2> newPair(S1 o1, S2 o2) {
+        return new Pair<S1, S2>(o1, o2);
+    }
 }

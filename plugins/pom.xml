@@ -27,6 +27,8 @@
 		<module>org.eclipse.recommenders.extdoc.rcp</module>
 		<module>org.eclipse.recommenders.injection</module>
 		<module>org.eclipse.recommenders.jayes</module>
+		<module>org.eclipse.recommenders.jayes.io</module>
+		<module>org.eclipse.recommenders.jayes.transformation</module>
 		<module>org.eclipse.recommenders.jayes.serialization</module>
 		<module>org.eclipse.recommenders.rcp</module>
 		<module>org.eclipse.recommenders.rdk</module>

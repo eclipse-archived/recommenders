@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.jayes.util;
 
+import org.eclipse.recommenders.jayes.factor.arraywrapper.IArrayWrapper;
+
 public class MathUtils {
 
     public static void exp(double[] vector) {
@@ -18,9 +20,21 @@ public class MathUtils {
         }
     }
 
+    public static void exp(IArrayWrapper array) {
+        for (int i = 0; i < array.length(); i++) {
+            array.set(i, Math.exp(array.getDouble(i)));
+        }
+    }
+
     public static void log(double[] vector) {
         for (int i = 0; i < vector.length; i++) {
             vector[i] = Math.log(vector[i]);
+        }
+    }
+
+    public static void log(IArrayWrapper vector) {
+        for (int i = 0; i < vector.length(); i++) {
+            vector.set(i, Math.log(vector.getDouble(i)));
         }
     }
 
@@ -44,8 +58,8 @@ public class MathUtils {
     }
 
     /**
-     * computes c := a / b , but avoids division by zero. In the context of the
-     * JTA, this is valid because it holds that b == 0 -> a == 0
+     * computes c := a / b , but avoids division by zero. In the context of the JTA, this is valid because it holds that
+     * b == 0 -> a == 0
      * 
      * @param a
      * @param b
@@ -88,6 +102,10 @@ public class MathUtils {
         return sum;
     }
 
+    /**
+     * 
+     * @return the value that differs most from zero
+     */
     private static double absMax(double[] vector) {
         double result = 0;
         for (double d : vector) {
@@ -98,4 +116,32 @@ public class MathUtils {
         return result;
     }
 
+    public static int product(int[] vector) {
+        return productOfRange(vector, 0, vector.length);
+    }
+
+    /**
+     * product of the values in the array, from index start (inclusive) to end (exclusive)
+     * 
+     * @throws ArrayIndexOutOfBoundsException
+     *             if end >= vector.length
+     */
+    public static int productOfRange(int[] vector, int start, int end) {
+        int result = 1;
+        for (int i = start; i < end; i++) {
+            result *= vector[i];
+        }
+        return result;
+    }
+
+    public static int scalarProduct(int[] v1, int[] v2) {
+        if (v1.length != v2.length) {
+            throw new IllegalArgumentException("vectors differ in length");
+        }
+        int result = 0;
+        for (int i = 0; i < v1.length; i++) {
+            result += v1[i] * v2[i];
+        }
+        return result;
+    }
 }
