@@ -15,20 +15,19 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 
 public interface IExtdocResource {
 
-    public String URL_CLASS_OVERRIDES = "class-overrides";
-    public String URL_CLASS_OVERRIDE_PATTERNS = "class-overrides-patterns";
-    public String URL_TYPE_USAGE_SNIPPETS = "type-usage-snippets";
-    public String URL_CLASS_SELF_CALLS = "class-selfcalls";
-    public String URL_METHOD_SELF_CALLS = "method-selfcalls";
+    String URL_CLASS_OVERRIDES = "class-overrides";
+    String URL_CLASS_OVERRIDE_PATTERNS = "class-overrides-patterns";
+    String URL_TYPE_USAGE_SNIPPETS = "type-usage-snippets";
+    String URL_CLASS_SELF_CALLS = "class-selfcalls";
+    String URL_METHOD_SELF_CALLS = "method-selfcalls";
 
-    public ClassOverrideDirectives findClassOverrideDirectives(final ITypeName type);
+    ClassOverrideDirectives findClassOverrideDirectives(final ITypeName type);
 
-    public ClassSelfcallDirectives findClassSelfcallDirectives(final ITypeName type);
+    ClassSelfcallDirectives findClassSelfcallDirectives(final ITypeName type);
 
-    public MethodSelfcallDirectives findMethodSelfcallDirectives(final IMethodName method);
+    MethodSelfcallDirectives findMethodSelfcallDirectives(final IMethodName method);
 
-    public ClassOverridePatterns findClassOverridePatterns(final ITypeName type);
+    ClassOverridePatterns findClassOverridePatterns(final ITypeName type);
 
-    public CodeExamples findCodeExamples(final ITypeName type);
-
+    CodeExamples findCodeExamples(final ITypeName type);
 }

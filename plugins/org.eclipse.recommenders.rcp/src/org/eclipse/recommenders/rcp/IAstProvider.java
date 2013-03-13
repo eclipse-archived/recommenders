@@ -15,5 +15,5 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public interface IAstProvider {
 
-    public CompilationUnit get(final ICompilationUnit compilationUnit);
+    CompilationUnit get(final ICompilationUnit compilationUnit);
 }

@@ -24,57 +24,57 @@ public interface IMethodName extends IName, Comparable<IMethodName>, Serializabl
     /**
      * Returns the a string containing the argument and return types.
      */
-    public abstract String getDescriptor();
+    String getDescriptor();
 
     /**
      * Returns the name, i.e., the char sequence between the declaring type and the brackets. Example: Invoking
      * getName() on MethdName like "Ljava/lang/Object.equals(Ljava/lang/Object;)Z" will result in "equals".
      */
-    public abstract String getName();
+    String getName();
 
     /**
      * Returns the method name followed by its descriptor.
      * 
      * @see #getDescriptor()
      */
-    public abstract String getSignature();
+    String getSignature();
 
     /**
      * (Misleading name) Returns {@code true} iff this method name is identical to the given method but ignores the
      * declaring type. This kind of similarity is used to check whether one method may override another method (but note
      * this criterion is required but not sufficient to check the overrides relation between two methods!).
      */
-    public abstract boolean similar(final IMethodName other);
+    boolean similar(final IMethodName other);
 
     /**
      * Returns the {@link ITypeName} of the declaring class, i.e., the class that statically defines this method.
      */
-    public abstract ITypeName getDeclaringType();
+    ITypeName getDeclaringType();
 
     /**
      * Returns the declared parameter types of this method.
      */
-    public abstract ITypeName[] getParameterTypes();
+    ITypeName[] getParameterTypes();
 
     /**
      * Returns the declared return type of this method.
      */
-    public abstract ITypeName getReturnType();
+    ITypeName getReturnType();
 
     /**
      * Returns {@code true} if the method's identifier equals <i>&lt;init&gt;</i>.
      */
-    public abstract boolean isInit();
+    boolean isInit();
 
     /**
      * Returns {@code true} if the method's identifier equals <i>&lt;clinit&gt;</i>.
      */
-    public abstract boolean isStaticInit();
+    boolean isStaticInit();
 
     /**
      * Returns {@code true} iff this method is synthetic, i.e., it contains a $ sign in its identifier
      */
-    public abstract boolean isSynthetic();
+    boolean isSynthetic();
 
     /**
      * Returns the fully qualified name of this method which consists of
@@ -87,9 +87,9 @@ public interface IMethodName extends IName, Comparable<IMethodName>, Serializabl
      * representation java types.
      */
     @Override
-    public abstract String toString();
+    String toString();
 
-    public abstract boolean isVoid();
+    boolean isVoid();
 
-    public abstract boolean hasParameters();
+    boolean hasParameters();
 }

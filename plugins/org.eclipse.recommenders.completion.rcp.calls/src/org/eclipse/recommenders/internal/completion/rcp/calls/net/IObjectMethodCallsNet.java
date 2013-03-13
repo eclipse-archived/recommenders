@@ -25,43 +25,42 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 
 public interface IObjectMethodCallsNet {
 
-    public abstract ITypeName getType();
+    ITypeName getType();
 
-    public abstract void setCalled(final IMethodName calledMethod);
+    void setCalled(final IMethodName calledMethod);
 
-    public abstract void clearEvidence();
+    void clearEvidence();
 
-    public abstract void setMethodContext(final IMethodName newActiveMethodContext);
+    void setMethodContext(final IMethodName newActiveMethodContext);
 
-    public abstract void setKind(final DefinitionSite.Kind newKind);
+    void setKind(final DefinitionSite.Kind newKind);
 
-    public abstract void setDefinition(final IMethodName newDefinition);
+    void setDefinition(final IMethodName newDefinition);
 
-    public abstract void setObservedMethodCalls(final @Nullable ITypeName rebaseType,
-            final Set<IMethodName> invokedMethods);
+    void setObservedMethodCalls(@Nullable final ITypeName rebaseType, final Set<IMethodName> invokedMethods);
 
-    public abstract void setQuery(final ObjectUsage query);
+    void setQuery(final ObjectUsage query);
 
-    public abstract SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold);
+    SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold);
 
-    public abstract SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(
-            final double minProbabilityThreshold, final int maxNumberOfRecommendations);
+    SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold,
+            final int maxNumberOfRecommendations);
 
-    public abstract List<Tuple<String, Double>> getPatternsWithProbability();
+    List<Tuple<String, Double>> getPatternsWithProbability();
 
-    public abstract void setPattern(final String patternName);
+    void setPattern(final String patternName);
 
-    public abstract Collection<IMethodName> getMethodCalls();
+    Collection<IMethodName> getMethodCalls();
 
-    public abstract Collection<IMethodName> getContexts();
+    Collection<IMethodName> getContexts();
 
-    public abstract IMethodName getActiveContext();
+    IMethodName getActiveContext();
 
-    public abstract IMethodName getActiveDefinition();
+    IMethodName getActiveDefinition();
 
-    public abstract Kind getActiveKind();
+    Kind getActiveKind();
 
-    public abstract Set<IMethodName> getActiveCalls();
+    Set<IMethodName> getActiveCalls();
 
-    public abstract Set<Tuple<String, Double>> getDefinitions();
+    Set<Tuple<String, Double>> getDefinitions();
 }

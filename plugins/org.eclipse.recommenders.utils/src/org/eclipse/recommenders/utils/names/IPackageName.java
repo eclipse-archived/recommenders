@@ -18,6 +18,5 @@ public interface IPackageName extends IName, Comparable<IPackageName> {
     /**
      * @return True, if the package is the default package, i.e. its identifier is empty.
      */
-    public boolean isDefaultPackage();
-
+    boolean isDefaultPackage();
 }

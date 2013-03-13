@@ -13,15 +13,13 @@ package org.eclipse.recommenders.utils.names;
 import java.io.Serializable;
 
 /**
- * A {@link IVariableName} is basically the full qualified method name. This
- * class provides an easy way to access the information available in such a
- * method name (like isInit, isSyntetic etc.) and provides some safety checks
- * for the format of such a full qualified name.
+ * A {@link IVariableName} is basically the full qualified method name. This class provides an easy way to access the
+ * information available in such a method name (like isInit, isSyntetic etc.) and provides some safety checks for the
+ * format of such a full qualified name.
  */
 public interface IVariableName extends IName, Comparable<IVariableName>, Serializable {
 
-    public abstract String getName();
+    String getName();
 
-    public abstract IMethodName getDeclaringMethod();
-
+    IMethodName getDeclaringMethod();
 }

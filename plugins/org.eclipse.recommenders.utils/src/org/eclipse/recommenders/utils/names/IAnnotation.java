@@ -12,7 +12,7 @@ import org.eclipse.recommenders.utils.annotations.Provisional;
 @Provisional
 public interface IAnnotation {
 
-    public ITypeName getAnnotationType();
+    ITypeName getAnnotationType();
 
     // TODO information about the runtime entity's field values should be added here
 }

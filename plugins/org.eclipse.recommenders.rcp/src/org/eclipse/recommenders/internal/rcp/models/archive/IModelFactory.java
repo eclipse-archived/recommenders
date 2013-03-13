@@ -14,18 +14,17 @@ import java.io.Closeable;
 
 public interface IModelFactory<K, M> extends Closeable {
 
-    public void open();
+    void open();
 
-    public boolean validateModel(K key, M model);
+    boolean validateModel(K key, M model);
 
-    public void passivateModel(K key, M model) throws Exception;
+    void passivateModel(K key, M model) throws Exception;
 
-    public boolean hasModel(K key);
+    boolean hasModel(K key);
 
-    public M createModel(K key) throws Exception;
+    M createModel(K key) throws Exception;
 
-    public void destroyModel(K key, M obj) throws Exception;
+    void destroyModel(K key, M obj) throws Exception;
 
-    public void activateModel(K key, M model) throws Exception;
-
+    void activateModel(K key, M model) throws Exception;
 }

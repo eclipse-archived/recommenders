@@ -13,19 +13,17 @@ package org.eclipse.recommenders.utils.names;
 import java.io.Serializable;
 
 /**
- * A {@link IFieldName} is basically the full qualified method name. This class
- * provides an easy way to access the information available in such a method
- * name (like isInit, isSyntetic etc.) and provides some safety checks for the
+ * A {@link IFieldName} is basically the full qualified method name. This class provides an easy way to access the
+ * information available in such a method name (like isInit, isSyntetic etc.) and provides some safety checks for the
  * format of such a full qualified name.
  */
 public interface IFieldName extends IName, Comparable<IFieldName>, Serializable {
     /**
-     * Returns the {@link ITypeName} of the declaring class, i.e., the class
-     * that statically defines this method.
+     * Returns the {@link ITypeName} of the declaring class, i.e., the class that statically defines this method.
      */
-    public abstract ITypeName getDeclaringType();
+    ITypeName getDeclaringType();
 
-    public abstract ITypeName getFieldType();
+    ITypeName getFieldType();
 
-    public abstract String getFieldName();
+    String getFieldName();
 }
