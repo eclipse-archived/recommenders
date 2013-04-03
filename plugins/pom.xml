@@ -70,6 +70,33 @@
 				<artifactId>maven-license-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<!-- Skip execution for this project, but do not skip for child projects. -->
+				<inherited>false</inherited>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+				<executions>
+					<execution>
+						<id>require-about-html</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<inherited>true</inherited>
+						<configuration>
+							<rules>
+								<requireFilesExist>
+									<files>
+										<file>${basedir}/about.html</file>
+									</files>
+								</requireFilesExist>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>animal-sniffer-maven-plugin</artifactId>
 				<executions>
@@ -82,23 +109,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<configuration>
-						<rules>
-							<requireFilesExist>
-								<files>
-									<file>${basedir}/about.html</file>
-								</files>
-							</requireFilesExist>
-						</rules>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
-
 </project>

@@ -325,15 +325,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.0.1</version>
-					<executions>
-						<execution>
-							<id>enforce-files-exist</id>
-							<goals>
-								<goal>enforce</goal>
-							</goals>
-						</execution>
-					</executions>
+					<version>1.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>

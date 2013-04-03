@@ -12,10 +12,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <!-- https://code.google.com/p/docbkx-tools -->
                 <!-- http://docs.codehaus.org/display/MAVENUSER/Docbkx+Maven+Plugin -->
                 <groupId>com.agilejava.docbkx</groupId>

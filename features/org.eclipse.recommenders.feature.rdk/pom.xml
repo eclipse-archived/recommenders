@@ -10,12 +10,4 @@
 	<artifactId>org.eclipse.recommenders.feature.rdk</artifactId>
 	<version>1.0.3-SNAPSHOT</version>
 	<packaging>eclipse-feature</packaging>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 </project>

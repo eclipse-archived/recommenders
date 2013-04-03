@@ -35,6 +35,33 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<!-- Skip execution for this project, but do not skip for child projects. -->
+				<inherited>false</inherited>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+				<executions>
+					<execution>
+						<id>require-feature-properties</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<inherited>true</inherited>
+						<configuration>
+							<rules>
+								<requireFilesExist>
+									<files>
+										<file>${basedir}/feature.properties</file>
+									</files>
+								</requireFilesExist>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-source-feature-plugin</artifactId>
 				<executions>
@@ -82,22 +109,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<configuration>
-						<rules>
-							<requireFilesExist>
-								<files>
-									<file>${basedir}/feature.properties</file>
-								</files>
-							</requireFilesExist>
-						</rules>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 </project>

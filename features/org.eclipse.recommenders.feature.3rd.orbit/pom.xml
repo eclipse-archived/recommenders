@@ -9,12 +9,4 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.eclipse.recommenders.feature.3rd.orbit</artifactId>
 	<packaging>eclipse-feature</packaging>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 </project>
