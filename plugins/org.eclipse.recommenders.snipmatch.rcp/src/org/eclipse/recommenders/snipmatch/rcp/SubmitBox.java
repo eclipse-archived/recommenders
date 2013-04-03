@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.recommenders.snipmatch.core.Effect;
 import org.eclipse.recommenders.snipmatch.core.EffectParameter;
 import org.eclipse.recommenders.snipmatch.core.MatchEnvironment;
@@ -76,7 +77,7 @@ public class SubmitBox extends ClientSwitcher {
     private StyledText codeText;
     private Button insertFormulaButton;
 
-    private static final Font codeFont = new Font(PlatformUI.getWorkbench().getDisplay(), "Courier New", 10, SWT.NORMAL);
+    private final Font codeFont = JFaceResources.getTextFont();
 
     private String editFilePath = null;
 
