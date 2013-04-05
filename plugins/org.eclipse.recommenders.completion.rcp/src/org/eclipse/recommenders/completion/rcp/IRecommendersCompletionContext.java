@@ -105,7 +105,7 @@ public interface IRecommendersCompletionContext {
     /**
      * Returns all completion proposals JDT would have made at the current completion location.
      */
-    public Map<IJavaCompletionProposal, CompletionProposal> getProposals();
+    Map<IJavaCompletionProposal, CompletionProposal> getProposals();
 
     /**
      * Returns a set of expected types names at the given location.

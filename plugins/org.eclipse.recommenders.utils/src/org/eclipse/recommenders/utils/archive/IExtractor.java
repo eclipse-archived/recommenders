@@ -14,6 +14,5 @@ import java.util.jar.JarFile;
 
 public interface IExtractor {
 
-    public abstract void extract(JarFile jarFile) throws Exception;
-
+    void extract(JarFile jarFile) throws Exception;
 }

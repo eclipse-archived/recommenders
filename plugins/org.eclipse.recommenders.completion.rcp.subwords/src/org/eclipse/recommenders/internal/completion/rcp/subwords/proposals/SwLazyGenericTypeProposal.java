@@ -84,7 +84,7 @@ public final class SwLazyGenericTypeProposal extends LazyJavaTypeCompletionPropo
 
     // jdt code below ==============================================
     /** Triggers for types. Do not modify. */
-    private final static char[] GENERIC_TYPE_TRIGGERS = new char[] { '.', '\t', '[', '(', '<', ' ' };
+    private static final char[] GENERIC_TYPE_TRIGGERS = new char[] { '.', '\t', '[', '(', '<', ' ' };
 
     /**
      * Short-lived context information object for generic types. Currently, these are only created after inserting a

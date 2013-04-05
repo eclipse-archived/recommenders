@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
-*/
+ */
 
 package org.eclipse.recommenders.snipmatch.web;
 
@@ -12,7 +12,9 @@ import org.eclipse.recommenders.snipmatch.core.MatchNode;
 
 public interface ISearchListener {
 
-	public void matchFound(MatchNode match);
-	public void searchFailed(String error);
-	public void searchSucceeded();
+    void matchFound(MatchNode match);
+
+    void searchFailed(String error);
+
+    void searchSucceeded();
 }
