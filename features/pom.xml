@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.parent</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+		<version>1.0.3-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.eclipse.recommenders.feature</groupId>
@@ -14,22 +14,22 @@
 	<packaging>pom</packaging>
 
 	<modules>
-        <module>org.eclipse.recommenders.feature.license</module>
-        <module>org.eclipse.recommenders.feature.rcp</module>
-        <module>org.eclipse.recommenders.feature.rcp.core</module>
+		<module>org.eclipse.recommenders.feature.license</module>
+		<module>org.eclipse.recommenders.feature.rcp</module>
+		<module>org.eclipse.recommenders.feature.rcp.core</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.intellig</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.intellig.e37</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.sandbox</module>
-        <module>org.eclipse.recommenders.feature.completion.rcp.chain</module>
-        <module>org.eclipse.recommenders.feature.completion.rcp.chain.e37</module>
+		<module>org.eclipse.recommenders.feature.completion.rcp.chain</module>
+		<module>org.eclipse.recommenders.feature.completion.rcp.chain.e37</module>
 		<module>org.eclipse.recommenders.feature.extdoc.rcp</module>
 		<module>org.eclipse.recommenders.feature.rdk</module>
-        <module>org.eclipse.recommenders.feature.3rd.orbit</module>
-        <module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>
-        <module>org.eclipse.recommenders.feature.3rd.rcp.nonjuno</module>
-        <module>org.eclipse.recommenders.feature.tests</module>
-        <module>org.eclipse.recommenders.feature.snipmatch.rcp</module>
+		<module>org.eclipse.recommenders.feature.3rd.orbit</module>
+		<module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>
+		<module>org.eclipse.recommenders.feature.3rd.rcp.nonjuno</module>
+		<module>org.eclipse.recommenders.feature.tests</module>
+		<module>org.eclipse.recommenders.feature.snipmatch.rcp</module>
 	</modules>
 
 	<build>
@@ -43,15 +43,19 @@
 						<goals>
 							<goal>source-feature</goal>
 						</goals>
-						<phase>package</phase>
 						<configuration>
-							<!-- Exclude 3rd party plugins without sources. -->
+							<!-- Exclude 3rd party plugins without sources (or with remote sources). -->
+							<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=374663 -->
 							<excludes>
+								<plugin id="com.google.gson"/>
 								<plugin id="com.google.inject.assistedinject"/>
 								<plugin id="com.google.inject.multibindings"/>
-								<feature id="org.eclipse.recommenders.feature.3rd.orbit"/>
-								<feature id="org.eclipse.recommenders.feature.3rd.rcp.nonorbit"/>
+								<plugin id="com.ning.async-http-client"/>
+								<plugin id="org.eclipse.recommenders.aether"/>
+								<plugin id="org.jboss.netty"/>
 							</excludes>
+							<!-- Non-breakable space, as normal spaces are trimmed. -->
+							<labelSuffix>&#xA0;(Sources)</labelSuffix>
 						</configuration>
 					</execution>
 				</executions>
@@ -78,7 +82,7 @@
 				</executions>
 			</plugin>
 		</plugins>
-        <pluginManagement>
+		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -91,7 +95,6 @@
 								</files>
 							</requireFilesExist>
 						</rules>
-						<fail>true</fail>
 					</configuration>
 				</plugin>
 			</plugins>

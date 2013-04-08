@@ -44,8 +44,8 @@
 		<url>https://hudson.eclipse.org/hudson</url>
 	</ciManagement>
 	<properties>
-	        <recommenders-version>1.0.3-SNAPSHOT</recommenders-version>
-		<tycho-version>0.16.0</tycho-version>
+		<recommenders-version>1.0.3-SNAPSHOT</recommenders-version>
+		<tycho-version>0.17.0</tycho-version>
 		<tycho-test-jvmArgs></tycho-test-jvmArgs>
 		
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the repository. -->
@@ -176,6 +176,9 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>target-platform-configuration</artifactId>
 					<version>${tycho-version}</version>
+					<configuration>
+						<executionEnvironmentDefault>JavaSE-1.6</executionEnvironmentDefault>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -198,7 +201,6 @@
 					<executions>
 						<execution>
 							<id>attach-source</id>
-							<phase>process-classes</phase>
 							<goals>
 								<goal>plugin-source</goal>
 							</goals>
@@ -332,6 +334,19 @@
 							</goals>
 						</execution>
 					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>animal-sniffer-maven-plugin</artifactId>
+					<version>1.9</version>
+					<configuration>
+						<signature>
+							<groupId>org.codehaus.mojo.signature</groupId>
+							<artifactId>java16</artifactId>
+							<!-- Pre-1.6u18 signature -->
+							<version>1.0</version>
+						</signature>
+					</configuration>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
