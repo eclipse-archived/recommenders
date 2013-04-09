@@ -12,7 +12,10 @@ package org.eclipse.recommenders.utils.rcp.ast;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
+import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Throws.throwCancelationException;
+import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -29,28 +32,102 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.PrimitiveType;
+import org.eclipse.jdt.core.dom.QualifiedName;
+import org.eclipse.jdt.core.dom.QualifiedType;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.UnionType;
+import org.eclipse.jdt.core.dom.WildcardType;
+import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
-import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
 import org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin;
 
 import com.google.common.base.Optional;
-import com.google.inject.Inject;
 
 public class ASTNodeUtils {
-    @Inject
-    private static JavaElementResolver resolver;
+
+    /**
+     * Returns the names top-level identifier, i.e., for "java.lang.String" --&gt; "String" and "String" --&gt; "String"
+     * 
+     * @param name
+     * @return
+     */
+    public static SimpleName stripQualifier(Name name) {
+        switch (name.getNodeType()) {
+        case ASTNode.SIMPLE_NAME:
+            return (SimpleName) name;
+        case ASTNode.QUALIFIED_NAME:
+            return ((QualifiedName) name).getName();
+        default:
+            throw throwUnreachable("unknow subtype of name: '%s'", name.getClass());
+        }
+    }
 
     public static boolean sameSimpleName(final Type jdtParam, final ITypeName crParam) {
-        final String jdtSimpleName = jdtParam.toString();
-        String crSimpleName = crParam.getClassName();
+        String jdtTypeName = toSimpleName(jdtParam);
+        String crSimpleName = toSimpleName(crParam);
+        return jdtTypeName.equals(crSimpleName);
+    }
+
+    private static String toSimpleName(final ITypeName crParam) {
+        String crSimpleName = Names.vm2srcSimpleTypeName(crParam);
         if (crSimpleName.contains("$")) {
             crSimpleName = StringUtils.substringAfterLast(crSimpleName, "$");
         }
-        return jdtSimpleName.equals(crSimpleName);
+        return crSimpleName;
+    }
+
+    /**
+     * Returns the simple name of a given class type, for primitive types their source names "int", "long" etc., for
+     * arrays it returns the element type of the array, for wildcards their bound type, and for union types something
+     * not meaningful.
+     */
+    private static String toSimpleName(Type type) {
+        SimpleName name;
+        switch (type.getNodeType()) {
+        case ASTNode.SIMPLE_TYPE: {
+            SimpleType t = cast(type);
+            name = stripQualifier(t.getName());
+            break;
+        }
+        case ASTNode.QUALIFIED_TYPE: {
+            QualifiedType t = cast(type);
+            name = stripQualifier(t.getName());
+            break;
+        }
+        case ASTNode.PARAMETERIZED_TYPE: {
+            ParameterizedType t = cast(type);
+            return toSimpleName(t.getType());
+        }
+        case ASTNode.PRIMITIVE_TYPE: {
+            PrimitiveType t = cast(type);
+            return t.getPrimitiveTypeCode().toString();
+        }
+        case ASTNode.WILDCARD_TYPE: {
+            WildcardType t = cast(type);
+            return toSimpleName(t.getBound());
+        }
+        case ASTNode.UNION_TYPE: {
+            // TODO: that will probably not work with any name matching...
+            UnionType t = cast(type);
+            return "UnionType" + t.types().toString();
+        }
+        case ASTNode.ARRAY_TYPE: {
+            ArrayType t = cast(type);
+            return toSimpleName(t.getElementType()) + repeat("[]", t.getDimensions());
+        }
+        default:
+            throw throwUnreachable("no support for type '%s'", type);
+        }
+
+        return name.getIdentifier();
     }
 
     public static Type getBaseType(final Type jdtType) {
@@ -125,7 +202,7 @@ public class ASTNodeUtils {
             if (jdtParam.isPrimitiveType()) {
                 continue;
             }
-            if (jdtParam.isSimpleType() && !sameSimpleName(jdtParam, crParam)) {
+            if (!sameSimpleName(jdtParam, crParam)) {
                 return false;
             }
         }
