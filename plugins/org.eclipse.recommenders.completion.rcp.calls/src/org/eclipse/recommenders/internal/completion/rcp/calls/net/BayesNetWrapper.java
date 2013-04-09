@@ -298,8 +298,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
     public List<Tuple<String, Double>> getPatternsWithProbability() {
         final double[] probs = junctionTreeAlgorithm.getBeliefs(callgroupNode);
         final List<Tuple<String, Double>> res = Lists.newArrayListWithCapacity(probs.length);
-        final Set<String> outcomes = callgroupNode.getOutcomes();
-        for (final String outcome : outcomes) {
+        for (final String outcome : callgroupNode.getOutcomes()) {
             final int probIndex = callgroupNode.getOutcomeIndex(outcome);
             final double p = probs[probIndex];
             if (0.01 > p) {
@@ -322,9 +321,8 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
 
     @Override
     public Collection<IMethodName> getContexts() {
-        final Set<String> outcomes = contextNode.getOutcomes();
         final LinkedList<IMethodName> result = new LinkedList<IMethodName>();
-        for (final String outcome : outcomes) {
+        for (final String outcome : contextNode.getOutcomes()) {
             result.add(VmMethodName.get(outcome));
         }
         return result;
