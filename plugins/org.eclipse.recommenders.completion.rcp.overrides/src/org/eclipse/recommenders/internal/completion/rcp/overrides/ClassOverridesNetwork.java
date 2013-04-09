@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.utils.Checks.ensureEquals;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -71,6 +72,14 @@ public class ClassOverridesNetwork {
         if (methodNode != null) {
             junctionTreeAlgorithm.addEvidence(methodNode, "true");
         }
+    }
+
+    public ITypeName getType() {
+        return typeName;
+    }
+
+    public Set<IMethodName> getMethods() {
+        return Sets.newHashSet(methodNameMapping.keySet());
     }
 
     public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodOverrides(final double minProbability) {
