@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
@@ -39,15 +40,15 @@ import com.google.common.io.OutputSupplier;
 
 public class Zips {
 
-    public static void unzip(File source, File dest) throws IOException {
+    public static void unzip(File zipFile, File destFolder) throws IOException {
         ZipInputStream zis = null;
         try {
-            InputSupplier<FileInputStream> fis = Files.newInputStreamSupplier(source);
+            InputSupplier<FileInputStream> fis = Files.newInputStreamSupplier(zipFile);
             zis = new ZipInputStream(fis.getInput());
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 if (!entry.isDirectory()) {
-                    final File file = new File(dest, entry.getName());
+                    final File file = new File(destFolder, entry.getName());
                     Files.createParentDirs(file);
                     Files.write(ByteStreams.toByteArray(zis), file);
                 }
@@ -75,8 +76,25 @@ public class Zips {
         }
     }
 
+    /**
+     * Creates a standard path for the given type name. Package names are replaced by "/". The final name is constructed
+     * as follows: "&lt;package&lg;/&lt;className&lg;&lt;extension&lg;
+     * <p>
+     * Note: if the path should contain a "." before the extension, it needs to be specified in the extension (e.g., by
+     * specifying ".json" instead of just using "json").
+     */
     public static String path(ITypeName type, @Nullable String suffix) {
         String name = StringUtils.removeStart(type.getIdentifier(), "L");
+        return suffix == null ? name : name + suffix;
+    }
+
+    /**
+     * Returns a path representing this package. The path is actually the package identifier itself.
+     * 
+     * @see IPackageName#getIdentifier()
+     */
+    public static String path(IPackageName pkg, @Nullable String suffix) {
+        String name = pkg.getIdentifier();
         return suffix == null ? name : name + suffix;
     }
 
@@ -91,7 +109,9 @@ public class Zips {
         char[] chars = name.toCharArray();
         chars[start] = '.';
         for (int i = start + 1; i < chars.length; i++) {
-            if (chars[i] == '.') chars[i] = '/';
+            if (chars[i] == '.') {
+                chars[i] = '/';
+            }
         }
         return VmMethodName.get(new String(chars));
     }
