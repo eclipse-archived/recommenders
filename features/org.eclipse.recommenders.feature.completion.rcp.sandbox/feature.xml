@@ -31,11 +31,23 @@
       %license
    </license>
 
+   <requires>
+      <import feature="org.eclipse.recommenders.feature.rcp.core" version="1.0.3.qualifier"/>
+   </requires>
+
    <plugin
          id="org.eclipse.recommenders.completion.rcp.sandbox"
          download-size="0"
          install-size="0"
          version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.completion.rcp.e38"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>
