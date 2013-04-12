@@ -74,20 +74,27 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
     }
 
     @Override
+    public void sessionEnded() {
+        fireAboutToClose();
+    }
+
+    @Override
     public List<ICompletionProposal> computeCompletionProposals(ContentAssistInvocationContext context,
             IProgressMonitor monitor) {
 
         List<ICompletionProposal> res = Lists.newLinkedList();
 
-        if (!(context instanceof JavaContentAssistInvocationContext)) return res;
+        if (!(context instanceof JavaContentAssistInvocationContext)) {
+            return res;
+        }
 
         storeContext(context);
         registerCompletionListener();
 
         fireStartSession(crContext);
         for (Entry<IJavaCompletionProposal, CompletionProposal> pair : crContext.getProposals().entrySet()) {
-            IJavaCompletionProposal proposal =
-                    ProcessableProposalFactory.create(pair.getValue(), pair.getKey(), jdtContext, proposalFactory);
+            IJavaCompletionProposal proposal = ProcessableProposalFactory.create(pair.getValue(), pair.getKey(),
+                    jdtContext, proposalFactory);
             res.add(proposal);
             if (proposal instanceof IProcessableProposal) {
                 fireProcessProposal((IProcessableProposal) proposal);
@@ -122,6 +129,7 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
     protected void fireProcessProposal(IProcessableProposal proposal) {
         for (SessionProcessor p : processors) {
             try {
+                int relevance = proposal.getRelevance();
                 p.process(proposal);
             } catch (Exception e) {
                 RecommendersPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
@@ -144,6 +152,16 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
         for (SessionProcessor p : processors) {
             try {
                 p.aboutToShow(proposals);
+            } catch (Exception e) {
+                RecommendersPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
+            }
+        }
+    }
+
+    protected void fireAboutToClose() {
+        for (SessionProcessor p : processors) {
+            try {
+                p.aboutToClose();
             } catch (Exception e) {
                 RecommendersPlugin.logError(e, "session processor '%s' failed with exception.", p.getClass());
             }
@@ -193,6 +211,8 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
      * to get notified about apply events.
      */
     private void unregisterCompletionListener() {
-        if (contentAssist != null) contentAssist.removeCompletionListener(this);
+        if (contentAssist != null) {
+            contentAssist.removeCompletionListener(this);
+        }
     }
 }

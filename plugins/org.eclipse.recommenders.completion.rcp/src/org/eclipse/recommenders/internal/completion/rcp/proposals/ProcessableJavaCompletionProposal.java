@@ -21,17 +21,17 @@ import org.eclipse.recommenders.completion.rcp.ProposalProcessorManager;
 
 import com.google.common.base.Optional;
 
-public class ProcessableJavaCompletionProposal extends org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal implements
-        IProcessableProposal {
+public class ProcessableJavaCompletionProposal extends org.eclipse.jdt.internal.ui.text.java.JavaCompletionProposal
+        implements IProcessableProposal {
 
     private ProposalProcessorManager mgr;
-    private CompletionProposal coreProposal;
+    private final CompletionProposal coreProposal;
     private String lastPrefix;
 
     protected ProcessableJavaCompletionProposal(CompletionProposal coreProposal, JavaCompletionProposal uiProposal,
             JavaContentAssistInvocationContext context) throws JavaModelException {
         super(uiProposal.getReplacementString(), coreProposal.getReplaceStart(), uiProposal.getReplacementLength(),
-                uiProposal.getImage(), uiProposal.getStyledDisplayString(), coreProposal.getRelevance(), true, context);
+                uiProposal.getImage(), uiProposal.getStyledDisplayString(), uiProposal.getRelevance(), true, context);
         this.coreProposal = coreProposal;
     }
 
@@ -52,10 +52,13 @@ public class ProcessableJavaCompletionProposal extends org.eclipse.jdt.internal.
     @Override
     public Optional<CompletionProposal> getCoreProposal() {
         return fromNullable(coreProposal);
-    }    @Override
+    }
+
+    @Override
     public ProposalProcessorManager getProposalProcessorManager() {
         return mgr;
     }
+
     @Override
     public void setProposalProcessorManager(ProposalProcessorManager mgr) {
         this.mgr = mgr;

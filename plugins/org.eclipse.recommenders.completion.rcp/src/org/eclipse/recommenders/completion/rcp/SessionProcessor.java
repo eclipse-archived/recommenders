@@ -63,4 +63,11 @@ public abstract class SessionProcessor {
     public void applied(ICompletionProposal proposal) {
     }
 
+    /**
+     * Called when a completion session is is about to end. this method may or may not be called before
+     * {@link #applied(ICompletionProposal)). Implementors have to deal with this as this event is controlled JDT and
+     * programmed inconsistently.
+     */
+    public void aboutToClose() {
+    }
 }

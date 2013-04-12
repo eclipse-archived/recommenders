@@ -22,28 +22,19 @@
    <extension
          point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
       <processor
-            class="org.eclipse.recommenders.internal.completion.rcp.sandbox.Subwords2SessionProcessor"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.sandbox.StatisticsSessionProcessor"
             icon="icons/elcl16/category.gif"
-            id="org.eclipse.recommenders.completion.rcp.subwords2.processor"
-            name="Assigment Name Processor">
+            id="org.eclipse.recommenders.completion.rcp.processors.statistics"
+            name="Statistics">
       </processor>
-      <processor
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.sandbox.TypeProposalsProcessor"
-            icon="icons/elcl16/category.gif"
-            id="org.eclipse.recommenders.completion.rcp.types.processor"
-            name="Types">
-      </processor>
-      <processor
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.sandbox.HippieCompletionSessionProcessor"
-            icon="icons/elcl16/category.gif"
-            id="org.eclipse.recommenders.completion.rcp.hippie.processor"
-            name="Hippie">
-      </processor>
-      <processor
-            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.sandbox.TypoSessionProcessor"
-            icon="icons/elcl16/category.gif"
-            id="org.eclipse.recommenders.completion.rcp.typo.processor"
-            name="Typo">
-      </processor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.recommenders.rcp.category.preferences"
+            class="org.eclipse.recommenders.internal.completion.rcp.sandbox.StatisticsPreferencePage"
+            id="org.eclipse.recommenders.completion.rcp.sandbox.preferencespage"
+            name="Statistics">
+      </page>
    </extension>
 </plugin>

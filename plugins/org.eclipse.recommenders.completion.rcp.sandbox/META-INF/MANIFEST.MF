@@ -17,6 +17,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.utils,
  org.eclipse.recommenders.utils.rcp,
  org.eclipse.ui.editors,
- org.eclipse.ui
+ org.eclipse.ui,
+ org.eclipse.recommenders.rcp,
+ org.eclipse.recommenders.rcp,
+ com.google.gson;bundle-version="2.1.0",
+ org.apache.commons.math;bundle-version="2.1.0",
+ org.apache.commons.primitives;bundle-version="1.0.0",
+ org.eclipse.recommenders.completion.rcp
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

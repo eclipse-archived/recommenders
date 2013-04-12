@@ -23,10 +23,10 @@ import com.google.common.collect.Sets;
 @Provisional
 public class ProposalProcessorManager {
 
-    private Set<ProposalProcessor> processors = Sets.newLinkedHashSet();
-    private IProcessableProposal proposal;
-    private StyledString orgDisplayString;
-    private int orgRelevance;
+    private final Set<ProposalProcessor> processors = Sets.newLinkedHashSet();
+    private final IProcessableProposal proposal;
+    private final StyledString orgDisplayString;
+    private final int orgRelevance;
 
     public ProposalProcessorManager(IProcessableProposal proposal) {
         this.proposal = proposal;
@@ -48,7 +48,7 @@ public class ProposalProcessorManager {
             p.modifyDisplayString(tmpStyledString);
             tmpRelevance += p.modifyRelevance();
         }
-        proposal.setRelevance(tmpRelevance);
+        proposal.setRelevance(tmpRelevance == 0 ? orgRelevance : tmpRelevance);
         proposal.setStyledDisplayString(tmpStyledString);
         return discardProposal;
     }
