@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.internal.completion.rcp.sandbox;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.SystemUtils.LINE_SEPARATOR;
 import static org.eclipse.recommenders.internal.completion.rcp.sandbox.CompletionEvent.ProposalKind.toKind;
 
@@ -107,7 +108,7 @@ public class StatisticsSessionProcessor extends SessionProcessor implements Clos
     public void startSession(IRecommendersCompletionContext ctx) {
         flushCurrentEvent();
         event = new CompletionEvent();
-        event.sessionStarted = event.sessionEnded = System.currentTimeMillis();
+        event.sessionStarted = System.currentTimeMillis();
         event.completionKind = ctx.getCompletionNode().or(NULL).getClass().getSimpleName();
         IType receiverType = ctx.getReceiverType().orNull();
         if (receiverType != null) {
@@ -145,6 +146,9 @@ public class StatisticsSessionProcessor extends SessionProcessor implements Clos
                 event.prefix = p.getPrefix();
                 event.applied = toKind(coreProposal.getKind());
                 event.completion = new String(coreProposal.getCompletion());
+                if (ProposalKind.UNKNOWN == event.applied && isEmpty(event.completion)) {
+                    event.error = coreProposal.toString();
+                }
             }
         } else if (proposal instanceof AbstractJavaCompletionProposal) {
             event.applied = ProposalKind.UNKNOWN;

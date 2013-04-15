@@ -78,4 +78,5 @@ public class CompletionEvent {
     public String completion;
     public ITypeName receiverType;
     public ProposalKind applied;
+    public String error;
 }
