@@ -110,6 +110,7 @@ public class StatisticsSessionProcessor extends SessionProcessor implements Clos
         event = new CompletionEvent();
         event.sessionStarted = System.currentTimeMillis();
         event.completionKind = ctx.getCompletionNode().or(NULL).getClass().getSimpleName();
+        event.completionParentKind = ctx.getCompletionNodeParent().or(NULL).getClass().getSimpleName();
         IType receiverType = ctx.getReceiverType().orNull();
         if (receiverType != null) {
             event.receiverType = resolver.toRecType(receiverType);

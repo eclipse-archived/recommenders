@@ -74,6 +74,7 @@ public class CompletionEvent {
     public long sessionEnded;
     public int numberOfProposals;
     public String completionKind;
+    public String completionParentKind;
     public String prefix;
     public String completion;
     public ITypeName receiverType;
