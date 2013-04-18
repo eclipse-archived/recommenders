@@ -27,6 +27,13 @@
             id="org.eclipse.recommenders.completion.rcp.processors.statistics"
             name="Statistics">
       </processor>
+      <processor
+            class="org.eclipse.recommenders.internal.completion.rcp.sandbox.BaseRelevanceSessionProcessor"
+            icon="icons/elcl16/category.gif"
+            id="org.eclipse.recommenders.completion.rcp.sandbox.baserelevanceprocessor"
+            name="JDT Base Relevance Adder"
+            priority="0">
+      </processor>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">

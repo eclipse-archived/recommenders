@@ -39,18 +39,18 @@ public class ProposalProcessorManager {
     }
 
     public boolean prefixChanged(String prefix) {
-        boolean discardProposal = false;
+        boolean keepProposal = false;
         StyledString tmpStyledString = deepCopy(orgDisplayString);
         int tmpRelevance = 0;
 
         for (ProposalProcessor p : processors) {
-            discardProposal |= p.isPrefix(prefix);
+            keepProposal |= p.isPrefix(prefix);
             p.modifyDisplayString(tmpStyledString);
             tmpRelevance += p.modifyRelevance();
         }
-        proposal.setRelevance(tmpRelevance == 0 ? orgRelevance : tmpRelevance);
+        proposal.setRelevance(tmpRelevance);
         proposal.setStyledDisplayString(tmpStyledString);
-        return discardProposal;
+        return keepProposal;
     }
 
     public static StyledString deepCopy(final StyledString displayString) {

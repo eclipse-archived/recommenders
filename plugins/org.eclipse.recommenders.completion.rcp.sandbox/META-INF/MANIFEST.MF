@@ -26,3 +26,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.recommenders.completion.rcp
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.recommenders.internal.completion.rcp.sandbox;x-internal:=true
