@@ -56,7 +56,7 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
     private final class BuggyEventsPredicate implements Predicate<CompletionEvent> {
         @Override
         public boolean apply(CompletionEvent input) {
-            return input.numberOfProposals < 1 || input.sessionEnded < input.sessionStarted;
+            return (input.numberOfProposals < 1) || (input.sessionEnded < input.sessionStarted);
         }
     }
 
@@ -100,8 +100,8 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
     protected Control createContents(Composite parent) {
         createWidgets(parent);
         appendNumberOfCompletionEvents();
-        appendTimeSpent();
         appendNumberOfKeystrokesSaved();
+        appendTimeSpent();
         appendNumberOfCompletionsByCompletionKind();
         appendNumberOfCompletionsByReceiverType();
 
@@ -143,14 +143,25 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         for (CompletionEvent e : okayEvents) {
             total += e.numberOfProposals;
         }
-        int selected = appliedEvents.size();
+        int completedInPercent = calculatePercentData(appliedEvents);
         styledString.append("Number of times code completion triggered: ")
                 .append(format("%,d", okayEvents.size()), COUNTER_STYLER).append("\n");
-        int aborted = abortedEvents.size();
+        int abortedInPercent = calculatePercentData(abortedEvents);
+
+        styledString.append("Number of concluded completions: ")
+                .append(appliedEvents.size() + " (" + completedInPercent + "%)", COUNTER_STYLER).append("\n");
+        styledString.append("Number of aborted completions: ")
+                .append(abortedEvents.size() + " (" + abortedInPercent + "%)", COUNTER_STYLER).append("\n");
         styledString.append("Number of proposals offered by code completion: ").append(total + "", COUNTER_STYLER)
                 .append("\n");
-        styledString.append("Number of aborted completions: ").append(aborted + "", COUNTER_STYLER).append("\n");
-        styledString.append("Number of concluded completions: ").append(selected + "", COUNTER_STYLER).append("\n");
+    }
+
+    private int calculatePercentData(Collection<CompletionEvent> list) {
+        if (okayEvents.size() == 0) {
+            return okayEvents.size();
+        }
+        double division = (list.size() / (double) okayEvents.size()) * 100;
+        return (int) Math.round(division);
     }
 
     private void appendNumberOfKeystrokesSaved() {
@@ -169,6 +180,7 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         double mean = mean(strokes.toArray());
         styledString.append("Average number of keystrokes saved per completion: ").append(format("%.2f", mean),
                 COUNTER_STYLER);
+        styledString.append("\n");
     }
 
     private void appendTimeSpent() {
@@ -190,9 +202,7 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         //
                 .append("\n   - concluded session:    ").append(format("%,d ms", meanApplied), COUNTER_STYLER)
                 //
-                .append("\n   - aborted session:     ").append(format("%,d ms", meanAborted), COUNTER_STYLER)
-                //
-                .append("\n");
+                .append("\n   - aborted session:     ").append(format("%,d ms", meanAborted), COUNTER_STYLER);
     }
 
     private String toTimeString(long time) {
@@ -216,13 +226,14 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
 
         Bag<ProposalKind> b = TreeBag.newTreeBag();
         for (final ProposalKind kind : ProposalKind.values()) {
-            Collection<CompletionEvent> byKind = Collections2.filter(okayEvents, new Predicate<CompletionEvent>() {
+            Collection<CompletionEvent> byKind = Collections2.filter(okayEvents,
+                    new Predicate<CompletionEvent>() {
 
-                @Override
-                public boolean apply(CompletionEvent input) {
-                    return kind == input.applied;
-                }
-            });
+                        @Override
+                        public boolean apply(CompletionEvent input) {
+                            return kind == input.applied;
+                        }
+                    });
             if (byKind.size() > 0) {
                 b.add(kind, byKind.size());
             }
