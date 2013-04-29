@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.parent</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+		<version>1.0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>org.eclipse.recommenders.tests</groupId>
 	<artifactId>org.eclipse.recommenders.tests.parent</artifactId>
@@ -21,38 +21,6 @@
 		<!--module>org.eclipse.recommenders.tests.ui</module-->
 		<!--module>org.eclipse.recommenders.tests.snipmatch.rcp</module-->
 	</modules>
-    <profiles>
-        <profile>
-            <id>osx</id>
-            <activation>
-                <os><family>mac</family></os>
-            </activation>
-            <properties>
-                <tycho-test-jvmArgs>-XstartOnFirstThread</tycho-test-jvmArgs>
-            </properties>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.eclipse.tycho</groupId>
-                            <artifactId>tycho-surefire-plugin</artifactId>
-                            <version>${tycho-version}</version>
-                            <configuration>
-                                <appArgLine>-XstartOnFirstThread</appArgLine>
-                                <dependencies combine.children="append">
-                                    <dependency>
-                                        <artifactId>org.eclipse.jdt.launching.macosx</artifactId>
-                                        <version>3.2.100</version>
-                                        <type>eclipse-plugin</type>
-                                    </dependency>
-                                </dependencies>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-    </profiles>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -60,24 +28,10 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<configuration>
-						<!-- don't run tests in UI thread and harness per default (i.e., run them headless). Can modules overwrite that? -->
-						<!-- see http://wiki.eclipse.org/Minerva#Headless_Tests -->
-						<!-- see http://wiki.eclipse.org/Tycho/Packaging_Types#eclipse-test-plugin for semantics of useUIHarness etc. -->
-						<useUIHarness>false</useUIHarness>
-						<useUIThread>false</useUIThread>
-						<!-- increase memory for test execution and enable mac execution by using +XstartOnFirstThread -->
-						<!-- STOP: using argline overwrites the jacoco arguments. DON'T use them -->
-						<!-- argLine>-Xms256m -Xmx512m -XX:MaxPermSize=256M -XstartOnFirstThread</argLine -->
-						<!-- Convention: We don't use test suites. All Test classes should end with "*Test.java". Everything else is not executed 
-							by default. Modules may overwrite this? -->
-						<includes>
-							<!-- see http://intellectualcramps.wordpress.com/2011/06/04/tycho-surefire-test-setup-tips/ -->
-							<!-- see http://maksim.sorokin.dk/it/2010/12/21/tests-in-tycho/ -->
-							<include>**/*Test.java</include>
-						</includes>
+						<!-- Use ${tycho.testArgLine} as set by jacoco-maven-plugin -->
+						<argLine>${tycho.testArgLine}</argLine>
 						<!-- Kill test JVM if tests take more than 5 minutes (300 seconds) to finish -->
 						<forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
-						<argLine append="true">${tycho.testArgLine}</argLine>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -94,6 +48,22 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<skip>${coverage.skip}</skip>
+							<destFile>${coverage.destFile}</destFile>
+							<includes>
+								<include>${coverage.filter}</include>
+							</includes>
+							<append>true</append>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -115,7 +85,7 @@
 					<dependency>
 						<groupId>org.jacoco</groupId>
 						<artifactId>org.jacoco.ant</artifactId>
-						<version>0.5.6.201201232323</version>
+						<version>0.6.2.201302030002</version>
 					</dependency>
 					<dependency>
 						<groupId>ant-contrib</groupId>
@@ -207,4 +177,27 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>mac</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.eclipse.tycho</groupId>
+							<artifactId>tycho-surefire-plugin</artifactId>
+							<configuration>
+								<argLine>-XstartOnFirstThread ${tycho.testArgLine}</argLine>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
 </project>

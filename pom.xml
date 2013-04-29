@@ -149,26 +149,6 @@
 				<artifactId>tycho-maven-plugin</artifactId>
 				<extensions>true</extensions>
 			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.5.6.201201232323</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration>
-							<skip>${coverage.skip}</skip>
-							<destFile>${coverage.destFile}</destFile>
-							<includes>
-								<include>${coverage.filter}</include>
-							</includes>
-							<append>true</append>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -339,6 +319,11 @@
 							<version>1.0</version>
 						</signature>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.6.2.201302030002</version>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>

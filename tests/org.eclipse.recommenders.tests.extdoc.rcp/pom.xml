@@ -1,14 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.eclipse.recommenders.tests</groupId>
 		<artifactId>org.eclipse.recommenders.tests.parent</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+		<version>1.0.3-SNAPSHOT</version>
 	</parent>
-	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.eclipse.recommenders.tests.extdoc.rcp</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -17,9 +16,6 @@
 				<configuration>
 					<useUIHarness>true</useUIHarness>
 					<useUIThread>false</useUIThread>
-                    <argLine>-Xmx1G -XX:MaxPermSize=256m ${tycho-test-jvmArgs}</argLine>
-					<product>org.eclipse.sdk.ide</product>
-					<application>org.eclipse.ui.ide.workbench</application>
 				</configuration>
 			</plugin>
 		</plugins>
