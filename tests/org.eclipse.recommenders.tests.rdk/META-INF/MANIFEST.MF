@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Tests for RDK
 Bundle-SymbolicName: org.eclipse.recommenders.tests.rdk
-Bundle-Version: 1.0.3.qualifier
+Bundle-Version: 1.0.4.qualifier
 Require-Bundle: org.junit;bundle-version="4.10.0",
  org.eclipse.recommenders.rdk,
  org.eclipse.recommenders.aether;bundle-version="1.0.0",

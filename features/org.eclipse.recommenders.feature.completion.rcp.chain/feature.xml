@@ -14,7 +14,7 @@
 <feature
       id="org.eclipse.recommenders.feature.completion.rcp.chain"
       label="Code Recommenders: Chain Completion"
-      version="1.0.3.qualifier"
+      version="1.0.4.qualifier"
       provider-name="Eclipse Code Recommenders"
       license-feature="org.eclipse.recommenders.feature.license"
       license-feature-version="0.0.0">

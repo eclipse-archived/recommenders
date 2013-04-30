@@ -14,7 +14,7 @@
 <feature
       id="org.eclipse.recommenders.feature.extdoc.rcp"
       label="Code Recommenders: Extended Documentation Platform"
-      version="1.0.3.qualifier"
+      version="1.0.4.qualifier"
       provider-name="Eclipse Code Recommenders"
       license-feature="org.eclipse.recommenders.feature.license"
       license-feature-version="0.0.0">

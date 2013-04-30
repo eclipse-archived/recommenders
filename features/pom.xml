@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.parent</artifactId>
-		<version>1.0.3-SNAPSHOT</version>
+		<version>1.0.4-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.eclipse.recommenders.feature</groupId>
@@ -29,8 +29,23 @@
 		<module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>
 		<module>org.eclipse.recommenders.feature.3rd.rcp.nonjuno</module>
 		<module>org.eclipse.recommenders.feature.tests</module>
-		<module>org.eclipse.recommenders.feature.snipmatch.rcp</module>
 	</modules>
+
+	<profiles>
+		<!-- Snipmatch unsupported under 4.3 -->
+		<profile>
+			<id>e3x</id>
+			<modules>
+				<module>org.eclipse.recommenders.feature.snipmatch.rcp</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>e42</id>
+			<modules>
+				<module>org.eclipse.recommenders.feature.snipmatch.rcp</module>
+			</modules>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>

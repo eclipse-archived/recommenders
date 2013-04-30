@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: SnipMatch Tests (Incubation)
 Bundle-SymbolicName: org.eclipse.recommenders.tests.snipmatch.rcp
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.4.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.recommenders.snipmatch.rcp,

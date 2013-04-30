@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Dynamic Templates Completion
 Bundle-SymbolicName: org.eclipse.recommenders.completion.rcp.templates;singleton:=true
-Bundle-Version: 1.0.3.qualifier
+Bundle-Version: 1.0.4.qualifier
 Bundle-ClassPath: .,
  /metadata
 Bundle-Vendor: Eclipse Code Recommenders

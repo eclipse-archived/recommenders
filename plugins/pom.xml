@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.parent</artifactId>
-		<version>1.0.3-SNAPSHOT</version>
+		<version>1.0.4-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.eclipse.recommenders.plugin</groupId>
@@ -33,7 +33,6 @@
 		<module>org.eclipse.recommenders.utils</module>
 		<module>org.eclipse.recommenders.utils.rcp</module>
 		<module>org.eclipse.recommenders.webclient</module>
-		<module>org.eclipse.recommenders.snipmatch.rcp</module>
 	</modules>
 
 	<profiles>
@@ -48,6 +47,19 @@
 			<properties>
 				<build-alias>b${env.BUILD_NUMBER}</build-alias>
 			</properties>
+		</profile>
+		<!-- Snipmatch unsupported under 4.3 -->
+		<profile>
+			<id>e3x</id>
+			<modules>
+				<module>org.eclipse.recommenders.snipmatch.rcp</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>e42</id>
+			<modules>
+				<module>org.eclipse.recommenders.snipmatch.rcp</module>
+			</modules>
 		</profile>
 	</profiles>
 
