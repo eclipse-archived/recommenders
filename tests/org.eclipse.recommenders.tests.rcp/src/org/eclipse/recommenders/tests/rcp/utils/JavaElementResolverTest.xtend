@@ -4,18 +4,19 @@ import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.IMethod
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.Checks
+import org.eclipse.recommenders.utils.names.VmMethodName
+import org.eclipse.recommenders.utils.names.VmTypeName
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.junit.Test
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.CodeBuilder.*
-import org.eclipse.recommenders.utils.names.VmMethodName
-import org.eclipse.recommenders.utils.names.VmTypeName
 
 class JavaElementResolverTest {
 
- 	JavaElementResolver sut  = new JavaElementResolver()
- 
+	JavaElementResolver sut  = new JavaElementResolver()
+	JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
+
 	@Test
 	def void testBoundReturn() {
 		val code = classbody('''public Iterable<? extends Executor> $m(){return null;}''')
@@ -65,7 +66,6 @@ class JavaElementResolverTest {
 	}
 
 	def IMethod getMethod(CharSequence code){
-		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
 		val struct = fixture.createFileAndParseWithMarkers(code)
 		val cu = struct.first;
 		val pos = struct.second.head;
@@ -73,5 +73,4 @@ class JavaElementResolverTest {
 		val method = selected.get(0) as IMethod
 		Checks::ensureIsNotNull(method);
 	}
-	
 }

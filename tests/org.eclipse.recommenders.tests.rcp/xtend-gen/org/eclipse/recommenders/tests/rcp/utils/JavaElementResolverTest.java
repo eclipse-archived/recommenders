@@ -34,6 +34,14 @@ public class JavaElementResolverTest {
     }
   }.apply();
   
+  private JavaProjectFixture fixture = new Function0<JavaProjectFixture>() {
+    public JavaProjectFixture apply() {
+      IWorkspace _workspace = ResourcesPlugin.getWorkspace();
+      JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
+      return _javaProjectFixture;
+    }
+  }.apply();
+  
   @Test
   public void testBoundReturn() {
     StringConcatenation _builder = new StringConcatenation();
@@ -120,10 +128,7 @@ public class JavaElementResolverTest {
     try {
       IMethod _xblockexpression = null;
       {
-        IWorkspace _workspace = ResourcesPlugin.getWorkspace();
-        JavaProjectFixture _javaProjectFixture = new JavaProjectFixture(_workspace, "test");
-        final JavaProjectFixture fixture = _javaProjectFixture;
-        final Tuple<ICompilationUnit,Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code);
+        final Tuple<ICompilationUnit,Set<Integer>> struct = this.fixture.createFileAndParseWithMarkers(code);
         final ICompilationUnit cu = struct.getFirst();
         Set<Integer> _second = struct.getSecond();
         final Integer pos = IterableExtensions.<Integer>head(_second);
