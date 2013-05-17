@@ -82,7 +82,7 @@ class SubwordsCompletionProposalComputerIntegrationTest {
 	
 	@Test 
 	def void test008_overloaded(){
-		val code = method('''Object o=""; o.w$''')
+		val code = method('''Object o=""; o.wai$''')
 		exerciseAndVerify(code, asList("wait", "wait","wait"))
 	}
 	

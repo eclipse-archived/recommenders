@@ -124,7 +124,7 @@ public class SubwordsCompletionProposalComputerIntegrationTest {
   @Test
   public void test008_overloaded() {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("Object o=\"\"; o.w$");
+    _builder.append("Object o=\"\"; o.wai$");
     final CharSequence code = CodeBuilder.method(_builder);
     List<String> _asList = Arrays.<String>asList("wait", "wait", "wait");
     this.exerciseAndVerify(code, _asList);
