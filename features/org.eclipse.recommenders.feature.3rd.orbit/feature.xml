@@ -21,7 +21,6 @@
 
    <requires>
       <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.slf4j.api" version="1.6.1" match="equivalent"/>
    </requires>
 
    <plugin
@@ -85,7 +84,7 @@
          id="org.slf4j.api"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.7.2"
          unpack="false"/>
 
    <plugin
@@ -99,7 +98,7 @@
          id="com.google.guava"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="10.0.1"
          unpack="false"/>
 
    <plugin
