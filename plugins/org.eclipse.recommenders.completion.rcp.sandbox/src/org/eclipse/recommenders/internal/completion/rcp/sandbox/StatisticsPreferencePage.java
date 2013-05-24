@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+ *    Timur Achmetow - some small enhancements
  */
 package org.eclipse.recommenders.internal.completion.rcp.sandbox;
 
@@ -24,30 +25,42 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.primitives.ArrayDoubleList;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.recommenders.internal.completion.rcp.sandbox.CompletionEvent.ProposalKind;
 import org.eclipse.recommenders.utils.Bag;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.TreeBag;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 
@@ -78,7 +91,6 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
 
     public StatisticsPreferencePage() {
         super("Completion Statistics");
-
     }
 
     private void setDescription() {
@@ -102,11 +114,16 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         appendNumberOfCompletionEvents();
         appendNumberOfKeystrokesSaved();
         appendTimeSpent();
-        appendNumberOfCompletionsByCompletionKind();
-        appendNumberOfCompletionsByReceiverType();
 
+        SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
+        sashForm.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+        showCompletionKindInViewer(sashForm);
+        showReceiverTypeInViewer(sashForm);
+
+        sashForm.setWeights(new int[] { 50, 50 });
         insertStyledText();
-        return container;
+        return parent;
     }
 
     private void createWidgets(Composite parent) {
@@ -115,9 +132,6 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         styledText = new StyledText(container, SWT.READ_ONLY | SWT.WRAP);
         styledText.setBackground(container.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
         styledString = new StyledString();
-        GridData data = new GridData(GridData.FILL_BOTH);
-        data.widthHint = 400;
-        styledText.setLayoutData(data);
     }
 
     private void loadEvents() {
@@ -222,35 +236,45 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         return spent;
     }
 
-    private void appendNumberOfCompletionsByCompletionKind() {
-
+    private void showCompletionKindInViewer(Composite parent) {
         Bag<ProposalKind> b = TreeBag.newTreeBag();
-        for (final ProposalKind kind : ProposalKind.values()) {
-            Collection<CompletionEvent> byKind = Collections2.filter(okayEvents,
-                    new Predicate<CompletionEvent>() {
+        final Multimap<ProposalKind, CompletionEvent> multiMap = ArrayListMultimap.create();
 
-                        @Override
-                        public boolean apply(CompletionEvent input) {
-                            return kind == input.applied;
+        for (final ProposalKind kind : ProposalKind.values()) {
+            Collection<CompletionEvent> byKind = Collections2.filter(okayEvents, new Predicate<CompletionEvent>() {
+                @Override
+                public boolean apply(CompletionEvent input) {
+                    if (kind == input.applied) {
+                        if (!multiMap.containsEntry(kind, input)) {
+                            multiMap.put(kind, input);
                         }
-                    });
+                        return true;
+                    }
+                    return false;
+                }
+            });
             if (byKind.size() > 0) {
                 b.add(kind, byKind.size());
             }
         }
 
-        styledString.append("\n\nMost frequently selected completion types were:\n");
+        final Composite newComp = createWrapperComposite(parent);
+        new Label(newComp, SWT.NONE).setText("Most frequently selected completion types were:");
+        final Composite comp = new Composite(newComp, SWT.NONE);
+        final TableColumnLayout layout = createTableColumnLayout(comp);
 
-        for (ProposalKind kind : b.topElements(20)) {
-            styledString.append("   - completion on ").append(kind.toString().toLowerCase().replace('_', ' '))
-                    .append(": ").append(b.count(kind) + "", COUNTER_STYLER).append("\n");
-        }
+        final TableViewer viewer = createTableViewer(comp);
+        createColumn("Completion Type", viewer, 150, layout, 50);
+        createColumn("Used", viewer, 60, layout, 15);
+        createColumn("Last used", viewer, 110, layout, 35);
+
+        viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setLabelProvider(new ProposalLabelProvider(multiMap));
+        viewer.setInput(b.topElements(30));
     }
 
-    private void appendNumberOfCompletionsByReceiverType() {
-        styledString.append("\nCode completion was triggered most frequently on variables of these types:")
-                .append("\n");
-        Bag<ITypeName> b = TreeBag.newTreeBag();
+    private void showReceiverTypeInViewer(Composite parent) {
+        final Bag<ITypeName> b = TreeBag.newTreeBag();
         for (CompletionEvent e : okayEvents) {
             if (e.receiverType == null) {
                 continue;
@@ -258,14 +282,129 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
             b.add(e.receiverType);
         }
 
-        for (ITypeName type : b.topElements(20)) {
-            styledString.append("   - ").append(Names.vm2srcQualifiedType(type)).append(": ")
-                    .append(b.count(type) + "", COUNTER_STYLER).append("\n");
-        }
+        final Composite newComp = createWrapperComposite(parent);
+        new Label(newComp, SWT.NONE)
+                .setText("Code completion was triggered most frequently on variables of these types:");
+
+        final Composite comp = new Composite(newComp, SWT.NONE);
+        final TableColumnLayout layout = createTableColumnLayout(comp);
+
+        final TableViewer viewer = createTableViewer(comp);
+        createColumn("Type", viewer, 450, layout, 60);
+        createColumn("Count", viewer, 100, layout, 30);
+
+        viewer.setContentProvider(new ArrayContentProvider());
+        viewer.setLabelProvider(new TypeNameLabelProvider(b));
+        viewer.setInput(b.topElements(30));
+    }
+
+    private Composite createWrapperComposite(Composite parent) {
+        final Composite newComp = new Composite(parent, SWT.NONE);
+        newComp.setLayout(new GridLayout());
+        newComp.setLayoutData(new GridData(GridData.FILL_BOTH));
+        return newComp;
+    }
+
+    private TableColumnLayout createTableColumnLayout(final Composite comp) {
+        final TableColumnLayout layout = new TableColumnLayout();
+        comp.setLayoutData(new GridData(GridData.FILL_BOTH));
+        comp.setLayout(layout);
+        return layout;
+    }
+
+    private TableViewer createTableViewer(Composite parent) {
+        final TableViewer viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION
+                | SWT.BORDER);
+        viewer.getTable().setHeaderVisible(true);
+        viewer.getTable().setLinesVisible(true);
+        viewer.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
+        return viewer;
+    }
+
+    private TableViewerColumn createColumn(String header, TableViewer viewer, int width, TableColumnLayout layout,
+            int weight) {
+        final TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(header);
+        column.getColumn().setToolTipText(header);
+        column.getColumn().setMoveable(true);
+        column.getColumn().setAlignment(SWT.CENTER);
+        column.getColumn().setResizable(true);
+        column.getColumn().setWidth(width);
+        layout.setColumnData(column.getColumn(), new ColumnWeightData(weight));
+        return column;
     }
 
     private void insertStyledText() {
         styledText.setText(styledString.toString());
         styledText.setStyleRanges(styledString.getStyleRanges());
+    }
+
+    public class TypeNameLabelProvider extends CellLabelProvider {
+        private final Bag<ITypeName> bag;
+
+        public TypeNameLabelProvider(Bag<ITypeName> b) {
+            super();
+            this.bag = b;
+        }
+
+        @Override
+        public void update(ViewerCell cell) {
+            String cellText = null;
+            ITypeName type = (ITypeName) cell.getElement();
+
+            switch (cell.getColumnIndex()) {
+            case 0:
+                cellText = Names.vm2srcQualifiedType(type);
+                break;
+            case 1:
+                cellText = Integer.toString(bag.count(type));
+                break;
+            }
+
+            if (cellText != null) {
+                cell.setText(cellText);
+            }
+        }
+    }
+
+    private class ProposalLabelProvider extends CellLabelProvider {
+        private final Multimap<ProposalKind, CompletionEvent> multiMap;
+
+        public ProposalLabelProvider(Multimap<ProposalKind, CompletionEvent> multiMap) {
+            super();
+            this.multiMap = multiMap;
+        }
+
+        @Override
+        public void update(ViewerCell cell) {
+            String cellText = null;
+            ProposalKind proposal = (ProposalKind) cell.getElement();
+
+            switch (cell.getColumnIndex()) {
+            case 0:
+                cellText = proposal.toString().toLowerCase().replace('_', ' ');
+                break;
+            case 1:
+                cellText = Integer.toString(multiMap.get(proposal).size());
+                break;
+            case 2:
+                Date past = new Date(getLastSessionStartedFor(proposal));
+                cellText = new DateFormatter().formatUnit(past, new Date());
+                break;
+            }
+
+            if (cellText != null) {
+                cell.setText(cellText);
+            }
+        }
+
+        private Long getLastSessionStartedFor(ProposalKind proposal) {
+            Collection<CompletionEvent> collection = multiMap.get(proposal);
+            TreeSet<Long> sessionSet = new TreeSet<Long>();
+            for (CompletionEvent completionEvent : collection) {
+                sessionSet.add(completionEvent.sessionEnded);
+            }
+            return sessionSet.last();
+        }
     }
 }
