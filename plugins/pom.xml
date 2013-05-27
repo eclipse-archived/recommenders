@@ -16,8 +16,8 @@
 		<module>org.eclipse.recommenders.completion.rcp</module>
 		<module>org.eclipse.recommenders.completion.rcp.e37</module>
 		<module>org.eclipse.recommenders.completion.rcp.e38</module>
-        <module>org.eclipse.recommenders.completion.rcp.calls</module>
-        <module>org.eclipse.recommenders.completion.rcp.chain</module>
+		<module>org.eclipse.recommenders.completion.rcp.calls</module>
+		<module>org.eclipse.recommenders.completion.rcp.chain</module>
 		<module>org.eclipse.recommenders.completion.rcp.overrides</module>
 		<module>org.eclipse.recommenders.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.completion.rcp.sandbox</module>
@@ -106,7 +106,29 @@
 							</rules>
 						</configuration>
 					</execution>
+					<execution>
+						<!-- (Transitive) dependencies must meet our execution environment compatibility requirements -->
+						<id>enforce-bytecode-version</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<inherited>true</inherited>
+						<configuration>
+							<rules>
+								<enforceBytecodeVersion>
+									<maxJdkVersion>${java-version}</maxJdkVersion>
+								</enforceBytecodeVersion>
+							</rules>
+						</configuration>
+					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>extra-enforcer-rules</artifactId>
+						<version>1.0-alpha-4</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
