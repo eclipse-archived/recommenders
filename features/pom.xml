@@ -89,7 +89,6 @@
 							<!-- Exclude 3rd party plugins without sources (or with remote sources). -->
 							<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=374663 -->
 							<excludes>
-								<plugin id="com.google.gson"/>
 								<plugin id="com.google.inject.assistedinject"/>
 								<plugin id="com.google.inject.multibindings"/>
 								<plugin id="com.ning.async-http-client"/>
