@@ -74,20 +74,21 @@
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>deploy</id>
-								<phase>install</phase>
+								<id>replace-repository</id>
+								<!-- Run immediately after eclipse-signing-maven-plugin's goals in integration-test -->
+								<phase>post-integration-test</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
 								<configuration>
 									<tasks>
 										<delete includeemptydirs="true" failonerror="false">
-											<fileset dir="target/repository/">
+											<fileset dir="${project.build.directory}/repository/">
 												<include name="**" />
 											</fileset>
 										</delete>
-										<copy includeemptydirs="false" todir="target/repository">
-											<fileset dir="target/checksumFix">
+										<copy includeemptydirs="false" todir="${project.build.directory}/repository">
+											<fileset dir="${project.build.directory}/checksumFix">
 												<include name="**" />
 											</fileset>
 										</copy>
