@@ -3,9 +3,10 @@
     xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>org.eclipse.recommenders.plugin.parent</artifactId>
-        <groupId>org.eclipse.recommenders.plugin</groupId>
+        <groupId>org.eclipse.recommenders</groupId>
+        <artifactId>plugins</artifactId>
         <version>1.0.4-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>org.eclipse.recommenders.doc</artifactId>
     <packaging>eclipse-plugin</packaging>

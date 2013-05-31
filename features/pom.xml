@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.parent</artifactId>
 		<version>1.0.4-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.eclipse.recommenders.feature</groupId>
-	<artifactId>org.eclipse.recommenders.feature.parent</artifactId>
+	<artifactId>features</artifactId>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -32,7 +31,6 @@
 	</modules>
 
 	<profiles>
-		<!-- Snipmatch unsupported under 4.3 -->
 		<profile>
 			<id>e3x</id>
 			<modules>
@@ -41,9 +39,14 @@
 		</profile>
 		<profile>
 			<id>e42</id>
+			<!-- Cannot be activeByDefault and active profiles are not inherited. -->
 			<modules>
 				<module>org.eclipse.recommenders.feature.snipmatch.rcp</module>
 			</modules>
+		</profile>
+		<profile>
+			<id>e43</id>
+			<!-- Snipmatch unsupported under Eclipse 4.3. -->
 		</profile>
 	</profiles>
 

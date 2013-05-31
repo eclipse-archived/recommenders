@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<parent>
-		<groupId>org.eclipse.recommenders.feature</groupId>
-		<artifactId>org.eclipse.recommenders.feature.parent</artifactId>
-        <version>1.0.4-SNAPSHOT</version>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.eclipse.recommenders</groupId>
+		<artifactId>features</artifactId>
+		<version>1.0.4-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 	<artifactId>org.eclipse.recommenders.feature.3rd.orbit</artifactId>
 	<packaging>eclipse-feature</packaging>
 </project>

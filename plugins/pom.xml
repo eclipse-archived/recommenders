@@ -6,10 +6,10 @@
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.parent</artifactId>
 		<version>1.0.4-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.eclipse.recommenders.plugin</groupId>
-	<artifactId>org.eclipse.recommenders.plugin.parent</artifactId>
+	<artifactId>plugins</artifactId>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -19,10 +19,10 @@
 		<module>org.eclipse.recommenders.completion.rcp.calls</module>
 		<module>org.eclipse.recommenders.completion.rcp.chain</module>
 		<module>org.eclipse.recommenders.completion.rcp.overrides</module>
-		<module>org.eclipse.recommenders.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.completion.rcp.sandbox</module>
-		<module>org.eclipse.recommenders.doc</module>
+		<module>org.eclipse.recommenders.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.completion.rcp.templates</module>
+		<module>org.eclipse.recommenders.doc</module>
 		<module>org.eclipse.recommenders.extdoc</module>
 		<module>org.eclipse.recommenders.extdoc.rcp</module>
 		<module>org.eclipse.recommenders.injection</module>

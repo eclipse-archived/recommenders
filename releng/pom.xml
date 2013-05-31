@@ -8,7 +8,6 @@
 		<version>1.0.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<groupId>org.eclipse.recommenders.releng</groupId>
 	<artifactId>releng</artifactId>
 	<packaging>pom</packaging>
 	<modules>

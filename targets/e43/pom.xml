@@ -3,7 +3,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.eclipse.recommenders.target</groupId>
+		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>targets</artifactId>
 		<version>1.0.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
@@ -12,4 +12,3 @@
 	<packaging>eclipse-target-definition</packaging>
 	<name>Eclipse 4.3 Target Definition</name>
 </project>
-
