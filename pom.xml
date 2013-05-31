@@ -135,6 +135,15 @@
 			</build>
 		</profile>
 	</profiles>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>eclipse</id>
+			<url>http://maven.eclipse.org/nexus/content/groups/public/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>

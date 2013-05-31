@@ -10,94 +10,85 @@
 	</parent>
 	<artifactId>org.eclipse.recommenders.repository.rcp.train.e43</artifactId>
 	<packaging>eclipse-repository</packaging>
-	<name>Code Recommenders: Simultaneous Release Update Site</name>
+	<name>Code Recommenders: Kepler Release Train Update Site</name>
 
-    <properties>
-        <signer-input-directory>/home/data/httpd/download-staging.priv/technology/recommenders</signer-input-directory>
-        <signing-plugin-version>1.0.5</signing-plugin-version>
-    </properties>
+	<properties>
+		<signer-input-directory>/home/data/httpd/download-staging.priv/technology/recommenders</signer-input-directory>
+		<signing-plugin-version>1.0.5</signing-plugin-version>
+	</properties>
 
 	<profiles>
 		<profile>
 			<id>build-server</id>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>eclipse</id>
-					<layout>default</layout>
-					<url>http://maven.eclipse.org/nexus/content/groups/public/</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
 			<build>
 				<plugins>
-<plugin>
-           <groupId>org.eclipse.dash.maven</groupId>
-           <artifactId>eclipse-signing-maven-plugin</artifactId>
-           <version>${signing-plugin-version}</version>
-           <executions>
-             <execution>
-               <id>pack</id>
-               <configuration>
-                 <inputFile>${project.build.directory}/${project.artifactId}-${project.version}.zip</inputFile>
-               </configuration>
-               <phase>integration-test</phase>
-               <goals>
-                 <goal>pack</goal>
-               </goals>
-             </execution>
-             <execution>
-               <id>sign</id>
-               <configuration>
-                 <inputFile>${project.build.directory}/packed/${project.artifactId}-${project.version}.zip</inputFile>
-                 <signerInputDirectory>${signer-input-directory}</signerInputDirectory>
-               </configuration>
-               <phase>integration-test</phase>
-               <goals>
-                 <goal>sign</goal>
-               </goals>
-             </execution>
-             <execution>
-               <id>repack</id>
-               <configuration>
-                 <inputFile>${project.build.directory}/signed/site_assembly.zip</inputFile>
-               </configuration>
-               <phase>integration-test</phase>
-               <goals>
-                 <goal>pack</goal>
-               </goals>
-             </execution>
-             <execution>
-               <id>fixCheckSums</id>
-               <configuration>
-                 <inputFile>${project.build.directory}/packed/site_assembly.zip</inputFile>
-               </configuration>
-               <phase>integration-test</phase>
-               <goals>
-                 <goal>fixCheckSums</goal>
-               </goals>
-             </execution>
-           </executions>
-         </plugin>
-			<plugin>
+					<plugin>
+						<groupId>org.eclipse.dash.maven</groupId>
+						<artifactId>eclipse-signing-maven-plugin</artifactId>
+						<version>${signing-plugin-version}</version>
+						<executions>
+							<execution>
+								<id>pack</id>
+								<configuration>
+									<inputFile>${project.build.directory}/${project.artifactId}-${project.version}.zip</inputFile>
+								</configuration>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>pack</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>sign</id>
+								<configuration>
+									<inputFile>${project.build.directory}/packed/${project.artifactId}-${project.version}.zip</inputFile>
+									<signerInputDirectory>${signer-input-directory}</signerInputDirectory>
+								</configuration>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>repack</id>
+								<configuration>
+									<inputFile>${project.build.directory}/signed/site_assembly.zip</inputFile>
+								</configuration>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>pack</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>fixCheckSums</id>
+								<configuration>
+									<inputFile>${project.build.directory}/packed/site_assembly.zip</inputFile>
+								</configuration>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>fixCheckSums</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>deploy</id>
-								<phase>install</phase>
+								<id>replace-repository</id>
+								<!-- Run immediately after eclipse-signing-maven-plugin's goals in integration-test -->
+								<phase>post-integration-test</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
 								<configuration>
 									<tasks>
 										<delete includeemptydirs="true" failonerror="false">
-											<fileset dir="target/repository/">
+											<fileset dir="${project.build.directory}/repository/">
 												<include name="**" />
 											</fileset>
 										</delete>
-										<copy includeemptydirs="false" todir="target/repository">
-											<fileset dir="target/checksumFix">
+										<copy includeemptydirs="false" todir="${project.build.directory}/repository">
+											<fileset dir="${project.build.directory}/checksumFix">
 												<include name="**" />
 											</fileset>
 										</copy>
