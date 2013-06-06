@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.utils;
 
+import static com.google.common.io.ByteStreams.toByteArray;
+import static com.google.common.io.Files.newInputStreamSupplier;
 import static org.apache.commons.io.filefilter.DirectoryFileFilter.DIRECTORY;
 import static org.apache.commons.io.filefilter.FileFileFilter.FILE;
 import static org.apache.commons.lang3.StringUtils.removeStart;
@@ -19,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -130,5 +133,29 @@ public class Zips {
         zos.putNextEntry(e);
         zos.write(data.getBytes(Charsets.UTF_8));
         zos.closeEntry();
+    }
+
+    /**
+     * Reads the give file into memory. This method may be used by zip based recommenders to speed up data access.
+     */
+    public static byte[] readFully(File file) throws IOException {
+        return toByteArray(newInputStreamSupplier(file));
+    }
+
+    /**
+     * Closes the give zip. Exceptions are printed to System.err.
+     */
+    public static boolean closeQuietly(ZipFile z) {
+        if (z == null) {
+            return true;
+        }
+        try {
+            z.close();
+            return true;
+        } catch (IOException e) {
+            System.err.printf("Failed to close zip '%s'. Caught exception printed below.\n", z.getName());
+            e.printStackTrace();
+            return false;
+        }
     }
 }
