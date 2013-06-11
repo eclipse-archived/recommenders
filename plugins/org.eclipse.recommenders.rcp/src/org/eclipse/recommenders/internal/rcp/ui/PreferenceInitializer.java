@@ -19,7 +19,7 @@ import org.eclipse.recommenders.rcp.RecommendersPlugin;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
-    private static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/juno/"; //$NON-NLS-1$
+    private static final String SERVER_URL = "http://download.eclipse.org/recommenders/models/kepler/"; //$NON-NLS-1$
 
     @Override
     public void initializeDefaultPreferences() {
