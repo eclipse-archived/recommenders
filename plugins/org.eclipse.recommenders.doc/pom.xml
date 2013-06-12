@@ -34,7 +34,7 @@
                             <draftMode>no</draftMode>
                             <chunkSectionDepth>0</chunkSectionDepth>
                             <eclipsePluginId>${project.artifactId}</eclipsePluginId>
-                            <eclipsePluginName>Code Recommenders: Documentation (Incubation)</eclipsePluginName>
+                            <eclipsePluginName>Code Recommenders: Documentation</eclipsePluginName>
                             <eclipsePluginProvider>Eclipse Code Recommenders</eclipsePluginProvider>
                             <suppressHeaderNavigation>true</suppressHeaderNavigation>
                             <suppressFooterNavigation>true</suppressFooterNavigation>
