@@ -67,7 +67,7 @@ public class Zips {
             OutputSupplier<FileOutputStream> s = Files.newOutputStreamSupplier(out);
             zos = new ZipOutputStream(s.getOutput());
             for (File f : FileUtils.listFiles(directory, FILE, DIRECTORY)) {
-                String path = removeStart(f.getPath(), directory.getAbsolutePath() + "/");
+                String path = removeStart(f.getPath(), directory.getAbsolutePath() + File.separator);
                 ZipEntry e = new ZipEntry(path);
                 zos.putNextEntry(e);
                 byte[] data = Files.toByteArray(f);
