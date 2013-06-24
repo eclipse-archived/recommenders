@@ -14,7 +14,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.recommenders.internal.completion.rcp.sandbox.CompletionEvent.ProposalKind;
-import org.eclipse.recommenders.internal.completion.rcp.sandbox.StatisticsPreferencePage.ProposalLabelProvider;
+import org.eclipse.recommenders.internal.completion.rcp.sandbox.StatisticsDialog.ProposalLabelProvider;
 import org.eclipse.recommenders.utils.Bag;
 import org.eclipse.recommenders.utils.Names;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -24,8 +24,7 @@ import com.google.common.collect.Multimap;
 public class TableSorters {
 
     public static void setCompletionTypeSorter(final TableViewer viewer, final TableViewerColumn column) {
-        new ColumnViewerSorter(viewer,
-                column) {
+        new ColumnViewerSorter(viewer, column) {
             @Override
             protected int doCompare(Viewer viewer, Object object1, Object object2) {
                 ProposalKind proposal1 = (ProposalKind) object1;
@@ -37,8 +36,7 @@ public class TableSorters {
 
     public static void setUsedCompletionSorter(final TableViewer viewer, final TableViewerColumn column,
             final Multimap<ProposalKind, CompletionEvent> multiMap) {
-        new ColumnViewerSorter(viewer,
-                column) {
+        new ColumnViewerSorter(viewer, column) {
             @Override
             protected int doCompare(Viewer viewer, Object object1, Object object2) {
                 int listSize1 = multiMap.get((ProposalKind) object1).size();
@@ -50,12 +48,11 @@ public class TableSorters {
 
     public static void setLastUsedSorter(final TableViewer viewer, final TableViewerColumn column,
             final Multimap<ProposalKind, CompletionEvent> multiMap) {
-        new ColumnViewerSorter(viewer,
-                column) {
+        new ColumnViewerSorter(viewer, column) {
             @Override
             protected int doCompare(Viewer viewer, Object object1, Object object2) {
 
-                StatisticsPreferencePage statsPage = new StatisticsPreferencePage();
+                StatisticsDialog statsPage = new StatisticsDialog();
                 ProposalLabelProvider proposalProvider = statsPage.new ProposalLabelProvider(multiMap);
                 Long session1 = proposalProvider.getLastSessionStartedFor((ProposalKind) object1);
                 Long session2 = proposalProvider.getLastSessionStartedFor((ProposalKind) object2);
@@ -65,8 +62,7 @@ public class TableSorters {
     }
 
     public static void setTypeSorter(final TableViewer viewer, final TableViewerColumn column) {
-        new ColumnViewerSorter(viewer,
-                column) {
+        new ColumnViewerSorter(viewer, column) {
             @Override
             protected int doCompare(Viewer viewer, Object e1, Object e2) {
                 String type1 = Names.vm2srcQualifiedType((ITypeName) e1);
@@ -77,8 +73,7 @@ public class TableSorters {
     }
 
     public static void setCountSorter(final TableViewer viewer, final TableViewerColumn column, final Bag<ITypeName> b) {
-        new ColumnViewerSorter(viewer,
-                column) {
+        new ColumnViewerSorter(viewer, column) {
             @Override
             protected int doCompare(Viewer viewer, Object e1, Object e2) {
                 Integer count1 = new Integer(b.count(e1));

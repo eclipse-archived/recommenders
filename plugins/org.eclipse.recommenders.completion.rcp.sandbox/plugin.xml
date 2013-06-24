@@ -36,12 +36,38 @@
       </processor>
    </extension>
    <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="org.eclipse.recommenders.rcp.category.preferences"
-            class="org.eclipse.recommenders.internal.completion.rcp.sandbox.StatisticsPreferencePage"
-            id="org.eclipse.recommenders.completion.rcp.sandbox.preferencespage"
-            name="Statistics">
-      </page>
+         point="org.eclipse.ui.commands">
+      <command
+            name="Open Statistics Dialog"
+            id="org.eclipse.recommenders.completion.rcp.sandbox.statsdialog">
+      </command>
    </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="org.eclipse.recommenders.completion.rcp.sandbox.statsdialog"
+            class="org.eclipse.recommenders.internal.completion.rcp.sandbox.StatisticsDialogHandler">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.eclipse.recommenders.completion.rcp.sandbox.statsdialog"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+6"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:help?after=group.assist">
+         <command
+               commandId="org.eclipse.recommenders.completion.rcp.sandbox.statsdialog"
+               label="Completion Statistics"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+
 </plugin>
