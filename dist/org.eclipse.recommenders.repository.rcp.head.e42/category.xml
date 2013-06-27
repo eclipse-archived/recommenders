@@ -21,12 +21,6 @@
    <feature id="org.eclipse.recommenders.feature.completion.rcp.chain.source" version="0.0.0">
       <category name="source"/>
    </feature>
-   <feature id="org.eclipse.recommenders.feature.snipmatch.rcp" version="0.0.0">
-      <category name="main"/>
-   </feature>
-   <feature id="org.eclipse.recommenders.feature.snipmatch.rcp.source" version="0.0.0">
-      <category name="source"/>
-   </feature>
    <feature id="org.eclipse.recommenders.feature.completion.rcp.intellig" version="0.0.0">
       <category name="main"/>
    </feature>

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Code Recommenders: Utils
 Bundle-SymbolicName: org.eclipse.recommenders.utils
-Bundle-Version: 1.0.4.qualifier
+Bundle-Version: 1.100.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Export-Package: org.eclipse.recommenders.internal.utils.codestructs,
  org.eclipse.recommenders.utils,

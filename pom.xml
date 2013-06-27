@@ -15,7 +15,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders.parent</artifactId>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.100.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<organization>
 		<name>Eclipse Foundation</name>
@@ -44,7 +44,7 @@
 		<url>https://hudson.eclipse.org/hudson</url>
 	</ciManagement>
 	<properties>
-		<recommenders-version>1.0.4-SNAPSHOT</recommenders-version>
+		<recommenders-version>1.100.0-SNAPSHOT</recommenders-version>
 		<java-version>1.6</java-version>
 		<tycho-version>0.18.0</tycho-version>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the repository. -->

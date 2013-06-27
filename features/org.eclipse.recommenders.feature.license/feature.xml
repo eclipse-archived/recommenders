@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.license"
       label="Code Recommenders License"
-      version="1.0.4.qualifier"
+      version="1.100.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.example.com/description">

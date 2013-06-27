@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.rdk"
       label="Code Recommenders: Recommender Developer Kit"
-      version="1.0.4.qualifier"
+      version="1.100.0.qualifier"
       provider-name="Eclipse Code Recommenders"
       license-feature="org.eclipse.recommenders.feature.license"
       license-feature-version="0.0.0">

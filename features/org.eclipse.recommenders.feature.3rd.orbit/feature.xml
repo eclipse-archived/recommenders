@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.3rd.orbit"
       label="Code Recommenders: 3rd Party Dependencies on Orbit"
-      version="1.0.4.qualifier"
+      version="1.100.0.qualifier"
       provider-name="Eclipse Code Recommenders"
       license-feature="org.eclipse.recommenders.feature.license"
       license-feature-version="0.0.0">

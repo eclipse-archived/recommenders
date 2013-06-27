@@ -11,6 +11,10 @@ target/
 aggregators/
 screenshots/
 
+## jrebel project config files
+rebel.xml
+
+
 ## various other file types we don't want to have in the repository:
 .DS_Store
 *~
