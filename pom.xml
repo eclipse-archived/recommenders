@@ -72,49 +72,6 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>e3x</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<configuration>
-							<target>
-								<artifact>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>e3x</artifactId>
-									<version>${recommenders-version}</version>
-								</artifact>
-							</target>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>e42</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<configuration>
-							<target>
-								<artifact>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>e42</artifactId>
-									<version>${recommenders-version}</version>
-								</artifact>
-							</target>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
 			<id>e43</id>
 			<build>
 				<plugins>
@@ -360,6 +317,14 @@
 								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.xtend</groupId>
+					<artifactId>xtend-maven-plugin</artifactId>
+					<version>2.4.2</version>
+					<configuration>
+						<outputDirectory>${project.build.directory}/generated-sources/xtend</outputDirectory>
 					</configuration>
 				</plugin>
 			</plugins>

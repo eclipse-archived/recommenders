@@ -12,26 +12,10 @@
 	<packaging>pom</packaging>
 	<profiles>
 		<profile>
-			<id>e3x</id>
-			<modules>
-				<module>org.eclipse.recommenders.repository.rcp.head.e37</module>
-				<module>org.eclipse.recommenders.repository.rcp.dev.e37</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>e42</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>org.eclipse.recommenders.repository.rcp.head.e42</module>
-				<module>org.eclipse.recommenders.repository.rcp.train.e42</module>
-				<module>org.eclipse.recommenders.repository.rcp.dev.e42</module>
-			</modules>
-		</profile>
-		<profile>
 			<id>e43</id>
 			<modules>
+				<module>org.eclipse.recommenders.repository.rcp.dev.e42</module>
+				<module>org.eclipse.recommenders.repository.rcp.head.e42</module>
 				<module>org.eclipse.recommenders.repository.rcp.train.e43</module>
 			</modules>
 		</profile>

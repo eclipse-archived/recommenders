@@ -11,6 +11,9 @@ target/
 aggregators/
 screenshots/
 
+## xtend-gen should not be checked in
+xtend-gen/
+
 ## jrebel project config files
 rebel.xml
 
@@ -22,6 +25,3 @@ rebel.xml
 *.licensed
 *.aux
 *_trace
-
-/plugins/org.eclipse.recommenders.mining/
-/tests/org.eclipse.recommenders.tests.mining/
