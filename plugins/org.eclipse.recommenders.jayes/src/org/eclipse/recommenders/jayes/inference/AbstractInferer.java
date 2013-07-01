@@ -30,6 +30,11 @@ public abstract class AbstractInferer implements IBayesInferer {
         beliefsValid = false;
     }
 
+    public void removeEvidence(BayesNode node) {
+        evidence.remove(node);
+        beliefsValid = false;
+    }
+
     @Override
     public double[] getBeliefs(final BayesNode node) {
         if (!beliefsValid) {
