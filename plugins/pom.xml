@@ -13,8 +13,8 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>org.eclipse.recommenders.codegen</module>
 		<module>org.eclipse.recommenders.completion.rcp</module>
-		<module>org.eclipse.recommenders.completion.rcp.e37</module>
 		<module>org.eclipse.recommenders.completion.rcp.e38</module>
 		<module>org.eclipse.recommenders.completion.rcp.calls</module>
 		<module>org.eclipse.recommenders.completion.rcp.chain</module>
@@ -59,6 +59,19 @@
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>xtend-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<phase>generate-sources</phase>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
