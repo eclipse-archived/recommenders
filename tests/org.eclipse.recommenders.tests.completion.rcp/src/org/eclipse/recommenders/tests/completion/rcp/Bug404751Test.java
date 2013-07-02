@@ -16,7 +16,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -102,7 +102,7 @@ public class Bug404751Test {
 
     private IRecommendersCompletionContext exercise(CharSequence code) throws CoreException {
         JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test");
-        Tuple<ICompilationUnit, Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code.toString());
+        Pair<ICompilationUnit, Set<Integer>> struct = fixture.createFileAndParseWithMarkers(code.toString());
         ICompilationUnit cu = struct.getFirst();
         int completionIndex = struct.getSecond().iterator().next();
         JavaContentAssistInvocationContext ctx = new JavaContentAssistContextMock(cu, completionIndex);

@@ -17,19 +17,19 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TupleTest {
+public class PairTest {
 
     private Object o1;
 
     private Object o2;
 
-    private Tuple<?, ?> sut;
+    private Pair<?, ?> sut;
 
     @Before
     public void setup() {
         o1 = new Object();
         o2 = new Object();
-        sut = Tuple.create(o1, o2);
+        sut = Pair.newPair(o1, o2);
     }
 
     @Test
@@ -39,24 +39,24 @@ public class TupleTest {
 
     @Test
     public void testEquals_Different() {
-        Tuple<?, ?> other = Tuple.create(new Object(), new Object());
+        Pair<?, ?> other = Pair.newPair(new Object(), new Object());
         assertFalse(sut.equals(other));
     }
 
     @Test
     public void testEquals_NullElements() {
-        Tuple<?, ?> nullnull = create(null, null);
-        Tuple<?, ?> nullobj = create(null, new Object());
-        Tuple<?, ?> objnull = create(null, new Object());
-        Tuple<?, ?> objobj = create(new Object(), new Object());
+        Pair<?, ?> nullnull = create(null, null);
+        Pair<?, ?> nullobj = create(null, new Object());
+        Pair<?, ?> objnull = create(null, new Object());
+        Pair<?, ?> objobj = create(new Object(), new Object());
         assertEquals(nullnull, nullnull);
         assertEquals(nullobj, nullobj);
         assertEquals(objnull, objnull);
         assertEquals(objobj, objobj);
     }
 
-    private Tuple<?, ?> create(Object arg0, Object arg1) {
-        return Tuple.create(arg0, arg1);
+    private Pair<?, ?> create(Object arg0, Object arg1) {
+        return Pair.newPair(arg0, arg1);
     }
 
     @Test

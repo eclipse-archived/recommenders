@@ -60,7 +60,7 @@ import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata.ModelAr
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
 import org.eclipse.recommenders.rcp.IClasspathEntryInfoProvider;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.rcp.RCPUtils;
 import org.eclipse.recommenders.utils.rcp.internal.ContentAssistEnablementBlock;
 import org.eclipse.swt.SWT;
@@ -92,7 +92,7 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
 
     private final IClasspathEntryInfoProvider cpeInfoProvider;
     private final IModelArchiveStore<IType, IObjectMethodCallsNet> modelStore;
-    private List<Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>>> mappings;
+    private List<Pair<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>>> mappings;
     final IModelRepository repository;
 
     private ContentAssistEnablementBlock enablement;
@@ -174,7 +174,7 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
             final ClasspathEntryInfo cpei = opt.get();
 
             final ModelArchiveMetadata<?, ?> metadata = modelStore.findOrCreateMetadata(root);
-            final Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> entry = Tuple.newTuple(cpei, metadata);
+            final Pair<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> entry = Pair.newPair(cpei, metadata);
             mappings.add(entry);
         }
     }
@@ -253,9 +253,9 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
         tableViewer.setComparator(new ViewerComparator() {
             @Override
             public int compare(final Viewer viewer, final Object e1, final Object e2) {
-                final Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> t1 = cast(e1);
+                final Pair<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> t1 = cast(e1);
                 final File f1 = t1.getSecond().getLocation();
-                final Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> t2 = cast(e2);
+                final Pair<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> t2 = cast(e2);
                 final File f2 = t2.getSecond().getLocation();
                 return reflectionCompare(f1, f2);
             }
@@ -264,7 +264,7 @@ public class CallPreferencePage extends PreferencePage implements IWorkbenchPref
 
             @Override
             public void selectionChanged(final SelectionChangedEvent event) {
-                final Optional<Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>>> e = RCPUtils.first(event
+                final Optional<Pair<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>>> e = RCPUtils.first(event
                         .getSelection());
                 mValue.setValue(e.get().getSecond());
                 rValue.setValue(e.get().getFirst());

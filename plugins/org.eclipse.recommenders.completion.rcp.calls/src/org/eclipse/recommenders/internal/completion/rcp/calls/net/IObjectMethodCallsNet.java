@@ -18,7 +18,7 @@ import java.util.SortedSet;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -41,12 +41,12 @@ public interface IObjectMethodCallsNet {
 
     void setQuery(final ObjectUsage query);
 
-    SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold);
+    SortedSet<Pair<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold);
 
-    SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold,
+    SortedSet<Pair<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold,
             final int maxNumberOfRecommendations);
 
-    List<Tuple<String, Double>> getPatternsWithProbability();
+    List<Pair<String, Double>> getPatternsWithProbability();
 
     void setPattern(final String patternName);
 
@@ -62,5 +62,5 @@ public interface IObjectMethodCallsNet {
 
     Set<IMethodName> getActiveCalls();
 
-    Set<Tuple<String, Double>> getDefinitions();
+    Set<Pair<String, Double>> getDefinitions();
 }

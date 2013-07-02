@@ -17,7 +17,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 
 import com.google.common.collect.Sets;
 
@@ -38,7 +38,7 @@ public class AstUtils {
         return res;
     }
 
-    public static Tuple<CompilationUnit, Set<Integer>> createAstWithMarkers(final String content) {
+    public static Pair<CompilationUnit, Set<Integer>> createAstWithMarkers(final String content) {
         final Set<Integer> markers = Sets.newTreeSet();
 
         int pos = 0;
@@ -52,7 +52,7 @@ public class AstUtils {
         // final IJavaElement javaElement = cu.getJavaElement();
         // final ITypeRoot typeRoot = cu.getTypeRoot();
         // final IType findPrimaryType = typeRoot.findPrimaryType();
-        return Tuple.newTuple(cu, markers);
+        return Pair.newPair(cu, markers);
     }
 
 }

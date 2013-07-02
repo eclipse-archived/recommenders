@@ -55,7 +55,7 @@ import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
 import org.eclipse.recommenders.utils.Throws;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
@@ -176,11 +176,11 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         final ObjectUsage query = createQuery(t);
         model.setQuery(query);
 
-        final List<Tuple<String, Double>> callgroups = getMostLikelyPatternsSortedByProbability(model);
-        for (final Tuple<String, Double> p : callgroups) {
+        final List<Pair<String, Double>> callgroups = getMostLikelyPatternsSortedByProbability(model);
+        for (final Pair<String, Double> p : callgroups) {
             final String patternId = p.getFirst();
             model.setPattern(patternId);
-            for (final Tuple<String, Double> def : model.getDefinitions()) {
+            for (final Pair<String, Double> def : model.getDefinitions()) {
                 final Collection<IMethodName> calls = getCallsForDefinition(model, VmMethodName.get(def.getFirst()));
                 calls.removeAll(query.calls);
                 // patterns with less than two calls are no patterns :)
@@ -202,7 +202,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         boolean constructorAdded = false;
 
         final TreeSet<IMethodName> calls = Sets.newTreeSet();
-        final SortedSet<Tuple<IMethodName, Double>> rec = model.getRecommendedMethodCalls(0.2d);
+        final SortedSet<Pair<IMethodName, Double>> rec = model.getRecommendedMethodCalls(0.2d);
         if (rec.isEmpty()) {
             return Collections.emptyList();
         }
@@ -213,7 +213,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         if (requiresConstructor && !constructorAdded) {
             return Collections.emptyList();
         }
-        for (final Tuple<IMethodName, Double> pair : rec) {
+        for (final Pair<IMethodName, Double> pair : rec) {
             calls.add(pair.getFirst());
         }
         if (!containsCallWithMethodPrefix(calls)) {
@@ -285,13 +285,13 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         query.contextFirst = elementResolver.toRecMethod(firstMethod).orNull();
     }
 
-    private List<Tuple<String, Double>> getMostLikelyPatternsSortedByProbability(final IObjectMethodCallsNet net) {
-        final List<Tuple<String, Double>> p = net.getPatternsWithProbability();
+    private List<Pair<String, Double>> getMostLikelyPatternsSortedByProbability(final IObjectMethodCallsNet net) {
+        final List<Pair<String, Double>> p = net.getPatternsWithProbability();
 
-        Collections.sort(p, new Comparator<Tuple<String, Double>>() {
+        Collections.sort(p, new Comparator<Pair<String, Double>>() {
 
             @Override
-            public int compare(final Tuple<String, Double> o1, final Tuple<String, Double> o2) {
+            public int compare(final Pair<String, Double> o1, final Pair<String, Double> o2) {
                 return o2.getSecond().compareTo(o1.getSecond());
             }
         });

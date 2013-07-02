@@ -54,7 +54,7 @@ import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.internal.utils.codestructs.Variable;
 import org.eclipse.recommenders.rcp.RecommendersPlugin;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.CompletionProposalDecorator;
@@ -258,14 +258,14 @@ public class CallsCompletionProposalComputer implements IJavaCompletionProposalC
 
         final double minProbability = prefStore.getInt(CallPreferencePage.ID_MIN_PROBABILITY) * 0.01;
         final int maxProposals = prefStore.getInt(CallPreferencePage.ID_MAX_PROPOSALS);
-        final SortedSet<Tuple<IMethodName, Double>> recommendedMethodCalls = model
+        final SortedSet<Pair<IMethodName, Double>> recommendedMethodCalls = model
                 .getRecommendedMethodCalls(minProbability);
 
         final Variable var = Variable.create(receiverName, jdtResolver.toRecType(receiverType), null);
 
         final boolean expectsReturnType = ctx.getExpectedTypeSignature().isPresent();
         final String prefix = ctx.getPrefix();
-        for (final Tuple<IMethodName, Double> recommended : recommendedMethodCalls) {
+        for (final Pair<IMethodName, Double> recommended : recommendedMethodCalls) {
             final IMethodName method = recommended.getFirst();
             final Double probability = recommended.getSecond();
 

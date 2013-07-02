@@ -23,7 +23,7 @@ import java.util.TreeSet;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -82,8 +82,8 @@ public class ClassOverridesNetwork {
         return Sets.newHashSet(methodNameMapping.keySet());
     }
 
-    public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodOverrides(final double minProbability) {
-        final TreeSet<Tuple<IMethodName, Double>> recommendations = createSortedSetForMethodRecommendations();
+    public SortedSet<Pair<IMethodName, Double>> getRecommendedMethodOverrides(final double minProbability) {
+        final TreeSet<Pair<IMethodName, Double>> recommendations = createSortedSetForMethodRecommendations();
         for (final BayesNode node : methodNodes) {
             if (junctionTreeAlgorithm.getEvidence().containsKey(node)) {
                 continue;
@@ -93,31 +93,31 @@ public class ClassOverridesNetwork {
                 continue;
             }
             final IMethodName method = VmMethodName.get(node.getName());
-            final Tuple<IMethodName, Double> item = Tuple.newTuple(method, probability);
+            final Pair<IMethodName, Double> item = Pair.newPair(method, probability);
             recommendations.add(item);
         }
         return recommendations;
     }
 
-    public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodOverrides(final double minProbabilityThreshold,
+    public SortedSet<Pair<IMethodName, Double>> getRecommendedMethodOverrides(final double minProbabilityThreshold,
             final int maxNumberOfRecommendations) {
-        final SortedSet<Tuple<IMethodName, Double>> recommendations = getRecommendedMethodOverrides(minProbabilityThreshold);
+        final SortedSet<Pair<IMethodName, Double>> recommendations = getRecommendedMethodOverrides(minProbabilityThreshold);
         if (recommendations.size() <= maxNumberOfRecommendations) {
             return recommendations;
         }
         // need to remove smaller items:
-        final Tuple<IMethodName, Double> firstExcludedRecommendation = Iterables.get(recommendations,
+        final Pair<IMethodName, Double> firstExcludedRecommendation = Iterables.get(recommendations,
                 maxNumberOfRecommendations);
-        final SortedSet<Tuple<IMethodName, Double>> res = recommendations.headSet(firstExcludedRecommendation);
+        final SortedSet<Pair<IMethodName, Double>> res = recommendations.headSet(firstExcludedRecommendation);
         ensureEquals(res.size(), maxNumberOfRecommendations,
                 "filter op did not return expected number of compilationUnits2recommendationsIndex");
         return res;
     }
 
-    public static TreeSet<Tuple<IMethodName, Double>> createSortedSetForMethodRecommendations() {
-        final TreeSet<Tuple<IMethodName, Double>> res = Sets.newTreeSet(new Comparator<Tuple<IMethodName, Double>>() {
+    public static TreeSet<Pair<IMethodName, Double>> createSortedSetForMethodRecommendations() {
+        final TreeSet<Pair<IMethodName, Double>> res = Sets.newTreeSet(new Comparator<Pair<IMethodName, Double>>() {
             @Override
-            public int compare(final Tuple<IMethodName, Double> o1, final Tuple<IMethodName, Double> o2) {
+            public int compare(final Pair<IMethodName, Double> o1, final Pair<IMethodName, Double> o2) {
                 // the higher probability will be sorted above the lower values:
                 final int probabilityCompare = Double.compare(o2.getSecond(), o1.getSecond());
                 return probabilityCompare != 0 ? probabilityCompare : o1.getFirst().compareTo(o2.getFirst());

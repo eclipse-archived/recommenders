@@ -21,7 +21,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.internal.completion.rcp.calls.net.IObjectMethodCallsNet;
 import org.eclipse.recommenders.internal.rcp.models.store.DefaultModelArchiveStore;
 import org.eclipse.recommenders.tests.completion.rcp.ProposalComparator;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.mockito.Mockito;
@@ -37,11 +37,11 @@ public class ModelStoreMock extends DefaultModelArchiveStore<IType, IObjectMetho
     @Override
     public Optional<IObjectMethodCallsNet> aquireModel(final IType type) {
         final IObjectMethodCallsNet net = Mockito.mock(IObjectMethodCallsNet.class);
-        final Comparator<Tuple<IMethodName, Double>> c = new ProposalComparator();
+        final Comparator<Pair<IMethodName, Double>> c = new ProposalComparator();
 
-        when(net.getRecommendedMethodCalls(anyDouble())).thenReturn(new TreeSet<Tuple<IMethodName, Double>>(c) {
+        when(net.getRecommendedMethodCalls(anyDouble())).thenReturn(new TreeSet<Pair<IMethodName, Double>>(c) {
             {
-                add(Tuple.newTuple((IMethodName) VmMethodName.get("Ljava/lang/Object.hashCode()I"), 0.8d));
+                add(Pair.newPair((IMethodName) VmMethodName.get("Ljava/lang/Object.hashCode()I"), 0.8d));
             }
         });
         return Optional.of(net);

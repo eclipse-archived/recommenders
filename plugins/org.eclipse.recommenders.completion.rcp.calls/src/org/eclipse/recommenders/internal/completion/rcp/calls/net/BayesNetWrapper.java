@@ -39,7 +39,7 @@ import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
 import org.eclipse.recommenders.jayes.inference.junctionTree.JunctionTreeAlgorithm;
 import org.eclipse.recommenders.utils.Constants;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -245,9 +245,9 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
     }
 
     @Override
-    public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold) {
+    public SortedSet<Pair<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold) {
 
-        final TreeSet<Tuple<IMethodName, Double>> res = createSortedSet();
+        final TreeSet<Pair<IMethodName, Double>> res = createSortedSet();
 
         for (final IMethodName method : callNodes.keySet()) {
             final BayesNode bayesNode = callNodes.get(method);
@@ -257,7 +257,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
                 final double[] probabilities = junctionTreeAlgorithm.getBeliefs(bayesNode);
                 final double probability = probabilities[indexForTrue];
                 if (probability >= minProbabilityThreshold) {
-                    res.add(Tuple.newTuple(method, probability));
+                    res.add(Pair.newPair(method, probability));
                 }
             }
         }
@@ -265,11 +265,11 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
         return res;
     }
 
-    private TreeSet<Tuple<IMethodName, Double>> createSortedSet() {
-        final TreeSet<Tuple<IMethodName, Double>> res = Sets.newTreeSet(new Comparator<Tuple<IMethodName, Double>>() {
+    private TreeSet<Pair<IMethodName, Double>> createSortedSet() {
+        final TreeSet<Pair<IMethodName, Double>> res = Sets.newTreeSet(new Comparator<Pair<IMethodName, Double>>() {
 
             @Override
-            public int compare(final Tuple<IMethodName, Double> o1, final Tuple<IMethodName, Double> o2) {
+            public int compare(final Pair<IMethodName, Double> o1, final Pair<IMethodName, Double> o2) {
                 // the higher probability will be sorted above the lower values:
                 final int probabilityCompare = Double.compare(o2.getSecond(), o1.getSecond());
                 return probabilityCompare != 0 ? probabilityCompare : o1.getFirst().compareTo(o2.getFirst());
@@ -279,32 +279,32 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
     }
 
     @Override
-    public SortedSet<Tuple<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold,
+    public SortedSet<Pair<IMethodName, Double>> getRecommendedMethodCalls(final double minProbabilityThreshold,
             final int maxNumberOfRecommendations) {
-        final SortedSet<Tuple<IMethodName, Double>> recommendations = getRecommendedMethodCalls(minProbabilityThreshold);
+        final SortedSet<Pair<IMethodName, Double>> recommendations = getRecommendedMethodCalls(minProbabilityThreshold);
         if (recommendations.size() <= maxNumberOfRecommendations) {
             return recommendations;
         }
         // need to remove smaller items:
-        final Tuple<IMethodName, Double> firstExcludedRecommendation = Iterables.get(recommendations,
+        final Pair<IMethodName, Double> firstExcludedRecommendation = Iterables.get(recommendations,
                 maxNumberOfRecommendations);
-        final SortedSet<Tuple<IMethodName, Double>> res = recommendations.headSet(firstExcludedRecommendation);
+        final SortedSet<Pair<IMethodName, Double>> res = recommendations.headSet(firstExcludedRecommendation);
         ensureEquals(res.size(), maxNumberOfRecommendations,
                 "filter op did not return expected number of compilationUnits2recommendationsIndex");
         return res;
     }
 
     @Override
-    public List<Tuple<String, Double>> getPatternsWithProbability() {
+    public List<Pair<String, Double>> getPatternsWithProbability() {
         final double[] probs = junctionTreeAlgorithm.getBeliefs(callgroupNode);
-        final List<Tuple<String, Double>> res = Lists.newArrayListWithCapacity(probs.length);
+        final List<Pair<String, Double>> res = Lists.newArrayListWithCapacity(probs.length);
         for (final String outcome : callgroupNode.getOutcomes()) {
             final int probIndex = callgroupNode.getOutcomeIndex(outcome);
             final double p = probs[probIndex];
             if (0.01 > p) {
                 continue;
             }
-            res.add(Tuple.newTuple(outcome, p));
+            res.add(Pair.newPair(outcome, p));
         }
         return res;
     }
@@ -370,8 +370,8 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
     }
 
     @Override
-    public Set<Tuple<String, Double>> getDefinitions() {
-        Set<Tuple<String, Double>> res = Sets.newHashSet();
+    public Set<Pair<String, Double>> getDefinitions() {
+        Set<Pair<String, Double>> res = Sets.newHashSet();
         double[] beliefs = junctionTreeAlgorithm.getBeliefs(definitionNode);
         for (int i = definitionNode.getOutcomeCount(); i-- > 0;) {
             if (beliefs[i] > 0.05) {
@@ -382,7 +382,7 @@ public class BayesNetWrapper implements IObjectMethodCallsNet {
                 if (outcomeName.equals(UNKNOWN_METHOD.getIdentifier())) {
                     continue;
                 }
-                res.add(Tuple.newTuple(outcomeName, beliefs[i]));
+                res.add(Pair.newPair(outcomeName, beliefs[i]));
             }
         }
         return res;

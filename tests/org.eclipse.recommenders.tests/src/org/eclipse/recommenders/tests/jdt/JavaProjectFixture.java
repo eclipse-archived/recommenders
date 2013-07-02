@@ -21,7 +21,7 @@ import static org.eclipse.recommenders.tests.jdt.AstUtils.MARKER_ESCAPE;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
 import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
-import static org.eclipse.recommenders.utils.Tuple.newTuple;
+import static org.eclipse.recommenders.utils.Pair.newPair;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -52,7 +52,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 
 import com.google.common.collect.Sets;
 
@@ -64,7 +64,7 @@ public class JavaProjectFixture {
      */
     public static final String JAVA_IDENTIFIER_REGEX = "([a-zA-Z_$\\p{Lu}\\p{Ll}]{1}"
             + "[a-zA-Z_$0-9\\p{Lu}\\p{Ll}\\p{Nl}]*)";
-    
+
     /**
      * A null reference to make code more readable.
      */
@@ -208,20 +208,20 @@ public class JavaProjectFixture {
         parser = ASTParser.newParser(AST.JLS3);
         // parser.setEnvironment(...) enables bindings resolving
         parser.setProject(javaProject); // enables bindings and IJavaElement
-                                        // resolving
+        // resolving
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
         parser.setResolveBindings(true);
     }
 
-    public Tuple<CompilationUnit, Set<Integer>> parseWithMarkers(final String content) {
-        final Tuple<String, Set<Integer>> contentMarkersPair = findMarkers(content);
+    public Pair<CompilationUnit, Set<Integer>> parseWithMarkers(final String content) {
+        final Pair<String, Set<Integer>> contentMarkersPair = findMarkers(content);
         final String contentWoMarkers = contentMarkersPair.getFirst();
         final Set<Integer> markers = contentMarkersPair.getSecond();
         final CompilationUnit cu = parse(contentWoMarkers);
-        return newTuple(cu, markers);
+        return newPair(cu, markers);
     }
 
-    public Tuple<String, Set<Integer>> findMarkers(final CharSequence content) {
+    public Pair<String, Set<Integer>> findMarkers(final CharSequence content) {
         final Set<Integer> markers = Sets.newTreeSet();
         int pos = 0;
         final StringBuilder sb = new StringBuilder(content);
@@ -231,7 +231,7 @@ public class JavaProjectFixture {
             ensureIsTrue(pos < sb.length());
             pos--;
         }
-        return newTuple(sb.toString(), markers);
+        return newPair(sb.toString(), markers);
     }
 
     public CompilationUnit parse(final String content) {
@@ -248,17 +248,17 @@ public class JavaProjectFixture {
      *
      * @param contentWithMarkers
      *            the code with markers(see {@link AstUtils}.MARKER)
-     * @return the Tuple of the ICompilationUnit and the List of marker positions in the code provided
+     * @return the Pair of the ICompilationUnit and the List of marker positions in the code provided
      * @throws CoreException
      */
-    public Tuple<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers)
+    public Pair<ICompilationUnit, Set<Integer>> createFileAndParseWithMarkers(final CharSequence contentWithMarkers)
             throws CoreException {
-        final Tuple<String, Set<Integer>> content = findMarkers(contentWithMarkers);
+        final Pair<String, Set<Integer>> content = findMarkers(contentWithMarkers);
 
         final ICompilationUnit cu = createFile(content.getFirst(), false);
         refreshAndBuildProject();
 
-        return Tuple.newTuple(cu, content.getSecond());
+        return Pair.newPair(cu, content.getSecond());
     }
 
     /**
@@ -267,18 +267,18 @@ public class JavaProjectFixture {
      *
      * @param contentWithMarkers
      *            the code with markers(see {@link AstUtils}.MARKER)
-     * @return the Tuple of the ICompilationUnit and the List of marker positions in the code provided
+     * @return the Pair of the ICompilationUnit and the List of marker positions in the code provided
      * @throws CoreException
      */
-    public Tuple<ICompilationUnit, Set<Integer>> createFileAndPackageAndParseWithMarkers(
+    public Pair<ICompilationUnit, Set<Integer>> createFileAndPackageAndParseWithMarkers(
             final CharSequence contentWithMarkers) throws CoreException {
-        final Tuple<String, Set<Integer>> content = findMarkers(contentWithMarkers);
+        final Pair<String, Set<Integer>> content = findMarkers(contentWithMarkers);
 
         createPackage(content.getFirst());
         final ICompilationUnit cu = createFile(content.getFirst(), true);
         refreshAndBuildProject();
 
-        return Tuple.newTuple(cu, content.getSecond());
+        return Pair.newPair(cu, content.getSecond());
     }
 
     /**

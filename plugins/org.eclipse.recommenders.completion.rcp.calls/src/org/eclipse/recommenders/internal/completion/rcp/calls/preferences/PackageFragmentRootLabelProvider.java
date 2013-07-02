@@ -15,18 +15,18 @@ import static org.eclipse.recommenders.utils.Checks.cast;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 
 public class PackageFragmentRootLabelProvider extends ColumnLabelProvider {
     @Override
     public String getText(final Object element) {
-        Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> e = cast(element);
+        Pair<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> e = cast(element);
         return e.getSecond().getLocation().getName();
     }
 
     @Override
     public String getToolTipText(final Object element) {
-        Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> e = cast(element);
+        Pair<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> e = cast(element);
         return e.getSecond().getLocation().getAbsolutePath();
     }
 }

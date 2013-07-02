@@ -20,14 +20,14 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class JarFileMockBuilder {
 
-    private final List<Tuple<String, InputStream>> entries = new LinkedList<Tuple<String, InputStream>>();
+    private final List<Pair<String, InputStream>> entries = new LinkedList<Pair<String, InputStream>>();
 
     public JarFile build() {
         final JarFile jarFile = Mockito.mock(JarFile.class);
@@ -42,12 +42,12 @@ public class JarFileMockBuilder {
     }
 
     public void addEntry(final String filename, final InputStream inputStream) {
-        entries.add(Tuple.newTuple(filename, inputStream));
+        entries.add(Pair.newPair(filename, inputStream));
     }
 
     private class EntryEnumeration implements Enumeration<JarEntry> {
 
-        private final Iterator<Tuple<String, InputStream>> iterator;
+        private final Iterator<Pair<String, InputStream>> iterator;
         private final JarFile jarFile;
 
         private EntryEnumeration(final JarFile jarFile) {
@@ -62,11 +62,11 @@ public class JarFileMockBuilder {
 
         @Override
         public JarEntry nextElement() {
-            final Tuple<String, InputStream> tuple = iterator.next();
+            final Pair<String, InputStream> pair = iterator.next();
             final JarEntry jarEntry = Mockito.mock(JarEntry.class);
-            Mockito.when(jarEntry.getName()).thenReturn(tuple.getFirst());
+            Mockito.when(jarEntry.getName()).thenReturn(pair.getFirst());
             try {
-                Mockito.when(jarFile.getInputStream(jarEntry)).thenReturn(tuple.getSecond());
+                Mockito.when(jarFile.getInputStream(jarEntry)).thenReturn(pair.getSecond());
             } catch (final IOException e) {
                 throw new RuntimeException(e);
             }

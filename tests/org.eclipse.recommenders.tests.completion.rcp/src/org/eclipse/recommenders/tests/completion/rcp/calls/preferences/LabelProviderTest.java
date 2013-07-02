@@ -14,7 +14,7 @@ import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.Packag
 import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.VersionLabelProvider;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
 import org.eclipse.recommenders.rcp.repo.IModelRepository;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
@@ -38,7 +38,7 @@ public class LabelProviderTest {
     @Mock
     IModelRepository repository;
 
-    Tuple<IPackageFragmentRoot, ?> data;
+    Pair<IPackageFragmentRoot, ?> data;
 
     Image IMG_FOUND = new Image(Display.getDefault(), 1, 1);
 
@@ -51,7 +51,7 @@ public class LabelProviderTest {
 
     @Before
     public void before() {
-        data = Tuple.newTuple(root, meta);
+        data = Pair.newPair(root, meta);
         modelSut = new ModelLabelProvider(repository, IMG_FOUND, IMG_NOT_FOUND);
     }
 

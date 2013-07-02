@@ -20,7 +20,7 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.internal.rcp.models.IModelArchiveStore;
 import org.eclipse.recommenders.internal.utils.codestructs.MethodDeclaration;
 import org.eclipse.recommenders.internal.utils.codestructs.TypeDeclaration;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
@@ -102,7 +102,7 @@ public class OverridesRecommender {
 
     private List<OverridesRecommendation> readRecommendations() {
         final List<OverridesRecommendation> res = Lists.newLinkedList();
-        for (final Tuple<IMethodName, Double> item : model.getRecommendedMethodOverrides(MIN_PROBABILITY_THRESHOLD, 5)) {
+        for (final Pair<IMethodName, Double> item : model.getRecommendedMethodOverrides(MIN_PROBABILITY_THRESHOLD, 5)) {
             final IMethodName method = item.getFirst();
             final Double probability = item.getSecond();
             final OverridesRecommendation recommendation = new OverridesRecommendation(method, probability);

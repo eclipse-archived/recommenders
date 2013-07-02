@@ -1,7 +1,7 @@
 package org.eclipse.recommenders.tests.rcp.models;
 
 import static com.google.common.base.Optional.absent;
-import static org.eclipse.recommenders.utils.Tuple.newTuple;
+import static org.eclipse.recommenders.utils.Pair.newPair;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -18,7 +18,7 @@ import org.eclipse.recommenders.internal.rcp.models.archive.CachingModelArchive;
 import org.eclipse.recommenders.internal.rcp.models.archive.IModelFactory;
 import org.eclipse.recommenders.internal.rcp.models.archive.NullModelArchive;
 import org.eclipse.recommenders.internal.rcp.models.archive.PoolingModelArchive;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ public class ModelArchiveSpecTest {
     String KEY_NO_MODEL = "key-but-no-model";
     String KEY_UNKNOWN = "unknown";
 
-    Tuple<IModelArchive<String, Object>, IModelFactory>[] suts;
+    Pair<IModelArchive<String, Object>, IModelFactory>[] suts;
 
     @Before
     public void before() throws Exception {
@@ -40,13 +40,13 @@ public class ModelArchiveSpecTest {
         IModelFactory f2 = newModelFactoryMock();
         IModelArchive a2 = new PoolingModelArchive(f2);
 
-        suts = new Tuple[] { newTuple(a1, f1), newTuple(a2, f2) };
+        suts = new Pair[] { newPair(a1, f1), newPair(a2, f2) };
     }
 
     @Test
     public void testAquireModel() throws Exception {
 
-        for (Tuple<IModelArchive<String, Object>, ?> p : suts) {
+        for (Pair<IModelArchive<String, Object>, ?> p : suts) {
             IModelArchive<String, Object> sut = p.getFirst();
             assertTrue(sut.hasModel(KEY_WITH_MODEL));
             assertTrue(sut.hasModel(KEY_NO_MODEL));
@@ -67,7 +67,7 @@ public class ModelArchiveSpecTest {
 
     @Test
     public void testOpenClose() throws IOException {
-        for (Tuple<IModelArchive<String, Object>, IModelFactory> p : suts) {
+        for (Pair<IModelArchive<String, Object>, IModelFactory> p : suts) {
             IModelArchive sut = p.getFirst();
             IModelFactory f = p.getSecond();
             sut.open();

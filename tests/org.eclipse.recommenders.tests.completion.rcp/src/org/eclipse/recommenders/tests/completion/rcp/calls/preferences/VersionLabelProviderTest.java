@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.recommenders.internal.completion.rcp.calls.preferences.VersionLabelProvider;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -24,11 +24,11 @@ public class VersionLabelProviderTest {
     VersionLabelProvider sut = new VersionLabelProvider(IMG_NOT_FOUND, IMG_FOUND);
     @Mock
     ClasspathEntryInfo info;
-    private Tuple<ClasspathEntryInfo, Object> data;
+    private Pair<ClasspathEntryInfo, Object> data;
 
     @Before
     public void before() {
-        data = Tuple.newTuple(info, null);
+        data = Pair.newPair(info, null);
     }
 
     @Test

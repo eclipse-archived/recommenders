@@ -15,7 +15,7 @@ import static com.google.common.base.Optional.of;
 import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
-import static org.eclipse.recommenders.utils.Tuple.newTuple;
+import static org.eclipse.recommenders.utils.Pair.newPair;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -28,7 +28,7 @@ import org.eclipse.recommenders.extdoc.rcp.providers.ExtdocProvider;
 import org.eclipse.recommenders.extdoc.rcp.providers.JavaSelectionSubscriber;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent.JavaSelectionLocation;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.swt.widgets.Composite;
 
 import com.google.common.base.Optional;
@@ -38,7 +38,7 @@ import com.google.inject.Inject;
 
 public class SubscriptionManager {
 
-    private final Multimap<Subscription, Tuple<ExtdocProvider, Method>> subscriptions = LinkedHashMultimap.create();
+    private final Multimap<Subscription, Pair<ExtdocProvider, Method>> subscriptions = LinkedHashMultimap.create();
 
     @Inject
     public SubscriptionManager(final List<ExtdocProvider> providers) {
@@ -50,27 +50,27 @@ public class SubscriptionManager {
 
     private void register(final ExtdocProvider provider) {
 
-        final Set<Tuple<Method, JavaSelectionSubscriber>> annotatedMethods = findAnnotatedMethods(provider);
+        final Set<Pair<Method, JavaSelectionSubscriber>> annotatedMethods = findAnnotatedMethods(provider);
 
         if (annotatedMethods.isEmpty()) {
             throwIllegalArgumentException("no listeners found"); //$NON-NLS-1$
         }
 
-        for (final Tuple<Method, JavaSelectionSubscriber> t : annotatedMethods) {
+        for (final Pair<Method, JavaSelectionSubscriber> t : annotatedMethods) {
             addSubscription(provider, t.getFirst(), t.getSecond());
         }
     }
 
-    private Set<Tuple<Method, JavaSelectionSubscriber>> findAnnotatedMethods(final ExtdocProvider provider) {
+    private Set<Pair<Method, JavaSelectionSubscriber>> findAnnotatedMethods(final ExtdocProvider provider) {
 
-        final Set<Tuple<Method, JavaSelectionSubscriber>> methods = newLinkedHashSet();
+        final Set<Pair<Method, JavaSelectionSubscriber>> methods = newLinkedHashSet();
 
         final Class<?> clazz = provider.getClass();
         for (final Method m : clazz.getMethods()) {
             final JavaSelectionSubscriber annotation = m.getAnnotation(JavaSelectionSubscriber.class);
             if (annotation != null) {
                 ensureCorrectMethodSignature(m);
-                methods.add(newTuple(m, annotation));
+                methods.add(newPair(m, annotation));
             }
         }
 
@@ -117,7 +117,7 @@ public class SubscriptionManager {
         final JavaSelectionLocation[] locs = annotation.value();
         final Class<?> javaElementType = method.getParameterTypes()[0];
 
-        final Tuple<ExtdocProvider, Method> subscriber = newTuple(provider, method);
+        final Pair<ExtdocProvider, Method> subscriber = newPair(provider, method);
 
         if (locs.length == 0) {
             final Subscription subscription = Subscription.create(javaElementType, null);
@@ -137,7 +137,7 @@ public class SubscriptionManager {
     public Optional<Method> findSubscribedMethod(final ExtdocProvider provider, final JavaSelectionEvent selection) {
         for (final Subscription s : subscriptions.keySet()) {
             if (s.isInterestedIn(selection)) {
-                for (final Tuple<ExtdocProvider, Method> t : subscriptions.get(s)) {
+                for (final Pair<ExtdocProvider, Method> t : subscriptions.get(s)) {
                     if (provider.equals(t.getFirst())) {
                         return of(t.getSecond());
                     }

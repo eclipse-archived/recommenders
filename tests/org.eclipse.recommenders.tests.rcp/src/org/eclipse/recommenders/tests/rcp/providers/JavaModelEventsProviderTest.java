@@ -26,7 +26,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.LibraryLocation;
 import org.eclipse.recommenders.internal.rcp.providers.JavaModelEventsProvider;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -52,7 +52,7 @@ public class JavaModelEventsProviderTest {
         project.close();
         project.open(null);
 
-        Tuple<ICompilationUnit, Set<Integer>> m = f.createFileAndParseWithMarkers("public class C {}");
+        Pair<ICompilationUnit, Set<Integer>> m = f.createFileAndParseWithMarkers("public class C {}");
         ICompilationUnit cu = m.getFirst();
 
         cu.getBuffer().append("// COMMENT");

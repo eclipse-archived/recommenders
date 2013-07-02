@@ -18,7 +18,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.recommenders.completion.rcp.calls.l10n.Messages;
 import org.eclipse.recommenders.internal.rcp.models.ModelArchiveMetadata;
 import org.eclipse.recommenders.rcp.ClasspathEntryInfo;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -53,7 +53,7 @@ public class VersionLabelProvider extends ColumnLabelProvider {
     }
 
     private boolean hasDependencyInformation(final Object element) {
-        Tuple<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> e = cast(element);
+        Pair<ClasspathEntryInfo, ModelArchiveMetadata<?, ?>> e = cast(element);
         ClasspathEntryInfo cpei = e.getFirst();
         if (isEmpty(cpei.getSymbolicName()) || cpei.getVersion().isUnknown()) {
             return false;

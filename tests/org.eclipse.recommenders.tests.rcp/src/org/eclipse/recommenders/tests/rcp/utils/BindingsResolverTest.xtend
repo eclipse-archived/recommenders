@@ -2,7 +2,9 @@ package org.eclipse.recommenders.tests.rcp.utils
 
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.dom.ITypeBinding
+import org.eclipse.jdt.core.dom.ParameterizedType
 import org.eclipse.jdt.core.dom.SimpleName
+import org.eclipse.jdt.core.dom.TypeParameter
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver
 import org.eclipse.recommenders.utils.rcp.ast.BindingUtils
@@ -11,8 +13,7 @@ import org.junit.Test
 import static org.eclipse.jdt.core.dom.NodeFinder.*
 import static org.eclipse.recommenders.tests.CodeBuilder.*
 import static org.junit.Assert.*
-import org.eclipse.jdt.core.dom.TypeParameter
-import org.eclipse.jdt.core.dom.ParameterizedType
+
 class BindingsResolverTest {
 
  	JavaElementResolver jdtResolver  = new JavaElementResolver()

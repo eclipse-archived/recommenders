@@ -45,7 +45,7 @@ import org.eclipse.recommenders.internal.utils.codestructs.ObjectUsage;
 import org.eclipse.recommenders.internal.utils.codestructs.DefinitionSite.Kind;
 import org.eclipse.recommenders.rcp.events.JavaSelectionEvent;
 import org.eclipse.recommenders.utils.Names;
-import org.eclipse.recommenders.utils.Tuple;
+import org.eclipse.recommenders.utils.Pair;
 import org.eclipse.recommenders.utils.annotations.Provisional;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -123,7 +123,7 @@ public final class CallsProvider extends ExtdocProvider {
             }
             model.setQuery(usage);
 
-            final Collection<Tuple<IMethodName, Double>> methodCalls = model.getRecommendedMethodCalls(0.05d);
+            final Collection<Pair<IMethodName, Double>> methodCalls = model.getRecommendedMethodCalls(0.05d);
             final IMethodName ctx = model.getActiveContext();
             final IMethodName def = model.getActiveDefinition();
             final Kind kind = model.getActiveKind();
@@ -166,7 +166,7 @@ public final class CallsProvider extends ExtdocProvider {
 
     private final class CallRecommendationsRenderer implements Runnable {
         private final IMethodName ctx;
-        private final Collection<Tuple<IMethodName, Double>> methodCalls;
+        private final Collection<Pair<IMethodName, Double>> methodCalls;
         private final Set<IMethodName> calls;
         private final String varName;
         private final IMethodName def;
@@ -174,7 +174,7 @@ public final class CallsProvider extends ExtdocProvider {
         private final Composite parent;
 
         private CallRecommendationsRenderer(final IMethodName ctx,
-                final Collection<Tuple<IMethodName, Double>> methodCalls, final Set<IMethodName> calls,
+                final Collection<Pair<IMethodName, Double>> methodCalls, final Set<IMethodName> calls,
                 final String varName, final IMethodName def, final Kind kind, final Composite parent) {
             this.ctx = ctx;
             this.methodCalls = methodCalls;
@@ -201,7 +201,7 @@ public final class CallsProvider extends ExtdocProvider {
             }
             new Label(container, SWT.NONE).setLayoutData(GridDataFactory.swtDefaults().span(4, 1).indent(0, 0)
                     .hint(SWT.DEFAULT, 1).create());
-            for (final Tuple<IMethodName, Double> rec : methodCalls) {
+            for (final Pair<IMethodName, Double> rec : methodCalls) {
                 final int percentage = (int) Math.rint(rec.getSecond() * 100);
                 createLabel(container, ExtdocUtils.percentageToRecommendationPhrase(percentage), true, false,
                         COLOR_INFO_FOREGROUND, false);

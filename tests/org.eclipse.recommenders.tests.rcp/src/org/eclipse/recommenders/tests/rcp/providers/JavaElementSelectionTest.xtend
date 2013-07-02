@@ -12,125 +12,123 @@ import org.junit.Test
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.XtendUtils.*
-import static org.mockito.Mockito.*
 
 class JavaElementSelectionTest {
 
-	@Test
-	def void testTypeSelectionInTypeDeclaration() {
-		// note: this does not work since classpath cannot resolve this!
-		val code = '''class Myc$lass {}'''
+    @Test
+    def void testTypeSelectionInTypeDeclaration() {
 
-		val expected = newListWithFrequency(
-			"LMyclass;" -> 1 
-		)
-		exerciseAndVerify(code, expected);
-	}
-	
-	@Test
-	def void testTypeSelectionsInMethodBody() {
-		val code = ''' 
-		class Myclass {
-			void test(String s1){
-				Str$ing s = new St$ring("");
-			}
-		}''' 
+        // note: this does not work since classpath cannot resolve this!
+        val code = '''class Myc$lass {}'''
 
-		val expected = newListWithFrequency(
-			"Ljava/lang/String;" -> 1,
-			"Ljava/lang/String;.(Ljava/lang/String;)V" -> 1 
-		)
-		exerciseAndVerify(code, expected);
-	}
-	
-	@Test
-	def void testTypeSelectionInExtends() {
+        val expected = newListWithFrequency(
+            "LMyclass;" -> 1
+        )
+        exerciseAndVerify(code, expected);
+    }
 
-		val code = '''
-		import java.util.*;
-		class Myclass123 extends L$ist {}
-		'''
+    @Test
+    def void testTypeSelectionsInMethodBody() {
+        val code = ''' 
+        class Myclass {
+        	void test(String s1){
+        		Str$ing s = new St$ring("");
+        	}
+        }'''
 
-		val expected = newListWithFrequency(
-			"Ljava/util/List<>;" -> 1 
-		)
-		exerciseAndVerify(code, expected);
-	}
+        val expected = newListWithFrequency(
+            "Ljava/lang/String;" -> 1,
+            "Ljava/lang/String;.(Ljava/lang/String;)V" -> 1
+        )
+        exerciseAndVerify(code, expected);
+    }
 
-	
-	@Test
-	def void testTypeSelectionInFieldDeclaration () {
-		val code = '''
-		class Myclass {
-			Str$ing s = new St$ring("");
-		}'''
+    @Test
+    def void testTypeSelectionInExtends() {
 
-		val expected = newListWithFrequency(
-			"Ljava/lang/String;" -> 1,
-			"Ljava/lang/String;.(Ljava/lang/String;)V" -> 1 
-		)
+        val code = '''
+            import java.util.*;
+            class Myclass123 extends L$ist {}
+        '''
 
-		exerciseAndVerify(code, expected);
-	}
+        val expected = newListWithFrequency(
+            "Ljava/util/List<>;" -> 1
+        )
+        exerciseAndVerify(code, expected);
+    }
 
-	@Test
-	def void testEmptySelectionInClassBody () {
-		val code = '''
-		class Myclass {
-			$
-		}'''
+    @Test
+    def void testTypeSelectionInFieldDeclaration() {
+        val code = '''
+        class Myclass {
+        	Str$ing s = new St$ring("");
+        }'''
 
-		exerciseAndVerify(code, Collections::emptyList);
-	}
+        val expected = newListWithFrequency(
+            "Ljava/lang/String;" -> 1,
+            "Ljava/lang/String;.(Ljava/lang/String;)V" -> 1
+        )
 
-	@Test
-	def void testMethodSelectionInMethodBody () {
-		val code = '''
-		class Myclass {
-			void test(String s1){
-				String s2 = s1.co$ncat("hello");
-				s2.hashCode$();
-				s1.$equals(s2);
-			}
-			
-		}'''
+        exerciseAndVerify(code, expected);
+    }
 
-		val expected = newListWithFrequency(
-			"Ljava/lang/String;.concat(Ljava/lang/String;)Ljava/lang/String;" -> 1,
-			"Ljava/lang/String;.hashCode()I" -> 1,
-			"Ljava/lang/String;.equals(Ljava/lang/Object;)Z" -> 1
-		)
+    @Test
+    def void testEmptySelectionInClassBody() {
+        val code = '''
+        class Myclass {
+        	$
+        }'''
 
-		exerciseAndVerify(code, expected);
-	}
+        exerciseAndVerify(code, Collections::emptyList);
+    }
 
-	@Test
-	@Ignore("Only for debugging the ui")
-	def void waitAlongTime(){
-		Thread::sleep(120*1000)
-	}
-	
-	def void exerciseAndVerify(CharSequence code, List<String> expected){
-		val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(),"test")
-		val struct = fixture.createFileAndParseWithMarkers(code)
-		val cu = struct.first;
-		if(cu==null){
-			fail("cu is not allowed to be null!")
-		}
-		val pos = struct.second;
-		val List<String> actual = newArrayList();
-		for(position : pos) {
-			 val selection = JavaSelectionUtils::resolveJavaElementFromTypeRootInEditor(cu, position)
-			 if(selection.present) {
-			 	val t = selection.get;
-			 	switch t {
-			 		IType : actual.add(t.key) 
-					IMethod :actual.add(t.key)
-			 	}
-			 }
-		}
-		assertEquals(expected, actual)
-	}
-	
-	
+    @Test
+    def void testMethodSelectionInMethodBody() {
+        val code = '''
+        class Myclass {
+        	void test(String s1){
+        		String s2 = s1.co$ncat("hello");
+        		s2.hashCode$();
+        		s1.$equals(s2);
+        	}
+        	
+        }'''
+
+        val expected = newListWithFrequency(
+            "Ljava/lang/String;.concat(Ljava/lang/String;)Ljava/lang/String;" -> 1,
+            "Ljava/lang/String;.hashCode()I" -> 1,
+            "Ljava/lang/String;.equals(Ljava/lang/Object;)Z" -> 1
+        )
+
+        exerciseAndVerify(code, expected);
+    }
+
+    @Test
+    @Ignore("Only for debugging the ui")
+    def void waitAlongTime() {
+        Thread::sleep(120 * 1000)
+    }
+
+    def void exerciseAndVerify(CharSequence code, List<String> expected) {
+        val fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(), "test")
+        val struct = fixture.createFileAndParseWithMarkers(code)
+        val cu = struct.first;
+        if (cu == null) {
+            fail("cu is not allowed to be null!")
+        }
+        val pos = struct.second;
+        val List<String> actual = newArrayList();
+        for (position : pos) {
+            val selection = JavaSelectionUtils::resolveJavaElementFromTypeRootInEditor(cu, position)
+            if (selection.present) {
+                val t = selection.get;
+                switch t {
+                    IType: actual.add(t.key)
+                    IMethod: actual.add(t.key)
+                }
+            }
+        }
+        assertEquals(expected, actual)
+    }
+
 }
