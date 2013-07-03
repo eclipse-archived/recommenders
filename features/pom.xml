@@ -87,6 +87,7 @@
 							<excludes>
 								<plugin id="com.google.inject.assistedinject"/>
 								<plugin id="com.google.inject.multibindings"/>
+								<plugin id="com.google.guava"/>
 								<plugin id="com.ning.async-http-client"/>
 								<plugin id="org.eclipse.recommenders.aether"/>
 								<plugin id="org.jboss.netty"/>
