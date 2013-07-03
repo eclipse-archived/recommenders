@@ -25,49 +25,80 @@ import com.google.common.collect.Ordering;
 @Beta
 public class Recommendations {
 
-    public static final Comparator<Recommendation<?>> BY_RELEVANCE = new Comparator<Recommendation<?>>() {
+    private static Comparator<Recommendation<?>> C_BY_RELEVANCE = new Comparator<Recommendation<?>>() {
 
         @Override
-        public int compare(Recommendation<?> o1, Recommendation<?> o2) {
+        public int compare(final Recommendation<?> o1, final Recommendation<?> o2) {
             return start().compare(o1.getRelevance(), o2.getRelevance()).compare(o1.toString(), o2.toString()).result();
         }
     };
 
-    public static final Comparator<Recommendation<?>> BY_NAME = new Comparator<Recommendation<?>>() {
+    private static Comparator<Recommendation<?>> C_BY_NAME = new Comparator<Recommendation<?>>() {
 
         @Override
-        public int compare(Recommendation<?> o1, Recommendation<?> o2) {
+        public int compare(final Recommendation<?> o1, final Recommendation<?> o2) {
             return start().compare(o1.getProposal().toString(), o2.getProposal().toString()).result();
         }
     };
 
-    private static final Predicate<Recommendation<IMethodName>> VOID = new Predicate<Recommendation<IMethodName>>() {
+    private static Predicate<Recommendation<IMethodName>> P_VOID = new Predicate<Recommendation<IMethodName>>() {
 
         @Override
-        public boolean apply(Recommendation<IMethodName> input) {
+        public boolean apply(final Recommendation<IMethodName> input) {
             return !input.getProposal().isVoid();
         }
     };
 
+    private static Predicate<Recommendation<?>> newMinimumRelevancePredicate(final double min) {
+        return new Predicate<Recommendation<?>>() {
+
+            @Override
+            public boolean apply(final Recommendation<?> input) {
+                return input.getRelevance() >= min;
+            }
+        };
+    }
+
     /**
-     * Returns the top k elements of the given iterable, sorted by proposal relevance in descending order.
+     * Returns the top k elements of the given list of recommendations, sorted by proposal relevance in descending
+     * order.
      */
-    public static <T> List<Recommendation<T>> top(Iterable<Recommendation<T>> recommendations, int numberOfTopElements) {
-        return Ordering.from(BY_RELEVANCE).greatestOf(recommendations, numberOfTopElements);
+    public static <T> List<Recommendation<T>> top(final Iterable<Recommendation<T>> recommendations,
+            final int numberOfTopElements) {
+        return Ordering.from(C_BY_RELEVANCE).greatestOf(recommendations, numberOfTopElements);
+    }
+
+    /**
+     * Returns the top k elements of the given list of recommendations that satisfy the minimum relevance criterion,
+     * sorted by proposal relevance in descending order.
+     */
+    public static <T> List<Recommendation<T>> top(final Iterable<Recommendation<T>> recommendations,
+            final int numberOfTopElements, final double minRelevance) {
+        return Ordering.from(C_BY_RELEVANCE).greatestOf(filterRelevance(recommendations, minRelevance),
+                numberOfTopElements);
     }
 
     /**
      * Filters all void methods from the list of method recommendations.
      */
-    public static Iterable<Recommendation<IMethodName>> filterVoid(Iterable<Recommendation<IMethodName>> recommendations) {
-        return Iterables.filter(recommendations, VOID);
+    public static Iterable<Recommendation<IMethodName>> filterVoid(
+            final Iterable<Recommendation<IMethodName>> recommendations) {
+        return Iterables.filter(recommendations, P_VOID);
+    };
+
+    /**
+     * Filters all proposals whose relevance is below the given threshold.
+     */
+    public static <T> Iterable<Recommendation<T>> filterRelevance(final Iterable<Recommendation<T>> recommendations,
+            final double min) {
+        return Iterables.filter(recommendations, newMinimumRelevancePredicate(min));
     };
 
     /**
      * Sorts the given list of proposals lexicographically in ascending order by the outcome of the proposal's toString
      * output.
      */
-    public static <T> List<Recommendation<T>> sortByName(Iterable<Recommendation<T>> recommendations) {
-        return Ordering.from(BY_NAME).sortedCopy(recommendations);
+    public static <T> List<Recommendation<T>> sortByName(final Iterable<Recommendation<T>> recommendations) {
+        return Ordering.from(C_BY_NAME).sortedCopy(recommendations);
     }
 }
