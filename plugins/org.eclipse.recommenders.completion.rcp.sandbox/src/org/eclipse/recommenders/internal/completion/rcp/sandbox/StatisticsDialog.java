@@ -1,13 +1,12 @@
 /**
- * Copyright (c) 2010, 2013 Darmstadt University of Technology.
+ * Copyright (c) 2013 Timur Achmetow
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Marcel Bruch - initial API and implementation.
- *    Timur Achmetow - Refined display of completion data events
+ *    Timur Achmetow - Initial API and implementation
  */
 package org.eclipse.recommenders.internal.completion.rcp.sandbox;
 
@@ -19,7 +18,11 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.apache.commons.math.stat.StatUtils.mean;
 import static org.apache.commons.math.stat.StatUtils.sum;
 import static org.eclipse.jface.viewers.StyledString.COUNTER_STYLER;
-import static org.eclipse.recommenders.internal.completion.rcp.sandbox.TableSorters.*;
+import static org.eclipse.recommenders.internal.completion.rcp.sandbox.TableSorters.setCompletionTypeSorter;
+import static org.eclipse.recommenders.internal.completion.rcp.sandbox.TableSorters.setCountSorter;
+import static org.eclipse.recommenders.internal.completion.rcp.sandbox.TableSorters.setLastUsedSorter;
+import static org.eclipse.recommenders.internal.completion.rcp.sandbox.TableSorters.setTypeSorter;
+import static org.eclipse.recommenders.internal.completion.rcp.sandbox.TableSorters.setUsedCompletionSorter;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,8 +34,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.primitives.ArrayDoubleList;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -53,8 +58,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
@@ -66,7 +70,17 @@ import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 
-public class StatisticsPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class StatisticsDialog extends TitleAreaDialog {
+
+    private static final long MAX_TIME_IN_COMPLETION = TimeUnit.MINUTES.toMillis(2);
+
+    private Collection<CompletionEvent> okayEvents;
+    private Collection<CompletionEvent> appliedEvents;
+    private Collection<CompletionEvent> abortedEvents;
+
+    private Composite container;
+    private StyledText styledText;
+    private StyledString styledString;
 
     private final class BuggyEventsPredicate implements Predicate<CompletionEvent> {
         @Override
@@ -82,36 +96,28 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         }
     }
 
-    private static final long MAX_TIME_IN_COMPLETION = TimeUnit.MINUTES.toMillis(2);
-    private Composite container;
-    private StyledText styledText;
-    private StyledString styledString;
-    private Collection<CompletionEvent> okayEvents;
-    private Collection<CompletionEvent> buggyEvents;
-    private Collection<CompletionEvent> appliedEvents;
-    private Collection<CompletionEvent> abortedEvents;
-
-    public StatisticsPreferencePage() {
-        super("Completion Statistics");
-    }
-
-    private void setDescription() {
-        String date = "the beginning of recording";
-        if (okayEvents.size() > 0) {
-            Date start = new Date(Iterables.getFirst(okayEvents, null).sessionStarted);
-            date = format("%tF", start);
-        }
-        setDescription("Here is a summary of your code completion activity since " + date + ":");
-    }
-
-    @Override
-    public void init(IWorkbench workbench) {
+    public StatisticsDialog(Shell parentShell) {
+        super(parentShell);
+        setHelpAvailable(false);
         loadEvents();
-        setDescription();
+    }
+
+    public StatisticsDialog() {
+        super(null);
     }
 
     @Override
     protected Control createContents(Composite parent) {
+        super.createContents(parent);
+        getShell().setText("Statistics Dialog");
+        getShell().setSize(550, 725);
+        setMessage(getDescriptionText(), IMessageProvider.INFORMATION);
+        return parent;
+    }
+
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        parent.setLayout(new GridLayout());
         createWidgets(parent);
         appendNumberOfCompletionEvents();
         appendNumberOfKeystrokesSaved();
@@ -119,8 +125,6 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
 
         SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
         GridData data = new GridData(GridData.FILL_BOTH);
-        data.widthHint = 530;
-        data.heightHint = 400;
         sashForm.setLayoutData(data);
 
         showCompletionKindInViewer(sashForm);
@@ -139,24 +143,6 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         styledString = new StyledString();
     }
 
-    private void loadEvents() {
-        File log = StatisticsSessionProcessor.getCompletionLogLocation();
-        Gson gson = StatisticsSessionProcessor.getCompletionLogSerializer();
-        LinkedList<CompletionEvent> events = Lists.newLinkedList();
-        try {
-            for (String json : Files.readLines(log, Charsets.UTF_8)) {
-                CompletionEvent event = gson.fromJson(json, CompletionEvent.class);
-                events.add(event);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        buggyEvents = Collections2.filter(events, new BuggyEventsPredicate());
-        okayEvents = Collections2.filter(events, not(new BuggyEventsPredicate()));
-        appliedEvents = Collections2.filter(okayEvents, new HasAppliedProposalPredicate());
-        abortedEvents = Collections2.filter(okayEvents, not(new HasAppliedProposalPredicate()));
-    }
-
     private void appendNumberOfCompletionEvents() {
         int total = 0;
         for (CompletionEvent e : okayEvents) {
@@ -164,8 +150,7 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         }
         int completedInPercent = calculatePercentData(appliedEvents);
         styledString.append("Number of times code completion triggered: ")
-                .append(format(addTabs(3) + "%,d", okayEvents.size()), COUNTER_STYLER)
-                .append("\n");
+                .append(format(addTabs(3) + "%,d", okayEvents.size()), COUNTER_STYLER).append("\n");
         int abortedInPercent = calculatePercentData(abortedEvents);
 
         styledString.append("Number of concluded completions: ")
@@ -175,8 +160,7 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
                 .append(addTabs(8) + abortedEvents.size() + " (" + abortedInPercent + "%)", COUNTER_STYLER)
                 .append("\n");
         styledString.append("Number of proposals offered by code completion: ")
-                .append(addTabs(1) + total + "", COUNTER_STYLER)
-                .append("\n");
+                .append(addTabs(1) + total + "", COUNTER_STYLER).append("\n");
     }
 
     private String addTabs(int count) {
@@ -217,16 +201,18 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         long totalAborted = round(sum(spentAborted.toArray()));
         long meanAborted = round(mean(spentAborted.toArray()));
 
-        styledString.append("\nTotal Time spent in completion window on ")
-        //
+        styledString
+                .append("\nTotal Time spent in completion window on ")
+                //
                 .append("\n   - concluded sessions:    ")
                 .append(addTabs(1) + toTimeString(totalApplied), COUNTER_STYLER)
                 //
                 .append("\n   - aborted sessions:      ")
                 .append(addTabs(2) + toTimeString(totalAborted), COUNTER_STYLER);
 
-        styledString.append("\n\nAverage time spent in completion window per")
-        //
+        styledString
+                .append("\n\nAverage time spent in completion window per")
+                //
                 .append("\n   - concluded session:    ")
                 .append(format(addTabs(1) + "%,d ms", meanApplied), COUNTER_STYLER)
                 //
@@ -235,8 +221,7 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
     }
 
     private String toTimeString(long time) {
-        return format("%d min, %d sec",
-                MILLISECONDS.toMinutes(time),
+        return format("%d min, %d sec", MILLISECONDS.toMinutes(time),
                 MILLISECONDS.toSeconds(time) - MINUTES.toSeconds(MILLISECONDS.toMinutes(time)));
     }
 
@@ -304,7 +289,8 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         }
 
         final Composite newComp = createWrapperComposite(parent);
-        new Label(newComp, SWT.NONE).setText("Code completion was triggered most frequently on variables of these types:");
+        new Label(newComp, SWT.NONE)
+                .setText("Code completion was triggered most frequently on variables of these types:");
 
         final Composite comp = new Composite(newComp, SWT.NONE);
         final TableColumnLayout layout = createTableColumnLayout(comp);
@@ -327,6 +313,11 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         newComp.setLayout(new GridLayout());
         newComp.setLayoutData(new GridData(GridData.FILL_BOTH));
         return newComp;
+    }
+
+    private void insertStyledText() {
+        styledText.setText(styledString.toString());
+        styledText.setStyleRanges(styledString.getStyleRanges());
     }
 
     private TableColumnLayout createTableColumnLayout(final Composite comp) {
@@ -358,9 +349,40 @@ public class StatisticsPreferencePage extends PreferencePage implements IWorkben
         return column;
     }
 
-    private void insertStyledText() {
-        styledText.setText(styledString.toString());
-        styledText.setStyleRanges(styledString.getStyleRanges());
+    @Override
+    protected final void createButtonsForButtonBar(final Composite parent) {
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+    }
+
+    @Override
+    protected boolean isResizable() {
+        return true;
+    }
+
+    private String getDescriptionText() {
+        String date = "the beginning of recording";
+        if (okayEvents.size() > 0) {
+            Date start = new Date(Iterables.getFirst(okayEvents, null).sessionStarted);
+            date = format("%tF", start);
+        }
+        return "Here is a summary of your code completion activity since " + date;
+    }
+
+    private void loadEvents() {
+        File log = StatisticsSessionProcessor.getCompletionLogLocation();
+        Gson gson = StatisticsSessionProcessor.getCompletionLogSerializer();
+        LinkedList<CompletionEvent> events = Lists.newLinkedList();
+        try {
+            for (String json : Files.readLines(log, Charsets.UTF_8)) {
+                CompletionEvent event = gson.fromJson(json, CompletionEvent.class);
+                events.add(event);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        okayEvents = Collections2.filter(events, not(new BuggyEventsPredicate()));
+        appliedEvents = Collections2.filter(okayEvents, new HasAppliedProposalPredicate());
+        abortedEvents = Collections2.filter(okayEvents, not(new HasAppliedProposalPredicate()));
     }
 
     public class TypeNameLabelProvider extends CellLabelProvider {
