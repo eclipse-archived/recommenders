@@ -21,14 +21,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public class CachingModelArchive<K, M> implements IModelArchive<K, M> {
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    private Cache<K, M> cache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).maximumSize(100)
+    private LoadingCache<K, M> cache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).maximumSize(100)
             .build(new CacheLoaderWrapper());
 
     private final IModelFactory<K, M> loader;

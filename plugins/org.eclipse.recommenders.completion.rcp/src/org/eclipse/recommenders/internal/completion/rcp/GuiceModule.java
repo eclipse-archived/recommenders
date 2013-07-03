@@ -12,13 +12,19 @@ package org.eclipse.recommenders.internal.completion.rcp;
 
 import javax.inject.Singleton;
 
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContextFactory;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 public class GuiceModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        install(new FactoryModuleBuilder().implement(IRecommendersCompletionContext.class,
+                RecommendersCompletionContext.class).build(IRecommendersCompletionContextFactory.class));
     }
 
     @Provides

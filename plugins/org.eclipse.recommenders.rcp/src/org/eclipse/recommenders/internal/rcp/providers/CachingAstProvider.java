@@ -12,8 +12,6 @@ package org.eclipse.recommenders.internal.rcp.providers;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
 
-import java.util.Map;
-
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IElementChangedListener;
@@ -22,18 +20,18 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.ui.SharedASTProvider;
 import org.eclipse.recommenders.rcp.IAstProvider;
 
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.inject.Singleton;
 
 @Singleton
 public class CachingAstProvider implements IAstProvider, IElementChangedListener {
 
-    @SuppressWarnings("deprecation")
-    private final Map<ICompilationUnit, CompilationUnit> cache = new MapMaker().maximumSize(20).makeMap();
+    private final Cache<ICompilationUnit, CompilationUnit> cache = CacheBuilder.newBuilder().maximumSize(20).build();
 
     @Override
     public CompilationUnit get(final ICompilationUnit compilationUnit) {
-        CompilationUnit ast = cache.get(compilationUnit);
+        CompilationUnit ast = cache.getIfPresent(compilationUnit);
         if (ast == null) {
             ast = SharedASTProvider.getAST(compilationUnit, SharedASTProvider.WAIT_YES, null);
             if (ast != null) {

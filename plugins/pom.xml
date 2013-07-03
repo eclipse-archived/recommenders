@@ -15,7 +15,6 @@
 	<modules>
 <!--		<module>org.eclipse.recommenders.codegen</module> -->
 		<module>org.eclipse.recommenders.completion.rcp</module>
-		<module>org.eclipse.recommenders.completion.rcp.e38</module>
 		<module>org.eclipse.recommenders.completion.rcp.calls</module>
 		<module>org.eclipse.recommenders.completion.rcp.chain</module>
 		<module>org.eclipse.recommenders.completion.rcp.overrides</module>

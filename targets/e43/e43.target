@@ -17,7 +17,7 @@
 <unit id="org.eclipse.m2e.feature.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/releases/kepler"/>
 </location>
-<!-- List of source bundles needs to be maintained manually; includeSources="true" not supported yet. -->
+<!-- List of source bundles needs to be maintained manually; includeSources="true" not supported yet --> 
 <!-- See http://wiki.eclipse.org/Tycho/Target_Platform#Target_files -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="false" type="InstallableUnit">
 <unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>
