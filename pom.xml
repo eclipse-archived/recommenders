@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Resources on the web: -->
-<!-- http://wiki.eclipse.org/Tycho/Packaging_Types -->
-<!-- http://wiki.eclipse.org/Tycho/Reference_Card -->
-<!-- http://wiki.eclipse.org/Category:Tycho -->
-<!-- http://wiki.eclipse.org/Minerva -->
-<!-- http://intellectualcramps.wordpress.com/2011/06/04/tycho-surefire-test-setup-tips/ -->
-<!-- http://maksim.sorokin.dk/it/2010/12/21/tests-in-tycho/ -->
-<!-- http://www.jug.ch/events/slides/111020_Tycho-Maven-Eclipse-RCP.pdf -->
-<!-- http://git.eclipse.org/c/tycho/org.eclipse.tycho.git/tree/tycho-demo -->
-<!-- http://timezra.blogspot.com/2010/05/tycho-tests-without-osgi.html -->
-<!-- http://www.java-forum.org/deployment/116917-tycho-unit-tests.html -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>org.eclipse.recommenders.parent</artifactId>
@@ -47,14 +36,15 @@
 		<recommenders-version>1.100.0-SNAPSHOT</recommenders-version>
 		<java-version>1.6</java-version>
 		<tycho-version>0.18.0</tycho-version>
-		<!-- Use HTTP, as it provides the most firewall-friendly access to the repository. -->
+		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
 		<jacoco-version>0.5.4.201111111111</jacoco-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<build-alias>b000</build-alias>
 		<coverage.skip>false</coverage.skip>
 		<coverage.filter>org.eclipse.recommenders.*</coverage.filter>
 		<coverage.destFile>../target/jacoco.exec</coverage.destFile>
+		<!-- Overwritten when the "build-server" profile (see below) is activated. -->
+		<build-alias>b000</build-alias>
 	</properties>
 	<modules>
 		<module>releng</module>
@@ -64,41 +54,10 @@
 		<module>features</module>
 		<module>dist</module>
 	</modules>
-	<profiles>
-		<profile>
-			<id>build-server</id>
-			<properties>
-				<build-alias>b${env.BUILD_NUMBER}</build-alias>
-			</properties>
-		</profile>
-		<profile>
-			<id>e43</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<configuration>
-							<target>
-								<artifact>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>e43</artifactId>
-									<version>${recommenders-version}</version>
-								</artifact>
-							</target>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 	<pluginRepositories>
 		<pluginRepository>
-			<id>eclipse</id>
-			<url>http://maven.eclipse.org/nexus/content/groups/public/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
+			<id>m2e-cbi</id>
+			<url>http://download.eclipse.org/technology/m2e/maven/</url>
 		</pluginRepository>
 	</pluginRepositories>
 	<build>
@@ -123,6 +82,7 @@
 					<version>${tycho-version}</version>
 					<configuration>
 						<executionEnvironmentDefault>JavaSE-${java-version}</executionEnvironmentDefault>
+						<includePackedArtifacts>true</includePackedArtifacts>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -196,6 +156,21 @@
 					<groupId>org.eclipse.tycho.extras</groupId>
 					<artifactId>tycho-source-feature-plugin</artifactId>
 					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho.extras</groupId>
+					<artifactId>tycho-pack200a-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho.extras</groupId>
+					<artifactId>tycho-pack200b-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.cbi.maven.plugins</groupId>
+					<artifactId>eclipse-jarsigner-plugin</artifactId>
+					<version>1.0.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -332,4 +307,32 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<profiles>
+		<profile>
+			<id>build-server</id>
+			<properties>
+				<build-alias>b${env.BUILD_NUMBER}</build-alias>
+			</properties>
+		</profile>
+		<profile>
+			<id>e43</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<configuration>
+							<target>
+								<artifact>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>e43</artifactId>
+									<version>${recommenders-version}</version>
+								</artifact>
+							</target>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

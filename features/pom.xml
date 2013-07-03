@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
@@ -77,7 +77,7 @@
 				<artifactId>tycho-source-feature-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>source-feature</id>
+						<id>generate-source-feature</id>
 						<goals>
 							<goal>source-feature</goal>
 						</goals>
@@ -85,12 +85,12 @@
 							<!-- Exclude 3rd party plugins without sources (or with remote sources). -->
 							<!-- See https://bugs.eclipse.org/bugs/show_bug.cgi?id=374663 -->
 							<excludes>
-								<plugin id="com.google.inject.assistedinject"/>
-								<plugin id="com.google.inject.multibindings"/>
-								<plugin id="com.google.guava"/>
-								<plugin id="com.ning.async-http-client"/>
-								<plugin id="org.eclipse.recommenders.aether"/>
-								<plugin id="org.jboss.netty"/>
+								<plugin id="com.google.inject.assistedinject" />
+								<plugin id="com.google.inject.multibindings" />
+								<plugin id="com.google.guava" />
+								<plugin id="com.ning.async-http-client" />
+								<plugin id="org.eclipse.recommenders.aether" />
+								<plugin id="org.jboss.netty" />
 							</excludes>
 							<!-- Non-breakable space, as normal spaces are trimmed. -->
 							<labelSuffix>&#xA0;(Sources)</labelSuffix>
@@ -103,22 +103,48 @@
 				<artifactId>tycho-p2-plugin</artifactId>
 				<executions>
 					<execution>
-						<!-- Don't attach (default) metadata before the source-feature execution.-->
+						<!-- Don't attach (default) metadata before the "generate-source-feature" execution. -->
 						<id>default-p2-metadata-default</id>
 						<configuration>
 							<attachP2Metadata>false</attachP2Metadata>
 						</configuration>
 					</execution>
 					<execution>
-						<!-- Do attach metadata after the source-feature execution.-->
+						<!-- Do attach metadata after the "generate-source-feature" execution. -->
 						<id>attach-p2-metadata</id>
+						<phase>package</phase>
 						<goals>
 							<goal>p2-metadata</goal>
 						</goals>
-						<phase>package</phase>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>build-server</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.cbi.maven.plugins</groupId>
+						<artifactId>eclipse-jarsigner-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign</id>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- Pull in "attach-p2-metadata" execution (see above). -->
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
