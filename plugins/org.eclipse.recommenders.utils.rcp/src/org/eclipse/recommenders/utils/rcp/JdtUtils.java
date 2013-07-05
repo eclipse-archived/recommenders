@@ -10,17 +10,11 @@
  */
 package org.eclipse.recommenders.utils.rcp;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.of;
-import static org.eclipse.jdt.internal.corext.util.JdtFlags.isPublic;
-import static org.eclipse.jdt.internal.corext.util.JdtFlags.isStatic;
-import static org.eclipse.jdt.ui.SharedASTProvider.WAIT_YES;
-import static org.eclipse.jdt.ui.SharedASTProvider.getAST;
-import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
-import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
+import static com.google.common.base.Optional.*;
+import static org.eclipse.jdt.internal.corext.util.JdtFlags.*;
+import static org.eclipse.jdt.ui.SharedASTProvider.*;
+import static org.eclipse.recommenders.utils.Checks.*;
+import static org.eclipse.recommenders.utils.Throws.*;
 import static org.eclipse.recommenders.utils.rcp.internal.RecommendersUtilsPlugin.logError;
 
 import java.io.File;
@@ -29,7 +23,9 @@ import java.util.LinkedHashMap;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -593,7 +589,31 @@ public class JdtUtils {
         return Optional.fromNullable(node);
     }
 
-    public static Optional<File> getLocation(final IPackageFragmentRoot packageRoot) {
+    /**
+     * Returns the absolute location of the given java project or {@link Optional#absent} if the project is
+     * <code>null</code> or could not be mapped to any existing location on disk.
+     */
+    public static Optional<File> getLocation(@Nullable final IJavaProject javaProject) {
+        if (javaProject == null) {
+            return absent();
+        }
+        IProject project = javaProject.getProject();
+        IPath location = project.getLocation();
+        if (location == null) {
+            return absent();
+        }
+        File file = location.toFile().getAbsoluteFile();
+        if (file.exists()) {
+            return of(file);
+        } else {
+            return absent();
+        }
+    }
+
+    public static Optional<File> getLocation(@Nullable final IPackageFragmentRoot packageRoot) {
+        if (packageRoot == null) {
+            return absent();
+        }
         File res = null;
         final IResource resource = packageRoot.getResource();
         if (resource != null) {
