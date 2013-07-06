@@ -16,6 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @Deprecated use Google Guava's {@code Multiset} classes instead.
+ * @See Bags
+ */
+@Deprecated
 public interface Bag<T> extends Iterable<T> {
     /**
      * Adds the given element to this bag and increases its counter by one.

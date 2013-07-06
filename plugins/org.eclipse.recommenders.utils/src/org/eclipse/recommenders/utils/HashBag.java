@@ -24,6 +24,7 @@ import java.util.Set;
 
 import com.google.common.collect.Maps;
 
+@Deprecated
 public class HashBag<T> implements Bag<T> {
 
     public static <T> HashBag<T> newHashBag() {

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+@Deprecated
 public class TreeBag<T> extends HashBag<T> {
 
     private Comparator<T> comparator;
