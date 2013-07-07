@@ -24,8 +24,14 @@
          point="org.eclipse.ui.views">
       <category
             id="org.eclipse.recommenders.rcp.category.views"
-            name="%category.name">
+            name="Recommenders">
       </category>
+      <view
+            category="org.eclipse.recommenders.rcp.category.views"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.rcp.ui.ModelIndexView"
+            id="org.eclipse.recommenders.internal.rcp.ui.ModelIndexView"
+            name="Model Index ">
+      </view>
    </extension>
      <extension
            point="org.eclipse.ui.preferencePages">
