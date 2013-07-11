@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Dependency Identification"
+            icon="icons/depinsp.gif"
+            category="org.eclipse.recommenders.rcp.category.views"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.models.rcp.dependencymonitor.views.DependencyMonitor"
+            id="org.eclipse.recommenders.models.rcp.dependencymonitor.views.DependencyMonitor">
+      </view>
+   </extension>
+
+</plugin>
