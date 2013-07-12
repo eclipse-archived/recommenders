@@ -232,6 +232,7 @@
 									<validHeader>license-tu-darmstadt-2010.txt</validHeader>
 									<validHeader>license-tu-darmstadt-2011.txt</validHeader>
 									<validHeader>license-tu-darmstadt-2012.txt</validHeader>
+									<validHeader>license-tu-darmstadt-2013.txt</validHeader>
 									<validHeader>license-henss-2010.txt</validHeader>
 									<validHeader>license-kutschke-2011.txt</validHeader>
 									<validHeader>license-kutschke-2012.txt</validHeader>
@@ -243,10 +244,16 @@
 									<validHeader>license-doug-ye-2011.txt</validHeader>
 									<validHeader>license-doug-ye-cheng.txt</validHeader>
 									<validHeader>license-amann-2012.txt</validHeader>
+									<validHeader>license-achmetow-2013.txt</validHeader>
+									<validHeader>license-schindl-2007.txt</validHeader>
 								</validHeaders>
 								<includes>
-									<include>${project.build.sourceDirectory}/**/*.java</include>
+									<include>src/**/*.java</include>
+									<include>src/**/*.xtend</include>
 								</includes>
+								<mapping>
+									<xtend>JAVADOC_STYLE</xtend>
+								</mapping>
 							</configuration>
 						</execution>
 					</executions>

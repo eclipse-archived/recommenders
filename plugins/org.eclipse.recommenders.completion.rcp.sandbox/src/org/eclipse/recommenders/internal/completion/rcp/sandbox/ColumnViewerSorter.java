@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**
  * Copyright (c) 2006, 2007 Tom Schindl and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -6,9 +6,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Tom Schindl - initial API and implementation
- *******************************************************************************/
-
+ *     Tom Schindl - initial API and implementation.
+ */
 package org.eclipse.recommenders.internal.completion.rcp.sandbox;
 
 import org.eclipse.jface.viewers.ColumnViewer;
