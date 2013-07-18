@@ -328,7 +328,7 @@ public class Names {
         if (name.getName().equals("<subtype-init>")) {
             sb.append("ConstructorCallFromSubtype");
         } else {
-            sb.append(name.isInit() ? vm2srcSimpleTypeName(name.getDeclaringType()) : name.getName());
+            sb.append(name.isInit() ? "new " + vm2srcSimpleTypeName(name.getDeclaringType()) : name.getName());
         }
         //
         sb.append('(');

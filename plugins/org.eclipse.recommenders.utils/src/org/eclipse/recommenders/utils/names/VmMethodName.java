@@ -10,19 +10,9 @@
  */
 package org.eclipse.recommenders.utils.names;
 
-import static org.eclipse.recommenders.utils.Checks.ensureIsInstanceOf;
-import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
+import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
-import static org.eclipse.recommenders.utils.Throws.throwNotImplemented;
-import static org.eclipse.recommenders.utils.names.VmTypeName.BOOLEAN;
-import static org.eclipse.recommenders.utils.names.VmTypeName.BYTE;
-import static org.eclipse.recommenders.utils.names.VmTypeName.CHAR;
-import static org.eclipse.recommenders.utils.names.VmTypeName.DOUBLE;
-import static org.eclipse.recommenders.utils.names.VmTypeName.FLOAT;
-import static org.eclipse.recommenders.utils.names.VmTypeName.INT;
-import static org.eclipse.recommenders.utils.names.VmTypeName.LONG;
-import static org.eclipse.recommenders.utils.names.VmTypeName.SHORT;
-import static org.eclipse.recommenders.utils.names.VmTypeName.VOID;
+import static org.eclipse.recommenders.utils.names.VmTypeName.*;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -262,7 +252,8 @@ public class VmMethodName implements IMethodName {
 
     @Override
     public boolean similar(final IMethodName other) {
-        throw throwNotImplemented();
+        String s1 = other.getSignature();
+        return s1.equals(getSignature());
     }
 
     @Override

@@ -71,7 +71,7 @@ public class NamesTest {
     public void testVm2srcSimpleMethod() {
         assertEquals("wait(int)", Names.vm2srcSimpleMethod(STRING_WAIT));
         assertEquals("hashCode()", Names.vm2srcSimpleMethod(STRING_HASHCODE));
-        assertEquals("String()", Names.vm2srcSimpleMethod(STRING_NEW));
+        assertEquals("new String()", Names.vm2srcSimpleMethod(STRING_NEW));
     }
 
     @Test
