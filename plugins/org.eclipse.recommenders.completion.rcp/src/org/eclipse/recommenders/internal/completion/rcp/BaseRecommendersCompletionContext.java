@@ -464,7 +464,8 @@ public abstract class BaseRecommendersCompletionContext implements IRecommenders
                 receiver = varBinding.type;
                 break;
             case Binding.TYPE:
-                // e.g. PlatformUI.|<ctrl-space>
+            case Binding.GENERIC_TYPE:
+                // e.g. Class.|<ctrl-space>
                 receiver = (TypeBinding) c.binding;
                 break;
             default:
