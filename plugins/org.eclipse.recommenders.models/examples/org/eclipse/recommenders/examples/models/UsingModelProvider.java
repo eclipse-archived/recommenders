@@ -10,33 +10,43 @@
  */
 package org.eclipse.recommenders.examples.models;
 
+import static org.eclipse.recommenders.models.ProjectCoordinate.UNKNOWN;
+
+import org.eclipse.recommenders.examples.models.CompletionEngineExample.IJavaElement;
+import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.models.IBasedName;
 import org.eclipse.recommenders.models.IModelProvider;
+import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.VmTypeName;
 
 public class UsingModelProvider {
+
+    EclipseProjectCoordinateProvider provider;
 
     RecommendationModel DUMMY = new RecommendationModel();
     IModelProvider<IBasedName<ITypeName>, RecommendationModel> service;
 
-    void getModelForIDEType(Object ideIType) {
-        IBasedName<ITypeName> name = convertToQualifiedTypeName(ideIType);
+    void getModelForIDEType(IJavaElement type) {
+        ProjectCoordinate coord = provider.map(type).or(UNKNOWN);
+        BasedTypeName name = new BasedTypeName(coord, toTypeName(type));
         RecommendationModel model = service.acquireModel(name).or(DUMMY);
         model.compute();
         // ...
         service.releaseModel(model);
     }
 
-    private IBasedName<ITypeName> convertToQualifiedTypeName(Object ideIType) {
-        // TODO Auto-generated method stub
-        return null;
+    //
+    // only fake implementations below this point
+
+    private ITypeName toTypeName(IJavaElement type) {
+        // fake! replace by real resolution logic
+        return VmTypeName.JavaLangString;
     }
 
     static class RecommendationModel {
 
         public void compute() {
-            // TODO Auto-generated method stub
-
         }
     }
 }

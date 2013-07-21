@@ -12,7 +12,6 @@ Require-Bundle: org.junit;bundle-version="4.10.0",
  org.eclipse.recommenders.rcp;resolution:=optional,
  com.google.guava,
  org.eclipse.core.runtime,
- org.mockito,
  org.objenesis,
  org.eclipse.jdt.core,
  org.apache.commons.lang3,
@@ -26,3 +25,6 @@ Require-Bundle: org.junit;bundle-version="4.10.0",
  org.eclipse.jface.text,
  org.eclipse.xtext.xbase.lib
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.mockito,
+ org.mockito.invocation,
+ org.mockito.stubbing

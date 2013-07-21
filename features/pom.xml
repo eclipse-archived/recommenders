@@ -16,11 +16,13 @@
 		<module>org.eclipse.recommenders.feature.license</module>
 		<module>org.eclipse.recommenders.feature.rcp</module>
 		<module>org.eclipse.recommenders.feature.rcp.core</module>
+		<module>org.eclipse.recommenders.feature.calls.rcp</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.intellig</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.sandbox</module>
 		<module>org.eclipse.recommenders.feature.completion.rcp.chain</module>
 		<module>org.eclipse.recommenders.feature.extdoc.rcp</module>
+		<module>org.eclipse.recommenders.feature.jayes</module>
 		<module>org.eclipse.recommenders.feature.rdk</module>
 		<module>org.eclipse.recommenders.feature.3rd.orbit</module>
 		<module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>

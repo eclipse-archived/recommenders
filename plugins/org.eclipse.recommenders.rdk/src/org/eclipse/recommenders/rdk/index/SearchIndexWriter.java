@@ -12,8 +12,7 @@ package org.eclipse.recommenders.rdk.index;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
-import static org.apache.lucene.document.Field.Store.NO;
-import static org.apache.lucene.document.Field.Store.YES;
+import static org.apache.lucene.document.Field.Store.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +28,8 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 import org.eclipse.recommenders.rdk.index.ModelDocuments.ModelDocument;
-import org.eclipse.recommenders.rdk.utils.Artifacts;
 import org.eclipse.recommenders.rdk.utils.Commands.CommandProvider;
+import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.annotations.Provisional;

@@ -2,14 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="id1"
-         point="org.eclipse.e4.workbench.model">
-      <processor
-            beforefragment="false"
-            class="org.eclipse.recommenders.models.rcp.wiring.E4Processor">
-      </processor>
-   </extension>
-   <extension
          point="org.eclipse.recommenders.injection.modules">
       <module
             class="org.eclipse.recommenders.models.rcp.wiring.ModelsRCPModule">

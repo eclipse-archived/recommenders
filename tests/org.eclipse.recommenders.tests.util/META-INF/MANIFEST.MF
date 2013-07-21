@@ -18,3 +18,4 @@ Require-Bundle: org.eclipse.recommenders.tests,
  com.google.gson,
  org.eclipse.osgi
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.sonatype.aether.artifact

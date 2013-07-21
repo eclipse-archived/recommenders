@@ -43,6 +43,24 @@ import com.google.common.io.OutputSupplier;
 
 public class Zips {
 
+    public static ZipFile NULL() {
+        try {
+            File tmp = File.createTempFile("recommenders_null_zip", ".zip");
+            ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(tmp));
+            zos.putNextEntry(new ZipEntry("/"));
+            zos.closeEntry();
+            zos.close();
+            return new ZipFile(tmp) {
+                @Override
+                public void close() throws IOException {
+                    super.close();
+                }
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static void unzip(File zipFile, File destFolder) throws IOException {
         ZipInputStream zis = null;
         try {

@@ -18,21 +18,19 @@ import java.util.jar.Attributes.Name;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.eclipse.osgi.util.ManifestElement;
-import org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.dependencies.DependencyInfo;
 import org.eclipse.recommenders.models.dependencies.DependencyType;
+import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Zips;
-import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
 public class OsgiManifestStrategy extends AbstractStrategy {
-    private static final Name BUNDLE_NAME = new Attributes.Name(Constants.BUNDLE_SYMBOLICNAME);
-    private static final Name BUNDLE_VERSION = new Attributes.Name(Constants.BUNDLE_VERSION);
+    private static final Name BUNDLE_NAME = new Attributes.Name("Bundle-SymbolicName");
+    private static final Name BUNDLE_VERSION = new Attributes.Name("Bundle-Version");
     private Logger log = LoggerFactory.getLogger(OsgiManifestStrategy.class);
 
     @Override
@@ -51,8 +49,9 @@ public class OsgiManifestStrategy extends AbstractStrategy {
             if (name == null || version == null) {
                 return absent();
             }
-            String aid = ManifestElement.parseHeader(Constants.BUNDLE_SYMBOLICNAME, name)[0].getValue();
-            String gid = RepositoryUtils.guessGroupId(aid);
+            int indexOf = name.indexOf(";");
+            String aid = name.substring(0, indexOf == -1 ? name.length() : indexOf);
+            String gid = Artifacts.guessGroupId(aid);
             return of(new ProjectCoordinate(gid, aid, version));
         } catch (Exception e) {
             log.error("Exception occured while parsing " + dep, e);

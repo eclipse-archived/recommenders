@@ -74,6 +74,7 @@ import org.sonatype.aether.repository.ProxySelector;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.Service;
 import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Inject;
@@ -96,6 +97,7 @@ public class RecommendersModule extends AbstractModule implements Module {
         bindRepository();
         initalizeSingletonServices();
         bindShutdownListener();
+        bindServiceListener();
     }
 
     @Singleton
@@ -104,8 +106,8 @@ public class RecommendersModule extends AbstractModule implements Module {
             IWorkspaceRoot workspace) {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         File stateLocation = new File(Platform.getStateLocation(bundle).toFile(), "v0.5-package-root-infos.json"); //$NON-NLS-1$
-        final IClasspathEntryInfoProvider cpeInfoProvider =
-                new ClasspathEntryInfoProvider(stateLocation, workspace, bus);
+        final IClasspathEntryInfoProvider cpeInfoProvider = new ClasspathEntryInfoProvider(stateLocation, workspace,
+                bus);
 
         PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
 
@@ -198,6 +200,39 @@ public class RecommendersModule extends AbstractModule implements Module {
         });
     }
 
+    private void bindServiceListener() {
+        bindListener(Matchers.any(), new TypeListener() {
+            @Override
+            public <I> void hear(TypeLiteral<I> typeLiteral, TypeEncounter<I> typeEncounter) {
+                typeEncounter.register(new InjectionListener<I>() {
+                    @Override
+                    public void afterInjection(final I i) {
+                        if (i instanceof Service) {
+                            // start it:
+                            ((Service) i).startAndWait();
+
+                            PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
+
+                                @Override
+                                public boolean preShutdown(IWorkbench workbench, boolean forced) {
+                                    try {
+                                        ((Service) i).stop().get(5, TimeUnit.SECONDS);
+                                    } catch (Exception e) {
+                                    }
+                                    return true;
+                                }
+
+                                @Override
+                                public void postShutdown(IWorkbench workbench) {
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     @BindingAnnotation
     @Target(PARAMETER)
     @Retention(RUNTIME)
@@ -239,12 +274,9 @@ public class RecommendersModule extends AbstractModule implements Module {
     // @Workspace
     protected EventBus provideWorkspaceEventBus() {
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
-        final ExecutorService pool =
-                coreThreadsTimoutExecutor(numberOfCores + 1,
-                        MIN_PRIORITY,
-                        "Recommenders-Bus-Thread-", //$NON-NLS-1$
-                        1L,
-                        TimeUnit.MINUTES);
+        final ExecutorService pool = coreThreadsTimoutExecutor(numberOfCores + 1, MIN_PRIORITY,
+                "Recommenders-Bus-Thread-", //$NON-NLS-1$
+                1L, TimeUnit.MINUTES);
         final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool); //$NON-NLS-1$
         return bus;
     }

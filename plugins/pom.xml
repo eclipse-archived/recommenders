@@ -13,7 +13,9 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<!-- <module>org.eclipse.recommenders.codegen</module> -->
+		<module>org.eclipse.recommenders.calls</module>
+		<module>org.eclipse.recommenders.calls.rcp</module>
+		<module>org.eclipse.recommenders.overrides</module>
 		<module>org.eclipse.recommenders.completion.rcp</module>
 		<module>org.eclipse.recommenders.completion.rcp.calls</module>
 		<module>org.eclipse.recommenders.completion.rcp.chain</module>
@@ -21,7 +23,7 @@
 		<module>org.eclipse.recommenders.completion.rcp.sandbox</module>
 		<module>org.eclipse.recommenders.completion.rcp.subwords</module>
 		<module>org.eclipse.recommenders.completion.rcp.templates</module>
-		<module>org.eclipse.recommenders.doc</module>
+		<!-- module>org.eclipse.recommenders.doc</module -->
 		<module>org.eclipse.recommenders.extdoc</module>
 		<module>org.eclipse.recommenders.extdoc.rcp</module>
 		<module>org.eclipse.recommenders.injection</module>

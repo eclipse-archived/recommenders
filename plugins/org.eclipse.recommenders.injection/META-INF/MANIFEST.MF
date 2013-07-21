@@ -9,6 +9,9 @@ Export-Package: org.eclipse.recommenders.injection;uses:="org.eclipse.core.runti
 Require-Bundle: com.google.inject;bundle-version="[3.0.0,4.0.0)";visibility:=reexport,
  javax.inject;bundle-version="[1.0.0,2.0.0)";visibility:=reexport,
  com.google.guava;bundle-version="[14.0.0,15.0.0)",
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.e4.core.di;resolution:=optional,
+ org.eclipse.e4.core.contexts;resolution:=optional,
+ org.eclipse.e4.ui.workbench;resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

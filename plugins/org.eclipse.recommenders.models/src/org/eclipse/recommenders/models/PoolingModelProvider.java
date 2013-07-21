@@ -10,55 +10,39 @@
  */
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.utils.Zips.closeQuietly;
 
 import java.io.IOException;
 import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.zip.ZipFile;
 
 import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
-import org.eclipse.recommenders.models.ModelRepository.ModelRepositoryEvents.ModelArchiveInstalledEvent;
 import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.Subscribe;
 
-public abstract class PoolingModelProvider<K extends IBasedName<?>, M> implements IModelProvider<K, M> {
+/**
+ * A model provider implementation that pools recommendation models to further improve performance. Note that models
+ * need to be release by clients. Otherwise the pool may be exhausted quickly.
+ */
+public abstract class PoolingModelProvider<K extends IBasedName<?>, M> extends SimpleModelProvider<K, M> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    // which zip files are currently open?
-    private final Map<ModelArchiveCoordinate, ZipFile> openZips = Maps.newHashMap();
-
-    // which models are currently pooled?
-    private final ListMultimap<ModelArchiveCoordinate, K> pooledModels = LinkedListMultimap.create();
-
     // which models are currently borrowed to someone?
+    // we need this mapping for implementing releaseModel properly so that clients don't have to submit their keys too.
     private final IdentityHashMap<M, K> borrowedModels = Maps.newIdentityHashMap();
-
-    // the cache to load the model archives from
-    private final ModelRepository modelCache;
 
     // model pool
     // REVIEW: we may want to make pool creation configurable later?
-    private final GenericKeyedObjectPool<K, M> modelPool = createModelPool();
+    private GenericKeyedObjectPool<K, M> pool = createModelPool();
 
-    private final String modelType;
-
-    public PoolingModelProvider(ModelRepository modelCache, String modelType) {
-        this.modelCache = modelCache;
-        this.modelType = modelType;
+    public PoolingModelProvider(IModelRepository repository, String modelType) {
+        super(repository, modelType);
     }
 
     private GenericKeyedObjectPool<K, M> createModelPool() {
@@ -75,76 +59,25 @@ public abstract class PoolingModelProvider<K extends IBasedName<?>, M> implement
 
     @Override
     public Optional<M> acquireModel(K key) {
-        Optional<ModelArchiveCoordinate> opt = modelCache.findBestModelArchive(key.getBase(), modelType);
-        if (!opt.isPresent()) {
-            return Optional.absent();
-        }
         try {
-            M model = modelPool.borrowObject(key);
-            return of(model);
+            M model = pool.borrowObject(key);
+            if (model != null) {
+                borrowedModels.put(model, key);
+            }
+            return fromNullable(model);
         } catch (Exception e) {
             log.error("Couldn't obtain model for " + key, e);
             return absent();
         }
     }
 
-    protected abstract Optional<M> createModel(K key, ZipFile modelArchive, ModelArchiveCoordinate modelId)
-            throws Exception;
-
     @Override
     public void releaseModel(M model) {
         try {
             K key = borrowedModels.remove(model);
-            modelPool.returnObject(key, model);
+            pool.returnObject(key, model);
         } catch (Exception e) {
             log.error("Exception while releasing Couldn't release model " + model, e);
-        }
-    }
-
-    protected void passivateModel(K key, M model, ModelArchiveCoordinate modelId) {
-    };
-
-    protected void destroyModel(K key, M model, ModelArchiveCoordinate modelId) {
-    };
-
-    @Subscribe
-    public void onEvent(ModelArchiveInstalledEvent e) {
-        ModelArchiveCoordinate modelId = e.coordinate;
-        closeZipFile(modelId);
-        clearPooledModels(modelId);
-    }
-
-    private void closeZipFile(@Nullable ModelArchiveCoordinate modelId) {
-        ZipFile zip = openZips.remove(modelId);
-        if (zip == null) {
-            return;
-        }
-        closeQuietly(zip);
-    }
-
-    private void clearPooledModels(ModelArchiveCoordinate modelId) {
-        for (K key : pooledModels.get(modelId)) {
-            modelPool.clear(key);
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        closePool();
-        closeZipFiles();
-    }
-
-    private void closePool() {
-        try {
-            modelPool.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void closeZipFiles() {
-        for (ZipFile zip : openZips.values()) {
-            closeQuietly(zip);
         }
     }
 
@@ -155,40 +88,17 @@ public abstract class PoolingModelProvider<K extends IBasedName<?>, M> implement
         @Override
         @Nullable
         public M makeObject(K key) throws Exception {
-            ModelArchiveCoordinate modelId = ensureIsNotNull(modelCache.findBestModelArchive(key.getBase(), modelType)
-                    .orNull());
-            ZipFile zipFile = openZips.get(modelId);
-            if (zipFile == null) {
-                return null;
-            }
-            M model = createModel(key, zipFile, modelId).orNull();
-            pooledModels.put(modelId, key);
-            return model;
+            return PoolingModelProvider.super.acquireModel(key).orNull();
         }
+    }
 
-        /**
-         * Removes the given model from the list of tracked pooled models and closes the zip-file this model originates
-         * from if no other model is loaded from this zip-file.
-         * 
-         * @see PoolingModelProvider#destroyModel(IBasedName, Object, ModelArchiveCoordinate)
-         */
-        @Override
-        public void destroyObject(K key, M model) throws Exception {
-            ModelArchiveCoordinate modelId = ensureIsNotNull(modelCache.findBestModelArchive(key.getBase(), modelType)
-                    .orNull());
-            pooledModels.remove(key, model);
-            // if there are no more models loaded
-            if (!pooledModels.containsKey(modelId)) {
-                closeZipFile(modelId);
-            }
-            destroyModel(key, model, modelId);
-        }
-
-        @Override
-        public void passivateObject(K key, M model) throws Exception {
-            ModelArchiveCoordinate modelId = ensureIsNotNull(modelCache.findBestModelArchive(key.getBase(), modelType)
-                    .orNull());
-            passivateModel(key, model, modelId);
+    @Override
+    public void close() throws IOException {
+        try {
+            super.close();
+            pool.close();
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 }

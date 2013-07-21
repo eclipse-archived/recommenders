@@ -90,7 +90,21 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.recommenders.doc"
+         id="org.eclipse.recommenders.models.rcp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.models.rcp.dependencymonitor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.recommenders.models"
          download-size="0"
          install-size="0"
          version="0.0.0"

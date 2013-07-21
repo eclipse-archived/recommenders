@@ -12,6 +12,8 @@ package org.eclipse.recommenders.models;
 
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+import com.google.common.base.Objects;
+
 /**
  * Represents an {@link ITypeName} qualified by a {@link ProjectCoordinate} like <i>jre:jre:1.6<i>. Project coordinates
  * are required to find the right recommendation model for the given type. It's in the responsibility of the recommender
@@ -37,4 +39,8 @@ public class BasedTypeName implements IBasedName<ITypeName> {
         return base;
     }
 
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this).add("name", getName()).add("base", getBase()).toString();
+    }
 }

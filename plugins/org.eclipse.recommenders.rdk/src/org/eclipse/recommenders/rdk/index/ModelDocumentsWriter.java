@@ -10,12 +10,10 @@
  */
 package org.eclipse.recommenders.rdk.index;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.apache.commons.io.filefilter.HiddenFileFilter.VISIBLE;
-import static org.eclipse.recommenders.rdk.utils.Artifacts.toArtifactFileName;
+import static org.eclipse.recommenders.utils.Artifacts.toArtifactFileName;
 import static org.eclipse.recommenders.utils.Constants.*;
 
 import java.io.BufferedReader;
@@ -33,7 +31,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.recommenders.rdk.index.ModelDocuments.AdditionalMetadata;
 import org.eclipse.recommenders.rdk.index.ModelDocuments.ModelDocument;
-import org.eclipse.recommenders.rdk.utils.Artifacts;
+import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Fingerprints;
 import org.eclipse.recommenders.utils.Version;
 import org.eclipse.recommenders.utils.annotations.Provisional;
@@ -71,7 +69,7 @@ public class ModelDocumentsWriter {
     }
 
     public ModelDocumentsWriter(final File mavenRepository, final File dest) {
-        this.basedir = mavenRepository;
+        basedir = mavenRepository;
         this.dest = dest;
     }
 

@@ -33,8 +33,8 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.dependencies.DependencyInfo;
 import org.eclipse.recommenders.models.dependencies.DependencyType;
+import org.eclipse.recommenders.models.dependencies.IMappingProvider;
 import org.eclipse.recommenders.models.dependencies.IProjectCoordinateResolver;
-import org.eclipse.recommenders.models.dependencies.impl.MappingProvider;
 import org.eclipse.recommenders.models.dependencies.rcp.EclipseDependencyListener;
 import org.eclipse.recommenders.models.rcp.dependencymonitor.Activator;
 import org.eclipse.recommenders.rcp.events.JavaModelEvents.JarPackageFragmentRootAdded;
@@ -70,7 +70,7 @@ public class DependencyMonitor extends ViewPart {
     private ContentProvider contentProvider;
 
     private final EclipseDependencyListener eclipseDependencyListener;
-    private final MappingProvider mappingProvider;
+    private final IMappingProvider mappingProvider;
 
     private TableViewerColumn locationColumn;
     private TableViewerColumn coordinateColumn;
@@ -79,7 +79,7 @@ public class DependencyMonitor extends ViewPart {
 
     @Inject
     public DependencyMonitor(final EventBus workspaceBus, final EclipseDependencyListener eclipseDependencyListener,
-            final MappingProvider mappingProvider) {
+            final IMappingProvider mappingProvider) {
         this.eclipseDependencyListener = eclipseDependencyListener;
         this.mappingProvider = mappingProvider;
         workspaceBus.register(this);
