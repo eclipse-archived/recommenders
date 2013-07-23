@@ -9,6 +9,9 @@ import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
 public class SingleZipCallRecommenderMain {
+    // Download the model archive from
+    // http://download.eclipse.org/recommenders/models/juno/jre/jre/1.0.0/jre-1.0.0-call.zip
+    // and put it directly into the project folder.
     private static final File MODELS = new File("jre-1.0.0-call.zip");
 
     public static void main(String[] args) throws Exception {
