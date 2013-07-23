@@ -6,6 +6,9 @@
    <feature id="org.eclipse.recommenders.feature.calls.rcp" version="0.0.0">
       <category name="main"/>
    </feature>
+   <feature id="org.eclipse.recommenders.feature.overrides.rcp" version="0.0.0">
+      <category name="main"/>
+   </feature>
    <feature id="org.eclipse.recommenders.feature.calls.rcp.source" version="0.0.0">
       <category name="main"/>
    </feature>
