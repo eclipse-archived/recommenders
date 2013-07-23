@@ -25,6 +25,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
+import org.eclipse.recommenders.models.MavenCentralFingerprintSearchAdvisor;
 import org.eclipse.recommenders.models.advisors.FingerprintAdvisor;
 import org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor;
 import org.eclipse.recommenders.models.advisors.JREReleaseFileAdvisor;
@@ -94,7 +95,6 @@ public class ModelsRcpModule extends AbstractModule implements Module {
     }
 
     @Provides
-    @SuppressWarnings("restriction")
     public IProxyService provideProxyService() {
         return ProxyManager.getProxyManager();
     }
@@ -111,6 +111,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         mappingProvider.addAdvisor(new OsgiManifestAdvisor());
         mappingProvider.addAdvisor(new MavenPomXmlAdvisor());
         mappingProvider.addAdvisor(new FingerprintAdvisor(index));
+        mappingProvider.addAdvisor(new MavenCentralFingerprintSearchAdvisor());
         return mappingProvider;
     }
 
