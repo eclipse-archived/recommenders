@@ -2,7 +2,7 @@ package org.eclipse.recommenders.examples.calls;
 
 import java.io.File;
 
-import org.eclipse.recommenders.examples.calls.SingelZipCallRecommender.ObjectUsage;
+import org.eclipse.recommenders.examples.calls.SingleZipCallRecommender.ObjectUsage;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
@@ -15,7 +15,7 @@ public class SingleZipCallRecommenderMain {
     private static final File MODELS = new File("jre-1.0.0-call.zip");
 
     public static void main(String[] args) throws Exception {
-        SingelZipCallRecommender r = new SingelZipCallRecommender(MODELS);
+        SingleZipCallRecommender r = new SingleZipCallRecommender(MODELS);
         ObjectUsage query = createSampleQuery();
 
         for (Recommendation<IMethodName> rec : r.computeRecommendations(query)) {
