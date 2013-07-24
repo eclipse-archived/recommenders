@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -35,6 +38,7 @@ import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.google.common.io.Files;
@@ -75,7 +79,7 @@ public class Zips {
                 }
             }
         } finally {
-            Closeables.closeQuietly(zis);
+            Closeables.close(zis, true);
         }
     }
 
@@ -119,9 +123,43 @@ public class Zips {
         return suffix == null ? name : name + suffix;
     }
 
+    public static Set<ITypeName> types(ZipFile zip, String suffix) {
+        return types(zip.entries(), suffix);
+    }
+
+    public static Set<ITypeName> types(Enumeration<? extends ZipEntry> entries, String suffix) {
+        TreeSet<ITypeName> content = Sets.newTreeSet();
+        while (entries.hasMoreElements()) {
+            ZipEntry next = entries.nextElement();
+            if (next.isDirectory() || next.getName().startsWith("META-INF/")) {
+                continue;
+            }
+            ITypeName type = Zips.type(next, suffix);
+            content.add(type);
+        }
+        return content;
+    }
+
     public static ITypeName type(ZipEntry entry, @Nullable String suffix) {
         String name = StringUtils.removeEnd(entry.getName(), suffix);
         return VmTypeName.get("L" + name);
+    }
+
+    public static Set<IMethodName> methods(ZipFile zip, String suffix) {
+        return methods(zip.entries(), suffix);
+    }
+
+    public static Set<IMethodName> methods(Enumeration<? extends ZipEntry> entries, String suffix) {
+        TreeSet<IMethodName> content = Sets.newTreeSet();
+        while (entries.hasMoreElements()) {
+            ZipEntry next = entries.nextElement();
+            if (next.isDirectory() || next.getName().startsWith("META-INF/")) {
+                continue;
+            }
+            IMethodName type = Zips.method(next, suffix);
+            content.add(type);
+        }
+        return content;
     }
 
     public static IMethodName method(ZipEntry e, String suffix) {
@@ -176,4 +214,5 @@ public class Zips {
             return false;
         }
     }
+
 }

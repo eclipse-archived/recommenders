@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModel.DefinitionType;
-import org.eclipse.recommenders.calls.OneZipCallModelProvider;
+import org.eclipse.recommenders.calls.SingleZipCallModelProvider;
 import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.recommenders.utils.Recommendation;
@@ -27,12 +27,12 @@ import com.google.common.collect.Sets;
  * completion, for instance, may perform a lightweight static analysis on the AST of the active editor and then query
  * one or more models for their recommendations.
  */
-public class SingelZipCallRecommender {
+public class SingleZipCallRecommender {
 
-    private final OneZipCallModelProvider store;
+    private final SingleZipCallModelProvider store;
 
-    public SingelZipCallRecommender(final File models) throws IOException {
-        store = new OneZipCallModelProvider(models);
+    public SingleZipCallRecommender(final File models) throws IOException {
+        store = new SingleZipCallModelProvider(models);
         store.open();
     }
 

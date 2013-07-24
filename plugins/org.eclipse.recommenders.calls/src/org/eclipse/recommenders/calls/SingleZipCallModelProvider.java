@@ -15,12 +15,14 @@ import static org.eclipse.recommenders.utils.Zips.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipFile;
 
 import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.utils.Openable;
+import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.annotations.Beta;
@@ -37,14 +39,14 @@ import com.google.common.cache.LoadingCache;
  * not. Thus, these <b>models should not be shared between and used by several recommenders at the same time</b>.
  */
 @Beta
-public class OneZipCallModelProvider implements ICallModelProvider, Openable {
+public class SingleZipCallModelProvider implements ICallModelProvider, Openable {
 
     private final File models;
     private ZipFile zip;
     private final LoadingCache<ITypeName, ICallModel> cache = CacheBuilder.newBuilder()
             .expireAfterAccess(3, TimeUnit.MINUTES).maximumSize(30).build(new CallNetCacheLoader());
 
-    public OneZipCallModelProvider(File models) {
+    public SingleZipCallModelProvider(File models) {
         this.models = models;
     }
 
@@ -69,6 +71,10 @@ public class OneZipCallModelProvider implements ICallModelProvider, Openable {
             e.printStackTrace();
             return Optional.absent();
         }
+    }
+
+    public Set<ITypeName> acquireableTypes() {
+        return Zips.types(zip.entries(), ".data");
     }
 
     @Override
