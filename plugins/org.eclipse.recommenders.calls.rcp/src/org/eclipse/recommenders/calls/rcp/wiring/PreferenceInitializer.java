@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.calls.rcp;
+package org.eclipse.recommenders.calls.rcp.wiring;
 
 import static org.eclipse.recommenders.calls.rcp.Constants.*;
 
