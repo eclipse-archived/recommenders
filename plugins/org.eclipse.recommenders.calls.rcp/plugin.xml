@@ -22,7 +22,7 @@
    <extension
          point="org.eclipse.equinox.preferences.preferences">
       <initializer
-            class="org.eclipse.recommenders.calls.rcp.PreferenceInitializer">
+            class="org.eclipse.recommenders.calls.rcp.wiring.PreferenceInitializer">
       </initializer>
    </extension>
    <extension

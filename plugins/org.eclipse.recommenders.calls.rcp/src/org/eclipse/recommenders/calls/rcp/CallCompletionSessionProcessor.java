@@ -22,7 +22,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
@@ -47,6 +46,7 @@ import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.rcp.JavaElementResolver;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.google.common.collect.Lists;
 
@@ -158,12 +158,11 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     }
 
     private void updatePreferences() {
-        IEclipsePreferences s = InstanceScope.INSTANCE.getNode(BUNDLE_NAME);
-        prefMaxNumberOfProposals = s.getInt(P_MAX_NUMBER_OF_PROPOSALS, 7);
-        prefMinProposalProbability = s.getInt(P_MIN_PROPOSAL_PROBABILITY, 1) / (double) 100;
-        prefUpdateProposalRelevance = s.getBoolean(P_UPDATE_PROPOSAL_RELEVANCE, true);
-        prefDecorateProposalText = s.getBoolean(P_DECORATE_PROPOSAL_TEXT, true);
-
+        ScopedPreferenceStore s = new ScopedPreferenceStore(InstanceScope.INSTANCE, BUNDLE_NAME);
+        prefMaxNumberOfProposals = s.getInt(P_MAX_NUMBER_OF_PROPOSALS);
+        prefMinProposalProbability = s.getInt(P_MIN_PROPOSAL_PROBABILITY) / (double) 100;
+        prefUpdateProposalRelevance = s.getBoolean(P_UPDATE_PROPOSAL_RELEVANCE);
+        prefDecorateProposalText = s.getBoolean(P_DECORATE_PROPOSAL_TEXT);
     }
 
     private void releaseModel() {
