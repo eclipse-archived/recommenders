@@ -16,6 +16,7 @@
 		<module>org.eclipse.recommenders.calls</module>
 		<module>org.eclipse.recommenders.calls.rcp</module>
 		<module>org.eclipse.recommenders.overrides</module>
+		<module>org.eclipse.recommenders.overrides.rcp</module>
 		<module>org.eclipse.recommenders.completion.rcp</module>
 		<module>org.eclipse.recommenders.completion.rcp.calls</module>
 		<module>org.eclipse.recommenders.completion.rcp.chain</module>

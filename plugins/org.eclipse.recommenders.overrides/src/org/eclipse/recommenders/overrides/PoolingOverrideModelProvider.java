@@ -20,10 +20,11 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.base.Optional;
 
-public class PoolingOverrideModelProvider extends PoolingModelProvider<IBasedName<ITypeName>, IOverrideModel> {
+public class PoolingOverrideModelProvider extends PoolingModelProvider<IBasedName<ITypeName>, IOverrideModel> implements
+        IOverrideModelProvider {
 
     public PoolingOverrideModelProvider(IModelRepository repository) {
-        super(repository, Constants.CLASS_OVRD_MODEL);
+        super(repository, Constants.CLASS_OVRM_MODEL);
     }
 
     @Override
