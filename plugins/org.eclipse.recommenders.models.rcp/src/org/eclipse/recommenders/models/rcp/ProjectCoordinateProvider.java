@@ -12,11 +12,12 @@ package org.eclipse.recommenders.models.rcp;
 
 import static com.google.common.base.Optional.absent;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
-import static org.eclipse.recommenders.models.dependencies.DependencyType.*;
+import static org.eclipse.recommenders.models.dependencies.DependencyType.JAR;
 import static org.eclipse.recommenders.utils.Checks.cast;
 import static org.eclipse.recommenders.utils.rcp.JdtUtils.getLocation;
 
 import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -32,19 +33,43 @@ import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.dependencies.DependencyInfo;
 import org.eclipse.recommenders.models.dependencies.DependencyType;
 import org.eclipse.recommenders.models.dependencies.IMappingProvider;
+import org.eclipse.recommenders.models.dependencies.rcp.EclipseDependencyListener;
 import org.eclipse.recommenders.utils.rcp.JdtUtils;
 
 import com.google.common.base.Optional;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public class ProjectCoordinateProvider {
 
     @Inject
     private IMappingProvider mappingProvider;
 
+    private LoadingCache<IPackageFragmentRoot, Optional<ProjectCoordinate>> cache = null;
+
     public ProjectCoordinateProvider() {
+        initializeCache();
+    }
+
+    private void initializeCache() {
+        /*
+         * At the moment the cache is only used for IPackageFragmentRoots --> ProjectCoordinates (PC). This could be
+         * extended to JavaElements --> PC to support cache also information about IJavaProject.
+         */
+        cache = CacheBuilder.newBuilder().maximumSize(200).recordStats()
+                .build(new CacheLoader<IPackageFragmentRoot, Optional<ProjectCoordinate>>() {
+
+                    @Override
+                    public Optional<ProjectCoordinate> load(IPackageFragmentRoot arg0) {
+                        return extractProjectCoordinate(arg0);
+                    }
+
+                });
     }
 
     public ProjectCoordinateProvider(IMappingProvider mappingProvider) {
+        this();
         this.mappingProvider = mappingProvider;
     }
 
@@ -81,6 +106,14 @@ public class ProjectCoordinateProvider {
     }
 
     public Optional<ProjectCoordinate> resolve(IPackageFragmentRoot root) {
+        try {
+            return cache.get(root);
+        } catch (ExecutionException e) {
+            return absent();
+        }
+    }
+
+    private Optional<ProjectCoordinate> extractProjectCoordinate(IPackageFragmentRoot root) {
         if (root == null) {
             return absent();
         }
@@ -92,23 +125,33 @@ public class ProjectCoordinateProvider {
             return absent();
         }
 
-        // TODO ProjectCoordinateProvider needs to cache this kind of data. Likely a LoadingCache that maps from
-        // Package Fragment Root to a project coordinate.
-        IJavaProject project = root.getJavaProject();
+        IJavaProject javaProject = root.getJavaProject();
         try {
-            for (IClasspathEntry entry : project.getRawClasspath()) {
-                boolean jre = entry.getPath().toString().contains("org.eclipse.jdt.launching.JRE_CONTAINER");
-                for (IPackageFragmentRoot sub : project.findPackageFragmentRoots(entry)) {
-                    if (sub.equals(root)) {
-                        DependencyInfo request = new DependencyInfo(location, jre ? JRE : JAR);
-                        return resolve(request);
+            for (IClasspathEntry entry : javaProject.getRawClasspath()) {
+                if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
+                    if (entry.getPath().toString().contains("org.eclipse.jdt.launching.JRE_CONTAINER")) {
+                        for (IPackageFragmentRoot packageFragmentRoot : javaProject.findPackageFragmentRoots(entry)) {
+                            if (!packageFragmentRoot.getPath().toFile().getParentFile().getName().equals("ext")) {
+                                if (packageFragmentRoot.equals(root)) {
+                                    Optional<DependencyInfo> request = EclipseDependencyListener
+                                            .createJREDependencyInfo(javaProject);
+                                    if (request.isPresent()) {
+                                        return resolve(request.get());
+                                    } else {
+                                        return absent();
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-            return resolve(new DependencyInfo(location, DependencyType.JAR));
+            DependencyInfo request = new DependencyInfo(location, JAR);
+            return resolve(request);
         } catch (JavaModelException e) {
-            return absent();
+            e.printStackTrace();
         }
+        return absent();
     }
 
     public Optional<ProjectCoordinate> resolve(IJavaProject javaProject) {

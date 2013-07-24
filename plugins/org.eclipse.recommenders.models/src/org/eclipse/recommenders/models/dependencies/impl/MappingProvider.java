@@ -16,18 +16,14 @@ import static com.google.common.base.Optional.fromNullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.dependencies.DependencyInfo;
 import org.eclipse.recommenders.models.dependencies.DependencyType;
 import org.eclipse.recommenders.models.dependencies.IMappingProvider;
 import org.eclipse.recommenders.models.dependencies.IProjectCoordinateResolver;
-import org.eclipse.recommenders.utils.annotations.Testing;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -36,15 +32,13 @@ import com.google.common.collect.Maps;
 public class MappingProvider implements IMappingProvider {
 
     private List<IProjectCoordinateResolver> strategies = Lists.newArrayList();
-    private final Cache<DependencyInfo, Optional<ProjectCoordinate>> cache;
     private final Map<DependencyInfo, ProjectCoordinate> manualMappings = Maps.newHashMap();
 
     public MappingProvider() {
-        cache = CacheBuilder.newBuilder().maximumSize(200).recordStats().build();
+        
     }
 
     public MappingProvider(Map<DependencyInfo, ProjectCoordinate> manualMappings) {
-        this();
         setManualMappings(manualMappings);
     }
 
@@ -65,17 +59,11 @@ public class MappingProvider implements IMappingProvider {
 
     @Override
     public Optional<ProjectCoordinate> searchForProjectCoordinate(final DependencyInfo dependencyInfo) {
-        try {
-            return cache.get(dependencyInfo, new Callable<Optional<ProjectCoordinate>>() {
-
-                @Override
-                public Optional<ProjectCoordinate> call() throws Exception {
-                    return extractProjectCoordinate(dependencyInfo);
-                }
-            });
-        } catch (Exception e) {
-            return absent();
+        ProjectCoordinate projectCoordinate = manualMappings.get(dependencyInfo);
+        if (projectCoordinate != null){
+            return fromNullable(projectCoordinate);
         }
+        return extractProjectCoordinate(dependencyInfo);
     }
 
     private Optional<ProjectCoordinate> extractProjectCoordinate(DependencyInfo dependencyInfo) {
@@ -111,26 +99,14 @@ public class MappingProvider implements IMappingProvider {
         return ImmutableMap.copyOf(manualMappings);
     }
 
-    @Testing
-    public long getMissCount() {
-        return cache.stats().missCount();
-    }
-
-    @Testing
-    public long getHitCount() {
-        return cache.stats().hitCount();
-    }
-
     @Override
     public void setManualMapping(DependencyInfo dependencyInfo, ProjectCoordinate projectCoordinate) {
         manualMappings.put(dependencyInfo, projectCoordinate);
-        cache.put(dependencyInfo, fromNullable(projectCoordinate));
     }
 
     @Override
     public void removeManualMapping(DependencyInfo dependencyInfo) {
         manualMappings.remove(dependencyInfo);
-        cache.invalidate(dependencyInfo);
     }
 
     @Override
