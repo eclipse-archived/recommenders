@@ -18,7 +18,7 @@ Import-Package: com.google.common.base;version="[14.0.0,15.0.0)",
  org.apache.commons.pool;version="[1.6.0,2.0.0)",
  org.apache.commons.pool.impl;version="[1.6.0,2.0.0)",
  org.apache.maven.repository.internal,
- org.eclipse.recommenders.internal.rcp.repo,
+ org.apache.maven.wagon,
  org.slf4j;version="[1.6.0,2.0.0)",
  org.sonatype.aether,
  org.sonatype.aether.artifact,
@@ -33,7 +33,8 @@ Import-Package: com.google.common.base;version="[14.0.0,15.0.0)",
  org.sonatype.aether.transfer,
  org.sonatype.aether.util,
  org.sonatype.aether.util.artifact,
- org.sonatype.aether.version
+ org.sonatype.aether.version,
+ org.sonatype.maven.wagon
 Export-Package: org.eclipse.recommenders.models;
   uses:="org.eclipse.core.runtime,
    org.eclipse.recommenders.utils.names,
