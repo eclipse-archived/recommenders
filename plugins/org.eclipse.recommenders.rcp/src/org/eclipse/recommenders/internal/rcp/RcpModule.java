@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.rcp;
 
 import static java.lang.Thread.MIN_PRIORITY;
+import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.io.File;
@@ -114,7 +115,13 @@ public class RcpModule extends AbstractModule implements Module {
 
         @Override
         public boolean matches(Object t) {
-            return t instanceof IRcpService;
+            if (t instanceof TypeLiteral<?>) {
+                Class<?> rawType = ((TypeLiteral<?>) t).getRawType();
+                Class<?>[] implemented = rawType.getInterfaces();
+                boolean isRcpService = contains(implemented, IRcpService.class);
+                return isRcpService;
+            }
+            return false;
         }
     }
 
@@ -132,10 +139,10 @@ public class RcpModule extends AbstractModule implements Module {
                 @Override
                 public void afterInjection(final Object i) {
                     for (final Method m : i.getClass().getDeclaredMethods()) {
-                        PostConstruct c = m.getAnnotation(PostConstruct.class);
-                        PreDestroy d = m.getAnnotation(PreDestroy.class);
+                        boolean hasPostConstruct = m.getAnnotation(PostConstruct.class) != null;
+                        boolean hasPreDestroy = m.getAnnotation(PreDestroy.class) != null;
 
-                        if (d != null) {
+                        if (hasPreDestroy) {
 
                             PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
 
@@ -155,7 +162,7 @@ public class RcpModule extends AbstractModule implements Module {
                             });
 
                         }
-                        if (c != null) {
+                        if (hasPostConstruct) {
                             try {
                                 m.invoke(i);
                             } catch (Exception e) {

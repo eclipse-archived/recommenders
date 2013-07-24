@@ -14,6 +14,7 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -34,13 +35,17 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
+import com.google.inject.name.Names;
 
 public class ModelsRcpModule extends AbstractModule implements Module {
+
+    public static final String IDENTIFIED_PACKAGE_FRAGMENT_ROOTS = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS";
 
     @Override
     protected void configure() {
@@ -48,6 +53,19 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         bind(IProjectCoordinateProvider.class).to(ProjectCoordinateProvider.class).in(Scopes.SINGLETON);
         bind(IModelRepository.class).to(EclipseModelRepository.class).in(Scopes.SINGLETON);
         bindRepository();
+        bindPackageFragmentRootsPersistenceFile();
+    }
+
+    private void bindPackageFragmentRootsPersistenceFile() {
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        File stateLocation = Platform.getStateLocation(bundle).toFile();
+        File cachePersistence = new File(stateLocation, "cache/identified-package-fragment-roots.json");
+        try {
+            Files.createParentDirs(cachePersistence);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        bind(File.class).annotatedWith(Names.named(IDENTIFIED_PACKAGE_FRAGMENT_ROOTS)).toInstance(cachePersistence);
     }
 
     private void bindRepository() {

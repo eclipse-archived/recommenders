@@ -7,20 +7,30 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+<<<<<<< HEAD:plugins/org.eclipse.recommenders.models.rcp/src/org/eclipse/recommenders/internal/models/rcp/ProjectCoordinateProvider.java
  *    Olav Lenz - Added caching behavior.
+=======
+ *    Olav Lenz - add caching and storage functionality.
+>>>>>>> [models] Persists cache entries in ProjectCoordinateProvider.:plugins/org.eclipse.recommenders.models.rcp/src/org/eclipse/recommenders/models/rcp/ProjectCoordinateProvider.java
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
+import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.IDENTIFIED_PACKAGE_FRAGMENT_ROOTS;
 import static org.eclipse.recommenders.models.DependencyType.JAR;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
-import javax.inject.Inject;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -36,28 +46,36 @@ import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IMappingProvider;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.io.Files;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
-public class ProjectCoordinateProvider implements IProjectCoordinateProvider {
+public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IRcpService {
 
-    @Inject
-    IMappingProvider mappingProvider;
-    @Inject
-    JavaElementResolver javaElementResolver;
+    private final JavaElementResolver javaElementResolver;
+    private final IMappingProvider mappingProvider;
+    private final File persistenceFile;
+    private final Gson cacheGson;
 
-    private LoadingCache<IPackageFragmentRoot, Optional<ProjectCoordinate>> cache = null;
+    @SuppressWarnings("serial")
+    private final Type cacheType = new TypeToken<Map<IPackageFragmentRoot, Optional<ProjectCoordinate>>>() {
+    }.getType();
 
-    public ProjectCoordinateProvider() {
-        initializeCache();
-    }
+    private LoadingCache<IPackageFragmentRoot, Optional<ProjectCoordinate>> cache;
 
     private void initializeCache() {
         /*
@@ -73,11 +91,21 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider {
                     }
 
                 });
+
     }
 
-    public ProjectCoordinateProvider(IMappingProvider mappingProvider) {
-        this();
+    @Inject
+    public ProjectCoordinateProvider(@Named(IDENTIFIED_PACKAGE_FRAGMENT_ROOTS) File persistenceFile,
+            IMappingProvider mappingProvider, JavaElementResolver javaElementResolver) {
+        this.persistenceFile = persistenceFile;
         this.mappingProvider = mappingProvider;
+        this.javaElementResolver = javaElementResolver;
+        cacheGson = new GsonBuilder()
+                .registerTypeAdapter(ProjectCoordinate.class, new ProjectCoordinateJsonTypeAdapter())
+                .registerTypeAdapter(Optional.class, new OptionalJsonTypeAdapter<ProjectCoordinate>())
+                .registerTypeAdapter(IPackageFragmentRoot.class, new PackageFragmentRootJsonTypeAdapter())
+                .enableComplexMapKeySerialization().serializeNulls().create();
+        initializeCache();
     }
 
     @Override
@@ -176,6 +204,25 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider {
     @Override
     public Optional<ProjectCoordinate> resolve(DependencyInfo info) {
         return mappingProvider.searchForProjectCoordinate(info);
+    }
+
+    @PreDestroy
+    public void close() throws IOException {
+        String json = cacheGson.toJson(cache.asMap(), cacheType);
+        Files.write(json, persistenceFile, Charsets.UTF_8);
+    }
+
+    @PostConstruct
+    public void open() throws IOException {
+        if (!persistenceFile.exists()) {
+            return;
+        }
+        String json = Files.toString(persistenceFile, Charsets.UTF_8);
+        Map<IPackageFragmentRoot, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, cacheType);
+
+        for (Entry<IPackageFragmentRoot, Optional<ProjectCoordinate>> entry : deserializedCache.entrySet()) {
+            cache.put(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override
