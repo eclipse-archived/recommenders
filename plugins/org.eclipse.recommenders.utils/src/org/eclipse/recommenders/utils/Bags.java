@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2013 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,6 +45,16 @@ public class Bags {
     public static <T> List<Entry<T>> topUsingToString(Multiset<T> set, int i) {
         Set<Entry<T>> entries = set.entrySet();
         return Ordering.from(BY_STRING).greatestOf(entries, i);
+    }
+
+    public static <T> List<Entry<T>> orderedByToString(Multiset<T> set) {
+        Set<Entry<T>> entries = set.entrySet();
+        return Ordering.from(BY_STRING).sortedCopy(entries);
+    }
+
+    public static <T> List<Entry<T>> orderedByCount(Multiset<T> set) {
+        Set<Entry<T>> entries = set.entrySet();
+        return Ordering.from(BY_COUNT).sortedCopy(entries);
     }
 
 }
