@@ -12,10 +12,11 @@
  */
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.eclipse.recommenders.internal.rcp.repo.RepositoryUtils.newArtifact;
-import static org.eclipse.recommenders.utils.Constants.*;
+import static org.eclipse.recommenders.utils.Constants.F_CLASSIFIER;
+import static org.eclipse.recommenders.utils.Constants.F_SYMBOLIC_NAMES;
 import static org.eclipse.recommenders.utils.Throws.throwUnsupportedOperation;
 
 import java.io.File;
@@ -37,8 +38,6 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.repository.internal.DefaultServiceLocator;
 import org.apache.maven.repository.internal.MavenRepositorySystemSession;
-import org.eclipse.recommenders.internal.rcp.repo.ManualWagonProvider;
-import org.eclipse.recommenders.internal.rcp.repo.TransferListener;
 import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Executors;
@@ -62,6 +61,7 @@ import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResult;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
+import org.sonatype.aether.transfer.TransferListener;
 import org.sonatype.aether.util.DefaultRepositorySystemSession;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
@@ -217,7 +217,7 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
             for (ScoreDoc doc : matches.scoreDocs) {
                 String value = reader.document(doc.doc).get(classifier);
                 if (value != null) {
-                    res.add(newArtifact(value));
+                    res.add(Artifacts.newArtifact(value));
                 }
             }
         } catch (Exception e) {
