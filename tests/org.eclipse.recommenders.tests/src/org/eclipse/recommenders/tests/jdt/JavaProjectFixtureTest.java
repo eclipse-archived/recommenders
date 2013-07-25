@@ -11,10 +11,7 @@
  */
 package org.eclipse.recommenders.tests.jdt;
 
-import static org.eclipse.recommenders.tests.jdt.JavaProjectFixture.findAnonymousClassNames;
-import static org.eclipse.recommenders.tests.jdt.JavaProjectFixture.findClassName;
-import static org.eclipse.recommenders.tests.jdt.JavaProjectFixture.findInnerClassNames;
-import static org.eclipse.recommenders.tests.jdt.JavaProjectFixture.findPackageName;
+import static org.eclipse.recommenders.tests.jdt.JavaProjectFixture.*;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;

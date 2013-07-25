@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
-		<artifactId>org.eclipse.recommenders.parent</artifactId>
+		<artifactId>org.eclipse.recommenders</artifactId>
 		<version>1.100.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
@@ -13,22 +13,10 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>org.eclipse.recommenders.feature.license</module>
-		<module>org.eclipse.recommenders.feature.rcp</module>
-		<module>org.eclipse.recommenders.feature.rcp.core</module>
-		<module>org.eclipse.recommenders.feature.calls.rcp</module>
-		<module>org.eclipse.recommenders.feature.completion.rcp.intellig</module>
-		<module>org.eclipse.recommenders.feature.completion.rcp.subwords</module>
-		<module>org.eclipse.recommenders.feature.completion.rcp.sandbox</module>
-		<module>org.eclipse.recommenders.feature.completion.rcp.chain</module>
-		<module>org.eclipse.recommenders.feature.extdoc.rcp</module>
-		<module>org.eclipse.recommenders.feature.jayes</module>
-		<module>org.eclipse.recommenders.feature.overrides.rcp</module>
-		<module>org.eclipse.recommenders.feature.rdk</module>
-		<module>org.eclipse.recommenders.feature.3rd.orbit</module>
-		<module>org.eclipse.recommenders.feature.3rd.rcp.nonorbit</module>
-		<module>org.eclipse.recommenders.feature.3rd.rcp.nonjuno</module>
-		<module>org.eclipse.recommenders.feature.tests</module>
+		<module>org.eclipse.recommenders.license.feature</module>
+		<module>org.eclipse.recommenders.simrel.feature</module>
+		<module>org.eclipse.recommenders.rcp.feature</module>
+		<module>org.eclipse.recommenders.jayes.feature</module>
 	</modules>
 
 	<build>
@@ -92,7 +80,7 @@
 								<plugin id="com.google.inject.multibindings" />
 								<plugin id="com.google.guava" />
 								<plugin id="com.ning.async-http-client" />
-								<plugin id="org.eclipse.recommenders.aether" />
+								<plugin id="org.eclipse.m2e.maven.runtime" />
 								<plugin id="org.jboss.netty" />
 							</excludes>
 							<!-- Non-breakable space, as normal spaces are trimmed. -->

@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
-	<artifactId>org.eclipse.recommenders.parent</artifactId>
+	<artifactId>org.eclipse.recommenders</artifactId>
 	<version>1.100.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<organization>
@@ -35,10 +35,9 @@
 	<properties>
 		<recommenders-version>1.100.0-SNAPSHOT</recommenders-version>
 		<java-version>1.6</java-version>
-		<tycho-version>0.18.0</tycho-version>
+		<tycho-version>0.18.1</tycho-version>
 		<!-- Use HTTP, as it provides the most firewall-friendly access to the Git repository. -->
 		<tycho.scmUrl>scm:git:http://git.eclipse.org/gitroot/recommenders/org.eclipse.recommenders.git</tycho.scmUrl>
-		<jacoco-version>0.5.4.201111111111</jacoco-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<coverage.skip>false</coverage.skip>
 		<coverage.filter>org.eclipse.recommenders.*</coverage.filter>
@@ -52,7 +51,7 @@
 		<module>plugins</module>
 		<module>tests</module>
 		<module>features</module>
-		<module>dist</module>
+		<module>repositories</module>
 	</modules>
 	<pluginRepositories>
 		<pluginRepository>
@@ -329,7 +328,10 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>e43</id>
+			<id>kepler</id>
+		    <activation>
+		        <activeByDefault>true</activeByDefault>
+		    </activation>
 			<build>
 				<plugins>
 					<plugin>
@@ -339,7 +341,7 @@
 							<target>
 								<artifact>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>e43</artifactId>
+									<artifactId>kepler</artifactId>
 									<version>${recommenders-version}</version>
 								</artifact>
 							</target>

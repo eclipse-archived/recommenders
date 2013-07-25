@@ -24,11 +24,8 @@ import com.google.common.base.Strings;
  */
 public final class ModelArchiveCoordinate {
 
-    public static final ModelArchiveCoordinate UNKNOWN = new ModelArchiveCoordinate("unknown",
-            "unknown",
-            "unknown",
-            "unknown",
-            "0.0.0");
+    public static final ModelArchiveCoordinate UNKNOWN = new ModelArchiveCoordinate("unknown", "unknown", "unknown",
+            "unknown", "0.0.0");
 
     private final String groupId;
     private final String artifactId;
@@ -86,8 +83,7 @@ public final class ModelArchiveCoordinate {
         case 1:
         case 2:
             throw Throws.throwIllegalArgumentException("Invalid coordinate format. It has only %d segments: %s",
-                    split.length,
-                    coord);
+                    split.length, coord);
         case 3:
             vers = split[2];
             break;
@@ -102,8 +98,7 @@ public final class ModelArchiveCoordinate {
             break;
         default:
             Throws.throwIllegalArgumentException("Invalid coordinate format. It has only %d segments: %s",
-                    split.length,
-                    coord);
+                    split.length, coord);
         }
         gid = split[0];
         aid = split[1];

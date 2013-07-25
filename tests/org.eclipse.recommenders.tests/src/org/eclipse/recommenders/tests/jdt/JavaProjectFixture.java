@@ -16,12 +16,10 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertTrue;
-import static org.eclipse.recommenders.tests.jdt.AstUtils.MARKER;
-import static org.eclipse.recommenders.tests.jdt.AstUtils.MARKER_ESCAPE;
-import static org.eclipse.recommenders.utils.Checks.cast;
-import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
-import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
+import static org.eclipse.recommenders.tests.jdt.AstUtils.*;
+import static org.eclipse.recommenders.utils.Checks.*;
 import static org.eclipse.recommenders.utils.Pair.newPair;
+import static org.eclipse.recommenders.utils.Throws.throwUnhandledException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -116,7 +114,7 @@ public class JavaProjectFixture {
 
     /**
      * Finds the package name from the package declaration inside the source code.
-     *
+     * 
      * @param source
      *            the source code
      * @return the package name or "" if no package declaration was found
@@ -245,7 +243,7 @@ public class JavaProjectFixture {
      * Creates the file with the content in the default package folder. The markers in the content will be removed
      * beforehand. The package specified in the content will not be created. After creation of the file the project will
      * be refreshed and built.
-     *
+     * 
      * @param contentWithMarkers
      *            the code with markers(see {@link AstUtils}.MARKER)
      * @return the Pair of the ICompilationUnit and the List of marker positions in the code provided
@@ -264,7 +262,7 @@ public class JavaProjectFixture {
     /**
      * Creates the package folders and the file with the content inside of this package. The markers in the content will
      * be removed beforehand. After creation of the file the project will be refreshed and built.
-     *
+     * 
      * @param contentWithMarkers
      *            the code with markers(see {@link AstUtils}.MARKER)
      * @return the Pair of the ICompilationUnit and the List of marker positions in the code provided
@@ -283,7 +281,7 @@ public class JavaProjectFixture {
 
     /**
      * Refreshes the resources of this project and initiates a full build.
-     *
+     * 
      * @throws CoreException
      */
     public void refreshAndBuildProject() throws CoreException {
@@ -296,7 +294,7 @@ public class JavaProjectFixture {
      * Creates the folders that represent the package/s defined in the source string. If the package name was not found,
      * no folders will be created. If some or all of the folders exist, these will not be overwritten. After the
      * creation of the folders, the internal java project will be refreshed.
-     *
+     * 
      * @param content
      *            the content of the file which package declaration will be used to create the package/s.
      * @throws CoreException
@@ -311,8 +309,8 @@ public class JavaProjectFixture {
             // append project and package folders
             IPath projectPath = project.getLocation().addTrailingSeparator();
 
-            String relativeFilePath = packageName.replace('.', Path.SEPARATOR);
-            relativeFilePath += String.valueOf(Path.SEPARATOR);
+            String relativeFilePath = packageName.replace('.', IPath.SEPARATOR);
+            relativeFilePath += String.valueOf(IPath.SEPARATOR);
 
             // create package folders
             IPath packagePath = new Path(projectPath.toString() + relativeFilePath);
@@ -331,7 +329,7 @@ public class JavaProjectFixture {
      * <br>
      * To create a file that has markers in it, use the method createFileAndParseWithMarkers() or
      * createFileAndPackageAndParseWithMarkers().
-     *
+     * 
      * @see createPackage(String)
      * @see refreshAndBuildProject()
      * @param content
@@ -355,8 +353,8 @@ public class JavaProjectFixture {
             // get package from the code
             String packageName = findPackageName(content);
             if (!packageName.equalsIgnoreCase("")) {
-                relativeFilePath.append(packageName.replace('.', Path.SEPARATOR));
-                relativeFilePath.append(String.valueOf(Path.SEPARATOR));
+                relativeFilePath.append(packageName.replace('.', IPath.SEPARATOR));
+                relativeFilePath.append(String.valueOf(IPath.SEPARATOR));
             }
         }
 
@@ -380,7 +378,7 @@ public class JavaProjectFixture {
 
     /**
      * Goes through the project and deletes all Java and Class files.
-     *
+     * 
      * @throws CoreException
      */
     public void clear() throws CoreException {
@@ -403,7 +401,7 @@ public class JavaProjectFixture {
     /**
      * Deletes the project inclusive content from the disk. <b>Warning:</b> This Fixture is no longer usable after doing
      * this.
-     *
+     * 
      * @throws CoreException
      */
     public void deleteProject() throws CoreException {
@@ -412,7 +410,7 @@ public class JavaProjectFixture {
 
     /**
      * Retrieves the inner java project managed by this fixture.
-     *
+     * 
      * @return the inner java project managed by this fixture
      */
     public IJavaProject getJavaProject() {
@@ -421,7 +419,7 @@ public class JavaProjectFixture {
 
     /**
      * Removes all markers from the content.
-     *
+     * 
      * @param content
      *            where the markers will be removed
      * @return the content without any markers

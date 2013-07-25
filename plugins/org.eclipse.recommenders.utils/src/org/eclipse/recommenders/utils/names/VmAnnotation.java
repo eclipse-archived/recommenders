@@ -11,12 +11,11 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.util.Map;
 
-import org.eclipse.recommenders.utils.annotations.Provisional;
-import org.eclipse.recommenders.utils.annotations.Testing;
-
+import com.google.common.annotations.Beta;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.MapMaker;
 
-@Provisional
+@Beta
 public class VmAnnotation implements IAnnotation {
 
     private static Map<ITypeName /* annotationType */, VmAnnotation> index = new MapMaker().weakValues().makeMap();
@@ -32,7 +31,7 @@ public class VmAnnotation implements IAnnotation {
         return res;
     }
 
-    @Testing("Outside of tests, VmAnnotations should be canonicalized through VmAnnotation#get(ITypeName)")
+    @VisibleForTesting
     protected VmAnnotation(ITypeName annotationType) {
         ensureIsNotNull(annotationType);
         this.annotationType = annotationType;

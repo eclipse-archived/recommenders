@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.recommenders.calls.ICallModel;
-import org.eclipse.recommenders.calls.ICallModel.DefinitionType;
+import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.SingleZipCallModelProvider;
 import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.utils.Constants;
@@ -41,7 +41,7 @@ public class SingleZipCallRecommender {
         ICallModel net = store.acquireModel(name).orNull();
         try {
             net.setObservedOverrideContext(query.overridesFirst);
-            net.setObservedDefinitionType(query.kind);
+            net.setObservedDefinitionKind(query.kind);
             if (query.definition != null && !query.definition.equals(UNKNOWN_METHOD)) {
                 net.setObservedDefiningMethod(query.definition);
             }
@@ -68,7 +68,7 @@ public class SingleZipCallRecommender {
             res.overridesFirst = Constants.UNKNOWN_METHOD;
             res.overridesSuper = Constants.UNKNOWN_METHOD;
             res.definition = Constants.UNKNOWN_METHOD;
-            res.kind = DefinitionType.UNKNOWN;
+            res.kind = DefinitionKind.UNKNOWN;
             return res;
         }
 
@@ -76,7 +76,7 @@ public class SingleZipCallRecommender {
         public IMethodName overridesSuper;
         public IMethodName overridesFirst;
         public Set<IMethodName> calls = Sets.newHashSet();
-        public DefinitionType kind;
+        public DefinitionKind kind;
         public IMethodName definition;
     }
 }

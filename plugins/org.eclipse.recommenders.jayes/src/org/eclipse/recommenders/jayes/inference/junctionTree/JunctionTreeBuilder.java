@@ -137,7 +137,7 @@ public class JunctionTreeBuilder {
         final UnionFind[] sets = UnionFind.createArray(vertexCount);
 
         final List<Pair<Edge, List<Integer>>> leftSepSets = new ArrayList<Pair<Edge, List<Integer>>>();
-        while (leftSepSets.size() < (vertexCount - 1)) {
+        while (leftSepSets.size() < vertexCount - 1) {
             final Pair<Edge, List<Integer>> sep = pq.poll();
             final boolean bothEndsInSameTree = sets[sep.getFirst().getFirst()].find() == sets[sep.getFirst()
                     .getSecond()].find();

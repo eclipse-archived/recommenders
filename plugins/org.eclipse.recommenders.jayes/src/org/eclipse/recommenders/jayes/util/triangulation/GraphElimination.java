@@ -77,7 +77,7 @@ public class GraphElimination implements Iterable<List<Integer>> {
                     final int predictedCost = heuristic.getHeuristicValue(graph, node);
                     if (predictedCost <= minCost) {
                         final double clusterWeight = computeClusterWeight(node);
-                        if ((predictedCost < minCost) || (clusterWeight < nextClusterWeight)) {
+                        if (predictedCost < minCost || clusterWeight < nextClusterWeight) {
                             returnNode = node;
                             minCost = predictedCost;
                             nextClusterWeight = clusterWeight;

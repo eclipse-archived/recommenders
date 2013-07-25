@@ -10,13 +10,8 @@
  */
 package org.eclipse.recommenders.tests.jdt;
 
-import static org.eclipse.jdt.core.IJavaElement.FIELD;
-import static org.eclipse.jdt.core.IJavaElement.JAVA_MODEL;
-import static org.eclipse.jdt.core.IJavaElement.LOCAL_VARIABLE;
-import static org.eclipse.jdt.core.IJavaElement.METHOD;
-import static org.eclipse.jdt.core.IJavaElement.TYPE;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.eclipse.jdt.core.IJavaElement.*;
+import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;

@@ -7,9 +7,9 @@
  */
 package org.eclipse.recommenders.utils.names;
 
-import org.eclipse.recommenders.utils.annotations.Provisional;
+import com.google.common.annotations.Beta;
 
-@Provisional
+@Beta
 public interface IAnnotation {
 
     ITypeName getAnnotationType();

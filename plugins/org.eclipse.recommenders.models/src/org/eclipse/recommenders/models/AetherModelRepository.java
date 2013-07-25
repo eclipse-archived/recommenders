@@ -12,15 +12,14 @@
  */
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.eclipse.recommenders.utils.Constants.F_CLASSIFIER;
-import static org.eclipse.recommenders.utils.Constants.F_SYMBOLIC_NAMES;
+import static org.eclipse.recommenders.utils.Constants.*;
 import static org.eclipse.recommenders.utils.Throws.throwUnsupportedOperation;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +48,6 @@ import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.DependencyCollectionContext;
 import org.sonatype.aether.collection.DependencySelector;
-import org.sonatype.aether.connector.file.FileRepositoryConnectorFactory;
 import org.sonatype.aether.connector.wagon.WagonProvider;
 import org.sonatype.aether.connector.wagon.WagonRepositoryConnectorFactory;
 import org.sonatype.aether.graph.Dependency;
@@ -65,7 +63,9 @@ import org.sonatype.aether.transfer.TransferListener;
 import org.sonatype.aether.util.DefaultRepositorySystemSession;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -259,8 +259,6 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
         DefaultServiceLocator locator = new DefaultServiceLocator();
         locator.setServices(WagonProvider.class, new ManualWagonProvider());
         locator.addService(RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class);
-        // import org.sonatype.aether.connector.file.FileRepositoryConnectorFactory;
-        locator.addService(RepositoryConnectorFactory.class, FileRepositoryConnectorFactory.class);
         return locator.getService(RepositorySystem.class);
     }
 
@@ -332,4 +330,18 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
         remote.setAuthentication(new Authentication(user, pass));
     }
 
+    @Override
+    public Collection<ModelArchiveCoordinate> listModels(String classifier) {
+        List<Artifact> artifacts = searchByClassifier(classifier);
+        return Collections2.transform(artifacts, new Artifact2ModelArchiveTransformer());
+    }
+
+    private static final class Artifact2ModelArchiveTransformer implements Function<Artifact, ModelArchiveCoordinate> {
+        @Override
+        public ModelArchiveCoordinate apply(Artifact a) {
+
+            return new ModelArchiveCoordinate(a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getExtension(),
+                    a.getVersion());
+        }
+    }
 }

@@ -237,4 +237,13 @@ public class Checks {
     private Checks() {
         // no-one should instantiate this class
     }
+
+    public static <T, S extends T> S castOrNull(T object) {
+        try {
+            return (S) object;
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
 }

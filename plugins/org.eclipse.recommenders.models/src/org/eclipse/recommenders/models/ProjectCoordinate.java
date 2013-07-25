@@ -13,7 +13,7 @@ package org.eclipse.recommenders.models;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.recommenders.utils.Checks;
-import org.eclipse.recommenders.utils.annotations.Nullable;
+import org.eclipse.recommenders.utils.Nullable;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
@@ -72,11 +72,7 @@ public class ProjectCoordinate {
 
     public static ProjectCoordinate valueOf(String coord) {
         String[] segments = coord.split(":");
-        Checks.ensureIsInRange(segments.length,
-                3,
-                3,
-                "Coordiante '%s' has invalid number of segments: %d",
-                coord,
+        Checks.ensureIsInRange(segments.length, 3, 3, "Coordiante '%s' has invalid number of segments: %d", coord,
                 segments.length);
         return new ProjectCoordinate(segments[0], segments[1], segments[2]);
     }

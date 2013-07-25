@@ -10,17 +10,14 @@
  */
 package org.eclipse.recommenders.utils.names;
 
-import static org.eclipse.recommenders.utils.Checks.ensureIsFalse;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
-import static org.eclipse.recommenders.utils.Checks.ensureIsTrue;
-import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
-import static org.eclipse.recommenders.utils.Throws.throwUnreachable;
+import static org.eclipse.recommenders.utils.Checks.*;
+import static org.eclipse.recommenders.utils.Throws.*;
 
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.recommenders.utils.annotations.Testing;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.MapMaker;
 
 public class VmTypeName implements ITypeName {
@@ -78,7 +75,7 @@ public class VmTypeName implements ITypeName {
     /**
      * @see #get(String)
      */
-    @Testing("Outside of tests, VmTypeNames should be canonicalized through VmTypeName#get(String)")
+    @VisibleForTesting
     protected VmTypeName(final String vmTypeName) {
         ensureIsNotNull(vmTypeName);
         ensureIsFalse(vmTypeName.length() == 0, "empty size for type name not permitted");
@@ -110,7 +107,7 @@ public class VmTypeName implements ITypeName {
         int off = 0;
         while (off < vmTypeName.length()) {
             final char c = vmTypeName.charAt(off);
-            if (c == '[' || c == '/' || c == '-'/* as in 'package-info.class' */|| c == '<' || c == '>'
+            if (c == '[' || c == '/' || c == '-' /* as in 'package-info.class' */|| c == '<' || c == '>'
                     || Character.isJavaIdentifierPart(c)) {
                 off++;
                 continue;

@@ -10,13 +10,7 @@
  */
 package org.eclipse.recommenders.jayes.io;
 
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.DEFINITION;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.FOR;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.GIVEN;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.NAME;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.OUTCOME;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.TABLE;
-import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.VARIABLE;
+import static org.eclipse.recommenders.internal.jayes.io.util.XMLBIFConstants.*;
 
 import java.io.FileWriter;
 import java.io.IOException;

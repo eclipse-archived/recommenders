@@ -54,8 +54,9 @@ public class BidirectionalMap<K, V> implements Map<K, V> {
 
     @Override
     public V put(K key, V value) {
-        if (containsValue(value) && valueKey.get(value) != key)
+        if (containsValue(value) && valueKey.get(value) != key) {
             throw new IllegalArgumentException(value + " has already been assigned an other key, violating uniqueness");
+        }
         V val = keyValue.put(key, value);
         valueKey.remove(val);
         valueKey.put(value, key);

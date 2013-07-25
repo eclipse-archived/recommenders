@@ -14,11 +14,28 @@ import static org.eclipse.recommenders.utils.Throws.throwNotImplemented;
 
 import org.eclipse.recommenders.examples.models.CompletionEngineExample.IJavaElement;
 import org.eclipse.recommenders.models.ProjectCoordinate;
-import org.eclipse.recommenders.models.dependencies.IProjectCoordinateProvider;
 
 import com.google.common.base.Optional;
 
-public class EclipseProjectCoordinateProvider implements IProjectCoordinateProvider {
+/**
+ * Maps an IDE specific code element to a {@link ProjectCoordinate}.
+ * <p>
+ * Note that this interface is only a marker interface which will be implemented by each IDE-implementation
+ * independently. An Eclipse-based provider may contain methods like:
+ * 
+ * <pre>
+ * Optional&lt;ProjectCoordinate&gt; map(IMethod m);
+ * 
+ * Optional&lt;ProjectCoordinate&gt; map(IType t);
+ * 
+ * Optional&lt;ProjectCoordinate&gt; map(IPackgeFragmentRoot p);
+ * 
+ * Optional&lt;ProjectCoordinate&gt; map(IJavaProject p);
+ * </pre>
+ * 
+ * The API for other IDEs or evaluation frameworks may use other methods names or abstractions.
+ */
+public class EclipseProjectCoordinateProvider {
 
     public Optional<ProjectCoordinate> map(IJavaElement jdtElement) {
         // TODO Auto-generated method stub

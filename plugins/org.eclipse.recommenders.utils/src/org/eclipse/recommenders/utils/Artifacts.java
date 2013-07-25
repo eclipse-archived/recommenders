@@ -29,17 +29,17 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.recommenders.utils.annotations.Provisional;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
 import com.google.common.net.InternetDomainName;
 
-@Provisional
+@Beta
 public class Artifacts {
 
     /**

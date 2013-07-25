@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.recommenders.calls.ICallModel;
-import org.eclipse.recommenders.calls.ICallModel.DefinitionType;
+import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.PoolingCallModelProvider;
 import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -44,7 +44,7 @@ public class EclipseOrgCallRecommender {
         }
         try {
             net.setObservedOverrideContext(query.overridesFirst);
-            net.setObservedDefinitionType(query.kind);
+            net.setObservedDefinitionKind(query.kind);
             if (query.definition != null && !query.definition.equals(UNKNOWN_METHOD)) {
                 net.setObservedDefiningMethod(query.definition);
             }
@@ -71,7 +71,7 @@ public class EclipseOrgCallRecommender {
             res.overridesFirst = Constants.UNKNOWN_METHOD;
             res.overridesSuper = Constants.UNKNOWN_METHOD;
             res.definition = Constants.UNKNOWN_METHOD;
-            res.kind = DefinitionType.UNKNOWN;
+            res.kind = DefinitionKind.UNKNOWN;
             return res;
         }
 
@@ -79,7 +79,7 @@ public class EclipseOrgCallRecommender {
         public IMethodName overridesSuper;
         public IMethodName overridesFirst;
         public Set<IMethodName> calls = Sets.newHashSet();
-        public DefinitionType kind;
+        public DefinitionKind kind;
         public IMethodName definition;
     }
 }

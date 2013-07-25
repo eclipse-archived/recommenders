@@ -29,12 +29,13 @@ import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.Region;
-import org.eclipse.recommenders.utils.annotations.Provisional;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Optional;
 
+@SuppressWarnings("restriction")
 public interface IRecommendersCompletionContext {
 
     JavaContentAssistInvocationContext getJavaContext();
@@ -117,9 +118,9 @@ public interface IRecommendersCompletionContext {
      */
     Set<ITypeName> getExpectedTypeNames();
 
-    @Provisional
+    @Beta
     Optional<CompilationUnitDeclaration> getCompliationUnitDeclaration();
 
-    @Provisional
+    @Beta
     Optional<Scope> getAssistScope();
 }

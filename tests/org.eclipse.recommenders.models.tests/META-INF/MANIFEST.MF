@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Code Recommenders: Tests Model
+Bundle-SymbolicName: org.eclipse.recommenders.models.tests;singleton:=true
+Bundle-Version: 1.100.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Fragment-Host: org.eclipse.recommenders.models
+Require-Bundle: org.junit,
+ org.mockito;bundle-version="1.8.4",
+ org.hamcrest;bundle-version="1.1.0",
+ org.eclipse.recommenders.tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

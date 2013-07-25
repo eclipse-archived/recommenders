@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2010 Darmstadt University of Technology.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+       Darmstadt University of Technology - initial API and implementation.
+
+-->
+<feature
+      id="org.eclipse.recommenders.simrel.feature"
+      label="Code Recommenders Developer Tools"
+      version="1.100.0.qualifier"
+      provider-name="Eclipse Code Recommenders"
+      plugin="org.eclipse.recommenders.rcp"
+      license-feature="org.eclipse.recommenders.license.feature"
+      license-feature-version="0.0.0">
+
+   <description url="http://www.eclipse.org/recommenders/">
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <includes
+         id="org.eclipse.recommenders.rcp.feature"
+         version="0.0.0"/>
+
+</feature>

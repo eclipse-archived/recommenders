@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.recommenders.utils.annotations.Testing;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.MapMaker;
 
 public class VmMethodName implements IMethodName {
@@ -75,7 +75,7 @@ public class VmMethodName implements IMethodName {
     /**
      * @see #get(String)
      */
-    @Testing("Outside of tests, VmMethodNames should be canonicalized through VmMethodName#get(String)")
+    @VisibleForTesting
     protected VmMethodName(final String vmFullQualifiedMethodName) {
         identifier = vmFullQualifiedMethodName;
         // // perform syntax check by creating every possible element from this

@@ -85,7 +85,7 @@ public class FloatArrayWrapper implements IArrayWrapper {
 
     @Override
     public double getDouble(int index) {
-        return (double) array[index];
+        return array[index];
     }
 
     @Override

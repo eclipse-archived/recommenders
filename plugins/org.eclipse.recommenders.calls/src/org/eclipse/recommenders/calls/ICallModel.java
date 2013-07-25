@@ -13,8 +13,8 @@ package org.eclipse.recommenders.calls;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.Recommendation;
-import org.eclipse.recommenders.utils.annotations.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
@@ -64,9 +64,9 @@ public interface ICallModel {
      * <p>
      * Depending on the definition kind, the method specified here will be
      * <ul>
-     * <li>{@link DefinitionType#METHOD_RETURN}: the method whose return value defined the variable,
-     * <li>{@link DefinitionType#PARAMETER}: the method this variable was defined as a parameter for,
-     * <li>{@link DefinitionType#NEW}: the constructor this variable was initialized with.
+     * <li>{@link DefinitionKind#METHOD_RETURN}: the method whose return value defined the variable,
+     * <li>{@link DefinitionKind#PARAMETER}: the method this variable was defined as a parameter for,
+     * <li>{@link DefinitionKind#NEW}: the constructor this variable was initialized with.
      * </ul>
      * 
      * @return returns <code>true</code> if the defining method was found, <code>false</code> otherwise
@@ -76,7 +76,7 @@ public interface ICallModel {
     /**
      * @see #setObservedDefiningMethod(IMethodName)
      */
-    boolean setObservedDefinitionType(@Nullable DefinitionType defType);
+    boolean setObservedDefinitionKind(@Nullable DefinitionKind defType);
 
     /**
      * Sets the given pattern as observed. This call is ignored when the given name is not known.
@@ -99,7 +99,7 @@ public interface ICallModel {
     /**
      * Returns the observed variable definition type - if any.
      */
-    Optional<DefinitionType> getObservedDefinitionType();
+    Optional<DefinitionKind> getObservedDefinitionKind();
 
     /**
      * Returns a list of observed methods flagged as being observed.
@@ -159,7 +159,7 @@ public interface ICallModel {
     /**
      * Specifies how the variable under examination was defined (field, parameter, by method return...).
      */
-    public enum DefinitionType {
+    public enum DefinitionKind {
         /**
          * indicates that the variable was defined by a method return value, e.g, int x = p.getX();
          */
@@ -185,6 +185,18 @@ public interface ICallModel {
          * specific values {@link #NEW}, or {@link #METHOD_RETURN} if possible.
          */
         LOCAL,
+        /**
+         * Completion was triggered on a string literal, e.g., "hello".$
+         */
+        STRING_LITERAL,
+        /**
+         * Completion was triggered on a value initilized with null, e.g., String hello = null; hello.$
+         */
+        NULL_LITERAL,
+        /**
+         * the value was obtained from an array access, e.g., args[0].$
+         */
+        ARRAY_ACCESS,
         /**
          * indicates that the variable was defined in an unexpected or unsupported and yet unhandled way.
          */

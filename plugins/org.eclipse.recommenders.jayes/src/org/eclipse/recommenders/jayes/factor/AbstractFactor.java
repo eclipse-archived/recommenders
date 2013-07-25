@@ -42,7 +42,7 @@ public abstract class AbstractFactor implements Cloneable {
 
     public void setValues(IArrayWrapper values) {
         this.values = values;
-        assert (MathUtils.product(dimensions) == values.length());
+        assert MathUtils.product(dimensions) == values.length();
     }
 
     public IArrayWrapper getValues() {
@@ -58,8 +58,9 @@ public abstract class AbstractFactor implements Cloneable {
         selections = new int[dimensions.length];
         resetSelections();
         int length = MathUtils.product(dimensions);
-        if (length > values.length())
+        if (length > values.length()) {
             values.newArray(length);
+        }
         dimensionIDs = Arrays.copyOf(dimensionIDs, dimensions.length);
     }
 
@@ -79,9 +80,11 @@ public abstract class AbstractFactor implements Cloneable {
     }
 
     protected int getDimensionFromID(int id) {
-        for (int i = 0; i < dimensionIDs.length; i++)
-            if (dimensionIDs[i] == id)
+        for (int i = 0; i < dimensionIDs.length; i++) {
+            if (dimensionIDs[i] == id) {
                 return i;
+            }
+        }
         return -1;
     }
 
@@ -155,10 +158,11 @@ public abstract class AbstractFactor implements Cloneable {
 
     public void multiplyPrepared(IArrayWrapper compatibleValues, int[] positions) {
         validateCut();
-        if (!isLogScale)
+        if (!isLogScale) {
             multiplyPrepared(cut, 0, compatibleValues, positions);
-        else
+        } else {
             multiplyPreparedLog(cut, 0, compatibleValues, positions);
+        }
     }
 
     private void multiplyPrepared(Cut cut, int offset, IArrayWrapper compatibleValues, int[] positions) {
@@ -181,10 +185,11 @@ public abstract class AbstractFactor implements Cloneable {
 
         compatibleFactorValues.fill(0);
 
-        if (!isLogScale)
+        if (!isLogScale) {
             sumPrepared(cut, 0, compatibleFactorValues, preparedOperation);
-        else
+        } else {
             sumPreparedLog(compatibleFactorValues, preparedOperation);
+        }
     }
 
     private void sumPrepared(Cut cut, int offset, IArrayWrapper compatibleFactorValues, int[] positions) {

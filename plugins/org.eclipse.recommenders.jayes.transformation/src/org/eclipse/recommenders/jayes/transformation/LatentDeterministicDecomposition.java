@@ -68,8 +68,9 @@ public class LatentDeterministicDecomposition extends AbstractDecomposition {
     protected List<double[]> getBasis(AbstractFactor f, List<double[]> vectors) throws DecompositionFailedException {
         Map<double[], Integer> counts = count(vectors);
         List<double[]> basis = getBest(counts, f.getValues().length() / vectors.size(), vectors.size() / 2);
-        if (basis == null)
+        if (basis == null) {
             throw new DecompositionFailedException("Could not find a good enough basis");
+        }
         return basis;
     }
 
@@ -105,8 +106,9 @@ public class LatentDeterministicDecomposition extends AbstractDecomposition {
         for (double[] v : q) {
             totalcounts += counts.get(v);
         }
-        if (totalcounts < minTotalCounts)
+        if (totalcounts < minTotalCounts) {
             return null;
+        }
 
         return new ArrayList<double[]>(q);
     }

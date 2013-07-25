@@ -15,7 +15,6 @@ import java.io.IOException;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelArchiveCoordinate;
 
-@SuppressWarnings("unused")
 public class UsingModelArchiveCache {
 
     void downloadModelArchive(final ModelArchiveCoordinate model, final IModelRepository repository) throws Exception {

@@ -13,8 +13,7 @@ package org.eclipse.recommenders.utils.names;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.recommenders.utils.annotations.Testing;
-
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 
@@ -48,7 +47,7 @@ public class VmPackageName implements IPackageName {
     /**
      * @see #get(String)
      */
-    @Testing("Outside of tests, VmPackageNames should be canonicalized through VmPackageName#get(String)")
+    @VisibleForTesting
     protected VmPackageName(final String vmPackageName) {
         identifier = vmPackageName;
     }
@@ -63,6 +62,7 @@ public class VmPackageName implements IPackageName {
         return getIdentifier().isEmpty();
     }
 
+    @Override
     public int compareTo(final IPackageName o) {
         return getIdentifier().compareTo(o.getIdentifier());
     }

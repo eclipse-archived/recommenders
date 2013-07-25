@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.models;
 
 import org.apache.maven.wagon.Wagon;
+import org.apache.maven.wagon.providers.file.FileWagon;
 import org.sonatype.maven.wagon.AhcWagon;
 
 /**
@@ -23,11 +24,14 @@ public class ManualWagonProvider implements org.sonatype.aether.connector.wagon.
         if ("http".equals(roleHint) || "https".equals(roleHint)) { //$NON-NLS-1$ //$NON-NLS-2$
             AhcWagon ahcWagon = new AhcWagon();
             // TODO set timeout to 300s instead of 60s to solve timeouts. experimental.
-            ahcWagon.setTimeout(300*1000);
+            ahcWagon.setTimeout(300 * 1000);
             return ahcWagon;
             // return new WebDavWagon();
+        } else if ("file".equals(roleHint)) {
+            return new FileWagon();
+        } else {
+            return null;
         }
-        return null;
     }
 
     @Override

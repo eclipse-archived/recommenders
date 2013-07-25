@@ -47,8 +47,9 @@ public class RejectionSampling extends AbstractInferer {
     }
 
     private void normalizeBeliefs() {
-        for (int i = 0; i < beliefs.length; i++)
+        for (int i = 0; i < beliefs.length; i++) {
             beliefs[i] = MathUtils.normalize(beliefs[i]);
+        }
     }
 
     private boolean isConsistenWithEvidence(Map<BayesNode, String> sample) {

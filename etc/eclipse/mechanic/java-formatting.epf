@@ -1,0 +1,33 @@
+# @title formatter-settings.epf
+# @description Sets the code formatter settings  to code recommenders defaults
+# @task_type LASTMOD
+#
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.alignment_for_compact_if=16
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.alignment_for_conditional_expression=80
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.alignment_for_superclass_in_type_declaration=16
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_enum_declaration=16
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_type_declaration=16
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.blank_lines_after_imports=1
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.blank_lines_after_package=1
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.blank_lines_before_imports=1
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.blank_lines_before_member_type=1
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.blank_lines_before_method=1
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.blank_lines_before_new_chunk=1
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.blank_lines_between_type_declarations=1
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.comment.line_length=120
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.indent_switchstatements_compare_to_switch=false
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.insert_new_line_at_end_of_file_if_missing=insert
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.insert_space_after_closing_angle_bracket_in_type_arguments=do not insert
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.insert_space_after_opening_brace_in_array_initializer=insert
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.insert_space_before_closing_brace_in_array_initializer=insert
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.insert_space_before_colon_in_case=do not insert
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.insert_space_before_colon_in_default=do not insert
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.insert_space_before_colon_in_labeled_statement=do not insert
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_array_initializer=insert
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.lineSplit=120
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.put_empty_statement_on_new_line=true
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.tabulation.char=space
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.use_tabs_only_for_leading_indentations=true
+
+/instance/org.eclipse.jdt.ui/formatter_profile=_Eclipse Code Recommenders
+file_export_version=3.0

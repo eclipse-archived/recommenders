@@ -14,11 +14,11 @@ package org.eclipse.recommenders.jayes.factor.opcache;
  * This class is to be used when divisions are a performance-critical part of the code, and the sequence of divisions is
  * such that many subsequent divisions will have the same result (using the same divisor).
  */
-public class DivisionCache{
+public class DivisionCache {
 
     private final int divisor;
 
-    private int cachedBlockStart;// the smallest value for which the cached result is valid
+    private int cachedBlockStart; // the smallest value for which the cached result is valid
     private int cachedResult;
 
     public DivisionCache(int divisor) {

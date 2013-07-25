@@ -42,8 +42,9 @@ public abstract class CanonicalSet<T> extends AbstractSet<T> {
     public boolean add(final T e) {
         if (!contains(e)) {
             return set.put(createEntry(e), e) == null;
-        } else
+        } else {
             return false;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -65,7 +66,7 @@ public abstract class CanonicalSet<T> extends AbstractSet<T> {
     @SuppressWarnings("unchecked")
     @Override
     public boolean remove(final Object o) {
-        if (!(hasProperType(o))) {
+        if (!hasProperType(o)) {
             return false;
         }
         return set.remove(createEntry((T) o)) != null;

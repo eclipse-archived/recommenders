@@ -10,11 +10,7 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.io;
 
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.CPT;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.ID;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PARENTS;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PROBABILITIES;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.STATE;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.*;
 
 import java.io.FileWriter;
 import java.io.IOException;

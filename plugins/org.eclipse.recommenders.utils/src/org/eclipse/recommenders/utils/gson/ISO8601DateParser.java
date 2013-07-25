@@ -13,7 +13,6 @@ package org.eclipse.recommenders.utils.gson;
 import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -38,7 +37,7 @@ public class ISO8601DateParser implements JsonDeserializer<Date>, JsonSerializer
 
     @Override
     public JsonElement serialize(final Date src, final Type typeOfSrc, final JsonSerializationContext context) {
-        final Calendar calendar = GregorianCalendar.getInstance();
+        final Calendar calendar = Calendar.getInstance();
         calendar.setTime(src);
         return new JsonPrimitive(DatatypeConverter.printDateTime(calendar));
     }

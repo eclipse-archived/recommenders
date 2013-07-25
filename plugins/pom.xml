@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
-		<artifactId>org.eclipse.recommenders.parent</artifactId>
+		<artifactId>org.eclipse.recommenders</artifactId>
 		<version>1.100.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
@@ -13,33 +13,24 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>org.eclipse.recommenders.apidocs</module>
+		<module>org.eclipse.recommenders.apidocs.rcp</module>
 		<module>org.eclipse.recommenders.calls</module>
 		<module>org.eclipse.recommenders.calls.rcp</module>
-		<module>org.eclipse.recommenders.overrides</module>
-		<module>org.eclipse.recommenders.overrides.rcp</module>
 		<module>org.eclipse.recommenders.completion.rcp</module>
-		<module>org.eclipse.recommenders.completion.rcp.calls</module>
-		<module>org.eclipse.recommenders.completion.rcp.chain</module>
-		<module>org.eclipse.recommenders.completion.rcp.overrides</module>
-		<module>org.eclipse.recommenders.completion.rcp.sandbox</module>
-		<module>org.eclipse.recommenders.completion.rcp.subwords</module>
-		<module>org.eclipse.recommenders.completion.rcp.templates</module>
-		<!-- module>org.eclipse.recommenders.doc</module -->
-		<module>org.eclipse.recommenders.extdoc</module>
-		<module>org.eclipse.recommenders.extdoc.rcp</module>
+		<module>org.eclipse.recommenders.chain.rcp</module>
+		<module>org.eclipse.recommenders.sandbox.rcp</module>
 		<module>org.eclipse.recommenders.injection</module>
 		<module>org.eclipse.recommenders.jayes</module>
 		<module>org.eclipse.recommenders.jayes.io</module>
 		<module>org.eclipse.recommenders.jayes.transformation</module>
-		<module>org.eclipse.recommenders.jayes.serialization</module>
-		<module>org.eclipse.recommenders.rcp</module>
-		<module>org.eclipse.recommenders.rdk</module>
-		<module>org.eclipse.recommenders.utils</module>
-		<module>org.eclipse.recommenders.utils.rcp</module>
-		<module>org.eclipse.recommenders.webclient</module>
 		<module>org.eclipse.recommenders.models</module>
 		<module>org.eclipse.recommenders.models.rcp</module>
-		<module>org.eclipse.recommenders.models.rcp.dependencymonitor</module>
+		<module>org.eclipse.recommenders.rcp</module>
+		<module>org.eclipse.recommenders.subwords.rcp</module>
+		<module>org.eclipse.recommenders.overrides</module>
+		<module>org.eclipse.recommenders.overrides.rcp</module>
+		<module>org.eclipse.recommenders.utils</module>
 	</modules>
 
 	<build>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="org.eclipse.recommenders.completion.category.all"
+         name="Code Recommenders All (experimental)"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <proposalCategory
+            icon="icons/elcl16/slice.gif">
+      </proposalCategory>
+   </extension>
+   <extension
+         id="experimental"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.eclipse.recommenders.completion.category.all"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.RecommendersAllCompletionProposalProcessor"
+            needsSortingAfterFiltering="true">
+      </javaCompletionProposalComputer>
+   </extension>
+   <extension
+         point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
+      <processor
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.completion.rcp.sandbox.StatisticsSessionProcessor"
+            icon="icons/elcl16/category.gif"
+            id="org.eclipse.recommenders.completion.rcp.processors.statistics"
+            name="Statistics">
+      </processor>
+      <processor
+            class="org.eclipse.recommenders.sandbox.rcp.BaseRelevanceSessionProcessor"
+            icon="icons/elcl16/category.gif"
+            id="org.eclipse.recommenders.completion.rcp.sandbox.baserelevanceprocessor"
+            name="JDT Base Relevance Adder"
+            priority="0">
+      </processor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            name="Open Statistics Dialog"
+            id="org.eclipse.recommenders.completion.rcp.sandbox.statsdialog">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="org.eclipse.recommenders.completion.rcp.sandbox.statsdialog"
+            class="org.eclipse.recommenders.sandbox.rcp.StatisticsDialogHandler">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.eclipse.recommenders.completion.rcp.sandbox.statsdialog"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+6"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:help?after=group.assist">
+         <command
+               commandId="org.eclipse.recommenders.completion.rcp.sandbox.statsdialog"
+               label="Completion Statistics"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+
+</plugin>

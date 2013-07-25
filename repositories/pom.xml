@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.eclipse.recommenders</groupId>
+		<artifactId>org.eclipse.recommenders</artifactId>
+		<version>1.100.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<artifactId>repositories</artifactId>
+	<packaging>pom</packaging>
+	<modules>
+		<!-- Contains all features produced by Eclipse Code Recommenders (including test features). -->
+		<module>head</module>
+		<!-- May contain features that have not undergone a release review. -->
+		<module>milestone</module>
+		<!-- Contains features that had a release review. -->
+		<module>stable</module>
+	</modules>
+</project>

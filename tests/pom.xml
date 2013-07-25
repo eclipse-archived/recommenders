@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
-		<artifactId>org.eclipse.recommenders.parent</artifactId>
+		<artifactId>org.eclipse.recommenders</artifactId>
 		<version>1.100.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
@@ -12,16 +12,16 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.eclipse.recommenders.tests</module>
-		<module>org.eclipse.recommenders.tests.completion.rcp</module>
-		<module>org.eclipse.recommenders.tests.extdoc.rcp</module>
-		<module>org.eclipse.recommenders.tests.jayes</module>
-		<module>org.eclipse.recommenders.tests.jayes.io</module>
-		<module>org.eclipse.recommenders.tests.jayes.transformation</module>
-		<module>org.eclipse.recommenders.tests.rdk</module>
-		<module>org.eclipse.recommenders.tests.rcp</module>
-		<module>org.eclipse.recommenders.tests.util</module>
-		<module>org.eclipse.recommenders.tests.models</module>
-		<module>org.eclipse.recommenders.tests.models.rcp</module>
+		<module>org.eclipse.recommenders.calls.rcp.tests</module>
+		<module>org.eclipse.recommenders.completion.rcp.tests</module>
+		<module>org.eclipse.recommenders.apidocs.rcp.tests</module>
+		<module>org.eclipse.recommenders.jayes.tests</module>
+		<module>org.eclipse.recommenders.jayes.io.tests</module>
+		<module>org.eclipse.recommenders.jayes.transformation.tests</module>
+		<module>org.eclipse.recommenders.rcp.tests</module>
+		<module>org.eclipse.recommenders.utils.tests</module>
+		<module>org.eclipse.recommenders.models.tests</module>
+		<module>org.eclipse.recommenders.models.rcp.tests</module>
 		<!--module>org.eclipse.recommenders.tests.webclient</module-->
 		<!--module>org.eclipse.recommenders.tests.ui</module-->
 		<!--module>org.eclipse.recommenders.tests.snipmatch.rcp</module-->

@@ -11,10 +11,7 @@
 package org.eclipse.recommenders.models.rcp.maybenotneeded;
 
 import static com.google.common.base.Optional.fromNullable;
-import static org.eclipse.recommenders.models.rcp.maybenotneeded.ModelArchiveRegistry.ArchiveDownloadStatus.DOWNLOADING;
-import static org.eclipse.recommenders.models.rcp.maybenotneeded.ModelArchiveRegistry.ArchiveDownloadStatus.FAILED;
-import static org.eclipse.recommenders.models.rcp.maybenotneeded.ModelArchiveRegistry.ArchiveDownloadStatus.RESOLVED;
-import static org.eclipse.recommenders.models.rcp.maybenotneeded.ModelArchiveRegistry.ArchiveDownloadStatus.UNRESOLVED;
+import static org.eclipse.recommenders.models.rcp.maybenotneeded.ModelArchiveRegistry.ArchiveDownloadStatus.*;
 
 import java.io.Closeable;
 import java.io.File;

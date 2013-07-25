@@ -5,7 +5,7 @@ import static org.eclipse.recommenders.utils.Recommendations.*;
 import java.util.List;
 
 import org.eclipse.recommenders.calls.ICallModel;
-import org.eclipse.recommenders.calls.ICallModel.DefinitionType;
+import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
@@ -13,9 +13,9 @@ import com.google.common.collect.Lists;
 
 public class ExampleApiUsages {
 
-    List<Recommendation<IMethodName>> recommendCalls(ICallModel m, IMethodName overridesContext, DefinitionType def,
+    List<Recommendation<IMethodName>> recommendCalls(ICallModel m, IMethodName overridesContext, DefinitionKind def,
             IMethodName definedBy) {
-        m.setObservedDefinitionType(def);
+        m.setObservedDefinitionKind(def);
         m.setObservedDefiningMethod(definedBy);
         m.setObservedOverrideContext(overridesContext);
 
@@ -38,11 +38,11 @@ public class ExampleApiUsages {
     // Given the type of a variable and how it was defined, tell me which "sets of methods" I'm likely to invoke on this
     // object now:
     List<List<Recommendation<IMethodName>>> recommendPatterns(ICallModel m, IMethodName overridesContext,
-            DefinitionType def, IMethodName definedBy) {
+            DefinitionKind def, IMethodName definedBy) {
 
         m.setObservedOverrideContext(overridesContext);
         m.setObservedDefiningMethod(definedBy);
-        m.setObservedDefinitionType(def);
+        m.setObservedDefinitionKind(def);
 
         // get the top 5 most likely call patterns
         List<Recommendation<String>> patterns = top(m.recommendPatterns(), 5);

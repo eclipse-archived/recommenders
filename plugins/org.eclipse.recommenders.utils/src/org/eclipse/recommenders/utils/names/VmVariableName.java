@@ -15,8 +15,8 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.recommenders.utils.annotations.Testing;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.MapMaker;
 
 public class VmVariableName implements IVariableName {
@@ -46,7 +46,7 @@ public class VmVariableName implements IVariableName {
     /**
      * @see #get(String)
      */
-    @Testing("Outside of tests, VmVariableNames should be canonicalized through VmVariableName#get(String)")
+    @VisibleForTesting
     protected VmVariableName(final String vmVariableName) {
         identifier = vmVariableName;
         ensureIsNotNull(identifier);

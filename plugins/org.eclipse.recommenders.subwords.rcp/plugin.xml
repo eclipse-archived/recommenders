@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="org.eclipse.recommenders.subwords.rcp.category"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.eclipse.recommenders.subwords.rcp.category"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.subwords.rcp.SubwordsCompletionProposalComputer"
+            needsSortingAfterFiltering="true"/>
+   </extension>
+ <extension
+       id="org.eclipse.recommenders.subwords.rcp.category"
+       name="%extension.name"
+       point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <proposalCategory
+            icon="icons/elcl16/category.gif"></proposalCategory>
+   </extension>
+ <extension
+       point="org.eclipse.ui.preferencePages">
+    <page
+          category="org.eclipse.recommenders.rcp.category.preferences"
+          class="org.eclipse.recommenders.internal.subwords.rcp.PreferencePage"
+          id="org.eclipse.recommenders.internal.subwords.rcp.PreferencePage"
+          name="%page.name">
+    </page>
+ </extension>
+ <extension
+       point="org.eclipse.recommenders.completion.rcp.sessionprocessors">
+    <processor
+          class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor"
+          icon="icons/elcl16/category.gif"
+          id="org.eclipse.recommenders.completion.rcp.subwords.processor"
+          name="Subwords Completion Processor">
+    </processor>
+ </extension>
+</plugin>

@@ -34,8 +34,9 @@ public abstract class Entry<T> {
             return false;
         }
         Object otherEntry = ((Entry<?>) obj).entry;
-        if (entry.getClass() != otherEntry.getClass())
+        if (entry.getClass() != otherEntry.getClass()) {
             return false;
+        }
         return equals(entry, (T) otherEntry);
     }
 

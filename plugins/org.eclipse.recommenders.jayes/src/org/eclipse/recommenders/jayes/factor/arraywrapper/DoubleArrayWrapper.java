@@ -120,9 +120,10 @@ public class DoubleArrayWrapper implements IArrayWrapper {
 
     @Override
     public void fill(float d) {
-        Arrays.fill(array, (double) d);
+        Arrays.fill(array, d);
     }
 
+    @Override
     public DoubleArrayWrapper clone() {
         try {
             DoubleArrayWrapper result = (DoubleArrayWrapper) super.clone();

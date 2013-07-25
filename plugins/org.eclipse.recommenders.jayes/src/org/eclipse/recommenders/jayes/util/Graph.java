@@ -32,7 +32,7 @@ public class Graph implements Cloneable {
     }
 
     public Edge addEdge(final int v1, final int v2) {
-        for (int i = 0; i < (Math.max(v1, v2) - adjacency.size()); i++) {
+        for (int i = 0; i < Math.max(v1, v2) - adjacency.size(); i++) {
             adjacency.add(new HashSet<Edge>());
         }
         final Edge e = new Edge(v1, v2);

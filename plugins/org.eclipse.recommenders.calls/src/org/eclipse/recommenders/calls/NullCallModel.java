@@ -48,7 +48,7 @@ public final class NullCallModel implements ICallModel {
     }
 
     @Override
-    public boolean setObservedDefinitionType(DefinitionType newKind) {
+    public boolean setObservedDefinitionKind(DefinitionKind newKind) {
         return false;
     }
 
@@ -72,7 +72,7 @@ public final class NullCallModel implements ICallModel {
     }
 
     @Override
-    public Optional<DefinitionType> getObservedDefinitionType() {
+    public Optional<DefinitionKind> getObservedDefinitionKind() {
         return absent();
     }
 

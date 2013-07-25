@@ -114,11 +114,14 @@ public class Cut implements Cloneable {
      * @return
      */
     private boolean needsSplit() {
-        if (length < subtreeStepsize)
+        if (length < subtreeStepsize) {
             return false;
-        for (int i = rootDimension; i < leafDimension; i++)
-            if (this.factor.selections[i] != -1)
+        }
+        for (int i = rootDimension; i < leafDimension; i++) {
+            if (this.factor.selections[i] != -1) {
                 return true;
+            }
+        }
         return false;
     }
 

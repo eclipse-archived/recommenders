@@ -10,9 +10,7 @@
  */
 package org.eclipse.recommenders.utils;
 
-import static org.eclipse.recommenders.utils.Checks.ensureExists;
-import static org.eclipse.recommenders.utils.Checks.ensureIsFile;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Checks.*;
 
 import java.io.File;
 import java.io.IOException;

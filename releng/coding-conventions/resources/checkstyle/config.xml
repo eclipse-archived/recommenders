@@ -2,22 +2,62 @@
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
-	<!--  http://checkstyle.sourceforge.net/config_regexp.html#RegexpMultiline -->
-	<module name="RegexpMultiline">
-		<!-- Match from the first illegal line delimiter to the end of file -->
-		<property name="format" value="(\r\n|\r)(.*(\r\n|\r|\n))*.*" />
-		<property name="message" value="Found non-Unix line delimiter(s)" />
-	</module>
+
 	<!-- http://checkstyle.sourceforge.net/config_misc.html#NewlineAtEndOfFile -->
 	<module name="NewlineAtEndOfFile">
-		<!-- Use a Unix line delimiter at end of file -->
-		<property name="lineSeparator" value="lf" />
+		<!-- Require a Unix line delimiter at end of file. -->
+		<property name="lineSeparator" value="lf"/>
 	</module>
+
+	<!--  http://checkstyle.sourceforge.net/config_regexp.html#RegexpMultiline -->
+	<module name="RegexpMultiline">
+		<!-- Match from the first illegal line delimiter to the end of file. -->
+		<property name="format" value="(\r\n|\r)(.*(\r\n|\r|\n))*.*"/>
+		<property name="message" value="Found non-Unix line delimiter(s)"/>
+	</module>
+
+	<!-- http://checkstyle.sourceforge.net/config_whitespace.html#FileTabCharacter -->
+	<module name="FileTabCharacter"/>
+
 	<!-- http://checkstyle.sourceforge.net/config.html#TreeWalker -->
 	<module name="TreeWalker">
+
+		<!--  http://checkstyle.sourceforge.net/config_coding.html#CovariantEquals -->
+		<module name="CovariantEquals"/>
+
+		<!--  http://checkstyle.sourceforge.net/config_coding.html#EmptyStatement -->
+		<module name="EmptyStatement"/>
+
+		<!--  http://checkstyle.sourceforge.net/config_coding.html#EqualsHashCode -->
+		<module name="EqualsHashCode"/>
+
+		<!--  http://checkstyle.sourceforge.net/config_coding.html#DefaultComesLast -->
+		<module name="DefaultComesLast"/>
+
+		<!-- http://checkstyle.sourceforge.net/config_misc.html#UpperEll -->
+		<module name="UpperEll"/>
+
+		<!-- http://checkstyle.sourceforge.net/config_misc.html#ArrayTypeStyle -->
+		<module name="ArrayTypeStyle">
+			<!-- Disallow C-style array type declarations like "String args[]". -->
+			<property name="javaStyle" value="true" />
+		</module>
+
 		<!-- http://checkstyle.sourceforge.net/config_modifier.html#ModifierOrder -->
-		<module name="ModifierOrder" />
+		<module name="ModifierOrder"/>
+
 		<!-- http://checkstyle.sourceforge.net/config_modifier.html#RedundantModifier -->
-		<module name="RedundantModifier" />
+		<module name="RedundantModifier"/>
+
+		<!-- http://checkstyle.sourceforge.net/config_whitespace.html#GenericWhitespace -->
+		<module name="GenericWhitespace"/>
+
+		<!-- http://checkstyle.sourceforge.net/config_whitespace.html#TypecastParenPad -->
+		<module name="TypecastParenPad"/>
+
+		<!-- http://checkstyle.sourceforge.net/config_whitespace.html#WhitespaceAfter -->
+		<module name="WhitespaceAfter">
+			<property name="tokens" value="COMMA, SEMI, TYPECAST"/>
+		</module>
 	</module>
 </module>

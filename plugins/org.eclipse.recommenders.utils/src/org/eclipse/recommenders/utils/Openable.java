@@ -13,8 +13,8 @@ package org.eclipse.recommenders.utils;
 import java.io.IOException;
 
 /**
- * An {@code Openable} is a resource that needs to be opened before it can be accessed. Its {@link Openable#open()} method
- * performs all necessary I/O operations that bring the resource in a valid initial state.
+ * An {@code Openable} is a resource that needs to be opened before it can be accessed. Its {@link Openable#open()}
+ * method performs all necessary I/O operations that bring the resource in a valid initial state.
  * <p>
  * Note that the constructor of an {@code Openable} instance should not perform any I/O operations or complex object
  * initialization itself.

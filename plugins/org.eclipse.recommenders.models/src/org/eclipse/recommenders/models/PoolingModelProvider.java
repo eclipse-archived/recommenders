@@ -18,7 +18,7 @@ import java.util.IdentityHashMap;
 
 import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
-import org.eclipse.recommenders.utils.annotations.Nullable;
+import org.eclipse.recommenders.utils.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -101,4 +101,11 @@ public class Recommendations {
     public static <T> List<Recommendation<T>> sortByName(final Iterable<Recommendation<T>> recommendations) {
         return Ordering.from(C_BY_NAME).sortedCopy(recommendations);
     }
+
+    /**
+     * Sorts the given list of proposals in ascending order by the recommendation's relevance.
+     */
+    public static <T> List<Recommendation<T>> sortByRelevance(final Iterable<Recommendation<T>> recommendations) {
+        return Ordering.from(C_BY_RELEVANCE).reverse().sortedCopy(recommendations);
+    }
 }

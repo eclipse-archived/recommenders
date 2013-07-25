@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.models;
 
 import java.io.File;
+import java.util.Collection;
 
 import com.google.common.base.Optional;
 
@@ -37,6 +38,7 @@ public interface IModelRepository {
      *             or a network/io error occurred.
      */
     void resolve(ModelArchiveCoordinate model) throws Exception;
+
     //
     // /**
     // * Deletes the artifact represented by the given coordinate from the local file system.
@@ -59,4 +61,6 @@ public interface IModelRepository {
     // model-type.
     // */
     // Optional<ModelArchiveCoordinate> findBestModelArchive(ProjectCoordinate coordinate, String modelType);
+
+    Collection<ModelArchiveCoordinate> listModels(String classifier);
 }

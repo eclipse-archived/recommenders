@@ -384,7 +384,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
             int current = cliqueIt.nextIndex() - 1;
             List<AbstractFactor> multiplicationPartnerList = multiplicationPartners.get(current);
             final AbstractFactor cliqueFactor = factory.create(cluster,
-                    multiplicationPartnerList == null ? Collections.<AbstractFactor> emptyList()
+                    multiplicationPartnerList == null ? Collections.<AbstractFactor>emptyList()
                             : multiplicationPartnerList);
             nodePotentials[current] = cliqueFactor;
         }
@@ -404,7 +404,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
 
     private void initializeSepsetFactors(final List<Pair<Edge, List<Integer>>> sepSets) {
         for (final Pair<Edge, List<Integer>> sep : sepSets) {
-            this.sepSets.put(sep.getFirst(), factory.create(sep.getSecond(), Collections.<AbstractFactor> emptyList()));
+            this.sepSets.put(sep.getFirst(), factory.create(sep.getSecond(), Collections.<AbstractFactor>emptyList()));
         }
     }
 
@@ -451,7 +451,7 @@ public class JunctionTreeAlgorithm extends AbstractInferer {
     private void prepareQueries(final CanonicalIntArrayManager flyWeight) {
         for (int i = 0; i < queryFactors.length; i++) {
             final AbstractFactor beliefFactor = factory.create(Arrays.asList(i),
-                    Collections.<AbstractFactor> emptyList());
+                    Collections.<AbstractFactor>emptyList());
             final int[] preparedQuery = queryFactors[i].prepareMultiplication(beliefFactor);
             preparedQueries[i] = flyWeight.getInstance(preparedQuery);
         }

@@ -67,8 +67,9 @@ public class SparseFactor extends AbstractFactor {
         counter[counter.length - 1] = -1;
         for (int i = 0; i < relativeBlockPointers.length; i++) {
             for (int j = 0; j < blockSize; j++) {
-                if (i * blockSize + j >= computeDenseLength())
+                if (i * blockSize + j >= computeDenseLength()) {
                     break;
+                }
                 AddressCalc.incrementMultiDimensionalCounter(counter, dimensions);
                 if (getRealPosition(getOriginalBlockAddress(i)) != 0) {
                     int pos = MathUtils.scalarProduct(counter, positionTransformation);
@@ -264,8 +265,9 @@ public class SparseFactor extends AbstractFactor {
             int[][] localToForeignTransformations, final int blockSize) {
         boolean isPartitionZero = true;
         for (int j = 0; j < blockSize; j++) {
-            if (partition * blockSize + j >= computeDenseLength())
+            if (partition * blockSize + j >= computeDenseLength()) {
                 break;
+            }
             AddressCalc.incrementMultiDimensionalCounter(counter, dimensions);
             if (isPartitionZero) {
                 isPartitionZero &= checkIfPositionIsZero(counter, compatible, localToForeignTransformations);
@@ -301,13 +303,13 @@ public class SparseFactor extends AbstractFactor {
         int newOverhead;
         int newArraySize;
         newArraySize = predictLengthOfValueArray(blocksize, compatible) * values.sizeOfElement();
-        newOverhead = (computeDenseLength() / blocksize) * SIZE_OF_INT;
+        newOverhead = computeDenseLength() / blocksize * SIZE_OF_INT;
         do {
             blocksize *= 2;
             arraySize = newArraySize;
             overhead = newOverhead;
             newArraySize = predictLengthOfValueArray(blocksize, compatible) * values.sizeOfElement();
-            newOverhead = (computeDenseLength() / blocksize) * SIZE_OF_INT;
+            newOverhead = computeDenseLength() / blocksize * SIZE_OF_INT;
         } while (newArraySize + newOverhead <= arraySize + overhead);
         blocksize /= 2;
         return blocksize;
@@ -320,10 +322,10 @@ public class SparseFactor extends AbstractFactor {
         while (upperBound - lowerBound > 1) {
             // invariant: lowerBound is a better block size than upperBound
             int lowerArraySize = predictLengthOfValueArray(lowerBound, compatible) * values.sizeOfElement();
-            int lowerOverhead = (computeDenseLength() / lowerBound) * SIZE_OF_INT;
+            int lowerOverhead = computeDenseLength() / lowerBound * SIZE_OF_INT;
             int middle = (lowerBound + upperBound) / 2;
             int middleArraySize = predictLengthOfValueArray(middle, compatible) * values.sizeOfElement();
-            int middleOverhead = (computeDenseLength() / middle) * SIZE_OF_INT;
+            int middleOverhead = computeDenseLength() / middle * SIZE_OF_INT;
             if (middleArraySize + middleOverhead < lowerArraySize + lowerOverhead) {
                 lowerBound = middle;
             } else {
@@ -390,8 +392,9 @@ public class SparseFactor extends AbstractFactor {
             return false;
         }
         for (AbstractFactor f : multiplicationCandidates) {
-            if (isSparseEnough(f, futureLength))
+            if (isSparseEnough(f, futureLength)) {
                 return true;
+            }
         }
         return false;
     }

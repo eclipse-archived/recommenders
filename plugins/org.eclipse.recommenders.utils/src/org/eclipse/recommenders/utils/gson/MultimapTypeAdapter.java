@@ -10,8 +10,7 @@
  */
 package org.eclipse.recommenders.utils.gson;
 
-import static org.eclipse.recommenders.utils.Checks.ensureEquals;
-import static org.eclipse.recommenders.utils.Checks.ensureIsInstanceOf;
+import static org.eclipse.recommenders.utils.Checks.*;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

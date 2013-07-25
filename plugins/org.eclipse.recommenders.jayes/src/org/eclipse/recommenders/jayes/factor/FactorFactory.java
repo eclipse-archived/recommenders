@@ -47,9 +47,9 @@ public class FactorFactory {
     public void setReferenceNetwork(BayesNet net) {
         this.net = net;
     }
-    
-    public BayesNet getReferenceNetwork(){
-    	return net;
+
+    public BayesNet getReferenceNetwork() {
+        return net;
     }
 
     /**

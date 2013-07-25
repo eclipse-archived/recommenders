@@ -11,8 +11,7 @@
 package org.eclipse.recommenders.tests.jdt;
 
 import static org.apache.commons.lang3.StringUtils.substring;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.core.CompletionContext;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -21,7 +20,6 @@ import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.recommenders.tests.jdt.SimpleCompletionRequestor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 

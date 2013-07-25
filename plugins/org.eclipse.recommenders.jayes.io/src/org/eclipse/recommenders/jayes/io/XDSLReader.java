@@ -11,11 +11,7 @@
 package org.eclipse.recommenders.jayes.io;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.CPT;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.ID;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PARENTS;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.PROBABILITIES;
-import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.STATE;
+import static org.eclipse.recommenders.internal.jayes.io.util.XDSLConstants.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;

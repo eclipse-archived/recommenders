@@ -7,8 +7,7 @@
  ******************************************************************************/
 package org.eclipse.recommenders.jayes.transformation;
 
-import static org.eclipse.recommenders.jayes.transformation.util.ArrayFlatten.flatten;
-import static org.eclipse.recommenders.jayes.transformation.util.ArrayFlatten.unflatten;
+import static org.eclipse.recommenders.jayes.transformation.util.ArrayFlatten.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,8 +65,9 @@ public abstract class AbstractDecomposition implements IDecompositionStrategy {
         int min = Ints.min(dimensions);
         int minIndex = Ints.lastIndexOf(dimensions, min);
 
-        if (minIndex == dimensions.length - 1)
+        if (minIndex == dimensions.length - 1) {
             return f;
+        }
         int[] nDim = rotateRight(dimensions, dimensions.length - 1 - minIndex);
         int[] nIDs = rotateRight(f.getDimensionIDs(), dimensions.length - 1 - minIndex);
 
