@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static org.eclipse.recommenders.utils.IOUtils.LINE_SEPARATOR;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -202,7 +204,7 @@ public class ProjectCoordinatesView extends ViewPart {
                 case COLUMN_LOCATION:
                     if (dependencyInfo.getType() == DependencyType.JRE) {
                         Optional<String> executionEnvironment = dependencyInfo
-                                .getAttribute(DependencyInfo.EXECUTION_ENVIRONMENT);
+                                .getHint(DependencyInfo.EXECUTION_ENVIRONMENT);
                         if (executionEnvironment.isPresent()) {
                             return executionEnvironment.get();
                         }
@@ -321,17 +323,17 @@ public class ProjectCoordinatesView extends ViewPart {
             } else {
                 sb.append(dependencyInfo.getFile().getAbsolutePath());
             }
-            sb.append(System.getProperty("line.separator"));
+            sb.append(LINE_SEPARATOR);
 
             sb.append("Type: ");
             sb.append(dependencyInfo.getType().toString());
 
-            Map<String, String> attributeMap = dependencyInfo.getAttributeMap();
-            if (attributeMap != null && !attributeMap.isEmpty()) {
-                sb.append(System.getProperty("line.separator"));
-                sb.append("Attributes: ");
-                for (Entry<String, String> entry : attributeMap.entrySet()) {
-                    sb.append(System.getProperty("line.separator"));
+            Map<String, String> hints = dependencyInfo.getHints();
+            if (hints != null && !hints.isEmpty()) {
+                sb.append(LINE_SEPARATOR);
+                sb.append("Hints: ");
+                for (Entry<String, String> entry : hints.entrySet()) {
+                    sb.append(LINE_SEPARATOR);
                     sb.append("  ");
                     sb.append(entry.getKey());
                     sb.append(": ");

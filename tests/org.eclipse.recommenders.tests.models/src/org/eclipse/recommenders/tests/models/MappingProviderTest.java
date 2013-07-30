@@ -16,6 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -24,7 +25,10 @@ import org.eclipse.recommenders.models.dependencies.DependencyType;
 import org.eclipse.recommenders.models.dependencies.IMappingProvider;
 import org.eclipse.recommenders.models.dependencies.IProjectCoordinateResolver;
 import org.eclipse.recommenders.models.dependencies.impl.MappingProvider;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
 import com.google.common.base.Optional;
@@ -36,6 +40,10 @@ public class MappingProviderTest {
             "example.project", "1.0.0");
     private static final ProjectCoordinate ANOTHER_EXPECTED_PROJECT_COORDINATE = new ProjectCoordinate(
             "another.example", "another.example.project", "1.2.3");
+
+    @Rule
+    public final TemporaryFolder folder = new TemporaryFolder();
+    private File exampleFile;
 
     private IProjectCoordinateResolver createMockedStrategy(final ProjectCoordinate projectCoordinate,
             final DependencyType... dependencyTypes) {
@@ -49,33 +57,38 @@ public class MappingProviderTest {
         return mockedStrategy;
     }
 
+    @Before
+    public void init() throws IOException {
+        exampleFile = folder.newFile("example.jar");
+    }
+
     @Test
-    public void testMappingProviderWithNoStrategy() {
+    public void testMappingProviderWithNoStrategy() throws IOException {
         IMappingProvider sut = new MappingProvider();
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                new File("example.jar"), DependencyType.JAR));
+                exampleFile, DependencyType.JAR));
 
         assertFalse(optionalProjectCoordinate.isPresent());
     }
 
     @Test
-    public void testMappingProviderWithMockedStrategy() {
+    public void testMappingProviderWithMockedStrategy() throws IOException {
         IMappingProvider sut = new MappingProvider();
         sut.addStrategy(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                new File("example.jar"), DependencyType.JAR));
+                exampleFile, DependencyType.JAR));
 
         assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
 
     @Test
-    public void testCorrectOrderOfStrategiesWithAddStrategies() {
+    public void testCorrectOrderOfStrategiesWithAddStrategies() throws IOException {
         IMappingProvider sut = new MappingProvider();
         sut.addStrategy(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
         sut.addStrategy(createMockedStrategy(ANOTHER_EXPECTED_PROJECT_COORDINATE));
 
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                new File("example.jar"), DependencyType.JAR));
+                exampleFile, DependencyType.JAR));
 
         assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
@@ -107,7 +120,7 @@ public class MappingProviderTest {
     }
 
     @Test
-    public void testCorrectOrderOfStrategiesWithSetStrategies() {
+    public void testCorrectOrderOfStrategiesWithSetStrategies() throws IOException {
         IMappingProvider sut = new MappingProvider();
 
         List<IProjectCoordinateResolver> strategies = Lists.newArrayList();
@@ -116,13 +129,13 @@ public class MappingProviderTest {
         sut.setStrategies(strategies);
 
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                new File("example.jar"), DependencyType.JAR));
+                exampleFile, DependencyType.JAR));
 
         assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
 
     @Test
-    public void testSecondStrategyWins() {
+    public void testSecondStrategyWins() throws IOException {
         IMappingProvider sut = new MappingProvider();
 
         List<IProjectCoordinateResolver> strategies = Lists.newArrayList();
@@ -131,8 +144,7 @@ public class MappingProviderTest {
         sut.setStrategies(strategies);
 
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                new File("example.jar"), DependencyType.JAR));
-
+                exampleFile, DependencyType.JAR));
         assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
 

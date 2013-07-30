@@ -10,13 +10,15 @@
  */
 package org.eclipse.recommenders.models;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.eclipse.recommenders.utils.Checks;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -29,16 +31,17 @@ public class DependencyInfo {
 
     private final File file;
     private final DependencyType type;
-    private final Map<String, String> attributes;
+    private final Map<String, String> hints;
 
     public DependencyInfo(File file, DependencyType type) {
         this(file, type, Collections.<String, String>emptyMap());
     }
 
-    public DependencyInfo(File file, DependencyType type, Map<String, String> attributes) {
-        this.file = file;
+    public DependencyInfo(File file, DependencyType type, Map<String, String> hint) {
+        this.file = ensureIsNotNull(file);
+        checkArgument(file.isAbsolute());
         this.type = type;
-        this.attributes = Checks.ensureIsNotNull(attributes);
+        this.hints = ensureIsNotNull(hint);
     }
 
     public File getFile() {
@@ -49,17 +52,17 @@ public class DependencyInfo {
         return type;
     }
 
-    public Optional<String> getAttribute(String key) {
-        return Optional.fromNullable(attributes.get(key));
+    public Optional<String> getHint(String key) {
+        return Optional.fromNullable(hints.get(key));
     }
 
-    public Map<String, String> getAttributeMap() {
-        return ImmutableMap.copyOf(attributes);
+    public Map<String, String> getHints() {
+        return ImmutableMap.copyOf(hints);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(file).append(type).append(attributes).toHashCode();
+        return new HashCodeBuilder().append(file).append(type).append(hints).toHashCode();
     }
 
     @Override
@@ -67,7 +70,7 @@ public class DependencyInfo {
         if (obj instanceof DependencyInfo) {
             final DependencyInfo other = (DependencyInfo) obj;
             return new EqualsBuilder().append(file, other.file).append(type, other.type)
-                    .append(attributes, other.attributes).isEquals();
+                    .append(hints, other.hints).isEquals();
         } else {
             return false;
         }
@@ -75,6 +78,6 @@ public class DependencyInfo {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper("").addValue(file).addValue(type).addValue(attributes).toString();
+        return Objects.toStringHelper("").addValue(file).addValue(type).addValue(hints).toString();
     }
 }

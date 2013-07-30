@@ -10,31 +10,45 @@
  */
 package org.eclipse.recommenders.models;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
-import org.junit.Ignore;
+import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
 public class JREIDEVersionStrategyTest {
 
-    private static final File JAVA_HOME_FOLDER = new File("JAVA_HOME/");
-    private static final ProjectCoordinate EXPECTED_PROJECT_COORDINATE = new ProjectCoordinate("jre", "jre", "1.0.0");
+    @Rule
+    public final TemporaryFolder folder = new TemporaryFolder();
 
-    private static Map<String, String> createAttributesMapForVersion(final String version) {
+    private File javaHome;
+
+    @Before
+    public void init() throws IOException {
+        javaHome = folder.newFolder("JAVA_HOME");
+    }
+
+    private static final ProjectCoordinate EXPECTED_PROJECT_COORDINATE = new ProjectCoordinate("jre", "jre", "1.6.0");
+
+    private static Map<String, String> createAttributesMapForExecutionEnvironment(final String executionEnvironment) {
         Map<String, String> attributes = Maps.newHashMap();
-        attributes.put(DependencyInfo.EXECUTION_ENVIRONMENT_VERSION, version);
+        attributes.put(DependencyInfo.EXECUTION_ENVIRONMENT, executionEnvironment);
         return attributes;
     }
 
     @Test
     public void testNotSupportedType() {
-        DependencyInfo info = new DependencyInfo(JAVA_HOME_FOLDER, DependencyType.JAR);
+        DependencyInfo info = new DependencyInfo(javaHome, DependencyType.JAR);
         IProjectCoordinateResolver sut = new JREExecutionEnvironmentStrategy();
 
         sut.searchForProjectCoordinate(info);
@@ -42,7 +56,7 @@ public class JREIDEVersionStrategyTest {
 
     @Test
     public void testMissingInformation() {
-        DependencyInfo info = new DependencyInfo(JAVA_HOME_FOLDER, DependencyType.JRE);
+        DependencyInfo info = new DependencyInfo(javaHome, DependencyType.JRE);
         IProjectCoordinateResolver sut = new JREExecutionEnvironmentStrategy();
 
         Optional<ProjectCoordinate> extractProjectCoordinate = sut.searchForProjectCoordinate(info);
@@ -51,11 +65,9 @@ public class JREIDEVersionStrategyTest {
     }
 
     @Test
-    @Ignore
-    // XXX SOMETHING BROKE HERE :-(
     public void testValidJRE() {
-        DependencyInfo info = new DependencyInfo(JAVA_HOME_FOLDER, DependencyType.JRE,
-                createAttributesMapForVersion("1.0.0"));
+        DependencyInfo info = new DependencyInfo(javaHome, DependencyType.JRE,
+                createAttributesMapForExecutionEnvironment("JavaSE-1.6"));
         IProjectCoordinateResolver sut = new JREExecutionEnvironmentStrategy();
 
         Optional<ProjectCoordinate> projectCoordinate = sut.searchForProjectCoordinate(info);

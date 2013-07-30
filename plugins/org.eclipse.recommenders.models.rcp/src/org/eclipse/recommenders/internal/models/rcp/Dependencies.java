@@ -15,6 +15,9 @@ import static com.google.common.base.Optional.*;
 import java.io.File;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -28,6 +31,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
 public final class Dependencies {
+
+    @Inject
+    static IWorkspaceRoot workspace;
 
     public static Optional<DependencyInfo> createJREDependencyInfo(final IJavaProject javaProject) {
         String executionEnvironmentId = getExecutionEnvironmentId(javaProject);
@@ -58,7 +64,7 @@ public final class Dependencies {
     }
 
     public static DependencyInfo createDependencyInfoForProject(final IJavaProject project) {
-        File file = project.getPath().toFile();
+        File file = workspace.findMember(project.getPath()).getLocation().toFile();
         DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.PROJECT);
         return dependencyInfo;
     }
