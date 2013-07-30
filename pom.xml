@@ -55,8 +55,18 @@
 	</modules>
 	<pluginRepositories>
 		<pluginRepository>
-			<id>m2e-cbi</id>
-			<url>http://download.eclipse.org/technology/m2e/maven/</url>
+			<id>eclipse-maven-releases</id>
+			<url>https://repo.eclipse.org/content/repositories/releases/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>eclipse-maven-snapshots</id>
+			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</pluginRepository>
 	</pluginRepositories>
 	<build>
@@ -176,7 +186,9 @@
 				<plugin>
 					<groupId>org.eclipse.cbi.maven.plugins</groupId>
 					<artifactId>eclipse-jarsigner-plugin</artifactId>
-					<version>1.0.1</version>
+					<!-- TODO Provides -Dcbi.jarsigner.skip=true as a temporary workaround for Xtend Bug 414032 -->
+					<!-- https://bugs.eclipse.org/bugs/show_bug.cgi?id=414032 -->
+					<version>1.0.4-SNAPSHOT</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -329,9 +341,9 @@
 		</profile>
 		<profile>
 			<id>kepler</id>
-		    <activation>
-		        <activeByDefault>true</activeByDefault>
-		    </activation>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>
