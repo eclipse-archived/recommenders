@@ -14,7 +14,7 @@
 		<!-- Contains all features produced by Eclipse Code Recommenders (including test features). -->
 		<module>head</module>
 		<!-- May contain features that have not undergone a release review. -->
-		<module>milestone</module>
+		<module>milestones</module>
 		<!-- Contains features that had a release review. -->
 		<module>stable</module>
 	</modules>
