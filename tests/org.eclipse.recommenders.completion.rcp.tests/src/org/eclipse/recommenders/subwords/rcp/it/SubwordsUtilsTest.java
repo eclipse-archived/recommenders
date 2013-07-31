@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.subwords.rcp;
+package org.eclipse.recommenders.subwords.rcp.it;
 
 import static org.junit.Assert.assertEquals;
 

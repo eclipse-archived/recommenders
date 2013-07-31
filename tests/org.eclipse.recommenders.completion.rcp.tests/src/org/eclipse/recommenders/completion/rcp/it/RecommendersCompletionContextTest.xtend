@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.completion.rcp
+package org.eclipse.recommenders.completion.rcp.it
 
 import com.google.common.base.Optional
 import org.eclipse.core.resources.ResourcesPlugin
@@ -6,6 +6,9 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMemberAccess
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference
 import org.eclipse.jdt.internal.compiler.ast.ASTNode
 import org.eclipse.jdt.internal.compiler.ast.MessageSend
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext
+import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext
+import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.utils.names.VmTypeName
 import org.junit.Test
@@ -13,7 +16,6 @@ import org.junit.Test
 import static com.google.common.base.Optional.*
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.CodeBuilder.*
-import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 
 class RecommendersCompletionContextTest {
 

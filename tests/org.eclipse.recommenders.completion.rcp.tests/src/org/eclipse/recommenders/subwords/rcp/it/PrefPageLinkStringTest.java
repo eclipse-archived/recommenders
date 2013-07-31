@@ -8,7 +8,7 @@
  * Contributors:
  *    Olav Lenz - initial API and implementation.
  */
-package org.eclipse.recommenders.subwords.rcp;
+package org.eclipse.recommenders.subwords.rcp.it;
 
 import static junit.framework.Assert.assertEquals;
 

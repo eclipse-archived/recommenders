@@ -1,14 +1,15 @@
-package org.eclipse.recommenders.chains.rcp
+package org.eclipse.recommenders.chains.rcp.it
 
 import java.util.List
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.SystemUtils
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jface.preference.IPreferenceStore
+import org.eclipse.recommenders.completion.rcp.it.JavaContentAssistContextMock
 import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposal
 import org.eclipse.recommenders.internal.chain.rcp.ChainCompletionProposalComputer
 import org.eclipse.recommenders.internal.chain.rcp.ChainPreferencePage
-import org.eclipse.recommenders.completion.rcp.JavaContentAssistContextMock
+import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.rcp.IAstProvider
 import org.eclipse.recommenders.tests.CodeBuilder
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
@@ -19,7 +20,6 @@ import org.mockito.Mockito
 
 import static junit.framework.Assert.*
 import static org.eclipse.recommenders.tests.SmokeTestScenarios.*
-import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 
 class ChainCompletionScenariosTest {
 

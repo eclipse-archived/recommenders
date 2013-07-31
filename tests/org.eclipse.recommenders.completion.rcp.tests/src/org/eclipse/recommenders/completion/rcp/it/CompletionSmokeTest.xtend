@@ -1,15 +1,17 @@
-package org.eclipse.recommenders.completion.rcp
+package org.eclipse.recommenders.completion.rcp.it
 
 import com.google.common.base.Optional
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.jdt.core.ICompilationUnit
+import org.eclipse.jdt.core.IMethod
 import org.eclipse.jdt.core.IType
 import org.eclipse.jdt.core.dom.AST
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposalComputer
 import org.eclipse.recommenders.calls.ICallModel
 import org.eclipse.recommenders.calls.ICallModelProvider
 import org.eclipse.recommenders.calls.NullCallModel
+import org.eclipse.recommenders.completion.rcp.it.JavaContentAssistContextMock
 import org.eclipse.recommenders.completion.rcp.processable.IntelligentCompletionProposalComputer
 import org.eclipse.recommenders.completion.rcp.processable.ProcessableProposalFactory
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor
@@ -18,14 +20,16 @@ import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcesso
 import org.eclipse.recommenders.internal.overrides.rcp.OverrideCompletionSessionProcessor
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider
 import org.eclipse.recommenders.internal.subwords.rcp.SubwordsSessionProcessor
+import org.eclipse.recommenders.models.BasedTypeName
 import org.eclipse.recommenders.models.ProjectCoordinate
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider
 import org.eclipse.recommenders.overrides.IOverrideModel
 import org.eclipse.recommenders.overrides.IOverrideModelProvider
 import org.eclipse.recommenders.overrides.NullOverrideModel
 import org.eclipse.recommenders.rcp.IAstProvider
-import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
 import org.eclipse.recommenders.rcp.JavaElementResolver
+import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
+import org.eclipse.recommenders.utils.names.VmTypeName
 import org.eclipse.ui.IEditorInput
 import org.eclipse.ui.IEditorPart
 import org.junit.Assert
@@ -39,9 +43,6 @@ import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
 
 import static extension com.google.common.collect.Iterables.*
-import org.eclipse.jdt.core.IMethod
-import org.eclipse.recommenders.models.BasedTypeName
-import org.eclipse.recommenders.utils.names.VmTypeName
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {
@@ -458,7 +459,7 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
         super(
             #{new SessionProcessorDescriptor("", "", null, 0, true, processor)}.toArray(SessionProcessorDescriptor),
             new ProcessableProposalFactory(), new CachingAstProvider());
-        this.processor = processor
+         this.processor = processor
     }
 
     def getProcessor() {

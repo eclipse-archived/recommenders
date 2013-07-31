@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.calls.rcp
+package org.eclipse.recommenders.calls.rcp.it
 
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
@@ -7,7 +7,7 @@ import org.junit.Ignore
 import org.junit.Test
 
 @Ignore
-class ContextAnalyzerTest {
+class AstAnalyzerTest {
 
     static JavaProjectFixture fixture = new JavaProjectFixture(ResourcesPlugin::getWorkspace(), "test")
 

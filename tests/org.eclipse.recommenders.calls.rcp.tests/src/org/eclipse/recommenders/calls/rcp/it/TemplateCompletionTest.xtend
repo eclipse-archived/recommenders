@@ -1,6 +1,6 @@
-package org.eclipse.recommenders.calls.rcp.templates
+package org.eclipse.recommenders.calls.rcp.it
 
-class TemplateCompletionProposalComputerTest { 
+class TemplateCompletionTest { 
   
 //  TemplatesCompletionProposalComputer sut 
 //  List<IJavaCompletionProposal> proposals

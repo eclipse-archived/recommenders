@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.completion.rcp;
+package org.eclipse.recommenders.completion.rcp.it;
 
 import static org.eclipse.recommenders.tests.CodeBuilder.classbody;
 import static org.hamcrest.CoreMatchers.*;
@@ -13,6 +13,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
+import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
+import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.rcp.CachingAstProvider;
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture;
 import org.eclipse.recommenders.utils.Pair;

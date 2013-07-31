@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.calls.rcp
+package org.eclipse.recommenders.calls.rcp.it
 
 import com.google.common.collect.Sets
 import java.util.HashSet
@@ -6,8 +6,8 @@ import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.jdt.core.dom.AST
 import org.eclipse.recommenders.calls.ICallModel
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind
-import org.eclipse.recommenders.completion.rcp.CompletionSmokeTest
-import org.eclipse.recommenders.completion.rcp.MockedIntelligentCompletionProposalComputer
+import org.eclipse.recommenders.completion.rcp.it.CompletionSmokeTest
+import org.eclipse.recommenders.completion.rcp.it.MockedIntelligentCompletionProposalComputer
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor
 import org.eclipse.recommenders.tests.CodeBuilder
 import org.eclipse.recommenders.tests.jdt.JavaProjectFixture
@@ -16,7 +16,7 @@ import org.junit.Test
 
 import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.*
 
-class QueryTest {
+class CallCompletionAstAnalyzerTest {
 
     static val fixture = new JavaProjectFixture(ResourcesPlugin.getWorkspace(), "test")
     CharSequence code

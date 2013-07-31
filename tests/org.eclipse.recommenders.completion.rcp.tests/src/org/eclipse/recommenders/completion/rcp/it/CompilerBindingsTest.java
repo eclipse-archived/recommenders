@@ -8,7 +8,7 @@
  * Contributors:
  *     Marcel Bruch - Initial API and implementation
  */
-package org.eclipse.recommenders.completion.rcp;
+package org.eclipse.recommenders.completion.rcp.it;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.calls.rcp;
+package org.eclipse.recommenders.calls.rcp.it;
 
 import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.models.ProjectCoordinate.UNKNOWN;
@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
-import org.eclipse.recommenders.completion.rcp.MockedIntelligentCompletionProposalComputer;
+import org.eclipse.recommenders.completion.rcp.it.MockedIntelligentCompletionProposalComputer;
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor;
 import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
@@ -134,7 +134,7 @@ public class Stubs {
         }
     }
 
-    static MockedIntelligentCompletionProposalComputer newCallComputer() {
+    public static MockedIntelligentCompletionProposalComputer newCallComputer() {
         JavaElementResolver jer = new JavaElementResolver();
         IProjectCoordinateProvider pcp = mock(IProjectCoordinateProvider.class);
 

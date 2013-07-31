@@ -1,5 +1,6 @@
-package org.eclipse.recommenders.completion.rcp;
+package org.eclipse.recommenders.completion.rcp.it;
 
+import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.junit.Test;
 
 public class BaseRecommendersCompletionContextTest {

@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.completion.rcp;
+package org.eclipse.recommenders.completion.rcp.it;
 
 import static org.junit.Assert.assertEquals;
 

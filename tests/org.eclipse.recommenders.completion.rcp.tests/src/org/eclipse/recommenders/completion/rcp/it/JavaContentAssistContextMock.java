@@ -8,7 +8,7 @@
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
-package org.eclipse.recommenders.completion.rcp;
+package org.eclipse.recommenders.completion.rcp.it;
 
 import static org.apache.commons.lang3.StringUtils.substring;
 import static org.mockito.Mockito.*;
