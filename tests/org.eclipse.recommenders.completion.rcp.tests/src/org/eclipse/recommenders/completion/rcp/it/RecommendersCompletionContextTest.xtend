@@ -38,6 +38,16 @@ class RecommendersCompletionContextTest {
     }
 
     @Test
+    def void testArraysAsList() {
+        val code = method('java.util.Arrays.asList(get$)')
+        val sut = exercise(code)
+
+        // this should be Object[]"
+        // TODO testing for existence only ATM
+        assertFalse(sut.expectedTypeNames.empty)
+    }
+
+    @Test
     def void test03() {
         val code = method(
             'String s1 = new String();
