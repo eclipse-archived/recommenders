@@ -7,16 +7,22 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
+<<<<<<< HEAD
 <<<<<<< HEAD:plugins/org.eclipse.recommenders.models.rcp/src/org/eclipse/recommenders/internal/models/rcp/ProjectCoordinateProvider.java
- *    Olav Lenz - Added caching behavior.
 =======
+>>>>>>> fa0b018... [models] Refactored EclipseDependencyListener, ProjectCoordinateProvider
+ *    Olav Lenz - Added caching behavior.
  *    Olav Lenz - add caching and storage functionality.
+<<<<<<< HEAD
 >>>>>>> [models] Persists cache entries in ProjectCoordinateProvider.:plugins/org.eclipse.recommenders.models.rcp/src/org/eclipse/recommenders/models/rcp/ProjectCoordinateProvider.java
+=======
+>>>>>>> fa0b018... [models] Refactored EclipseDependencyListener, ProjectCoordinateProvider
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.*;
 import static org.eclipse.jdt.core.IJavaElement.PACKAGE_FRAGMENT_ROOT;
+import static org.eclipse.recommenders.internal.models.rcp.Dependencies.createJREDependencyInfo;
 import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.IDENTIFIED_PACKAGE_FRAGMENT_ROOTS;
 import static org.eclipse.recommenders.models.DependencyType.JAR;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
@@ -166,6 +172,21 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
         }
 
         IJavaProject javaProject = root.getJavaProject();
+
+        if (isPartOfJRE(root, javaProject)) {
+            Optional<DependencyInfo> request = createJREDependencyInfo(javaProject);
+            if (request.isPresent()) {
+                return resolve(request.get());
+            } else {
+                return absent();
+            }
+        } else {
+            DependencyInfo request = new DependencyInfo(location, JAR);
+            return resolve(request);
+        }
+    }
+
+    private static boolean isPartOfJRE(IPackageFragmentRoot root, IJavaProject javaProject) {
         try {
             for (IClasspathEntry entry : javaProject.getRawClasspath()) {
                 if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
@@ -173,25 +194,17 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
                         for (IPackageFragmentRoot packageFragmentRoot : javaProject.findPackageFragmentRoots(entry)) {
                             if (!packageFragmentRoot.getPath().toFile().getParentFile().getName().equals("ext")) {
                                 if (packageFragmentRoot.equals(root)) {
-                                    Optional<DependencyInfo> request = EclipseDependencyListener
-                                            .createJREDependencyInfo(javaProject);
-                                    if (request.isPresent()) {
-                                        return resolve(request.get());
-                                    } else {
-                                        return absent();
-                                    }
+                                    return true;
                                 }
                             }
                         }
                     }
                 }
             }
-            DependencyInfo request = new DependencyInfo(location, JAR);
-            return resolve(request);
         } catch (JavaModelException e) {
             e.printStackTrace();
         }
-        return absent();
+        return false;
     }
 
     @Override

@@ -11,10 +11,10 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.*;
+import static org.eclipse.recommenders.internal.models.rcp.Dependencies.*;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -27,8 +27,6 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
-import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IDependencyListener;
@@ -40,7 +38,6 @@ import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectOpened;
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -50,12 +47,6 @@ public class EclipseDependencyListener implements IDependencyListener {
 
     private final HashMultimap<DependencyInfo, DependencyInfo> workspaceDependenciesByProject = HashMultimap.create();
     private final HashMultimap<DependencyInfo, IPackageFragmentRoot> jrePackageFragmentRoots = HashMultimap.create();
-
-    public static DependencyInfo createDependencyInfoForProject(final IJavaProject project) {
-        File file = project.getPath().toFile();
-        DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.PROJECT);
-        return dependencyInfo;
-    }
 
     public EclipseDependencyListener(final EventBus bus) {
         bus.register(this);
@@ -148,34 +139,6 @@ public class EclipseDependencyListener implements IDependencyListener {
             e.printStackTrace();
         }
         return jreRoots;
-    }
-
-    public static Optional<DependencyInfo> createJREDependencyInfo(final IJavaProject javaProject) {
-        String executionEnvironmentId = getExecutionEnvironmentId(javaProject);
-
-        try {
-            IVMInstall vmInstall = JavaRuntime.getVMInstall(javaProject);
-            File javaHome = vmInstall.getInstallLocation();
-
-            Map<String, String> attributes = Maps.newHashMap();
-            attributes.put(DependencyInfo.EXECUTION_ENVIRONMENT, executionEnvironmentId);
-            return fromNullable(new DependencyInfo(javaHome, DependencyType.JRE, attributes));
-        } catch (CoreException e) {
-            return absent();
-        }
-    }
-
-    private static String getExecutionEnvironmentId(final IJavaProject javaProject) {
-        try {
-            for (IClasspathEntry entry : javaProject.getRawClasspath()) {
-                if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-                    return JavaRuntime.getExecutionEnvironmentId(entry.getPath());
-                }
-            }
-        } catch (JavaModelException e) {
-            e.printStackTrace();
-        }
-        return "";
     }
 
     private void deregisterDependenciesForJavaProject(final IJavaProject javaProject) {
