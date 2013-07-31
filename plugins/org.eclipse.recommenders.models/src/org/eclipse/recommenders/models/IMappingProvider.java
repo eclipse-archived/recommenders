@@ -11,7 +11,6 @@
 package org.eclipse.recommenders.models;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * The Mapping interface provide the functionality for the mapping between IDependencyInfo and ProjectCoordinate
@@ -24,5 +23,4 @@ public interface IMappingProvider extends IProjectCoordinateResolver {
 
     void setStrategies(List<IProjectCoordinateResolver> strategies);
 
-    Map<DependencyInfo, ProjectCoordinate> getManualMappings();
 }

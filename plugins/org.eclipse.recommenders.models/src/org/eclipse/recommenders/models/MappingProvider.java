@@ -10,25 +10,17 @@
  */
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.absent;
 
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class MappingProvider implements IMappingProvider {
 
     private List<IProjectCoordinateResolver> strategies = Lists.newArrayList();
-    private final Map<DependencyInfo, ProjectCoordinate> manualMappings = Maps.newHashMap();
-
-    public MappingProvider() {
-
-    }
 
     @Override
     public List<IProjectCoordinateResolver> getStrategies() {
@@ -47,10 +39,6 @@ public class MappingProvider implements IMappingProvider {
 
     @Override
     public Optional<ProjectCoordinate> searchForProjectCoordinate(final DependencyInfo dependencyInfo) {
-        ProjectCoordinate projectCoordinate = manualMappings.get(dependencyInfo);
-        if (projectCoordinate != null) {
-            return fromNullable(projectCoordinate);
-        }
         return extractProjectCoordinate(dependencyInfo);
     }
 
@@ -72,11 +60,6 @@ public class MappingProvider implements IMappingProvider {
             }
         }
         return false;
-    }
-
-    @Override
-    public Map<DependencyInfo, ProjectCoordinate> getManualMappings() {
-        return ImmutableMap.copyOf(manualMappings);
     }
 
 }
