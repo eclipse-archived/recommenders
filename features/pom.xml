@@ -13,10 +13,11 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>org.eclipse.recommenders.license.feature</module>
-		<module>org.eclipse.recommenders.simrel.feature</module>
-		<module>org.eclipse.recommenders.rcp.feature</module>
 		<module>org.eclipse.recommenders.jayes.feature</module>
+		<module>org.eclipse.recommenders.license.feature</module>
+		<module>org.eclipse.recommenders.rcp.feature</module>
+		<module>org.eclipse.recommenders.rcp.tests.feature</module>
+		<module>org.eclipse.recommenders.simrel.feature</module>
 	</modules>
 
 	<build>

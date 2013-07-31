@@ -6,5 +6,8 @@
    <feature id="org.eclipse.recommenders.rcp.feature" version="0.0.0">
       <category name="main"/>
    </feature>
+   <feature id="org.eclipse.recommenders.rcp.tests.feature" version="0.0.0">
+      <category name="main"/>
+   </feature>
    <category-def name="main" label="Code Recommenders"/>
 </site>
