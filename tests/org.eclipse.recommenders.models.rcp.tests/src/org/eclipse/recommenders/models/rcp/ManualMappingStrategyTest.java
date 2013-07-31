@@ -32,13 +32,13 @@ public class ManualMappingStrategyTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    private File createPersistanceFile() throws IOException {
+    private File createPersistenceFile() throws IOException {
         return folder.newFile("manual-mappings.json");
     }
 
     @Test
     public void returnAbsentWhenNoMappingExist() throws IOException {
-        ManualMappingStrategy sut = new ManualMappingStrategy(createPersistanceFile());
+        ManualMappingStrategy sut = new ManualMappingStrategy(createPersistenceFile());
 
         Optional<ProjectCoordinate> projectCoordinate = sut.searchForProjectCoordinate(EXAMPLE_DEPENDENCY_INFO);
 
@@ -49,7 +49,7 @@ public class ManualMappingStrategyTest {
 
     @Test
     public void returnManualMappingCorrect() throws IOException {
-        ManualMappingStrategy sut = new ManualMappingStrategy(createPersistanceFile());
+        ManualMappingStrategy sut = new ManualMappingStrategy(createPersistenceFile());
 
         sut.setManualMapping(EXAMPLE_DEPENDENCY_INFO, EXPECTED_PROJECT_COORDINATE);
 
@@ -62,7 +62,7 @@ public class ManualMappingStrategyTest {
 
     @Test
     public void returnManualMappingsCorrectForMoreMappings() throws IOException {
-        ManualMappingStrategy sut = new ManualMappingStrategy(createPersistanceFile());
+        ManualMappingStrategy sut = new ManualMappingStrategy(createPersistenceFile());
 
         sut.setManualMapping(EXAMPLE_DEPENDENCY_INFO, EXPECTED_PROJECT_COORDINATE);
         sut.setManualMapping(ANOTHER_EXAMPLE_DEPENDENCY_INFO, ANOTHER_EXPECTED_PROJECT_COORDINATE);
@@ -79,16 +79,17 @@ public class ManualMappingStrategyTest {
 
     @Test
     public void storageOfManualMappingsWorksCorrect() throws IOException {
-        File persistanceFile = createPersistanceFile();
+        File persistenceFile = createPersistenceFile();
 
-        ManualMappingStrategy sut = new ManualMappingStrategy(persistanceFile);
-
+        ManualMappingStrategy sut = new ManualMappingStrategy(persistenceFile);
+        sut.open();
         sut.setManualMapping(EXAMPLE_DEPENDENCY_INFO, EXPECTED_PROJECT_COORDINATE);
         sut.setManualMapping(ANOTHER_EXAMPLE_DEPENDENCY_INFO, ANOTHER_EXPECTED_PROJECT_COORDINATE);
 
         sut.close();
 
-        sut = new ManualMappingStrategy(persistanceFile);
+        sut = new ManualMappingStrategy(persistenceFile);
+        sut.open();
 
         Optional<ProjectCoordinate> projectCoordinate = sut.searchForProjectCoordinate(EXAMPLE_DEPENDENCY_INFO);
         assertEquals(EXPECTED_PROJECT_COORDINATE, projectCoordinate.get());
