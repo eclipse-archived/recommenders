@@ -54,7 +54,6 @@ public class Bags {
 
     public static <T> List<Entry<T>> orderedByCount(Multiset<T> set) {
         Set<Entry<T>> entries = set.entrySet();
-        return Ordering.from(BY_COUNT).sortedCopy(entries);
+        return Ordering.from(BY_COUNT).reverse().sortedCopy(entries);
     }
-
 }

@@ -123,7 +123,7 @@ public final class ApidocsViewUtils {
 
         for (final Entry<IMethodName> method : Bags.orderedByCount(methods)) {
 
-            final int frequency = methods.count(method);
+            final int frequency = method.getCount();
             final int percentage = (int) Math.round(frequency * 100.0d / total);
             if (percentage < 5d) {
                 continue;
