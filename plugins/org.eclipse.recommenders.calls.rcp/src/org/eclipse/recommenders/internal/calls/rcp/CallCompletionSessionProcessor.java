@@ -31,6 +31,9 @@ import org.eclipse.jdt.internal.codeassist.complete.CompletionOnMessageSend;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnQualifiedNameReference;
 import org.eclipse.jdt.internal.codeassist.complete.CompletionOnSingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.DecorationOverlayIcon;
+import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.calls.NullCallModel;
@@ -43,7 +46,11 @@ import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -76,11 +83,19 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private Iterable<Recommendation<IMethodName>> recommendations;
 
+    private ImageDescriptor overlay;
+
     @Inject
     public CallCompletionSessionProcessor(final IProjectCoordinateProvider projectCoordinateProvider,
             final ICallModelProvider modelProvider) {
         pcProvider = projectCoordinateProvider;
         this.modelProvider = modelProvider;
+        initializeOverlayIcon();
+    }
+
+    private void initializeOverlayIcon() {
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        overlay = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(), "icons/view16/overlay2.png");
     }
 
     @Override
@@ -193,11 +208,18 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
                 }
                 if (prefUpdateProposalRelevance || prefDecorateProposalText) {
                     proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));
+                    addOverlayIcon(proposal);
                 }
                 // we found the proposal we are looking for. So quit.
                 break;
             }
         }
+    }
+
+    private void addOverlayIcon(final IProcessableProposal proposal) {
+        Image originalImage = proposal.getImage();
+        DecorationOverlayIcon decorator = new DecorationOverlayIcon(originalImage, overlay, IDecoration.TOP_LEFT);
+        proposal.setImage(decorator.createImage());
     }
 
     @VisibleForTesting
