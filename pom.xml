@@ -61,13 +61,6 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</pluginRepository>
-		<pluginRepository>
-			<id>eclipse-maven-snapshots</id>
-			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
 	</pluginRepositories>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -82,18 +75,101 @@
 				<artifactId>tycho-maven-plugin</artifactId>
 				<extensions>true</extensions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>require-plugin-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requirePluginVersions/>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
+				<!-- Apache Maven core plugins -->
 				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>target-platform-configuration</artifactId>
-					<version>${tycho-version}</version>
-					<configuration>
-						<executionEnvironmentDefault>JavaSE-${java-version}</executionEnvironmentDefault>
-						<includePackedArtifacts>true</includePackedArtifacts>
-					</configuration>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>2.4.1</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.7</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>2.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.14.1</version>
+				</plugin>
+				<!-- Apache Maven packaging types / tools -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.4</version>
+				</plugin>
+				<!-- Apache Maven reporting plugins -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>2.10</version>
+					<dependencies>
+						<dependency>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>coding-conventions</artifactId>
+							<version>${recommenders-version}</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<id>check-coding-conventions</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<configuration>
+								<configLocation>checkstyle/config.xml</configLocation>
+								<includeTestSourceDirectory>true</includeTestSourceDirectory>
+								<logViolationsToConsole>true</logViolationsToConsole>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<!-- Apache Maven tools -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>1.2</version>
+				</plugin>
+				<!-- Eclipse Tycho plugins -->
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-maven-plugin</artifactId>
@@ -110,16 +186,12 @@
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-source-plugin</artifactId>
+					<artifactId>target-platform-configuration</artifactId>
 					<version>${tycho-version}</version>
-					<executions>
-						<execution>
-							<id>attach-source</id>
-							<goals>
-								<goal>plugin-source</goal>
-							</goals>
-						</execution>
-					</executions>
+					<configuration>
+						<executionEnvironmentDefault>JavaSE-${java-version}</executionEnvironmentDefault>
+						<includePackedArtifacts>true</includePackedArtifacts>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -148,12 +220,14 @@
 					</dependencies>
 				</plugin>
 				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-surefire-plugin</artifactId>
+					<groupId>org.eclipse.tycho.extras</groupId>
+					<artifactId>tycho-pack200a-plugin</artifactId>
 					<version>${tycho-version}</version>
-					<configuration>
-						<argLine>${tycho.test.jvmArgs}</argLine>
-					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho.extras</groupId>
+					<artifactId>tycho-pack200b-plugin</artifactId>
+					<version>${tycho-version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -169,52 +243,43 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-p2-publisher-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-source-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<executions>
+						<execution>
+							<id>attach-source</id>
+							<goals>
+								<goal>plugin-source</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
 					<groupId>org.eclipse.tycho.extras</groupId>
 					<artifactId>tycho-source-feature-plugin</artifactId>
 					<version>${tycho-version}</version>
 				</plugin>
 				<plugin>
-					<groupId>org.eclipse.tycho.extras</groupId>
-					<artifactId>tycho-pack200a-plugin</artifactId>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
+					<configuration>
+						<argLine>${tycho.test.jvmArgs}</argLine>
+					</configuration>
 				</plugin>
-				<plugin>
-					<groupId>org.eclipse.tycho.extras</groupId>
-					<artifactId>tycho-pack200b-plugin</artifactId>
-					<version>${tycho-version}</version>
-				</plugin>
+				<!-- Eclipse Common Build Infrastructure plugins -->
 				<plugin>
 					<groupId>org.eclipse.cbi.maven.plugins</groupId>
 					<artifactId>eclipse-jarsigner-plugin</artifactId>
-					<!-- TODO Provides -Dcbi.jarsigner.skip=true as a temporary workaround for Xtend Bug 414032 -->
-					<!-- https://bugs.eclipse.org/bugs/show_bug.cgi?id=414032 -->
-					<version>1.0.4-SNAPSHOT</version>
+					<version>1.0.3</version>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>2.10</version>
-					<dependencies>
-						<dependency>
-							<groupId>${project.groupId}</groupId>
-							<artifactId>coding-conventions</artifactId>
-							<version>${recommenders-version}</version>
-						</dependency>
-					</dependencies>
-					<executions>
-						<execution>
-							<id>check-coding-conventions</id>
-							<goals>
-								<goal>check</goal>
-							</goals>
-							<configuration>
-								<configLocation>checkstyle/config.xml</configLocation>
-								<includeTestSourceDirectory>true</includeTestSourceDirectory>
-								<logViolationsToConsole>true</logViolationsToConsole>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
+				<!-- Other plugins -->
 				<plugin>
 					<groupId>com.mycila.maven-license-plugin</groupId>
 					<artifactId>maven-license-plugin</artifactId>
@@ -268,11 +333,6 @@
 							</configuration>
 						</execution>
 					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
