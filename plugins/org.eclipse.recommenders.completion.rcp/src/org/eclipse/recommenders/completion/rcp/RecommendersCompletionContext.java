@@ -11,7 +11,7 @@
 package org.eclipse.recommenders.completion.rcp;
 
 import static com.google.common.base.Optional.*;
-import static org.apache.commons.lang3.StringUtils.substring;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.eclipse.recommenders.utils.Checks.cast;
 
 import java.lang.reflect.Field;
@@ -22,7 +22,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.CompletionContext;
@@ -282,7 +281,7 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
             return absent();
         }
         // keys contain '/' instead of dots and may end with ';'
-        final char[][] keys = coreContext.getExpectedTypesKeys();
+        final char[][] keys = coreContext.getExpectedTypesSignatures();
         if (keys == null) {
             return absent();
         }
@@ -297,8 +296,8 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
     public Set<ITypeName> getExpectedTypeNames() {
         ASTNode completion = getCompletionNode().orNull();
         char[][] keys = isArgumentCompletion(completion) && getPrefix().isEmpty() ? simulateCompletionWithFakePrefix()
-                : coreContext.getExpectedTypesKeys();
-        return createTypeNamesFromKeys(keys);
+                : coreContext.getExpectedTypesSignatures();
+        return createTypeNamesFromSignatures(keys);
     }
 
     private boolean isArgumentCompletion(ASTNode completion) {
@@ -354,24 +353,24 @@ public class RecommendersCompletionContext implements IRecommendersCompletionCon
     }
 
     @VisibleForTesting
-    public static Set<ITypeName> createTypeNamesFromKeys(final char[][] keys) {
-        if (keys == null) {
+    public static Set<ITypeName> createTypeNamesFromSignatures(final char[][] sigs) {
+        if (sigs == null) {
             return Collections.emptySet();
         }
-        if (keys.length < 1) {
+        if (sigs.length < 1) {
             return Collections.emptySet();
         }
         Set<ITypeName> res = Sets.newHashSet();
-        // keys contain '/' instead of dots and may end with ';'
-        for (char[] key : keys) {
+        // JDT signatures contain '.' instead of '/' and may end with ';'
+        for (char[] sig : sigs) {
             try {
-                String descriptor = new String(key);
-                descriptor = StringUtils.substringBeforeLast(descriptor, ";");
+                String descriptor = new String(sig).replace(".", "/");
+                descriptor = substringBeforeLast(descriptor, ";");
                 res.add(VmTypeName.get(descriptor));
             } catch (Exception e) {
                 // this fails sometimes on method argument completion.
                 // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=396595
-                log.error("Couldn't parse type name: '" + String.valueOf(key) + "'", e);
+                log.error("Couldn't parse type name: '" + String.valueOf(sig) + "'", e);
             }
         }
         return res;
