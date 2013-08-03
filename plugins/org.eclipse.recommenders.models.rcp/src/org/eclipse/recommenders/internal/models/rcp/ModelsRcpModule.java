@@ -50,6 +50,10 @@ public class ModelsRcpModule extends AbstractModule implements Module {
 
     @Override
     protected void configure() {
+
+        //
+        requestStaticInjection(Dependencies.class);
+
         //
         bind(IProjectCoordinateProvider.class).to(ProjectCoordinateProvider.class).in(Scopes.SINGLETON);
         bind(IModelRepository.class).to(EclipseModelRepository.class).in(Scopes.SINGLETON);

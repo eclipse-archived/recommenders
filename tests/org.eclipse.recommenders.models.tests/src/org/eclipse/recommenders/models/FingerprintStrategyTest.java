@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import org.eclipse.recommenders.utils.Fingerprints;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -32,37 +33,41 @@ public class FingerprintStrategyTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    private File exampleFile;
+
+    @Before
+    public void init() throws IOException {
+        exampleFile = folder.newFile("example.jar");
+    }
+
     @Test
     public void testInvalidDependencyType() {
         FingerprintStrategy sut = new FingerprintStrategy(null);
-        sut.searchForProjectCoordinate(new DependencyInfo(null, DependencyType.PROJECT));
+        sut.searchForProjectCoordinate(new DependencyInfo(exampleFile, DependencyType.PROJECT));
     }
 
     @Test
     public void testValidJAR() throws IOException {
-        File jar = folder.newFile("example.jar");
-
         SimpleIndexSearcher mockedIndexer = mock(SimpleIndexSearcher.class);
-        when(mockedIndexer.searchByFingerprint(Fingerprints.sha1(jar))).thenReturn(
+        when(mockedIndexer.searchByFingerprint(Fingerprints.sha1(exampleFile))).thenReturn(
                 Optional.fromNullable("example:example.project:jar:1.0.0"));
 
         FingerprintStrategy sut = new FingerprintStrategy(mockedIndexer);
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(jar,
-                DependencyType.JAR));
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
+                exampleFile, DependencyType.JAR));
 
         Assert.assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
 
     @Test
     public void testMissingInformation() throws IOException {
-        File jar = folder.newFile("example.jar");
-
         SimpleIndexSearcher mockedIndexer = mock(SimpleIndexSearcher.class);
-        when(mockedIndexer.searchByFingerprint(Fingerprints.sha1(jar))).thenReturn(fromNullable("example:1.0.0"));
+        when(mockedIndexer.searchByFingerprint(Fingerprints.sha1(exampleFile))).thenReturn(
+                fromNullable("example:1.0.0"));
 
         FingerprintStrategy sut = new FingerprintStrategy(mockedIndexer);
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(jar,
-                DependencyType.JAR));
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
+                exampleFile, DependencyType.JAR));
 
         Assert.assertFalse(optionalProjectCoordinate.isPresent());
     }

@@ -10,7 +10,8 @@
  */
 package org.eclipse.recommenders.models;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,6 +33,10 @@ public class JREReleaseFileStrategyTest {
 
     private File javaHomeDirectory;
     private File releaseFile;
+
+    private File createDummyFile() throws IOException {
+        return folder.newFolder("dummy.jar");
+    }
 
     private void createJavaHomeDirectory() throws IOException {
         javaHomeDirectory = folder.newFolder("JAVA_HOME");
@@ -56,8 +61,8 @@ public class JREReleaseFileStrategyTest {
     }
 
     @Test
-    public void testInvalidType() {
-        DependencyInfo info = new DependencyInfo(new File(""), DependencyType.JAR);
+    public void testInvalidType() throws IOException {
+        DependencyInfo info = new DependencyInfo(createDummyFile(), DependencyType.JAR);
         IProjectCoordinateResolver sut = new JREReleaseFileStrategy();
 
         Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(info);

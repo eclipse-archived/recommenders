@@ -23,10 +23,9 @@ public class JREExecutionEnvironmentStrategy extends AbstractStrategy {
 
     @Override
     protected Optional<ProjectCoordinate> extractProjectCoordinateInternal(DependencyInfo dependencyInfo) {
-        Optional<String> optionalExecutionEnvironment = dependencyInfo
-                .getAttribute(DependencyInfo.EXECUTION_ENVIRONMENT);
-        if (optionalExecutionEnvironment.isPresent()) {
-            ProjectCoordinate projectCoordinate = lookUpTable.get(optionalExecutionEnvironment.get());
+        String optionalExecutionEnvironment = dependencyInfo.getHint(DependencyInfo.EXECUTION_ENVIRONMENT).orNull();
+        if (optionalExecutionEnvironment != null) {
+            ProjectCoordinate projectCoordinate = lookUpTable.get(optionalExecutionEnvironment);
             if (projectCoordinate != null) {
                 return fromNullable(projectCoordinate);
             }
