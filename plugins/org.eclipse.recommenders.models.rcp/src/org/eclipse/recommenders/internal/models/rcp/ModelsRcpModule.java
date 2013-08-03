@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.io.File;
@@ -20,7 +20,11 @@ import java.lang.annotation.Target;
 
 import javax.inject.Singleton;
 
+import org.eclipse.core.internal.net.ProxyManager;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.models.FingerprintStrategy;
 import org.eclipse.recommenders.models.IMappingProvider;
 import org.eclipse.recommenders.models.IModelRepository;
@@ -31,6 +35,7 @@ import org.eclipse.recommenders.models.MavenPomPropertiesStrategy;
 import org.eclipse.recommenders.models.OsgiManifestStrategy;
 import org.eclipse.recommenders.models.SimpleIndexSearcher;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.ui.IWorkbench;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -50,10 +55,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
 
     @Override
     protected void configure() {
-
-        //
         requestStaticInjection(Dependencies.class);
-
         //
         bind(IProjectCoordinateProvider.class).to(ProjectCoordinateProvider.class).in(Scopes.SINGLETON);
         bind(IModelRepository.class).to(EclipseModelRepository.class).in(Scopes.SINGLETON);
@@ -103,6 +105,11 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         return new SimpleIndexSearcher(localRepositoryFile);
     }
 
+    @Provides
+    protected IProxyService provideProxyService() {
+        return ProxyManager.getProxyManager();
+    }
+
     @Singleton
     @Provides
     protected IMappingProvider provideMappingProvider(SimpleIndexSearcher searcher,
@@ -117,8 +124,16 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         return mappingProvider;
     }
 
+    @Provides
+    @Singleton
+    public ModelsRcpPreferences provide(IWorkbench wb) {
+        IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
+        ModelsRcpPreferences prefs = ContextInjectionFactory.make(ModelsRcpPreferences.class, context);
+        return prefs;
+    }
+
     @BindingAnnotation
-    @Target(PARAMETER)
+    @Target({ PARAMETER, FIELD })
     @Retention(RUNTIME)
     public static @interface LocalModelRepositoryLocation {
     }
@@ -131,7 +146,7 @@ public class ModelsRcpModule extends AbstractModule implements Module {
     // }
     //
     @BindingAnnotation
-    @Target(PARAMETER)
+    @Target({ PARAMETER, FIELD })
     @Retention(RUNTIME)
     public static @interface ModelRepositoryIndexLocation {
     }

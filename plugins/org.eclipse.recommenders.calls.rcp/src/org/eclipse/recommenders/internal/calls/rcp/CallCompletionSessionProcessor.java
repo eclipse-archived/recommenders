@@ -14,7 +14,6 @@ import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Math.rint;
 import static org.eclipse.recommenders.completion.rcp.processable.ProcessableCompletionProposalComputer.NULL_PROPOSAL;
-import static org.eclipse.recommenders.internal.calls.rcp.Constants.*;
 import static org.eclipse.recommenders.utils.Recommendations.top;
 
 import java.util.HashSet;
@@ -22,7 +21,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.CompletionProposal;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -39,6 +37,7 @@ import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.calls.NullCallModel;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
+import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
 import org.eclipse.recommenders.models.BasedTypeName;
@@ -48,7 +47,6 @@ import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -66,12 +64,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
             add(CompletionOnSingleNameReference.class);
         }
     };
-
-    private int prefMaxNumberOfProposals;
-    private double prefMinProposalProbability;
-    private boolean prefUpdateProposalRelevance;
-    private boolean prefDecorateProposalText;
-
     private final ICallModelProvider modelProvider;
     private final IProjectCoordinateProvider pcProvider;
 
@@ -84,12 +76,14 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     private Iterable<Recommendation<IMethodName>> recommendations;
 
     private ImageDescriptor overlay;
+    private CallsRcpPreferences prefs;
 
     @Inject
     public CallCompletionSessionProcessor(final IProjectCoordinateProvider projectCoordinateProvider,
-            final ICallModelProvider modelProvider) {
+            final ICallModelProvider modelProvider, CallsRcpPreferences prefs) {
         pcProvider = projectCoordinateProvider;
         this.modelProvider = modelProvider;
+        this.prefs = prefs;
         initializeOverlayIcon();
     }
 
@@ -136,8 +130,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     }
 
     private boolean findRecommendations() {
-        updatePreferences();
-
         model.reset();
 
         // set override-context:
@@ -161,16 +153,8 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         if (ctx.getExpectedTypeSignature().isPresent()) {
             recommendations = Recommendations.filterVoid(recommendations);
         }
-        recommendations = top(recommendations, prefMaxNumberOfProposals, prefMinProposalProbability);
+        recommendations = top(recommendations, prefs.maxNumberOfProposals, prefs.minProposalProbability / (double) 100);
         return !isEmpty(recommendations);
-    }
-
-    private void updatePreferences() {
-        ScopedPreferenceStore s = new ScopedPreferenceStore(InstanceScope.INSTANCE, BUNDLE_NAME);
-        prefMaxNumberOfProposals = s.getInt(P_MAX_NUMBER_OF_PROPOSALS);
-        prefMinProposalProbability = s.getInt(P_MIN_PROPOSAL_PROBABILITY) / (double) 100;
-        prefUpdateProposalRelevance = s.getBoolean(P_UPDATE_PROPOSAL_RELEVANCE);
-        prefDecorateProposalText = s.getBoolean(P_DECORATE_PROPOSAL_TEXT);
     }
 
     private void releaseModel() {
@@ -197,17 +181,11 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
                     continue;
                 }
                 int percentage = (int) rint(call.getRelevance() * 100);
-
-                int increment = 0;
-                if (prefUpdateProposalRelevance) {
-                    increment = 200 + percentage;
-                }
-                String label = "";
-                if (prefDecorateProposalText) {
-                    label = percentage + " %";
-                }
-                if (prefUpdateProposalRelevance || prefDecorateProposalText) {
-                    proposal.getProposalProcessorManager().addProcessor(new SimpleProposalProcessor(increment, label));
+                String label = prefs.decorateProposalText ? percentage + " %" : "";
+                int relevance = prefs.changeProposalRelevance ? 200 + percentage : 0;
+                ProposalProcessorManager mgr = proposal.getProposalProcessorManager();
+                mgr.addProcessor(new SimpleProposalProcessor(relevance, label));
+                if (prefs.decorateProposalIcon) {
                     addOverlayIcon(proposal);
                 }
                 // we found the proposal we are looking for. So quit.

@@ -14,7 +14,6 @@ import static java.lang.Thread.MIN_PRIORITY;
 import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +36,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
@@ -52,8 +50,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.base.Throwables;
 import com.google.common.eventbus.AsyncEventBus;
@@ -75,8 +71,7 @@ public class RcpModule extends AbstractModule implements Module {
     protected void configure() {
         configureJavaElementResolver();
         configureAstProvider();
-        bindRepository();
-        bindServiceListener();
+        bindRcpServiceListener();
         bind(Helper.class).asEagerSingleton();
     }
 
@@ -93,89 +88,7 @@ public class RcpModule extends AbstractModule implements Module {
         bind(IAstProvider.class).toInstance(p);
     }
 
-    private void bindRepository() {
-
-        Bundle bundle = FrameworkUtil.getBundle(getClass());
-        File stateLocation = Platform.getStateLocation(bundle).toFile();
-
-        File repo = new File(stateLocation, "repository"); //$NON-NLS-1$
-        repo.mkdirs();
-        RcpPlugin plugin = RcpPlugin.getDefault();
-        IPreferenceStore store = plugin.getPreferenceStore();
-        // bind(File.class).annotatedWith(LocalModelRepositoryLocation.class).toInstance(repo);
-        // bind(String.class).annotatedWith(RemoteModelRepositoryLocation.class).toInstance(url);
-        // "file:/Volumes/usb/juno/m2/"
-
-        //        File index = new File(stateLocation, "index"); //$NON-NLS-1$
-        // index.mkdirs();
-        // bind(File.class).annotatedWith(ModelRepositoryIndexLocation.class).toInstance(index);
-    }
-
-    static class ServiceMatcher extends AbstractMatcher {
-
-        @Override
-        public boolean matches(Object t) {
-            if (t instanceof TypeLiteral<?>) {
-                Class<?> rawType = ((TypeLiteral<?>) t).getRawType();
-                Class<?>[] implemented = rawType.getInterfaces();
-                boolean isRcpService = contains(implemented, IRcpService.class);
-                return isRcpService;
-            }
-            return false;
-        }
-    }
-
-    static class Helper {
-        @Inject
-        JavaElementSelectionService provider;
-    }
-
-    static class Listener implements TypeListener {
-
-        @Override
-        public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter) {
-            encounter.register(new InjectionListener<I>() {
-
-                @Override
-                public void afterInjection(final Object i) {
-                    for (final Method m : i.getClass().getDeclaredMethods()) {
-                        boolean hasPostConstruct = m.getAnnotation(PostConstruct.class) != null;
-                        boolean hasPreDestroy = m.getAnnotation(PreDestroy.class) != null;
-
-                        if (hasPreDestroy) {
-
-                            PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
-
-                                @Override
-                                public boolean preShutdown(IWorkbench workbench, boolean forced) {
-                                    try {
-                                        m.invoke(i);
-                                    } catch (Exception e) {
-                                        Throwables.propagate(e);
-                                    }
-                                    return true;
-                                }
-
-                                @Override
-                                public void postShutdown(IWorkbench workbench) {
-                                }
-                            });
-
-                        }
-                        if (hasPostConstruct) {
-                            try {
-                                m.invoke(i);
-                            } catch (Exception e) {
-                                Throwables.propagate(e);
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    private void bindServiceListener() {
+    private void bindRcpServiceListener() {
         bindListener(new ServiceMatcher(), new Listener());
     }
 
@@ -295,6 +208,70 @@ public class RcpModule extends AbstractModule implements Module {
     @Provides
     protected IExtensionRegistry provideRegistry() {
         return Platform.getExtensionRegistry();
+    }
+
+    static class ServiceMatcher extends AbstractMatcher {
+
+        @Override
+        public boolean matches(Object t) {
+            if (t instanceof TypeLiteral<?>) {
+                Class<?> rawType = ((TypeLiteral<?>) t).getRawType();
+                Class<?>[] implemented = rawType.getInterfaces();
+                boolean isRcpService = contains(implemented, IRcpService.class);
+                return isRcpService;
+            }
+            return false;
+        }
+    }
+
+    static class Helper {
+        @Inject
+        JavaElementSelectionService provider;
+    }
+
+    static class Listener implements TypeListener {
+
+        @Override
+        public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter) {
+            encounter.register(new InjectionListener<I>() {
+
+                @Override
+                public void afterInjection(final Object i) {
+                    for (final Method m : i.getClass().getDeclaredMethods()) {
+                        boolean hasPostConstruct = m.getAnnotation(PostConstruct.class) != null;
+                        boolean hasPreDestroy = m.getAnnotation(PreDestroy.class) != null;
+
+                        if (hasPreDestroy) {
+
+                            PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
+
+                                @Override
+                                public boolean preShutdown(IWorkbench workbench, boolean forced) {
+                                    try {
+                                        m.invoke(i);
+                                    } catch (Exception e) {
+                                        Throwables.propagate(e);
+                                    }
+                                    return true;
+                                }
+
+                                @Override
+                                public void postShutdown(IWorkbench workbench) {
+                                }
+                            });
+
+                        }
+                        if (hasPostConstruct) {
+                            try {
+                                m.invoke(i);
+                            } catch (Exception e) {
+                                Throwables.propagate(e);
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private final class ActivePageFinder implements Callable<IWorkbenchPage> {

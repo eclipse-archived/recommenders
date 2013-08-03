@@ -10,10 +10,16 @@
  */
 package org.eclipse.recommenders.internal.calls.rcp;
 
+import javax.inject.Singleton;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.recommenders.calls.ICallModelProvider;
+import org.eclipse.ui.IWorkbench;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
+import com.google.inject.Provides;
 import com.google.inject.Scopes;
 
 public class CallsRcpModule extends AbstractModule implements Module {
@@ -25,4 +31,13 @@ public class CallsRcpModule extends AbstractModule implements Module {
     protected void configure() {
         bind(ICallModelProvider.class).to(RcpCallModelProvider.class).in(Scopes.SINGLETON);
     }
+
+    @Provides
+    @Singleton
+    public CallsRcpPreferences provide(IWorkbench wb) {
+        IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
+        CallsRcpPreferences prefs = ContextInjectionFactory.make(CallsRcpPreferences.class, context);
+        return prefs;
+    }
+
 }

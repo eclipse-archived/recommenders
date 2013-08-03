@@ -10,6 +10,9 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.eclipse.jface.viewers.StyledString.COUNTER_STYLER;
+
 import org.eclipse.jface.viewers.StyledString;
 
 public class SimpleProposalProcessor extends ProposalProcessor {
@@ -33,8 +36,8 @@ public class SimpleProposalProcessor extends ProposalProcessor {
 
     @Override
     public void modifyDisplayString(StyledString displayString) {
-        if (addon != null) {
-            displayString.append(" - " + addon, StyledString.COUNTER_STYLER);
+        if (!isEmpty(addon)) {
+            displayString.append(" - " + addon, COUNTER_STYLER);
         }
     }
 }

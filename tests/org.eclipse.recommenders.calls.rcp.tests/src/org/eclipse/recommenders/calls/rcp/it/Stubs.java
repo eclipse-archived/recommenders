@@ -14,6 +14,7 @@ import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.completion.rcp.it.MockedIntelligentCompletionProposalComputer;
 import org.eclipse.recommenders.internal.calls.rcp.CallCompletionSessionProcessor;
+import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences;
 import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
@@ -153,7 +154,7 @@ public class Stubs {
 
         ICallModelProvider mp = mock(ICallModelProvider.class);
         when(mp.acquireModel((BasedTypeName) anyObject())).thenReturn(Optional.<ICallModel>of(new CallModelSpy()));
-        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcp, mp);
+        CallCompletionSessionProcessor sut = new CallCompletionSessionProcessor(pcp, mp, new CallsRcpPreferences());
         return new MockedIntelligentCompletionProposalComputer(sut);
     }
 }

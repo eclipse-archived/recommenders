@@ -43,6 +43,7 @@ import static org.mockito.Matchers.*
 import static org.mockito.Mockito.*
 
 import static extension com.google.common.collect.Iterables.*
+import org.eclipse.recommenders.internal.calls.rcp.CallsRcpPreferences
 
 @RunWith(Parameterized)
 class CompletionSmokeTest {
@@ -426,7 +427,8 @@ class CompletionSmokeTest {
             case "calls": {
                 val mp = mock(ICallModelProvider)
                 when(mp.acquireModel(anyObject())).thenReturn(Optional.<ICallModel>of(NullCallModel.NULL_MODEL))
-                return new CallCompletionSessionProcessor(pcp, mp)
+                val sut = new CallCompletionSessionProcessor(pcp, mp, new CallsRcpPreferences)
+                return sut
             }
             case "overrides": {
                 val mp = mock(IOverrideModelProvider)
@@ -440,15 +442,6 @@ class CompletionSmokeTest {
         }
     }
 
-    static def newCallComputer() {
-        val pcp = mock(IProjectCoordinateProvider)
-        when(pcp.resolve(anyObject() as IType)).thenReturn(Optional.of(ProjectCoordinate.UNKNOWN))
-        val mp = mock(ICallModelProvider)
-        when(mp.acquireModel(anyObject())).thenReturn(Optional.<ICallModel>of(NullCallModel.NULL_MODEL))
-        val sut = new CallCompletionSessionProcessor(pcp, mp)
-        new MockedIntelligentCompletionProposalComputer(sut)
-
-    }
 }
 
 class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> extends IntelligentCompletionProposalComputer {
@@ -459,7 +452,7 @@ class MockedIntelligentCompletionProposalComputer<T extends SessionProcessor> ex
         super(
             #{new SessionProcessorDescriptor("", "", null, 0, true, processor)}.toArray(SessionProcessorDescriptor),
             new ProcessableProposalFactory(), new CachingAstProvider());
-         this.processor = processor
+        this.processor = processor
     }
 
     def getProcessor() {

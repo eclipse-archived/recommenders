@@ -14,6 +14,7 @@ package org.eclipse.recommenders.models;
 
 import static com.google.common.base.Optional.*;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.eclipse.recommenders.models.AetherModelRepository.DownloadCallback.NULL;
 import static org.eclipse.recommenders.utils.Constants.*;
 import static org.eclipse.recommenders.utils.Throws.throwUnsupportedOperation;
 
@@ -37,6 +38,8 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.repository.internal.DefaultServiceLocator;
 import org.apache.maven.repository.internal.MavenRepositorySystemSession;
+import org.apache.maven.wagon.Wagon;
+import org.apache.maven.wagon.providers.file.FileWagon;
 import org.eclipse.recommenders.utils.Artifacts;
 import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Executors;
@@ -54,14 +57,17 @@ import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.repository.Authentication;
 import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.repository.ProxySelector;
+import org.sonatype.aether.repository.Proxy;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResult;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
+import org.sonatype.aether.transfer.TransferCancelledException;
+import org.sonatype.aether.transfer.TransferEvent;
 import org.sonatype.aether.transfer.TransferListener;
 import org.sonatype.aether.util.DefaultRepositorySystemSession;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.sonatype.maven.wagon.AhcWagon;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -69,12 +75,11 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
-public class AetherModelRepository extends AbstractIdleService implements IModelRepository {
+public class AetherModelRepository implements IModelRepository {
 
     private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.coreThreadsTimoutExecutor(1,
             Thread.MIN_PRIORITY, "model-downloader"));
@@ -90,30 +95,15 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
     private RepositorySystem system;
 
     private RemoteRepository remote;
-    private ProxySelector proxySelector;
     private FSDirectory index;
     private IndexReader reader;
 
-    public AetherModelRepository(File local, String remote, ProxySelector proxySelector) throws Exception {
+    public AetherModelRepository(File local, String remote) throws Exception {
         basedir = local;
         indexdir = new File(local, "index");
         repodir = new File(local, "repository");
-        this.proxySelector = proxySelector;
         system = createRepositorySystem();
         this.remote = new RemoteRepository("remote-models", "default", remote);
-        if (proxySelector != null) {
-            this.remote.setProxy(proxySelector.getProxy(this.remote));
-        }
-    }
-
-    @Override
-    protected void shutDown() throws Exception {
-
-    }
-
-    @Override
-    protected void startUp() throws Exception {
-        open();
     }
 
     public void open() throws Exception {
@@ -131,18 +121,45 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
         // on mac, we often have hidden files in the folder. This is just a simple heuristic.
     }
 
-    public AetherModelRepository(File local, String remote) throws Exception {
-        this(local, remote, null);
-    }
-
     public ListenableFuture<File> schedule(final ModelArchiveCoordinate model) {
-        return schedule(model, null);
+        return schedule(model, NULL);
     }
 
-    public ListenableFuture<File> schedule(final ModelArchiveCoordinate model, final TransferListener callback) {
+    public ListenableFuture<File> schedule(final ModelArchiveCoordinate model, final DownloadCallback callback) {
         final Artifact coord = new DefaultArtifact(model.getGroupId(), model.getArtifactId(), model.getClassifier(),
                 model.getExtension(), model.getVersion());
-        return executor.submit(new DownloadArtifactTask(coord, callback));
+        return executor.submit(new DownloadArtifactTask(coord, new TransferListener() {
+
+            @Override
+            public void transferSucceeded(TransferEvent e) {
+                callback.downloadSucceeded();
+            }
+
+            @Override
+            public void transferStarted(TransferEvent e) throws TransferCancelledException {
+                callback.downloadStarted();
+            }
+
+            @Override
+            public void transferProgressed(TransferEvent e) throws TransferCancelledException {
+                callback.downloadProgressed();
+            }
+
+            @Override
+            public void transferInitiated(TransferEvent e) throws TransferCancelledException {
+                callback.downloadInitiated();
+            }
+
+            @Override
+            public void transferFailed(TransferEvent e) {
+                callback.downloadFailed();
+            }
+
+            @Override
+            public void transferCorrupted(TransferEvent e) throws TransferCancelledException {
+                callback.downloadCorrupted();
+            }
+        }));
     }
 
     @Override
@@ -244,7 +261,6 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
             Set<String> results = Sets.newHashSet();
             for (ScoreDoc scoreDoc : matches.scoreDocs) {
                 Document doc = reader.document(scoreDoc.doc);
-                // TODO does work with CALL models only!:
                 String modelcoord = doc.get(modelCoordFieldName);
                 results.add(modelcoord);
             }
@@ -254,7 +270,7 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
         }
     }
 
-    protected RepositorySystem createRepositorySystem() throws Exception {
+    private RepositorySystem createRepositorySystem() throws Exception {
         @SuppressWarnings("deprecation")
         DefaultServiceLocator locator = new DefaultServiceLocator();
         locator.setServices(WagonProvider.class, new ManualWagonProvider());
@@ -264,11 +280,6 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
 
     private synchronized DefaultRepositorySystemSession newSession() {
         MavenRepositorySystemSession session = new MavenRepositorySystemSession();
-
-        if (proxySelector != null) {
-            session.setProxySelector(proxySelector);
-            remote.setProxy(proxySelector.getProxy(remote));
-        }
         LocalRepository localRepo = new LocalRepository(repodir);
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(localRepo));
         return session;
@@ -308,7 +319,7 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
         }
     }
 
-    public static class TheArtifactOnlyDependencySelector implements DependencySelector {
+    private static class TheArtifactOnlyDependencySelector implements DependencySelector {
 
         @Override
         public boolean selectDependency(Dependency d) {
@@ -324,6 +335,17 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
 
     public String getRemoteUrl() {
         return remote.getUrl();
+    }
+
+    public void setProxy(String type, String host, int port, String user, String pass) {
+        Authentication auth = user == null ? null : new Authentication(user, pass);
+        Proxy proxy = type == null ? null : new Proxy(type, host, port, auth);
+        remote.setProxy(proxy);
+    }
+
+    // TODO: need an API to reset proxy settings.
+    public void unsetProxy() {
+        remote.setProxy(null);
     }
 
     public void setAuthentication(String user, String pass) {
@@ -342,6 +364,53 @@ public class AetherModelRepository extends AbstractIdleService implements IModel
 
             return new ModelArchiveCoordinate(a.getGroupId(), a.getArtifactId(), a.getClassifier(), a.getExtension(),
                     a.getVersion());
+        }
+    }
+
+    public static class DownloadCallback {
+        public static final DownloadCallback NULL = new DownloadCallback();
+
+        void downloadSucceeded() {
+        }
+
+        void downloadCorrupted() {
+        }
+
+        void downloadFailed() {
+        }
+
+        void downloadInitiated() {
+        }
+
+        void downloadProgressed() {
+        }
+
+        void downloadStarted() {
+        }
+    }
+
+    /**
+     * A simplistic provider for wagon instances when no Plexus-compatible IoC container is used.
+     */
+    private class ManualWagonProvider implements org.sonatype.aether.connector.wagon.WagonProvider {
+
+        @Override
+        public Wagon lookup(String roleHint) throws Exception {
+            if ("http".equals(roleHint) || "https".equals(roleHint)) { //$NON-NLS-1$ //$NON-NLS-2$
+                AhcWagon ahcWagon = new AhcWagon();
+                // TODO set timeout to 300s instead of 60s to solve timeouts. experimental.
+                ahcWagon.setTimeout(300 * 1000);
+                return ahcWagon;
+                // return new WebDavWagon();
+            } else if ("file".equals(roleHint)) {
+                return new FileWagon();
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public void release(Wagon wagon) {
         }
     }
 }
