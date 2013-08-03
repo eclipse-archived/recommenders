@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.models;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.base.Objects;
@@ -37,6 +39,16 @@ public class BasedTypeName implements IBasedName<ITypeName> {
     @Override
     public ProjectCoordinate getBase() {
         return base;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
     }
 
     @Override

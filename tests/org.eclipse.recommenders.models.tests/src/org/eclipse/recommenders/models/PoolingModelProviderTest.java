@@ -51,6 +51,21 @@ public class PoolingModelProviderTest {
         assertFalse("pool did not get exhausted", last.isPresent());
     }
 
+    @Test
+    public void testRepeatedCallsReturnSameModel() {
+
+        SomeName name = new SomeName("name");
+        String model1 = sut.acquireModel(name).orNull();
+        String model2 = sut.acquireModel(name).orNull();
+        // two different models because model1 wasn't release yet
+        assertNotSame(model1, model2);
+        sut.releaseModel(model1);
+        String model3 = sut.acquireModel(name).orNull();
+        // model1 was release and should be reused by the pool, thus should be the same as model1
+        assertSame(model1, model3);
+
+    }
+
     private final class PoolingModelProviderStub extends PoolingModelProvider<IBasedName<String>, String> {
         private PoolingModelProviderStub(IModelRepository repository, String modelType) {
             super(repository, modelType);
