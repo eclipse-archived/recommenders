@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
@@ -260,20 +261,20 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         final TreeSet<IMethodName> calls = Sets.newTreeSet();
         final List<Recommendation<IMethodName>> rec = Recommendations.top(model.recommendCalls(), 100, 0.1d);
         if (rec.isEmpty()) {
-            return Collections.emptyList();
+            return Lists.newLinkedList();
         }
         if (requiresConstructor && definition.isInit()) {
             calls.add(definition);
             constructorAdded = true;
         }
         if (requiresConstructor && !constructorAdded) {
-            return Collections.emptyList();
+            return Lists.newLinkedList();
         }
         for (final Recommendation<IMethodName> pair : rec) {
             calls.add(pair.getProposal());
         }
         if (!containsCallWithMethodPrefix(calls)) {
-            return Collections.emptyList();
+            return Lists.newLinkedList();
         }
         return calls;
     }
