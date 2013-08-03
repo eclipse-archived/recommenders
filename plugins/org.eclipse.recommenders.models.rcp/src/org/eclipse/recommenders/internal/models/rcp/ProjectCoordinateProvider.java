@@ -7,16 +7,7 @@
  *
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
-<<<<<<< HEAD
-<<<<<<< HEAD:plugins/org.eclipse.recommenders.models.rcp/src/org/eclipse/recommenders/internal/models/rcp/ProjectCoordinateProvider.java
-=======
->>>>>>> fa0b018... [models] Refactored EclipseDependencyListener, ProjectCoordinateProvider
- *    Olav Lenz - Added caching behavior.
- *    Olav Lenz - add caching and storage functionality.
-<<<<<<< HEAD
->>>>>>> [models] Persists cache entries in ProjectCoordinateProvider.:plugins/org.eclipse.recommenders.models.rcp/src/org/eclipse/recommenders/models/rcp/ProjectCoordinateProvider.java
-=======
->>>>>>> fa0b018... [models] Refactored EclipseDependencyListener, ProjectCoordinateProvider
+ *    Olav Lenz - Added caching caching and storage functionality.
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
