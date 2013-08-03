@@ -95,7 +95,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
 
     private void initializeOverlayIcon() {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
-        overlay = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(), "icons/view16/overlay2.png");
+        overlay = AbstractUIPlugin.imageDescriptorFromPlugin(bundle.getSymbolicName(), "icons/view16/overlay-plus.png");
     }
 
     @Override
