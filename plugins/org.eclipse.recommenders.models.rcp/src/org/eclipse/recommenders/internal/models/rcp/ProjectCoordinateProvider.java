@@ -225,11 +225,6 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
         Map<IPackageFragmentRoot, Optional<ProjectCoordinate>> deserializedCache = cacheGson.fromJson(json, cacheType);
 
         for (Entry<IPackageFragmentRoot, Optional<ProjectCoordinate>> entry : deserializedCache.entrySet()) {
-            if (entry.getKey() == null) {
-                // a package fragment root may disappear (e.g., the project was closed),
-                // and thus can not be resolved anymore.
-                continue;
-            }
             cache.put(entry.getKey(), entry.getValue());
         }
     }
