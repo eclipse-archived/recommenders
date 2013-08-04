@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
-import org.eclipse.recommenders.models.MavenPomPropertiesStrategy.IFileToJarFileConverter;
+import org.eclipse.recommenders.models.IFileToJarFileConverter;
 import org.eclipse.recommenders.tests.JarFileMockBuilder;
 import org.eclipse.recommenders.utils.Pair;
 

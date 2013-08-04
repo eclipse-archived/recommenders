@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.models;
 
 import static com.google.common.base.Optional.*;
+import static org.eclipse.recommenders.utils.Zips.closeQuietly;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,25 +52,16 @@ public class MavenPomPropertiesStrategy extends AbstractStrategy {
 
     @Override
     protected Optional<ProjectCoordinate> extractProjectCoordinateInternal(DependencyInfo dependencyInfo) {
-        Optional<JarFile> optionalJarFile = readJarFileIn(dependencyInfo.getFile());
-        if (!optionalJarFile.isPresent()) {
+        JarFile jarFile = readJarFileIn(dependencyInfo.getFile()).orNull();
+        if (jarFile == null) {
             return absent();
         }
-        JarFile jarFile = optionalJarFile.get();
         try {
             return extractProjectCoordinateOfJarFile(jarFile);
         } catch (IOException e) {
             return absent();
         } finally {
-            close(jarFile);
-        }
-    }
-
-    private void close(JarFile jarFile) {
-        try {
-            jarFile.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            closeQuietly(jarFile);
         }
     }
 
@@ -162,22 +154,6 @@ public class MavenPomPropertiesStrategy extends AbstractStrategy {
             return split[split.length - index];
         }
         return "";
-    }
-
-    public interface IFileToJarFileConverter {
-        Optional<JarFile> createJarFile(File file);
-    }
-
-    private class DefaultJarFileConverter implements IFileToJarFileConverter {
-        @Override
-        public Optional<JarFile> createJarFile(File file) {
-            try {
-                JarFile jarFile = new JarFile(file);
-                return fromNullable(jarFile);
-            } catch (IOException e) {
-                return absent();
-            }
-        }
     }
 
 }
