@@ -35,4 +35,19 @@ public interface IBasedName<T> {
      */
     ProjectCoordinate getBase();
 
+    /**
+     * {@inheritDoc}
+     * 
+     * Implementors must implement {@link #equals(Object)} properly. Otherwise model pooling does not work.
+     */
+    @Override
+    boolean equals(Object obj);
+
+    /**
+     * {@inheritDoc}
+     * 
+     * Implementors must implement {@link #hashCode()} properly. Otherwise model pooling does not work.
+     */
+    @Override
+    int hashCode();
 }
