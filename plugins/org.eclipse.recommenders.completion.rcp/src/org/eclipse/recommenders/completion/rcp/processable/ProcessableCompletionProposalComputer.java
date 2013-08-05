@@ -12,7 +12,6 @@ package org.eclipse.recommenders.completion.rcp.processable;
 
 import static org.eclipse.recommenders.utils.Checks.cast;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -78,7 +77,6 @@ public abstract class ProcessableCompletionProposalComputer extends JavaAllCompl
     @Override
     public void sessionEnded() {
         fireAboutToClose();
-        active = Collections.emptySet();
     }
 
     @Override
