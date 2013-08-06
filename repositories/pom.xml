@@ -18,4 +18,54 @@
 		<!-- Contains features that had a release review. -->
 		<module>stable</module>
 	</modules>
+	<properties>
+		<p2MirrorsURL>http://www.eclipse.org/downloads/download.php?file=/recommenders/updates/${project.artifactId}&amp;format=xml</p2MirrorsURL>
+		<p2StatsURL>http://download.codetrails.com/stats/recommenders/${project.artifactId}</p2StatsURL>
+		<!-- At the moment, this list of features needs to be maintained manually. -->
+		<statsTrackedArtifacts>org.eclipse.recommenders.jayes.feature,org.eclipse.recommenders.simrel.feature,org.eclipse.recommenders.rcp.feature,org.eclipse.recommenders.rcp.tests.feature</statsTrackedArtifacts>
+	</properties>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho.extras</groupId>
+					<artifactId>tycho-eclipserun-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<executions>
+						<execution>
+							<id>add-repo-properties</id>
+							<goals>
+								<goal>eclipse-run</goal>
+							</goals>
+							<phase>package</phase>
+							<configuration>
+								<!-- See http://wiki.eclipse.org/Equinox/p2/p2.mirrorsURL -->
+								<!-- See http://wiki.eclipse.org/Equinox_p2_download_stats -->
+								<appArgLine>-application org.eclipse.wtp.releng.tools.addRepoProperties</appArgLine>
+								<argLine>-DartifactRepoDirectory=${project.build.directory}/repository -Dp2MirrorsURL=${p2MirrorsURL} -Dp2StatsURI=${p2StatsURL} -DstatsTrackedArtifacts=${statsTrackedArtifacts} -DstatsArtifactsSuffix=-${project.version}</argLine>
+								<dependencies>
+									<dependency>
+										<artifactId>org.eclipse.wtp.releng.tools.feature</artifactId>
+										<type>eclipse-feature</type>
+									</dependency>
+								</dependencies>
+								<repositories>
+									<repository>
+										<id>wtp-releng</id>
+										<url>http://download.eclipse.org/webtools/releng/repository</url>
+										<layout>p2</layout>
+									</repository>
+									<repository>
+										<id>kepler</id>
+										<url>http://download.eclipse.org/releases/kepler</url>
+										<layout>p2</layout>
+									</repository>
+								</repositories>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>
