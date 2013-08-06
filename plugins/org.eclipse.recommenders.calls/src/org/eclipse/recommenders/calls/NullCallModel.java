@@ -102,6 +102,11 @@ public final class NullCallModel implements ICallModel {
     }
 
     @Override
+    public ImmutableSet<DefinitionKind> getKnownDefinitionKinds() {
+        return ImmutableSet.of();
+    }
+
+    @Override
     public ImmutableSet<IMethodName> getKnownDefiningMethods() {
         return ImmutableSet.of();
     }

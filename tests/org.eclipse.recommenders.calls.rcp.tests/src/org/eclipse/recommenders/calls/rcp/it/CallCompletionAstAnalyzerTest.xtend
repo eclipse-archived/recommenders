@@ -34,7 +34,7 @@ class CallCompletionAstAnalyzerTest {
             List l = Collections.emptyList();
             l.get(0).$''')
         exercise()
-        verifyDefinition(METHOD_RETURN)
+        verifyDefinition(RETURN)
     }
 
     @Test
@@ -46,7 +46,7 @@ class CallCompletionAstAnalyzerTest {
             o.$''')
         exercise()
 
-        verifyDefinition(METHOD_RETURN)
+        verifyDefinition(RETURN)
     }
 
     @Test

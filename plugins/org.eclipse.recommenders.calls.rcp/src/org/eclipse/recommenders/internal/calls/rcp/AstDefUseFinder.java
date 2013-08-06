@@ -234,13 +234,13 @@ public class AstDefUseFinder extends ASTVisitor {
             // x = some().method().call()
             final MethodInvocation mi = cast(expression);
             definingMethod = toMethodName(mi.resolveMethodBinding()).orNull();
-            defKind = METHOD_RETURN;
+            defKind = RETURN;
             break;
         case ASTNode.SUPER_METHOD_INVOCATION:
             // x = super.some()
             final SuperMethodInvocation smi = cast(expression);
             definingMethod = toMethodName(smi.resolveMethodBinding()).orNull();
-            defKind = METHOD_RETURN;
+            defKind = RETURN;
             break;
         case ASTNode.CLASS_INSTANCE_CREATION:
             final ClassInstanceCreation cic = cast(expression);
@@ -279,7 +279,7 @@ public class AstDefUseFinder extends ASTVisitor {
     @Override
     public boolean visit(final SingleVariableDeclaration node) {
         if (matchesVarName(node.getName()) && node.getParent() instanceof MethodDeclaration) {
-            defKind = PARAMETER;
+            defKind = PARAM;
             definingMethod = toMethodName(method.resolveBinding()).orNull();
         }
         return true;
