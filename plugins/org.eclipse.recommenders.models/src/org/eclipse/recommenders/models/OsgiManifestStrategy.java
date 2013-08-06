@@ -12,48 +12,63 @@ package org.eclipse.recommenders.models;
 
 import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.models.DependencyType.JAR;
+import static org.eclipse.recommenders.utils.Zips.closeQuietly;
 
+import java.io.IOException;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.eclipse.recommenders.utils.Artifacts;
-import org.eclipse.recommenders.utils.Zips;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
 public class OsgiManifestStrategy extends AbstractStrategy {
-    private static final Name BUNDLE_NAME = new Attributes.Name("Bundle-SymbolicName");
-    private static final Name BUNDLE_VERSION = new Attributes.Name("Bundle-Version");
-    private Logger log = LoggerFactory.getLogger(OsgiManifestStrategy.class);
+    public static final Name BUNDLE_NAME = new Attributes.Name("Bundle-SymbolicName");
+    public static final Name BUNDLE_VERSION = new Attributes.Name("Bundle-Version");
+    private IFileToJarFileConverter jarFileConverter;
+
+    public OsgiManifestStrategy() {
+        jarFileConverter = new DefaultJarFileConverter();
+    }
+
+    @VisibleForTesting
+    public OsgiManifestStrategy(IFileToJarFileConverter fileToJarFileConverter) {
+        jarFileConverter = fileToJarFileConverter;
+    }
 
     @Override
-    protected Optional<ProjectCoordinate> extractProjectCoordinateInternal(DependencyInfo dep) {
+    protected Optional<ProjectCoordinate> extractProjectCoordinateInternal(DependencyInfo dependencyInfo) {
+        JarFile jarFile = jarFileConverter.createJarFile(dependencyInfo.getFile()).orNull();
+        if (jarFile == null) {
+            return absent();
+        }
         try {
-            JarFile jar = new JarFile(dep.getFile());
-            final Manifest manifest = jar.getManifest();
-            Zips.closeQuietly(jar);
+            final Manifest manifest = jarFile.getManifest();
             if (manifest == null) {
                 return absent();
             }
-
-            Attributes attributes = manifest.getMainAttributes();
-            String name = attributes.getValue(BUNDLE_NAME);
-            String version = attributes.getValue(BUNDLE_VERSION);
-            if (name == null || version == null) {
-                return absent();
-            }
-            int indexOf = name.indexOf(";");
-            String aid = name.substring(0, indexOf == -1 ? name.length() : indexOf);
-            String gid = Artifacts.guessGroupId(aid);
-            return of(new ProjectCoordinate(gid, aid, version));
-        } catch (Exception e) {
-            log.error("Exception occured while parsing " + dep, e);
+            return extractProjectCoordinateFromManifest(manifest);
+        } catch (IOException e) {
+            return absent();
+        } finally {
+            closeQuietly(jarFile);
         }
-        return absent();
+    }
+
+    private Optional<ProjectCoordinate> extractProjectCoordinateFromManifest(Manifest manifest) {
+        Attributes attributes = manifest.getMainAttributes();
+        String name = attributes.getValue(BUNDLE_NAME);
+        String version = attributes.getValue(BUNDLE_VERSION);
+        if (name == null || version == null) {
+            return absent();
+        }
+        int indexOf = name.indexOf(";");
+        String aid = name.substring(0, indexOf == -1 ? name.length() : indexOf);
+        String gid = Artifacts.guessGroupId(aid);
+        return of(new ProjectCoordinate(gid, aid, version));
     }
 
     @Override

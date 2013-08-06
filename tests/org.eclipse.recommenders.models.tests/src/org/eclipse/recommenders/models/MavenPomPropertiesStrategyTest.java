@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.eclipse.recommenders.models.MavenPomPropertiesStrategy.IFileToJarFileConverter;
 import org.eclipse.recommenders.tests.models.utils.IFileToJarFileConverterMockBuilder;
 import org.junit.Before;
 import org.junit.Rule;
