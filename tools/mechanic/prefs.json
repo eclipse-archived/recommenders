@@ -1,0 +1,17 @@
+{
+  type : 'com.google.eclipse.mechanic.UriTaskProviderModel',
+  metadata : {
+    name: 'Workspace Mechanic Tasks for Eclipse Code Recommenders',
+    description: 'Workspace Mechanic tasks to get default settings for Eclipse',
+    contact: 'recommenders-dev@eclipse.org'
+  },  
+  tasks: [
+    'editor-spaces.epf',
+    'file-encoding.epf',
+    'java-compiler.epf',
+    'java-editor-save.epf',
+    'java-formatting.epf',
+    'pde-api-tools.epf',
+    'project-setup.epf',
+  ]
+}

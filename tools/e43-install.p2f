@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?p2f version='1.0.0'?>
+<p2f version='1.0.0'>
+  <ius size='10'>
+    <iu id='org.eclipse.egit.feature.group' name='Eclipse Git Team Provider' version='3.0.0.201306101825-r'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/kepler'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.releng.tools.feature.group' name='Eclipse Releng Tools' version='3.5.0.v20130523-0845'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/eclipse/updates/4.3'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.sdk.ide' name='Eclipse SDK' version='4.3.0.I20130605-2000'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/eclipse/updates/4.3'/>
+        <repository location='http://download.eclipse.org/releases/kepler'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.m2e.feature.feature.group' name='m2e - Maven Integration for Eclipse' version='1.4.0.20130601-0317'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/kepler'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.m2e.logback.feature.feature.group' name='m2e - slf4j over logback logging (Optional)' version='1.4.0.20130601-0317'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/kepler'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.epp.mpc.feature.group' name='Marketplace Client' version='1.2.0.v20130612-1900'>
+      <repositories size='1'>
+        <repository location='http://download.eclipse.org/releases/kepler'/>
+      </repositories>
+    </iu>
+    <iu id='org.sonatype.tycho.m2e.feature.feature.group' name='Tycho Project Configurators' version='0.6.0.201207302152'>
+      <repositories size='1'>
+        <repository location='http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.6.0/N/0.6.0.201207302152/'/>
+      </repositories>
+    </iu>
+    <iu id='name.njbartlett.eclipse.macbadge.feature.feature.group' name='Workspace Dock Badge for Mac OS X' version='1.0.0.201110100042'>
+      <repositories size='1'>
+        <repository location='http://macbadge-updates.s3.amazonaws.com/'/>
+      </repositories>
+    </iu>
+    <iu id='com.google.eclipse.mechanic.feature.group' name='Workspace Mechanic' version='0.3.4'>
+      <repositories size='1'>
+        <repository location='http://workspacemechanic.eclipselabs.org.codespot.com/git.update/mechanic/'/>
+      </repositories>
+    </iu>
+    <iu id='org.eclipse.xtend.sdk.feature.group' name='Xtend SDK' version='2.4.2.v201306120542'>
+      <repositories size='2'>
+        <repository location='http://download.eclipse.org/releases/kepler'/>
+        <repository location='http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/'/>
+      </repositories>
+    </iu>
+  </ius>
+</p2f>
