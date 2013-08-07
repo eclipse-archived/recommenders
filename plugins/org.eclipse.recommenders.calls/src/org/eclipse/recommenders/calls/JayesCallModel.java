@@ -113,7 +113,7 @@ public class JayesCallModel implements ICallModel {
     private BayesNode callgroupNode;
     private BayesNode overridesNode;
     private BayesNode definedByNode;
-    private BayesNode defTypeNode;
+    private BayesNode defKindNode;
     private JunctionTreeAlgorithm junctionTree;
 
     private ITypeName typeName;
@@ -153,7 +153,7 @@ public class JayesCallModel implements ICallModel {
             } else if (node.getIdentifier().equals(N_NODEID_CALL_GROUPS)) {
                 callgroupNode = bayesNode;
             } else if (node.getIdentifier().equals(N_NODEID_DEF_KIND)) {
-                defTypeNode = bayesNode;
+                defKindNode = bayesNode;
             } else if (node.getIdentifier().equals(N_NODEID_DEF)) {
                 definedByNode = bayesNode;
             } else {
@@ -210,6 +210,15 @@ public class JayesCallModel implements ICallModel {
     }
 
     @Override
+    public ImmutableSet<DefinitionKind> getKnownDefinitionKinds() {
+        Builder<DefinitionKind> b = ImmutableSet.builder();
+        for (String s : defKindNode.getOutcomes()) {
+            b.add(DefinitionKind.valueOf(s));
+        }
+        return b.build();
+    }
+
+    @Override
     public ImmutableSet<String> getKnownPatterns() {
         return copyOf(callgroupNode.getOutcomes());
     }
@@ -243,7 +252,7 @@ public class JayesCallModel implements ICallModel {
 
     @Override
     public Optional<DefinitionKind> getObservedDefinitionKind() {
-        String stateId = junctionTree.getEvidence().get(defTypeNode);
+        String stateId = junctionTree.getEvidence().get(defKindNode);
         if (stateId == null) {
             return absent();
         }
@@ -361,14 +370,14 @@ public class JayesCallModel implements ICallModel {
     @Override
     public boolean setObservedDefinitionKind(@Nullable final DefinitionKind newDef) {
         if (newDef == null) {
-            junctionTree.removeEvidence(defTypeNode);
+            junctionTree.removeEvidence(defKindNode);
             return true;
         }
         // else:
         String identifier = newDef.toString();
-        boolean contains = defTypeNode.getOutcomes().contains(identifier);
+        boolean contains = defKindNode.getOutcomes().contains(identifier);
         if (contains) {
-            junctionTree.addEvidence(defTypeNode, identifier);
+            junctionTree.addEvidence(defKindNode, identifier);
         }
         return contains;
     }

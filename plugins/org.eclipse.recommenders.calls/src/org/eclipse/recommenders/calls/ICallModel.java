@@ -64,8 +64,8 @@ public interface ICallModel {
      * <p>
      * Depending on the definition kind, the method specified here will be
      * <ul>
-     * <li>{@link DefinitionKind#METHOD_RETURN}: the method whose return value defined the variable,
-     * <li>{@link DefinitionKind#PARAMETER}: the method this variable was defined as a parameter for,
+     * <li>{@link DefinitionKind#RETURN}: the method whose return value defined the variable,
+     * <li>{@link DefinitionKind#PARAM}: the method this variable was defined as a parameter for,
      * <li>{@link DefinitionKind#NEW}: the constructor this variable was initialized with.
      * </ul>
      * 
@@ -112,6 +112,12 @@ public interface ICallModel {
      * @see #setObservedCall(IMethodName)
      */
     ImmutableSet<IMethodName> getKnownCalls();
+
+    /**
+     * Returns all known definition kinds for the given receiver type that can be observed. Note that this may be a
+     * subset of all kinds defined in {@link DefinitionKind).
+     */
+    ImmutableSet<DefinitionKind> getKnownDefinitionKinds();
 
     ImmutableSet<IMethodName> getKnownDefiningMethods();
 
@@ -163,7 +169,7 @@ public interface ICallModel {
         /**
          * indicates that the variable was defined by a method return value, e.g, int x = p.getX();
          */
-        METHOD_RETURN,
+        RETURN,
         /**
          * indicates that the variable was defined by a constructor call, e.g, Point p = new Point(x,y);
          */
@@ -175,7 +181,7 @@ public interface ICallModel {
         /**
          * indicates that the variable was declared as a parameter of the enclosing method.
          */
-        PARAMETER,
+        PARAM,
         /**
          * indicates that the variable represents "this"
          */

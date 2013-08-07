@@ -124,7 +124,7 @@ public class AstCallCompletionAnalyzer {
                         defKind = FIELD;
                     }
                 } else if (def != null) {
-                    defKind = METHOD_RETURN;
+                    defKind = RETURN;
                     definedBy = def;
                 }
             }
@@ -152,7 +152,7 @@ public class AstCallCompletionAnalyzer {
         if (defKind == null) {
             // we may have triggered completion on a member access (e.g., PlatformUI.getWorkbench().|<>
             definedBy = ctx.getMethodDef().orNull();
-            defKind = definedBy == null ? null : METHOD_RETURN;
+            defKind = definedBy == null ? null : RETURN;
         }
     }
 

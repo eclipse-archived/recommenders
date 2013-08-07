@@ -13,7 +13,7 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import static com.google.common.collect.Iterables.isEmpty;
 import static java.lang.String.format;
-import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.PARAMETER;
+import static org.eclipse.recommenders.calls.ICallModel.DefinitionKind.PARAM;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
 import static org.eclipse.recommenders.rcp.JavaElementSelectionEvent.JavaElementSelectionLocation.*;
 import static org.eclipse.recommenders.rcp.utils.JdtUtils.resolveMethod;
@@ -122,7 +122,7 @@ public final class CallsApidocProvider extends ApidocProvider {
             IMethodName definingMethod = defUse.getDefiningMethod().orNull();
             DefinitionKind kind = defUse.getDefinitionKind();
             // In the case of parameters we replace the defining method with the overridesContext
-            if (PARAMETER == kind) {
+            if (PARAM == kind) {
                 definingMethod = overrideContext;
             }
 
