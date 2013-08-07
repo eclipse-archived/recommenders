@@ -23,6 +23,14 @@
             category="org.eclipse.recommenders.rcp.category.views"
             class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.ProjectCoordinatesView">
       </view>
+      <view
+            category="org.eclipse.recommenders.rcp.category.views"
+            class="org.eclipse.recommenders.injection.ExtensionFactory:org.eclipse.recommenders.internal.models.rcp.CoordinatesToModelsView"
+            icon="icons/depinsp.gif"
+            id="org.eclipse.recommenders.models.rcp.CoordinatesToModelsView"
+            name="Dependency Overview"
+            restorable="true">
+      </view>
       
    </extension>
      <extension

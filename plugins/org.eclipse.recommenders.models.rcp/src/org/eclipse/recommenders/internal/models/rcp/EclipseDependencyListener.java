@@ -239,8 +239,14 @@ public class EclipseDependencyListener implements IDependencyListener {
 
     @Override
     public ImmutableSet<DependencyInfo> getDependenciesForProject(final DependencyInfo project) {
-        Set<DependencyInfo> projectDependencies = workspaceDependenciesByProject.get(project);
-        return ImmutableSet.copyOf(projectDependencies);
+        Set<DependencyInfo> infos = workspaceDependenciesByProject.get(project);
+        return ImmutableSet.copyOf(infos);
+    }
+
+    @Override
+    public ImmutableSet<DependencyInfo> getProjects() {
+        Set<DependencyInfo> infos = workspaceDependenciesByProject.keySet();
+        return ImmutableSet.copyOf(infos);
     }
 
 }
