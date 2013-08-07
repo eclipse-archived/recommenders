@@ -1,6 +1,5 @@
 package org.eclipse.recommenders.examples.calls;
 
-import static org.eclipse.recommenders.utils.Constants.UNKNOWN_METHOD;
 import static org.eclipse.recommenders.utils.Recommendations.top;
 
 import java.io.File;
@@ -40,16 +39,20 @@ public class SingleZipCallRecommender {
         BasedTypeName name = new BasedTypeName(null, query.type);
         ICallModel net = store.acquireModel(name).orNull();
         try {
-            net.setObservedOverrideContext(query.overridesFirst);
+            //
+            // set the inputs into the net
+            net.setObservedOverrideContext(query.overrideFirst);
             net.setObservedDefinitionKind(query.kind);
-            if (query.definition != null && !query.definition.equals(UNKNOWN_METHOD)) {
-                net.setObservedDefiningMethod(query.definition);
-            }
+            net.setObservedDefiningMethod(query.definition);
+            // note setObservedCalls should *always* be called.
             net.setObservedCalls(query.calls);
-            // query the recommender:
+
+            //
+            // query the recommender (just a few examples)
             List<Recommendation<String>> patterns = top(net.recommendPatterns(), 10, 0.01);
             List<Recommendation<IMethodName>> definitions = top(net.recommendDefinitions(), 10);
-            return top(net.recommendCalls(), 5, 0.01d);
+            List<Recommendation<IMethodName>> calls = top(net.recommendCalls(), 5, 0.01d);
+            return calls;
 
         } finally {
             store.releaseModel(net);
@@ -57,24 +60,24 @@ public class SingleZipCallRecommender {
     }
 
     /**
-     * The {@link ObjectUsage} is simple data struct that contains the results of the on-the-fly static analysis done in
-     * the IDE at completion time. It's not part of the official API.
+     * The {@link ObjectUsage} is simple data struct that may contain the results of the on-the-fly static analysis done
+     * in the IDE at completion time. It's not part of the official API!
      */
     public static class ObjectUsage {
 
         public static ObjectUsage newObjectUsageWithDefaults() {
             final ObjectUsage res = new ObjectUsage();
             res.type = Constants.UNKNOWN_TYPE;
-            res.overridesFirst = Constants.UNKNOWN_METHOD;
-            res.overridesSuper = Constants.UNKNOWN_METHOD;
+            res.overrideFirst = Constants.UNKNOWN_METHOD;
+            res.overrideSuper = Constants.UNKNOWN_METHOD;
             res.definition = Constants.UNKNOWN_METHOD;
             res.kind = DefinitionKind.UNKNOWN;
             return res;
         }
 
         public ITypeName type;
-        public IMethodName overridesSuper;
-        public IMethodName overridesFirst;
+        public IMethodName overrideSuper;
+        public IMethodName overrideFirst;
         public Set<IMethodName> calls = Sets.newHashSet();
         public DefinitionKind kind;
         public IMethodName definition;

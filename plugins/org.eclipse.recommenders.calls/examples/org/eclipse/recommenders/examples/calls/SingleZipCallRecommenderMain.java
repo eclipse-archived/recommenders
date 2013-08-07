@@ -26,7 +26,7 @@ public class SingleZipCallRecommenderMain {
     private static ObjectUsage createSampleQuery() {
         ObjectUsage query = ObjectUsage.newObjectUsageWithDefaults();
         query.type = VmTypeName.STRING;
-        query.overridesFirst = VmMethodName.get("Ljava/lang/Object.equals(Ljava/lang/Object;)Z");
+        query.overrideFirst = VmMethodName.get("Ljava/lang/Object.equals(Ljava/lang/Object;)Z");
         return query;
     }
 }
