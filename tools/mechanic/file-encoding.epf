@@ -1,0 +1,6 @@
+# @title File encoding
+# @description set file encoding to UTF-8 and line end to unix
+# @task_type LASTMOD
+/instance/org.eclipse.core.resources/encoding=UTF-8
+/instance/org.eclipse.core.runtime/line.separator=\n
+file_export_version=3.0
