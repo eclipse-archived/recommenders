@@ -6,8 +6,18 @@
    <feature id="org.eclipse.recommenders.rcp.feature" version="0.0.0">
       <category name="main"/>
    </feature>
-   <feature id="org.eclipse.recommenders.rcp.tests.feature" version="0.0.0">
+   <feature id="org.eclipse.recommenders.rcp.tests.feature" version="0.0.0"> 
       <category name="main"/>
    </feature>
+   <feature id="org.eclipse.recommenders.rcp.feature.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature id="org.eclipse.recommenders.simrel.feature.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature id="org.eclipse.recommenders.rcp.tests.feature.source" version="0.0.0"> 
+      <category name="sources"/>
+   </feature>
    <category-def name="main" label="Code Recommenders"/>
+   <category-def name="sources" label="Sources"/>
 </site>
