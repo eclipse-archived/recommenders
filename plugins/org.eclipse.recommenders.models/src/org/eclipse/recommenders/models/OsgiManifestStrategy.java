@@ -13,7 +13,10 @@ package org.eclipse.recommenders.models;
 import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.models.DependencyType.JAR;
 import static org.eclipse.recommenders.utils.Zips.closeQuietly;
+import static org.eclipse.recommenders.models.DependencyType.PROJECT;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
@@ -41,16 +44,43 @@ public class OsgiManifestStrategy extends AbstractStrategy {
 
     @Override
     protected Optional<ProjectCoordinate> extractProjectCoordinateInternal(DependencyInfo dependencyInfo) {
-        JarFile jarFile = jarFileConverter.createJarFile(dependencyInfo.getFile()).orNull();
-        if (jarFile == null) {
-            return absent();
+        Optional<Manifest> optionalManifest = absent();
+        if (dependencyInfo.getType() == DependencyType.JAR) {
+            optionalManifest = extractManifestFromJar(dependencyInfo);
+        } else if (dependencyInfo.getType() == DependencyType.PROJECT) {
+            optionalManifest = extractManifestFromProject(dependencyInfo);
         }
-        try {
-            final Manifest manifest = jarFile.getManifest();
-            if (manifest == null) {
+        if (optionalManifest.isPresent()) {
+            return extractProjectCoordinateFromManifest(optionalManifest.get());
+        }
+        return absent();
+    }
+
+    private Optional<Manifest> extractManifestFromProject(DependencyInfo dependencyInfo) {
+        File projectFolder = dependencyInfo.getFile();
+        File manifestFile = new File(projectFolder, "META-INF" + File.separator + "MANIFEST.MF");
+        if (manifestFile.exists()) {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(manifestFile);
+                Manifest manifest = new Manifest(fileInputStream);
+                fileInputStream.close();
+                return of(manifest);
+            } catch (IOException e) {
                 return absent();
             }
-            return extractProjectCoordinateFromManifest(manifest);
+        }
+        return absent();
+    }
+
+    private Optional<Manifest> extractManifestFromJar(DependencyInfo dependencyInfo) {
+        Optional<JarFile> optionalJarFile = jarFileConverter.createJarFile(dependencyInfo.getFile());
+        if (!optionalJarFile.isPresent()) {
+            return absent();
+        }
+        JarFile jarFile = optionalJarFile.get();
+        try {
+            final Manifest manifest = jarFile.getManifest();
+            return fromNullable(manifest);
         } catch (IOException e) {
             return absent();
         } finally {
@@ -60,19 +90,23 @@ public class OsgiManifestStrategy extends AbstractStrategy {
 
     private Optional<ProjectCoordinate> extractProjectCoordinateFromManifest(Manifest manifest) {
         Attributes attributes = manifest.getMainAttributes();
-        String name = attributes.getValue(BUNDLE_NAME);
-        String version = attributes.getValue(BUNDLE_VERSION);
-        if (name == null || version == null) {
+        String bundleName = attributes.getValue(BUNDLE_NAME);
+        String bundleVersion = attributes.getValue(BUNDLE_VERSION);
+        if (bundleName == null || bundleVersion == null) {
             return absent();
         }
-        int indexOf = name.indexOf(";");
-        String aid = name.substring(0, indexOf == -1 ? name.length() : indexOf);
-        String gid = Artifacts.guessGroupId(aid);
-        return of(new ProjectCoordinate(gid, aid, version));
+        int indexOf = bundleName.indexOf(";");
+        String artifactId = bundleName.substring(0, indexOf == -1 ? bundleName.length() : indexOf);
+        String groupId = Artifacts.guessGroupId(artifactId);
+        Optional<String> version = OsgiVersionParser.parse(bundleVersion);
+        if (version.isPresent()) {
+            return of(new ProjectCoordinate(groupId, artifactId, version.get()));
+        }
+        return absent();
     }
 
     @Override
     public boolean isApplicable(DependencyType type) {
-        return JAR == type;
+        return (JAR == type) || (PROJECT == type);
     }
 }
