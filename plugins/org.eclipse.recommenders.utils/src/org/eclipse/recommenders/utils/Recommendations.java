@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.utils;
 
 import static com.google.common.collect.ComparisonChain.start;
+import static org.eclipse.recommenders.utils.Checks.ensureIsInRange;
 
 import java.util.Comparator;
 import java.util.List;
@@ -107,5 +108,15 @@ public class Recommendations {
      */
     public static <T> List<Recommendation<T>> sortByRelevance(final Iterable<Recommendation<T>> recommendations) {
         return Ordering.from(C_BY_RELEVANCE).reverse().sortedCopy(recommendations);
+    }
+
+    /**
+     * Returns the relevance of the give proposal multiplied by 100 and rounded to the next Integer. Note that this
+     * method checks that the relevance is in the range of [0, 1].
+     */
+    public static int asPercentage(Recommendation<?> recommendation) {
+        double rel = recommendation.getRelevance();
+        ensureIsInRange(rel, 0, 1, "relevance '%f' not in interval [0, 1]", rel);
+        return (int) Math.round(rel * 100);
     }
 }
