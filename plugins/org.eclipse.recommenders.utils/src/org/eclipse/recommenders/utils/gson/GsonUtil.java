@@ -28,6 +28,7 @@ import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -72,6 +73,7 @@ public class GsonUtil {
             //
             builder.registerTypeAdapter(File.class, new GsonFileDeserializer());
             builder.registerTypeAdapter(File.class, new GsonFileSerializer());
+            builder.registerTypeAdapter(UUID.class, new UuidTypeAdapter());
             builder.setPrettyPrinting();
             // builder.setDateFormat("dd.MM.yyyy HH:mm:ss");
             builder.registerTypeAdapter(Date.class, new ISO8601DateParser());
