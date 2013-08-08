@@ -273,6 +273,12 @@
 						<argLine>${tycho.test.jvmArgs}</argLine>
 					</configuration>
 				</plugin>
+				<!-- Eclipse Tycho extras -->
+				<plugin>
+					<groupId>org.eclipse.tycho.extras</groupId>
+					<artifactId>tycho-eclipserun-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
 				<!-- Eclipse Common Build Infrastructure plugins -->
 				<plugin>
 					<groupId>org.eclipse.cbi.maven.plugins</groupId>
