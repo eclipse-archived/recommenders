@@ -12,24 +12,47 @@ package org.eclipse.recommenders.internal.overrides.rcp;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.eclipse.recommenders.models.IBasedName;
+import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
+import org.eclipse.recommenders.models.IUniqueName;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 import org.eclipse.recommenders.overrides.IOverrideModel;
 import org.eclipse.recommenders.overrides.IOverrideModelProvider;
 import org.eclipse.recommenders.overrides.PoolingOverrideModelProvider;
+import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.AbstractIdleService;
+import com.google.common.eventbus.Subscribe;
 
-public class RcpOverrideModelProvider extends AbstractIdleService implements IOverrideModelProvider {
+public class RcpOverrideModelProvider implements IOverrideModelProvider, IRcpService {
 
-    private PoolingOverrideModelProvider delegate;
+    @Inject
+    IModelRepository repository;
+    @Inject
+    IModelArchiveCoordinateAdvisor index;
+
+    PoolingOverrideModelProvider delegate;
 
     @Override
-    public Optional<IOverrideModel> acquireModel(IBasedName<ITypeName> key) {
+    @PostConstruct
+    public void open() throws IOException {
+        delegate = new PoolingOverrideModelProvider(repository, index);
+        delegate.open();
+    }
+
+    @Override
+    @PreDestroy
+    public void close() throws IOException {
+        delegate.close();
+    }
+
+    @Override
+    public Optional<IOverrideModel> acquireModel(IUniqueName<ITypeName> key) {
         return delegate.acquireModel(key);
     }
 
@@ -38,28 +61,9 @@ public class RcpOverrideModelProvider extends AbstractIdleService implements IOv
         delegate.releaseModel(model);
     }
 
-    @Override
-    public void open() throws IOException {
-        delegate.open();
-    }
-
-    @Override
-    public void close() throws IOException {
-        delegate.close();
-    }
-
-    @Inject
-    public RcpOverrideModelProvider(IModelRepository repository) {
-        delegate = new PoolingOverrideModelProvider(repository);
-    }
-
-    @Override
-    protected void shutDown() throws Exception {
+    @Subscribe
+    public void onEvent(ModelRepositoryUrlChangedEvent e) throws IOException {
         close();
-    }
-
-    @Override
-    protected void startUp() throws Exception {
         open();
     }
 }

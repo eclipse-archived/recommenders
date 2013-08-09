@@ -10,6 +10,7 @@
  */
 package org.eclipse.recommenders.utils;
 
+import static com.google.common.base.Optional.*;
 import static com.google.common.io.ByteStreams.toByteArray;
 import static com.google.common.io.Files.newInputStreamSupplier;
 import static org.apache.commons.io.filefilter.DirectoryFileFilter.DIRECTORY;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -36,7 +38,9 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
@@ -61,6 +65,26 @@ public class Zips {
             };
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /**
+     * This abstraction is used for testing.
+     */
+    @VisibleForTesting
+    public interface IFileToJarFileConverter {
+        Optional<JarFile> createJarFile(File file);
+    }
+
+    public static class DefaultJarFileConverter implements IFileToJarFileConverter {
+
+        @Override
+        public Optional<JarFile> createJarFile(File file) {
+            try {
+                return of(new JarFile(file));
+            } catch (IOException e) {
+                return absent();
+            }
         }
     }
 

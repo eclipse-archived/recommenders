@@ -15,8 +15,7 @@ public class ProposalMatcherTest {
 
     @Test
     public void test() {
-
-        // just to be sure we als fail sometimes ;)
+        // just to be sure we also fail sometimes ;)
         assertFalse(check("m(I)V", "LC.m()V"));
 
         //
@@ -31,7 +30,6 @@ public class ProposalMatcherTest {
     }
 
     private boolean check(String jSignature, String rSignature) {
-
         int sep = StringUtils.indexOfAny(jSignature, "<", "(");
         String name = StringUtils.substring(jSignature, 0, sep);
         String sig = StringUtils.substring(jSignature, sep);

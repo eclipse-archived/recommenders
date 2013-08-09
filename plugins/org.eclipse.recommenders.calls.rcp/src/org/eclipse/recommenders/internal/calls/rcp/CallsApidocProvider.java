@@ -38,7 +38,7 @@ import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.calls.ICallModelProvider;
-import org.eclipse.recommenders.models.BasedTypeName;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
@@ -77,7 +77,7 @@ public final class CallsApidocProvider extends ApidocProvider {
 
     private IType receiverType;
     private ICallModel model;
-    private BasedTypeName baseName;
+    private UniqueTypeName baseName;
 
     @JavaSelectionSubscriber
     public void onVariableSelection(final ILocalVariable var, final JavaElementSelectionEvent event,
@@ -104,7 +104,7 @@ public final class CallsApidocProvider extends ApidocProvider {
         }
 
         receiverType = varType.get();
-        baseName = pcProvider.toBasedName(receiverType).orNull();
+        baseName = pcProvider.toUniqueName(receiverType).orNull();
         if (baseName == null || !acquireModel()) {
             return;
         }

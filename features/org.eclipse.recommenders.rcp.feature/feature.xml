@@ -13,7 +13,7 @@
 -->
 <feature
       id="org.eclipse.recommenders.rcp.feature"
-      label="Code Recommenders SDK"
+      label="Code Recommenders Developer Tools (Milestone)"
       version="1.100.0.qualifier"
       provider-name="Eclipse Code Recommenders"
       plugin="org.eclipse.recommenders.rcp"
@@ -282,13 +282,6 @@
 
    <plugin
          id="org.eclipse.recommenders.jayes.io"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.recommenders.jayes.transformation"
          download-size="0"
          install-size="0"
          version="0.0.0"

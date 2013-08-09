@@ -10,7 +10,7 @@
  */
 package org.eclipse.recommenders.calls;
 
-import org.eclipse.recommenders.models.BasedTypeName;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.IModelProvider;
 
 import com.google.common.annotations.Beta;
@@ -21,5 +21,5 @@ import com.google.common.annotations.Beta;
  * interface.
  */
 @Beta
-public interface ICallModelProvider extends IModelProvider<BasedTypeName, ICallModel> {
+public interface ICallModelProvider extends IModelProvider<UniqueTypeName, ICallModel> {
 }

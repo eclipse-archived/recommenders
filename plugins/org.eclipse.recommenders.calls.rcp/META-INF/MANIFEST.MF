@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Call Recommender UI Integration
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.eclipse.recommenders.calls.rcp;singleton:=true
 Bundle-Version: 1.100.0.qualifier
-Bundle-Vendor: Eclipse Code Recommenders
+Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.recommenders.apidocs.rcp;bundle-version="1.100.0";resolution:=optional,
  org.eclipse.recommenders.calls;bundle-version="1.100.0",

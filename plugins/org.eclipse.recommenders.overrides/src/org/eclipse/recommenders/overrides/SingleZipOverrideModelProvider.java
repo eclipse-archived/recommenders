@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.zip.ZipFile;
 
-import org.eclipse.recommenders.models.BasedTypeName;
-import org.eclipse.recommenders.models.IBasedName;
+import org.eclipse.recommenders.models.UniqueTypeName;
+import org.eclipse.recommenders.models.IUniqueName;
 import org.eclipse.recommenders.utils.Openable;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -28,7 +28,7 @@ import com.google.common.base.Optional;
 /**
  * A model provider that uses a single zip file to resolve and load call models from.
  * <p>
- * Note that this provider does not implement any pooling behavior, i.e., calls to {@link #acquireModel(BasedTypeName)}
+ * Note that this provider does not implement any pooling behavior, i.e., calls to {@link #acquireModel(UniqueTypeName)}
  * may return the <b>same</b> {@link ICallModel} independent of whether {@link #releaseModel(ICallModel)} was called or
  * not. Thus, these <b>models should not be shared between and used by several recommenders at the same time</b>.
  */
@@ -61,7 +61,7 @@ public class SingleZipOverrideModelProvider implements IOverrideModelProvider, O
     }
 
     @Override
-    public Optional<IOverrideModel> acquireModel(IBasedName<ITypeName> key) {
+    public Optional<IOverrideModel> acquireModel(IUniqueName<ITypeName> key) {
         try {
             return JayesOverrideModel.load(zip, key.getName());
         } catch (IOException e) {

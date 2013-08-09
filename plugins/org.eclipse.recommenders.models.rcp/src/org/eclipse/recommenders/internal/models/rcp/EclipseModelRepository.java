@@ -10,35 +10,40 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.REPOSITORY_BASEDIR;
+import static org.eclipse.recommenders.utils.Urls.mangle;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
-import org.eclipse.recommenders.internal.models.rcp.ModelsRcpModule.LocalModelRepositoryLocation;
-import org.eclipse.recommenders.models.AetherModelRepository;
+import org.eclipse.recommenders.models.ModelRepository;
+import org.eclipse.recommenders.models.ModelRepository.DownloadCallback;
 import org.eclipse.recommenders.models.IModelRepository;
-import org.eclipse.recommenders.models.ModelArchiveCoordinate;
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.ModelCoordinate;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
-import org.eclipse.recommenders.utils.Pair;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListenableFuture;
 
+/**
+ * The Eclipse RCP wrapper around an {@link IModelRepository} that responds to (@link ModelRepositoryChangedEvent)s by
+ * reconfiguring the underlying repository. It also manages proxy settings and handling of auto download properties.
+ */
 public class EclipseModelRepository implements IModelRepository, IRcpService {
 
     @Inject
-    @LocalModelRepositoryLocation
-    File repodir;
+    @Named(REPOSITORY_BASEDIR)
+    File basedir;
 
     @Inject
     IProxyService proxy;
@@ -46,48 +51,54 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
     @Inject
     ModelsRcpPreferences prefs;
 
-    Cache<Pair<ProjectCoordinate, String>, Optional<ModelArchiveCoordinate>> cache = CacheBuilder.newBuilder()
-            .maximumSize(10).concurrencyLevel(1).build();
-
-    AetherModelRepository delegate;
+    ModelRepository delegate;
 
     @PostConstruct
-    public void open() throws Exception {
-        delegate = new AetherModelRepository(repodir.getParentFile(), prefs.remote);
-        delegate.open();
+    void open() throws Exception {
+        File cache = new File(basedir, mangle(prefs.remote));
+        cache.mkdirs();
+        delegate = new ModelRepository(cache, prefs.remote);
+    }
 
-        // XXX that's not great but there is yet no way to mix Guice with E4 and we need a callback when the URL changes
-        prefs.addRemoteUrlChangedCallback(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    AetherModelRepository tmp = new AetherModelRepository(repodir.getParentFile(), prefs.remote);
-                    // triggers index download and the like
-                    tmp.open();
-                    // XXX this cannot work well in reality when urls are actually changed...
-                    delegate = tmp;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+    @PreDestroy
+    void close() throws Exception {
+    }
+
+    @Subscribe
+    public void onModelRepositoryChanged(ModelRepositoryUrlChangedEvent e) throws Exception {
+        close();
+        open();
     }
 
     @Override
-    public void resolve(ModelArchiveCoordinate model) throws Exception {
-        if (prefs.autoDownloadEnabled) {
-            updateProxySettings();
-            delegate.resolve(model);
-        }
+    public Optional<File> resolve(ModelCoordinate mc) throws Exception {
+        updateProxySettings();
+        return delegate.resolve(mc);
     }
 
-    private void updateProxySettings() {
+    @Override
+    public Optional<File> getLocation(final ModelCoordinate mc) {
+        Optional<File> location = delegate.getLocation(mc);
+        if (!location.isPresent() && prefs.autoDownloadEnabled) {
+            updateProxySettings();
+            new DownloadModelArchiveJob(delegate, mc).schedule();
+        }
+        return location;
+    }
+
+    @Override
+    public ListenableFuture<File> resolve(ModelCoordinate mc, DownloadCallback callback) {
+        updateProxySettings();
+        return delegate.resolve(mc, callback);
+    }
+
+    void updateProxySettings() {
         if (!proxy.isProxiesEnabled()) {
             delegate.unsetProxy();
             return;
         }
         try {
-            URI uri = new URI(delegate.getRemoteUrl());
+            URI uri = new URI(prefs.remote);
             IProxyData[] entries = proxy.select(uri);
             if (entries.length == 0) {
                 delegate.unsetProxy();
@@ -106,29 +117,4 @@ public class EclipseModelRepository implements IModelRepository, IRcpService {
         }
     }
 
-    @Override
-    public Optional<File> getLocation(ModelArchiveCoordinate coordinate) {
-        return delegate.getLocation(coordinate);
-    }
-
-    @Override
-    public Optional<ModelArchiveCoordinate> findBestModelArchive(final ProjectCoordinate coordinate,
-            final String modelType) {
-        try {
-            return cache.get(Pair.newPair(coordinate, modelType), new Callable<Optional<ModelArchiveCoordinate>>() {
-
-                @Override
-                public Optional<ModelArchiveCoordinate> call() throws Exception {
-                    return delegate.findBestModelArchive(coordinate, modelType);
-                }
-            });
-        } catch (ExecutionException e) {
-            return Optional.absent();
-        }
-    }
-
-    @Override
-    public Collection<ModelArchiveCoordinate> listModels(String classifier) {
-        return delegate.listModels(classifier);
-    }
 }

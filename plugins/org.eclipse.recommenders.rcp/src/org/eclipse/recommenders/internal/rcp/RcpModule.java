@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010, 2012 Darmstadt University of Technology.
+ * Copyright (c) 2010, 2013 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -56,6 +56,7 @@ import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
+import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
@@ -89,7 +90,7 @@ public class RcpModule extends AbstractModule implements Module {
     }
 
     private void bindRcpServiceListener() {
-        bindListener(new ServiceMatcher(), new Listener());
+        bindListener(new RcpServiceMatcher(), new Listener());
     }
 
     @Singleton
@@ -107,8 +108,7 @@ public class RcpModule extends AbstractModule implements Module {
         final ExecutorService pool = coreThreadsTimoutExecutor(numberOfCores + 1, MIN_PRIORITY,
                 "Recommenders-Bus-Thread-", //$NON-NLS-1$
                 1L, TimeUnit.MINUTES);
-        final EventBus bus = new AsyncEventBus("Code Recommenders asychronous Workspace Event Bus", pool); //$NON-NLS-1$
-        return bus;
+        return new AsyncEventBus("Recommenders asychronous Workspace Event Bus", pool); //$NON-NLS-1$
     }
 
     @Provides
@@ -135,16 +135,6 @@ public class RcpModule extends AbstractModule implements Module {
     protected IWorkspaceRoot provideWorkspaceRoot() {
         return ResourcesPlugin.getWorkspace().getRoot();
     }
-
-    // @Provides
-    // protected ProxySelector provideProxyService() {
-    // Bundle bundle = FrameworkUtil.getBundle(getClass());
-    // ServiceTracker tracker = new ServiceTracker(bundle.getBundleContext(), IProxyService.class.getName(), null);
-    // tracker.open();
-    // IProxyService service = (IProxyService) tracker.getService();
-    // tracker.close();
-    // return new ServiceBasedProxySelector(service);
-    // }
 
     @Provides
     protected IWorkspace provideWorkspace() {
@@ -210,15 +200,15 @@ public class RcpModule extends AbstractModule implements Module {
         return Platform.getExtensionRegistry();
     }
 
-    static class ServiceMatcher extends AbstractMatcher {
+    static class RcpServiceMatcher extends AbstractMatcher {
 
         @Override
         public boolean matches(Object t) {
             if (t instanceof TypeLiteral<?>) {
                 Class<?> rawType = ((TypeLiteral<?>) t).getRawType();
                 Class<?>[] implemented = rawType.getInterfaces();
-                boolean isRcpService = contains(implemented, IRcpService.class);
-                return isRcpService;
+                boolean contains = contains(implemented, IRcpService.class);
+                return contains;
             }
             return false;
         }
@@ -236,42 +226,52 @@ public class RcpModule extends AbstractModule implements Module {
 
         @Override
         public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter) {
+            final Provider<EventBus> provider = encounter.getProvider(EventBus.class);
+
             encounter.register(new InjectionListener<I>() {
 
                 @Override
                 public void afterInjection(final Object i) {
+                    registerWithEventBus(i);
                     for (final Method m : i.getClass().getDeclaredMethods()) {
                         boolean hasPostConstruct = m.getAnnotation(PostConstruct.class) != null;
                         boolean hasPreDestroy = m.getAnnotation(PreDestroy.class) != null;
-
                         if (hasPreDestroy) {
-
-                            PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
-
-                                @Override
-                                public boolean preShutdown(IWorkbench workbench, boolean forced) {
-                                    try {
-                                        m.invoke(i);
-                                    } catch (Exception e) {
-                                        Throwables.propagate(e);
-                                    }
-                                    return true;
-                                }
-
-                                @Override
-                                public void postShutdown(IWorkbench workbench) {
-                                }
-                            });
-
+                            registerPreDestroyHook(i, m);
                         }
                         if (hasPostConstruct) {
-                            try {
-                                m.invoke(i);
-                            } catch (Exception e) {
-                                Throwables.propagate(e);
-                            }
+                            registerPostConstructHook(i, m);
                         }
                     }
+                }
+
+                private void registerPostConstructHook(final Object i, final Method m) {
+                    try {
+                        m.setAccessible(true);
+                        m.invoke(i);
+                    } catch (Exception e) {
+                        Throwables.propagate(e);
+                    }
+                }
+
+                private void registerPreDestroyHook(final Object i, final Method m) {
+                    PlatformUI.getWorkbench().addWorkbenchListener(new IWorkbenchListener() {
+
+                        @Override
+                        public boolean preShutdown(IWorkbench workbench, boolean forced) {
+                            registerPostConstructHook(i, m);
+                            return true;
+                        }
+
+                        @Override
+                        public void postShutdown(IWorkbench workbench) {
+                        }
+                    });
+                }
+
+                private void registerWithEventBus(final Object i) {
+                    EventBus bus = provider.get();
+                    bus.register(i);
                 }
             });
         }

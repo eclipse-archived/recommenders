@@ -19,6 +19,7 @@ import static java.util.Arrays.asList;
 import static org.eclipse.recommenders.internal.apidocs.rcp.ApidocsViewUtils.*;
 import static org.eclipse.swt.SWT.COLOR_INFO_FOREGROUND;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,10 +40,12 @@ import org.eclipse.recommenders.apidocs.ClassOverridePatterns;
 import org.eclipse.recommenders.apidocs.MethodPattern;
 import org.eclipse.recommenders.apidocs.rcp.ApidocProvider;
 import org.eclipse.recommenders.apidocs.rcp.JavaSelectionSubscriber;
-import org.eclipse.recommenders.models.BasedTypeName;
+import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.PoolingModelProvider;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.JavaElementSelectionEvent;
 import org.eclipse.recommenders.utils.Constants;
@@ -66,23 +69,33 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 public final class OverridesProvider extends ApidocProvider {
 
     private final JavaElementResolver resolver;
     private final EventBus workspaceBus;
-    private IProjectCoordinateProvider coordsProvider;
+    private IProjectCoordinateProvider pcProvider;
     private OverrideDirectivesModelProvider dStore;
     private OverridePatternsModelProvider pStore;
 
     @Inject
-    public OverridesProvider(IProjectCoordinateProvider coordsProvider, JavaElementResolver resolver,
+    public OverridesProvider(IProjectCoordinateProvider pcProvider, JavaElementResolver resolver,
             EventBus workspaceBus, OverridePatternsModelProvider pStore, OverrideDirectivesModelProvider dStore) {
-        this.coordsProvider = coordsProvider;
+        this.pcProvider = pcProvider;
         this.resolver = resolver;
         this.workspaceBus = workspaceBus;
         this.pStore = pStore;
         this.dStore = dStore;
+    }
+
+    @Subscribe
+    public void onEvent(ModelIndexOpenedEvent e) throws IOException {
+        pStore.close();
+        pStore.open();
+
+        dStore.close();
+        dStore.open();
     }
 
     @JavaSelectionSubscriber
@@ -102,7 +115,7 @@ public final class OverridesProvider extends ApidocProvider {
     }
 
     private boolean renderClassOverrideDirectives(final IType type, final Composite parent) throws ExecutionException {
-        Optional<ClassOverrideDirectives> model = dStore.acquireModel(coordsProvider.toBasedName(type).orNull());
+        Optional<ClassOverrideDirectives> model = dStore.acquireModel(pcProvider.toUniqueName(type).orNull());
         if (!model.isPresent() || model.get().getOverrides() == null) {
             return false;
         }
@@ -111,7 +124,7 @@ public final class OverridesProvider extends ApidocProvider {
     }
 
     private boolean renderClassOverridesPatterns(final IType type, final Composite parent) throws ExecutionException {
-        Optional<ClassOverridePatterns> opt = pStore.acquireModel(coordsProvider.toBasedName(type).orNull());
+        Optional<ClassOverridePatterns> opt = pStore.acquireModel(pcProvider.toUniqueName(type).orNull());
         if (!opt.isPresent()) {
             return false;
         }
@@ -293,15 +306,15 @@ public final class OverridesProvider extends ApidocProvider {
     }
 
     public static class OverridePatternsModelProvider extends
-            PoolingModelProvider<BasedTypeName, ClassOverridePatterns> {
+            PoolingModelProvider<UniqueTypeName, ClassOverridePatterns> {
 
         @Inject
-        public OverridePatternsModelProvider(IModelRepository repository) {
-            super(repository, Constants.CLASS_OVRP_MODEL);
+        public OverridePatternsModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
+            super(repository, index, Constants.CLASS_OVRP_MODEL);
         }
 
         @Override
-        protected Optional<ClassOverridePatterns> loadModel(ZipFile zip, BasedTypeName key) throws Exception {
+        protected Optional<ClassOverridePatterns> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
             String path = Zips.path(key.getName(), ".json");
             ZipEntry entry = zip.getEntry(path);
             if (entry == null) {
@@ -315,15 +328,15 @@ public final class OverridesProvider extends ApidocProvider {
     }
 
     public static class OverrideDirectivesModelProvider extends
-            PoolingModelProvider<BasedTypeName, ClassOverrideDirectives> {
+            PoolingModelProvider<UniqueTypeName, ClassOverrideDirectives> {
 
         @Inject
-        public OverrideDirectivesModelProvider(IModelRepository repository) {
-            super(repository, Constants.CLASS_OVRD_MODEL);
+        public OverrideDirectivesModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index) {
+            super(repository, index, Constants.CLASS_OVRD_MODEL);
         }
 
         @Override
-        protected Optional<ClassOverrideDirectives> loadModel(ZipFile zip, BasedTypeName key) throws Exception {
+        protected Optional<ClassOverrideDirectives> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
             String path = Zips.path(key.getName(), ".json");
             ZipEntry entry = zip.getEntry(path);
             if (entry == null) {

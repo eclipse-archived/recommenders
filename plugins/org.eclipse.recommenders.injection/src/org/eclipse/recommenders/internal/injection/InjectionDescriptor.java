@@ -1,5 +1,3 @@
-package org.eclipse.recommenders.internal.injection;
-
 /**
  * Copyright (c) 2010 Darmstadt University of Technology.
  * All rights reserved. This program and the accompanying materials
@@ -10,6 +8,7 @@ package org.eclipse.recommenders.internal.injection;
  * Contributors:
  *    Marcel Bruch - initial API and implementation.
  */
+package org.eclipse.recommenders.internal.injection;
 
 import java.util.List;
 

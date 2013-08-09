@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.eclipse.recommenders.models.advisors.JREReleaseFileAdvisor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -63,9 +64,9 @@ public class JREReleaseFileStrategyTest {
     @Test
     public void testInvalidType() throws IOException {
         DependencyInfo info = new DependencyInfo(createDummyFile(), DependencyType.JAR);
-        IProjectCoordinateResolver sut = new JREReleaseFileStrategy();
+        IProjectCoordinateAdvisor sut = new JREReleaseFileAdvisor();
 
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(info);
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
 
         assertFalse(optionalProjectCoordinate.isPresent());
     }
@@ -78,9 +79,9 @@ public class JREReleaseFileStrategyTest {
         fillReleaseFileWithOtherStuff();
 
         DependencyInfo info = new DependencyInfo(javaHomeDirectory, DependencyType.JRE);
-        IProjectCoordinateResolver sut = new JREReleaseFileStrategy();
+        IProjectCoordinateAdvisor sut = new JREReleaseFileAdvisor();
 
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(info);
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
 
         assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
@@ -92,9 +93,9 @@ public class JREReleaseFileStrategyTest {
         fillReleaseFileWithOtherStuff();
 
         DependencyInfo info = new DependencyInfo(javaHomeDirectory, DependencyType.JRE);
-        IProjectCoordinateResolver sut = new JREReleaseFileStrategy();
+        IProjectCoordinateAdvisor sut = new JREReleaseFileAdvisor();
 
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(info);
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
 
         assertFalse(optionalProjectCoordinate.isPresent());
     }
@@ -104,9 +105,9 @@ public class JREReleaseFileStrategyTest {
         createJavaHomeDirectory();
 
         DependencyInfo info = new DependencyInfo(javaHomeDirectory, DependencyType.JRE);
-        IProjectCoordinateResolver sut = new JREReleaseFileStrategy();
+        IProjectCoordinateAdvisor sut = new JREReleaseFileAdvisor();
 
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(info);
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(info);
 
         assertFalse(optionalProjectCoordinate.isPresent());
     }

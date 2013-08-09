@@ -10,12 +10,12 @@
  */
 package org.eclipse.recommenders.models;
 
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 public interface IDependencyListener {
 
-    Set<DependencyInfo> getDependenciesForProject(DependencyInfo project);
+    ImmutableSet<DependencyInfo> getDependenciesForProject(DependencyInfo project);
 
-    Set<DependencyInfo> getDependencies();
+    ImmutableSet<DependencyInfo> getDependencies();
 
 }

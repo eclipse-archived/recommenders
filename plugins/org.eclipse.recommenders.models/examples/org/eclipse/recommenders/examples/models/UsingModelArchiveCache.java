@@ -13,21 +13,21 @@ package org.eclipse.recommenders.examples.models;
 import java.io.IOException;
 
 import org.eclipse.recommenders.models.IModelRepository;
-import org.eclipse.recommenders.models.ModelArchiveCoordinate;
+import org.eclipse.recommenders.models.ModelCoordinate;
 
 public class UsingModelArchiveCache {
 
-    void downloadModelArchive(final ModelArchiveCoordinate model, final IModelRepository repository) throws Exception {
-        repository.resolve(model);
+    void downloadModelArchive(final ModelCoordinate mc, final IModelRepository repository) throws Exception {
+        repository.resolve(mc);
     }
 
-    void findLocalModelArchive(final ModelArchiveCoordinate model, final IModelRepository repository) throws Exception {
-        if (!repository.getLocation(model).isPresent()) {
-            repository.resolve(model);
+    void findLocalModelArchive(final ModelCoordinate mc, final IModelRepository repository) throws Exception {
+        if (!repository.getLocation(mc).isPresent()) {
+            repository.resolve(mc);
         }
     }
 
-    void deleteCachedModelArchive(final ModelArchiveCoordinate model, final IModelRepository repository)
+    void deleteCachedModelArchive(final ModelCoordinate mc, final IModelRepository repository)
             throws IOException {
         // repository.delete(model);
     }

@@ -14,7 +14,8 @@ import static org.eclipse.recommenders.utils.Constants.CLASS_CALL_MODELS;
 
 import java.util.zip.ZipFile;
 
-import org.eclipse.recommenders.models.BasedTypeName;
+import org.eclipse.recommenders.models.UniqueTypeName;
+import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelProvider;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.SimpleModelProvider;
@@ -29,15 +30,15 @@ import com.google.common.base.Optional;
  * Note that models should not be shared between several recommenders.
  */
 @Beta
-public class SimpleCallModelProvider extends SimpleModelProvider<BasedTypeName, ICallModel> implements
+public class SimpleCallModelProvider extends SimpleModelProvider<UniqueTypeName, ICallModel> implements
         ICallModelProvider {
 
-    public SimpleCallModelProvider(IModelRepository repo) {
-        super(repo, CLASS_CALL_MODELS);
+    public SimpleCallModelProvider(IModelRepository repo, IModelArchiveCoordinateAdvisor index) {
+        super(repo, index, CLASS_CALL_MODELS);
     }
 
     @Override
-    protected Optional<ICallModel> loadModel(ZipFile zip, BasedTypeName key) throws Exception {
+    protected Optional<ICallModel> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
         return JayesCallModel.load(zip, key.getName());
     }
 }

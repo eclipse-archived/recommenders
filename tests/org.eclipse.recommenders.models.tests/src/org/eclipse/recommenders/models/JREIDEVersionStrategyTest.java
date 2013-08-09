@@ -17,7 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,17 +49,17 @@ public class JREIDEVersionStrategyTest {
     @Test
     public void testNotSupportedType() {
         DependencyInfo info = new DependencyInfo(javaHome, DependencyType.JAR);
-        IProjectCoordinateResolver sut = new JREExecutionEnvironmentStrategy();
+        IProjectCoordinateAdvisor sut = new JREExecutionEnvironmentAdvisor();
 
-        sut.searchForProjectCoordinate(info);
+        sut.suggest(info);
     }
 
     @Test
     public void testMissingInformation() {
         DependencyInfo info = new DependencyInfo(javaHome, DependencyType.JRE);
-        IProjectCoordinateResolver sut = new JREExecutionEnvironmentStrategy();
+        IProjectCoordinateAdvisor sut = new JREExecutionEnvironmentAdvisor();
 
-        Optional<ProjectCoordinate> extractProjectCoordinate = sut.searchForProjectCoordinate(info);
+        Optional<ProjectCoordinate> extractProjectCoordinate = sut.suggest(info);
 
         assertFalse(extractProjectCoordinate.isPresent());
     }
@@ -68,9 +68,9 @@ public class JREIDEVersionStrategyTest {
     public void testValidJRE() {
         DependencyInfo info = new DependencyInfo(javaHome, DependencyType.JRE,
                 createAttributesMapForExecutionEnvironment("JavaSE-1.6"));
-        IProjectCoordinateResolver sut = new JREExecutionEnvironmentStrategy();
+        IProjectCoordinateAdvisor sut = new JREExecutionEnvironmentAdvisor();
 
-        Optional<ProjectCoordinate> projectCoordinate = sut.searchForProjectCoordinate(info);
+        Optional<ProjectCoordinate> projectCoordinate = sut.suggest(info);
 
         assertEquals(EXPECTED_PROJECT_COORDINATE, projectCoordinate.get());
     }

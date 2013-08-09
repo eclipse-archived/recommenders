@@ -11,15 +11,13 @@
 package org.eclipse.recommenders.models;
 
 import static com.google.common.base.Optional.fromNullable;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,18 +35,17 @@ public class MappingProviderTest {
             "another.example", "another.example.project", "1.2.3");
 
     @Rule
-    public final TemporaryFolder folder = new TemporaryFolder();
-    private File exampleFile;
+    public TemporaryFolder folder = new TemporaryFolder();
 
-    private IProjectCoordinateResolver createMockedStrategy(final ProjectCoordinate projectCoordinate,
+    ProjectCoordinateAdvisorService sut = new ProjectCoordinateAdvisorService();
+
+    File exampleFile;
+
+    private IProjectCoordinateAdvisor createMockedStrategy(final ProjectCoordinate projectCoordinate,
             final DependencyType... dependencyTypes) {
-        IProjectCoordinateResolver mockedStrategy = Mockito.mock(IProjectCoordinateResolver.class);
-        Mockito.when(mockedStrategy.searchForProjectCoordinate(Mockito.any(DependencyInfo.class))).thenReturn(
+        IProjectCoordinateAdvisor mockedStrategy = Mockito.mock(IProjectCoordinateAdvisor.class);
+        Mockito.when(mockedStrategy.suggest(Mockito.any(DependencyInfo.class))).thenReturn(
                 fromNullable(projectCoordinate));
-        Mockito.when(mockedStrategy.isApplicable(Mockito.any(DependencyType.class))).thenReturn(false);
-        for (DependencyType dependencyType : dependencyTypes) {
-            Mockito.when(mockedStrategy.isApplicable(dependencyType)).thenReturn(true);
-        }
         return mockedStrategy;
     }
 
@@ -59,87 +56,61 @@ public class MappingProviderTest {
 
     @Test
     public void testMappingProviderWithNoStrategy() throws IOException {
-        IMappingProvider sut = new MappingProvider();
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                exampleFile, DependencyType.JAR));
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(new DependencyInfo(exampleFile,
+                DependencyType.JAR));
 
         assertFalse(optionalProjectCoordinate.isPresent());
     }
 
     @Test
     public void testMappingProviderWithMockedStrategy() throws IOException {
-        IMappingProvider sut = new MappingProvider();
-        sut.addStrategy(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                exampleFile, DependencyType.JAR));
+        sut.addAdvisor(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(new DependencyInfo(exampleFile,
+                DependencyType.JAR));
 
         assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
 
     @Test
     public void testCorrectOrderOfStrategiesWithAddStrategies() throws IOException {
-        IMappingProvider sut = new MappingProvider();
-        sut.addStrategy(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
-        sut.addStrategy(createMockedStrategy(ANOTHER_EXPECTED_PROJECT_COORDINATE));
+        ProjectCoordinateAdvisorService sut = new ProjectCoordinateAdvisorService();
+        sut.addAdvisor(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
+        sut.addAdvisor(createMockedStrategy(ANOTHER_EXPECTED_PROJECT_COORDINATE));
 
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                exampleFile, DependencyType.JAR));
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(new DependencyInfo(exampleFile,
+                DependencyType.JAR));
 
         assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
 
     @Test
     public void testSetStrategiesSetStrategiesCorrect() {
-        IMappingProvider sut = new MappingProvider();
-
-        List<IProjectCoordinateResolver> strategies = Lists.newArrayList();
+        List<IProjectCoordinateAdvisor> strategies = Lists.newArrayList();
         strategies.add(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
         strategies.add(createMockedStrategy(ANOTHER_EXPECTED_PROJECT_COORDINATE));
-        sut.setStrategies(strategies);
+        sut.setAdvisors(strategies);
 
-        assertEquals(strategies, sut.getStrategies());
-    }
-
-    @Test
-    public void testIsApplicableWithoutStrategies() {
-        IMappingProvider sut = new MappingProvider();
-        assertFalse(sut.isApplicable(DependencyType.JAR));
-    }
-
-    @Test
-    public void testIsApplicableWithStrategies() {
-        IMappingProvider sut = new MappingProvider();
-        sut.addStrategy(createMockedStrategy(ProjectCoordinate.UNKNOWN, DependencyType.JRE));
-        sut.addStrategy(createMockedStrategy(ProjectCoordinate.UNKNOWN, DependencyType.JAR));
-        assertTrue(sut.isApplicable(DependencyType.JAR));
+        assertEquals(strategies, sut.getAdvisors());
     }
 
     @Test
     public void testCorrectOrderOfStrategiesWithSetStrategies() throws IOException {
-        IMappingProvider sut = new MappingProvider();
+        sut.addAdvisor(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
+        sut.addAdvisor(createMockedStrategy(ANOTHER_EXPECTED_PROJECT_COORDINATE));
 
-        List<IProjectCoordinateResolver> strategies = Lists.newArrayList();
-        strategies.add(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
-        strategies.add(createMockedStrategy(ANOTHER_EXPECTED_PROJECT_COORDINATE));
-        sut.setStrategies(strategies);
-
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                exampleFile, DependencyType.JAR));
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(new DependencyInfo(exampleFile,
+                DependencyType.JAR));
 
         assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
 
     @Test
     public void testSecondStrategyWins() throws IOException {
-        IMappingProvider sut = new MappingProvider();
+        sut.addAdvisor(createMockedStrategy(null));
+        sut.addAdvisor(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
 
-        List<IProjectCoordinateResolver> strategies = Lists.newArrayList();
-        strategies.add(createMockedStrategy(null));
-        strategies.add(createMockedStrategy(EXPECTED_PROJECT_COORDINATE));
-        sut.setStrategies(strategies);
-
-        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.searchForProjectCoordinate(new DependencyInfo(
-                exampleFile, DependencyType.JAR));
+        Optional<ProjectCoordinate> optionalProjectCoordinate = sut.suggest(new DependencyInfo(exampleFile,
+                DependencyType.JAR));
         assertEquals(EXPECTED_PROJECT_COORDINATE, optionalProjectCoordinate.get());
     }
 

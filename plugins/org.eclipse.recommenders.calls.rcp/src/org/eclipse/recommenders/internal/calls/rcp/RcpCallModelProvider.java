@@ -12,42 +12,57 @@ package org.eclipse.recommenders.internal.calls.rcp;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.recommenders.calls.ICallModel;
 import org.eclipse.recommenders.calls.ICallModelProvider;
 import org.eclipse.recommenders.calls.PoolingCallModelProvider;
-import org.eclipse.recommenders.models.BasedTypeName;
+import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
+import org.eclipse.recommenders.models.UniqueTypeName;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
+import org.eclipse.recommenders.rcp.IRcpService;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
 
-public class RcpCallModelProvider implements ICallModelProvider {
+public class RcpCallModelProvider implements ICallModelProvider, IRcpService {
+
+    @Inject
+    IModelRepository repository;
+    @Inject
+    IModelArchiveCoordinateAdvisor index;
 
     PoolingCallModelProvider delegate;
 
-    @Inject
-    public RcpCallModelProvider(IModelRepository repository) {
-        delegate = new PoolingCallModelProvider(repository);
+    @Override
+    @PostConstruct
+    public void open() throws IOException {
+        delegate = new PoolingCallModelProvider(repository, index);
+        delegate.open();
     }
 
     @Override
+    @PreDestroy
     public void close() throws IOException {
         delegate.close();
     }
 
     @Override
-    public void open() throws IOException {
-        delegate.open();
-    }
-
-    @Override
-    public Optional<ICallModel> acquireModel(BasedTypeName key) {
+    public Optional<ICallModel> acquireModel(UniqueTypeName key) {
         return delegate.acquireModel(key);
     }
 
     @Override
     public void releaseModel(ICallModel value) {
         delegate.releaseModel(value);
+    }
+
+    @Subscribe
+    public void onEvent(ModelRepositoryUrlChangedEvent e) throws IOException {
+        close();
+        open();
     }
 }

@@ -14,7 +14,8 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.eclipse.recommenders.models.IBasedName;
+import org.eclipse.recommenders.models.IUniqueName;
+import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.PoolingModelProvider;
 import org.eclipse.recommenders.utils.Zips;
@@ -22,14 +23,14 @@ import org.eclipse.recommenders.utils.names.ITypeName;
 
 import com.google.common.base.Optional;
 
-public class CallsDemoModelProvider extends PoolingModelProvider<IBasedName<ITypeName>, Object> {
+public class CallsDemoModelProvider extends PoolingModelProvider<IUniqueName<ITypeName>, Object> {
 
-    public CallsDemoModelProvider(IModelRepository repo) {
-        super(repo, "call");
+    public CallsDemoModelProvider(IModelRepository repo, IModelArchiveCoordinateAdvisor index) {
+        super(repo, index, "call");
     }
 
     @Override
-    protected Optional<Object> loadModel(ZipFile zip, IBasedName<ITypeName> key) throws Exception {
+    protected Optional<Object> loadModel(ZipFile zip, IUniqueName<ITypeName> key) throws Exception {
         String path = Zips.path(key.getName(), ".net");
         ZipEntry entry = zip.getEntry(path);
         if (entry == null) {

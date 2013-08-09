@@ -28,6 +28,7 @@ public class DependencyInfo {
 
     public static final String EXECUTION_ENVIRONMENT = "EXECUTION_ENVIRONMENT";
     public static final String EXECUTION_ENVIRONMENT_VERSION = "EXECUTION_ENVIRONMENT_VERSION";
+    public static final String PROJECT_NAME = "PROJECT_NAME";
 
     private final File file;
     private final DependencyType type;
@@ -41,7 +42,7 @@ public class DependencyInfo {
         this.file = ensureIsNotNull(file);
         checkArgument(file.isAbsolute());
         this.type = type;
-        this.hints = ensureIsNotNull(hint);
+        hints = ensureIsNotNull(hint);
     }
 
     public File getFile() {
@@ -56,28 +57,22 @@ public class DependencyInfo {
         return Optional.fromNullable(hints.get(key));
     }
 
-    public Map<String, String> getHints() {
+    public ImmutableMap<String, String> getHints() {
         return ImmutableMap.copyOf(hints);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(file).append(type).append(hints).toHashCode();
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DependencyInfo) {
-            final DependencyInfo other = (DependencyInfo) obj;
-            return new EqualsBuilder().append(file, other.file).append(type, other.type)
-                    .append(hints, other.hints).isEquals();
-        } else {
-            return false;
-        }
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper("").addValue(file).addValue(type).addValue(hints).toString();
+        return Objects.toStringHelper(this).addValue(file).addValue(type).addValue(hints).toString();
     }
 }

@@ -32,20 +32,22 @@ import com.google.common.cache.RemovalNotification;
 
 /**
  * A non-thread-safe implementation of {@link IModelProvider} that loads models from model zip files using a
- * {@link ModelRepository}. Note that {@link #acquireModel(IBasedName)} attempts to download matching model archives
+ * {@link ModelRepository}. Note that {@link #acquireModel(IUniqueName)} attempts to download matching model archives
  * immediately and thus blocks until the download is completed.
  */
-public abstract class SimpleModelProvider<K extends IBasedName<?>, M> implements IModelProvider<K, M> {
+public abstract class SimpleModelProvider<K extends IUniqueName<?>, M> implements IModelProvider<K, M> {
 
     private Logger log = LoggerFactory.getLogger(getClass());
-    protected LoadingCache<ModelArchiveCoordinate, ZipFile> openZips = CacheBuilder.newBuilder().maximumSize(10)
+    protected LoadingCache<ModelCoordinate, ZipFile> openZips = CacheBuilder.newBuilder().maximumSize(10)
             .expireAfterAccess(1, MINUTES).removalListener(new ZipRemovalListener()).build(new ZipCacheLoader());
 
     protected IModelRepository repository;
     protected String modelType;
+    private IModelArchiveCoordinateAdvisor index;
 
-    public SimpleModelProvider(IModelRepository cache, String modelType) {
+    public SimpleModelProvider(IModelRepository cache, IModelArchiveCoordinateAdvisor index, String modelType) {
         this.repository = cache;
+        this.index = index;
         this.modelType = modelType;
     }
 
@@ -53,15 +55,15 @@ public abstract class SimpleModelProvider<K extends IBasedName<?>, M> implements
     public Optional<M> acquireModel(K key) {
         try {
             // unknown model? return immediately
-            ModelArchiveCoordinate coord = repository.findBestModelArchive(key.getBase(), modelType).orNull();
-            if (coord == null) {
+            ModelCoordinate mc = index.suggest(key.getProjectCoordinate(), modelType).orNull();
+            if (mc == null) {
                 return absent();
             }
             // since the guava cache does not support null values, we have to check this before.
-            if (!repository.getLocation(coord).isPresent()) {
+            if (!repository.getLocation(mc).isPresent()) {
                 return absent();
             }
-            ZipFile zip = openZips.get(coord);
+            ZipFile zip = openZips.get(mc);
             return loadModel(zip, key);
         } catch (Exception e) {
             log.error("Exception while loading model " + key, e);
@@ -88,9 +90,9 @@ public abstract class SimpleModelProvider<K extends IBasedName<?>, M> implements
      * Resolves the given model archive coordinate from models store, puts the zip file into the cache, and loads the
      * file contents completely in memory for faster data access.
      */
-    private final class ZipCacheLoader extends CacheLoader<ModelArchiveCoordinate, ZipFile> {
+    private final class ZipCacheLoader extends CacheLoader<ModelCoordinate, ZipFile> {
         @Override
-        public ZipFile load(ModelArchiveCoordinate key) throws Exception {
+        public ZipFile load(ModelCoordinate key) throws Exception {
             File location = repository.getLocation(key).get();
             // read file in memory to speed up access
             toByteArray(newInputStreamSupplier(location));
@@ -101,9 +103,9 @@ public abstract class SimpleModelProvider<K extends IBasedName<?>, M> implements
     /**
      * Closes an zip file evicted from the cache.
      */
-    private final class ZipRemovalListener implements RemovalListener<ModelArchiveCoordinate, ZipFile> {
+    private final class ZipRemovalListener implements RemovalListener<ModelCoordinate, ZipFile> {
         @Override
-        public void onRemoval(RemovalNotification<ModelArchiveCoordinate, ZipFile> notification) {
+        public void onRemoval(RemovalNotification<ModelCoordinate, ZipFile> notification) {
             closeQuietly(notification.getValue());
         }
     }

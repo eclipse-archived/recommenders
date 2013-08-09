@@ -13,7 +13,7 @@ package org.eclipse.recommenders.examples.models;
 import java.io.File;
 
 import org.eclipse.recommenders.examples.models.UsingModelProvider.RecommendationModel;
-import org.eclipse.recommenders.models.IBasedName;
+import org.eclipse.recommenders.models.IUniqueName;
 import org.eclipse.recommenders.models.IModelProvider;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -40,20 +40,20 @@ public class CompletionEngineExample {
     }
 
     private static final class CompletionEngine {
-        IModelProvider<IBasedName<ITypeName>, RecommendationModel> modelProvider;
+        IModelProvider<IUniqueName<ITypeName>, RecommendationModel> modelProvider;
         EclipseProjectCoordinateProvider coordService;
 
         void computeProposals(IJavaElement e) {
-            ProjectCoordinate gav = coordService.map(e).orNull();
+            ProjectCoordinate pc = coordService.map(e).orNull();
             ITypeName type = e.getITypeName(); // convert somehow to ITypeName
-            IBasedName<ITypeName> name = createQualifiedName(gav, type);
+            IUniqueName<ITypeName> name = createQualifiedName(pc, type);
             RecommendationModel net = modelProvider.acquireModel(name).orNull();
             // ... do work
             modelProvider.releaseModel(net);
 
         }
 
-        private IBasedName<ITypeName> createQualifiedName(ProjectCoordinate gav, ITypeName name) {
+        private IUniqueName<ITypeName> createQualifiedName(ProjectCoordinate pc, ITypeName name) {
             return null;
         }
     }

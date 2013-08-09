@@ -40,7 +40,7 @@ import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.ProposalProcessorManager;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
-import org.eclipse.recommenders.models.BasedTypeName;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
@@ -70,7 +70,7 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     private IRecommendersCompletionContext ctx;
 
     private AstCallCompletionAnalyzer completionAnalyzer;
-    private BasedTypeName basedName;
+    private UniqueTypeName name;
     private ICallModel model;
 
     private Iterable<Recommendation<IMethodName>> recommendations;
@@ -79,9 +79,9 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     private CallsRcpPreferences prefs;
 
     @Inject
-    public CallCompletionSessionProcessor(final IProjectCoordinateProvider projectCoordinateProvider,
+    public CallCompletionSessionProcessor(final IProjectCoordinateProvider pcProvider,
             final ICallModelProvider modelProvider, CallsRcpPreferences prefs) {
-        pcProvider = projectCoordinateProvider;
+        this.pcProvider = pcProvider;
         this.modelProvider = modelProvider;
         this.prefs = prefs;
         initializeOverlayIcon();
@@ -114,12 +114,12 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         if (receiverType == null) {
             return false;
         }
-        basedName = pcProvider.toBasedName(receiverType).orNull();
-        if (basedName == null) {
+        name = pcProvider.toUniqueName(receiverType).orNull();
+        if (name == null) {
             return false;
         }
         // TODO loop until we find a model. later
-        model = modelProvider.acquireModel(basedName).or(NullCallModel.NULL_MODEL);
+        model = modelProvider.acquireModel(name).or(NullCallModel.NULL_MODEL);
         return model != null;
 
     }
@@ -143,7 +143,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
         // set definition-type and defined-by
         model.setObservedDefinitionKind(completionAnalyzer.getReceiverDefinitionType());
         model.setObservedDefiningMethod(completionAnalyzer.getDefinedBy().orNull());
-
         // set calls:
         model.setObservedCalls(newHashSet(completionAnalyzer.getCalls()));
 

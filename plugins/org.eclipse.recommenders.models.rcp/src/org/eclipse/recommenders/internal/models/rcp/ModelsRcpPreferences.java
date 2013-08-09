@@ -12,39 +12,33 @@ package org.eclipse.recommenders.internal.models.rcp;
 
 import static org.eclipse.recommenders.internal.models.rcp.Constants.P_REPOSITORY_ENABLE_AUTO_DOWNLOAD;
 
-import java.util.Set;
-
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.recommenders.injection.InjectionService;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelRepositoryUrlChangedEvent;
 
-import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
+@SuppressWarnings("restriction")
 public class ModelsRcpPreferences {
 
     @Inject
     @Preference(P_REPOSITORY_ENABLE_AUTO_DOWNLOAD)
     public boolean autoDownloadEnabled;
 
-    @Inject
-    @Preference(Constants.P_REPOSITORY_URL)
     public String remote;
 
+    private EventBus bus = InjectionService.getInstance().requestInstance(EventBus.class);;
+
     @Inject
-    public void setRemote(@Preference(Constants.P_REPOSITORY_URL) String remote) throws Exception {
-        for (Runnable r : callbacks) {
-            r.run();
+    void setRemote(@Preference(Constants.P_REPOSITORY_URL) String newRemote) throws Exception {
+        if (remote == null) {
+            // first initialization. Don't fire an event.
+            remote = newRemote;
+        } else if (!newRemote.equals(remote)) {
+            remote = newRemote;
+            bus.post(new ModelRepositoryUrlChangedEvent());
         }
     }
-
-    Set<Runnable> callbacks = Sets.newHashSet();
-
-    public void addRemoteUrlChangedCallback(Runnable runnable) {
-        callbacks.add(runnable);
-    }
-
-    public void removeRemoteUrlChangedCallback(Runnable runnable) {
-        callbacks.remove(runnable);
-    }
-
 }

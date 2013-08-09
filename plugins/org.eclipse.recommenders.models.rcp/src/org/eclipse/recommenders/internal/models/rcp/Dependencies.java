@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.models.rcp;
 
 import static com.google.common.base.Optional.*;
+import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
 
 import java.io.File;
 import java.util.Map;
@@ -65,7 +66,9 @@ public final class Dependencies {
 
     public static DependencyInfo createDependencyInfoForProject(final IJavaProject project) {
         File file = workspace.findMember(project.getPath()).getLocation().toFile();
-        DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.PROJECT);
+        Map<String, String> hints = Maps.newHashMap();
+        hints.put(PROJECT_NAME, project.getElementName());
+        DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.PROJECT, hints);
         return dependencyInfo;
     }
 }

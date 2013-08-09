@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.recommenders.internal.models.rcp.ManualMappingStrategy;
+import org.eclipse.recommenders.internal.models.rcp.ManualProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.ProjectCoordinate;
@@ -40,9 +40,9 @@ public class ManualMappingStrategyTest {
 
     @Test
     public void returnAbsentWhenNoMappingExist() throws IOException {
-        ManualMappingStrategy sut = new ManualMappingStrategy(persistenceFile);
+        ManualProjectCoordinateAdvisor sut = new ManualProjectCoordinateAdvisor(persistenceFile);
 
-        Optional<ProjectCoordinate> projectCoordinate = sut.searchForProjectCoordinate(exampleDependencyInfo);
+        Optional<ProjectCoordinate> projectCoordinate = sut.suggest(exampleDependencyInfo);
 
         assertFalse(projectCoordinate.isPresent());
 
@@ -51,11 +51,11 @@ public class ManualMappingStrategyTest {
 
     @Test
     public void returnManualMappingCorrect() throws IOException {
-        ManualMappingStrategy sut = new ManualMappingStrategy(persistenceFile);
+        ManualProjectCoordinateAdvisor sut = new ManualProjectCoordinateAdvisor(persistenceFile);
 
         sut.setManualMapping(exampleDependencyInfo, EXPECTED_PROJECT_COORDINATE);
 
-        Optional<ProjectCoordinate> projectCoordinate = sut.searchForProjectCoordinate(exampleDependencyInfo);
+        Optional<ProjectCoordinate> projectCoordinate = sut.suggest(exampleDependencyInfo);
 
         assertEquals(EXPECTED_PROJECT_COORDINATE, projectCoordinate.get());
 
@@ -64,16 +64,16 @@ public class ManualMappingStrategyTest {
 
     @Test
     public void returnManualMappingsCorrectForMoreMappings() throws IOException {
-        ManualMappingStrategy sut = new ManualMappingStrategy(persistenceFile);
+        ManualProjectCoordinateAdvisor sut = new ManualProjectCoordinateAdvisor(persistenceFile);
 
         sut.setManualMapping(exampleDependencyInfo, EXPECTED_PROJECT_COORDINATE);
         sut.setManualMapping(anotherExampleDependencyInfo, ANOTHER_EXPECTED_PROJECT_COORDINATE);
 
-        Optional<ProjectCoordinate> projectCoordinate = sut.searchForProjectCoordinate(exampleDependencyInfo);
+        Optional<ProjectCoordinate> projectCoordinate = sut.suggest(exampleDependencyInfo);
         assertEquals(EXPECTED_PROJECT_COORDINATE, projectCoordinate.get());
 
         Optional<ProjectCoordinate> anotherProjectCoordinate = sut
-                .searchForProjectCoordinate(anotherExampleDependencyInfo);
+                .suggest(anotherExampleDependencyInfo);
         assertEquals(ANOTHER_EXPECTED_PROJECT_COORDINATE, anotherProjectCoordinate.get());
 
         sut.close();
@@ -81,21 +81,21 @@ public class ManualMappingStrategyTest {
 
     @Test
     public void storageOfManualMappingsWorksCorrect() throws IOException {
-        ManualMappingStrategy sut = new ManualMappingStrategy(persistenceFile);
+        ManualProjectCoordinateAdvisor sut = new ManualProjectCoordinateAdvisor(persistenceFile);
 
         sut.setManualMapping(exampleDependencyInfo, EXPECTED_PROJECT_COORDINATE);
         sut.setManualMapping(anotherExampleDependencyInfo, ANOTHER_EXPECTED_PROJECT_COORDINATE);
 
         sut.close();
 
-        sut = new ManualMappingStrategy(persistenceFile);
+        sut = new ManualProjectCoordinateAdvisor(persistenceFile);
         sut.open();
 
-        Optional<ProjectCoordinate> projectCoordinate = sut.searchForProjectCoordinate(exampleDependencyInfo);
+        Optional<ProjectCoordinate> projectCoordinate = sut.suggest(exampleDependencyInfo);
         assertEquals(EXPECTED_PROJECT_COORDINATE, projectCoordinate.get());
 
         Optional<ProjectCoordinate> anotherProjectCoordinate = sut
-                .searchForProjectCoordinate(anotherExampleDependencyInfo);
+                .suggest(anotherExampleDependencyInfo);
         assertEquals(ANOTHER_EXPECTED_PROJECT_COORDINATE, anotherProjectCoordinate.get());
 
         sut.close();

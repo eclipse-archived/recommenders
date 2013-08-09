@@ -39,7 +39,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
     @Override
     public void init(IWorkbench workbench) {
-        setDescription("Settings for the Call Recommender Session Processor.\n");
+        setDescription("Settings for the Override Recommender Session Processor.\n");
         setPreferenceStore(new ScopedPreferenceStore(InstanceScope.INSTANCE, Constants.BUNDLE_NAME));
     }
 }

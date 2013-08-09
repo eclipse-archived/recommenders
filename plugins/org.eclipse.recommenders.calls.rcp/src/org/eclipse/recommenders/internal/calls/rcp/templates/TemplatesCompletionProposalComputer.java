@@ -50,8 +50,8 @@ import org.eclipse.recommenders.completion.rcp.DisableContentAssistCategoryJob;
 import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.RecommendersCompletionContext;
 import org.eclipse.recommenders.internal.calls.rcp.AstCallCompletionAnalyzer;
-import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.rcp.IAstProvider;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
@@ -84,7 +84,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
         TYPE_NAME, MEMBER_ACCESS, THIS
     }
 
-    private IProjectCoordinateProvider pcp;
+    private IProjectCoordinateProvider pcProvider;
     private IRecommendersCompletionContext rCtx;
     private IMethod enclosingMethod;
     private Set<IType> candidates;
@@ -100,9 +100,9 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     private IAstProvider astProvider;
 
     @Inject
-    public TemplatesCompletionProposalComputer(final IProjectCoordinateProvider projectCoordinateProvider,
+    public TemplatesCompletionProposalComputer(final IProjectCoordinateProvider pcProvider,
             final ICallModelProvider store, IAstProvider astProvider, final JavaElementResolver elementResolver) {
-        pcp = projectCoordinateProvider;
+        this.pcProvider = pcProvider;
         this.store = store;
         this.astProvider = astProvider;
         this.elementResolver = elementResolver;
@@ -172,8 +172,8 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     }
 
     private void addPatternsForType(final IType t, final ProposalBuilder proposalBuilder) {
-        ProjectCoordinate coord = pcp.resolve(t).or(ProjectCoordinate.UNKNOWN);
-        BasedTypeName name = new BasedTypeName(coord, elementResolver.toRecType(t));
+        ProjectCoordinate pc = pcProvider.resolve(t).or(ProjectCoordinate.UNKNOWN);
+        UniqueTypeName name = new UniqueTypeName(pc, elementResolver.toRecType(t));
         model = store.acquireModel(name).orNull();
         if (model == null) {
             return;

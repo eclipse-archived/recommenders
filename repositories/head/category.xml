@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature id="org.eclipse.recommenders.simrel.feature" version="0.0.0">
-      <category name="main"/>
-   </feature>
    <feature id="org.eclipse.recommenders.rcp.feature" version="0.0.0">
       <category name="main"/>
    </feature>
@@ -10,9 +7,6 @@
       <category name="main"/>
    </feature>
    <feature id="org.eclipse.recommenders.rcp.feature.source" version="0.0.0">
-      <category name="sources"/>
-   </feature>
-   <feature id="org.eclipse.recommenders.simrel.feature.source" version="0.0.0">
       <category name="sources"/>
    </feature>
    <feature id="org.eclipse.recommenders.rcp.tests.feature.source" version="0.0.0"> 

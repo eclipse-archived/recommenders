@@ -29,8 +29,8 @@ import org.eclipse.recommenders.completion.rcp.IRecommendersCompletionContext;
 import org.eclipse.recommenders.completion.rcp.processable.IProcessableProposal;
 import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.completion.rcp.processable.SimpleProposalProcessor;
-import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.overrides.IOverrideModel;
 import org.eclipse.recommenders.overrides.IOverrideModelProvider;
@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
 public class OverrideCompletionSessionProcessor extends SessionProcessor {
 
     private Logger log = LoggerFactory.getLogger(getClass());
-    private IProjectCoordinateProvider coordsProvider;
-    private IOverrideModelProvider provider;
+    private IProjectCoordinateProvider pcProvider;
+    private IOverrideModelProvider mProvider;
     private JavaElementResolver jdtCache;
 
     private int prefMaxNumberOfProposals;
@@ -60,15 +60,15 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
     private IRecommendersCompletionContext ctx;
     private IType enclosingType;
     private IType supertype;
-    private ProjectCoordinate projectCoord;
+    private ProjectCoordinate pc;
     private IOverrideModel model;
     private List<Recommendation<IMethodName>> recommendations;
 
     @Inject
-    public OverrideCompletionSessionProcessor(IProjectCoordinateProvider coordsProvider,
+    public OverrideCompletionSessionProcessor(IProjectCoordinateProvider pcProvider,
             IOverrideModelProvider modelProvider, final JavaElementResolver cache) {
-        this.coordsProvider = coordsProvider;
-        provider = modelProvider;
+        this.pcProvider = pcProvider;
+        mProvider = modelProvider;
         jdtCache = cache;
     };
 
@@ -108,19 +108,19 @@ public class OverrideCompletionSessionProcessor extends SessionProcessor {
     }
 
     private boolean findProjectCoordinate() {
-        projectCoord = coordsProvider.resolve(supertype).orNull();
-        return projectCoord != null;
+        pc = pcProvider.resolve(supertype).orNull();
+        return pc != null;
     }
 
     private boolean hasModel() {
-        BasedTypeName name = new BasedTypeName(projectCoord, jdtCache.toRecType(supertype));
-        model = provider.acquireModel(name).orNull();
+        UniqueTypeName name = new UniqueTypeName(pc, jdtCache.toRecType(supertype));
+        model = mProvider.acquireModel(name).orNull();
         return model != null;
     }
 
     private void releaseModel() {
         if (model != null) {
-            provider.releaseModel(model);
+            mProvider.releaseModel(model);
         }
     }
 

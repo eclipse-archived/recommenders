@@ -29,7 +29,7 @@ import com.google.common.collect.Maps;
  * A model provider implementation that pools recommendation models to further improve performance. Note that models
  * need to be release by clients. Otherwise the pool may be exhausted quickly.
  */
-public abstract class PoolingModelProvider<K extends IBasedName<?>, M> extends SimpleModelProvider<K, M> {
+public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends SimpleModelProvider<K, M> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -41,8 +41,11 @@ public abstract class PoolingModelProvider<K extends IBasedName<?>, M> extends S
     // REVIEW: we may want to make pool creation configurable later?
     private GenericKeyedObjectPool<K, M> pool = createModelPool();
 
-    public PoolingModelProvider(IModelRepository repository, String modelType) {
-        super(repository, modelType);
+    private IModelArchiveCoordinateAdvisor index;
+
+    public PoolingModelProvider(IModelRepository repository, IModelArchiveCoordinateAdvisor index, String modelType) {
+        super(repository, index, modelType);
+        this.index = index;
     }
 
     private GenericKeyedObjectPool<K, M> createModelPool() {

@@ -10,7 +10,9 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
+import static org.eclipse.recommenders.models.DependencyInfo.*;
 import static org.eclipse.recommenders.utils.IOUtils.LINE_SEPARATOR;
+import static org.eclipse.ui.plugin.AbstractUIPlugin.imageDescriptorFromPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +36,10 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
-import org.eclipse.recommenders.models.IMappingProvider;
-import org.eclipse.recommenders.models.IProjectCoordinateResolver;
+import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootAdded;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JarPackageFragmentRootRemoved;
 import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectClosed;
@@ -50,7 +53,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
@@ -70,24 +72,26 @@ public class ProjectCoordinatesView extends ViewPart {
     private TableViewer tableViewer;
     private ContentProvider contentProvider;
 
-    private final EclipseDependencyListener eclipseDependencyListener;
-    private final IMappingProvider mappingProvider;
+    private final EclipseDependencyListener dependencyListener;
+    private final ProjectCoordinateAdvisorService pcAdvisors;
 
     private TableViewerColumn locationColumn;
     private TableViewerColumn coordinateColumn;
     private TableComparator comparator;
     private Table table;
+    private EventBus bus;
 
     @Inject
-    public ProjectCoordinatesView(final EventBus workspaceBus,
-            final EclipseDependencyListener eclipseDependencyListener, final IMappingProvider mappingProvider) {
-        this.eclipseDependencyListener = eclipseDependencyListener;
-        this.mappingProvider = mappingProvider;
-        workspaceBus.register(this);
+    public ProjectCoordinatesView(final EventBus bus, final EclipseDependencyListener eclipseDependencyListener,
+            final ProjectCoordinateAdvisorService pcAdvisorService) {
+        this.bus = bus;
+        dependencyListener = eclipseDependencyListener;
+        pcAdvisors = pcAdvisorService;
+
     }
 
     private Image loadImage(final String pathToFile) {
-        ImageDescriptor imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(Constants.BUNDLE_ID, pathToFile);
+        ImageDescriptor imageDescriptor = imageDescriptorFromPlugin(Constants.BUNDLE_ID, pathToFile);
         if (imageDescriptor != null) {
             Image image = imageDescriptor.createImage();
             return image;
@@ -115,13 +119,18 @@ public class ProjectCoordinatesView extends ViewPart {
         checkForDependencyUpdates();
     }
 
+    @Subscribe
+    public void onEvent(ModelIndexOpenedEvent e) {
+        checkForDependencyUpdates();
+    }
+
     protected void checkForDependencyUpdates() {
         if (parent != null) {
             parent.getDisplay().syncExec(new Runnable() {
 
                 @Override
                 public void run() {
-                    contentProvider.setData(eclipseDependencyListener.getDependencies());
+                    contentProvider.setData(dependencyListener.getDependencies());
                     refreshTable();
                 }
 
@@ -142,6 +151,8 @@ public class ProjectCoordinatesView extends ViewPart {
 
     @Override
     public void createPartControl(final Composite parent) {
+        bus.register(this);
+
         this.parent = parent;
 
         Composite composite = new Composite(parent, SWT.NONE);
@@ -184,6 +195,7 @@ public class ProjectCoordinatesView extends ViewPart {
 
     @Override
     public void dispose() {
+        bus.unregister(this);
         IMG_JAR.dispose();
         IMG_PROJECT.dispose();
         IMG_JRE.dispose();
@@ -202,17 +214,17 @@ public class ProjectCoordinatesView extends ViewPart {
                 DependencyInfo dependencyInfo = (DependencyInfo) obj;
                 switch (index) {
                 case COLUMN_LOCATION:
-                    if (dependencyInfo.getType() == DependencyType.JRE) {
-                        Optional<String> executionEnvironment = dependencyInfo
-                                .getHint(DependencyInfo.EXECUTION_ENVIRONMENT);
-                        if (executionEnvironment.isPresent()) {
-                            return executionEnvironment.get();
-                        }
+                    String name = dependencyInfo.getFile().getName();
+                    switch (dependencyInfo.getType()) {
+                    case JRE:
+                        return dependencyInfo.getHint(EXECUTION_ENVIRONMENT).or(name);
+                    case PROJECT:
+                        return dependencyInfo.getHint(PROJECT_NAME).or(name);
+                    default:
+                        return name;
                     }
-                    return dependencyInfo.getFile().getName();
                 case COLUMN_COORDINATE:
-                    Optional<ProjectCoordinate> optionalProjectCoordinate = mappingProvider
-                            .searchForProjectCoordinate(dependencyInfo);
+                    Optional<ProjectCoordinate> optionalProjectCoordinate = pcAdvisors.suggest(dependencyInfo);
                     if (optionalProjectCoordinate.isPresent()) {
                         return optionalProjectCoordinate.get().toString();
                     }
@@ -351,26 +363,20 @@ public class ProjectCoordinatesView extends ViewPart {
         @Override
         protected String generateTooltip(final DependencyInfo dependencyInfo) {
             StringBuilder sb = new StringBuilder();
-            List<IProjectCoordinateResolver> strategies = mappingProvider.getStrategies();
+            List<IProjectCoordinateAdvisor> strategies = pcAdvisors.getAdvisors();
 
-            for (IProjectCoordinateResolver strategy : strategies) {
+            for (IProjectCoordinateAdvisor strategy : strategies) {
                 if (strategies.indexOf(strategy) != 0) {
                     sb.append(System.getProperty("line.separator"));
                 }
                 sb.append(strategy.getClass().getSimpleName());
                 sb.append(": ");
-                if (!strategy.isApplicable(dependencyInfo.getType())) {
-                    sb.append("n/a");
+                Optional<ProjectCoordinate> optionalCoordinate = strategy.suggest(dependencyInfo);
+                if (optionalCoordinate.isPresent()) {
+                    sb.append(optionalCoordinate.get().toString());
                 } else {
-                    Optional<ProjectCoordinate> optionalCoordinate = strategy
-                            .searchForProjectCoordinate(dependencyInfo);
-                    if (optionalCoordinate.isPresent()) {
-                        sb.append(optionalCoordinate.get().toString());
-                    } else {
-                        sb.append("unknown");
-                    }
+                    sb.append("n/a");
                 }
-
             }
             return sb.toString();
         }
@@ -433,10 +439,8 @@ public class ProjectCoordinatesView extends ViewPart {
         }
 
         private int compareCoordinate(final DependencyInfo firstElement, final DependencyInfo secondElement) {
-            Optional<ProjectCoordinate> optionalCoordinateFirstElement = mappingProvider
-                    .searchForProjectCoordinate(firstElement);
-            Optional<ProjectCoordinate> optionalCoordinateSecondElement = mappingProvider
-                    .searchForProjectCoordinate(secondElement);
+            Optional<ProjectCoordinate> optionalCoordinateFirstElement = pcAdvisors.suggest(firstElement);
+            Optional<ProjectCoordinate> optionalCoordinateSecondElement = pcAdvisors.suggest(secondElement);
 
             if (optionalCoordinateFirstElement.isPresent()) {
                 if (optionalCoordinateSecondElement.isPresent()) {

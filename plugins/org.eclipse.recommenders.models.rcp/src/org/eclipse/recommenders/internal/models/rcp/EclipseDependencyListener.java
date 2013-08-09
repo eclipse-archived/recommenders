@@ -38,6 +38,7 @@ import org.eclipse.recommenders.rcp.JavaModelEvents.JavaProjectOpened;
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -229,17 +230,17 @@ public class EclipseDependencyListener implements IDependencyListener {
     }
 
     @Override
-    public Set<DependencyInfo> getDependencies() {
-        Set<DependencyInfo> dependencies = Sets.newHashSet();
+    public ImmutableSet<DependencyInfo> getDependencies() {
+        Builder<DependencyInfo> res = ImmutableSet.builder();
         for (DependencyInfo javaProjects : workspaceDependenciesByProject.keySet()) {
             Set<DependencyInfo> dependenciesForProject = workspaceDependenciesByProject.get(javaProjects);
-            dependencies.addAll(dependenciesForProject);
+            res.addAll(dependenciesForProject);
         }
-        return ImmutableSet.copyOf(dependencies);
+        return res.build();
     }
 
     @Override
-    public Set<DependencyInfo> getDependenciesForProject(final DependencyInfo project) {
+    public ImmutableSet<DependencyInfo> getDependenciesForProject(final DependencyInfo project) {
         Set<DependencyInfo> projectDependencies = workspaceDependenciesByProject.get(project);
         return ImmutableSet.copyOf(projectDependencies);
     }

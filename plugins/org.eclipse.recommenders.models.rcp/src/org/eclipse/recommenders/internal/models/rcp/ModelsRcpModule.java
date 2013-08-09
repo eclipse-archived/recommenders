@@ -10,13 +10,10 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static com.google.inject.Scopes.SINGLETON;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 
 import javax.inject.Singleton;
 
@@ -25,15 +22,15 @@ import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.recommenders.models.FingerprintStrategy;
-import org.eclipse.recommenders.models.IMappingProvider;
+import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
+import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.IModelRepository;
-import org.eclipse.recommenders.models.JREExecutionEnvironmentStrategy;
-import org.eclipse.recommenders.models.JREReleaseFileStrategy;
-import org.eclipse.recommenders.models.MappingProvider;
-import org.eclipse.recommenders.models.MavenPomPropertiesStrategy;
-import org.eclipse.recommenders.models.OsgiManifestStrategy;
-import org.eclipse.recommenders.models.SimpleIndexSearcher;
+import org.eclipse.recommenders.models.advisors.FingerprintAdvisor;
+import org.eclipse.recommenders.models.advisors.JREExecutionEnvironmentAdvisor;
+import org.eclipse.recommenders.models.advisors.JREReleaseFileAdvisor;
+import org.eclipse.recommenders.models.advisors.MavenPomPropertiesAdvisor;
+import org.eclipse.recommenders.models.advisors.OsgiManifestAdvisor;
+import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.ui.IWorkbench;
 import org.osgi.framework.Bundle;
@@ -42,85 +39,76 @@ import org.osgi.framework.FrameworkUtil;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.google.inject.AbstractModule;
-import com.google.inject.BindingAnnotation;
 import com.google.inject.Module;
 import com.google.inject.Provides;
-import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 
+@SuppressWarnings("restriction")
 public class ModelsRcpModule extends AbstractModule implements Module {
 
     public static final String IDENTIFIED_PACKAGE_FRAGMENT_ROOTS = "IDENTIFIED_PACKAGE_FRAGMENT_ROOTS";
+    public static final String REPOSITORY_BASEDIR = "REPOSITORY_BASEDIR";
+    public static final String INDEX_BASEDIR = "INDEX_BASEDIR";
     public static final String MANUAL_MAPPINGS = "MANUAL_MAPPINGS";
 
     @Override
     protected void configure() {
         requestStaticInjection(Dependencies.class);
         //
-        bind(IProjectCoordinateProvider.class).to(ProjectCoordinateProvider.class).in(Scopes.SINGLETON);
-        bind(IModelRepository.class).to(EclipseModelRepository.class).in(Scopes.SINGLETON);
-        bind(ManualMappingStrategy.class).in(Scopes.SINGLETON);
+        bind(IProjectCoordinateProvider.class).to(ProjectCoordinateProvider.class).in(SINGLETON);
 
-        bindRepository();
+        // bind all clients of IRecommendersModelIndex or its super interface IModelArchiveCoordinateProvider to a
+        // single instance in Eclipse:
+        bind(EclipseModelIndex.class).in(SINGLETON);
+        bind(IModelArchiveCoordinateAdvisor.class).to(EclipseModelIndex.class);
+        bind(IModelIndex.class).to(EclipseModelIndex.class);
+        createAndBindNamedFile("index", INDEX_BASEDIR);
 
-        createAndBindNamedFile("cache/manual-mappings.json", MANUAL_MAPPINGS);
-        createAndBindNamedFile("cache/identified-package-fragment-roots.json", IDENTIFIED_PACKAGE_FRAGMENT_ROOTS);
+        //
+        bind(IModelRepository.class).to(EclipseModelRepository.class).in(SINGLETON);
+        createAndBindNamedFile("repository", REPOSITORY_BASEDIR);
+
+        // configure caching
+        bind(ManualProjectCoordinateAdvisor.class).in(SINGLETON);
+        createAndBindNamedFile("caches/manual-mappings.json", MANUAL_MAPPINGS);
+        createAndBindNamedFile("caches/identified-package-fragment-roots.json", IDENTIFIED_PACKAGE_FRAGMENT_ROOTS);
     }
 
     private void createAndBindNamedFile(String fileName, String name) {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         File stateLocation = Platform.getStateLocation(bundle).toFile();
-        File cachePersistence = new File(stateLocation, fileName);
+        File file = new File(stateLocation, fileName);
         try {
-            Files.createParentDirs(cachePersistence);
+            Files.createParentDirs(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        bind(File.class).annotatedWith(Names.named(name)).toInstance(cachePersistence);
-    }
-
-    private void bindRepository() {
-
-        Bundle bundle = FrameworkUtil.getBundle(getClass());
-        File stateLocation = Platform.getStateLocation(bundle).toFile();
-
-        File repo = new File(stateLocation, "repository"); //$NON-NLS-1$
-        repo.mkdirs();
-        bind(File.class).annotatedWith(LocalModelRepositoryLocation.class).toInstance(repo);
-
-        File index = new File(stateLocation, "index"); //$NON-NLS-1$
-        index.mkdirs();
-        bind(File.class).annotatedWith(ModelRepositoryIndexLocation.class).toInstance(index);
+        bind(File.class).annotatedWith(Names.named(name)).toInstance(file);
     }
 
     @Singleton
     @Provides
-    protected EclipseDependencyListener provideMappingProvider(EventBus bus) {
+    public EclipseDependencyListener provideMappingProvider(EventBus bus) {
         return new EclipseDependencyListener(bus);
     }
 
-    @Singleton
     @Provides
-    public SimpleIndexSearcher provideSearcher(@ModelRepositoryIndexLocation File localRepositoryFile) {
-        return new SimpleIndexSearcher(localRepositoryFile);
-    }
-
-    @Provides
-    protected IProxyService provideProxyService() {
+    @SuppressWarnings("restriction")
+    public IProxyService provideProxyService() {
         return ProxyManager.getProxyManager();
     }
 
     @Singleton
     @Provides
-    protected IMappingProvider provideMappingProvider(SimpleIndexSearcher searcher,
-            ManualMappingStrategy manualMappingStrategy) {
-        MappingProvider mappingProvider = new MappingProvider();
-        mappingProvider.addStrategy(manualMappingStrategy);
-        mappingProvider.addStrategy(new MavenPomPropertiesStrategy());
-        mappingProvider.addStrategy(new JREExecutionEnvironmentStrategy());
-        mappingProvider.addStrategy(new JREReleaseFileStrategy());
-        mappingProvider.addStrategy(new OsgiManifestStrategy());
-        mappingProvider.addStrategy(new FingerprintStrategy(searcher));
+    public ProjectCoordinateAdvisorService provideMappingProvider(IModelIndex index,
+            ManualProjectCoordinateAdvisor manualMappingStrategy) {
+        ProjectCoordinateAdvisorService mappingProvider = new ProjectCoordinateAdvisorService();
+        mappingProvider.addAdvisor(manualMappingStrategy);
+        mappingProvider.addAdvisor(new MavenPomPropertiesAdvisor());
+        mappingProvider.addAdvisor(new JREExecutionEnvironmentAdvisor());
+        mappingProvider.addAdvisor(new JREReleaseFileAdvisor());
+        mappingProvider.addAdvisor(new OsgiManifestAdvisor());
+        mappingProvider.addAdvisor(new FingerprintAdvisor(index));
         return mappingProvider;
     }
 
@@ -131,24 +119,4 @@ public class ModelsRcpModule extends AbstractModule implements Module {
         ModelsRcpPreferences prefs = ContextInjectionFactory.make(ModelsRcpPreferences.class, context);
         return prefs;
     }
-
-    @BindingAnnotation
-    @Target({ PARAMETER, FIELD })
-    @Retention(RUNTIME)
-    public static @interface LocalModelRepositoryLocation {
-    }
-
-    //
-    // @BindingAnnotation
-    // @Target(PARAMETER)
-    // @Retention(RUNTIME)
-    // public static @interface RemoteModelRepositoryLocation {
-    // }
-    //
-    @BindingAnnotation
-    @Target({ PARAMETER, FIELD })
-    @Retention(RUNTIME)
-    public static @interface ModelRepositoryIndexLocation {
-    }
-
 }
