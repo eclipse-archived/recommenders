@@ -14,14 +14,16 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.IPackageName;
 import org.eclipse.recommenders.utils.names.ITypeName;
 import org.eclipse.recommenders.utils.names.Names;
+import org.eclipse.recommenders.utils.names.Names.PrimitiveType;
+import org.eclipse.recommenders.utils.names.VmFieldName;
 import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmPackageName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
-import org.eclipse.recommenders.utils.names.Names.PrimitiveType;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -57,6 +59,8 @@ public class NamesTest {
             .get("Ljava/lang/String.virtual(I[[Ljava/lang/String;Ljava/lang/Object;)V");
 
     public static final ITypeName ANONYMOUS = VmTypeName.get("Ljava/awt/SomeClass$17");
+
+    public static final IFieldName EVENT_FIELD = VmFieldName.get("Ljava/lang/Event.field;Ljava/lang/String");
 
     @Test
     public void testSrc2vmType_Primitives() {

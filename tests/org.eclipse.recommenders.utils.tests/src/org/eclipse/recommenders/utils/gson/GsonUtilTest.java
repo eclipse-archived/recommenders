@@ -10,61 +10,21 @@
  */
 package org.eclipse.recommenders.utils.gson;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.eclipse.recommenders.utils.NamesTest;
-import org.eclipse.recommenders.utils.names.IMethodName;
-import org.eclipse.recommenders.utils.names.ITypeName;
-import org.eclipse.recommenders.utils.names.VmMethodName;
-import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.junit.Test;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 
 public class GsonUtilTest {
-    @Test
-    public void testMethodNameDeserialization() {
-        // setup
-        final IMethodName expected = NamesTest.STRING_HASHCODE;
-        // exercise
-        final JsonElement e = new JsonPrimitive(expected.getIdentifier());
-        final IMethodName actual1 = new GsonMethodNameDeserializer().deserialize(e, VmMethodName.class, null);
-        final IMethodName actual2 = new GsonMethodNameDeserializer().deserialize(e, IMethodName.class, null);
-        // verify
-        assertEquals(expected, actual1);
-        assertEquals(expected, actual2);
-    }
-
-    @Test
-    public void testMethodNameSerialization() {
-        // setup
-        final IMethodName type = NamesTest.STRING_HASHCODE;
-        final JsonElement expected = new JsonPrimitive(type.getIdentifier());
-        // exercise
-        final JsonElement actual = new GsonNameSerializer().serialize(type, IMethodName.class, null);
-        // verify
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testTypeNameSerialization() {
-        // setup
-        final ITypeName typeName = NamesTest.STRING;
-        final JsonElement expected = new JsonPrimitive(typeName.getIdentifier());
-        // exercise
-        final JsonElement actual = new GsonNameSerializer().serialize(typeName, ITypeName.class, null);
-        // verify
-        assertEquals(expected, actual);
-    }
 
     @Test
     public void testEmptyFileDeserialization() throws IOException {
@@ -78,19 +38,6 @@ public class GsonUtilTest {
 
         // it's actually null :)
         assertNull(res);
-    }
-
-    @Test
-    public void testTypeNameDeserialization() {
-        // setup
-        final ITypeName expected = NamesTest.STRING;
-        // exercise
-        final JsonElement e = new JsonPrimitive(expected.getIdentifier());
-        final ITypeName actual1 = new GsonTypeNameDeserializer().deserialize(e, VmTypeName.class, null);
-        final ITypeName actual2 = new GsonTypeNameDeserializer().deserialize(e, ITypeName.class, null);
-        // verify
-        assertEquals(expected, actual1);
-        assertEquals(expected, actual2);
     }
 
     @Test
@@ -147,4 +94,5 @@ public class GsonUtilTest {
         // verify
         assertEquals(map, output);
     }
+
 }

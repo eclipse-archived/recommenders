@@ -58,27 +58,23 @@ public class GsonUtil {
     public static synchronized Gson getInstance() {
         if (gson == null) {
             final GsonBuilder builder = new GsonBuilder();
-            builder.registerTypeAdapter(VmMethodName.class, new GsonNameSerializer());
-            builder.registerTypeAdapter(IMethodName.class, new GsonNameSerializer());
-            builder.registerTypeAdapter(VmMethodName.class, new GsonMethodNameDeserializer());
-            builder.registerTypeAdapter(IMethodName.class, new GsonMethodNameDeserializer());
-            builder.registerTypeAdapter(VmTypeName.class, new GsonNameSerializer());
-            builder.registerTypeAdapter(ITypeName.class, new GsonNameSerializer());
-            builder.registerTypeAdapter(VmTypeName.class, new GsonTypeNameDeserializer());
-            builder.registerTypeAdapter(ITypeName.class, new GsonTypeNameDeserializer());
-            builder.registerTypeAdapter(VmFieldName.class, new GsonNameSerializer());
-            builder.registerTypeAdapter(IFieldName.class, new GsonNameSerializer());
-            builder.registerTypeAdapter(VmFieldName.class, new GsonFieldNameDeserializer());
-            builder.registerTypeAdapter(IFieldName.class, new GsonFieldNameDeserializer());
+            builder.registerTypeAdapter(VmMethodName.class, new MethodNameTypeAdapter());
+            builder.registerTypeAdapter(IMethodName.class, new MethodNameTypeAdapter());
+
+            builder.registerTypeAdapter(VmTypeName.class, new TypeNameTypeAdapter());
+            builder.registerTypeAdapter(ITypeName.class, new TypeNameTypeAdapter());
+
+            builder.registerTypeAdapter(VmFieldName.class, new FieldNameTypeAdapter());
+            builder.registerTypeAdapter(IFieldName.class, new FieldNameTypeAdapter());
             //
-            builder.registerTypeAdapter(File.class, new GsonFileDeserializer());
-            builder.registerTypeAdapter(File.class, new GsonFileSerializer());
+            builder.registerTypeAdapter(File.class, new FileTypeAdapter());
             builder.registerTypeAdapter(UUID.class, new UuidTypeAdapter());
-            builder.setPrettyPrinting();
-            // builder.setDateFormat("dd.MM.yyyy HH:mm:ss");
+
             builder.registerTypeAdapter(Date.class, new ISO8601DateParser());
             builder.registerTypeAdapter(Multimap.class, new MultimapTypeAdapter());
+
             builder.enableComplexMapKeySerialization();
+            builder.setPrettyPrinting();
             gson = builder.create();
         }
         return gson;
