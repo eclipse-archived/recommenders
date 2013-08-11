@@ -1,6 +1,6 @@
 # @title Set space-friendly visualization in editors
 # @description This task uses spaces for tabs, sets 4 character tab width.
-# @task_type LASTMOD
+# @task_type RECONCILE
 #
 file_export_version=3.0
 /instance/org.eclipse.ui.editors/spacesForTabs=true
