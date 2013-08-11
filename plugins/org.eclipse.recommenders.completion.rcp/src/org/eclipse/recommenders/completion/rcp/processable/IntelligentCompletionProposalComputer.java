@@ -10,6 +10,8 @@
  */
 package org.eclipse.recommenders.completion.rcp.processable;
 
+import static org.eclipse.recommenders.internal.completion.rcp.Constants.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -32,10 +34,6 @@ import com.google.common.collect.Sets;
 public class IntelligentCompletionProposalComputer extends ProcessableCompletionProposalComputer {
 
     private SessionProcessorDescriptor[] descriptors;
-    static final String JDT_ALL_CATEGORY = "org.eclipse.jdt.ui.javaAllProposalCategory";
-    static final String MYLYN_ALL_CATEGORY = "org.eclipse.mylyn.java.ui.javaAllProposalCategory";
-
-    public static String CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.category.completion.all";
 
     @Inject
     public IntelligentCompletionProposalComputer(SessionProcessorDescriptor[] descriptors,
@@ -69,7 +67,7 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
     @VisibleForTesting
     protected boolean shouldReturnResults() {
         Set<String> cats = Sets.newHashSet(PreferenceConstants.getExcludedCompletionProposalCategories());
-        if (cats.contains(CATEGORY_ID)) {
+        if (cats.contains(RECOMMENDERS_ALL_CATEGORY_ID)) {
             // we are excluded on default tab?
             // then we are not on default tab NOW. We are on a subsequent tab.
             // then make completions:
@@ -78,7 +76,7 @@ public class IntelligentCompletionProposalComputer extends ProcessableCompletion
 
         if (isJdtAllEnabled(cats) || isMylynInstalledAndEnabled(cats)) {
             // do not compute any recommendations and deactivate yourself in background
-            new DisableContentAssistCategoryJob(CATEGORY_ID).schedule(300);
+            new DisableContentAssistCategoryJob(RECOMMENDERS_ALL_CATEGORY_ID).schedule(300);
             return false;
         }
         return true;

@@ -63,10 +63,10 @@ import com.google.inject.Inject;
 
 @SuppressWarnings("restriction")
 public class ChainCompletionProposalComputer implements IJavaCompletionProposalComputer {
+
+    public static final String CATEGORY_ID = "org.eclipse.recommenders.chain.rcp.category"; //$NON-NLS-1$
+
     private Logger log = LoggerFactory.getLogger(getClass());
-
-    static final String CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.chain.category"; //$NON-NLS-1$
-
     private IRecommendersCompletionContext ctx;
     private List<ChainElement> entrypoints;
     private String error;

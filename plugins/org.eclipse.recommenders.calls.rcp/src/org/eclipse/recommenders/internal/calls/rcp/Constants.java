@@ -15,6 +15,12 @@ public class Constants {
      * Bundle symbolic name of the o.e.r.calls.rcp bundle.
      */
     public static final String BUNDLE_NAME = "org.eclipse.recommenders.calls.rcp";
+
+    /**
+     * Templates completion category id
+     */
+    public static final String TEMPLATES_CATEGORY_ID = "org.eclipse.recommenders.calls.rcp.templates.computer";
+
     /**
      * minimum probability a proposal needs to have before displaying it in the UI.
      */

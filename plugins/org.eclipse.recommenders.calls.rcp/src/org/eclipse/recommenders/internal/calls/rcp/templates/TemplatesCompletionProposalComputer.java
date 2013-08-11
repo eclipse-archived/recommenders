@@ -11,6 +11,7 @@
 package org.eclipse.recommenders.internal.calls.rcp.templates;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.eclipse.recommenders.internal.calls.rcp.Constants.TEMPLATES_CATEGORY_ID;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -78,7 +79,6 @@ import com.google.inject.Inject;
 @SuppressWarnings("restriction")
 public class TemplatesCompletionProposalComputer implements IJavaCompletionProposalComputer {
     private Logger log = LoggerFactory.getLogger(getClass());
-    private static final String CATEGORY_ID = "org.eclipse.recommenders.completion.rcp.templates.category";
 
     public static enum CompletionMode {
         TYPE_NAME, MEMBER_ACCESS, THIS
@@ -163,8 +163,8 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
     protected boolean shouldMakeProposals() {
         String[] excluded = PreferenceConstants.getExcludedCompletionProposalCategories();
         Set<String> ex = Sets.newHashSet(excluded);
-        if (!ex.contains(CATEGORY_ID)) {
-            new DisableContentAssistCategoryJob(CATEGORY_ID).schedule();
+        if (!ex.contains(TEMPLATES_CATEGORY_ID)) {
+            new DisableContentAssistCategoryJob(TEMPLATES_CATEGORY_ID).schedule();
             return false;
         }
         // we are not on the default tab
