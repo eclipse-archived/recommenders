@@ -161,6 +161,7 @@ public class TemplatesCompletionProposalComputer implements IJavaCompletionPropo
 
     @VisibleForTesting
     protected boolean shouldMakeProposals() {
+        // we only make proposals on non-default content assist lists (2nd, 3rd,...)
         String[] excluded = PreferenceConstants.getExcludedCompletionProposalCategories();
         Set<String> ex = Sets.newHashSet(excluded);
         if (!ex.contains(TEMPLATES_CATEGORY_ID)) {
