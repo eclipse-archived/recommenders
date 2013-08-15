@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.tests"
       label="Code Recommenders: Test Utilities"
-      version="1.0.4.qualifier"
+      version="1.0.5.qualifier"
       provider-name="Eclipse Code Recommenders"
       license-feature="org.eclipse.recommenders.feature.license"
       license-feature-version="0.0.0">

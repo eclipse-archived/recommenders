@@ -14,7 +14,7 @@
 <feature
       id="org.eclipse.recommenders.feature.completion.rcp.sandbox"
       label="Code Recommenders: Completion Sandbox (Experimental)"
-      version="1.0.4.qualifier"
+      version="1.0.5.qualifier"
       provider-name="Eclipse Code Recommenders"
       license-feature="org.eclipse.recommenders.feature.license"
       license-feature-version="0.0.0">
@@ -32,7 +32,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.recommenders.feature.rcp.core" version="1.0.4.qualifier"/>
+      <import feature="org.eclipse.recommenders.feature.rcp.core" version="1.0.5.qualifier"/>
    </requires>
 
    <plugin
