@@ -110,6 +110,8 @@
 								<plugin id="com.google.inject.assistedinject"/>
 								<plugin id="com.google.inject.multibindings"/>
 								<plugin id="com.ning.async-http-client"/>
+								<plugin id="org.apache.commons.lang3"/>
+								<plugin id="org.apache.commons.primitives"/>
 								<plugin id="org.eclipse.recommenders.aether"/>
 								<plugin id="org.jboss.netty"/>
 							</excludes>
