@@ -1,7 +1,7 @@
 #
 # @title PDE API Tools Settings
 # @description defines defaults like ignore missing default api etc.
-# @task_type LASTMOD
+# @task_type RECONCILE
 /bundle_defaults/org.eclipse.pde.api.tools/ANNOTATION_ELEMENT_TYPE_ADDED_METHOD_WITHOUT_DEFAULT_VALUE=Error
 /bundle_defaults/org.eclipse.pde.api.tools/ANNOTATION_ELEMENT_TYPE_CHANGED_TYPE_CONVERSION=Error
 /bundle_defaults/org.eclipse.pde.api.tools/ANNOTATION_ELEMENT_TYPE_REMOVED_FIELD=Error

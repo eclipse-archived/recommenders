@@ -1,7 +1,7 @@
 #
 # @title Java Editor Save actions
 # @description configures actions to be executed while saving a java file
-# @task_type LASTMOD
+# @task_type RECONCILE
 /instance/org.eclipse.jdt.ui/editor_save_participant_org.eclipse.jdt.ui.postsavelistener.cleanup=true
 /instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.importorder=java;javax;org;com;
 /instance/org.eclipse.jdt.ui/sp_cleanup.add_default_serial_version_id=false

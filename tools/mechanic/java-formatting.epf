@@ -1,11 +1,7 @@
 # @title Java Code Formatter Settings
 # @description Sets the code formatter settings  to code recommenders defaults
-# @task_type LASTMOD
+# @task_type RECONCILE
 #
-/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.comment.line_length=120
-/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.lineSplit=120
-/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.put_empty_statement_on_new_line=true
-/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.tabulation.char=space
 /instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.staticondemandthreshold=2
-
+/instance/org.eclipse.jdt.ui/formatter_profile=_Recommenders
 file_export_version=3.0

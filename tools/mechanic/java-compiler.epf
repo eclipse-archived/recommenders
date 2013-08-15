@@ -1,6 +1,6 @@
 # @title Java Compiler Settings
 # @description Configures compiler warnings
-# @task_type LASTMOD
+# @task_type RECONCILE
 /instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
 /instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.compliance=1.6
 /instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
