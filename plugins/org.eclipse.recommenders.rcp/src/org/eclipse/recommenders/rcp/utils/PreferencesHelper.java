@@ -8,7 +8,7 @@
  * Contributors:
  *    Olav Lenz - initial API and implementation.
  */
-package org.eclipse.recommenders.internal.subwords.rcp;
+package org.eclipse.recommenders.rcp.utils;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;

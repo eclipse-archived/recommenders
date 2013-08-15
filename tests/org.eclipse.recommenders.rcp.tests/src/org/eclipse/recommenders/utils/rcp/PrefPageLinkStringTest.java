@@ -8,11 +8,11 @@
  * Contributors:
  *    Olav Lenz - initial API and implementation.
  */
-package org.eclipse.recommenders.subwords.rcp.it;
+package org.eclipse.recommenders.utils.rcp;
 
 import static junit.framework.Assert.assertEquals;
 
-import org.eclipse.recommenders.internal.subwords.rcp.PreferencesHelper;
+import org.eclipse.recommenders.rcp.utils.PreferencesHelper;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation")

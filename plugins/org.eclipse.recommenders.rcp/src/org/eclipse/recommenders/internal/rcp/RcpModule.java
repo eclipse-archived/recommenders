@@ -12,6 +12,7 @@ package org.eclipse.recommenders.internal.rcp;
 
 import static java.lang.Thread.MIN_PRIORITY;
 import static org.apache.commons.lang3.ArrayUtils.contains;
+import static org.eclipse.recommenders.internal.rcp.Constants.SURVEY_SHOW_DIALOG_JOB_DELAY_MINUTES;
 import static org.eclipse.recommenders.utils.Executors.coreThreadsTimoutExecutor;
 
 import java.lang.reflect.Method;
@@ -33,6 +34,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.core.JavaModelManager;
@@ -43,12 +46,15 @@ import org.eclipse.recommenders.rcp.utils.ASTNodeUtils;
 import org.eclipse.recommenders.rcp.utils.ASTStringUtils;
 import org.eclipse.recommenders.rcp.utils.AstBindings;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.progress.UIJob;
 
 import com.google.common.base.Throwables;
@@ -95,7 +101,7 @@ public class RcpModule extends AbstractModule implements Module {
 
     @Singleton
     @Provides
-    protected JavaModelEventsService provideJavaModelEventsProvider(final EventBus bus, final IWorkspaceRoot workspace) {
+    public JavaModelEventsService provideJavaModelEventsProvider(final EventBus bus, final IWorkspaceRoot workspace) {
         final JavaModelEventsService p = new JavaModelEventsService(bus, workspace);
         JavaCore.addElementChangedListener(p);
         return p;
@@ -103,7 +109,7 @@ public class RcpModule extends AbstractModule implements Module {
 
     @Singleton
     @Provides
-    protected EventBus provideWorkspaceEventBus() {
+    public EventBus provideWorkspaceEventBus() {
         final int numberOfCores = Runtime.getRuntime().availableProcessors();
         final ExecutorService pool = coreThreadsTimoutExecutor(numberOfCores + 1, MIN_PRIORITY,
                 "Recommenders-Bus-Thread-", //$NON-NLS-1$
@@ -113,7 +119,21 @@ public class RcpModule extends AbstractModule implements Module {
 
     @Provides
     @Singleton
-    protected JavaElementSelectionService provideJavaSelectionProvider(final EventBus bus) {
+    public RcpPreferences providePreferences(IWorkbench wb) {
+        IEclipseContext context = (IEclipseContext) wb.getService(IEclipseContext.class);
+        RcpPreferences prefs = ContextInjectionFactory.make(RcpPreferences.class, context);
+        return prefs;
+    }
+
+    @Provides
+    public IWebBrowser provideWebBrowser(IWorkbench wb) throws PartInitException {
+        IWebBrowser browser = wb.getBrowserSupport().getExternalBrowser();
+        return browser;
+    }
+
+    @Provides
+    @Singleton
+    public JavaElementSelectionService provideJavaSelectionProvider(final EventBus bus) {
         final JavaElementSelectionService provider = new JavaElementSelectionService(bus);
         new UIJob("Registering workbench selection listener.") { //$NON-NLS-1$
             {
@@ -132,17 +152,17 @@ public class RcpModule extends AbstractModule implements Module {
     }
 
     @Provides
-    protected IWorkspaceRoot provideWorkspaceRoot() {
+    public IWorkspaceRoot provideWorkspaceRoot() {
         return ResourcesPlugin.getWorkspace().getRoot();
     }
 
     @Provides
-    protected IWorkspace provideWorkspace() {
+    public IWorkspace provideWorkspace() {
         return ResourcesPlugin.getWorkspace();
     }
 
     @Provides
-    protected Display provideDisplay() {
+    public Display provideDisplay() {
         Display d = Display.getCurrent();
         if (d == null) {
             d = Display.getDefault();
@@ -151,18 +171,23 @@ public class RcpModule extends AbstractModule implements Module {
     }
 
     @Provides
-    protected IWorkbench provideWorkbench() {
+    public IWorkbench provideWorkbench() {
         return PlatformUI.getWorkbench();
     }
 
     @Provides
-    protected IWorkbenchPage provideActiveWorkbenchPage(final IWorkbench wb) {
+    public IWorkbenchPage provideActiveWorkbenchPage(final IWorkbench wb) {
 
         if (isRunningInUiThread()) {
             return wb.getActiveWorkbenchWindow().getActivePage();
         }
 
         return runUiFinder().activePage;
+    }
+
+    @Provides
+    public Shell provideActiveShell(IWorkbench wb) {
+        return wb.getActiveWorkbenchWindow().getShell();
     }
 
     private ActivePageFinder runUiFinder() {
@@ -186,17 +211,17 @@ public class RcpModule extends AbstractModule implements Module {
     }
 
     @Provides
-    protected IJavaModel provideJavaModel() {
+    public IJavaModel provideJavaModel() {
         return JavaModelManager.getJavaModelManager().getJavaModel();
     }
 
     @Provides
-    protected JavaModelManager provideJavaModelManger() {
+    public JavaModelManager provideJavaModelManger() {
         return JavaModelManager.getJavaModelManager();
     }
 
     @Provides
-    protected IExtensionRegistry provideRegistry() {
+    public IExtensionRegistry provideRegistry() {
         return Platform.getExtensionRegistry();
     }
 
@@ -215,11 +240,17 @@ public class RcpModule extends AbstractModule implements Module {
     }
 
     static class Helper {
+
         @Inject
         JavaElementSelectionService provider;
 
         @Inject
         JavaModelEventsService JavaModelEventsService;
+
+        @Inject
+        public Helper(ShowSurveyDialogJob job) {
+            job.schedule(TimeUnit.MINUTES.toMillis(SURVEY_SHOW_DIALOG_JOB_DELAY_MINUTES));
+        }
     }
 
     static class Listener implements TypeListener {

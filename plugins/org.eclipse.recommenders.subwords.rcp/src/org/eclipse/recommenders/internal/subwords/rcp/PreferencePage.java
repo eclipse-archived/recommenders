@@ -16,6 +16,7 @@ import static org.eclipse.recommenders.internal.subwords.rcp.SubwordsUtils.*;
 import java.util.Set;
 
 import org.eclipse.recommenders.rcp.utils.ContentAssistEnablementBlock;
+import org.eclipse.recommenders.rcp.utils.PreferencesHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
