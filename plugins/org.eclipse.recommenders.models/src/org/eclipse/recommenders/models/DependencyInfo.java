@@ -10,8 +10,7 @@
  */
 package org.eclipse.recommenders.models;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
+import static org.eclipse.recommenders.utils.Checks.*;
 
 import java.io.File;
 import java.util.Collections;
@@ -40,7 +39,7 @@ public class DependencyInfo {
 
     public DependencyInfo(File file, DependencyType type, Map<String, String> hint) {
         this.file = ensureIsNotNull(file);
-        checkArgument(file.isAbsolute());
+        ensureIsTrue(file.isAbsolute());
         this.type = type;
         hints = ensureIsNotNull(hint);
     }

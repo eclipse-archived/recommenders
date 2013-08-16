@@ -14,7 +14,6 @@ import static java.lang.String.format;
 import static org.eclipse.recommenders.utils.Throws.throwIllegalArgumentException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -59,11 +58,6 @@ public class Checks {
     public static File ensureExists(final File file) {
         ensureIsNotNull(file);
         if (!file.exists()) {
-            try {
-                file.getCanonicalFile();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
             throwIllegalArgumentException("file %s does not exist.", file.getAbsolutePath());
         }
         return file;
