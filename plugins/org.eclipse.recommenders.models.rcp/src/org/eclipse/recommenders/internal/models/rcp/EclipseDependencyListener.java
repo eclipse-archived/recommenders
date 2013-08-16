@@ -10,8 +10,11 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static com.google.common.base.Optional.*;
+import static com.google.common.base.Optional.fromNullable;
+import static org.eclipse.jdt.core.IJavaElement.JAVA_PROJECT;
 import static org.eclipse.recommenders.internal.models.rcp.Dependencies.*;
+import static org.eclipse.recommenders.rcp.utils.JdtUtils.getLocation;
+import static org.eclipse.recommenders.utils.Checks.ensureIsNotNull;
 
 import java.io.File;
 import java.util.HashSet;
@@ -21,7 +24,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
@@ -149,7 +151,7 @@ public class EclipseDependencyListener implements IDependencyListener {
     }
 
     private void registerDependencyForJAR(final JarPackageFragmentRoot root) {
-        Optional<IJavaProject> optionalJavaProject = getIJavaProjectForPackageFragmentRoot(root);
+        Optional<IJavaProject> optionalJavaProject = getJavaProjectForPackageFragmentRoot(root);
         if (!optionalJavaProject.isPresent()) {
             return;
         }
@@ -175,33 +177,32 @@ public class EclipseDependencyListener implements IDependencyListener {
         return false;
     }
 
-    private boolean isPartOfTheJRE(final IPackageFragmentRoot packageFragmentRoot) {
-        Optional<IJavaProject> optionalJavaProject = getIJavaProjectForPackageFragmentRoot(packageFragmentRoot);
+    private boolean isPartOfTheJRE(final IPackageFragmentRoot pfr) {
+        Optional<IJavaProject> optionalJavaProject = getJavaProjectForPackageFragmentRoot(pfr);
         if (optionalJavaProject.isPresent()) {
-            if (jrePackageFragmentRoots.containsEntry(createDependencyInfoForProject(optionalJavaProject.get()),
-                    packageFragmentRoot)) {
+            if (jrePackageFragmentRoots.containsEntry(createDependencyInfoForProject(optionalJavaProject.get()), pfr)) {
                 return true;
             }
         }
         return false;
     }
 
-    private DependencyInfo createDependencyInfoForJAR(final JarPackageFragmentRoot root) {
-        File file = root.getPath().toFile();
+    private DependencyInfo createDependencyInfoForJAR(final JarPackageFragmentRoot pfr) {
+        File file = ensureIsNotNull(getLocation(pfr).orNull(), "Could not determine absolute location of %s.", pfr);
         DependencyInfo dependencyInfo = new DependencyInfo(file, DependencyType.JAR);
         return dependencyInfo;
     }
 
-    private void deregisterDependencyForJAR(final JarPackageFragmentRoot root) {
-        Optional<IJavaProject> optionalJavaProject = getIJavaProjectForPackageFragmentRoot(root);
+    private void deregisterDependencyForJAR(final JarPackageFragmentRoot pfr) {
+        Optional<IJavaProject> optionalJavaProject = getJavaProjectForPackageFragmentRoot(pfr);
         if (!optionalJavaProject.isPresent()) {
             return;
         }
         IJavaProject javaProject = optionalJavaProject.get();
-        if (isPartOfTheJRE(root)) {
+        if (isPartOfTheJRE(pfr)) {
             deregisterJREDependenciesForProject(javaProject);
         } else {
-            DependencyInfo dependencyInfo = createDependencyInfoForJAR(root);
+            DependencyInfo dependencyInfo = createDependencyInfoForJAR(pfr);
             DependencyInfo projectDependencyInfo = createDependencyInfoForProject(javaProject);
             workspaceDependenciesByProject.remove(projectDependencyInfo, dependencyInfo);
             if (!workspaceDependenciesByProject.containsKey(projectDependencyInfo)) {
@@ -221,12 +222,9 @@ public class EclipseDependencyListener implements IDependencyListener {
         }
     }
 
-    private Optional<IJavaProject> getIJavaProjectForPackageFragmentRoot(final IPackageFragmentRoot root) {
-        IJavaElement parent = root.getParent();
-        if (parent instanceof IJavaProject) {
-            return fromNullable((IJavaProject) parent);
-        }
-        return absent();
+    private Optional<IJavaProject> getJavaProjectForPackageFragmentRoot(final IPackageFragmentRoot pfr) {
+        IJavaProject parent = (IJavaProject) pfr.getAncestor(JAVA_PROJECT);
+        return fromNullable(parent);
     }
 
     @Override
