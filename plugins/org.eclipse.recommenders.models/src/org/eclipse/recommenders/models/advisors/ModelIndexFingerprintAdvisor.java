@@ -18,11 +18,11 @@ import org.eclipse.recommenders.utils.Fingerprints;
 
 import com.google.common.base.Optional;
 
-public class FingerprintAdvisor extends AbstractProjectCoordinateAdvisor {
+public class ModelIndexFingerprintAdvisor extends AbstractProjectCoordinateAdvisor {
 
     private final IModelIndex indexer;
 
-    public FingerprintAdvisor(IModelIndex indexer) {
+    public ModelIndexFingerprintAdvisor(IModelIndex indexer) {
         this.indexer = indexer;
     }
 

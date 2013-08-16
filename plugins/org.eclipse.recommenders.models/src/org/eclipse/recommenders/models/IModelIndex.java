@@ -27,6 +27,7 @@ public interface IModelIndex extends IModelArchiveCoordinateAdvisor {
 
     ImmutableSet<ModelCoordinate> getKnownModels(String modelType);
 
+    // TODO review whether this should take a version or return a set of pcs (vaadin example 7.1.1 vs 7.0.0-SNAPSHOT)
     Optional<ProjectCoordinate> suggestProjectCoordinateByArtifactId(String artifactId);
 
     Optional<ProjectCoordinate> suggestProjectCoordinateByFingerprint(String fingerprint);
