@@ -35,6 +35,12 @@ public class ModelEvents {
     public static class ModelIndexOpenedEvent {
     }
 
+    @Beta
+    public static class ProjectCoordinateChangeEvent {
+        // TODO this event needs to publish the affected IPackageFragmentRoot so that project coordinate providers can
+        // clear their cache entry accordingly
+    }
+
     private ModelEvents() {
     }
 }

@@ -49,6 +49,7 @@ import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
 import org.eclipse.recommenders.models.rcp.ModelEvents.ModelIndexOpenedEvent;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.rcp.utils.JdtUtils;
@@ -254,26 +255,37 @@ public class ProjectCoordinateProvider implements IProjectCoordinateProvider, IR
     }
 
     @Subscribe
+    public void onEvent(ProjectCoordinateChangeEvent e) {
+        // TODO there is yet no way to get the affected IPackageFragmentRoot from the editor. So, we are a bit
+        // over-cautious and refresh all cached entries.
+        new RefreshProjectCoordinatesJob("Refreshing cached project coordinates").schedule();
+    }
+
+    @Subscribe
     public void onEvent(ModelIndexOpenedEvent e) {
         // the fingerprint strategy uses the model index to determine missing project coordinates. Thus we have to
         // invalidate at least all absent values but to be honest, all values need to be refreshed!
-        new Job("Refreshing cached project coordinates") {
-            {
-                schedule();
-            }
-
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                Set<IPackageFragmentRoot> pfrs = cache.asMap().keySet();
-                monitor.beginTask("Refreshing", pfrs.size());
-                for (IPackageFragmentRoot pfr : pfrs) {
-                    monitor.subTask(pfr.getElementName());
-                    cache.refresh(pfr);
-                    monitor.worked(1);
-                }
-                monitor.done();
-                return Status.OK_STATUS;
-            }
-        };
+        new RefreshProjectCoordinatesJob("Refreshing cached project coordinates").schedule();
     }
+
+    private final class RefreshProjectCoordinatesJob extends Job {
+
+        private RefreshProjectCoordinatesJob(String name) {
+            super(name);
+        }
+
+        @Override
+        protected IStatus run(IProgressMonitor monitor) {
+            Set<IPackageFragmentRoot> pfrs = cache.asMap().keySet();
+            monitor.beginTask("Refreshing", pfrs.size());
+            for (IPackageFragmentRoot pfr : pfrs) {
+                monitor.subTask(pfr.getElementName());
+                cache.refresh(pfr);
+                monitor.worked(1);
+            }
+            monitor.done();
+            return Status.OK_STATUS;
+        }
+    }
+
 }
