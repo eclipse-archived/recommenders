@@ -16,7 +16,9 @@ import static org.eclipse.recommenders.sandbox.rcp.CompletionEvent.ProposalKind.
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -33,10 +35,13 @@ import org.eclipse.recommenders.completion.rcp.processable.SessionProcessor;
 import org.eclipse.recommenders.rcp.IRcpService;
 import org.eclipse.recommenders.rcp.JavaElementResolver;
 import org.eclipse.recommenders.sandbox.rcp.CompletionEvent.ProposalKind;
-import org.eclipse.recommenders.utils.gson.GsonFieldNameDeserializer;
-import org.eclipse.recommenders.utils.gson.GsonMethodNameDeserializer;
-import org.eclipse.recommenders.utils.gson.GsonNameSerializer;
-import org.eclipse.recommenders.utils.gson.GsonTypeNameDeserializer;
+import org.eclipse.recommenders.utils.gson.FieldNameTypeAdapter;
+import org.eclipse.recommenders.utils.gson.FileTypeAdapter;
+import org.eclipse.recommenders.utils.gson.ISO8601DateParser;
+import org.eclipse.recommenders.utils.gson.MethodNameTypeAdapter;
+import org.eclipse.recommenders.utils.gson.MultimapTypeAdapter;
+import org.eclipse.recommenders.utils.gson.TypeNameTypeAdapter;
+import org.eclipse.recommenders.utils.gson.UuidTypeAdapter;
 import org.eclipse.recommenders.utils.names.IFieldName;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
@@ -48,6 +53,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
+import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -62,18 +68,17 @@ public class StatisticsSessionProcessor extends SessionProcessor implements IRcp
 
     public static Gson getCompletionLogSerializer() {
         final GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(VmMethodName.class, new GsonNameSerializer());
-        builder.registerTypeAdapter(IMethodName.class, new GsonNameSerializer());
-        builder.registerTypeAdapter(VmMethodName.class, new GsonMethodNameDeserializer());
-        builder.registerTypeAdapter(IMethodName.class, new GsonMethodNameDeserializer());
-        builder.registerTypeAdapter(VmTypeName.class, new GsonNameSerializer());
-        builder.registerTypeAdapter(ITypeName.class, new GsonNameSerializer());
-        builder.registerTypeAdapter(VmTypeName.class, new GsonTypeNameDeserializer());
-        builder.registerTypeAdapter(ITypeName.class, new GsonTypeNameDeserializer());
-        builder.registerTypeAdapter(VmFieldName.class, new GsonNameSerializer());
-        builder.registerTypeAdapter(IFieldName.class, new GsonNameSerializer());
-        builder.registerTypeAdapter(VmFieldName.class, new GsonFieldNameDeserializer());
-        builder.registerTypeAdapter(IFieldName.class, new GsonFieldNameDeserializer());
+        builder.registerTypeAdapter(VmMethodName.class, new MethodNameTypeAdapter());
+        builder.registerTypeAdapter(IMethodName.class, new MethodNameTypeAdapter());
+        builder.registerTypeAdapter(VmTypeName.class, new TypeNameTypeAdapter());
+        builder.registerTypeAdapter(ITypeName.class, new TypeNameTypeAdapter());
+        builder.registerTypeAdapter(VmFieldName.class, new FieldNameTypeAdapter());
+        builder.registerTypeAdapter(IFieldName.class, new FieldNameTypeAdapter());
+        builder.registerTypeAdapter(File.class, new FileTypeAdapter());
+        builder.registerTypeAdapter(UUID.class, new UuidTypeAdapter());
+        builder.registerTypeAdapter(Date.class, new ISO8601DateParser());
+        builder.registerTypeAdapter(Multimap.class, new MultimapTypeAdapter());
+
         return builder.create();
     }
 

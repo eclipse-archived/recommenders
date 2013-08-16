@@ -6,22 +6,22 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Andreas Sewe - initial API and implementation.
+ *    Marcel Bruch - initial API and implementation.
  */
 package org.eclipse.recommenders.utils.gson;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
-public class UuidTypeAdapter extends TypeAdapter<UUID> {
+public class FileTypeAdapter extends TypeAdapter<File> {
 
     @Override
-    public void write(JsonWriter out, UUID value) throws IOException {
+    public void write(JsonWriter out, File value) throws IOException {
         if (value == null) {
             out.nullValue();
         } else {
@@ -30,12 +30,12 @@ public class UuidTypeAdapter extends TypeAdapter<UUID> {
     }
 
     @Override
-    public UUID read(JsonReader in) throws IOException {
+    public File read(JsonReader in) throws IOException {
         if (in.peek() == JsonToken.NULL) {
             in.nextNull();
             return null;
         } else {
-            return UUID.fromString(in.nextString());
+            return new File(in.nextString());
         }
     }
 }
