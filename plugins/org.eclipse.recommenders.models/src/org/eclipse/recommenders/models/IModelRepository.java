@@ -12,8 +12,6 @@ package org.eclipse.recommenders.models;
 
 import java.io.File;
 
-import org.eclipse.recommenders.models.ModelRepository.DownloadCallback;
-
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 

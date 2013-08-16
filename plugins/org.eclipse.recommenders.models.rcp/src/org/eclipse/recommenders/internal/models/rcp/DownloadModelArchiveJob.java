@@ -18,7 +18,7 @@ import static org.eclipse.ui.internal.misc.StatusUtil.newStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.recommenders.models.ModelRepository.DownloadCallback;
+import org.eclipse.recommenders.models.DownloadCallback;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.ModelCoordinate;
 
