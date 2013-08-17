@@ -10,15 +10,16 @@
  */
 package org.eclipse.recommenders.models.advisors;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.of;
+import static com.google.common.base.Optional.*;
 import static org.eclipse.recommenders.models.DependencyType.PROJECT;
+import static org.eclipse.recommenders.utils.IOUtils.closeQuietly;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
@@ -27,7 +28,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.recommenders.models.DependencyInfo;
 import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.ProjectCoordinate;
-import org.eclipse.recommenders.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import com.google.common.base.Optional;
 
 public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MavenPomXmlAdvisor.class);
+    private Logger log = LoggerFactory.getLogger(MavenPomXmlAdvisor.class);
 
     @Override
     protected Optional<ProjectCoordinate> doSuggest(DependencyInfo dependencyInfo) {
@@ -48,11 +48,8 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
                 Model model = readModelFromFile(pomfile);
                 return extractProjectCoordinateFromModel(model);
             }
-        } catch (IOException e) {
-            LOG.error("Could not read pom.xml file of dependency :" + dependencyInfo, e);
-            return absent();
-        } catch (XmlPullParserException e) {
-            LOG.error("Could not read pom.xml file of dependency :" + dependencyInfo, e);
+        } catch (Exception e) {
+            log.error("Could not read pom.xml file of dependency :" + dependencyInfo, e);
             return absent();
         }
     }
@@ -61,11 +58,39 @@ public class MavenPomXmlAdvisor extends AbstractProjectCoordinateAdvisor {
         InputStreamReader pomInputStream = null;
         try {
             MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-            pomInputStream = new InputStreamReader(new FileInputStream(pomfile), Charsets.UTF_8);
+            pomInputStream = new InputStreamReader(new FileInputStream(pomfile), detectFileEncoding(pomfile));
             return mavenReader.read(pomInputStream);
         } finally {
-            IOUtils.closeQuietly(pomInputStream);
+            closeQuietly(pomInputStream);
         }
+    }
+
+    private Charset detectFileEncoding(File file) throws IOException {
+        FileInputStream input = null;
+        try {
+            input = new FileInputStream(file);
+            int first = input.read();
+            if (first == 0xEF) {
+                // look for the UTF-8 Byte Order Mark (BOM)
+                int second = input.read();
+                int third = input.read();
+                if (second == 0xBB && third == 0xBF) {
+                    return Charsets.UTF_8;
+                }
+            } else if (first == 0xFE) {
+                // look for the UTF-16 BOM
+                if (input.read() == 0xFF) {
+                    return Charsets.UTF_16BE;
+                }
+            } else if (first == 0xFF) {
+                if (input.read() == 0xFE) {
+                    return Charsets.UTF_16LE;
+                }
+            }
+        } finally {
+            closeQuietly(input);
+        }
+        return Charset.defaultCharset();
     }
 
     private Optional<ProjectCoordinate> extractProjectCoordinateFromModel(Model model) {

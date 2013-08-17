@@ -22,7 +22,6 @@ import java.nio.charset.Charset;
 
 import org.eclipse.recommenders.models.advisors.MavenPomXmlAdvisor;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -53,7 +52,6 @@ public class MavenPomXmlAdvisorTest {
         assertEquals(expected, optionalProjectCoordinate.get());
     }
 
-    @Ignore
     @Test
     public void testProjectCoordinateExtractedFromSimplePomInUtf16() throws IOException {
         writePomFile(folder.newFile("pom.xml"), Charsets.UTF_16, "org.example", "artifact", "1.0.0-SNAPSHOT");
