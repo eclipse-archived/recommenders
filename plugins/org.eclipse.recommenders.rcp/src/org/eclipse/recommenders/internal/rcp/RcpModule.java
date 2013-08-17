@@ -57,7 +57,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.progress.UIJob;
 
-import com.google.common.base.Throwables;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
@@ -271,17 +270,17 @@ public class RcpModule extends AbstractModule implements Module {
                             registerPreDestroyHook(i, m);
                         }
                         if (hasPostConstruct) {
-                            registerPostConstructHook(i, m);
+                            executeMethod(i, m);
                         }
                     }
                 }
 
-                private void registerPostConstructHook(final Object i, final Method m) {
+                private void executeMethod(final Object i, final Method m) {
                     try {
                         m.setAccessible(true);
                         m.invoke(i);
                     } catch (Exception e) {
-                        Throwables.propagate(e);
+                        RcpPlugin.logError(e, "Exception Occured in IRcpService hook '%s'.", m); //$NON-NLS-1$
                     }
                 }
 
@@ -290,7 +289,7 @@ public class RcpModule extends AbstractModule implements Module {
 
                         @Override
                         public boolean preShutdown(IWorkbench workbench, boolean forced) {
-                            registerPostConstructHook(i, m);
+                            executeMethod(i, m);
                             return true;
                         }
 
