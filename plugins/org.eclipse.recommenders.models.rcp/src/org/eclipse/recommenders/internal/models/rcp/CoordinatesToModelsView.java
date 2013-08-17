@@ -18,7 +18,12 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -28,14 +33,17 @@ import org.eclipse.recommenders.models.IModelIndex;
 import org.eclipse.recommenders.models.ModelCoordinate;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.rcp.IProjectCoordinateProvider;
+import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Constants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.part.ViewPart;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 public class CoordinatesToModelsView extends ViewPart {
@@ -47,21 +55,24 @@ public class CoordinatesToModelsView extends ViewPart {
 
     private IProjectCoordinateProvider pcProvider;
     private IModelIndex modelIndex;
+    private EclipseModelRepository eclipseModelRepository;
 
     @Inject
     public CoordinatesToModelsView(final EventBus workspaceBus,
             final EclipseDependencyListener eclipseDependencyListener, final IProjectCoordinateProvider pcProvider,
-            final IModelIndex modelIndex) {
+            final IModelIndex modelIndex, final EclipseModelRepository eclipseModelRepository) {
         dependencyListener = eclipseDependencyListener;
         this.pcProvider = pcProvider;
         this.modelIndex = modelIndex;
+        this.eclipseModelRepository = eclipseModelRepository;
         imageProvider = new ImageProvider();
         workspaceBus.register(this);
     }
 
     @Override
     public void createPartControl(Composite parent) {
-        Tree dependencyTree = new Tree(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        Tree dependencyTree = new Tree(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL
+                | SWT.V_SCROLL);
         dependencyTree.setHeaderVisible(true);
         dependencyTree.setLinesVisible(true);
         createColumn(dependencyTree, "Dependency", 400);
@@ -76,7 +87,44 @@ public class CoordinatesToModelsView extends ViewPart {
         treeViewer.setContentProvider(new ContentProvider());
         treeViewer.setLabelProvider(new LabelProvider());
         treeViewer.setSorter(new ViewerSorter());
+        addContextMenu();
         updateContent();
+    }
+
+    private void addContextMenu() {
+
+        final MenuManager menuManager = new MenuManager();
+        Menu contextMenu = menuManager.createContextMenu(treeViewer.getTree());
+        menuManager.setRemoveAllWhenShown(true);
+        treeViewer.getControl().setMenu(contextMenu);
+
+        menuManager.addMenuListener(new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager manager) {
+                IStructuredSelection selection = Checks.cast(treeViewer.getSelection());
+                Set<DependencyInfo> deps = extractSelectedDependencies(selection);
+                if (!deps.isEmpty()) {
+                    menuManager.add(new TriggerModelDownloadAction("Download models", deps));
+                }
+            }
+        });
+    }
+
+    private Set<DependencyInfo> extractSelectedDependencies(IStructuredSelection selection) {
+        final Set<DependencyInfo> selectedDependencies = Sets.newHashSet();
+
+        for (Object element : selection.toList()) {
+            if (element instanceof Dependency) {
+                Dependency dependency = (Dependency) element;
+                selectedDependencies.add(dependency.info);
+            } else if (element instanceof Project) {
+                Project project = (Project) element;
+                for (Dependency dependency : project.dependencies) {
+                    selectedDependencies.add(dependency.info);
+                }
+            }
+        }
+        return selectedDependencies;
     }
 
     private void createColumn(Tree dependencyTree, String label, int width) {
@@ -106,6 +154,11 @@ public class CoordinatesToModelsView extends ViewPart {
             result.add(project);
         }
         return result;
+    }
+
+    @Override
+    public void setFocus() {
+        treeViewer.getControl().setFocus();
     }
 
     public class Project {
@@ -248,8 +301,33 @@ public class CoordinatesToModelsView extends ViewPart {
         }
     }
 
-    @Override
-    public void setFocus() {
-        treeViewer.getControl().setFocus();
+    private final class TriggerModelDownloadAction extends Action {
+        private final Set<DependencyInfo> deps;
+        private final String[] modelTypes = { Constants.CLASS_CALL_MODELS, Constants.CLASS_OVRM_MODEL,
+                Constants.CLASS_OVRP_MODEL, Constants.CLASS_OVRD_MODEL, Constants.CLASS_SELFC_MODEL,
+                Constants.CLASS_SELFM_MODEL };
+
+        private TriggerModelDownloadAction(String text, Set<DependencyInfo> deps) {
+            super(text);
+            this.deps = deps;
+        }
+
+        @Override
+        public void run() {
+            Set<ModelCoordinate> mcs = Sets.newHashSet();
+            for (DependencyInfo dep : deps) {
+                ProjectCoordinate pc = pcProvider.resolve(dep).orNull();
+                if (pc == null) {
+                    continue;
+                }
+                for (String modelType : modelTypes) {
+                    ModelCoordinate mc = modelIndex.suggest(pc, modelType).orNull();
+                    if (mc != null) {
+                        mcs.add(mc);
+                    }
+                }
+            }
+            new DownloadMultipleModelArchivesJob(eclipseModelRepository, mcs).schedule();
+        }
     }
 }
