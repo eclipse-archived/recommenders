@@ -10,8 +10,7 @@
  */
 package org.eclipse.recommenders.internal.models.rcp;
 
-import static org.eclipse.recommenders.models.DependencyInfo.EXECUTION_ENVIRONMENT;
-import static org.eclipse.recommenders.models.DependencyInfo.PROJECT_NAME;
+import static org.eclipse.recommenders.models.DependencyInfo.*;
 import static org.eclipse.recommenders.utils.IOUtils.LINE_SEPARATOR;
 import static org.eclipse.ui.plugin.AbstractUIPlugin.imageDescriptorFromPlugin;
 
@@ -50,6 +49,7 @@ import org.eclipse.recommenders.models.DependencyType;
 import org.eclipse.recommenders.models.IProjectCoordinateAdvisor;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.models.advisors.ProjectCoordinateAdvisorService;
+import org.eclipse.recommenders.models.rcp.ModelEvents.ProjectCoordinateChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -70,6 +70,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
 public class ProjectCoordinatesView extends ViewPart {
@@ -92,18 +93,21 @@ public class ProjectCoordinatesView extends ViewPart {
     private final ProjectCoordinateAdvisorService pcAdvisors;
     private ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor;
 
-
     private Table table;
     private TableViewerColumn locationColumn;
     private TableViewerColumn coordinateColumn;
     private TableComparator comparator;
 
+    private EventBus bus;
+
     @Inject
     public ProjectCoordinatesView(final EclipseDependencyListener dependencyListener,
-            final ProjectCoordinateAdvisorService pcAdvisors, final ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor) {
+            final ProjectCoordinateAdvisorService pcAdvisors,
+            final ManualProjectCoordinateAdvisor manualProjectCoordinateAdvisor, EventBus bus) {
         this.dependencyListener = dependencyListener;
         this.pcAdvisors = pcAdvisors;
         this.manualProjectCoordinateAdvisor = manualProjectCoordinateAdvisor;
+        this.bus = bus;
     }
 
     private Image loadImage(final String pathToFile) {
@@ -173,6 +177,7 @@ public class ProjectCoordinatesView extends ViewPart {
         public ContentProvider() {
             Map<DependencyInfo, Collection<Optional<ProjectCoordinate>>> map = Maps.newHashMap();
             data = Multimaps.newListMultimap(map, new Supplier<List<Optional<ProjectCoordinate>>>() {
+                @Override
                 public List<Optional<ProjectCoordinate>> get() {
                     return Lists.newArrayList();
                 }
@@ -184,6 +189,7 @@ public class ProjectCoordinatesView extends ViewPart {
 
             try {
                 PlatformUI.getWorkbench().getActiveWorkbenchWindow().run(true, false, new IRunnableWithProgress() {
+                    @Override
                     public void run(IProgressMonitor monitor) {
                         int steps = dependencyInfos.size();
                         monitor.beginTask("Resolving dependencies", steps);
@@ -489,8 +495,7 @@ public class ProjectCoordinatesView extends ViewPart {
                         Object data = ((Item) element).getData();
                         if (data instanceof Entry) {
                             Entry<DependencyInfo, Collection<Optional<ProjectCoordinate>>> entry = castToEntry(data);
-
-                            if ("".equals((String) value)) {
+                            if ("".equals(value)) {
                                 manualProjectCoordinateAdvisor.removeManualMapping(entry.getKey());
                             } else {
                                 try {
@@ -502,6 +507,7 @@ public class ProjectCoordinatesView extends ViewPart {
                                     return;
                                 }
                             }
+                            bus.post(new ProjectCoordinateChangeEvent());
                         }
                     }
                     /*
