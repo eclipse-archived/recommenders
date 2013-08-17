@@ -130,8 +130,6 @@ public class CallCompletionSessionProcessor extends SessionProcessor {
     }
 
     private boolean findRecommendations() {
-        model.reset();
-
         // set override-context:
         IMethod overrides = completionAnalyzer.getOverridesContext().orNull();
         if (overrides != null) {

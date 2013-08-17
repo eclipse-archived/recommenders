@@ -93,6 +93,21 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
         public M makeObject(K key) throws Exception {
             return PoolingModelProvider.super.acquireModel(key).orNull();
         }
+
+        @Override
+        public void activateObject(K key, M obj) throws Exception {
+            PoolingModelProvider.this.activateModel(obj);
+        }
+
+        @Override
+        public void passivateObject(K key, M obj) throws Exception {
+            PoolingModelProvider.this.passivateModel(obj);
+        }
+
+        @Override
+        public void destroyObject(K key, M obj) throws Exception {
+            PoolingModelProvider.this.destroyModel(obj);
+        }
     }
 
     @Override
@@ -104,4 +119,23 @@ public abstract class PoolingModelProvider<K extends IUniqueName<?>, M> extends 
             throw new IOException(e);
         }
     }
+
+    /**
+     * Invoked before the model is returned from the pool.
+     */
+    protected void activateModel(M model) {
+    }
+
+    /**
+     * Invoked after the model was released and returned to the pool.
+     */
+    protected void passivateModel(M model) {
+    }
+
+    /**
+     * Invoked when the model is removed from the pool.
+     */
+    protected void destroyModel(M model) {
+    }
+
 }

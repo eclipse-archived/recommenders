@@ -14,10 +14,10 @@ import static org.eclipse.recommenders.utils.Constants.CLASS_CALL_MODELS;
 
 import java.util.zip.ZipFile;
 
-import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.IModelArchiveCoordinateAdvisor;
 import org.eclipse.recommenders.models.IModelRepository;
 import org.eclipse.recommenders.models.PoolingModelProvider;
+import org.eclipse.recommenders.models.UniqueTypeName;
 
 import com.google.common.base.Optional;
 
@@ -31,5 +31,10 @@ public class PoolingCallModelProvider extends PoolingModelProvider<UniqueTypeNam
     @Override
     protected Optional<ICallModel> loadModel(ZipFile zip, UniqueTypeName key) throws Exception {
         return JayesCallModel.load(zip, key.getName());
+    }
+
+    @Override
+    protected void passivateModel(ICallModel model) {
+        model.reset();
     }
 }
