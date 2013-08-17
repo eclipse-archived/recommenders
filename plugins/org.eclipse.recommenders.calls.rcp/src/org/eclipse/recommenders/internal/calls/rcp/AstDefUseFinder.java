@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
@@ -43,6 +44,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.internal.corext.util.JdtFlags;
 import org.eclipse.recommenders.calls.ICallModel.DefinitionKind;
 import org.eclipse.recommenders.rcp.utils.AstBindings;
+import org.eclipse.recommenders.utils.Checks;
 import org.eclipse.recommenders.utils.Nullable;
 import org.eclipse.recommenders.utils.names.IMethodName;
 
@@ -113,7 +115,20 @@ public class AstDefUseFinder extends ASTVisitor {
             return false;
         }
         final String name = node.getFullyQualifiedName();
-        return varname.equals(name);
+        boolean equals = varname.equals(name);
+        if (equals && defKind == UNKNOWN) {
+            refineDefKindByBinding(node);
+        }
+        return equals;
+    }
+
+    private void refineDefKindByBinding(final Name node) {
+        IVariableBinding b = Checks.castOrNull(node.resolveBinding());
+        if (b.isField()) {
+            defKind = FIELD;
+        } else if (b.isParameter()) {
+            defKind = PARAM;
+        }
     }
 
     private boolean maybeThis() {
